@@ -66,7 +66,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private View changeWiFi;
 
     private BluetoothAdapter bluetoothAdapter;
-    private boolean factoryResetting = false;
+    private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
 
     private @Nullable SensePeripheral.SenseWifiNetwork currentWifiNetwork;
@@ -74,7 +74,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (factoryResetting) {
+            if (blockConnection) {
                 return;
             }
 
@@ -101,7 +101,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         if (savedInstanceState != null) {
             this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
-            this.factoryResetting = savedInstanceState.getBoolean("factoryResetting", false);
+            this.blockConnection = savedInstanceState.getBoolean("blockConnection", false);
         } else {
             JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, properties);
@@ -137,7 +137,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onResume() {
         super.onResume();
 
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter.isEnabled() && !blockConnection) {
             connectToPeripheral();
         }
     }
@@ -158,7 +158,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("didEnableBluetooth", didEnableBluetooth);
-        outState.putBoolean("factoryResetting", factoryResetting);
+        outState.putBoolean("blockConnection", blockConnection);
     }
 
     @Override
@@ -368,6 +368,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
 
+        this.blockConnection = true;
+
         LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
         hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY)
                 .subscribe(ignored -> {
@@ -433,7 +435,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private void completeFactoryReset() {
         LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
         runLedAnimation(SensePeripheral.LedAnimation.BUSY).subscribe(ignored -> {
-            this.factoryResetting = true;
+            this.blockConnection = true;
 
             bindAndSubscribe(hardwarePresenter.factoryReset(device),
                     device -> {
