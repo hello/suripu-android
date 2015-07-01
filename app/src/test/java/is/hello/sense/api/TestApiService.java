@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +39,8 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
-import is.hello.sense.api.model.v2.TimelineUpdate;
+import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -140,40 +143,72 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Timeline> timelineForDate(@NonNull @Path("year") String year,
-                                                @NonNull @Path("month") String month,
-                                                @NonNull @Path("day") String day) {
+    public Observable<Timeline> timelineForDate(@NonNull @Path("date") String date) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
-                        .setDate(new DateTime(Integer.parseInt(year, 10), Integer.parseInt(month, 10), Integer.parseInt(day, 10), 0, 0))
+                        .setDate(dateTime)
                         .setScore(90, Condition.IDEAL)
                         .setMessage(new MarkupString("This is *just* a test."))
                         .build()
         );
     }
 
+
+
     @Override
-    public Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("year") String year,
-                                                        @NonNull @Path("month") String month,
-                                                        @NonNull @Path("day") String day,
-                                                        @NonNull @Body TimelineUpdate update) {
-        return safeJust(new VoidResponse());
+    public Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
+                                                    @NonNull @Path("type") TimelineEvent.Type type,
+                                                    @Path("timestamp") long timestamp) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, Condition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .addEvent(new TimelineEventBuilder()
+                                .setType(type)
+                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()))
+                                .build())
+                        .build()
+        );
     }
 
     @Override
-    public Observable<VoidResponse> amendTimelineEventTime(@NonNull @Path("year") String year,
-                                                           @NonNull @Path("month") String month,
-                                                           @NonNull @Path("day") String day,
-                                                           @NonNull @Body TimelineUpdate update) {
-        return safeJust(new VoidResponse());
+    public Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
+                                                       @NonNull @Path("type") TimelineEvent.Type type,
+                                                       @Path("timestamp") long timestamp,
+                                                       @NonNull @Body TimelineEvent.TimeAmendment amendment) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, Condition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .addEvent(new TimelineEventBuilder()
+                                .setType(type)
+                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()).withTime(amendment.newTime))
+                                .build())
+                        .build()
+        );
     }
 
     @Override
-    public Observable<VoidResponse> deleteTimelineEvent(@NonNull @Path("year") String year,
-                                                        @NonNull @Path("month") String month,
-                                                        @NonNull @Path("day") String day,
-                                                        @NonNull @Body TimelineUpdate update) {
-        return safeJust(new VoidResponse());
+    public Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
+                                                    @NonNull @Path("type") TimelineEvent.Type type,
+                                                    @Path("timestamp") long timestamp) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, Condition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .addEvent(new TimelineEventBuilder()
+                                .setType(type)
+                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()))
+                                .build())
+                        .build()
+        );
     }
 
     @Override

@@ -100,11 +100,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     }
 
     public Observable<Timeline> retrieveTimeline(@NonNull DateTime date) {
-        String year = date.year().getAsString();
-        String month = date.monthOfYear().getAsString();
-        String day = date.dayOfMonth().getAsString();
-
-        return apiService.timelineForDate(year, month, day)
+        return apiService.timelineForDate(date.toString(ApiService.DATE_FORMAT))
                          .observeOn(updateScheduler);
     }
 

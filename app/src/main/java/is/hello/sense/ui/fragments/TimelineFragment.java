@@ -381,9 +381,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        // For timeline corrections
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
-
         boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         Runnable continuation = stateSafeExecutor.bind(() -> {
             if (animationEnabled) {
@@ -412,9 +409,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void timelineUnavailable(Throwable e) {
-        // For timeline corrections
-        LoadingDialogFragment.close(getFragmentManager());
-
         adapter.clear();
         headerView.bindError(e);
     }
@@ -542,8 +536,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                 ignored -> {
-                    // Loading dialog is dismissed in #bindRenderedTimeline
-                    timelinePresenter.update();
+                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                 },
                 e -> {
                     LoadingDialogFragment.close(getFragmentManager());
@@ -577,8 +570,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         loadingDialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
         bindAndSubscribe(timelinePresenter.deleteEvent(event),
                 ignored -> {
-                    // Loading dialog is dismissed in #bindRenderedTimeline
-                    timelinePresenter.update();
+                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                 },
                 e -> {
                     LoadingDialogFragment.close(getFragmentManager());

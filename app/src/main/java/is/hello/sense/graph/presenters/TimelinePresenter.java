@@ -9,10 +9,8 @@ import org.joda.time.LocalTime;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
-import is.hello.sense.api.model.v2.TimelineUpdate;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
@@ -35,9 +33,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     @Override
     protected Observable<Timeline> provideUpdateObservable() {
-        return service.timelineForDate(date.year().getAsString(),
-                date.monthOfYear().getAsString(),
-                date.dayOfMonth().getAsString());
+        return service.timelineForDate(date.toString(ApiService.DATE_FORMAT));
     }
 
 
@@ -54,36 +50,32 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
         }
     }
 
-    public Observable<VoidResponse> amendEventTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
+    public Observable<Void> amendEventTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
         return latest().flatMap(timeline -> {
-            DateTime timelineDate = timeline.getDate();
-            String year = timelineDate.year().getAsString();
-            String month = timelineDate.monthOfYear().getAsString();
-            String day = timelineDate.dayOfMonth().getAsString();
-            TimelineUpdate amendment = TimelineUpdate.amendTime(event, newTime);
-            return service.amendTimelineEventTime(year, month, day, amendment);
+            String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
+            TimelineEvent.TimeAmendment timeAmendment = new TimelineEvent.TimeAmendment(newTime);
+            return service.amendTimelineEventTime(date, event.getType(),
+                    event.getRawTimestamp().getMillis(), timeAmendment)
+                    .doOnNext(this.timeline::onNext)
+                    .map(ignored -> null);
         });
     }
 
-    public Observable<VoidResponse> verifyEvent(@NonNull TimelineEvent event) {
+    public Observable<Void> verifyEvent(@NonNull TimelineEvent event) {
         return latest().flatMap(timeline -> {
-            DateTime timelineDate = timeline.getDate();
-            String year = timelineDate.year().getAsString();
-            String month = timelineDate.monthOfYear().getAsString();
-            String day = timelineDate.dayOfMonth().getAsString();
-            TimelineUpdate update = TimelineUpdate.from(event);
-            return service.verifyTimelineEvent(year, month, day, update);
+            String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
+            return service.verifyTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
+                    .doOnNext(this.timeline::onNext)
+                    .map(ignored -> null);
         });
     }
 
-    public Observable<VoidResponse> deleteEvent(@NonNull TimelineEvent event) {
+    public Observable<Void> deleteEvent(@NonNull TimelineEvent event) {
         return latest().flatMap(timeline -> {
-            DateTime timelineDate = timeline.getDate();
-            String year = timelineDate.year().getAsString();
-            String month = timelineDate.monthOfYear().getAsString();
-            String day = timelineDate.dayOfMonth().getAsString();
-            TimelineUpdate update = TimelineUpdate.from(event);
-            return service.deleteTimelineEvent(year, month, day, update);
+            String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
+            return service.deleteTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
+                    .doOnNext(this.timeline::onNext)
+                    .map(ignored -> null);
         });
     }
 }

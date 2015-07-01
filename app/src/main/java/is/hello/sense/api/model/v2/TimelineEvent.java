@@ -13,11 +13,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Enums;
 import is.hello.sense.functional.Lists;
@@ -183,6 +185,23 @@ public class TimelineEvent extends ApiResponse {
         @JsonCreator
         public static Type fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
+        }
+    }
+
+    public static class TimeAmendment {
+        @JsonProperty("new_event_time")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
+        public final LocalTime newTime;
+
+        public TimeAmendment(@NonNull LocalTime newTime) {
+            this.newTime = newTime;
+        }
+
+        @Override
+        public String toString() {
+            return "TimeAmendment{" +
+                    "newTime=" + newTime +
+                    '}';
         }
     }
 }

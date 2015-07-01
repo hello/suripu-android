@@ -26,7 +26,7 @@ import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.api.model.v2.TimelineUpdate;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -113,28 +113,24 @@ public interface ApiService {
 
     //region Timeline
 
-    @GET("/v2/timeline/{year}-{month}-{day}")
-    Observable<Timeline> timelineForDate(@NonNull @Path("year") String year,
-                                         @NonNull @Path("month") String month,
-                                         @NonNull @Path("day") String day);
+    @GET("/v2/timeline/{date}")
+    Observable<Timeline> timelineForDate(@NonNull @Path("date") String date);
 
-    @PATCH("/v2/timeline/{year}-{month}-{day}/event")
-    Observable<VoidResponse> amendTimelineEventTime(@NonNull @Path("year") String year,
-                                                    @NonNull @Path("month") String month,
-                                                    @NonNull @Path("day") String day,
-                                                    @NonNull @Body TimelineUpdate update);
+    @PATCH("/v2/timeline/{date}/event/{type}/{timestamp}")
+    Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
+                                                @NonNull @Path("type") TimelineEvent.Type type,
+                                                @Path("timestamp") long timestamp,
+                                                @NonNull @Body TimelineEvent.TimeAmendment amendment);
 
-    @DELETE("/v2/timeline/{year}-{month}-{day}/event")
-    Observable<VoidResponse> deleteTimelineEvent(@NonNull @Path("year") String year,
-                                                 @NonNull @Path("month") String month,
-                                                 @NonNull @Path("day") String day,
-                                                 @NonNull @Body TimelineUpdate update);
+    @DELETE("/v2/timeline/{date}/event/{type}/{timestamp}")
+    Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
+                                             @NonNull @Path("type") TimelineEvent.Type type,
+                                             @Path("timestamp") long timestamp);
 
-    @PUT("/v2/timeline/{year}-{month}-{day}/event")
-    Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("year") String year,
-                                                 @NonNull @Path("month") String month,
-                                                 @NonNull @Path("day") String day,
-                                                 @NonNull @Body TimelineUpdate update);
+    @PUT("/v2/timeline/{date}/event/{type}/{timestamp}")
+    Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
+                                             @NonNull @Path("type") TimelineEvent.Type type,
+                                             @Path("timestamp") long timestamp);
 
     //endregion
 

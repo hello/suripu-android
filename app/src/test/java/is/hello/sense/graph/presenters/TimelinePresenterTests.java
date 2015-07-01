@@ -10,9 +10,12 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTests;
 import is.hello.sense.util.Sync;
 import is.hello.sense.util.markup.text.MarkupString;
+
+import static junit.framework.Assert.assertFalse;
 
 public class TimelinePresenterTests extends InjectionTests {
     @Inject TimelinePresenter presenter;
@@ -46,7 +49,10 @@ public class TimelinePresenterTests extends InjectionTests {
                 .build();
 
         Sync.wrap(presenter.amendEventTime(timelineEvent, LocalTime.now()))
-            .assertNotNull();
+            .assertNull();
+
+        Timeline timeline = Sync.next(presenter.timeline);
+        assertFalse(Lists.isEmpty(timeline.getEvents()));
     }
 
     @Test
@@ -58,7 +64,10 @@ public class TimelinePresenterTests extends InjectionTests {
                 .build();
 
         Sync.wrap(presenter.verifyEvent(timelineEvent))
-            .assertNotNull();
+            .assertNull();
+
+        Timeline timeline = Sync.next(presenter.timeline);
+        assertFalse(Lists.isEmpty(timeline.getEvents()));
     }
 
     @Test
@@ -70,6 +79,9 @@ public class TimelinePresenterTests extends InjectionTests {
                 .build();
 
         Sync.wrap(presenter.deleteEvent(timelineEvent))
-            .assertNotNull();
+            .assertNull();
+
+        Timeline timeline = Sync.next(presenter.timeline);
+        assertFalse(Lists.isEmpty(timeline.getEvents()));
     }
 }
