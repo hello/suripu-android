@@ -94,8 +94,8 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
 
     protected void dispatchAnimationDidEnd(boolean finished) {
         dispatchAnimationsFinished();
-        for (Listener listener : listeners) {
-            listener.onTimelineAnimationDidEnd(finished);
+        for (int i = listeners.size() - 1; i >= 0; i--) {
+            listeners.get(i).onTimelineAnimationDidEnd(finished);
         }
     }
 
