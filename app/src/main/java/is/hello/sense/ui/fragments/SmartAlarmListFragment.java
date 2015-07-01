@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +29,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.ListViews;
@@ -242,7 +242,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         int alarmPosition = ListViews.getAdapterPosition(listView, position);
         DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(alarmPosition);
         deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
-        deleteDialog.show(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
+        deleteDialog.showAllowingStateLoss(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
         return true;
     }
 
@@ -274,7 +274,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     }
 
 
-    public static class DeleteAlarmDialogFragment extends DialogFragment {
+    public static class DeleteAlarmDialogFragment extends SenseDialogFragment {
         public static final String ARG_INDEX = DeleteAlarmDialogFragment.class.getName() + ".ARG_ALARM";
         public static final String TAG = DeleteAlarmDialogFragment.class.getSimpleName();
 

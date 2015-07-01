@@ -249,7 +249,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         @TimePickerDialogFragment.Config int config = use24Time ? TimePickerDialogFragment.FLAG_USE_24_TIME : 0;
         TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime(), config);
         dialogFragment.setTargetFragment(this, TIME_REQUEST_CODE);
-        dialogFragment.show(getFragmentManager(), TimePickerDialogFragment.TAG);
+        dialogFragment.showAllowingStateLoss(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
 
     public void dayButtonClicked(@NonNull View sender) {
@@ -270,7 +270,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void selectSound(@NonNull View sender) {
         SmartAlarmSoundDialogFragment dialogFragment = SmartAlarmSoundDialogFragment.newInstance(alarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
-        dialogFragment.show(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
+        dialogFragment.showAllowingStateLoss(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {
