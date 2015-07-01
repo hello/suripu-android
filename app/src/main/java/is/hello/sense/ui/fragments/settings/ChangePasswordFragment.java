@@ -123,7 +123,8 @@ public class ChangePasswordFragment extends InjectionFragment {
             return;
         }
 
-        LoadingDialogFragment.show(getFragmentManager(), null, true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         PasswordUpdate passwordUpdate = new PasswordUpdate(currentPassword.getText().toString(), newPassword.getText().toString());
         bindAndSubscribe(apiService.changePassword(passwordUpdate),
                          ignored -> recreateSession(),

@@ -2,7 +2,6 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Build;
@@ -16,9 +15,10 @@ import org.joda.time.LocalTime;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 
-public class TimePickerDialogFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener, RotaryTimePickerDialog.OnTimeSetListener {
+public class TimePickerDialogFragment extends SenseDialogFragment implements TimePickerDialog.OnTimeSetListener, RotaryTimePickerDialog.OnTimeSetListener {
     public static final String TAG = TimePickerDialogFragment.class.getSimpleName();
 
     public static final int FLAG_USE_24_TIME = (1 << 1);

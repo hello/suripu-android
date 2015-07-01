@@ -119,7 +119,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
             Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 
             InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
-            dialogFragment.show(getFragmentManager(), InsightInfoDialogFragment.TAG);
+            dialogFragment.showAllowingStateLoss(getFragmentManager(), InsightInfoDialogFragment.TAG);
         }
     }
 
@@ -148,7 +148,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     @Override
     public void onAnswerQuestion() {
         QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
-        dialogFragment.show(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
+        dialogFragment.showAllowingStateLoss(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
         insightsAdapter.clearCurrentQuestion();
     }
 

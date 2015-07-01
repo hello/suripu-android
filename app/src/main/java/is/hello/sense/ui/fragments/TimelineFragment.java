@@ -537,7 +537,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void completeAdjustTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                getString(R.string.dialog_loading_message),
+                LoadingDialogFragment.OPAQUE_BACKGROUND);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                 ignored -> {
                     // Loading dialog is dismissed in #bindRenderedTimeline
@@ -550,10 +552,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private LoadingDialogFragment createInlineLoadingDialogFragment(int height) {
-        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.newInstance(null, true);
+        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.newInstance(null, 
+                LoadingDialogFragment.OPAQUE_BACKGROUND | LoadingDialogFragment.DIM_ENABLED);
         loadingDialogFragment.setHeight(height);
-        loadingDialogFragment.setWindowGravity(Gravity.BOTTOM);
-        loadingDialogFragment.setWindowDimmed(true);
+        loadingDialogFragment.setGravity(Gravity.BOTTOM);
         return loadingDialogFragment;
     }
 

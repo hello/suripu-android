@@ -192,7 +192,9 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         newAccount.setEmail(email);
         newAccount.setPassword(password);
 
-        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+        LoadingDialogFragment.show(getFragmentManager(),
+                getString(R.string.dialog_loading_message),
+                LoadingDialogFragment.OPAQUE_BACKGROUND);
 
         bindAndSubscribe(apiService.createAccount(newAccount), this::login, error -> {
             LoadingDialogFragment.close(getFragmentManager());

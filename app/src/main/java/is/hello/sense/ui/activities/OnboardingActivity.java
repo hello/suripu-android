@@ -115,7 +115,9 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
                 case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
                     if (account == null) {
-                        LoadingDialogFragment.show(getFragmentManager(), getString(R.string.dialog_loading_message), true);
+                        LoadingDialogFragment.show(getFragmentManager(),
+                                getString(R.string.dialog_loading_message),
+                                LoadingDialogFragment.OPAQUE_BACKGROUND);
                         bindAndSubscribe(apiService.getAccount(), account -> {
                             LoadingDialogFragment.close(getFragmentManager());
                             showBirthday(account);
