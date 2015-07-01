@@ -191,6 +191,11 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
         if (titleText != null) {
+            animate(activityIndicator)
+                    .setDuration(Animation.DURATION_FAST)
+                    .fadeOut(View.INVISIBLE)
+                    .start();
+
             animate(titleText)
                     .setDuration(Animation.DURATION_FAST)
                     .fadeOut(View.INVISIBLE)
@@ -198,12 +203,10 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                         if (!finished)
                             return;
 
-                        animate(activityIndicator)
-                                .fadeOut(View.INVISIBLE)
-                                .start();
-
+                        checkMark.setRotation(45f);
                         animate(checkMark)
                                 .zoomInFrom(0f)
+                                .rotation(0f)
                                 .start();
 
 
