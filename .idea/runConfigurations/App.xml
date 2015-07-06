@@ -23,8 +23,6 @@
     <option name="INVALID_CLOUD_SELECTION_ERROR" value="" />
     <RunnerSettings RunnerId="AndroidDebugRunner" />
     <ConfigurationWrapper RunnerId="AndroidDebugRunner" />
-    <method>
-      <option name="Android.Gradle.BeforeRunTask" enabled="true" goal="" />
-    </method>
+    <method />
   </configuration>
 </component>

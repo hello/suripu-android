@@ -147,6 +147,6 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
 
     public void done(@NonNull View sender) {
-        dismiss();
+        dismissAllowingStateLoss();
     }
 }
