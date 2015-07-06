@@ -37,7 +37,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Condition;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
@@ -52,7 +52,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     public static final String TAG = TimelineInfoFragment.class.getSimpleName();
 
     private static final String ARG_SUMMARY = TimelineInfoFragment.class.getName() + ".ARG_SUMMARY";
-    private static final String ARG_SCORE = TimelineInfoFragment.class.getName() + ".ARG_SCORE";
     private static final String ARG_SCORE_CONDITION = TimelineInfoFragment.class.getName() + ".ARG_SCORE_CONDITION";
     private static final String ARG_METRICS = TimelineInfoFragment.class.getName() + ".ARG_METRICS";
     private static final String ARG_SOURCE_VIEW_ID = TimelineInfoFragment.class.getName() + ".ARG_SOURCE_VIEW_ID";
@@ -60,7 +59,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private static final int GRID_COLUMNS_PER_ROW = 2;
 
     private @Nullable MarkupString summary;
-    private int score;
+    private ScoreCondition scoreCondition;
     private int scoreColor, darkenedScoreColor;
     private ArrayList<TimelineMetric> metrics;
     private @IdRes int sourceViewId;
@@ -82,7 +81,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARG_SUMMARY, timeline.getMessage());
-        arguments.putInt(ARG_SCORE, timeline.getScore());
         arguments.putString(ARG_SCORE_CONDITION, timeline.getScoreCondition().toString());
         arguments.putParcelableArrayList(ARG_METRICS, timeline.getMetrics());
         arguments.putInt(ARG_SOURCE_VIEW_ID, sourceViewId);
@@ -98,8 +96,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         Bundle arguments = getArguments();
 
-        this.score = arguments.getInt(ARG_SCORE);
-        Condition scoreCondition = Condition.fromString(arguments.getString(ARG_SCORE_CONDITION));
+        this.scoreCondition = ScoreCondition.fromString(arguments.getString(ARG_SCORE_CONDITION));
         this.scoreColor = getResources().getColor(scoreCondition.colorRes);
         this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
         this.metrics = arguments.getParcelableArrayList(ARG_METRICS);
@@ -121,7 +118,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // For the negative space edge effect to have the right color. Yes, really.
-            int styleRes = Styles.getSleepScoreTintThemeRes(score);
+            int styleRes = Styles.getScoreConditionTintThemeRes(scoreCondition);
             ContextThemeWrapper themeContext = new ContextThemeWrapper(getActivity(), styleRes);
             inflater = LayoutInflater.from(themeContext);
         }
@@ -459,8 +456,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             TimelineMetric metric = metrics.get(position);
 
-            holder.titleText.setText(metric.getName());
-            holder.readingText.setText(Styles.assembleReadingAndUnit(metric.getValue(), metric.getUnit(), Styles.UNIT_STYLE_SUBSCRIPT));
+            holder.titleText.setText(metric.getName().stringRes);
+            if (metric.getValue() != null) {
+                holder.readingText.setText(metric.getValue().toString());
+            } else {
+                holder.readingText.setText("");
+            }
 
             int valueColorRes = metric.getCondition().colorRes;
             holder.readingText.setTextColor(getResources().getColor(valueColorRes));

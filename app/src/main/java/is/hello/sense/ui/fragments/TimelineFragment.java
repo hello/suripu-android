@@ -28,6 +28,7 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Functions;
@@ -263,14 +264,19 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         bindAndSubscribe(timelinePresenter.latest(),
                 timeline -> {
+                    Integer score = timeline.getScore();
+                    if (score == null) {
+                        return;
+                    }
+
                     DateTime date = timelinePresenter.getDate();
-                    String score = Integer.toString(timeline.getScore());
+                    String scoreString = score.toString();
                     String shareCopy;
                     if (DateFormatter.isLastNight(date)) {
-                        shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                        shareCopy = getString(R.string.timeline_share_last_night_fmt, scoreString);
                     } else {
                         String dateString = dateFormatter.formatAsTimelineDate(date);
-                        shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                        shareCopy = getString(R.string.timeline_share_other_days_fmt, scoreString, dateString);
                     }
 
                     Share.text(shareCopy)
@@ -398,9 +404,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         this.wantsShareButton = hasEvents;
         if (hasEvents) {
-            headerView.bindScore(timeline.getScore(), continuation);
+            headerView.bindScore(timeline.getScore(), timeline.getScoreCondition(), continuation);
         } else {
-            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
+            headerView.bindScore(null, ScoreCondition.UNAVAILABLE, continuation);
         }
 
         headerView.bindMessage(timeline.getMessage());

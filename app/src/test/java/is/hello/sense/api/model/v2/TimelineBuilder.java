@@ -6,7 +6,6 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
-import is.hello.sense.api.model.Condition;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineBuilder {
@@ -17,7 +16,7 @@ public class TimelineBuilder {
         timeline.metrics = new ArrayList<>();
     }
 
-    public TimelineBuilder setScore(int score, @NonNull Condition condition) {
+    public TimelineBuilder setScore(int score, @NonNull ScoreCondition condition) {
         timeline.score = score;
         timeline.scoreCondition = condition;
         return this;

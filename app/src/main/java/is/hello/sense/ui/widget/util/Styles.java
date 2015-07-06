@@ -38,6 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitSystem;
@@ -97,13 +98,20 @@ public final class Styles {
         }
     }
 
-    public static @StyleRes @DrawableRes int getSleepScoreTintThemeRes(int sleepScore) {
-        if (sleepScore >= 80) {
-            return R.style.TintOverride_SleepScore_Ideal;
-        } else if (sleepScore >= 50) {
-            return R.style.TintOverride_SleepScore_Warning;
-        } else {
-            return R.style.TintOverride_SleepScore_Alert;
+    public static @StyleRes @DrawableRes int getScoreConditionTintThemeRes(@NonNull ScoreCondition condition) {
+        switch (condition) {
+            default:
+            case UNAVAILABLE:
+                return R.style.TintOverride_SleepScore;
+
+            case ALERT:
+                return R.style.TintOverride_SleepScore_Alert;
+
+            case WARNING:
+                return R.style.TintOverride_SleepScore_Warning;
+
+            case IDEAL:
+                return R.style.TintOverride_SleepScore_Ideal;
         }
     }
 

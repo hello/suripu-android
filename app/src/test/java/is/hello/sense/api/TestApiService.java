@@ -21,7 +21,6 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
-import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
@@ -37,6 +36,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
@@ -148,7 +148,7 @@ public final class TestApiService implements ApiService {
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
-                        .setScore(90, Condition.IDEAL)
+                        .setScore(90, ScoreCondition.IDEAL)
                         .setMessage(new MarkupString("This is *just* a test."))
                         .build()
         );
@@ -164,7 +164,7 @@ public final class TestApiService implements ApiService {
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
-                        .setScore(90, Condition.IDEAL)
+                        .setScore(90, ScoreCondition.IDEAL)
                         .setMessage(new MarkupString("This is *just* a test."))
                         .addEvent(new TimelineEventBuilder()
                                 .setType(type)
@@ -183,7 +183,7 @@ public final class TestApiService implements ApiService {
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
-                        .setScore(90, Condition.IDEAL)
+                        .setScore(90, ScoreCondition.IDEAL)
                         .setMessage(new MarkupString("This is *just* a test."))
                         .addEvent(new TimelineEventBuilder()
                                 .setType(type)
@@ -201,7 +201,7 @@ public final class TestApiService implements ApiService {
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
-                        .setScore(90, Condition.IDEAL)
+                        .setScore(90, ScoreCondition.IDEAL)
                         .setMessage(new MarkupString("This is *just* a test."))
                         .addEvent(new TimelineEventBuilder()
                                 .setType(type)
