@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -111,6 +112,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContainer.setVisibility(INVISIBLE);
 
         this.cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
+        Drawable end = cardTitle.getCompoundDrawablesRelative()[2];
+        Drawables.setTintColor(end, resources.getColor(R.color.light_accent));
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
 
 
@@ -182,11 +185,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContainer.setAlpha(amount);
 
         topFadeView.setTranslationY(-getTop());
-    }
-
-    private void setCardTitleTint(int color) {
-        cardTitle.setTextColor(color);
-        Drawables.setTintColor(cardTitle.getCompoundDrawablesRelative()[2].mutate(), color);
     }
 
     public @IdRes int getCardViewId() {
@@ -341,7 +339,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
                 }
             });
 
-            setCardTitleTint(endColor);
             scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
             scoreAnimator.addListener(animatorContext);
@@ -379,7 +376,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     public void bindError(@NonNull Throwable e) {
         cardTitle.setText(R.string.dialog_error_title);
-        setCardTitleTint(getResources().getColor(R.color.sensor_unknown));
 
         cardContents.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
         cardContents.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
