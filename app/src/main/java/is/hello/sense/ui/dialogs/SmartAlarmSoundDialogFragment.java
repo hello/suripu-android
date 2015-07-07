@@ -104,7 +104,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void presentError(Throwable e) {
         dialog.setActivityIndicatorVisible(false);
         ErrorDialogFragment.presentError(getFragmentManager(), e);
-        dismiss();
+        dismissAllowingStateLoss();
     }
 
 
