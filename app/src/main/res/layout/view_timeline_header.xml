@@ -47,7 +47,7 @@
             android:drawablePadding="@dimen/gap_small"
             android:drawableEnd="@drawable/disclosure_chevron"
             android:gravity="center_vertical|start"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
             android:text="@string/label_sleep_summary" />
 
         <View style="@style/Divider.Horizontal.Padded" />
