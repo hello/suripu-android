@@ -11,16 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
@@ -29,8 +28,10 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
@@ -48,10 +49,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     private ListView listView;
     private ProgressBar activityIndicator;
     private View emptyPrompt;
-    private View emptyView;
-    private TextView emptyTitle;
-    private TextView emptyMessage;
-    private Button emptyRetry;
 
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
@@ -75,14 +72,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
 
         this.emptyPrompt = view.findViewById(R.id.fragment_smart_alarm_list_first_prompt);
-        this.emptyView = view.findViewById(android.R.id.empty);
-        this.emptyTitle = (TextView) emptyView.findViewById(R.id.fragment_smart_alarm_empty_title);
-        this.emptyMessage = (TextView) emptyView.findViewById(R.id.fragment_smart_alarm_empty_message);
-        this.emptyRetry = (Button) emptyView.findViewById(R.id.fragment_smart_alarm_empty_retry);
-        Views.setSafeOnClickListener(emptyRetry, ignored -> {
-            startLoading();
-            smartAlarmPresenter.update();
-        });
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         this.adapter = new SmartAlarmAdapter(getActivity(), this);
@@ -120,10 +109,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         this.listView = null;
         this.activityIndicator = null;
         this.emptyPrompt = null;
-        this.emptyView = null;
-        this.emptyTitle = null;
-        this.emptyMessage = null;
-        this.emptyRetry = null;
 
         this.adapter = null;
     }
@@ -153,7 +138,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     }
 
     public void startLoading() {
-        emptyView.setVisibility(View.GONE);
+        adapter.clearMessage();
         emptyPrompt.setVisibility(View.GONE);
         activityIndicator.setVisibility(View.VISIBLE);
     }
@@ -161,15 +146,13 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void finishLoading(boolean success) {
         activityIndicator.setVisibility(View.GONE);
 
-        if (adapter.getCount() == 0) {
-            emptyView.setVisibility(View.VISIBLE);
+        if (currentAlarms.size() == 0) {
             if (success) {
                 emptyPrompt.setVisibility(View.VISIBLE);
             } else {
                 emptyPrompt.setVisibility(View.GONE);
             }
         } else {
-            emptyView.setVisibility(View.GONE);
             emptyPrompt.setVisibility(View.GONE);
         }
     }
@@ -177,31 +160,46 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void bindAlarms(@NonNull ArrayList<Alarm> alarms) {
         this.currentAlarms = alarms;
 
-        adapter.clear();
-        adapter.addAll(alarms);
-
-        emptyTitle.setText(R.string.title_smart_alarms);
-        emptyMessage.setText(R.string.message_smart_alarm_placeholder);
-        emptyRetry.setVisibility(View.GONE);
+        adapter.bindAlarms(alarms);
+        if (alarms.isEmpty()) {
+            SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(R.string.title_smart_alarms,
+                    StringRef.from(R.string.message_smart_alarm_placeholder));
+            message.actionRes = R.string.action_new_alarm;
+            message.onClickListener = this::newAlarm;
+            adapter.bindMessage(message);
+        }
 
         finishLoading(true);
     }
 
     public void alarmsUnavailable(Throwable e) {
         Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
-        adapter.clear();
 
-        emptyTitle.setText(R.string.dialog_error_title);
+        SmartAlarmAdapter.Message message;
         if (ApiException.isNetworkError(e)) {
-            emptyMessage.setText(R.string.error_network_unavailable);
+            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
+                    StringRef.from(R.string.error_network_unavailable));
+            message.actionRes = R.string.action_retry;
+            message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 400)) {
-            emptyMessage.setText(R.string.error_smart_alarm_clock_drift);
+            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
+                    StringRef.from(R.string.error_smart_alarm_clock_drift));
+            message.actionRes = R.string.action_retry;
+            message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 412)) {
-            emptyMessage.setText(R.string.error_smart_alarm_requires_device);
+            message = new SmartAlarmAdapter.Message(R.string.device_sense,
+                    StringRef.from(R.string.error_smart_alarm_requires_device));
+            message.titleIconRes = R.drawable.sense_icon;
+            message.titleStyleRes = R.style.AppTheme_Text_Body;
+            message.actionRes = R.string.action_pair_new_sense;
+            message.onClickListener = this::pairNewSense;
         } else {
-            emptyMessage.setText(e.getMessage());
+            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
+                    StringRef.from(e.getMessage()));
+            message.actionRes = R.string.action_retry;
+            message.onClickListener = this::retry;
         }
-        emptyRetry.setVisibility(View.VISIBLE);
+        adapter.bindMessage(message);
 
         finishLoading(false);
     }
@@ -271,6 +269,18 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void newAlarm(@NonNull View sender) {
         Analytics.trackEvent(Analytics.TopView.EVENT_NEW_ALARM, null);
         editAlarm(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW);
+    }
+
+    public void retry(@NonNull View sender) {
+        startLoading();
+        onUpdate();
+    }
+
+    public void pairNewSense(@NonNull View sender) {
+        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
+        Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
+        intent.putExtras(intentArguments);
+        startActivity(intent);
     }
 
 

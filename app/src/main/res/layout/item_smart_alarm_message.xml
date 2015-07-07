@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/gap_outer"
+    android:padding="@dimen/gap_outer"
+    style="@style/AppTheme.Card">
+
+    <TextView
+        android:id="@+id/item_smart_alarm_message_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/gap_small"
+        android:gravity="start|center_vertical"
+        android:singleLine="true"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading" />
+
+    <TextView
+        android:id="@+id/item_smart_alarm_message_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body" />
+
+    <Button
+        android:id="@+id/item_smart_alarm_message_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@android:string/ok"
+        style="@style/AppTheme.Button.Rounded" />
+
+</LinearLayout>
