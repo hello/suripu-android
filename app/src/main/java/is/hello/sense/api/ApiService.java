@@ -116,18 +116,18 @@ public interface ApiService {
     @GET("/v2/timeline/{date}")
     Observable<Timeline> timelineForDate(@NonNull @Path("date") String date);
 
-    @PATCH("/v2/timeline/{date}/event/{type}/{timestamp}")
+    @PATCH("/v2/timeline/{date}/events/{type}/{timestamp}")
     Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
                                                 @NonNull @Path("type") TimelineEvent.Type type,
                                                 @Path("timestamp") long timestamp,
                                                 @NonNull @Body TimelineEvent.TimeAmendment amendment);
 
-    @DELETE("/v2/timeline/{date}/event/{type}/{timestamp}")
+    @DELETE("/v2/timeline/{date}/events/{type}/{timestamp}")
     Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
                                              @NonNull @Path("type") TimelineEvent.Type type,
                                              @Path("timestamp") long timestamp);
 
-    @PUT("/v2/timeline/{date}/event/{type}/{timestamp}")
+    @PUT("/v2/timeline/{date}/events/{type}/{timestamp}")
     Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
                                              @NonNull @Path("type") TimelineEvent.Type type,
                                              @Path("timestamp") long timestamp);

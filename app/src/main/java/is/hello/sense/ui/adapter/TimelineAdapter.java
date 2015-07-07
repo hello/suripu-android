@@ -59,7 +59,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     private final List<TimelineEvent> events = new ArrayList<>();
     private final SparseArray<LocalTime> itemTimes = new SparseArray<>();
-    private final SparseArray<Pair<Integer, Integer>> stolenSleepDepths = new SparseArray<>();
+    private final SparseArray<Pair<TimelineEvent, TimelineEvent>> stolenSleepDepths = new SparseArray<>();
     private int[] segmentHeights;
 
     private boolean use24Time = false;
@@ -109,9 +109,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             TimelineEvent event = events.get(i);
 
             if (event.hasInfo()) {
-                int previousDepth = i > 0 ? events.get(i - 1).getSleepDepth() : 0;
-                int nextDepth = i < (eventCount - 1) ? events.get(i + 1).getSleepDepth() : 0;
-                stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousDepth, nextDepth));
+                TimelineEvent previousEvent = i > 0 ? events.get(i - 1) : null;
+                TimelineEvent nextEvent = i < (eventCount - 1) ? events.get(i + 1) : null;
+                stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousEvent, nextEvent));
 
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
                 previousEventHadInfo = true;
@@ -419,7 +419,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
 
         void bindEvent(int position, @NonNull TimelineEvent event) {
-            drawable.setSleepDepth(event.getSleepDepth());
+            drawable.setSleepDepth(event.getSleepDepth(), event.getSleepState());
 
             LocalTime itemTime = itemTimes.get(position);
             if (itemTime != null) {
@@ -473,13 +473,24 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             setExcludedFromParallax(event.getSleepState() == TimelineEvent.SleepState.AWAKE);
 
-            Pair<Integer, Integer> stolenScores = stolenSleepDepths.get(position);
+            Pair<TimelineEvent, TimelineEvent> stolenScores = stolenSleepDepths.get(position);
             if (stolenScores != null) {
-                drawable.setStolenTopSleepDepth(stolenScores.first);
-                drawable.setStolenBottomSleepDepth(stolenScores.second);
+                TimelineEvent top = stolenScores.first;
+                if (top != null) {
+                    drawable.setStolenTopSleepDepth(top.getSleepDepth(), top.getSleepState());
+                } else {
+                    drawable.setStolenTopSleepDepth(0, TimelineEvent.SleepState.AWAKE);
+                }
+
+                TimelineEvent bottom = stolenScores.second;
+                if (bottom != null) {
+                    drawable.setStolenBottomSleepDepth(bottom.getSleepDepth(), bottom.getSleepState());
+                } else {
+                    drawable.setStolenBottomSleepDepth(0, TimelineEvent.SleepState.AWAKE);
+                }
             } else {
-                drawable.setStolenBottomSleepDepth(0);
-                drawable.setStolenTopSleepDepth(0);
+                drawable.setStolenBottomSleepDepth(0, TimelineEvent.SleepState.AWAKE);
+                drawable.setStolenTopSleepDepth(0, TimelineEvent.SleepState.AWAKE);
             }
 
             messageText.setText(event.getMessage());

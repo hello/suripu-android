@@ -13,8 +13,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.ui.widget.TextDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 
 public class TimelineSegmentDrawable extends Drawable {
     private final Resources resources;
@@ -53,7 +53,7 @@ public class TimelineSegmentDrawable extends Drawable {
 
         stripePaint.setColor(resources.getColor(R.color.timeline_segment_stripe));
 
-        setSleepDepth(0);
+        setSleepDepth(0, TimelineEvent.SleepState.AWAKE);
     }
 
     @Override
@@ -177,23 +177,23 @@ public class TimelineSegmentDrawable extends Drawable {
         }
     }
 
-    public void setSleepDepth(int sleepDepth) {
+    public void setSleepDepth(int sleepDepth, @NonNull TimelineEvent.SleepState sleepState) {
         this.sleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
-        this.sleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
+        this.sleepDepthColor = resources.getColor(sleepState.colorRes);
 
         invalidateSelf();
     }
 
-    public void setStolenTopSleepDepth(int sleepDepth) {
+    public void setStolenTopSleepDepth(int sleepDepth, @NonNull TimelineEvent.SleepState sleepState) {
         this.stolenTopSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
-        this.stolenTopSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
+        this.stolenTopSleepDepthColor = resources.getColor(sleepState.colorRes);
 
         invalidateSelf();
     }
 
-    public void setStolenBottomSleepDepth(int sleepDepth) {
+    public void setStolenBottomSleepDepth(int sleepDepth, @NonNull TimelineEvent.SleepState sleepState) {
         this.stolenBottomSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
-        this.stolenBottomSleepDepthColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
+        this.stolenBottomSleepDepthColor = resources.getColor(sleepState.colorRes);
 
         invalidateSelf();
     }

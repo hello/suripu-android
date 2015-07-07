@@ -51,7 +51,6 @@ public final class Styles {
     public static final int CARD_SPACING_FOOTER = (1 << 2);
     public static final int CARD_SPACING_USE_COMPACT = (1 << 3);
     public static final int CARD_SPACING_HEADER_AND_FOOTER = CARD_SPACING_HEADER | CARD_SPACING_FOOTER;
-    public static final int CARD_SPACING_OUT_COUNT = 2;
 
     @IntDef(
             value = {
@@ -75,18 +74,6 @@ public final class Styles {
     @Retention(RetentionPolicy.SOURCE)
     public @interface UnitStyle {}
 
-
-    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
-        if (sleepDepth == 0) {
-            return R.color.sleep_awake;
-        } else if (sleepDepth == 100) {
-            return R.color.sleep_sound;
-        } else if (sleepDepth < 60) {
-            return R.color.sleep_light;
-        } else {
-            return R.color.sleep_medium;
-        }
-    }
 
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
         if (sleepScore >= 80) {
@@ -113,22 +100,6 @@ public final class Styles {
             case IDEAL:
                 return R.style.TintOverride_SleepScore_Ideal;
         }
-    }
-
-    public static @StringRes int getSleepDepthStringRes(int sleepDepth) {
-        if (sleepDepth == 0) {
-            return R.string.sleep_depth_awake;
-        } else if (sleepDepth == 100) {
-            return R.string.sleep_depth_sound;
-        } else if (sleepDepth < 60) {
-            return R.string.sleep_depth_light;
-        } else {
-            return R.string.sleep_depth_medium;
-        }
-    }
-
-    public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
-        return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
     }
 
 
