@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.TypefaceSpan;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -74,13 +73,12 @@ public class TimelineInfoPopup {
     }
 
     public void bindSegment(@NonNull TimelineSegment segment) {
-        String sleepDepth = activity.getString(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
-        String prefix = activity.getString(R.string.timeline_popup_info_prefix);
+        CharSequence sleepDepth = activity.getText(Styles.getSleepDepthStringRes(segment.getSleepDepth()));
+        CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
 
         SpannableStringBuilder reading = new SpannableStringBuilder(sleepDepth);
         int darkerColor = activity.getResources().getColor(R.color.text_medium);
         reading.setSpan(new ForegroundColorSpan(darkerColor), 0, sleepDepth.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        reading.setSpan(new TypefaceSpan("sans-serif-medium"), 0, sleepDepth.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         reading.insert(0, prefix);
 
         contents.setText(reading);
