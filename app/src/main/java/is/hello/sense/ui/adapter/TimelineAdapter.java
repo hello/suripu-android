@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Drawing;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -57,9 +57,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     private final int segmentEventOffsetMax;
     private final int segmentEventStolenHeight;
 
-    private final List<TimelineSegment> segments = new ArrayList<>();
+    private final List<TimelineEvent> events = new ArrayList<>();
     private final SparseArray<LocalTime> itemTimes = new SparseArray<>();
-    private final SparseArray<Pair<Integer, Integer>> stolenSleepDepths = new SparseArray<>();
+    private final SparseArray<Pair<TimelineEvent, TimelineEvent>> stolenSleepDepths = new SparseArray<>();
     private int[] segmentHeights;
 
     private boolean use24Time = false;
@@ -88,8 +88,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     //region Rendering Cache
 
-    private int calculateSegmentHeight(@NonNull TimelineSegment segment, boolean previousSegmentWasEvent) {
-        float hours = segment.getDuration() / 3600f;
+    private int calculateSegmentHeight(@NonNull TimelineEvent segment, boolean previousSegmentWasEvent) {
+        float hours = segment.getDuration(TimeUnit.SECONDS) / 3600f;
         int rawHeight = Math.round(segmentHeightPerHour * hours);
         if (previousSegmentWasEvent) {
             rawHeight -= segmentEventOffsetMax + segmentEventStolenHeight;
@@ -98,41 +98,41 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     private void buildCache() {
-        int segmentCount = segments.size();
-        this.segmentHeights = new int[segmentCount];
+        int eventCount = events.size();
+        this.segmentHeights = new int[eventCount];
         stolenSleepDepths.clear();
         itemTimes.clear();
 
         Set<Integer> hours = new HashSet<>();
-        boolean previousSegmentWasEvent = false;
-        for (int i = 0; i < segmentCount; i++) {
-            TimelineSegment segment = segments.get(i);
+        boolean previousEventHadInfo = false;
+        for (int i = 0; i < eventCount; i++) {
+            TimelineEvent event = events.get(i);
 
-            if (segment.hasEventInfo()) {
-                int previousDepth = i > 0 ? segments.get(i - 1).getDisplaySleepDepth() : 0;
-                int nextDepth = i < (segmentCount - 1) ? segments.get(i + 1).getDisplaySleepDepth() : 0;
-                stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousDepth, nextDepth));
+            if (event.hasInfo()) {
+                TimelineEvent previousEvent = i > 0 ? events.get(i - 1) : null;
+                TimelineEvent nextEvent = i < (eventCount - 1) ? events.get(i + 1) : null;
+                stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousEvent, nextEvent));
 
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
-                previousSegmentWasEvent = true;
+                previousEventHadInfo = true;
             } else {
-                int segmentHeight = calculateSegmentHeight(segment, previousSegmentWasEvent);
+                int segmentHeight = calculateSegmentHeight(event, previousEventHadInfo);
                 this.segmentHeights[i] = segmentHeight;
-                previousSegmentWasEvent = false;
+                previousEventHadInfo = false;
 
             }
 
-            int hour = segment.getShiftedTimestamp().getHourOfDay();
+            int hour = event.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour)) {
-                if (segment.hasEventInfo()) {
+                if (event.getType() != null) {
                     int previous = (i - 1) + STATIC_ITEM_COUNT;
                     if (i > 0 && itemTimes.get(previous) == null) {
-                        itemTimes.put(previous, segment.getShiftedTimestamp().toLocalTime());
+                        itemTimes.put(previous, event.getShiftedTimestamp().toLocalTime());
                     } else {
                         continue;
                     }
                 } else {
-                    itemTimes.put(i + STATIC_ITEM_COUNT, segment.getShiftedTimestamp().toLocalTime());
+                    itemTimes.put(i + STATIC_ITEM_COUNT, event.getShiftedTimestamp().toLocalTime());
                 }
 
                 hours.add(hour);
@@ -157,18 +157,18 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     @Override
     public int getItemCount() {
-        return STATIC_ITEM_COUNT + segments.size();
+        return STATIC_ITEM_COUNT + events.size();
     }
 
-    public TimelineSegment getSegment(int adapterPosition) {
-        return segments.get(adapterPosition - STATIC_ITEM_COUNT);
+    public TimelineEvent getEvent(int adapterPosition) {
+        return events.get(adapterPosition - STATIC_ITEM_COUNT);
     }
 
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
             return VIEW_TYPE_HEADER;
-        } else if (getSegment(position).hasEventInfo()) {
+        } else if (getEvent(position).hasInfo()) {
             return VIEW_TYPE_EVENT;
         } else {
             return VIEW_TYPE_SEGMENT;
@@ -184,15 +184,15 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
     }
 
-    public void bindSegments(@Nullable List<TimelineSegment> newSegments) {
+    public void bindEvents(@Nullable List<TimelineEvent> newEvents) {
         stopSoundPlayer();
 
-        int oldSize = segments.size();
-        int newSize = newSegments != null ? newSegments.size() : 0;
+        int oldSize = events.size();
+        int newSize = newEvents != null ? newEvents.size() : 0;
 
-        segments.clear();
-        if (!Lists.isEmpty(newSegments)) {
-            segments.addAll(newSegments);
+        events.clear();
+        if (!Lists.isEmpty(newEvents)) {
+            events.addAll(newEvents);
             buildCache();
         }
 
@@ -210,8 +210,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     public void clear() {
         stopSoundPlayer();
 
-        int oldSize = segments.size();
-        segments.clear();
+        int oldSize = events.size();
+        events.clear();
         clearCache();
         notifyItemRangeRemoved(STATIC_ITEM_COUNT, oldSize);
     }
@@ -232,11 +232,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             OnItemClickListener onItemClickListener = this.onItemClickListener;
             onItemClickExecutor.execute(() -> {
                 int position = holder.getAdapterPosition();
-                TimelineSegment segment = getSegment(position);
-                if (segment.hasEventInfo()) {
-                    onItemClickListener.onEventItemClicked(position, segment);
+                TimelineEvent event = getEvent(position);
+                if (event.hasInfo()) {
+                    onItemClickListener.onEventItemClicked(position, event);
                 } else {
-                    onItemClickListener.onSegmentItemClicked(position, holder.itemView, segment);
+                    onItemClickListener.onSegmentItemClicked(position, holder.itemView, event);
                 }
             });
         }
@@ -268,15 +268,15 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             return;
         }
 
-        TimelineSegment segment = getSegment(position);
-        if (segment.hasSound()) {
+        TimelineEvent event = getEvent(position);
+        if (event.hasSound()) {
             Logger.debug(getClass().getSimpleName(), "playSegmentSound(" + position + ")");
 
             if (soundPlayer == null) {
                 this.soundPlayer = new SoundPlayer(context, this, false);
             }
 
-            String url = segment.getSound().getUrl();
+            String url = event.getSoundUrl();
             soundPlayer.play(Uri.parse(url));
 
             setPlayingPosition(position);
@@ -414,12 +414,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         public final void bind(int position) {
             itemView.getLayoutParams().height = TimelineAdapter.this.getSegmentHeight(position);
 
-            TimelineSegment segment = getSegment(position);
-            bindSegment(position, segment);
+            TimelineEvent event = getEvent(position);
+            bindEvent(position, event);
         }
 
-        void bindSegment(int position, @NonNull TimelineSegment segment) {
-            drawable.setSleepDepth(segment.getDisplaySleepDepth());
+        void bindEvent(int position, @NonNull TimelineEvent event) {
+            drawable.setSleepDepth(event.getSleepDepth(), event.getSleepState());
 
             LocalTime itemTime = itemTimes.get(position);
             if (itemTime != null) {
@@ -468,24 +468,35 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         //region Binding
 
         @Override
-        void bindSegment(int position, @NonNull TimelineSegment segment) {
-            super.bindSegment(position, segment);
+        void bindEvent(int position, @NonNull TimelineEvent event) {
+            super.bindEvent(position, event);
 
-            setExcludedFromParallax(segment.isBeforeSleep());
+            setExcludedFromParallax(event.getSleepState() == TimelineEvent.SleepState.AWAKE);
 
-            Pair<Integer, Integer> stolenScores = stolenSleepDepths.get(position);
+            Pair<TimelineEvent, TimelineEvent> stolenScores = stolenSleepDepths.get(position);
             if (stolenScores != null) {
-                drawable.setStolenTopSleepDepth(stolenScores.first);
-                drawable.setStolenBottomSleepDepth(stolenScores.second);
+                TimelineEvent top = stolenScores.first;
+                if (top != null) {
+                    drawable.setStolenTopSleepDepth(top.getSleepDepth(), top.getSleepState());
+                } else {
+                    drawable.setStolenTopSleepDepth(0, TimelineEvent.SleepState.AWAKE);
+                }
+
+                TimelineEvent bottom = stolenScores.second;
+                if (bottom != null) {
+                    drawable.setStolenBottomSleepDepth(bottom.getSleepDepth(), bottom.getSleepState());
+                } else {
+                    drawable.setStolenBottomSleepDepth(0, TimelineEvent.SleepState.AWAKE);
+                }
             } else {
-                drawable.setStolenBottomSleepDepth(0);
-                drawable.setStolenTopSleepDepth(0);
+                drawable.setStolenBottomSleepDepth(0, TimelineEvent.SleepState.AWAKE);
+                drawable.setStolenTopSleepDepth(0, TimelineEvent.SleepState.AWAKE);
             }
 
-            messageText.setText(segment.getMessage());
-            dateText.setText(dateFormatter.formatForTimelineEvent(segment.getShiftedTimestamp(), use24Time));
+            messageText.setText(event.getMessage());
+            dateText.setText(dateFormatter.formatForTimelineEvent(event.getShiftedTimestamp(), use24Time));
 
-            if (segment.hasSound()) {
+            if (event.hasSound()) {
                 if (isSegmentPlaybackActive(position)) {
                     iconImage.setImageResource(R.drawable.timeline_event_stop);
                     iconImage.setContentDescription(context.getString(R.string.accessibility_event_stop));
@@ -497,9 +508,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                 Views.setSafeOnClickListener(iconImage, ignored -> playSegmentSound(position));
                 iconImage.setBackgroundResource(R.drawable.selectable_dark);
             } else {
-                int iconRes = Styles.getTimelineSegmentIconRes(segment);
-                iconImage.setImageResource(iconRes);
-                iconImage.setContentDescription(context.getString(segment.getEventType().accessibilityStringRes));
+                iconImage.setImageResource(event.getType().iconDrawableRes);
+                iconImage.setContentDescription(context.getString(event.getType().accessibilityStringRes));
 
                 iconImage.setOnClickListener(null);
                 iconImage.setBackground(null);
@@ -557,7 +567,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
 
     public interface OnItemClickListener {
-        void onSegmentItemClicked(int position, View view, @NonNull TimelineSegment segment);
-        void onEventItemClicked(int position, @NonNull TimelineSegment segment);
+        void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event);
+        void onEventItemClicked(int position, @NonNull TimelineEvent event);
     }
 }

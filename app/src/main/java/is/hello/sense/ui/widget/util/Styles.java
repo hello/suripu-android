@@ -38,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.sense.R;
-import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitSystem;
@@ -51,7 +51,6 @@ public final class Styles {
     public static final int CARD_SPACING_FOOTER = (1 << 2);
     public static final int CARD_SPACING_USE_COMPACT = (1 << 3);
     public static final int CARD_SPACING_HEADER_AND_FOOTER = CARD_SPACING_HEADER | CARD_SPACING_FOOTER;
-    public static final int CARD_SPACING_OUT_COUNT = 2;
 
     @IntDef(
             value = {
@@ -76,18 +75,6 @@ public final class Styles {
     public @interface UnitStyle {}
 
 
-    public static @ColorRes @DrawableRes int getSleepDepthColorRes(int sleepDepth) {
-        if (sleepDepth == 0) {
-            return R.color.sleep_awake;
-        } else if (sleepDepth == 100) {
-            return R.color.sleep_deep;
-        } else if (sleepDepth < 60) {
-            return R.color.sleep_light;
-        } else {
-            return R.color.sleep_intermediate;
-        }
-    }
-
     public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
         if (sleepScore >= 80) {
             return R.color.sensor_ideal;
@@ -98,30 +85,21 @@ public final class Styles {
         }
     }
 
-    public static @StyleRes @DrawableRes int getSleepScoreTintThemeRes(int sleepScore) {
-        if (sleepScore >= 80) {
-            return R.style.TintOverride_SleepScore_Ideal;
-        } else if (sleepScore >= 50) {
-            return R.style.TintOverride_SleepScore_Warning;
-        } else {
-            return R.style.TintOverride_SleepScore_Alert;
-        }
-    }
+    public static @StyleRes @DrawableRes int getScoreConditionTintThemeRes(@NonNull ScoreCondition condition) {
+        switch (condition) {
+            default:
+            case UNAVAILABLE:
+                return R.style.TintOverride_SleepScore;
 
-    public static @StringRes int getSleepDepthStringRes(int sleepDepth) {
-        if (sleepDepth == 0) {
-            return R.string.sleep_depth_awake;
-        } else if (sleepDepth == 100) {
-            return R.string.sleep_depth_deep;
-        } else if (sleepDepth < 60) {
-            return R.string.sleep_depth_light;
-        } else {
-            return R.string.sleep_depth_intermediate;
-        }
-    }
+            case ALERT:
+                return R.style.TintOverride_SleepScore_Alert;
 
-    public static int getSleepScoreColor(@NonNull Context context, int sleepScore) {
-        return context.getResources().getColor(getSleepScoreColorRes(sleepScore));
+            case WARNING:
+                return R.style.TintOverride_SleepScore_Warning;
+
+            case IDEAL:
+                return R.style.TintOverride_SleepScore_Ideal;
+        }
     }
 
 
@@ -139,80 +117,6 @@ public final class Styles {
             default:
             case CONNECTED:
                 return R.string.title_connecting;
-        }
-    }
-
-
-    public static @DrawableRes int getTimelineSegmentIconRes(@NonNull TimelineSegment segment) {
-        if (!segment.hasEventInfo()) {
-            return 0;
-        }
-
-        switch (segment.getEventType()) {
-            case MOTION: {
-                return R.drawable.timeline_movement;
-            }
-
-            case NOISE: {
-                return R.drawable.timeline_sound;
-            }
-
-            case SNORING: {
-                return R.drawable.timeline_sound;
-            }
-
-            case SLEEP_TALK: {
-                return R.drawable.timeline_sound;
-            }
-
-            case LIGHT: {
-                return R.drawable.timeline_light;
-            }
-
-            case LIGHTS_OUT: {
-                return R.drawable.timeline_lights_out;
-            }
-
-            case SLEEP_MOTION: {
-                return R.drawable.timeline_movement;
-            }
-
-            case IN_BED: {
-                return R.drawable.timeline_in_bed;
-            }
-
-            case SLEEP: {
-                return R.drawable.timeline_asleep;
-            }
-
-            case SUNSET: {
-                return R.drawable.timeline_sunset;
-            }
-
-            case SUNRISE: {
-                return R.drawable.timeline_sunrise;
-            }
-
-            case PARTNER_MOTION: {
-                return R.drawable.timeline_partner;
-            }
-
-            case OUT_OF_BED: {
-                return R.drawable.timeline_out_of_bed;
-            }
-
-            case WAKE_UP: {
-                return R.drawable.timeline_wakeup;
-            }
-
-            case ALARM: {
-                return R.drawable.timeline_alarm;
-            }
-
-            default:
-            case UNKNOWN: {
-                return R.drawable.timeline_unknown;
-            }
         }
     }
 

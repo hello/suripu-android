@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -292,5 +293,10 @@ public class SenseAlertDialog extends Dialog {
         }
 
         updatePaddingAndDividers();
+    }
+
+    public void setView(@LayoutRes int viewRes) {
+        View view = getLayoutInflater().inflate(viewRes, container, false);
+        setView(view);
     }
 }

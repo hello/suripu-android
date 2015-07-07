@@ -255,7 +255,7 @@ import is.hello.sense.ui.widget.util.Styles;
     public @NonNull CharSequence formatDuration(long duration, @NonNull TimeUnit unit) {
         long totalMinutes = unit.toMinutes(duration);
         if (totalMinutes < 60) {
-            return Styles.assembleReadingAndUnit(totalMinutes, context.getString(R.string.format_duration_abbrev_minutes));
+            return Styles.assembleReadingAndUnit(Long.toString(totalMinutes), context.getString(R.string.format_duration_abbrev_minutes), Styles.UNIT_STYLE_SUBSCRIPT);
         } else {
             float hours = totalMinutes / 60f;
             long leftOverMinutes = totalMinutes % 60;

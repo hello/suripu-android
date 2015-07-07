@@ -4,16 +4,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.joda.time.DateTime;
-
-import java.util.ArrayList;
+import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Feedback;
-import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.functional.Lists;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
@@ -36,16 +33,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     @Override
     protected Observable<Timeline> provideUpdateObservable() {
-        Observable<ArrayList<Timeline>> update = service.timelineForDate(date.year().getAsString(),
-                                                                         date.monthOfYear().getAsString(),
-                                                                         date.dayOfMonth().getAsString());
-        return update.flatMap(timelines -> {
-            if (Lists.isEmpty(timelines)) {
-                return Observable.error(new Throwable("No timelines found"));
-            } else {
-                return Observable.just(timelines.get(0));
-            }
-        });
+        return service.timelineForDate(date.toString(ApiService.DATE_FORMAT));
     }
 
 
@@ -62,7 +50,32 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
         }
     }
 
-    public Observable<VoidResponse> submitCorrection(@NonNull Feedback correction) {
-        return service.submitCorrect(correction);
+    public Observable<Void> amendEventTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
+        return latest().flatMap(timeline -> {
+            String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
+            TimelineEvent.TimeAmendment timeAmendment = new TimelineEvent.TimeAmendment(newTime);
+            return service.amendTimelineEventTime(date, event.getType(),
+                    event.getRawTimestamp().getMillis(), timeAmendment)
+                    .doOnNext(this.timeline::onNext)
+                    .map(ignored -> null);
+        });
+    }
+
+    public Observable<Void> verifyEvent(@NonNull TimelineEvent event) {
+        return latest().flatMap(timeline -> {
+            String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
+            return service.verifyTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
+                    .doOnNext(this.timeline::onNext)
+                    .map(ignored -> null);
+        });
+    }
+
+    public Observable<Void> deleteEvent(@NonNull TimelineEvent event) {
+        return latest().flatMap(timeline -> {
+            String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
+            return service.deleteTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
+                    .doOnNext(this.timeline::onNext)
+                    .map(ignored -> null);
+        });
     }
 }

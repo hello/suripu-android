@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/gap_outer">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/label_custom_endpoint_url"/>
+
+        <EditText
+            android:id="@+id/dialog_custom_endpoint_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:nextFocusForward="@+id/dialog_custom_endpoint_client_id"
+            android:imeOptions="actionNext"
+            android:inputType="textUri"
+            android:hint="@string/label_custom_endpoint_url"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/label_custom_endpoint_client_id"/>
+
+        <EditText
+            android:id="@+id/dialog_custom_endpoint_client_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:nextFocusForward="@+id/dialog_custom_endpoint_client_secret"
+            android:imeOptions="actionNext"
+            android:inputType="textUri"
+            android:hint="@string/label_custom_endpoint_client_id"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_small"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:text="@string/label_custom_endpoint_client_secret"/>
+
+        <EditText
+            android:id="@+id/dialog_custom_endpoint_client_secret"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="textUri"
+            android:hint="@string/label_custom_endpoint_client_secret"/>
+
+    </LinearLayout>
+
+</ScrollView>

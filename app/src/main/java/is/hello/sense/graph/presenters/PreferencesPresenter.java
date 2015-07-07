@@ -45,11 +45,6 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
 
-    public static final String DEBUG_CLIENT_ID_OVERRIDE = "debug_client_id_override";
-    public static final String DEBUG_CLIENT_SECRET_OVERRIDE = "debug_client_secret_override";
-    public static final String DEBUG_API_URL_OVERRIDE = "debug_api_url_override";
-
-
     private final Context context;
     private final SharedPreferences sharedPreferences;
     private final AccountPresenter accountPresenter;

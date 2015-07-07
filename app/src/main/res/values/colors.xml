@@ -63,8 +63,8 @@
 
     <color name="sleep_awake">@color/transparent</color>
     <color name="sleep_light">#4d009cff</color>
-    <color name="sleep_intermediate">#80009cff</color>
-    <color name="sleep_deep">#cc009cff</color>
+    <color name="sleep_medium">#80009cff</color>
+    <color name="sleep_sound">#cc009cff</color>
 
     <color name="graph_stroke_color">#66000000</color>
     <color name="graph_fill_gradient_top">#22000000</color>

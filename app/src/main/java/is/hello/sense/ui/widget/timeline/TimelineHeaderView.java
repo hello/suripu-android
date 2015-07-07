@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -26,19 +27,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.SafeOnClickListener;
 
 public class TimelineHeaderView extends RelativeLayout implements TimelineFadeItemAnimator.Listener {
-    public static final int NULL_SCORE = -1;
-
-
     private final Paint dividerPaint = new Paint();
     private final int dividerHeight;
 
@@ -111,6 +109,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContainer.setVisibility(INVISIBLE);
 
         this.cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
+        Drawable end = cardTitle.getCompoundDrawablesRelative()[2];
+        Drawables.setTintColor(end, resources.getColor(R.color.light_accent));
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
 
 
@@ -184,11 +184,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         topFadeView.setTranslationY(-getTop());
     }
 
-    private void setCardTitleTint(int color) {
-        cardTitle.setTextColor(color);
-        Drawables.setTintColor(cardTitle.getCompoundDrawablesRelative()[2].mutate(), color);
-    }
-
     public @IdRes int getCardViewId() {
         return cardContainer.getId();
     }
@@ -255,12 +250,12 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     //region Scores
 
-    private void setScore(int score) {
+    private void setScore(@Nullable Integer score, ScoreCondition condition) {
         clearAnimation();
 
         int color;
-        if (score < 0) {
-            color = getResources().getColor(R.color.sensor_unknown);
+        if (score == null || condition == ScoreCondition.UNAVAILABLE) {
+            color = getResources().getColor(ScoreCondition.UNAVAILABLE.colorRes);
 
             scoreDrawable.setValue(0);
             scoreText.setText(R.string.missing_data_placeholder);
@@ -268,7 +263,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
             setWillNotDraw(true);
         } else {
-            color = Styles.getSleepScoreColor(getContext(), score);
+            color = getResources().getColor(condition.colorRes);
 
             scoreDrawable.setValue(score);
             scoreText.setText(Integer.toString(score));
@@ -284,9 +279,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContainer.setVisibility(VISIBLE);
     }
 
-    private void animateToScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        if (score < 0 || !animationEnabled || hasAnimated || getVisibility() != VISIBLE) {
-            setScore(score);
+    private void animateToScore(@Nullable Integer score, ScoreCondition condition, @NonNull Runnable fireAdapterAnimations) {
+        if (score == null || !animationEnabled || hasAnimated || getVisibility() != VISIBLE) {
+            setScore(score, condition);
             fireAdapterAnimations.run();
         } else {
             stopPulsing();
@@ -303,8 +298,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             scoreAnimator.setDuration(Animation.DURATION_NORMAL);
             scoreAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
-            int startColor = Styles.getSleepScoreColor(getContext(), scoreDrawable.getValue());
-            int endColor = Styles.getSleepScoreColor(getContext(), score);
+            int startColor = scoreDrawable.getFillColor();
+            int endColor = getResources().getColor(condition.colorRes);
             scoreAnimator.addUpdateListener(a -> {
                 Integer newScore = (Integer) a.getAnimatedValue();
                 int color = Drawing.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
@@ -341,7 +336,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
                 }
             });
 
-            setCardTitleTint(endColor);
             scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
             scoreAnimator.addListener(animatorContext);
@@ -373,18 +367,17 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContents.setText(message);
     }
 
-    public void bindScore(int score, @NonNull Runnable fireAdapterAnimations) {
-        animateToScore(score, fireAdapterAnimations);
+    public void bindScore(@Nullable Integer score, ScoreCondition condition, @NonNull Runnable fireAdapterAnimations) {
+        animateToScore(score, condition, fireAdapterAnimations);
     }
 
     public void bindError(@NonNull Throwable e) {
         cardTitle.setText(R.string.dialog_error_title);
-        setCardTitleTint(getResources().getColor(R.color.sensor_unknown));
 
         cardContents.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
         cardContents.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
 
-        setScore(NULL_SCORE);
+        setScore(null, ScoreCondition.UNAVAILABLE);
 
         setScoreClickEnabled(false);
     }

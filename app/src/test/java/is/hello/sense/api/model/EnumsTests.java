@@ -19,6 +19,14 @@ public class EnumsTests extends SenseTestCase {
         assertEquals(TestEnum.UNKNOWN, TestEnum.fromString("VALUE4"));
     }
 
+    @Test
+    public void caseInsensitivity() {
+        assertEquals(TestEnum.VALUE1, TestEnum.fromString("VALUE1"));
+        assertEquals(TestEnum.VALUE1, TestEnum.fromString("value1"));
+        assertEquals(TestEnum.VALUE1, TestEnum.fromString("Value1"));
+        assertEquals(TestEnum.VALUE1, TestEnum.fromString("vALuE1"));
+    }
+
     private enum TestEnum {
         VALUE1,
         VALUE2,

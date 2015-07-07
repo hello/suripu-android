@@ -7,6 +7,10 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +23,6 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
-import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
@@ -30,13 +33,18 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
-import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineBuilder;
+import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.markup.text.MarkupString;
 import retrofit.http.Body;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -85,7 +93,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> getAccount() {
-        return loadResponse("account", new TypeReference<Account>() {});
+        return loadResponse("account", new TypeReference<Account>() {
+        });
     }
 
     @Override
@@ -134,15 +143,72 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
-                                                      @NonNull @Path("month") String month,
-                                                      @NonNull @Path("day") String day) {
-        return loadResponse("timeline", new TypeReference<ArrayList<Timeline>>() {});
+    public Observable<Timeline> timelineForDate(@NonNull @Path("date") String date) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, ScoreCondition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .build()
+        );
+    }
+
+
+
+    @Override
+    public Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
+                                                    @NonNull @Path("type") TimelineEvent.Type type,
+                                                    @Path("timestamp") long timestamp) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, ScoreCondition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .addEvent(new TimelineEventBuilder()
+                                .setType(type)
+                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()))
+                                .build())
+                        .build()
+        );
     }
 
     @Override
-    public Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction) {
-        return safeJust(new VoidResponse());
+    public Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
+                                                       @NonNull @Path("type") TimelineEvent.Type type,
+                                                       @Path("timestamp") long timestamp,
+                                                       @NonNull @Body TimelineEvent.TimeAmendment amendment) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, ScoreCondition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .addEvent(new TimelineEventBuilder()
+                                .setType(type)
+                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()).withTime(amendment.newTime))
+                                .build())
+                        .build()
+        );
+    }
+
+    @Override
+    public Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
+                                                    @NonNull @Path("type") TimelineEvent.Type type,
+                                                    @Path("timestamp") long timestamp) {
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        return safeJust(
+                new TimelineBuilder()
+                        .setDate(dateTime)
+                        .setScore(90, ScoreCondition.IDEAL)
+                        .setMessage(new MarkupString("This is *just* a test."))
+                        .addEvent(new TimelineEventBuilder()
+                                .setType(type)
+                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()))
+                                .build())
+                        .build()
+        );
     }
 
     @Override

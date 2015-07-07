@@ -13,11 +13,11 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Timeline;
+import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Logger;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
@@ -138,25 +138,26 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             dayNumber.setText(date.toString("d"));
             dayName.setText(date.toString("EE"));
 
-            if (timeline == null) {
-                int sleepScoreColor = resources.getColor(R.color.sensor_unknown);
+            if (timeline == null || timeline.getScore() == null ||
+                    timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE) {
+                int sleepScoreColor = resources.getColor(ScoreCondition.UNAVAILABLE.colorRes);
                 score.setText(R.string.missing_data_placeholder);
                 score.setTextColor(sleepScoreColor);
                 scoreDrawable.setFillColor(sleepScoreColor);
                 scoreDrawable.setValue(0);
 
-                preview.setTimelineSegments(null);
+                preview.setTimelineEvents(null);
 
                 this.hasTimeline = false;
             } else {
                 int sleepScore = timeline.getScore();
-                int sleepScoreColor = Styles.getSleepScoreColor(context, sleepScore);
+                int sleepScoreColor = resources.getColor(timeline.getScoreCondition().colorRes);
                 score.setText(Integer.toString(sleepScore));
                 score.setTextColor(sleepScoreColor);
                 scoreDrawable.setFillColor(sleepScoreColor);
                 scoreDrawable.setValue(sleepScore);
 
-                preview.setTimelineSegments(timeline.getSegments());
+                preview.setTimelineEvents(timeline.getEvents());
 
                 this.hasTimeline = true;
             }

@@ -12,7 +12,6 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
-import is.hello.sense.api.model.Feedback;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
@@ -23,16 +22,18 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
-import is.hello.sense.api.model.Timeline;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Headers;
+import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
@@ -61,7 +62,7 @@ public interface ApiService {
 
     //region OAuth
 
-    @POST("/oauth2/token")
+    @POST("/v1/oauth2/token")
     Observable<OAuthSession> authorize(@NonNull @Body OAuthCredentials request);
 
     //endregion
@@ -69,7 +70,7 @@ public interface ApiService {
 
     //region Updates
 
-    @POST("/app/checkin")
+    @POST("/v1/app/checkin")
     Observable<UpdateCheckIn.Response> checkInForUpdates(@NonNull @Body UpdateCheckIn body);
 
     //endregion
@@ -77,34 +78,34 @@ public interface ApiService {
 
     //region Account
 
-    @GET("/account")
+    @GET("/v1/account")
     Observable<Account> getAccount();
 
-    @POST("/account")
+    @POST("/v1/account")
     Observable<Account> createAccount(@NonNull @Body Account account);
 
-    @PUT("/account")
+    @PUT("/v1/account")
     Observable<Account> updateAccount(@NonNull @Body Account account);
 
-    @POST("/account/password")
+    @POST("/v1/account/password")
     Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate);
 
-    @POST("/notifications/registration")
+    @POST("/v1/notifications/registration")
     Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration);
 
-    @GET("/timezone")
+    @GET("/v1/timezone")
     Observable<SenseTimeZone> currentTimeZone();
 
-    @POST("/timezone")
+    @POST("/v1/timezone")
     Observable<SenseTimeZone> updateTimeZone(@NonNull @Body SenseTimeZone senseTimeZone);
 
-    @POST("/account/email")
+    @POST("/v1/account/email")
     Observable<Account> updateEmailAddress(@NonNull @Body Account account);
 
-    @GET("/preferences")
+    @GET("/v1/preferences")
     Observable<HashMap<AccountPreference.Key, Object>> accountPreferences();
 
-    @PUT("/preferences")
+    @PUT("/v1/preferences")
     Observable<AccountPreference> updateAccountPreference(@NonNull @Body AccountPreference preference);
 
     //endregion
@@ -112,55 +113,70 @@ public interface ApiService {
 
     //region Timeline
 
-    @GET("/timeline/{year}-{month}-{day}")
-    Observable<ArrayList<Timeline>> timelineForDate(@NonNull @Path("year") String year,
-                                                    @NonNull @Path("month") String month,
-                                                    @NonNull @Path("day") String day);
+    @GET("/v2/timeline/{date}")
+    Observable<Timeline> timelineForDate(@NonNull @Path("date") String date);
 
-    @GET("/insights")
-    Observable<ArrayList<Insight>> currentInsights();
+    @PATCH("/v2/timeline/{date}/events/{type}/{timestamp}")
+    Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
+                                                @NonNull @Path("type") TimelineEvent.Type type,
+                                                @Path("timestamp") long timestamp,
+                                                @NonNull @Body TimelineEvent.TimeAmendment amendment);
 
-    @GET("/insights/info/{category}")
-    Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
+    @DELETE("/v2/timeline/{date}/events/{type}/{timestamp}")
+    Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
+                                             @NonNull @Path("type") TimelineEvent.Type type,
+                                             @Path("timestamp") long timestamp);
 
-    @POST("/feedback/sleep")
-    Observable<VoidResponse> submitCorrect(@NonNull @Body Feedback correction);
+    @PUT("/v2/timeline/{date}/events/{type}/{timestamp}")
+    Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
+                                             @NonNull @Path("type") TimelineEvent.Type type,
+                                             @Path("timestamp") long timestamp);
 
     //endregion
 
 
     //region Room Conditions
 
-    @GET("/room/current")
+    @GET("/v1/room/current")
     Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
-    @GET("/room/all_sensors/hours")
+    @GET("/v1/room/all_sensors/hours")
     Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                     @Query("from_utc") long timestamp);
 
-    @GET("/room/{sensor}/day")
+    @GET("/v1/room/{sensor}/day")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
                                                                  @Query("from") long timestamp);
 
-    @GET("/room/{sensor}/week")
+    @GET("/v1/room/{sensor}/week")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                                   @Query("from") long timestamp);
 
     //endregion
 
 
+    //region Insights
+
+    @GET("/v1/insights")
+    Observable<ArrayList<Insight>> currentInsights();
+
+    @GET("/v1/insights/info/{category}")
+    Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category);
+
+    //endregion
+
+
     //region Questions
 
-    @GET("/questions")
+    @GET("/v1/questions")
     Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp);
 
-    @POST("/questions/save")
+    @POST("/v1/questions/save")
     Observable<VoidResponse> answerQuestion(@Query("account_question_id") long accountId,
                                             @NonNull @Body List<Question.Choice> answers);
 
-    @PUT("/questions/skip")
+    @PUT("/v1/questions/skip")
     @Headers("Content-Type: application/json")
-
     Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
                                           @Query("id") long questionId);
 
@@ -169,19 +185,19 @@ public interface ApiService {
 
     //region Devices
 
-    @GET("/devices")
+    @GET("/v1/devices")
     Observable<ArrayList<Device>> registeredDevices();
 
-    @GET("/devices/info")
+    @GET("/v1/devices/info")
     Observable<DevicesInfo> devicesInfo();
 
-    @DELETE("/devices/pill/{id}")
+    @DELETE("/v1/devices/pill/{id}")
     Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId);
 
-    @DELETE("/devices/sense/{id}")
+    @DELETE("/v1/devices/sense/{id}")
     Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId);
 
-    @DELETE("/devices/sense/{id}/all")
+    @DELETE("/v1/devices/sense/{id}/all")
     Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId);
 
     //endregion
@@ -189,14 +205,14 @@ public interface ApiService {
 
     //region Smart Alarms
 
-    @GET("/alarms")
+    @GET("/v1/alarms")
     Observable<ArrayList<Alarm>> smartAlarms();
 
-    @POST("/alarms/{client_time_utc}")
+    @POST("/v1/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
                                              @NonNull @Body List<Alarm> alarms);
 
-    @GET("/alarms/sounds")
+    @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
 
     //endregion
@@ -204,13 +220,13 @@ public interface ApiService {
 
     //region Trends
 
-    @GET("/insights/trends/list")
+    @GET("/v1/insights/trends/list")
     Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs();
 
-    @GET("/insights/trends/all")
+    @GET("/v1/insights/trends/all")
     Observable<ArrayList<TrendGraph>> allTrends();
 
-    @GET("/insights/trends/graph")
+    @GET("/v1/insights/trends/graph")
     Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
                                                  @NonNull @Query("time_period") String timePeriod);
 

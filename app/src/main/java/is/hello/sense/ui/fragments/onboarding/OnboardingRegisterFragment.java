@@ -22,6 +22,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.DynamicApiEndpoint;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
@@ -89,7 +90,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             selectHost.setTextAppearance(getActivity(), R.style.AppTheme_Button_Borderless_Accent_Bounded);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
-            Observable<String> apiUrl = preferences.observableString(PreferencesPresenter.DEBUG_API_URL_OVERRIDE, apiEndpoint.getUrl());
+            Observable<String> apiUrl = preferences.observableString(DynamicApiEndpoint.PREF_API_ENDPOINT_OVERRIDE, apiEndpoint.getUrl());
             bindAndSubscribe(apiUrl, selectHost::setText, Functions.LOG_ERROR);
 
             int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);

@@ -12,15 +12,14 @@ import android.view.View;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.TimelineSegment;
-import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.api.model.v2.TimelineEvent;
 
 public class TimelinePreviewView extends View {
     private final Paint fillPaint = new Paint();
     private final Paint borderPaint = new Paint();
     private final int borderWidth;
 
-    private @Nullable List<TimelineSegment> timelineSegments;
+    private @Nullable List<TimelineEvent> timelineEvents;
 
 
     public TimelinePreviewView(@NonNull Context context) {
@@ -48,18 +47,18 @@ public class TimelinePreviewView extends View {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        if (timelineSegments != null && !timelineSegments.isEmpty()) {
+        if (timelineEvents != null && !timelineEvents.isEmpty()) {
             Resources resources = getResources();
 
-            float segmentHeight = height / timelineSegments.size();
+            float segmentHeight = height / timelineEvents.size();
             float y = 0f;
 
-            for (TimelineSegment segment : timelineSegments) {
-                int sleepDepth = segment.getSleepDepth();
+            for (TimelineEvent event : timelineEvents) {
+                int sleepDepth = event.getSleepDepth();
                 float segmentWidth = width * (sleepDepth / 100f);
 
-                int dimmedColor = resources.getColor(Styles.getSleepDepthColorRes(sleepDepth));
-                fillPaint.setColor(dimmedColor);
+                int color = resources.getColor(event.getSleepState().colorRes);
+                fillPaint.setColor(color);
 
                 canvas.drawRect(0, y, segmentWidth, y + segmentHeight, fillPaint);
 
@@ -71,8 +70,8 @@ public class TimelinePreviewView extends View {
     }
 
 
-    public void setTimelineSegments(@Nullable List<TimelineSegment> timelineSegments) {
-        this.timelineSegments = timelineSegments;
+    public void setTimelineEvents(@Nullable List<TimelineEvent> events) {
+        this.timelineEvents = events;
         invalidate();
     }
 }

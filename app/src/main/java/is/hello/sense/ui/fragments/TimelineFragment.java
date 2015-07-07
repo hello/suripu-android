@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +28,9 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Feedback;
-import is.hello.sense.api.model.Timeline;
-import is.hello.sense.api.model.TimelineSegment;
+import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -263,14 +264,19 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         bindAndSubscribe(timelinePresenter.latest(),
                 timeline -> {
+                    Integer score = timeline.getScore();
+                    if (score == null) {
+                        return;
+                    }
+
                     DateTime date = timelinePresenter.getDate();
-                    String score = Integer.toString(timeline.getScore());
+                    String scoreString = score.toString();
                     String shareCopy;
                     if (DateFormatter.isLastNight(date)) {
-                        shareCopy = getString(R.string.timeline_share_last_night_fmt, score);
+                        shareCopy = getString(R.string.timeline_share_last_night_fmt, scoreString);
                     } else {
                         String dateString = dateFormatter.formatAsTimelineDate(date);
-                        shareCopy = getString(R.string.timeline_share_other_days_fmt, score, dateString);
+                        shareCopy = getString(R.string.timeline_share_other_days_fmt, scoreString, dateString);
                     }
 
                     Share.text(shareCopy)
@@ -381,10 +387,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Binding
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        // For timeline corrections
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
-
-        boolean hasSegments = !Lists.isEmpty(timeline.getSegments());
+        boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         Runnable continuation = stateSafeExecutor.bind(() -> {
             if (animationEnabled) {
                 itemAnimator.addListener(new HandholdingOneShotListener());
@@ -392,29 +395,26 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
             }
 
-            adapter.bindSegments(timeline.getSegments());
+            adapter.bindEvents(timeline.getEvents());
 
             if (controlsSharedChrome) {
                 homeActivity.setShareButtonVisible(wantsShareButton);
             }
         });
 
-        this.wantsShareButton = hasSegments;
-        if (hasSegments) {
-            headerView.bindScore(timeline.getScore(), continuation);
+        this.wantsShareButton = hasEvents;
+        if (hasEvents) {
+            headerView.bindScore(timeline.getScore(), timeline.getScoreCondition(), continuation);
         } else {
-            headerView.bindScore(TimelineHeaderView.NULL_SCORE, continuation);
+            headerView.bindScore(null, ScoreCondition.UNAVAILABLE, continuation);
         }
 
         headerView.bindMessage(timeline.getMessage());
 
-        headerView.setScoreClickEnabled(timeline.getStatistics() != null && hasSegments);
+        headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
     public void timelineUnavailable(Throwable e) {
-        // For timeline corrections
-        LoadingDialogFragment.close(getFragmentManager());
-
         adapter.clear();
         headerView.bindError(e);
     }
@@ -425,13 +425,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Acting on Items
 
     @Override
-    public void onSegmentItemClicked(int position, View view, @NonNull TimelineSegment segment) {
+    public void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event) {
         if (infoPopup != null) {
             infoPopup.dismiss();
         }
 
         this.infoPopup = new TimelineInfoPopup(getActivity());
-        infoPopup.bindSegment(segment);
+        infoPopup.bindEvent(event);
         infoPopup.show(view);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
@@ -439,9 +439,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     @Override
-    public void onEventItemClicked(int segmentPosition, @NonNull TimelineSegment segment) {
+    public void onEventItemClicked(int eventPosition, @NonNull TimelineEvent event) {
         if (infoPopup != null) {
             infoPopup.dismiss();
+        }
+
+        if (!event.supportsAnyAction()) {
+            return;
         }
 
         SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
@@ -455,25 +459,27 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         actions.setWantsDividers(true);
         actions.setFadesOut(true);
 
-        actions.addOption(
-                new SenseBottomSheet.Option(ID_EVENT_CORRECT)
-                        .setTitle(R.string.action_timeline_mark_event_correct)
-                        .setIcon(R.drawable.timeline_action_correct)
-                        .setEnabled(false)
-        );
-        if (segment.isTimeAdjustable()) {
+        if (event.supportsAction(TimelineEvent.Action.VERIFY)) {
+            actions.addOption(
+                    new SenseBottomSheet.Option(ID_EVENT_CORRECT)
+                            .setTitle(R.string.action_timeline_mark_event_correct)
+                            .setIcon(R.drawable.timeline_action_correct)
+            );
+        }
+        if (event.supportsAction(TimelineEvent.Action.ADJUST_TIME)) {
             actions.addOption(
                     new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
                             .setTitle(R.string.action_timeline_event_adjust_time)
                             .setIcon(R.drawable.timeline_action_adjust)
             );
         }
-        actions.addOption(
-                new SenseBottomSheet.Option(ID_EVENT_REMOVE)
-                        .setTitle(R.string.action_timeline_event_remove)
-                        .setIcon(R.drawable.timeline_action_remove)
-                        .setEnabled(false)
-        );
+        if (event.supportsAction(TimelineEvent.Action.REMOVE)) {
+            actions.addOption(
+                    new SenseBottomSheet.Option(ID_EVENT_REMOVE)
+                            .setTitle(R.string.action_timeline_event_remove)
+                            .setIcon(R.drawable.timeline_action_remove)
+            );
+        }
 
         actions.setOnOptionSelectedListener((optionPosition, option) -> {
             preferences
@@ -483,17 +489,17 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
-                    markCorrect(actions.getVisibleHeight(), segmentPosition);
+                    markCorrect(actions.getVisibleHeight(), event);
                     break;
                 }
 
                 case ID_EVENT_ADJUST_TIME: {
-                    adjustTime(segmentPosition);
+                    adjustTime(event);
                     break;
                 }
 
                 case ID_EVENT_REMOVE: {
-                    removeEvent(actions.getVisibleHeight(), segmentPosition);
+                    removeEvent(actions.getVisibleHeight(), event);
                     break;
                 }
 
@@ -510,12 +516,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
     }
 
-    private void adjustTime(int position) {
-        TimelineSegment segment = adapter.getSegment(position);
-        DateTime initialTime = segment.getShiftedTimestamp();
+    private void adjustTime(@NonNull TimelineEvent event) {
+        DateTime initialTime = event.getShiftedTimestamp();
         RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
             LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
-            completeAdjustTime(position, newTime);
+            completeAdjustTime(event, newTime);
         };
         RotaryTimePickerDialog timePicker = new RotaryTimePickerDialog(
                 getActivity(),
@@ -531,38 +536,52 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, null);
     }
 
-    private void completeAdjustTime(int position, @NonNull LocalTime newTime) {
-        TimelineSegment segment = adapter.getSegment(position);
-        DateTime originalTime = segment.getShiftedTimestamp();
-
-        Feedback feedback = new Feedback();
-        feedback.setEventType(segment.getEventType());
-        feedback.setNight(getDate().toLocalDate());
-        feedback.setOldTime(originalTime.toLocalTime());
-        feedback.setNewTime(newTime);
-
-        LoadingDialogFragment loadingDialog = LoadingDialogFragment.newInstance(
+    private void completeAdjustTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
+        LoadingDialogFragment.show(getFragmentManager(),
                 getString(R.string.dialog_loading_message),
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
-        loadingDialog.setDismissMessage(R.string.title_thank_you);
-        loadingDialog.show(getFragmentManager(), LoadingDialogFragment.TAG);
-        bindAndSubscribe(timelinePresenter.submitCorrection(feedback),
+        bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                 ignored -> {
-                    // Loading dialog is dismissed in #bindRenderedTimeline
-                    timelinePresenter.update();
+                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                 },
                 e -> {
                     LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
                 });
     }
 
-    private void markCorrect(int height, int segmentPosition) {
-
+    private LoadingDialogFragment createInlineLoadingDialogFragment(int height) {
+        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.newInstance(null, 
+                LoadingDialogFragment.OPAQUE_BACKGROUND | LoadingDialogFragment.DIM_ENABLED);
+        loadingDialogFragment.setHeight(height);
+        loadingDialogFragment.setGravity(Gravity.BOTTOM);
+        return loadingDialogFragment;
     }
 
-    private void removeEvent(int height, int segmentPosition) {
+    private void markCorrect(int height, @NonNull TimelineEvent event) {
+        LoadingDialogFragment loadingDialogFragment = createInlineLoadingDialogFragment(height);
+        loadingDialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
+        bindAndSubscribe(timelinePresenter.verifyEvent(event),
+                ignored -> {
+                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                },
+                e -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                });
+    }
 
+    private void removeEvent(int height, @NonNull TimelineEvent event) {
+        LoadingDialogFragment loadingDialogFragment = createInlineLoadingDialogFragment(height);
+        loadingDialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
+        bindAndSubscribe(timelinePresenter.deleteEvent(event),
+                ignored -> {
+                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                },
+                e -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                });
     }
 
     //endregion
