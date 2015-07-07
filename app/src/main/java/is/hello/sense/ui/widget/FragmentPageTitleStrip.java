@@ -135,9 +135,9 @@ public final class FragmentPageTitleStrip extends FrameLayout implements Fragmen
     public void setDimmed(boolean dimmed) {
         int color;
         if (dimmed) {
-            color = getResources().getColor(R.color.light_accent_dimmed);
+            color = getResources().getColor(R.color.text_dim);
         } else {
-            color = getResources().getColor(R.color.light_accent);
+            color = getResources().getColor(R.color.text_dark);
         }
 
         textView1.setTextColor(color);
