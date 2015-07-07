@@ -235,7 +235,7 @@ so you can sleep better.</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in your bedroom.</string>
     <string name="error_smart_alarm_day_overlap">You cannot set more than one Smart Alarm per day of the week.</string>
     <string name="error_smart_alarm_clock_drift">Your device‘s time is significantly different from our reference time. From your device‘s Settings app, please enable automatic date &amp; time, or enter the correct time manually.</string>
-    <string name="error_smart_alarm_requires_device">You must have a Sense paired with your account to use Alarms.</string>
+    <string name="error_smart_alarm_requires_device">You don‘t currently have a Sense connected to your account. Please pair with Sense to set alarms.</string>
     <string name="action_replace_device">Replace</string>
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
     <string name="dialog_message_replace_sleep_pill">Are you sure you want to remove this Sleep Pill from your account? You will not be able to track your sleep until you pair another Sleep Pill.</string>
@@ -442,4 +442,5 @@ so you can sleep better.</string>
     <string name="error_timeline_sound_playback_failed">Could not play sound</string>
     <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms Sense uses to detect and analyze your sleep.</string>
     <string name="timeline_actions_intro_title">Sense learns</string>
+    <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair a Sense to view current conditions.</string>
 </resources>

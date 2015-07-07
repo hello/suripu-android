@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
@@ -42,6 +44,14 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
     private TextView supportInfoFooter;
+
+    public static void startStandaloneFrom(@NonNull Activity activity) {
+        Bundle intentArguments = FragmentNavigationActivity.getArguments(activity.getString(R.string.label_devices),
+                DeviceListFragment.class, null);
+        Intent intent = new Intent(activity, FragmentNavigationActivity.class);
+        intent.putExtras(intentArguments);
+        activity.startActivity(intent);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
