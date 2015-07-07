@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,18 +35,26 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineInfoFragment extends AnimatedInjectionFragment {
@@ -57,6 +66,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private static final String ARG_SOURCE_VIEW_ID = TimelineInfoFragment.class.getName() + ".ARG_SOURCE_VIEW_ID";
 
     private static final int GRID_COLUMNS_PER_ROW = 2;
+
+    @Inject DateFormatter dateFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private @Nullable MarkupString summary;
     private ScoreCondition scoreCondition;
@@ -457,14 +469,56 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             TimelineMetric metric = metrics.get(position);
 
             holder.titleText.setText(metric.getName().stringRes);
-            if (metric.getValue() != null) {
-                holder.readingText.setText(metric.getValue().toString());
+            Long value = metric.getValue();
+            if (value != null) {
+                if (metric.getUnit() == TimelineMetric.Unit.MINUTES) {
+                    holder.readingText.setText(dateFormatter.formatDuration(value, TimeUnit.SECONDS));
+                } else if (metric.getUnit() == TimelineMetric.Unit.TIMESTAMP) {
+                    DateTime date = new DateTime(value);
+                    boolean use24Time = preferences.getUse24Time();
+                    holder.readingText.setText(dateFormatter.formatForTimelineInfo(date, use24Time));
+                } else {
+                    holder.readingText.setText(value.toString());
+                }
             } else {
-                holder.readingText.setText("");
+                if (metric.getUnit() == TimelineMetric.Unit.CONDITION) {
+                    holder.readingText.setText(getConditionText(metric.getName(), metric.getCondition()));
+                } else {
+                    holder.readingText.setText(null);
+                }
             }
 
             int valueColorRes = metric.getCondition().colorRes;
             holder.readingText.setTextColor(getResources().getColor(valueColorRes));
+        }
+
+        private @StringRes int getConditionText(@NonNull TimelineMetric.Name sensor, @NonNull Condition condition) {
+            switch (condition) {
+                case ALERT: {
+                    switch (sensor) {
+                        case TEMPERATURE:
+                            return R.string.condition_short_hand_alert_temperature;
+                        case HUMIDITY:
+                            return R.string.condition_short_hand_alert_humidity;
+                        case PARTICULATES:
+                            return R.string.condition_short_hand_alert_particulates;
+                        case SOUND:
+                            return R.string.condition_short_hand_alert_sound;
+                        case LIGHT:
+                            return R.string.condition_short_hand_alert_light;
+                        default:
+                            return R.string.condition_short_hand_alert_generic;
+                    }
+                }
+                case WARNING: {
+                    return R.string.condition_short_hand_warning;
+                }
+                case IDEAL: {
+                    return R.string.condition_short_hand_ideal;
+                }
+            }
+
+            return R.string.missing_data_placeholder;
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
