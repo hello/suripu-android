@@ -42,7 +42,7 @@ public class TimelineInfoPopup {
         contents.setBackgroundResource(R.drawable.background_timeline_info_popup);
 
         Resources resources = activity.getResources();
-        int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_small),
+        int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_medium),
             paddingVertical = resources.getDimensionPixelSize(R.dimen.gap_small);
         contents.setPadding(
             contents.getPaddingLeft() + paddingHorizontal,
