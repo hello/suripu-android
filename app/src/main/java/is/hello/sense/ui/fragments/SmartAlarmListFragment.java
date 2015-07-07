@@ -28,7 +28,6 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -192,7 +191,9 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
             message.titleIconRes = R.drawable.sense_icon;
             message.titleStyleRes = R.style.AppTheme_Text_Body;
             message.actionRes = R.string.action_pair_new_sense;
-            message.onClickListener = this::pairNewSense;
+            message.onClickListener = ignored -> {
+                DeviceListFragment.startStandaloneFrom(getActivity());
+            };
         } else {
             message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
                     StringRef.from(e.getMessage()));
@@ -282,13 +283,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void retry(@NonNull View sender) {
         startLoading();
         onUpdate();
-    }
-
-    public void pairNewSense(@NonNull View sender) {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
-        Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
-        intent.putExtras(intentArguments);
-        startActivity(intent);
     }
 
 

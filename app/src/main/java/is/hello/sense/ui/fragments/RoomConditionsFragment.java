@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,16 +25,19 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -136,8 +140,9 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
         List<ArrayList<SensorGraphSample>> histories = result.roomSensorHistory.toList();
         List<SensorState> sensors = result.conditions.toList();
-
         List<UnitSystem.Unit> units = result.units.toUnitList();
+
+        adapter.setShowNoSenseMessage(false);
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
 
@@ -149,11 +154,11 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
             ArrayList<SensorGraphSample> sensorDataRun = histories.get(i);
             Observable<Update> update = Update.forHistorySeries(sensorDataRun, true);
             bindAndSubscribe(update,
-                             sensorInfo.graphAdapter::update,
-                             e -> {
-                                 Logger.error(getClass().getSimpleName(), "Could not update graph.", e);
-                                 sensorInfo.graphAdapter.clear();
-                             });
+                    sensorInfo.graphAdapter::update,
+                    e -> {
+                        Logger.error(getClass().getSimpleName(), "Could not update graph.", e);
+                        sensorInfo.graphAdapter.clear();
+                    });
         }
 
         adapter.notifyDataSetChanged();
@@ -169,6 +174,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
             sensorInfo.errorMessage = getString(R.string.error_cannot_retrieve_condition, sensorInfo.sensorName);
         }
 
+        adapter.setShowNoSenseMessage(ApiException.statusEquals(e, 404));
         adapter.notifyDataSetChanged();
     }
 
@@ -183,6 +189,10 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if (adapter.getShowNoSenseMessage()) {
+            return;
+        }
+
         SensorEntry sensorEntry = (SensorEntry) adapterView.getItemAtPosition(position);
         showSensorHistory(sensorEntry.sensorName);
     }
@@ -202,12 +212,20 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     }
 
     class Adapter extends ArrayAdapter<SensorEntry> {
+        private final int VIEW_ID_SENSOR = 0;
+        private final int VIEW_ID_NO_SENSE = 1;
+        private final int VIEW_ID_COUNT = 2;
+
+        private final Resources resources;
         private final LayoutInflater inflater;
         private final int graphBottomInset;
+
+        private boolean showNoSenseMessage = false;
 
         Adapter(@NonNull Context context, @NonNull SensorEntry[] conditions) {
             super(context, R.layout.item_room_sensor_condition, conditions);
 
+            this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
 
             Resources resources = context.getResources();
@@ -215,54 +233,80 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         }
 
 
+        void setShowNoSenseMessage(boolean showNoSenseMessage) {
+            this.showNoSenseMessage = showNoSenseMessage;
+        }
+
+        public boolean getShowNoSenseMessage() {
+            return showNoSenseMessage;
+        }
+
+        @Override
+        public int getCount() {
+            if (showNoSenseMessage) {
+                return 1;
+            } else {
+                return super.getCount();
+            }
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return VIEW_ID_COUNT;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (showNoSenseMessage) {
+                return VIEW_ID_NO_SENSE;
+            } else {
+                return VIEW_ID_SENSOR;
+            }
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
-                view.setTag(new ViewHolder(view));
-            }
+            if (showNoSenseMessage) {
+                if (view == null) {
+                    view = inflater.inflate(R.layout.item_message_card, parent, false);
 
-            SensorEntry sensorEntry = getItem(position);
-            ViewHolder holder = (ViewHolder) view.getTag();
-            Resources resources = getContext().getResources();
-            if (sensorEntry.sensorState != null) {
-                int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);
+                    TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+                    title.setText(R.string.device_sense);
+                    title.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
+                    title.setAllCaps(false);
+                    title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.sense_icon, 0, 0, 0);
 
-                CharSequence readingText = sensorEntry.sensorState.getFormattedValue(sensorEntry.formatter);
-                if (!TextUtils.isEmpty(readingText)) {
-                    holder.reading.setText(readingText);
-                    holder.reading.setTextColor(sensorColor);
-                } else {
-                    holder.reading.setText(R.string.missing_data_placeholder);
-                    holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
+                    TextView message = (TextView) view.findViewById(R.id.item_message_card_message);
+                    message.setText(R.string.error_room_conditions_no_sense);
+
+                    Button action = (Button) view.findViewById(R.id.item_message_card_action);
+                    action.setText(R.string.action_pair_new_sense);
+                    Views.setSafeOnClickListener(action, ignored -> {
+                        DeviceListFragment.startStandaloneFrom(getActivity());
+                    });
                 }
-                markdown.renderInto(holder.message, sensorEntry.sensorState.getMessage());
-
-                holder.lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
-                holder.lineGraphDrawable.setAdapter(sensorEntry.graphAdapter);
             } else {
-                holder.reading.setText(R.string.missing_data_placeholder);
-                holder.reading.setTextColor(resources.getColor(R.color.sensor_unknown));
-                if (TextUtils.isEmpty(sensorEntry.errorMessage)) {
-                    holder.message.setText(null);
-                } else {
-                    holder.message.setText(sensorEntry.errorMessage);
+                if (view == null) {
+                    view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
+                    view.setTag(new SensorViewHolder(view));
                 }
 
-                holder.lineGraphDrawable.setColorFilter(null);
-                holder.lineGraphDrawable.setAdapter(null);
+                SensorEntry sensorEntry = getItem(position);
+                SensorViewHolder holder = (SensorViewHolder) view.getTag();
+                holder.bind(sensorEntry);
             }
+
             return view;
         }
 
 
-        class ViewHolder {
+        class SensorViewHolder {
             final TextView reading;
             final TextView message;
             final LineGraphDrawable lineGraphDrawable;
 
-            ViewHolder(@NonNull View view) {
+            SensorViewHolder(@NonNull View view) {
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
@@ -273,6 +317,36 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);
+            }
+
+            void bind(@NonNull SensorEntry sensorEntry) {
+                if (sensorEntry.sensorState != null) {
+                    int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);
+
+                    CharSequence readingText = sensorEntry.sensorState.getFormattedValue(sensorEntry.formatter);
+                    if (!TextUtils.isEmpty(readingText)) {
+                        reading.setText(readingText);
+                        reading.setTextColor(sensorColor);
+                    } else {
+                        reading.setText(R.string.missing_data_placeholder);
+                        reading.setTextColor(resources.getColor(R.color.sensor_unknown));
+                    }
+                    markdown.renderInto(message, sensorEntry.sensorState.getMessage());
+
+                    lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
+                    lineGraphDrawable.setAdapter(sensorEntry.graphAdapter);
+                } else {
+                    reading.setText(R.string.missing_data_placeholder);
+                    reading.setTextColor(resources.getColor(R.color.sensor_unknown));
+                    if (TextUtils.isEmpty(sensorEntry.errorMessage)) {
+                        message.setText(null);
+                    } else {
+                        message.setText(sensorEntry.errorMessage);
+                    }
+
+                    lineGraphDrawable.setColorFilter(null);
+                    lineGraphDrawable.setAdapter(null);
+                }
             }
         }
     }

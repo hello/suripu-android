@@ -1,7 +1,6 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -9,7 +8,6 @@ import org.json.JSONObject;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -85,13 +83,6 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
 
     //region Actions
 
-    private void showDevices() {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
-        Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
-        intent.putExtras(intentArguments);
-        startActivity(intent);
-    }
-
     private void dispatchLater() {
         JSONObject properties = Analytics.createProperties(
             Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
@@ -108,7 +99,7 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
         if (issue == DevicesPresenter.Issue.SLEEP_PILL_LOW_BATTERY) {
             UserSupport.showReplaceBattery(getActivity());
         } else {
-            showDevices();
+            DeviceListFragment.startStandaloneFrom(getActivity());
         }
     }
 

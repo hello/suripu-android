@@ -442,4 +442,5 @@ so you can sleep better.</string>
     <string name="error_timeline_sound_playback_failed">Could not play sound</string>
     <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms Sense uses to detect and analyze your sleep.</string>
     <string name="timeline_actions_intro_title">Sense learns</string>
+    <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair a Sense to view current conditions.</string>
 </resources>
