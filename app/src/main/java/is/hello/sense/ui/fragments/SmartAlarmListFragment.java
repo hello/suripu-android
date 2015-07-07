@@ -48,6 +48,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     private ListView listView;
     private ProgressBar activityIndicator;
     private View emptyPrompt;
+    private ImageButton addButton;
 
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
@@ -84,7 +85,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
         Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER | Styles.CARD_SPACING_USE_COMPACT);
 
-        ImageButton addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
+        this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);
 
         startLoading();
@@ -145,7 +146,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void finishLoading(boolean success) {
         activityIndicator.setVisibility(View.GONE);
 
-        if (currentAlarms.size() == 0) {
+        if (currentAlarms.isEmpty()) {
             if (success) {
                 emptyPrompt.setVisibility(View.VISIBLE);
             } else {
@@ -167,6 +168,8 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
             message.onClickListener = this::newAlarm;
             adapter.bindMessage(message);
         }
+
+        addButton.setEnabled(true);
 
         finishLoading(true);
     }
@@ -201,6 +204,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
             message.onClickListener = this::retry;
         }
         adapter.bindMessage(message);
+        addButton.setEnabled(!ApiException.statusEquals(e, 412));
 
         finishLoading(false);
     }
