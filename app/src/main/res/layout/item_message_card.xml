@@ -8,7 +8,7 @@
     style="@style/AppTheme.Card">
 
     <TextView
-        android:id="@+id/item_smart_alarm_message_title"
+        android:id="@+id/item_message_card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawablePadding="@dimen/gap_small"
@@ -17,7 +17,7 @@
         android:textAppearance="@style/AppTheme.Text.SectionHeading" />
 
     <TextView
-        android:id="@+id/item_smart_alarm_message_message"
+        android:id="@+id/item_message_card_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_outer"
@@ -27,7 +27,7 @@
         android:lineSpacingMultiplier="@dimen/line_multiple_body" />
 
     <Button
-        android:id="@+id/item_smart_alarm_message_action"
+        android:id="@+id/item_message_card_action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@android:string/ok"

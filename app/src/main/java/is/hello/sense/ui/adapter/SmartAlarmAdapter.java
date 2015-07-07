@@ -24,8 +24,9 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SafeOnClickListener;
 
 public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListener {
-    private static final int ITEM_ID_ALARM = 0;
-    private static final int ITEM_ID_MESSAGE = 1;
+    private static final int VIEW_ID_ALARM = 0;
+    private static final int VIEW_ID_MESSAGE = 1;
+    private static final int VIEW_ID_COUNT = 2;
 
     private final Context context;
     private final LayoutInflater inflater;
@@ -60,6 +61,10 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
         this.currentMessage = message;
         this.alarms.clear();
         notifyDataSetChanged();
+    }
+
+    public boolean isShowingMessage() {
+        return (currentMessage != null);
     }
 
     public void clearMessage() {
@@ -107,15 +112,15 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return VIEW_ID_COUNT;
     }
 
     @Override
     public int getItemViewType(int position) {
         if (currentMessage != null) {
-            return ITEM_ID_MESSAGE;
+            return VIEW_ID_MESSAGE;
         } else {
-            return ITEM_ID_ALARM;
+            return VIEW_ID_ALARM;
         }
     }
 
@@ -129,7 +134,7 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
         View view = convertView;
         if (currentMessage != null) {
             if (view == null) {
-                view = inflater.inflate(R.layout.item_smart_alarm_message, parent, false);
+                view = inflater.inflate(R.layout.item_message_card, parent, false);
                 view.setTag(new MessageViewHolder(view));
             }
 
@@ -193,9 +198,9 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
         final Button actionButton;
 
         MessageViewHolder(@NonNull View view) {
-            this.titleText = (TextView) view.findViewById(R.id.item_smart_alarm_message_title);
-            this.messageText = (TextView) view.findViewById(R.id.item_smart_alarm_message_message);
-            this.actionButton = (Button) view.findViewById(R.id.item_smart_alarm_message_action);
+            this.titleText = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.messageText = (TextView) view.findViewById(R.id.item_message_card_message);
+            this.actionButton = (Button) view.findViewById(R.id.item_message_card_action);
         }
 
         void bind(@NonNull Message message) {

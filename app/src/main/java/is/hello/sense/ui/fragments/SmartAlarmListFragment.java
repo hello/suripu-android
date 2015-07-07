@@ -228,6 +228,10 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if (adapter.isShowingMessage()) {
+            return;
+        }
+
         Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_ALARM, null);
 
         Alarm alarm = (Alarm) adapterView.getItemAtPosition(position);
@@ -237,6 +241,10 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if (adapter.isShowingMessage()) {
+            return false;
+        }
+
         int alarmPosition = ListViews.getAdapterPosition(listView, position);
         DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(alarmPosition);
         deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
