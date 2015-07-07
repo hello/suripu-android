@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.TypefaceSpan;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -42,7 +41,7 @@ public class TimelineInfoPopup {
         contents.setBackgroundResource(R.drawable.background_timeline_info_popup);
 
         Resources resources = activity.getResources();
-        int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_small),
+        int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_medium),
             paddingVertical = resources.getDimensionPixelSize(R.dimen.gap_small);
         contents.setPadding(
             contents.getPaddingLeft() + paddingHorizontal,
@@ -73,13 +72,12 @@ public class TimelineInfoPopup {
     }
 
     public void bindEvent(@NonNull TimelineEvent event) {
-        String sleepDepth = activity.getString(event.getSleepState().stringRes);
-        String prefix = activity.getString(R.string.timeline_popup_info_prefix);
+        CharSequence sleepDepth = activity.getText(event.getSleepState().stringRes);
+        CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
 
         SpannableStringBuilder reading = new SpannableStringBuilder(sleepDepth);
         int darkerColor = activity.getResources().getColor(R.color.text_medium);
         reading.setSpan(new ForegroundColorSpan(darkerColor), 0, sleepDepth.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        reading.setSpan(new TypefaceSpan("sans-serif-medium"), 0, sleepDepth.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         reading.insert(0, prefix);
 
         contents.setText(reading);
