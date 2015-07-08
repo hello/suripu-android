@@ -6,12 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,18 +28,15 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_FLAGS = LoadingDialogFragment.class.getName() + ".ARG_FLAGS";
-    private static final String ARG_HEIGHT = LoadingDialogFragment.class.getName() + ".ARG_HEIGHT";
-    private static final String ARG_GRAVITY = LoadingDialogFragment.class.getName() + ".ARG_GRAVITY";
     private static final String ARG_DISMISS_MSG = LoadingDialogFragment.class.getName() + ".ARG_DISMISS_MSG";
 
 
     //region Config
 
     public static final int OPAQUE_BACKGROUND = (1 << 1);
-    public static final int DIM_ENABLED = (1 << 2);
     public static final int DEFAULTS = 0;
 
-    @IntDef(flag = true, value = {DEFAULTS, OPAQUE_BACKGROUND, DIM_ENABLED})
+    @IntDef(flag = true, value = {DEFAULTS, OPAQUE_BACKGROUND})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Config {}
 
@@ -139,22 +132,6 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
             }
 
             titleText.setText(arguments.getString(ARG_TITLE));
-
-            Window window = dialog.getWindow();
-            WindowManager.LayoutParams windowAttributes = window.getAttributes();
-
-            if ((flags & DIM_ENABLED) == DIM_ENABLED) {
-                window.setDimAmount(0.5f);
-                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            }
-
-            if (arguments.containsKey(ARG_HEIGHT)) {
-                root.getLayoutParams().height = arguments.getInt(ARG_HEIGHT);
-                root.requestLayout();
-                window.setLayout(windowAttributes.width, ViewGroup.LayoutParams.WRAP_CONTENT);
-            }
-
-            window.setGravity(arguments.getInt(ARG_GRAVITY, windowAttributes.gravity));
         }
 
         return dialog;
@@ -170,18 +147,6 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
         if (titleText != null) {
             titleText.setText(title);
         }
-    }
-
-    public void setHeight(int height) {
-        getArguments().putInt(ARG_HEIGHT, height);
-    }
-
-    public void setGravity(int gravity) {
-        getArguments().putInt(ARG_GRAVITY, gravity);
-    }
-
-    public void setDismissMessage(@StringRes int messageRes) {
-        getArguments().putInt(ARG_DISMISS_MSG, messageRes);
     }
 
     //endregion
