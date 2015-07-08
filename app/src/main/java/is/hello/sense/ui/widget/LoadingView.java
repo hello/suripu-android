@@ -3,6 +3,8 @@ package is.hello.sense.ui.widget;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -24,6 +26,11 @@ public class LoadingView extends LinearLayout {
     public static final long DURATION_DONE_MESSAGE = 2 * 1000;
 
     private final ProgressBar progressBar;
+    private boolean doneIconVisible = false;
+    private @Nullable String doneText = null;
+
+
+    //region Lifecycle
 
     public LoadingView(@NonNull Context context) {
         this(context, null);
@@ -38,6 +45,7 @@ public class LoadingView extends LinearLayout {
 
         setGravity(Gravity.CENTER);
         setOrientation(VERTICAL);
+
         LayoutTransition layoutTransition = new LayoutTransition();
         for (int type = LayoutTransition.CHANGE_APPEARING; type <= LayoutTransition.CHANGING; type++) {
             layoutTransition.setDuration(type, Animation.DURATION_NORMAL);
@@ -52,51 +60,93 @@ public class LoadingView extends LinearLayout {
         this.progressBar = (ProgressBar) findViewById(R.id.view_loading_progress_bar);
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        SavedState state = new SavedState(super.onSaveInstanceState());
+        state.doneIconVisible = doneIconVisible;
+        state.doneText = doneText;
+        return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+
+        if (savedState.doneIconVisible) {
+            showDoneIcon(false);
+        }
+
+        if (savedState.doneText != null) {
+            showDoneText(savedState.doneText);
+        }
+    }
+
+    //endregion
+
 
     //region Transitions
 
-    public void animateOutProgressBar(@NonNull Runnable onDone) {
-        PropertyAnimatorProxy.animate(progressBar)
-                .setDuration(getLayoutTransition().getDuration(LayoutTransition.DISAPPEARING))
-                .setStartDelay(getLayoutTransition().getStartDelay(LayoutTransition.DISAPPEARING))
-                .scale(0)
-                .fadeOut(GONE)
-                .addOnAnimationCompleted(finished -> {
-                    removeView(progressBar);
-                    onDone.run();
-                })
-                .start();
+    @Override
+    public void clearAnimation() {
+        super.clearAnimation();
+
+        PropertyAnimatorProxy.stop(progressBar);
     }
 
-    public ImageView showDoneIcon() {
+    public void dismissProgressBar(boolean animated, @NonNull Runnable onDone) {
+        if (animated) {
+            PropertyAnimatorProxy.animate(progressBar)
+                    .setDuration(getLayoutTransition().getDuration(LayoutTransition.DISAPPEARING))
+                    .setStartDelay(getLayoutTransition().getStartDelay(LayoutTransition.DISAPPEARING))
+                    .scale(0)
+                    .fadeOut(GONE)
+                    .addOnAnimationCompleted(finished -> {
+                        removeView(progressBar);
+                        onDone.run();
+                    })
+                    .start();
+        } else {
+            removeView(progressBar);
+            onDone.run();
+        }
+    }
+
+    public ImageView showDoneIcon(boolean animated) {
+        this.doneIconVisible = true;
+
         ImageView doneView = new ImageView(getContext());
         doneView.setImageResource(R.drawable.loading_done);
-        getLayoutTransition().addTransitionListener(new LayoutTransition.TransitionListener() {
-            @Override
-            public void startTransition(LayoutTransition transition, ViewGroup container, View view, int transitionType) {
-                if (view == doneView) {
-                    doneView.setScaleX(0f);
-                    doneView.setScaleY(0f);
-                    PropertyAnimatorProxy.animate(doneView)
-                            .setDuration(transition.getDuration(transitionType))
-                            .setStartDelay(transition.getStartDelay(transitionType))
-                            .scale(1f)
-                            .start();
-                }
-            }
 
-            @Override
-            public void endTransition(LayoutTransition transition, ViewGroup container, View view, int transitionType) {
-                if (view == doneView) {
-                    transition.removeTransitionListener(this);
+        if (animated) {
+            getLayoutTransition().addTransitionListener(new LayoutTransition.TransitionListener() {
+                @Override
+                public void startTransition(LayoutTransition transition, ViewGroup container, View view, int transitionType) {
+                    if (view == doneView) {
+                        doneView.setScaleX(0f);
+                        doneView.setScaleY(0f);
+                        PropertyAnimatorProxy.animate(doneView)
+                                .setDuration(transition.getDuration(transitionType))
+                                .setStartDelay(transition.getStartDelay(transitionType))
+                                .scale(1f)
+                                .start();
+                    }
                 }
-            }
-        });
+
+                @Override
+                public void endTransition(LayoutTransition transition, ViewGroup container, View view, int transitionType) {
+                    if (view == doneView) {
+                        transition.removeTransitionListener(this);
+                    }
+                }
+            });
+        }
+
         addView(doneView);
         return doneView;
     }
 
-    public TextView showDoneText(@NonNull CharSequence text) {
+    public TextView showDoneText(@NonNull String text) {
         Resources resources = getResources();
 
         TextView textView = new TextView(getContext());
@@ -108,11 +158,13 @@ public class LoadingView extends LinearLayout {
         layoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_large);
         addView(textView, layoutParams);
 
+        this.doneText = text;
+
         return textView;
     }
 
     public TextView showDoneText(@StringRes int textRes) {
-        return showDoneText(getResources().getText(textRes));
+        return showDoneText(getResources().getString(textRes));
     }
 
     public void afterTransition(long extraDelay, @NonNull Runnable action) {
@@ -130,8 +182,8 @@ public class LoadingView extends LinearLayout {
     }
 
     public void playDoneTransition(@StringRes int doneTextRes, @NonNull Runnable allDoneAction) {
-        animateOutProgressBar(() -> {
-            showDoneIcon();
+        dismissProgressBar(true, () -> {
+            showDoneIcon(true);
             afterTransition(100, () -> {
                 showDoneText(doneTextRes);
                 postDelayed(allDoneAction, LoadingView.DURATION_DONE_MESSAGE);
@@ -140,5 +192,44 @@ public class LoadingView extends LinearLayout {
     }
 
     //endregion
+
+
+    public static class SavedState extends BaseSavedState {
+        boolean doneIconVisible = false;
+        @Nullable String doneText = null;
+
+        public SavedState(Parcel in) {
+            super(in);
+
+            this.doneIconVisible = in.readByte() != 0;
+            this.doneText = in.readString();
+        }
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+
+        @Override
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+
+            out.writeByte((byte) (doneIconVisible ? 1 : 0));
+            out.writeString(doneText);
+        }
+
+
+        public static Creator<SavedState> CREATOR = new Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel source) {
+                return new SavedState(source);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
 }
 

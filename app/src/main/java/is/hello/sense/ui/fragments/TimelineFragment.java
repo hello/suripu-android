@@ -49,6 +49,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
+import is.hello.sense.ui.widget.util.Dialogs;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -444,10 +445,20 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             infoPopup.dismiss();
         }
 
-        if (!event.supportsAnyAction()) {
-            return;
+        if (event.hasActions()) {
+            showAvailableActions(event);
+        } else {
+            showNoActionsAvailable();
         }
 
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
+    }
+
+    private void showNoActionsAvailable() {
+
+    }
+
+    private void showAvailableActions(@NonNull TimelineEvent event) {
         SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
 
         SenseBottomSheet actions = new SenseBottomSheet(getActivity());
@@ -511,8 +522,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         actions.show();
 
         this.activeDialog = new WeakReference<>(actions);
-
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
     }
 
     private void adjustTime(@NonNull TimelineEvent event) {
@@ -550,6 +559,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void markCorrect(@NonNull SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, activity);
+        }
+
         LoadingView loadingView = new LoadingView(getActivity());
         bottomSheet.replaceContent(loadingView, null);
         bottomSheet.setCancelable(false);
@@ -564,6 +578,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void removeEvent(SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, activity);
+        }
+
         LoadingView loadingView = new LoadingView(getActivity());
         bottomSheet.replaceContent(loadingView, null);
         bottomSheet.setCancelable(false);

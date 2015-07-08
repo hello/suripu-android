@@ -107,7 +107,7 @@ public class TimelineEvent extends ApiResponse {
         return null;
     }
 
-    public boolean supportsAnyAction() {
+    public boolean hasActions() {
         return !Lists.isEmpty(validActions);
     }
 
