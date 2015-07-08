@@ -455,7 +455,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void showNoActionsAvailable() {
+        SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
+        noActions.setTitle(R.string.message_timeline_no_actions_title);
+        noActions.setMessage(R.string.message_timeline_no_actions_body);
+        noActions.show();
 
+        this.activeDialog = new WeakReference<>(noActions);
     }
 
     private void showAvailableActions(@NonNull TimelineEvent event) {
@@ -559,9 +564,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void markCorrect(@NonNull SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
-        Activity activity = getActivity();
-        if (activity != null) {
-            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, activity);
+        if (homeActivity != null) {
+            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
         }
 
         LoadingView loadingView = new LoadingView(getActivity());
@@ -578,9 +582,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void removeEvent(SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
-        Activity activity = getActivity();
-        if (activity != null) {
-            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, activity);
+        if (homeActivity != null) {
+            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
         }
 
         LoadingView loadingView = new LoadingView(getActivity());

@@ -256,7 +256,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             }
         }
 
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, contentRoot.getMeasuredHeight());
+        int minHeight = getContext().getResources().getDimensionPixelSize(R.dimen.bottom_sheet_replacement_content_min_height);
+        int contentHeight = contentRoot.getMeasuredHeight();
+        int height = Math.max(minHeight, contentHeight);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, height);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         replacementContent.setVisibility(View.INVISIBLE);
