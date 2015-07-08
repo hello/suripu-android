@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
@@ -457,7 +457,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             actions.setWantsBigTitle(true);
         }
         actions.setWantsDividers(true);
-        actions.setFadesOut(true);
 
         if (event.supportsAction(TimelineEvent.Action.VERIFY)) {
             actions.addOption(
@@ -489,23 +488,23 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
-                    markCorrect(actions.getVisibleHeight(), event);
-                    break;
+                    markCorrect(actions, event);
+                    return false;
                 }
 
                 case ID_EVENT_ADJUST_TIME: {
                     adjustTime(event);
-                    break;
+                    return true;
                 }
 
                 case ID_EVENT_REMOVE: {
-                    removeEvent(actions.getVisibleHeight(), event);
-                    break;
+                    removeEvent(actions, event);
+                    return false;
                 }
 
                 default: {
                     Logger.warn(getClass().getSimpleName(), "Unknown option " + option);
-                    break;
+                    return true;
                 }
             }
         });
@@ -550,36 +549,30 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 });
     }
 
-    private LoadingDialogFragment createInlineLoadingDialogFragment(int height) {
-        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.newInstance(null, 
-                LoadingDialogFragment.OPAQUE_BACKGROUND | LoadingDialogFragment.DIM_ENABLED);
-        loadingDialogFragment.setHeight(height);
-        loadingDialogFragment.setGravity(Gravity.BOTTOM);
-        return loadingDialogFragment;
-    }
-
-    private void markCorrect(int height, @NonNull TimelineEvent event) {
-        LoadingDialogFragment loadingDialogFragment = createInlineLoadingDialogFragment(height);
-        loadingDialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
+    private void markCorrect(@NonNull SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
+        LoadingView loadingView = new LoadingView(getActivity());
+        bottomSheet.replaceContent(loadingView, null);
+        bottomSheet.setCancelable(false);
         bindAndSubscribe(timelinePresenter.verifyEvent(event),
                 ignored -> {
-                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                    loadingView.playDoneTransition(R.string.title_thank_you, bottomSheet::dismiss);
                 },
                 e -> {
-                    LoadingDialogFragment.close(getFragmentManager());
+                    bottomSheet.dismiss();
                     ErrorDialogFragment.presentError(getFragmentManager(), e);
                 });
     }
 
-    private void removeEvent(int height, @NonNull TimelineEvent event) {
-        LoadingDialogFragment loadingDialogFragment = createInlineLoadingDialogFragment(height);
-        loadingDialogFragment.show(getFragmentManager(), LoadingDialogFragment.TAG);
+    private void removeEvent(SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
+        LoadingView loadingView = new LoadingView(getActivity());
+        bottomSheet.replaceContent(loadingView, null);
+        bottomSheet.setCancelable(false);
         bindAndSubscribe(timelinePresenter.deleteEvent(event),
                 ignored -> {
-                    LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                    loadingView.playDoneTransition(R.string.title_thank_you, bottomSheet::dismiss);
                 },
                 e -> {
-                    LoadingDialogFragment.close(getFragmentManager());
+                    bottomSheet.dismiss();
                     ErrorDialogFragment.presentError(getFragmentManager(), e);
                 });
     }

@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,7 +27,9 @@ import java.util.Collection;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.util.Logger;
+import rx.functions.Action1;
+
+import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
@@ -38,7 +42,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private final ArrayList<Option> options = new ArrayList<>();
     private final LayoutInflater inflater;
 
-    private final ViewGroup root;
+    private final RelativeLayout contentRoot;
     private final LinearLayout optionsContainer;
     private final TextView titleText;
     private final TextView messageText;
@@ -47,6 +51,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private boolean wantsDividers = false;
     private boolean wantsBigTitle = false;
 
+    private @Nullable View replacementContent;
     private @Nullable OnOptionSelectedListener onOptionSelectedListener;
 
 
@@ -61,7 +66,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         this.inflater = LayoutInflater.from(context);
 
-        this.root = (ViewGroup) findViewById(R.id.dialog_bottom_sheet_root);
+        this.contentRoot = (RelativeLayout) findViewById(R.id.dialog_bottom_sheet_content);
         this.optionsContainer = (LinearLayout) findViewById(R.id.dialog_bottom_sheet_options);
 
         Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset, null);
@@ -229,29 +234,47 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
     }
 
+    public void replaceContent(@NonNull View replacementContent,
+                               @Nullable Action1<Boolean> onAnimationFinished) {
+        if (this.replacementContent != null) {
+            View oldContent = this.replacementContent;
+            animate(oldContent)
+                    .fadeOut(View.INVISIBLE)
+                    .addOnAnimationCompleted(finished -> {
+                        contentRoot.removeView(oldContent);
+                    })
+                    .start();
+        } else {
+            for (int i = 0, size = contentRoot.getChildCount(); i < size; i++) {
+                View child = contentRoot.getChildAt(i);
+                animate(child)
+                        .fadeOut(View.INVISIBLE)
+                        .addOnAnimationCompleted(finished -> {
+                            contentRoot.removeView(child);
+                        })
+                        .start();
+            }
+        }
+
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, contentRoot.getMeasuredHeight());
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        replacementContent.setVisibility(View.INVISIBLE);
+        contentRoot.addView(replacementContent, layoutParams);
+        animate(replacementContent)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (onAnimationFinished != null) {
+                        onAnimationFinished.call(finished);
+                    }
+                })
+                .start();
+
+        this.replacementContent = contentRoot;
+    }
+
     public void setOnOptionSelectedListener(@Nullable OnOptionSelectedListener onOptionSelectedListener) {
         this.onOptionSelectedListener = onOptionSelectedListener;
-    }
-
-    public int getVisibleHeight() {
-        if (!isShowing()) {
-            Logger.warn(getClass().getSimpleName(), "#getVisibleHeight() called before #show()");
-            return 0;
-        }
-
-        return root.getMeasuredHeight();
-    }
-
-    public void setFadesOut(boolean fadesOut) {
-        if (isShowing()) {
-            Logger.warn(getClass().getSimpleName(), "Window does not support changing animations after show");
-        }
-
-        if (fadesOut) {
-            getWindow().setWindowAnimations(R.style.WindowAnimations_BottomSlide_FadeOutOnly);
-        } else {
-            getWindow().setWindowAnimations(R.style.WindowAnimations_BottomSlide);
-        }
     }
 
     //endregion
@@ -262,7 +285,9 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         if (onOptionSelectedListener != null) {
             int position = (int) view.getTag();
             Option option = options.get(position);
-            onOptionSelectedListener.onOptionSelected(position, option);
+            if (!onOptionSelectedListener.onOptionSelected(position, option)) {
+                return;
+            }
         }
 
         dismiss();
@@ -270,7 +295,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
 
     public interface OnOptionSelectedListener {
-        void onOptionSelected(int position, @NonNull Option option);
+        boolean onOptionSelected(int position, @NonNull Option option);
     }
 
     public static class Option implements Parcelable {

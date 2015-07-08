@@ -82,6 +82,11 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Thin">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Medium">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">normal</item>
