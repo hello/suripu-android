@@ -98,6 +98,7 @@
     <dimen name="view_rotary_picker_width">90sp</dimen>
     <dimen name="view_rotary_picker_height">45sp</dimen>
 
+    <dimen name="bottom_sheet_option_vertical_margin">18dp</dimen>
     <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>
 
     <!-- Graphs -->
@@ -123,11 +124,15 @@
     <dimen name="timeline_segment_event_offset_max">7dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>
 
+    <dimen name="timeline_event_popup_overlap">8dp</dimen>
+
     <dimen name="timeline_detail_reading_height">2dp</dimen>
     <dimen name="timeline_detail_reading_height_large">4dp</dimen>
 
     <dimen name="timeline_event_start_inset">0dp</dimen>
     <dimen name="timeline_event_end_inset">8dp</dimen>
+    <dimen name="timeline_event_text_top_inset">7dp</dimen>
+    <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
 
 
     <!-- Buttons -->

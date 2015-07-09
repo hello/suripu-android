@@ -53,7 +53,8 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     public Observable<Void> amendEventTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
         return latest().flatMap(timeline -> {
             String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
-            TimelineEvent.TimeAmendment timeAmendment = new TimelineEvent.TimeAmendment(newTime);
+            TimelineEvent.TimeAmendment timeAmendment = new TimelineEvent.TimeAmendment(newTime,
+                    event.getTimezone().getOffset(event.getShiftedTimestamp()));
             return service.amendTimelineEventTime(date, event.getType(),
                     event.getRawTimestamp().getMillis(), timeAmendment)
                     .doOnNext(this.timeline::onNext)

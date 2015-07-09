@@ -226,9 +226,4 @@
         <item name="android:textColor">@color/text_dim</item>
     </style>
 
-    <style name="AppTheme.Text.Timeline.Popup">
-        <item name="android:textColor">@color/text_dim</item>
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
-    </style>
-
 </resources>

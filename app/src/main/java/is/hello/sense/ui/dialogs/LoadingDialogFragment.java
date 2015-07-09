@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -149,6 +150,10 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
         }
     }
 
+    public void setDismissMessage(@StringRes int messageRes) {
+        getArguments().putInt(ARG_DISMISS_MSG, messageRes);
+    }
+
     //endregion
 
 
@@ -168,10 +173,8 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                         if (!finished)
                             return;
 
-                        checkMark.setRotation(45f);
                         animate(checkMark)
                                 .zoomInFrom(0f)
-                                .rotation(0f)
                                 .start();
 
 

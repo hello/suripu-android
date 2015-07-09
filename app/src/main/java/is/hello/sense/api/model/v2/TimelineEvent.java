@@ -152,7 +152,8 @@ public class TimelineEvent extends ApiResponse {
     public enum Action {
         ADJUST_TIME,
         VERIFY,
-        REMOVE
+        REMOVE,
+        INCORRECT,
     }
 
     public enum Type {
@@ -193,8 +194,12 @@ public class TimelineEvent extends ApiResponse {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
         public final LocalTime newTime;
 
-        public TimeAmendment(@NonNull LocalTime newTime) {
+        @JsonProperty("timezone_offset")
+        public final long timeZoneOffset;
+
+        public TimeAmendment(@NonNull LocalTime newTime, long timeZoneOffset) {
             this.newTime = newTime;
+            this.timeZoneOffset = timeZoneOffset;
         }
 
         @Override

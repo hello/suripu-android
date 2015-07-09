@@ -7,8 +7,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -37,7 +35,7 @@ public class TimelineInfoPopup {
         popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         this.contents = new TextView(activity);
-        contents.setTextAppearance(activity, R.style.AppTheme_Text_Timeline_Popup);
+        contents.setTextAppearance(activity, R.style.AppTheme_Text_Timeline);
         contents.setBackgroundResource(R.drawable.background_timeline_info_popup);
 
         Resources resources = activity.getResources();
@@ -72,23 +70,21 @@ public class TimelineInfoPopup {
     }
 
     public void bindEvent(@NonNull TimelineEvent event) {
-        CharSequence sleepDepth = activity.getText(event.getSleepState().stringRes);
         CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
+        CharSequence sleepDepth = activity.getText(event.getSleepState().stringRes);
 
-        SpannableStringBuilder reading = new SpannableStringBuilder(sleepDepth);
-        int darkerColor = activity.getResources().getColor(R.color.text_medium);
-        reading.setSpan(new ForegroundColorSpan(darkerColor), 0, sleepDepth.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        reading.insert(0, prefix);
-
+        SpannableStringBuilder reading = new SpannableStringBuilder(prefix).append(sleepDepth);
         contents.setText(reading);
     }
 
     public void show(@NonNull View fromView) {
         View parent = (View) fromView.getParent();
+        Resources resources = activity.getResources();
         int parentHeight = parent.getMeasuredHeight();
-        int fromViewMiddle = (fromView.getTop() + fromView.getBottom()) / 2;
-        int bottomInset = (parentHeight - fromViewMiddle) + getNavigationBarHeight();
-        int leftInset = activity.getResources().getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
+        int overlay = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_overlap);
+        int fromViewTop = fromView.getTop() + overlay;
+        int bottomInset = (parentHeight - fromViewTop) + getNavigationBarHeight();
+        int leftInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
         popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.START, leftInset, bottomInset);
 
         contents.postDelayed(this::dismiss, VISIBLE_DURATION);

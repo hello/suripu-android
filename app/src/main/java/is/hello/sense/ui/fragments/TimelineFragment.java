@@ -55,6 +55,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
+import rx.Observable;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
@@ -67,6 +68,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private static final int ID_EVENT_CORRECT = 0;
     private static final int ID_EVENT_ADJUST_TIME = 1;
     private static final int ID_EVENT_REMOVE = 2;
+    private static final int ID_EVENT_INCORRECT = 3;
 
 
     @Inject TimelinePresenter timelinePresenter;
@@ -458,6 +460,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
         noActions.setTitle(R.string.message_timeline_no_actions_title);
         noActions.setMessage(R.string.message_timeline_no_actions_body);
+        noActions.setWantsBigTitle(true);
         noActions.show();
 
         this.activeDialog = new WeakReference<>(noActions);
@@ -495,6 +498,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                             .setIcon(R.drawable.timeline_action_remove)
             );
         }
+        if (event.supportsAction(TimelineEvent.Action.INCORRECT)) {
+            actions.addOption(
+                    new SenseBottomSheet.Option(ID_EVENT_INCORRECT)
+                            .setTitle(R.string.action_timeline_event_incorrect)
+                            .setIcon(R.drawable.timeline_action_remove)
+            );
+        }
 
         actions.setOnOptionSelectedListener((optionPosition, option) -> {
             preferences
@@ -504,7 +514,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
-                    markCorrect(actions, event);
+                    doEventAction(actions, timelinePresenter.verifyEvent(event));
                     return false;
                 }
 
@@ -513,8 +523,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                     return true;
                 }
 
+                case ID_EVENT_INCORRECT:
                 case ID_EVENT_REMOVE: {
-                    removeEvent(actions, event);
+                    doEventAction(actions, timelinePresenter.deleteEvent(event));
                     return false;
                 }
 
@@ -550,9 +561,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void completeAdjustTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
-        LoadingDialogFragment.show(getFragmentManager(),
+        LoadingDialogFragment dialogFragment = LoadingDialogFragment.show(getFragmentManager(),
                 getString(R.string.dialog_loading_message),
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
+        dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                 ignored -> {
                     LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
@@ -563,7 +575,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 });
     }
 
-    private void markCorrect(@NonNull SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
+    private void doEventAction(@NonNull SenseBottomSheet bottomSheet, @NonNull Observable<Void> action) {
         if (homeActivity != null) {
             Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
         }
@@ -571,25 +583,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         LoadingView loadingView = new LoadingView(getActivity());
         bottomSheet.replaceContent(loadingView, null);
         bottomSheet.setCancelable(false);
-        bindAndSubscribe(timelinePresenter.verifyEvent(event),
-                ignored -> {
-                    loadingView.playDoneTransition(R.string.title_thank_you, bottomSheet::dismiss);
-                },
-                e -> {
-                    bottomSheet.dismiss();
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
-                });
-    }
-
-    private void removeEvent(SenseBottomSheet bottomSheet, @NonNull TimelineEvent event) {
-        if (homeActivity != null) {
-            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
-        }
-
-        LoadingView loadingView = new LoadingView(getActivity());
-        bottomSheet.replaceContent(loadingView, null);
-        bottomSheet.setCancelable(false);
-        bindAndSubscribe(timelinePresenter.deleteEvent(event),
+        bindAndSubscribe(action,
                 ignored -> {
                     loadingView.playDoneTransition(R.string.title_thank_you, bottomSheet::dismiss);
                 },

@@ -151,6 +151,7 @@ public class LoadingView extends LinearLayout {
 
         TextView textView = new TextView(getContext());
         textView.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Thin);
+        textView.setTextSize(17);
         textView.setSingleLine();
         textView.setText(text);
 

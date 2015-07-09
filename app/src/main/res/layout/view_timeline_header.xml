@@ -34,18 +34,17 @@
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_xsmall"
         android:orientation="vertical"
-        android:paddingTop="@dimen/gap_medium"
-        android:paddingBottom="@dimen/gap_medium"
         android:background="@drawable/background_timeline_header_card_selector">
 
         <TextView
             android:id="@+id/view_timeline_header_card_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
             android:layout_marginStart="@dimen/gap_medium"
             android:layout_marginEnd="@dimen/gap_medium"
             android:drawablePadding="@dimen/gap_small"
-            android:drawableEnd="@drawable/disclosure_chevron"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
             android:gravity="center_vertical|start"
             android:textAppearance="@style/AppTheme.Text.SectionHeading.Accent"
             android:text="@string/label_sleep_summary" />
@@ -56,8 +55,10 @@
             android:id="@+id/view_timeline_header_card_contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_tiny"
             android:layout_marginStart="@dimen/gap_medium"
             android:layout_marginEnd="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_medium"
             android:drawablePadding="@dimen/gap_medium"
             android:minLines="2"
             android:ellipsize="end"
