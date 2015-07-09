@@ -10,6 +10,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +34,7 @@ public class TimelineToolbar extends RelativeLayout {
     private @Nullable ValueAnimator titleColorAnimator;
     private boolean titleDimmed;
 
-    private boolean shareVisible = true;
+    private boolean shareVisible;
 
 
     //region Lifecycle
@@ -64,6 +65,8 @@ public class TimelineToolbar extends RelativeLayout {
         this.overflowFadeDrawable = new TransitionDrawable(overflowDrawables);
         overflowFadeDrawable.setCrossFadeEnabled(true);
         overflow.setImageDrawable(overflowFadeDrawable);
+
+        share.setVisibility(INVISIBLE);
     }
 
     @Override
@@ -100,10 +103,18 @@ public class TimelineToolbar extends RelativeLayout {
         }
 
         this.overflowOpen = overflowOpen;
-        if (overflowOpen) {
-            overflowFadeDrawable.startTransition(Animation.DURATION_FAST);
+
+        int duration;
+        if (!ViewCompat.isAttachedToWindow(this)) {
+            duration = 0;
         } else {
-            overflowFadeDrawable.reverseTransition(Animation.DURATION_FAST);
+            duration = Animation.DURATION_FAST;
+        }
+
+        if (overflowOpen) {
+            overflowFadeDrawable.startTransition(duration);
+        } else {
+            overflowFadeDrawable.reverseTransition(duration);
         }
     }
 
@@ -117,6 +128,15 @@ public class TimelineToolbar extends RelativeLayout {
         }
 
         this.shareVisible = shareVisible;
+
+        if (!ViewCompat.isAttachedToWindow(this)) {
+            if (shareVisible) {
+                share.setVisibility(VISIBLE);
+            } else {
+                share.setVisibility(INVISIBLE);
+            }
+            return;
+        }
 
         if (shareVisible) {
             PropertyAnimatorProxy.animate(share)
@@ -170,7 +190,8 @@ public class TimelineToolbar extends RelativeLayout {
             endColor = getResources().getColor(R.color.text_dark);
         }
 
-        if (startColor == endColor) {
+        if (!ViewCompat.isAttachedToWindow(this)) {
+            title.setTextColor(endColor);
             return;
         }
 
