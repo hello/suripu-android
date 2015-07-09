@@ -390,11 +390,11 @@ so you can sleep better.</string>
     <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
     <string name="action_more_info">More info</string>
     <string name="action_submit">Submit</string>
-    <string name="sleep_depth_awake"><b>AWAKE</b></string>
-    <string name="sleep_depth_sound">IN <b>DEEP SLEEP</b></string>
-    <string name="sleep_depth_light">IN <b>LIGHT SLEEP</b></string>
-    <string name="sleep_depth_medium">IN <b>MEDIUM SLEEP</b></string>
-    <string name="timeline_popup_info_prefix">"YOU WERE "</string>
+    <string name="sleep_depth_awake"><b>awake</b>.</string>
+    <string name="sleep_depth_sound">in <b>deep sleep</b>.</string>
+    <string name="sleep_depth_light">in <b>light sleep</b>.</string>
+    <string name="sleep_depth_medium">in <b>medium sleep</b>.</string>
+    <string name="timeline_popup_info_prefix">"You were "</string>
     <string name="debug_action_scan">Scan</string>
     <string name="device_color_red">Red</string>
     <string name="device_color_blue">Blue</string>
