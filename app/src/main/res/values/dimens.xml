@@ -98,6 +98,7 @@
     <dimen name="view_rotary_picker_width">90sp</dimen>
     <dimen name="view_rotary_picker_height">45sp</dimen>
 
+    <dimen name="bottom_sheet_option_vertical_margin">18dp</dimen>
     <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>
 
     <!-- Graphs -->

@@ -423,10 +423,10 @@ so you can sleep better.</string>
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
     <string name="title_acknowledgements">Acknowledgements</string>
-    <string name="action_timeline_mark_event_correct">This is correct</string>
-    <string name="action_timeline_event_adjust_time">Adjust the time</string>
+    <string name="action_timeline_mark_event_correct">Mark as correct</string>
+    <string name="action_timeline_event_adjust_time">Adjust time</string>
     <string name="action_timeline_event_remove">Remove this event</string>
-    <string name="action_timeline_event_incorrect">This is incorrect</string>
+    <string name="action_timeline_event_incorrect">Mark as incorrect</string>
 
     <string name="condition_short_hand_alert_generic">was bad</string>
     <string name="condition_short_hand_alert_temperature">was a bit hot</string>
@@ -441,8 +441,8 @@ so you can sleep better.</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
     <string name="dialog_negative_alarm_sound_volume_low">No, thanks</string>
     <string name="error_timeline_sound_playback_failed">Could not play sound</string>
-    <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms Sense uses to detect and analyze your sleep.</string>
-    <string name="timeline_actions_intro_title">Sense learns</string>
+    <string name="timeline_actions_intro_title">Sense Learns</string>
+    <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms that Sense uses to detect and analyze your sleep.</string>
     <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair a Sense to view current conditions.</string>
     <string name="message_timeline_no_actions_title">No Actions Available</string>
     <string name="message_timeline_no_actions_body">The event you selected does not have any actions available.</string>

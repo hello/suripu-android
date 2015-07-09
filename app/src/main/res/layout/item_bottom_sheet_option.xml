@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/gap_outer"
     android:paddingRight="@dimen/gap_outer"
-    android:paddingTop="@dimen/gap_medium"
-    android:paddingBottom="@dimen/gap_medium"
+    android:paddingTop="@dimen/bottom_sheet_option_vertical_margin"
+    android:paddingBottom="@dimen/bottom_sheet_option_vertical_margin"
     android:background="@drawable/selectable_dark_bounded"
     android:descendantFocusability="blocksDescendants">
 
@@ -14,7 +14,6 @@
         android:id="@+id/item_bottom_sheet_option_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_tiny"
         android:drawablePadding="@dimen/gap_medium"
         android:gravity="center_vertical|start"
         android:textAppearance="@style/AppTheme.Text.Body"

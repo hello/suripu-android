@@ -561,9 +561,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     private void completeAdjustTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
-        LoadingDialogFragment.show(getFragmentManager(),
+        LoadingDialogFragment dialogFragment = LoadingDialogFragment.show(getFragmentManager(),
                 getString(R.string.dialog_loading_message),
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
+        dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                 ignored -> {
                     LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
