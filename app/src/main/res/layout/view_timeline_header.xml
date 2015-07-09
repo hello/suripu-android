@@ -69,12 +69,4 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/view_timeline_header_fade"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/gap_tiny"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/timeline_top_fade"
-        android:importantForAccessibility="no" />
-
 </merge>

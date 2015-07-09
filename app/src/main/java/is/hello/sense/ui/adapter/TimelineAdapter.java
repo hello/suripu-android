@@ -37,11 +37,8 @@ import is.hello.sense.util.SoundPlayer;
 import is.hello.sense.util.StateSafeExecutor;
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> implements SoundPlayer.OnEventListener {
-    private static final int VIEW_TYPE_HEADER = 0;
-    private static final int VIEW_TYPE_SEGMENT = 1;
-    private static final int VIEW_TYPE_EVENT = 2;
-
-    public static final int STATIC_ITEM_COUNT = 1;
+    private static final int VIEW_TYPE_SEGMENT = -1;
+    private static final int VIEW_TYPE_EVENT = -2;
 
     private static final float EVENT_SCALE_MIN = 0.9f;
     private static final float EVENT_SCALE_MAX = 1.0f;
@@ -49,8 +46,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     private final Context context;
     private final LayoutInflater inflater;
-    private final View headerView;
     private final DateFormatter dateFormatter;
+    private final View[] headers;
 
     private final int segmentMinHeight;
     private final int segmentHeightPerHour;
@@ -71,12 +68,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
 
     public TimelineAdapter(@NonNull Context context,
-                           @NonNull View headerView,
-                           @NonNull DateFormatter dateFormatter) {
+                           @NonNull DateFormatter dateFormatter,
+                           @NonNull View[] headers) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
-        this.headerView = headerView;
         this.dateFormatter = dateFormatter;
+        this.headers = headers;
 
         Resources resources = context.getResources();
         this.segmentMinHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_min_height);
@@ -111,7 +108,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             if (event.hasInfo()) {
                 TimelineEvent previousEvent = i > 0 ? events.get(i - 1) : null;
                 TimelineEvent nextEvent = i < (eventCount - 1) ? events.get(i + 1) : null;
-                stolenSleepDepths.put(i + STATIC_ITEM_COUNT, Pair.create(previousEvent, nextEvent));
+                stolenSleepDepths.put(i + headers.length, Pair.create(previousEvent, nextEvent));
 
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
                 previousEventHadInfo = true;
@@ -125,14 +122,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             int hour = event.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour)) {
                 if (event.getType() != null) {
-                    int previous = (i - 1) + STATIC_ITEM_COUNT;
+                    int previous = (i - 1) + headers.length;
                     if (i > 0 && itemTimes.get(previous) == null) {
                         itemTimes.put(previous, event.getShiftedTimestamp().toLocalTime());
                     } else {
                         continue;
                     }
                 } else {
-                    itemTimes.put(i + STATIC_ITEM_COUNT, event.getShiftedTimestamp().toLocalTime());
+                    itemTimes.put(i + headers.length, event.getShiftedTimestamp().toLocalTime());
                 }
 
                 hours.add(hour);
@@ -141,7 +138,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     private int getSegmentHeight(int adapterPosition) {
-        return segmentHeights[adapterPosition - STATIC_ITEM_COUNT];
+        return segmentHeights[adapterPosition - headers.length];
     }
 
     private void clearCache() {
@@ -157,17 +154,21 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     @Override
     public int getItemCount() {
-        return STATIC_ITEM_COUNT + events.size();
+        return headers.length + events.size();
+    }
+
+    public boolean hasEvents() {
+        return !events.isEmpty();
     }
 
     public TimelineEvent getEvent(int adapterPosition) {
-        return events.get(adapterPosition - STATIC_ITEM_COUNT);
+        return events.get(adapterPosition - headers.length);
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
-            return VIEW_TYPE_HEADER;
+        if (position < headers.length) {
+            return position;
         } else if (getEvent(position).hasInfo()) {
             return VIEW_TYPE_EVENT;
         } else {
@@ -197,13 +198,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         }
 
         if (oldSize > newSize) {
-            notifyItemRangeRemoved(STATIC_ITEM_COUNT + newSize, oldSize - newSize);
-            notifyItemRangeChanged(STATIC_ITEM_COUNT, newSize);
+            notifyItemRangeRemoved(headers.length + newSize, oldSize - newSize);
+            notifyItemRangeChanged(headers.length, newSize);
         } else if (newSize > oldSize) {
-            notifyItemRangeInserted(STATIC_ITEM_COUNT + oldSize, newSize - oldSize);
-            notifyItemRangeChanged(STATIC_ITEM_COUNT, oldSize);
+            notifyItemRangeInserted(headers.length + oldSize, newSize - oldSize);
+            notifyItemRangeChanged(headers.length, oldSize);
         } else {
-            notifyItemRangeChanged(STATIC_ITEM_COUNT, newSize);
+            notifyItemRangeChanged(headers.length, newSize);
         }
     }
 
@@ -213,7 +214,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         int oldSize = events.size();
         events.clear();
         clearCache();
-        notifyItemRangeRemoved(STATIC_ITEM_COUNT, oldSize);
+        notifyItemRangeRemoved(headers.length, oldSize);
     }
 
     //endregion
@@ -353,25 +354,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     @Override
     public TimelineBaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_HEADER: {
-                return new StaticViewHolder(headerView);
-            }
-
-            case VIEW_TYPE_SEGMENT: {
-                View segmentView = new View(context);
-                segmentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                return new SegmentViewHolder(segmentView);
-            }
-
-            case VIEW_TYPE_EVENT: {
-                View segmentView = inflater.inflate(R.layout.item_timeline_segment, parent, false);
-                return new EventViewHolder(segmentView);
-            }
-
-            default: {
-                throw new IllegalArgumentException();
-            }
+        if (viewType == VIEW_TYPE_SEGMENT) {
+            View segmentView = new View(context);
+            segmentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            return new SegmentViewHolder(segmentView);
+        } else if (viewType == VIEW_TYPE_EVENT) {
+            View segmentView = inflater.inflate(R.layout.item_timeline_segment, parent, false);
+            return new EventViewHolder(segmentView);
+        } else {
+            View header = headers[viewType];
+            return new StaticViewHolder(header);
         }
     }
 

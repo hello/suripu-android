@@ -46,9 +46,11 @@ import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
+import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.ui.widget.util.Dialogs;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -57,7 +59,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener {
+public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -81,15 +83,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private boolean hasCreatedView = false;
     private boolean animationEnabled = true;
 
-    private View contentShadow;
     private RecyclerView recyclerView;
 
     private LinearLayoutManager layoutManager;
+    private TimelineToolbar toolbar;
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
     private TimelineFadeItemAnimator itemAnimator;
 
-    private boolean wantsShareButton = false;
     private boolean controlsSharedChrome = false;
 
     private @Nullable TutorialOverlayView tutorialOverlay;
@@ -144,8 +145,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        this.contentShadow = view.findViewById(R.id.fragment_timeline_content_shadow);
-
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.addOnScrollListener(new ScrollListener());
@@ -155,29 +154,32 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
 
+        this.toolbar = new TimelineToolbar(getActivity());
+        toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
+        toolbar.setOverflowOpen(homeActivity.isUndersideVisible());
+
+        toolbar.setTitleOnClickListener(ignored -> homeActivity.showTimelineNavigator(getDate(), getCachedTimeline()));
+        toolbar.setTitle(getTitle());
+        toolbar.setTitleDimmed(homeActivity.isUndersideVisible());
+
+        toolbar.setShareOnClickListener(this::share);
+        toolbar.setShareVisible(false);
+
+
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
         headerView.setAnimationEnabled(animationEnabled);
         headerView.setOnScoreClickListener(this::showBreakdown);
-        headerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(View v) {
-                contentShadow.setVisibility(View.INVISIBLE);
-            }
 
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                contentShadow.setVisibility(View.VISIBLE);
-            }
-        });
+        View[] headers = { toolbar, headerView };
 
-        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
+        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext(), headers.length);
         itemAnimator.setEnabled(animationEnabled);
         itemAnimator.addListener(headerView);
         recyclerView.setItemAnimator(itemAnimator);
-        recyclerView.addItemDecoration(new BackgroundDecoration(getResources()));
+        recyclerView.addItemDecoration(new BackgroundDecoration(getResources(), headers.length));
 
-        this.adapter = new TimelineAdapter(getActivity(), headerView, dateFormatter);
+        this.adapter = new TimelineAdapter(getActivity(), dateFormatter, headers);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
 
@@ -262,7 +264,21 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Actions
 
-    public void share() {
+    @Override
+    public void onTopViewWillSlideDown() {
+        toolbar.setOverflowOpen(true);
+        toolbar.setTitleDimmed(true);
+        toolbar.setShareVisible(false);
+    }
+
+    @Override
+    public void onTopViewDidSlideUp() {
+        toolbar.setOverflowOpen(false);
+        toolbar.setTitleDimmed(false);
+        toolbar.setShareVisible(adapter.hasEvents());
+    }
+
+    public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
         bindAndSubscribe(timelinePresenter.latest(),
@@ -317,10 +333,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     public @NonNull String getTitle() {
         return dateFormatter.formatAsTimelineDate(getDate());
-    }
-
-    public boolean getWantsShareButton() {
-        return wantsShareButton;
     }
 
     public void setControlsSharedChrome(boolean controlsSharedChrome) {
@@ -400,12 +412,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
             adapter.bindEvents(timeline.getEvents());
 
-            if (controlsSharedChrome) {
-                homeActivity.setShareButtonVisible(wantsShareButton);
-            }
+            toolbar.setShareVisible(hasEvents);
         });
 
-        this.wantsShareButton = hasEvents;
         if (hasEvents) {
             headerView.bindScore(timeline.getScore(), timeline.getScoreCondition(), continuation);
         } else {
@@ -418,6 +427,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void timelineUnavailable(Throwable e) {
+        toolbar.setShareVisible(false);
         adapter.clear();
         headerView.bindError(e);
     }
@@ -599,13 +609,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (headerView.getParent() != null) {
-                float headerBottom = headerView.getBottom();
-                float headerHeight = headerView.getMeasuredHeight();
-                float headerFadeAmount = headerBottom / headerHeight;
-                headerView.setChildFadeAmount(headerFadeAmount);
-            }
-
             if (!itemAnimator.isRunning()) {
                 int recyclerHeight = recyclerView.getMeasuredHeight(),
                     recyclerCenter = recyclerHeight / 2;
@@ -645,10 +648,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     static class BackgroundDecoration extends RecyclerView.ItemDecoration {
         private final Drawable background;
         private final int bottomPadding;
+        private final int headerCount;
 
-        public BackgroundDecoration(@NonNull Resources resources) {
+        public BackgroundDecoration(@NonNull Resources resources, int headerCount) {
             this.background = ResourcesCompat.getDrawable(resources, R.color.timeline_background_fill, null);
             this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
+            this.headerCount = headerCount;
         }
 
         @Override
@@ -670,7 +675,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
             int position = parent.getChildAdapterPosition(view);
-            if (position > 0 && position == parent.getAdapter().getItemCount() - 1) {
+            if (position >= headerCount && position == parent.getAdapter().getItemCount() - 1) {
                 outRect.bottom = bottomPadding;
             }
         }

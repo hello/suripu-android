@@ -41,7 +41,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private final int dividerHeight;
 
 
-    private final View topFadeView;
     private final View scoreContainer;
     private final SleepScoreDrawable scoreDrawable;
     private final TextView scoreText;
@@ -84,8 +83,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
-
-        this.topFadeView = findViewById(R.id.view_timeline_header_fade);
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
         int scoreTranslation = resources.getDimensionPixelSize(R.dimen.gap_xlarge);
@@ -173,15 +170,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     public boolean isScoreClickEnabled() {
         return scoreContainer.isClickable() && cardContainer.isClickable();
-    }
-
-    public void setChildFadeAmount(float amount) {
-        scoreDrawable.setAlpha(Math.round(255f * amount));
-        scoreText.setAlpha(amount);
-
-        cardContainer.setAlpha(amount);
-
-        topFadeView.setTranslationY(-getTop());
     }
 
     public @IdRes int getCardViewId() {

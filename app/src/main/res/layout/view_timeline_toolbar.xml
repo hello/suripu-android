@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/action_bar_height">
+
+    <ImageButton
+        android:id="@+id/view_timeline_toolbar_overflow"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/icon_menu_closed"
+        android:scaleType="center"
+        tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:id="@+id/view_timeline_toolbar_share"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/icon_share_enabled"
+        android:scaleType="center"
+        android:contentDescription="@string/action_share" />
+
+    <TextView
+        android:id="@+id/view_timeline_toolbar_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_toEndOf="@id/view_timeline_toolbar_overflow"
+        android:layout_toStartOf="@id/view_timeline_toolbar_share"
+        android:gravity="center"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textAppearance="@style/AppTheme.Text.ScreenTitle"
+        android:background="@drawable/selectable_dark_bounded"/>
+
+</merge>
