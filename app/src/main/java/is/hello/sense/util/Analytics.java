@@ -331,7 +331,12 @@ public class Analytics {
         String EVENT_TAP = "Timeline tap";
         String EVENT_TIMELINE_EVENT_TAPPED = "Timeline Event tapped";
         String EVENT_LONG_PRESS_EVENT = "Long press sleep duration bar";
-        String EVENT_ADJUST_TIME = "Timeline adjust time tapped";
+
+        String EVENT_ADJUST_TIME = "Timeline event time adjust";
+        String EVENT_CORRECT = "Timeline event correct";
+        String EVENT_INCORRECT = "Timeline event incorrect";
+        String EVENT_REMOVE = "Timeline event remove";
+        String PROP_TYPE = "Type";
 
 
         String EVENT_SYSTEM_ALERT = "System Alert";

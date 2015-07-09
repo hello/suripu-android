@@ -522,23 +522,30 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                     .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
                     .apply();
 
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Timeline.PROP_TYPE, event.getType().toString()
+            );
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
                     doEventAction(actions, timelinePresenter.verifyEvent(event));
+                    Analytics.trackEvent(Analytics.Timeline.EVENT_CORRECT, properties);
                     return false;
                 }
-
                 case ID_EVENT_ADJUST_TIME: {
                     adjustTime(event);
+                    Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, properties);
                     return true;
                 }
-
-                case ID_EVENT_INCORRECT:
-                case ID_EVENT_REMOVE: {
+                case ID_EVENT_INCORRECT:  {
                     doEventAction(actions, timelinePresenter.deleteEvent(event));
+                    Analytics.trackEvent(Analytics.Timeline.EVENT_INCORRECT, properties);
                     return false;
                 }
-
+                case ID_EVENT_REMOVE: {
+                    doEventAction(actions, timelinePresenter.deleteEvent(event));
+                    Analytics.trackEvent(Analytics.Timeline.EVENT_REMOVE, properties);
+                    return false;
+                }
                 default: {
                     Logger.warn(getClass().getSimpleName(), "Unknown option " + option);
                     return true;
@@ -566,8 +573,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         timePicker.show();
 
         this.activeDialog = new WeakReference<>(timePicker);
-
-        Analytics.trackEvent(Analytics.Timeline.EVENT_ADJUST_TIME, null);
     }
 
     private void completeAdjustTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
