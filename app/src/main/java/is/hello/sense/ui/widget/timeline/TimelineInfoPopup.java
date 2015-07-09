@@ -79,10 +79,12 @@ public class TimelineInfoPopup {
 
     public void show(@NonNull View fromView) {
         View parent = (View) fromView.getParent();
+        Resources resources = activity.getResources();
         int parentHeight = parent.getMeasuredHeight();
-        int fromViewMiddle = (fromView.getTop() + fromView.getBottom()) / 2;
-        int bottomInset = (parentHeight - fromViewMiddle) + getNavigationBarHeight();
-        int leftInset = activity.getResources().getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
+        int overlay = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_overlap);
+        int fromViewTop = fromView.getTop() + overlay;
+        int bottomInset = (parentHeight - fromViewTop) + getNavigationBarHeight();
+        int leftInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
         popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.START, leftInset, bottomInset);
 
         contents.postDelayed(this::dismiss, VISIBLE_DURATION);
