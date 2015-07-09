@@ -266,12 +266,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void onTopViewWillSlideDown() {
         toolbar.setOverflowOpen(true);
         toolbar.setTitleDimmed(true);
+        toolbar.setShareVisible(false);
     }
 
     @Override
     public void onTopViewDidSlideUp() {
         toolbar.setOverflowOpen(false);
         toolbar.setTitleDimmed(false);
+        toolbar.setShareVisible(adapter.hasEvents());
     }
 
     public void share(@NonNull View sender) {

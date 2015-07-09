@@ -157,6 +157,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         return headers.length + events.size();
     }
 
+    public boolean hasEvents() {
+        return !events.isEmpty();
+    }
+
     public TimelineEvent getEvent(int adapterPosition) {
         return events.get(adapterPosition - headers.length);
     }
