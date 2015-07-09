@@ -128,6 +128,8 @@
 
     <dimen name="timeline_event_start_inset">0dp</dimen>
     <dimen name="timeline_event_end_inset">8dp</dimen>
+    <dimen name="timeline_event_text_top_inset">7dp</dimen>
+    <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
 
 
     <!-- Buttons -->
