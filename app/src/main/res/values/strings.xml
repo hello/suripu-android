@@ -426,6 +426,7 @@ so you can sleep better.</string>
     <string name="action_timeline_mark_event_correct">This is correct</string>
     <string name="action_timeline_event_adjust_time">Adjust the time</string>
     <string name="action_timeline_event_remove">Remove this event</string>
+    <string name="action_timeline_event_incorrect">This is incorrect</string>
 
     <string name="condition_short_hand_alert_generic">was bad</string>
     <string name="condition_short_hand_alert_temperature">was a bit hot</string>

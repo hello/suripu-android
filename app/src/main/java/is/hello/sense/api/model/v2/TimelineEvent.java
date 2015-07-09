@@ -152,7 +152,8 @@ public class TimelineEvent extends ApiResponse {
     public enum Action {
         ADJUST_TIME,
         VERIFY,
-        REMOVE
+        REMOVE,
+        INCORRECT,
     }
 
     public enum Type {
