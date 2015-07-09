@@ -295,7 +295,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             this.hasAnimated = true;
 
             this.scoreAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
-            scoreAnimator.setDuration(Animation.DURATION_NORMAL);
+            scoreAnimator.setDuration(Animation.DURATION_SLOW);
             scoreAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
 
             int startColor = scoreDrawable.getFillColor();
