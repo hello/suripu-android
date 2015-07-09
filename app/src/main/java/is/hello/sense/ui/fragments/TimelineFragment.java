@@ -458,6 +458,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
         noActions.setTitle(R.string.message_timeline_no_actions_title);
         noActions.setMessage(R.string.message_timeline_no_actions_body);
+        noActions.setWantsBigTitle(true);
         noActions.show();
 
         this.activeDialog = new WeakReference<>(noActions);
