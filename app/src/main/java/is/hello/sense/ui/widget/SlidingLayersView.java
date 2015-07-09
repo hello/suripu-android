@@ -42,7 +42,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private boolean animating = false;
 
     private boolean isOpen = false;
-    private @Nullable OnInteractionListener onInteractionListener;
+    private @Nullable
+    Listener listener;
     private @Nullable GestureInterceptingView gestureInterceptingChild;
     private @Nullable InteractiveAnimator interactiveAnimator;
     private @Nullable AnimatorContext animatorContext;
@@ -97,8 +98,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             requestLayout();
 
             post(() -> {
-                if (isOpen && onInteractionListener != null) {
-                    onInteractionListener.onUserWillPullDownTopView();
+                if (isOpen && listener != null) {
+                    listener.onTopViewWillSlideDown();
                 }
             });
         }
@@ -128,8 +129,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         stopAnimations();
 
-        if (onInteractionListener != null) {
-            onInteractionListener.onUserWillPullDownTopView();
+        if (listener != null) {
+            listener.onTopViewWillSlideDown();
         }
 
         requestLayout();
@@ -148,8 +149,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         stopAnimations();
 
-        if (onInteractionListener != null) {
-            onInteractionListener.onUserWillPullDownTopView();
+        if (listener != null) {
+            listener.onTopViewWillSlideDown();
         }
 
         if (interactiveAnimator != null) {
@@ -180,8 +181,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         }
     }
 
-    public void setOnInteractionListener(@Nullable OnInteractionListener onInteractionListener) {
-        this.onInteractionListener = onInteractionListener;
+    public void setListener(@Nullable Listener listener) {
+        this.listener = listener;
     }
 
     public void setGestureInterceptingChild(@Nullable GestureInterceptingView gestureInterceptingChild) {
@@ -346,8 +347,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                         this.isOpen = false;
                         this.recyclerView = null;
 
-                        if (onInteractionListener != null) {
-                            onInteractionListener.onUserDidPushUpTopView();
+                        if (listener != null) {
+                            listener.onTopViewDidSlideUp();
                         }
                     }
                 })
@@ -479,8 +480,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                         animatorContext.beginAnimation();
                     }
 
-                    if (onInteractionListener != null) {
-                        onInteractionListener.onUserWillPullDownTopView();
+                    if (listener != null) {
+                        listener.onTopViewWillSlideDown();
                     }
 
                     if (interactiveAnimator != null) {
@@ -498,8 +499,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     //endregion
 
 
-    public interface OnInteractionListener {
-        void onUserWillPullDownTopView();
-        void onUserDidPushUpTopView();
+    public interface Listener {
+        void onTopViewWillSlideDown();
+        void onTopViewDidSlideUp();
     }
 }

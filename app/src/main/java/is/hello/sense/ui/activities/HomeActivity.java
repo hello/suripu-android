@@ -49,7 +49,6 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.widget.FragmentPageTitleStrip;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.Views;
@@ -67,7 +66,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
-        implements FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.OnInteractionListener, ZoomedOutTimelineFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
+        implements FragmentPageView.OnTransitionObserver<TimelineFragment>, SlidingLayersView.Listener, ZoomedOutTimelineFragment.OnTimelineDateSelectedListener, AnimatorContext.Scene
 {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
@@ -83,9 +82,6 @@ public class HomeActivity
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
 
-    private ImageButton overflowButton;
-    private ImageButton shareButton;
-    private FragmentPageTitleStrip pagerTitleStrip;
     private FragmentPageView<TimelineFragment> viewPager;
     private ImageButton smartAlarmButton;
 
@@ -143,30 +139,6 @@ public class HomeActivity
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
 
 
-        this.overflowButton = (ImageButton) findViewById(R.id.activity_home_timeline_header_overflow);
-        Views.setSafeOnClickListener(overflowButton, ignored -> slidingLayersView.toggle());
-
-        this.shareButton = (ImageButton) findViewById(R.id.activity_home_timeline_header_share);
-        shareButton.setVisibility(View.INVISIBLE);
-        Views.setSafeOnClickListener(shareButton, ignored -> {
-            TimelineFragment currentTimeline = viewPager.getCurrentFragment();
-            if (currentTimeline == null) {
-                return;
-            }
-
-            currentTimeline.share();
-        });
-
-        this.pagerTitleStrip = (FragmentPageTitleStrip) findViewById(R.id.activity_home_timeline_date);
-        Views.setSafeOnClickListener(pagerTitleStrip, ignored -> {
-            TimelineFragment currentTimeline = viewPager.getCurrentFragment();
-            if (currentTimeline == null) {
-                return;
-            }
-
-            showTimelineNavigator(currentTimeline.getDate(), currentTimeline.getCachedTimeline());
-        });
-
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
@@ -182,7 +154,6 @@ public class HomeActivity
 
         viewPager.setFragmentManager(getFragmentManager());
         viewPager.setOnTransitionObserver(this);
-        viewPager.setDecor(pagerTitleStrip);
         viewPager.setStateSafeExecutor(stateSafeExecutor);
         viewPager.setAnimatorContext(animatorContext);
 
@@ -194,7 +165,7 @@ public class HomeActivity
         this.undersideContainer = (FrameLayout) findViewById(R.id.activity_home_underside_container);
 
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
-        slidingLayersView.setOnInteractionListener(this);
+        slidingLayersView.setListener(this);
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
         slidingLayersView.setGestureInterceptingChild(viewPager);
         slidingLayersView.setAnimatorContext(animatorContext);
@@ -456,7 +427,6 @@ public class HomeActivity
         if (currentFragment != null) {
             currentFragment.setControlsSharedChrome(false);
         }
-        setShareButtonVisible(false);
 
         showAlarmShortcut();
     }
@@ -466,8 +436,6 @@ public class HomeActivity
         this.lastUpdated = System.currentTimeMillis();
 
         fragment.setControlsSharedChrome(true);
-
-        setShareButtonVisible(fragment.getWantsShareButton());
 
         if (isInteractive) {
             Tutorial.SWIPE_TIMELINE.markShown(this);
@@ -481,7 +449,6 @@ public class HomeActivity
 
     @Override
     public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
-        setShareButtonVisible(fragment.getWantsShareButton());
         fragment.setControlsSharedChrome(true);
     }
 
@@ -515,14 +482,6 @@ public class HomeActivity
         }
     }
 
-    public void setShareButtonVisible(boolean visible) {
-        if (visible && !slidingLayersView.isOpen()) {
-            shareButton.setVisibility(View.VISIBLE);
-        } else {
-            shareButton.setVisibility(View.INVISIBLE);
-        }
-    }
-
     //endregion
 
 
@@ -548,7 +507,7 @@ public class HomeActivity
     }
 
     @Override
-    public void onUserWillPullDownTopView() {
+    public void onTopViewWillSlideDown() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
 
         if (isResumed && getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
@@ -558,15 +517,16 @@ public class HomeActivity
                     .commit();
         }
 
-        setShareButtonVisible(false);
-        overflowButton.setImageResource(R.drawable.icon_menu_open);
-        pagerTitleStrip.setDimmed(true);
+        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        if (currentFragment != null) {
+            currentFragment.onTopViewWillSlideDown();
+        }
 
         this.isFirstActivityRun = false;
     }
 
     @Override
-    public void onUserDidPushUpTopView() {
+    public void onTopViewDidSlideUp() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
 
         UndersideFragment underside = getUndersideFragment();
@@ -580,9 +540,9 @@ public class HomeActivity
         }
 
         TimelineFragment currentFragment = viewPager.getCurrentFragment();
-        setShareButtonVisible(currentFragment != null && currentFragment.getWantsShareButton());
-        overflowButton.setImageResource(R.drawable.icon_menu_closed);
-        pagerTitleStrip.setDimmed(false);
+        if (currentFragment != null) {
+            currentFragment.onTopViewDidSlideUp();
+        }
     }
 
     public void showUndersideWithItem(int item, boolean animate) {
@@ -599,6 +559,10 @@ public class HomeActivity
                 slidingLayersView.openWithoutAnimation();
             }
         }
+    }
+
+    public void toggleUndersideVisible() {
+        slidingLayersView.toggle();
     }
 
     private class UndersideAnimator implements InteractiveAnimator {

@@ -8,17 +8,18 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.animation.AnimatorContext;
 
 public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnimator {
     private final AnimatorContext animatorContext;
+    private final int headerCount;
     private final List<Listener> listeners = new ArrayList<>();
 
     protected boolean enabled = true;
 
-    protected AbstractTimelineItemAnimator(@NonNull AnimatorContext animatorContext) {
+    protected AbstractTimelineItemAnimator(@NonNull AnimatorContext animatorContext, int headerCount) {
         this.animatorContext = animatorContext;
+        this.headerCount = headerCount;
         setSupportsChangeAnimations(false);
     }
 
@@ -35,7 +36,7 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
     }
 
     protected boolean isViewHolderAnimated(@NonNull RecyclerView.ViewHolder viewHolder) {
-        return (enabled && viewHolder.getAdapterPosition() >= TimelineAdapter.STATIC_ITEM_COUNT);
+        return (enabled && viewHolder.getAdapterPosition() >= headerCount);
     }
 
     //region Default Implementations

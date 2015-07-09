@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_timeline_recycler"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_timeline">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_timeline_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <ImageView
-        android:id="@+id/fragment_timeline_content_shadow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="fitXY"
-        android:src="@drawable/timeline_top_shadow"
-        android:importantForAccessibility="no" />
-
-</RelativeLayout>
+    android:background="@color/background_timeline" />
