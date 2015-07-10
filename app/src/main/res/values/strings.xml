@@ -323,14 +323,14 @@ so you can sleep better.</string>
     <string name="issue_title_low_battery">Low Battery</string>
     <string name="issue_message_low_battery">The battery in your Sleep Pill is getting low. Replace it to continue tracking your sleep.</string>
 
-    <string name="welcome_dialog_timeline_title_intro">Understand your sleep</string>
-    <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom, and recognizes your movements during the night, giving you the full picture of your sleep.\n\nSwipe left to learn how this information is presented to you in a detailed yet easy to understand way.</string>
+    <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
+    <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom and recognizes your movements during the night, giving you a full picture of your sleep.\n\nSense takes all this data and builds a Sleep Timeline of your sleep for each night. Swipe left to learn more.</string>
     <string name="welcome_dialog_timeline_title_score">Sleep Score</string>
-    <string name="welcome_dialog_timeline_score">Each morning, you‘ll receive a personalized Sleep Score — out of 100 — based on the conditions of your room and how you slept the night before.</string>
-    <string name="welcome_dialog_timeline_title_before_sleep">Sleep Summary</string>
-    <string name="welcome_dialog_timeline_before_sleep">Tap on your Sleep Summary at the top of the Timeline to view detailed information about your night.\n\nYou‘ll see how long it took you to fall asleep, how much of your night was spent asleep, what the environmental conditions of your bedroom were like before and during your sleep, and more. </string>
+    <string name="welcome_dialog_timeline_score">Each morning, you‘ll receive a personalized Sleep Score — out of 100. All the data Sense collects about your sleep is synthesized into this one simple score.</string>
+    <string name="welcome_dialog_timeline_title_summary">Sleep Summary</string>
+    <string name="welcome_dialog_timeline_summary">Tap on the Sleep Summary at the top of your Timeline to view detailed stats about your night.\n\nYou‘ll see how long it took you to fall asleep, how long you spent in deep sleep, what the conditions were like in your bedroom, and more.</string>
     <string name="welcome_dialog_timeline_title_events">Sleep Timeline</string>
-    <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, loud noises and more.</string>
+    <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, noise disturbances, and more.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
     <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: Temperature, Humidity, Light, and Sound. Tap a card for more details.</string>
     <string name="welcome_dialog_trends_title">Trends</string>
