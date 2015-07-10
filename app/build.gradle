@@ -67,7 +67,6 @@ android {
         def CLIENT_ID = "CLIENT_ID"
         def CLIENT_SECRET = "CLIENT_SECRET"
         def BASE_URL = "BASE_URL"
-        def SUPPORT_AUTHORITY = "SUPPORT_AUTHORITY"
         def MP_API_KEY = "MP_API_KEY"
         def HOCKEY_API_KEY = "HOCKEY_API_KEY"
 
@@ -82,7 +81,6 @@ android {
             buildConfigField TYPE_STRING, CLIENT_ID, '"' + "android_dev" + '"'
             buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "99999secret" + '"'
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://dev-api.hello.is" + '"'
-            buildConfigField TYPE_STRING, SUPPORT_AUTHORITY, '"' + "staging-user.hello.is" + '"'
             buildConfigField TYPE_STRING, MP_API_KEY, '"' + "d62a169fe4856dea26f3a322750613a8" + '"'
             buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "805427569ce2035dcda0b99e4d984256" + '"'
 
@@ -99,7 +97,6 @@ android {
             buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
             buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is" + '"'
-            buildConfigField TYPE_STRING, SUPPORT_AUTHORITY, '"' + "guide.hello.is" + '"'
             buildConfigField TYPE_STRING, MP_API_KEY, '"' + "d62a169fe4856dea26f3a322750613a8" + '"'
             buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "43c61cc553f0ccf2b3e1f73bc30bbfb4" + '"'
 
@@ -115,7 +112,6 @@ android {
             buildConfigField TYPE_STRING, CLIENT_ID, '"' + "8d3c1664-05ae-47e4-bcdb-477489590aa4" + '"'
             buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is" + '"'
-            buildConfigField TYPE_STRING, SUPPORT_AUTHORITY, '"' + "guide.hello.is" + '"'
             buildConfigField TYPE_STRING, MP_API_KEY, '"' + "43c61cc553f0ccf2b3e1f73bc30bbfb4" + '"'
 
             signingConfig signingConfigs.release
