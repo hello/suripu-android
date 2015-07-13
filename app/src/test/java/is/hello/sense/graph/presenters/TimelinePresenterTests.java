@@ -65,9 +65,6 @@ public class TimelinePresenterTests extends InjectionTests {
 
         Sync.wrap(presenter.verifyEvent(timelineEvent))
             .assertNull();
-
-        Timeline timeline = Sync.next(presenter.timeline);
-        assertFalse(Lists.isEmpty(timeline.getEvents()));
     }
 
     @Test

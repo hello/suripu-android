@@ -157,21 +157,10 @@ public final class TestApiService implements ApiService {
 
 
     @Override
-    public Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
-                                                    @NonNull @Path("type") TimelineEvent.Type type,
-                                                    @Path("timestamp") long timestamp) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
-        return safeJust(
-                new TimelineBuilder()
-                        .setDate(dateTime)
-                        .setScore(90, ScoreCondition.IDEAL)
-                        .setMessage(new MarkupString("This is *just* a test."))
-                        .addEvent(new TimelineEventBuilder()
-                                .setType(type)
-                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()))
-                                .build())
-                        .build()
-        );
+    public Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
+                                                        @NonNull @Path("type") TimelineEvent.Type type,
+                                                        @Path("timestamp") long timestamp) {
+        return safeJust(new VoidResponse());
     }
 
     @Override

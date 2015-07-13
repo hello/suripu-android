@@ -66,7 +66,6 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
         return latest().flatMap(timeline -> {
             String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
             return service.verifyTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
-                    .doOnNext(this.timeline::onNext)
                     .map(ignored -> null);
         });
     }

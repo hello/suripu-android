@@ -128,9 +128,9 @@ public interface ApiService {
                                              @Path("timestamp") long timestamp);
 
     @PUT("/v2/timeline/{date}/events/{type}/{timestamp}")
-    Observable<Timeline> verifyTimelineEvent(@NonNull @Path("date") String date,
-                                             @NonNull @Path("type") TimelineEvent.Type type,
-                                             @Path("timestamp") long timestamp);
+    Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
+                                                 @NonNull @Path("type") TimelineEvent.Type type,
+                                                 @Path("timestamp") long timestamp);
 
     //endregion
 
