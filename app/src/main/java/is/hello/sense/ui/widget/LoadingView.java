@@ -23,7 +23,7 @@ import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 
 public class LoadingView extends LinearLayout {
-    public static final long DURATION_DONE_MESSAGE = 2 * 1000;
+    public static final long DURATION_DONE_MESSAGE = 1000;
 
     private final ProgressBar progressBar;
     private boolean doneIconVisible = false;
