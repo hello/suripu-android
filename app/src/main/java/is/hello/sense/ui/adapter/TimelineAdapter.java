@@ -121,17 +121,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             int hour = event.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour)) {
-                if (event.getType() != null) {
-                    int previous = (i - 1) + headers.length;
-                    if (i > 0 && itemTimes.get(previous) == null) {
-                        itemTimes.put(previous, event.getShiftedTimestamp().toLocalTime());
-                    } else {
-                        continue;
-                    }
-                } else {
-                    itemTimes.put(i + headers.length, event.getShiftedTimestamp().toLocalTime());
-                }
-
+                itemTimes.put(i + headers.length, event.getShiftedTimestamp().toLocalTime());
                 hours.add(hour);
             }
         }
