@@ -1,0 +1,83 @@
+package is.hello.sense.util;
+
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
+
+import org.junit.Assert;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class RecyclerAdapterTesting {
+    @SuppressWarnings("unchecked")
+    public static <VH extends RecyclerView.ViewHolder> VH createAndBindView(@NonNull RecyclerView.Adapter adapter,
+                                                                            @NonNull ViewGroup parent,
+                                                                            int viewId,
+                                                                            int adapterPosition) {
+        VH holder = (VH) adapter.createViewHolder(parent, viewId);
+        adapter.bindViewHolder(holder, adapterPosition);
+        return holder;
+    }
+
+    public static class Observer extends RecyclerView.AdapterDataObserver {
+        public final List<Change> changes = new ArrayList<>();
+
+        public void onChanged() {
+            changes.add(new Change(Change.Type.UNKNOWN));
+        }
+
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            changes.add(new Change(Change.Type.CHANGED, positionStart, itemCount));
+        }
+
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            changes.add(new Change(Change.Type.INSERTED, positionStart, itemCount));
+        }
+
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            changes.add(new Change(Change.Type.REMOVED, positionStart, itemCount));
+        }
+
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            changes.add(new Change(Change.Type.MOVED, fromPosition, toPosition, itemCount));
+        }
+
+
+        public boolean hasObservedChange(@NonNull Change.Type type, @NonNull int... values) {
+            for (Change change : changes) {
+                if (change.type == type && Arrays.equals(change.values, values)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void assertChangeOccurred(@NonNull Change.Type type, @NonNull int... values) {
+            if (!hasObservedChange(type, values)) {
+                Assert.fail("Expected change '" + type + "' " + Arrays.toString(values));
+            }
+        }
+
+
+        public static class Change {
+            public final Type type;
+            public final int[] values;
+
+            public Change(@NonNull Type type, @NonNull int... values) {
+                this.type = type;
+                this.values = values;
+            }
+
+            public enum Type {
+                UNKNOWN,
+                CHANGED,
+                INSERTED,
+                REMOVED,
+                MOVED,
+            }
+        }
+    }
+}

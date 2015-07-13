@@ -167,14 +167,7 @@ public class TimelineSegmentDrawable extends Drawable {
     //region Sleep Depths
 
     private static float calculateSleepDepthFraction(int sleepDepth) {
-        float fraction = Math.min(1f, sleepDepth / 100f);
-        if (sleepDepth <= 33) {
-            return Math.max(0.10f, fraction);
-        } else if (sleepDepth <= 66) {
-            return Math.max(0.4f, fraction);
-        } else {
-            return fraction;
-        }
+        return Math.min(1f, sleepDepth / 100f);
     }
 
     public void setSleepDepth(int sleepDepth, @NonNull TimelineEvent.SleepState sleepState) {
@@ -184,6 +177,14 @@ public class TimelineSegmentDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public float getSleepDepthFraction() {
+        return sleepDepthFraction;
+    }
+
+    public int getSleepDepthColor() {
+        return sleepDepthColor;
+    }
+
     public void setStolenTopSleepDepth(int sleepDepth, @NonNull TimelineEvent.SleepState sleepState) {
         this.stolenTopSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
         this.stolenTopSleepDepthColor = resources.getColor(sleepState.colorRes);
@@ -191,11 +192,27 @@ public class TimelineSegmentDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public float getStolenTopSleepDepthFraction() {
+        return stolenTopSleepDepthFraction;
+    }
+
+    public int getStolenTopSleepDepthColor() {
+        return stolenTopSleepDepthColor;
+    }
+
     public void setStolenBottomSleepDepth(int sleepDepth, @NonNull TimelineEvent.SleepState sleepState) {
         this.stolenBottomSleepDepthFraction = calculateSleepDepthFraction(sleepDepth);
         this.stolenBottomSleepDepthColor = resources.getColor(sleepState.colorRes);
 
         invalidateSelf();
+    }
+
+    public float getStolenBottomSleepDepthFraction() {
+        return stolenBottomSleepDepthFraction;
+    }
+
+    public int getStolenBottomSleepDepthColor() {
+        return stolenBottomSleepDepthColor;
     }
 
     //endregion
@@ -206,6 +223,10 @@ public class TimelineSegmentDrawable extends Drawable {
     public void setTimestamp(@Nullable CharSequence timestamp) {
         timestampDrawable.setText(timestamp);
         invalidateSelf();
+    }
+
+    public @Nullable CharSequence getTimestamp() {
+        return timestampDrawable.getText();
     }
 
     //endregion

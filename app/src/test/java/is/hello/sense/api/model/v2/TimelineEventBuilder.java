@@ -7,6 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.util.DateFormatter;
@@ -14,6 +15,30 @@ import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineEventBuilder {
     private final TimelineEvent event = new TimelineEvent();
+
+    public static TimelineEvent randomEvent(@NonNull Random random, @NonNull TimelineEvent.Type type) {
+        TimelineEventBuilder builder = new TimelineEventBuilder();
+        builder.setDuration(random.nextInt(3600), TimeUnit.SECONDS);
+
+        TimelineEvent.SleepState[] sleepStates = TimelineEvent.SleepState.values();
+        builder.setSleepDepth(random.nextInt(100), sleepStates[random.nextInt(sleepStates.length)]);
+
+        TimelineEvent.Type[] types = TimelineEvent.Type.values();
+        builder.setType(type);
+
+        TimelineEvent.Action[] actions = TimelineEvent.Action.values();
+        for (int i = 0, limit = random.nextInt(actions.length); i < limit; i++) {
+            builder.addAction(actions[i]);
+        }
+
+        return builder.build();
+    }
+
+    public static TimelineEvent randomEvent(@NonNull Random random) {
+        TimelineEvent.Type[] types = TimelineEvent.Type.values();
+        TimelineEvent.Type type = types[random.nextInt(types.length)];
+        return randomEvent(random, type);
+    }
 
     public TimelineEventBuilder() {
         event.validActions = new ArrayList<>();
