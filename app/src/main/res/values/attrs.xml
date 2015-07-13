@@ -9,10 +9,6 @@
         <attr name="senseWantsFooters" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="SenseHtmlTextView">
-        <attr name="senseHtml" format="integer" />
-    </declare-styleable>
-
     <declare-styleable name="ScaleView">
         <attr name="scaleOrientation" format="enum">
             <enum name="vertical" value="0" />

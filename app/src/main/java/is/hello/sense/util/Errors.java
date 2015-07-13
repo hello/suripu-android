@@ -3,32 +3,7 @@ package is.hello.sense.util;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
-import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
-import is.hello.sense.api.model.ApiException;
-
 public class Errors {
-    /**
-     * Returns whether or not a given exception was expected to
-     * occur during normal operation of the Sense application.
-     */
-    public static boolean isUnexpected(@Nullable Throwable e) {
-        return (e != null &&
-                !(e instanceof BluetoothError) &&
-                !(e instanceof ApiException));
-    }
-
-    /**
-     * An error listener that records unexpected issues to analytics.
-     *
-     * @see Analytics#trackUnexpectedError(Throwable)
-     */
-    public static final ErrorListener REPORT_UNEXPECTED = e -> {
-        if (Errors.isUnexpected(e)) {
-            Analytics.trackUnexpectedError(e);
-        }
-    };
-
     /**
      * Returns the type string for a given error object.
      */
@@ -87,8 +62,7 @@ public class Errors {
          * Returns the localized message representing the
          * error's cause, and its potential resolution.
          */
-        @NonNull
-        StringRef getDisplayMessage();
+        @NonNull StringRef getDisplayMessage();
     }
 
 

@@ -40,7 +40,6 @@ import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.graph.presenters.TrendsPresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
-import is.hello.sense.util.CachedObjectTests;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
 
@@ -70,7 +69,6 @@ import is.hello.sense.util.markup.MarkupProcessor;
 
         SmartAlarmPresenter.class,
         SmartAlarmPresenterTests.class,
-        CachedObjectTests.class,
 
         DateFormatterTests.class,
 
