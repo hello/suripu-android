@@ -195,12 +195,6 @@ public class TrendsPresenterTests extends InjectionTests {
     }
 
     @Test
-    public void availableTrendGraphs() throws Exception {
-        Sync.wrap(trendsPresenter.availableTrendGraphs())
-            .assertFalse(Lists::isEmpty);
-    }
-
-    @Test
     public void updateTrend() throws Exception {
         ArrayList<TrendsPresenter.Rendered> renderedGraphs = Sync.next(trendsPresenter.trends);
         assertEquals(3, renderedGraphs.size());

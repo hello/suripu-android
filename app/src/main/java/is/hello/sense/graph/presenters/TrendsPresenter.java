@@ -12,7 +12,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
@@ -53,10 +52,6 @@ public class TrendsPresenter extends ScopedValuePresenter<ArrayList<TrendsPresen
         });
     }
 
-
-    public Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs() {
-        return apiService.availableTrendGraphs();
-    }
 
     public Observable<Void> updateTrend(int position, @NonNull String newTimePeriod) {
         logEvent("updateTrend(" + position + ", " + newTimePeriod + ")");

@@ -9,7 +9,6 @@ import java.util.List;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
-import is.hello.sense.api.model.AvailableTrendGraph;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
@@ -219,9 +218,6 @@ public interface ApiService {
 
 
     //region Trends
-
-    @GET("/v1/insights/trends/list")
-    Observable<ArrayList<AvailableTrendGraph>> availableTrendGraphs();
 
     @GET("/v1/insights/trends/all")
     Observable<ArrayList<TrendGraph>> allTrends();

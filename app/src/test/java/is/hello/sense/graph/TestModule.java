@@ -18,7 +18,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.api.sessions.TransientApiSessionManager;
+import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
@@ -112,7 +112,7 @@ public final class TestModule {
     }
 
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
-        return new TransientApiSessionManager(context);
+        return new TestApiSessionManager(context);
     }
 
     @Singleton @Provides TestBluetoothStackBehavior provideBluetoothStackConfig() {

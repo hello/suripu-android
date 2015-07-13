@@ -4,10 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public class TransientApiSessionManager extends ApiSessionManager {
+public class TestApiSessionManager extends ApiSessionManager {
     private OAuthSession session;
 
-    public TransientApiSessionManager(@NonNull Context context) {
+    public TestApiSessionManager(@NonNull Context context) {
         super(context);
     }
 
