@@ -10,6 +10,9 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.buruberi.util.Errors;
+import is.hello.buruberi.util.StringRef;
+
 public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
     public static final int PLAYBACK_STREAM_TYPE = AudioManager.STREAM_MUSIC;
 
