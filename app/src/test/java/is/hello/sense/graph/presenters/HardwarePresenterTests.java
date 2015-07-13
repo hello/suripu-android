@@ -25,7 +25,7 @@ import is.hello.buruberi.bluetooth.stacks.test.TestPeripheralService;
 import is.hello.buruberi.util.Either;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class HardwarePresenterTests extends InjectionTests {
+public class HardwarePresenterTests extends InjectionTestCase {
     private final TestPeripheralBehavior peripheralBehavior = new TestPeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
     private final TestPeripheral testPeripheral;
     private final SensePeripheral peripheral;

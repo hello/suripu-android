@@ -7,11 +7,11 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
 @SuppressLint("CommitPrefEdits")
-public class PreferencesPresenterTests extends InjectionTests {
+public class PreferencesPresenterTests extends InjectionTestCase {
     private static final String TEST_KEY = "test_key";
 
     @Inject PreferencesPresenter presenter;

@@ -1,6 +1,7 @@
 package is.hello.sense.graph;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
@@ -20,6 +21,10 @@ import is.hello.sense.SenseApplication;
 public abstract class SenseTestCase {
     protected Context getContext() {
         return RuntimeEnvironment.application.getApplicationContext();
+    }
+
+    protected Resources getResources() {
+        return getContext().getResources();
     }
 
     public static class WorkaroundTestRunner extends RobolectricGradleTestRunner {

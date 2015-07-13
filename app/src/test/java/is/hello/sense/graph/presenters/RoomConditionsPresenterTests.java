@@ -4,13 +4,13 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
 import static is.hello.sense.graph.presenters.RoomConditionsPresenter.Result;
 import static org.junit.Assert.assertNotNull;
 
-public class RoomConditionsPresenterTests extends InjectionTests {
+public class RoomConditionsPresenterTests extends InjectionTestCase {
     @Inject RoomConditionsPresenter presenter;
 
     @Test

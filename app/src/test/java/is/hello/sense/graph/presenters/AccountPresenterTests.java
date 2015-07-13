@@ -8,7 +8,7 @@ import org.junit.Test;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Account;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
 import static org.junit.Assert.assertEquals;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
-public class AccountPresenterTests extends InjectionTests {
+public class AccountPresenterTests extends InjectionTestCase {
     @Inject AccountPresenter accountPresenter;
 
     @Test

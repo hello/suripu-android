@@ -11,12 +11,12 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CachedObjectTests extends InjectionTests {
+public class CachedObjectTests extends InjectionTestCase {
     private static final String FILENAME = "Suripu-Unit-Test";
 
     @Inject ObjectMapper objectMapper;
