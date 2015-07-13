@@ -376,7 +376,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Timeline Animations
 
     @Override
-    public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade f) {
+    public void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade f) {
         f.animate(cardContainer)
          .fadeIn();
     }

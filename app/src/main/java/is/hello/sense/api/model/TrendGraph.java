@@ -1,6 +1,5 @@
 package is.hello.sense.api.model;
 
-import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -13,8 +12,6 @@ import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import is.hello.sense.R;
 
 public class TrendGraph extends ApiResponse {
     public static final String TIME_PERIOD_DAY_OF_WEEK = "DOW";
@@ -218,15 +215,9 @@ public class TrendGraph extends ApiResponse {
     }
 
     public enum DataLabel {
-        BAD(R.color.sensor_alert),
-        OK(R.color.sensor_warning),
-        GOOD(R.color.sensor_ideal);
-
-        public final @ColorRes int colorRes;
-
-        DataLabel(@ColorRes int colorRes) {
-            this.colorRes = colorRes;
-        }
+        BAD,
+        OK,
+        GOOD;
 
         @JsonCreator
         public static DataLabel fromString(@Nullable String string) {

@@ -57,14 +57,6 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
         notifyDataChanged();
     }
 
-    public void clear() {
-        this.trendGraph = null;
-        this.sectionSamples = Collections.emptyList();
-        this.extremes = null;
-
-        notifyDataChanged();
-    }
-
     public LineGraphDrawable.Marker[] getMarkers() {
         int baseIndex = getBaseIndex();
         int peakIndex = getPeakIndex();
@@ -208,18 +200,6 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
                 time += "h";
                 return time;
             }
-        }
-    }
-
-
-    private static class Result {
-        private final List<GraphSample> sectionSamples;
-        private final Extremes<Float> extremes;
-
-        private Result(@NonNull List<GraphSample> sectionSamples,
-                       @NonNull Extremes<Float> extremes) {
-            this.sectionSamples = sectionSamples;
-            this.extremes = extremes;
         }
     }
 }

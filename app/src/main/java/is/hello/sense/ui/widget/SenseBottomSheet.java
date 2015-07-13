@@ -289,7 +289,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         if (onOptionSelectedListener != null) {
             int position = (int) view.getTag();
             Option option = options.get(position);
-            if (!onOptionSelectedListener.onOptionSelected(position, option)) {
+            if (!onOptionSelectedListener.onOptionSelected(option)) {
                 return;
             }
         }
@@ -299,7 +299,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
 
     public interface OnOptionSelectedListener {
-        boolean onOptionSelected(int position, @NonNull Option option);
+        boolean onOptionSelected(@NonNull Option option);
     }
 
     public static class Option implements Parcelable {

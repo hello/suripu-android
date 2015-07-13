@@ -44,10 +44,6 @@ public class ApiException extends Exception implements Errors.Reporting {
         return errorResponse;
     }
 
-    public @NonNull RetrofitError getNetworkStackError() {
-        return networkStackError;
-    }
-
 
     public @Nullable Integer getStatus() {
         if (networkStackError.getResponse() != null)

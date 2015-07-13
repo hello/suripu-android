@@ -383,7 +383,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
         @Override
-        public void onTimelineAnimationWillStart(@NonNull AnimatorContext animatorContext, @NonNull AnimatorContext.TransactionFacade transactionFacade) {
+        public void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade) {
         }
 
         @Override
@@ -516,7 +516,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             );
         }
 
-        actions.setOnOptionSelectedListener((optionPosition, option) -> {
+        actions.setOnOptionSelectedListener((option) -> {
             preferences
                     .edit()
                     .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)

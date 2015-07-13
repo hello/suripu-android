@@ -12,8 +12,6 @@
     <string name="accessibility_event_name_talk">Sleep talking</string>
     <string name="accessibility_event_name_light">Light disturbance</string>
     <string name="accessibility_event_name_lights_out">Lights out</string>
-    <string name="accessibility_event_name_sleep_motion">Tossing and turning</string>
-    <string name="accessibility_event_name_sleep">Sleep</string>
     <string name="accessibility_event_name_sunset">Sunset</string>
     <string name="accessibility_event_name_sunrise">Sunrise</string>
     <string name="accessibility_event_name_woke_up">Woke up</string>

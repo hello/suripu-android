@@ -6,10 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
-
-import org.joda.time.DateTimeZone;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,7 +34,6 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
     public static final String UNIT_SYSTEM = "unit_system_name";
     public static final String USE_24_TIME = "use_24_time";
 
-    public static final String PAIRED_DEVICE_TIME_ZONE = "paired_device_time_zone";
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
     public static final String PAIRED_DEVICE_SSID = "paired_device_ssid";
     public static final String PAIRED_PILL_ID = "paired_pill_id";
@@ -205,15 +201,6 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 
     //region Wrappers
-
-    public @NonNull DateTimeZone getSenseTimeZone() {
-        String pairedDeviceTimeZone = getString(PAIRED_DEVICE_TIME_ZONE, null);
-        if (TextUtils.isEmpty(pairedDeviceTimeZone)) {
-            return DateTimeZone.getDefault();
-        } else {
-            return DateTimeZone.forID(pairedDeviceTimeZone);
-        }
-    }
 
     public boolean getUse24Time() {
         return getBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));

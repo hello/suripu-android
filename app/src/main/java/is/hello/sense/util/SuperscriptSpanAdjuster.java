@@ -9,9 +9,6 @@ import android.text.style.MetricAffectingSpan;
 public class SuperscriptSpanAdjuster extends MetricAffectingSpan {
     double ratio = 0.5;
 
-    public SuperscriptSpanAdjuster() {
-    }
-
     public SuperscriptSpanAdjuster(double ratio) {
         this.ratio = ratio;
     }

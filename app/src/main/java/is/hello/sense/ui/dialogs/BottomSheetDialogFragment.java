@@ -82,7 +82,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
 
 
     @Override
-    public boolean onOptionSelected(int position, @NonNull Option option) {
+    public boolean onOptionSelected(@NonNull Option option) {
         if (getTargetFragment() != null) {
             Intent result = new Intent();
             result.putExtra(RESULT_OPTION_ID, option.getOptionId());

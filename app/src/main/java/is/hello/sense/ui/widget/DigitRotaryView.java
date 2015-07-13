@@ -186,6 +186,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                this.wasCanceled = true;
             }
 
             @Override
