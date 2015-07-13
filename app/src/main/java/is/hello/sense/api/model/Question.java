@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,6 +36,25 @@ public class Question extends ApiResponse {
     @JsonProperty("choices")
     @JsonDeserialize(contentAs = Choice.class)
     private List<Choice> choices;
+
+
+    @VisibleForTesting
+    public static Question create(long id, long accountId,
+                                  String text, Type type,
+                                  LocalDateTime askDate, AskTime askTime,
+                                  List<Choice> choices) {
+        Question question = new Question();
+
+        question.id = id;
+        question.accountId = accountId;
+        question.text = text;
+        question.type = type;
+        question.askDate = askDate;
+        question.askTime = askTime;
+        question.choices = choices;
+
+        return question;
+    }
 
 
     public long getId() {

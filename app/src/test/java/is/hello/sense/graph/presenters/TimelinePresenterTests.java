@@ -11,13 +11,13 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import is.hello.sense.util.markup.text.MarkupString;
 
 import static junit.framework.Assert.assertFalse;
 
-public class TimelinePresenterTests extends InjectionTests {
+public class TimelinePresenterTests extends InjectionTestCase {
     @Inject TimelinePresenter presenter;
 
     @Test

@@ -4,10 +4,10 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
-public class InsightsPresenterTests extends InjectionTests {
+public class InsightsPresenterTests extends InjectionTestCase {
     @Inject InsightsPresenter insightsPresenter;
 
     @Test

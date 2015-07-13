@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class TrendsPresenterTests extends InjectionTests {
+public class TrendsPresenterTests extends InjectionTestCase {
     @Inject TrendsPresenter trendsPresenter;
 
     @Before

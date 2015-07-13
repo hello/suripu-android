@@ -12,10 +12,10 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
-public class QuestionsPresenterTests extends InjectionTests {
+public class QuestionsPresenterTests extends InjectionTestCase {
     @Inject ApiSessionManager apiSessionManager;
     @Inject QuestionsPresenter presenter;
 

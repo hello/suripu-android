@@ -15,14 +15,14 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class DateFormatterTests extends InjectionTests {
+public class DateFormatterTests extends InjectionTestCase {
     private DateFormatter formatter;
     private String placeholder;
 
