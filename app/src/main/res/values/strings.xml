@@ -173,7 +173,7 @@ so you can sleep better.</string>
     <string name="action_setup_another_pill">Set up another Sleep Pill now</string>
     <string name="action_no_thanks">Not Right Now</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the Sense app.</string>
-    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode. Have your partner visit <b>senseapp.com</b> to download the Sense app and create a new account.\n\nThey will be given instructions to set up their Sleep Pill.</string>
+    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode. Have your partner visit <b>senseapp.com</b> on their mobile device to download the Sense app, and create a new account.\n\nThey will be given instructions to set up their Sleep Pill.</string>
     <string name="label_finding_wifi_networks">Finding Wifi Networks…</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
