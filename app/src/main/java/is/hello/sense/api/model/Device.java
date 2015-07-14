@@ -1,7 +1,6 @@
 package is.hello.sense.api.model;
 
 import android.content.Context;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -172,16 +171,14 @@ public class Device extends ApiResponse {
     }
 
     public enum State {
-        NORMAL(R.string.device_state_normal, R.color.text_dark),
-        LOW_BATTERY(R.string.device_state_low_battery, R.color.destructive_accent),
-        UNKNOWN(R.string.device_state_unknown, R.color.destructive_accent);
+        NORMAL(R.string.device_state_normal),
+        LOW_BATTERY(R.string.device_state_low_battery),
+        UNKNOWN(R.string.device_state_unknown);
 
         public final @StringRes int nameRes;
-        public final @ColorRes int colorRes;
 
-        State(@StringRes int nameRes, @ColorRes int colorRes) {
+        State(@StringRes int nameRes) {
             this.nameRes = nameRes;
-            this.colorRes = colorRes;
         }
 
         @JsonCreator

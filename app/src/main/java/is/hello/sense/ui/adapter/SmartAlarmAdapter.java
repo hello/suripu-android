@@ -72,12 +72,6 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
         notifyDataSetChanged();
     }
 
-    public void clear() {
-        this.alarms.clear();
-        this.currentMessage = null;
-        notifyDataSetChanged();
-    }
-
     //endregion
 
 
@@ -227,8 +221,9 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
     }
 
     public static class Message {
-        public @StringRes int titleRes;
-        public StringRef message;
+        public @StringRes
+        final int titleRes;
+        public final StringRef message;
 
         public @DrawableRes int titleIconRes = 0;
         public @StyleRes int titleStyleRes = R.style.AppTheme_Text_SectionHeading;

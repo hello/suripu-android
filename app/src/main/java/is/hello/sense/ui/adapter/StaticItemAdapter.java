@@ -298,7 +298,7 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     }
 
 
-    public static enum ItemType {
+    public enum ItemType {
         SECTION_TITLE,
         TEXT_ITEM,
         CHECK_ITEM,

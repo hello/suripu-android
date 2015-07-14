@@ -6,7 +6,6 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 

@@ -20,10 +20,11 @@ import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.Constants;
-import is.hello.sense.util.LambdaVar;
 
 public enum Tutorial {
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
@@ -126,7 +127,7 @@ public enum Tutorial {
                 .with(fadeOut)
                 .before(fadeIn);
 
-        LambdaVar<Boolean> canceled = LambdaVar.of(false);
+        AtomicBoolean canceled = new AtomicBoolean(false);
         slideAndFadeIn.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationCancel(Animator animation) {

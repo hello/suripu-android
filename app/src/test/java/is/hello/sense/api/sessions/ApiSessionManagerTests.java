@@ -25,7 +25,7 @@ public class ApiSessionManagerTests extends SenseTestCase {
         assertTrue(testApiSessionManager.retrieveOAuthSessionCalled);
     }
 
-    private static class TestApiSessionManager extends TransientApiSessionManager {
+    private static class TestApiSessionManager extends is.hello.sense.api.sessions.TestApiSessionManager {
         boolean storeOAuthSessionCalled = false;
         boolean retrieveOAuthSessionCalled = false;
 

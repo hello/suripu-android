@@ -21,15 +21,6 @@ public class Drawing {
     }
 
     /**
-     * Creates a {@link TextPaint} object with the parameters of a specified text style.
-     */
-    public static @NonNull TextPaint createTextPaintFromStyle(@NonNull Context context, @StyleRes int styleRes) {
-        TextPaint textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-        updateTextPaintFromStyle(textPaint, context, styleRes);
-        return textPaint;
-    }
-
-    /**
      * Returns the estimated height that text rendered with a given paint will have.
      * <p/>
      * This method allocates.

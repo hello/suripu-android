@@ -157,10 +157,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 ignored -> {
                     Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
 
-                    preferences.edit()
-                            .putString(PreferencesPresenter.PAIRED_DEVICE_TIME_ZONE, timeZone.timeZoneId)
-                            .apply();
-
                     pushDeviceData();
                 },
                 e -> presentError(e, "Updating time zone"));

@@ -18,7 +18,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.api.sessions.TransientApiSessionManager;
+import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
@@ -41,7 +41,6 @@ import is.hello.sense.graph.presenters.TrendsPresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
 import is.hello.sense.ui.adapter.DevicesAdapterTests;
-import is.hello.sense.util.CachedObjectTests;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
 
@@ -71,7 +70,6 @@ import is.hello.sense.util.markup.MarkupProcessor;
 
         SmartAlarmPresenter.class,
         SmartAlarmPresenterTests.class,
-        CachedObjectTests.class,
 
         DateFormatterTests.class,
 
@@ -117,7 +115,7 @@ public final class TestModule {
     }
 
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
-        return new TransientApiSessionManager(context);
+        return new TestApiSessionManager(context);
     }
 
     @Singleton @Provides TestBluetoothStackBehavior provideBluetoothStackConfig() {

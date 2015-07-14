@@ -16,7 +16,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.Enums;
 
 public class TimelineMetric extends ApiResponse implements Parcelable {
-    private static long VALUE_MISSING = Long.MIN_VALUE;
+    private static final long VALUE_MISSING = Long.MIN_VALUE;
 
     @VisibleForTesting
     @JsonProperty("name")
