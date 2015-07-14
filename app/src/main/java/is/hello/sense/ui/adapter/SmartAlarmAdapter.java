@@ -157,7 +157,7 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
     }
 
 
-    private class AlarmViewHolder {
+    class AlarmViewHolder {
         final CompoundButton enabled;
         final TextView time;
         final TextView timePeriod;
@@ -186,7 +186,7 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
         }
     }
 
-    private class MessageViewHolder {
+    class MessageViewHolder {
         final TextView titleText;
         final TextView messageText;
         final Button actionButton;

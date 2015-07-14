@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.util.Either;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.schedulers.Schedulers;
 
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-public class ZoomedOutTimelinePresenterTests extends InjectionTests {
+public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
     private final DateTime startTime = DateTime.now();
 
     @Inject ZoomedOutTimelinePresenter presenter;

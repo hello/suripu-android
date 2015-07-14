@@ -1,6 +1,7 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -32,6 +33,23 @@ public class Insight extends ApiResponse {
         Insight insight = new Insight();
         insight.message = new MarkupString(message);
         insight.category = InsightCategory.IN_APP_ERROR;
+        return insight;
+    }
+
+    @VisibleForTesting
+    public static Insight create(long accountId,
+                                 String title,
+                                 MarkupString message,
+                                 DateTime created,
+                                 InsightCategory category,
+                                 String infoPreview) {
+        Insight insight = new Insight();
+        insight.accountId = accountId;
+        insight.title = title;
+        insight.message = message;
+        insight.created = created;
+        insight.category = category;
+        insight.infoPreview = infoPreview;
         return insight;
     }
 

@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.InjectionTests;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ConstantConditions")
-public class SmartAlarmPresenterTests extends InjectionTests {
+public class SmartAlarmPresenterTests extends InjectionTestCase {
     @Inject SmartAlarmPresenter presenter;
 
     @Test
