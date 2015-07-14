@@ -495,20 +495,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         private @StringRes int getConditionText(@NonNull TimelineMetric.Name sensor, @NonNull Condition condition) {
             switch (condition) {
                 case ALERT: {
-                    switch (sensor) {
-                        case TEMPERATURE:
-                            return R.string.condition_short_hand_alert_temperature;
-                        case HUMIDITY:
-                            return R.string.condition_short_hand_alert_humidity;
-                        case PARTICULATES:
-                            return R.string.condition_short_hand_alert_particulates;
-                        case SOUND:
-                            return R.string.condition_short_hand_alert_sound;
-                        case LIGHT:
-                            return R.string.condition_short_hand_alert_light;
-                        default:
-                            return R.string.condition_short_hand_alert_generic;
-                    }
+                    return R.string.condition_short_hand_alert;
                 }
                 case WARNING: {
                     return R.string.condition_short_hand_warning;
