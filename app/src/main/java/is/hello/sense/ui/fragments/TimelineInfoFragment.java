@@ -472,7 +472,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             Long value = metric.getValue();
             if (value != null) {
                 if (metric.getUnit() == TimelineMetric.Unit.MINUTES) {
-                    holder.readingText.setText(dateFormatter.formatDuration(value, TimeUnit.SECONDS));
+                    holder.readingText.setText(dateFormatter.formatDuration(value, TimeUnit.MINUTES));
                 } else if (metric.getUnit() == TimelineMetric.Unit.TIMESTAMP) {
                     DateTime date = new DateTime(value);
                     boolean use24Time = preferences.getUse24Time();
