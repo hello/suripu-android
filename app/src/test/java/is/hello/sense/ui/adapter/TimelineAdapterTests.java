@@ -26,6 +26,7 @@ import is.hello.sense.util.markup.text.MarkupString;
 
 import static is.hello.sense.util.RecyclerAdapterTesting.createAndBindView;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TimelineAdapterTests extends SenseTestCase {
@@ -219,6 +220,7 @@ public class TimelineAdapterTests extends SenseTestCase {
 
         assertEquals("Y u mov so much???", holder.messageText.getText().toString());
         assertEquals("1:30 AM", holder.dateText.getText().toString());
+        assertEquals(View.VISIBLE, holder.dateText.getVisibility());
 
         assertEquals(0, holder.containerLayoutParams.topMargin);
         assertEquals(0, holder.containerLayoutParams.bottomMargin);
@@ -226,6 +228,23 @@ public class TimelineAdapterTests extends SenseTestCase {
         Resources resources = getContext().getResources();
         assertEquals(ResourcesCompat.getDrawable(resources, R.drawable.timeline_generic_motion, null),
                 holder.iconImage.getDrawable());
+    }
+
+    @Test
+    public void alarmRangRendering() throws Exception {
+        TimelineEvent event = new TimelineEventBuilder()
+                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30))
+                .setType(TimelineEvent.Type.ALARM_RANG)
+                .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
+                .setMessage(new MarkupString("Alarm rang at 8:00"))
+                .build();
+        adapter.bindEvents(Lists.newArrayList(event));
+
+        TimelineAdapter.EventViewHolder holder = createAndBindView(adapter, fakeParent,
+                TimelineAdapter.VIEW_TYPE_EVENT, adapter.getHeaderCount());
+        holder.setExcludedFromParallax(true);
+
+        assertNotEquals(View.VISIBLE, holder.dateText.getVisibility());
     }
 
     @Test

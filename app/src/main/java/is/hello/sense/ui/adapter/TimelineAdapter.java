@@ -483,7 +483,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             }
 
             messageText.setText(event.getMessage());
-            dateText.setText(dateFormatter.formatForTimelineEvent(event.getShiftedTimestamp(), use24Time));
+            if (event.getType() == TimelineEvent.Type.ALARM_RANG) {
+                dateText.setVisibility(View.GONE);
+            } else {
+                dateText.setText(dateFormatter.formatForTimelineEvent(event.getShiftedTimestamp(), use24Time));
+                dateText.setVisibility(View.VISIBLE);
+            }
 
             if (event.hasSound()) {
                 if (isSegmentPlaybackActive(position)) {
