@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 
 public enum Condition implements Enums.FromString {
     UNKNOWN(R.color.sensor_unknown),

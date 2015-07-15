@@ -37,23 +37,18 @@ public class DateFormatterTests extends InjectionTestCase {
 
     @Test
     public void now() {
-        assertEquals(DateTimeZone.getDefault(), DateFormatter.now().getZone());
-    }
-
-    @Test
-    public void lastNight() {
-        assertEquals(DateTimeZone.getDefault(), DateFormatter.lastNight().getZone());
+        assertEquals(DateTimeZone.getDefault(), DateFormatter.nowDateTime().getZone());
     }
 
     @Test
     public void isLastNight() {
         assertTrue(DateFormatter.isLastNight(DateFormatter.lastNight()));
-        assertFalse(DateFormatter.isLastNight(DateFormatter.now()));
+        assertFalse(DateFormatter.isLastNight(DateFormatter.lastNight().minusDays(5)));
     }
 
     @Test
     public void isInLastWeek() {
-        DateTime now = DateFormatter.now();
+        LocalDate now = DateFormatter.nowLocalDate();
         assertFalse(DateFormatter.isInLastWeek(now.plusDays(1)));
         assertFalse(DateFormatter.isInLastWeek(now));
         assertTrue(DateFormatter.isInLastWeek(now.minusDays(1)));
@@ -71,10 +66,10 @@ public class DateFormatterTests extends InjectionTestCase {
         String lastNightString = getContext().getString(R.string.format_date_last_night);
         assertEquals(lastNightString, formatter.formatAsTimelineDate(DateFormatter.lastNight()));
 
-        DateTime nightBefore = DateFormatter.lastNight().minusDays(1);
+        LocalDate nightBefore = DateFormatter.lastNight().minusDays(1);
         assertEquals(nightBefore.toString("EEEE"), formatter.formatAsTimelineDate(nightBefore));
 
-        DateTime weekBefore = DateFormatter.lastNight().minusDays(8);
+        LocalDate weekBefore = DateFormatter.lastNight().minusDays(8);
         assertEquals(weekBefore.toString("MMMM d"), formatter.formatAsTimelineDate(weekBefore));
 
         assertEquals(placeholder, formatter.formatAsTimelineDate(null));

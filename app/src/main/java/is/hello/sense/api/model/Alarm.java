@@ -94,7 +94,7 @@ public class Alarm extends ApiResponse {
     }
 
     public void setRingOnce() {
-        DateTime today = DateFormatter.now();
+        DateTime today = DateFormatter.nowDateTime();
         if (getTime().isBefore(today.toLocalTime())) {
             DateTime tomorrow = today.plusDays(1);
             this.year = tomorrow.getYear();

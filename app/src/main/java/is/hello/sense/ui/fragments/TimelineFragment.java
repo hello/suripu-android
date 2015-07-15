@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
@@ -101,13 +102,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Lifecycle
 
-    public static TimelineFragment newInstance(@NonNull DateTime date,
+    public static TimelineFragment newInstance(@NonNull LocalDate date,
                                                @Nullable Timeline cachedTimeline,
                                                boolean isFirstTimeline) {
         TimelineFragment fragment = new TimelineFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_DATE, date.withTimeAtStartOfDay());
+        arguments.putSerializable(ARG_DATE, date);
         arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
         arguments.putBoolean(ARG_IS_FIRST_TIMELINE, isFirstTimeline);
         fragment.setArguments(arguments);
@@ -126,7 +127,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DateTime date = getDate();
+        LocalDate date = getDate();
         JSONObject properties = Analytics.createProperties(
             Analytics.Timeline.PROP_DATE, date.toString()
         );
@@ -288,7 +289,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                         return;
                     }
 
-                    DateTime date = timelinePresenter.getDate();
+                    LocalDate date = timelinePresenter.getDate();
                     String scoreString = score.toString();
                     String shareCopy;
                     if (DateFormatter.isLastNight(date)) {
@@ -323,8 +324,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Hooks
 
-    public @NonNull DateTime getDate() {
-        return (DateTime) getArguments().getSerializable(ARG_DATE);
+    public @NonNull LocalDate getDate() {
+        return (LocalDate) getArguments().getSerializable(ARG_DATE);
     }
 
     public @Nullable Timeline getCachedTimeline() {

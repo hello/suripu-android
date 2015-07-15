@@ -3,7 +3,7 @@ package is.hello.sense.graph.presenters;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
-    private final DateTime startTime = DateTime.now();
+    private final LocalDate startTime = LocalDate.now();
 
     @Inject ZoomedOutTimelinePresenter presenter;
 
@@ -48,13 +48,13 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
 
 
     @Test
-    public void getDateTimeAt() throws Exception {
-        assertEquals(startTime.minusDays(5).withTimeAtStartOfDay(), presenter.getDateTimeAt(5));
+    public void getDateAt() throws Exception {
+        assertEquals(startTime.minusDays(5), presenter.getDateAt(5));
     }
 
     @Test
-    public void getDateTimePosition() throws Exception {
-        assertEquals(4, presenter.getDateTimePosition(startTime.minusDays(5)));
+    public void getDatePosition() throws Exception {
+        assertEquals(4, presenter.getDatePosition(startTime.minusDays(5)));
     }
 
 
@@ -69,7 +69,7 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void retrieveAndCacheTimelineFresh() throws Exception {
-        DateTime date = DateTime.now();
+        LocalDate date = LocalDate.now();
         Timeline timeline = Sync.last(presenter.retrieveAndCacheTimeline(date));
         assertNotNull(timeline);
 
@@ -80,7 +80,7 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void retrieveAndCacheTimelineExisting() throws Exception {
-        DateTime date = DateTime.now();
+        LocalDate date = LocalDate.now();
         Timeline toCache = new Timeline();
         presenter.cacheTimeline(date, toCache);
 
@@ -89,7 +89,7 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void retrieveTimelines() throws Exception {
-        DateTime date = DateTime.now();
+        LocalDate date = LocalDate.now();
         Batch firstBatch = Batch.create(date, 3).addTo(presenter);
 
         presenter.retrieveTimelines();
@@ -112,11 +112,11 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
         final CountDownLatch countDownLatch;
         final TestView[] testViews;
 
-        static Batch create(@NonNull DateTime dateTime, int size) {
+        static Batch create(@NonNull LocalDate LocalDate, int size) {
             TestView[] testViews = new TestView[size];
             CountDownLatch countDownLatch = new CountDownLatch(size);
             for (int i = 0; i < size; i++) {
-                testViews[i] = new TestView(dateTime.minusDays(i), countDownLatch);
+                testViews[i] = new TestView(LocalDate.minusDays(i), countDownLatch);
             }
 
             return new Batch(countDownLatch, testViews);
@@ -166,22 +166,22 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
     }
 
     static class TestView implements ZoomedOutTimelinePresenter.DataView {
-        private final DateTime dateTime;
+        private final LocalDate LocalDate;
         private final CountDownLatch countDownLatch;
 
         private boolean wantsUpdates = true;
         private @Nullable Either<Timeline, Throwable> result = null;
 
-        TestView(@NonNull DateTime dateTime,
+        TestView(@NonNull LocalDate LocalDate,
                  @NonNull CountDownLatch countDownLatch) {
-            this.dateTime = dateTime;
+            this.LocalDate = LocalDate;
             this.countDownLatch = countDownLatch;
         }
 
 
         @Override
-        public DateTime getDate() {
-            return dateTime;
+        public LocalDate getDate() {
+            return LocalDate;
         }
 
         @Override

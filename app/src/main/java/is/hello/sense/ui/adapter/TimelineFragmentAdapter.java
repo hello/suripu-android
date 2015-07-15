@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.FragmentPageView;
@@ -36,8 +36,8 @@ public class TimelineFragmentAdapter implements FragmentPageView.Adapter<Timelin
 
     @Override
     public boolean hasFragmentAfterFragment(@NonNull TimelineFragment fragment) {
-        DateTime fragmentTime = fragment.getDate();
-        return fragmentTime.isBefore(DateFormatter.lastNight().withTimeAtStartOfDay());
+        LocalDate fragmentTime = fragment.getDate();
+        return fragmentTime.isBefore(DateFormatter.lastNight());
     }
 
     @Override

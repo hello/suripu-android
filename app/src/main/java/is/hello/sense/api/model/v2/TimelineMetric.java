@@ -10,9 +10,9 @@ import android.support.annotation.VisibleForTesting;
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.Enums;
 
 public class TimelineMetric extends ApiResponse implements Parcelable {
     private static final long VALUE_MISSING = Long.MIN_VALUE;

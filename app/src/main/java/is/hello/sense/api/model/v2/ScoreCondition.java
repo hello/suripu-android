@@ -5,7 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Enums;
+import is.hello.sense.api.gson.Enums;
 
 public enum ScoreCondition implements Enums.FromString {
     UNAVAILABLE(R.color.sensor_unknown),

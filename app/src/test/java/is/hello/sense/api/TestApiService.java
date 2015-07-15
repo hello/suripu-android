@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonReader;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
 import java.io.IOException;
@@ -150,7 +151,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Timeline> timelineForDate(@NonNull @Path("date") String date) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
@@ -174,7 +175,7 @@ public final class TestApiService implements ApiService {
                                                        @NonNull @Path("type") TimelineEvent.Type type,
                                                        @Path("timestamp") long timestamp,
                                                        @NonNull @Body TimelineEvent.TimeAmendment amendment) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
@@ -192,7 +193,7 @@ public final class TestApiService implements ApiService {
     public Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
                                                     @NonNull @Path("type") TimelineEvent.Type type,
                                                     @Path("timestamp") long timestamp) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)

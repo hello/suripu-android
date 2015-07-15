@@ -6,9 +6,11 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 import java.util.List;
+
+import is.hello.sense.api.gson.Enums;
 
 public class Question extends ApiResponse {
     @SerializedName("id")
@@ -24,8 +26,7 @@ public class Question extends ApiResponse {
     private Type type;
 
     @SerializedName("ask_local_date")
-    //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private LocalDateTime askDate;
+    private DateTime askDate;
 
     @SerializedName("ask_time")
     private AskTime askTime;
@@ -37,7 +38,7 @@ public class Question extends ApiResponse {
     @VisibleForTesting
     public static Question create(long id, long accountId,
                                   String text, Type type,
-                                  LocalDateTime askDate, AskTime askTime,
+                                  DateTime askDate, AskTime askTime,
                                   List<Choice> choices) {
         Question question = new Question();
 
@@ -73,7 +74,7 @@ public class Question extends ApiResponse {
         return askTime;
     }
 
-    public LocalDateTime getAskDate() {
+    public DateTime getAskDate() {
         return askDate;
     }
 

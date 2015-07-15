@@ -1,4 +1,4 @@
-package is.hello.sense.api;
+package is.hello.sense.api.gson;
 
 import android.support.annotation.NonNull;
 

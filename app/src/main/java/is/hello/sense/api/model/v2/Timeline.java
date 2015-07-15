@@ -5,7 +5,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 
@@ -27,8 +27,7 @@ public class Timeline extends ApiResponse {
 
     @VisibleForTesting
     @SerializedName("date")
-    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
-    DateTime date;
+    LocalDate date;
 
     @VisibleForTesting
     @SerializedName("events")
@@ -51,7 +50,7 @@ public class Timeline extends ApiResponse {
         return message;
     }
 
-    public DateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

@@ -21,7 +21,7 @@ import android.widget.RelativeLayout;
 
 import com.squareup.seismic.ShakeDetector;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
@@ -315,7 +315,7 @@ public class HomeActivity
                         slidingLayersView.close();
                     }
 
-                    DateTime date = Notification.getDate(notification);
+                    LocalDate date = Notification.getDate(notification);
                     TimelineFragment fragment = TimelineFragment.newInstance(date, null, false);
                     viewPager.setCurrentFragment(fragment);
 
@@ -637,7 +637,7 @@ public class HomeActivity
 
     //region Timeline Navigation
 
-    public void showTimelineNavigator(@NonNull DateTime startDate, @Nullable Timeline timeline) {
+    public void showTimelineNavigator(@NonNull LocalDate startDate, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
         ZoomedOutTimelineFragment navigatorFragment = ZoomedOutTimelineFragment.newInstance(startDate, timeline);
@@ -650,7 +650,7 @@ public class HomeActivity
     }
 
     @Override
-    public void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline) {
+    public void onTimelineSelected(@NonNull LocalDate date, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
         TimelineFragment currentFragment = viewPager.getCurrentFragment();

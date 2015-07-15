@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.HistogramGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;

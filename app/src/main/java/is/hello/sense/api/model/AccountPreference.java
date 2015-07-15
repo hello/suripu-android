@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import is.hello.sense.api.gson.Enums;
+
 public class AccountPreference extends ApiResponse {
     @SerializedName("pref")
     private Key key;

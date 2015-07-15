@@ -1,4 +1,4 @@
-package is.hello.sense.api.model;
+package is.hello.sense.api.gson;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +20,7 @@ public class Enums {
      * Searches a given set of enum fields for one whose name matches a given string value,
      * returning a given unknown enum field if no match could be found.
      * <p />
-     * Search is case-insensitive. For implementing {@link is.hello.sense.api.model.Enums.FromString}.
+     * Search is case-insensitive. For implementing {@link Enums.FromString}.
      */
     public static <T extends Enum<T>> T fromString(@Nullable String value, @NonNull T[] values, @NonNull T unknown) {
         if (!TextUtils.isEmpty(value)) {
@@ -49,13 +49,14 @@ public class Enums {
         @Override
         public Object deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String string = json.getAsJsonPrimitive().getAsString();
-
             try {
                 Class<?> enumClass = (Class<?>) typeOfT;
                 Method fromString = enumClass.getDeclaredMethod("fromString", String.class);
                 return fromString.invoke(null, string);
+            } catch (NoSuchMethodException e) {
+                throw new JsonParseException("Missing fromString method on enum implementing Enums.FromString", e);
             } catch (Exception e) {
-                throw new JsonParseException("Does your enum have a static fromString method?", e);
+                throw new JsonParseException(e);
             }
         }
 

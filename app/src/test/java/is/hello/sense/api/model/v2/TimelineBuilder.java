@@ -2,7 +2,7 @@ package is.hello.sense.api.model.v2;
 
 import android.support.annotation.NonNull;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ public class TimelineBuilder {
         return this;
     }
 
-    public TimelineBuilder setDate(DateTime date) {
+    public TimelineBuilder setDate(LocalDate date) {
         timeline.date = date;
         return this;
     }

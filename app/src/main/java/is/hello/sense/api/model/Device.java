@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 
 public class Device extends ApiResponse {
     public static final int MISSING_THRESHOLD_HRS = 24;

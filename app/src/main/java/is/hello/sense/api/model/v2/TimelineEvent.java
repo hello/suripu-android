@@ -16,15 +16,14 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.api.model.Enums;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineEvent extends ApiResponse {
     @VisibleForTesting
     @SerializedName("timestamp")
-    // @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     DateTime timestamp;
 
     @VisibleForTesting
@@ -141,7 +140,7 @@ public class TimelineEvent extends ApiResponse {
         }
     }
 
-    public enum Action implements Enums.FromString {
+    public enum Action {
         ADJUST_TIME,
         VERIFY,
         REMOVE,
@@ -182,7 +181,6 @@ public class TimelineEvent extends ApiResponse {
 
     public static class TimeAmendment {
         @SerializedName("new_event_time")
-        // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
         public final LocalTime newTime;
 
         @SerializedName("timezone_offset")

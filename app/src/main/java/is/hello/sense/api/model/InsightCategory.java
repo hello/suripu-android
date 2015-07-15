@@ -2,6 +2,8 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 
+import is.hello.sense.api.gson.Enums;
+
 public enum InsightCategory implements Enums.FromString {
     GENERIC,
     SLEEP_HYGIENE,
@@ -25,6 +27,6 @@ public enum InsightCategory implements Enums.FromString {
     IN_APP_ERROR;
 
     public static InsightCategory fromString(@NonNull String value) {
-            return Enums.fromString(value, values(), GENERIC);
+        return Enums.fromString(value, values(), GENERIC);
     }
 }

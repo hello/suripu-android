@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.fatboyindustrial.gsonjodatime.Converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +27,10 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.gson.ApiGsonConverter;
+import is.hello.sense.api.gson.Enums;
+import is.hello.sense.api.gson.GsonJodaTime;
 import is.hello.sense.api.model.ApiException;
-import is.hello.sense.api.model.Enums;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
@@ -45,9 +52,23 @@ public class ApiModule {
 
     public static Gson createConfiguredGson(@NonNull MarkupProcessor markupProcessor) {
         GsonBuilder builder = new GsonBuilder();
-        Converters.registerAll(builder);
-        builder.registerTypeAdapter(new TypeToken<MarkupString>(){}.getType(), new MarkupDeserializer(markupProcessor));
+        builder.disableHtmlEscaping();
+
+        builder.registerTypeAdapter(new TypeToken<DateTime>(){}.getType(),
+                new GsonJodaTime.DateTimeSerialization(ISODateTimeFormat.dateTime().withZoneUTC(),
+                        GsonJodaTime.SerializeAs.NUMBER));
+
+        builder.registerTypeAdapter(new TypeToken<LocalDate>(){}.getType(),
+                new GsonJodaTime.LocalDateSerialization(DateTimeFormat.forPattern(ApiService.DATE_FORMAT)));
+
+        builder.registerTypeAdapter(new TypeToken<LocalTime>(){}.getType(),
+                new GsonJodaTime.LocalTimeSerialization(DateTimeFormat.forPattern(ApiService.TIME_FORMAT)));
+
+        builder.registerTypeAdapter(new TypeToken<MarkupString>(){}.getType(),
+                new MarkupDeserializer(markupProcessor));
+
         builder.registerTypeHierarchyAdapter(Enums.FromString.class, new Enums.Serialization());
+
         return builder.create();
     }
 

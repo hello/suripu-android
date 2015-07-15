@@ -12,6 +12,8 @@ import org.joda.time.DateTimeZone;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.sense.api.gson.Enums;
+
 public class TrendGraph extends ApiResponse {
     public static final String TIME_PERIOD_DAY_OF_WEEK = "DOW";
     public static final String TIME_PERIOD_OVER_TIME_1W = "1W";

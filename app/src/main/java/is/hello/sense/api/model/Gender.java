@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 
 public enum Gender implements Enums.FromString {
     MALE(R.string.gender_male),
