@@ -47,7 +47,7 @@ public class ApiModule {
         GsonBuilder builder = new GsonBuilder();
         Converters.registerAll(builder);
         builder.registerTypeAdapter(new TypeToken<MarkupString>(){}.getType(), new MarkupDeserializer(markupProcessor));
-        builder.registerTypeHierarchyAdapter(Enums.FromString.class, new Enums.Deserializer());
+        builder.registerTypeHierarchyAdapter(Enums.FromString.class, new Enums.Serialization());
         return builder.create();
     }
 
