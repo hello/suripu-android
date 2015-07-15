@@ -12,7 +12,7 @@ import is.hello.sense.units.UnitSystem;
 
 public class SensorState extends ApiResponse {
     @SerializedName("value")
-    private Long value;
+    private Double value;
 
     @SerializedName("message")
     private String message;
@@ -33,7 +33,7 @@ public class SensorState extends ApiResponse {
     public SensorState() {
     }
 
-    public SensorState(long value,
+    public SensorState(double value,
                        @NonNull String message,
                        @NonNull Condition condition,
                        @NonNull String unit,
@@ -45,7 +45,7 @@ public class SensorState extends ApiResponse {
         this.lastUpdated = lastUpdated;
     }
 
-    public Long getValue() {
+    public Double getValue() {
         return value;
     }
 
@@ -73,9 +73,9 @@ public class SensorState extends ApiResponse {
         if (getValue() == null) {
             return null;
         } else if (formatter != null) {
-            return formatter.format(getValue());
+            return formatter.format(getValue().longValue());
         } else {
-            return Styles.assembleReadingAndUnit(getValue(), getUnit());
+            return Styles.assembleReadingAndUnit(getValue().longValue(), getUnit());
         }
     }
 
