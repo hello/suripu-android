@@ -2,7 +2,10 @@ package is.hello.sense.util.markup;
 
 import android.graphics.Typeface;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 
 import org.junit.Test;
 
@@ -13,19 +16,20 @@ import is.hello.sense.util.markup.text.MarkupStyleSpan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class MarkupJacksonTests extends SenseTestCase {
-    private final ObjectMapper mapper;
+public class MarkupGsonDeserializerTests extends SenseTestCase {
+    private final Gson gson;
 
-    public MarkupJacksonTests() {
-        this.mapper = new ObjectMapper();
-        mapper.registerModule(new MarkupJacksonModule());
+    public MarkupGsonDeserializerTests() {
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<MarkupString>(){}.getType(), new MarkupDeserializer(new MarkupProcessor()))
+                .create();
     }
 
 
     @Test
     public void deserialize() throws Exception {
         String json = "{\"message\": \"This **really** works\"}";
-        TestObject testObject = mapper.readValue(json, TestObject.class);
+        TestObject testObject = gson.fromJson(json, TestObject.class);
         assertNotNull(testObject);
 
         MarkupString message = testObject.message;
@@ -41,10 +45,7 @@ public class MarkupJacksonTests extends SenseTestCase {
 
 
     public static class TestObject {
-        public final MarkupString message;
-
-        public TestObject(@SerializedName("message") MarkupString message) {
-            this.message = message;
-        }
+        @SerializedName("message")
+        public MarkupString message;
     }
 }
