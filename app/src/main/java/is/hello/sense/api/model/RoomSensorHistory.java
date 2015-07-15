@@ -1,6 +1,6 @@
 package is.hello.sense.api.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,19 +8,19 @@ import java.util.List;
 import is.hello.sense.functional.Lists;
 
 public class RoomSensorHistory extends ApiResponse {
-    @JsonProperty("humidity")
+    @SerializedName("humidity")
     private ArrayList<SensorGraphSample> humidity;
 
-    @JsonProperty("light")
+    @SerializedName("light")
     private ArrayList<SensorGraphSample> light;
 
-    @JsonProperty("particulates")
+    @SerializedName("particulates")
     private ArrayList<SensorGraphSample> particulates;
 
-    @JsonProperty("sound")
+    @SerializedName("sound")
     private ArrayList<SensorGraphSample> sound;
 
-    @JsonProperty("temperature")
+    @SerializedName("temperature")
     private ArrayList<SensorGraphSample> temperature;
 
 

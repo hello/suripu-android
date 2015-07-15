@@ -4,11 +4,9 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import is.hello.sense.R;
 
-public enum Condition {
+public enum Condition implements Enums.FromString {
     UNKNOWN(R.color.sensor_unknown),
     ALERT(R.color.sensor_alert),
     WARNING(R.color.sensor_warning),
@@ -20,8 +18,6 @@ public enum Condition {
         this.colorRes = colorRes;
     }
 
-    @JsonCreator
-    @SuppressWarnings("UnusedDeclaration")
     public static Condition fromString(@NonNull String value) {
         return Enums.fromString(value, values(), UNKNOWN);
     }

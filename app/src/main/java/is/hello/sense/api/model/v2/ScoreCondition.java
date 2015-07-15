@@ -4,12 +4,10 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import is.hello.sense.R;
 import is.hello.sense.api.model.Enums;
 
-public enum ScoreCondition {
+public enum ScoreCondition implements Enums.FromString {
     UNAVAILABLE(R.color.sensor_unknown),
     ALERT(R.color.sensor_alert),
     WARNING(R.color.sensor_warning),
@@ -21,7 +19,6 @@ public enum ScoreCondition {
         this.colorRes = colorRes;
     }
 
-    @JsonCreator
     public static ScoreCondition fromString(@NonNull String string) {
         return Enums.fromString(string, values(), UNAVAILABLE);
     }

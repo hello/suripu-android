@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -30,7 +28,6 @@ public enum Notification {
         return fromString(notifications.getString(NotificationReceiver.EXTRA_TARGET));
     }
 
-    @JsonCreator
     public static Notification fromString(@Nullable String string) {
         return Enums.fromString(string, values(), TIMELINE);
     }

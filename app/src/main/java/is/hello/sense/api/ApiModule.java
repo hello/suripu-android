@@ -5,9 +5,10 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fatboyindustrial.gsonjodatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -22,13 +23,15 @@ import dagger.Provides;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.Enums;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.markup.MarkupJacksonModule;
+import is.hello.sense.util.markup.MarkupDeserializer;
 import is.hello.sense.util.markup.MarkupProcessor;
+import is.hello.sense.util.markup.text.MarkupString;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
@@ -40,14 +43,12 @@ import retrofit.client.OkClient;
 public class ApiModule {
     private final Context applicationContext;
 
-    public static ObjectMapper createConfiguredObjectMapper(@NonNull MarkupProcessor markupProcessor) {
-        ObjectMapper mapper = new ObjectMapper();
-        if (!BuildConfig.DEBUG) {
-            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        }
-        mapper.registerModule(new JodaModule());
-        mapper.registerModule(new MarkupJacksonModule(markupProcessor));
-        return mapper;
+    public static Gson createConfiguredGson(@NonNull MarkupProcessor markupProcessor) {
+        GsonBuilder builder = new GsonBuilder();
+        Converters.registerAll(builder);
+        builder.registerTypeAdapter(new TypeToken<MarkupString>(){}.getType(), new MarkupDeserializer(markupProcessor));
+        builder.registerTypeHierarchyAdapter(Enums.FromString.class, new Enums.Deserializer());
+        return builder.create();
     }
 
     public ApiModule(@NonNull Context applicationContext) {
@@ -58,8 +59,7 @@ public class ApiModule {
         return applicationContext;
     }
 
-    @Provides
-    ApiEndpoint provideApiEndpoint() {
+    @Provides ApiEndpoint provideApiEndpoint() {
         if (BuildConfig.DEBUG) {
             return new DynamicApiEndpoint(applicationContext);
         } else {
@@ -68,16 +68,16 @@ public class ApiModule {
     }
 
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context,
-                                                                    @NonNull ObjectMapper mapper) {
-        return new PersistentApiSessionManager(context, mapper);
+                                                                    @NonNull Gson gson) {
+        return new PersistentApiSessionManager(context, gson);
     }
 
     @Singleton @Provides MarkupProcessor provideMarkupProcessor() {
         return new MarkupProcessor(applicationContext.getString(R.string.format_markup_list_deliminator));
     }
 
-    @Singleton @Provides ObjectMapper provideObjectMapper(@NonNull MarkupProcessor markupProcessor) {
-        return createConfiguredObjectMapper(markupProcessor);
+    @Singleton @Provides Gson provideGson(@NonNull MarkupProcessor markupProcessor) {
+        return createConfiguredGson(markupProcessor);
     }
 
     @Singleton @Provides Cache provideCache(@NonNull @ApiAppContext Context context) {
@@ -98,13 +98,13 @@ public class ApiModule {
         return client;
     }
 
-    @Singleton @Provides RestAdapter provideRestAdapter(@NonNull ObjectMapper mapper,
+    @Singleton @Provides RestAdapter provideRestAdapter(@NonNull Gson gson,
                                                         @NonNull OkHttpClient httpClient,
                                                         @NonNull ApiEndpoint endpoint,
                                                         @NonNull ApiSessionManager sessionManager) {
         RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
-        builder.setConverter(new ApiJacksonConverter(mapper));
+        builder.setConverter(new ApiGsonConverter(gson));
         builder.setEndpoint(endpoint);
         if (BuildConfig.DEBUG) {
             builder.setLogLevel(RestAdapter.LogLevel.FULL);

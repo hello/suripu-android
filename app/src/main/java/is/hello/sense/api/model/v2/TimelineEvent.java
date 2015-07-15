@@ -6,10 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -19,7 +16,6 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Enums;
 import is.hello.sense.functional.Lists;
@@ -27,36 +23,36 @@ import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineEvent extends ApiResponse {
     @VisibleForTesting
-    @JsonProperty("timestamp")
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @SerializedName("timestamp")
+    // @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     DateTime timestamp;
 
     @VisibleForTesting
-    @JsonProperty("timezone_offset")
+    @SerializedName("timezone_offset")
     int timezoneOffset;
 
     @VisibleForTesting
-    @JsonProperty("duration_millis")
+    @SerializedName("duration_millis")
     long durationMillis;
 
     @VisibleForTesting
-    @JsonProperty("message")
+    @SerializedName("message")
     MarkupString message;
 
     @VisibleForTesting
-    @JsonProperty("sleep_depth")
+    @SerializedName("sleep_depth")
     int sleepDepth;
 
     @VisibleForTesting
-    @JsonProperty("sleep_state")
+    @SerializedName("sleep_state")
     SleepState sleepState;
 
     @VisibleForTesting
-    @JsonProperty("event_type")
+    @SerializedName("event_type")
     Type type;
 
     @VisibleForTesting
-    @JsonProperty("valid_actions")
+    @SerializedName("valid_actions")
     ArrayList<Action> validActions;
 
 
@@ -92,17 +88,14 @@ public class TimelineEvent extends ApiResponse {
         return type;
     }
 
-    @JsonIgnore
     public boolean hasInfo() {
         return (type != Type.IN_BED);
     }
 
-    @JsonIgnore
     public boolean hasSound() {
         return false;
     }
 
-    @JsonIgnore
     public String getSoundUrl() {
         return null;
     }
@@ -128,7 +121,7 @@ public class TimelineEvent extends ApiResponse {
     }
 
 
-    public enum SleepState {
+    public enum SleepState implements Enums.FromString {
         AWAKE(R.color.sleep_awake, R.string.sleep_depth_awake),
         LIGHT(R.color.sleep_light, R.string.sleep_depth_light),
         MEDIUM(R.color.sleep_medium, R.string.sleep_depth_medium),
@@ -143,20 +136,19 @@ public class TimelineEvent extends ApiResponse {
             this.stringRes = stringRes;
         }
 
-        @JsonCreator
         public static SleepState fromString(@NonNull String string) {
             return Enums.fromString(string, values(), AWAKE);
         }
     }
 
-    public enum Action {
+    public enum Action implements Enums.FromString {
         ADJUST_TIME,
         VERIFY,
         REMOVE,
         INCORRECT,
     }
 
-    public enum Type {
+    public enum Type implements Enums.FromString {
         IN_BED(0, 0),
         GENERIC_MOTION(R.drawable.timeline_generic_motion, R.string.accessibility_event_name_generic_motion),
         PARTNER_MOTION(R.drawable.timeline_partner, R.string.accessibility_event_name_partner_moved),
@@ -183,18 +175,17 @@ public class TimelineEvent extends ApiResponse {
             this.accessibilityStringRes = accessibilityStringRes;
         }
 
-        @JsonCreator
         public static Type fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }
     }
 
     public static class TimeAmendment {
-        @JsonProperty("new_event_time")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
+        @SerializedName("new_event_time")
+        // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.TIME_FORMAT)
         public final LocalTime newTime;
 
-        @JsonProperty("timezone_offset")
+        @SerializedName("timezone_offset")
         public final long timeZoneOffset;
 
         public TimeAmendment(@NonNull LocalTime newTime, long timeZoneOffset) {

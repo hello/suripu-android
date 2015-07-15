@@ -3,8 +3,7 @@ package is.hello.sense.api.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
@@ -12,29 +11,28 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitSystem;
 
 public class SensorState extends ApiResponse {
-    @JsonProperty("value")
+    @SerializedName("value")
     private Long value;
 
-    @JsonProperty("message")
+    @SerializedName("message")
     private String message;
 
-    @JsonProperty("condition")
+    @SerializedName("condition")
     private Condition condition;
 
-    @JsonProperty("unit")
+    @SerializedName("unit")
     private String unit;
 
-    @JsonProperty("last_updated_utc")
+    @SerializedName("last_updated_utc")
     private DateTime lastUpdated;
 
-    @JsonProperty("ideal_conditions")
+    @SerializedName("ideal_conditions")
     private String idealConditions;
 
 
     public SensorState() {
     }
 
-    @JsonIgnore
     public SensorState(long value,
                        @NonNull String message,
                        @NonNull Condition condition,

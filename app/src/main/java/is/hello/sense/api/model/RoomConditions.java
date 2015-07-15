@@ -3,7 +3,7 @@ package is.hello.sense.api.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -11,19 +11,19 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.functional.Lists;
 
 public class RoomConditions extends ApiResponse {
-    @JsonProperty("temperature")
+    @SerializedName("temperature")
     private SensorState temperature;
 
-    @JsonProperty("humidity")
+    @SerializedName("humidity")
     private SensorState humidity;
 
-    @JsonProperty("particulates")
+    @SerializedName("particulates")
     private SensorState particulates;
 
-    @JsonProperty("light")
+    @SerializedName("light")
     private SensorState light;
 
-    @JsonProperty("sound")
+    @SerializedName("sound")
     private SensorState sound;
 
 

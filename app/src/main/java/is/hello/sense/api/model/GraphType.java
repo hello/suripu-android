@@ -5,14 +5,12 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.HistogramGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 
-public enum GraphType {
+public enum GraphType implements Enums.FromString {
     HISTOGRAM {
         @Override
         public GraphDrawable createDrawable(@NonNull Resources resources) {
@@ -40,7 +38,6 @@ public enum GraphType {
 
     public abstract @DrawableRes int getGridDrawable();
 
-    @JsonCreator
     public static GraphType fromString(@Nullable String string) {
         return Enums.fromString(string, values(), TIME_SERIES_LINE);
     }

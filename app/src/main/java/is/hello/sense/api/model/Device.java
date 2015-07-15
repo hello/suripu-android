@@ -6,9 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import net.danlew.android.joda.DateUtils;
 
@@ -23,25 +22,25 @@ import is.hello.sense.R;
 public class Device extends ApiResponse {
     public static final int MISSING_THRESHOLD_HRS = 24;
 
-    @JsonProperty("type")
+    @SerializedName("type")
     private Type type;
 
-    @JsonProperty("device_id")
+    @SerializedName("device_id")
     private String deviceId;
 
-    @JsonProperty("state")
+    @SerializedName("state")
     private State state;
 
-    @JsonProperty("firmware_version")
+    @SerializedName("firmware_version")
     private String firmwareVersion;
 
-    @JsonProperty("last_updated")
+    @SerializedName("last_updated")
     private DateTime lastUpdated;
 
-    @JsonProperty("color")
+    @SerializedName("color")
     private Color color;
 
-    @JsonIgnore
+    @Expose(deserialize = false, serialize = false)
     private boolean exists = true;
 
 
@@ -103,7 +102,6 @@ public class Device extends ApiResponse {
         return color;
     }
 
-    @JsonIgnore
     public boolean exists() {
         return exists;
     }
@@ -114,7 +112,6 @@ public class Device extends ApiResponse {
      * Returns 0 if the device has not reported being update yet. This state
      * happens immediately after a device has been paired to an account.
      */
-    @JsonIgnore
     public int getHoursSinceLastUpdated() {
         if (lastUpdated != null) {
             return Hours.hoursBetween(lastUpdated, DateTime.now()).getHours();
@@ -129,7 +126,6 @@ public class Device extends ApiResponse {
      * Differs from {@link #getHoursSinceLastUpdated()} by considering
      * a missing last updated value to indicate a device is missing.
      */
-    @JsonIgnore
     public boolean isMissing() {
         return (!exists || (getLastUpdated() == null) ||
                 (getHoursSinceLastUpdated() >= MISSING_THRESHOLD_HRS));
@@ -149,7 +145,7 @@ public class Device extends ApiResponse {
     }
 
 
-    public enum Type {
+    public enum Type implements Enums.FromString {
         PILL(R.drawable.pill_icon, R.string.device_pill),
         SENSE(R.drawable.sense_icon, R.string.device_sense),
         OTHER(R.drawable.sense_icon, R.string.device_unknown);
@@ -164,13 +160,12 @@ public class Device extends ApiResponse {
         }
 
 
-        @JsonCreator
         public static Type fromString(@NonNull String string) {
             return Enums.fromString(string, values(), OTHER);
         }
     }
 
-    public enum State {
+    public enum State implements Enums.FromString {
         NORMAL(R.string.device_state_normal),
         LOW_BATTERY(R.string.device_state_low_battery),
         UNKNOWN(R.string.device_state_unknown);
@@ -181,13 +176,12 @@ public class Device extends ApiResponse {
             this.nameRes = nameRes;
         }
 
-        @JsonCreator
         public static State fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }
     }
 
-    public enum Color {
+    public enum Color implements Enums.FromString {
         BLACK(R.string.device_color_black),
         WHITE(R.string.device_color_white),
         BLUE(R.string.device_color_blue),
@@ -200,7 +194,6 @@ public class Device extends ApiResponse {
             this.nameRes = nameRes;
         }
 
-        @JsonCreator
         public static Color fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }

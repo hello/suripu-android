@@ -2,7 +2,6 @@ package is.hello.sense.util.markup;
 
 import android.graphics.Typeface;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
@@ -44,7 +43,7 @@ public class MarkupJacksonTests extends SenseTestCase {
     public static class TestObject {
         public final MarkupString message;
 
-        public TestObject(@JsonProperty("message") MarkupString message) {
+        public TestObject(@SerializedName("message") MarkupString message) {
             this.message = message;
         }
     }

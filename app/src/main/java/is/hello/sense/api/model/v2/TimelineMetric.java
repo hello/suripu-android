@@ -7,8 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
@@ -19,19 +18,19 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
     private static final long VALUE_MISSING = Long.MIN_VALUE;
 
     @VisibleForTesting
-    @JsonProperty("name")
+    @SerializedName("name")
     Name name;
 
     @VisibleForTesting
-    @JsonProperty("value")
+    @SerializedName("value")
     @Nullable Long value;
 
     @VisibleForTesting
-    @JsonProperty("unit")
+    @SerializedName("unit")
     Unit unit;
 
     @VisibleForTesting
-    @JsonProperty("condition")
+    @SerializedName("condition")
     Condition condition;
 
 
@@ -105,7 +104,7 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
     //endregion
 
 
-    public enum Name {
+    public enum Name implements Enums.FromString {
         UNKNOWN(R.string.missing_data_placeholder),
         TOTAL_SLEEP(R.string.timeline_info_label_total_sleep),
         SOUND_SLEEP(R.string.timeline_info_label_sound_sleep),
@@ -125,7 +124,6 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
             this.stringRes = stringRes;
         }
 
-        @JsonCreator
         public static Name fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }
@@ -136,13 +134,12 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
         }
     }
 
-    public enum Unit {
+    public enum Unit implements Enums.FromString {
         MINUTES,
         QUANTITY,
         TIMESTAMP,
         CONDITION;
 
-        @JsonCreator
         public static Unit fromString(@NonNull String string) {
             return Enums.fromString(string, values(), QUANTITY);
         }
