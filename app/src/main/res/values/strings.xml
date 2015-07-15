@@ -429,9 +429,15 @@ so you can sleep better.</string>
     <string name="action_timeline_event_remove">Remove this event</string>
     <string name="action_timeline_event_incorrect">Mark as incorrect</string>
 
-    <string name="condition_short_hand_alert">was uncomfortable</string>
-    <string name="condition_short_hand_warning">was not ideal</string>
-    <string name="condition_short_hand_ideal">was ideal</string>
+    <string name="condition_short_hand_alert_sound">way too loud</string>
+    <string name="condition_short_hand_alert_aqi">way too high</string>
+    <string name="condition_short_hand_alert_light">way too bright</string>
+    <string name="condition_short_hand_alert">uncomfortable</string>
+    <string name="condition_short_hand_warning_sound">a little loud</string>
+    <string name="condition_short_hand_warning_aqi">a little high</string>
+    <string name="condition_short_hand_warning_light">a bit bright</string>
+    <string name="condition_short_hand_warning">not ideal</string>
+    <string name="condition_short_hand_ideal">just right</string>
     <string name="dialog_title_alarm_sound_volume_low">Low Volume</string>
     <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm sound preview. Would you like us to turn it up?</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
