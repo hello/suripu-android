@@ -284,11 +284,6 @@ public class Analytics {
         String EVENT_ANOTHER_PILL = "Onboarding Another Pill";
 
         /**
-         * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"
-         */
-        String EVENT_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
-
-        /**
          * When user lands on screen that tells partner to get app from hello.is/app
          */
         String EVENT_GET_APP = "Onboarding Get App";
