@@ -15,12 +15,12 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class NotificationReceiver extends BroadcastReceiver {
     public static final String EXTRA_TARGET = "target";
@@ -77,7 +77,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         String message = intent.getStringExtra(EXTRA_MESSAGE);
         if (!TextUtils.isEmpty(message)) {
             markdown.render(message)
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(Rx.mainThreadScheduler())
                     .subscribe(richMessage -> {
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
                         builder.setSmallIcon(R.drawable.ic_stat_notify_msg);

@@ -8,9 +8,9 @@ import android.widget.TextView;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.util.markup.MarkupProcessor;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -34,7 +34,7 @@ import rx.schedulers.Schedulers;
     public @NonNull Observable<CharSequence> render(@Nullable String markdown) {
         if (TextUtils.isEmpty(markdown)) {
             return Observable.just((CharSequence) "")
-                             .observeOn(AndroidSchedulers.mainThread());
+                             .observeOn(Rx.mainThreadScheduler());
         }
 
         Observable<CharSequence> renderTask = Observable.create(s -> {
@@ -47,12 +47,12 @@ import rx.schedulers.Schedulers;
             }
         });
         return renderTask.subscribeOn(Schedulers.computation())
-                         .observeOn(AndroidSchedulers.mainThread());
+                         .observeOn(Rx.mainThreadScheduler());
     }
 
     public void renderInto(@NonNull TextView textView, @Nullable String markdown) {
         render(markdown)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Rx.mainThreadScheduler())
                 .subscribe(textView::setText, e -> {
                     Logger.error(getClass().getSimpleName(), "Could not render markdown", e);
                     textView.setText(markdown);

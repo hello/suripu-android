@@ -15,11 +15,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.Timeline;
 import rx.Observable;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class ZoomedOutTimelinePresenter extends Presenter {
     private static final int CACHE_LIMIT = 10;
@@ -28,7 +28,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     private LocalDate firstDate;
 
     private final List<DataView> dataViews = new ArrayList<>();
-    private Scheduler updateScheduler = AndroidSchedulers.mainThread();
+    private Scheduler updateScheduler = Rx.mainThreadScheduler();
 
     private final ApiService apiService;
     private final LruCache<LocalDate, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
