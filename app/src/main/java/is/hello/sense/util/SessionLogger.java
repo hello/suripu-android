@@ -17,13 +17,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public final class SessionLogger {
     public static final String FILENAME = "Sense-Session-Log.txt";
@@ -88,7 +86,7 @@ public final class SessionLogger {
             } catch (Exception e) {
                 s.onError(e);
             }
-        }).subscribeOn(AndroidSchedulers.handlerThread(handler));
+        }).subscribeOn(new Rx.HandlerScheduler(handler));
     }
 
     public static Observable<Void> clearLog() {
@@ -118,7 +116,7 @@ public final class SessionLogger {
 
                 s.onError(e);
             }
-        }).subscribeOn(AndroidSchedulers.handlerThread(handler));
+        }).subscribeOn(new Rx.HandlerScheduler(handler));
     }
 
     public static @NonNull String getLogFilePath(@NonNull Context context) {
@@ -146,7 +144,7 @@ public final class SessionLogger {
 
                 println(Log.INFO, "Internal", "Session Began");
 
-                Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+                Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
                 logOutSignal.subscribe(intent ->
                                 clearLog().subscribe(ignored -> Log.i(SessionLogger.class.getSimpleName(), "Cleared session log for log out"),
                                         e -> Log.e(SessionLogger.class.getSimpleName(), "Could not clear log.", e)),

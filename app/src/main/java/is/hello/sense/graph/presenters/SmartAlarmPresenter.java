@@ -16,12 +16,12 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
@@ -174,7 +174,7 @@ import rx.subjects.ReplaySubject;
         logEvent("Loading smart alarm sounds");
 
         Observable<ArrayList<Alarm.Sound>> alarmSounds = apiService.availableSmartAlarmSounds();
-        alarmSounds.observeOn(AndroidSchedulers.mainThread())
+        alarmSounds.observeOn(Rx.mainThreadScheduler())
                    .subscribe(sounds -> {
                        logEvent("Loaded smart alarm sounds");
                        this.availableAlarmSounds = sounds;

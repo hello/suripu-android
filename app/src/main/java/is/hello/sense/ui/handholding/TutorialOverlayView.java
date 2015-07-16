@@ -25,9 +25,9 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.OperatorConditionalBinding;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
@@ -85,7 +85,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private <T> Subscription bindAndSubscribe(@NonNull Observable<T> observable,
                                               @NonNull Action1<T> onNext,
                                               @NonNull Action1<Throwable> onError) {
-        return observable.lift(new OperatorConditionalBinding<>(this, ViewCompat::isAttachedToWindow))
+        return observable.lift(new Rx.OperatorConditionalBinding<>(this, ViewCompat::isAttachedToWindow))
                          .subscribe(onNext, onError);
     }
 

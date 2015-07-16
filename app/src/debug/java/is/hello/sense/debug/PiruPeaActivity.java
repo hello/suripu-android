@@ -23,6 +23,7 @@ import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -36,7 +37,6 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;
@@ -83,7 +83,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addTextItem("Turn Off LEDs", null, this::stopAnimationWithoutFade);
 
         IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
-        Observable<Intent> onConnectionLost = fromLocalBroadcast(this, filter);
+        Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);
         bindAndSubscribe(onConnectionLost,
                          intent -> disconnect(),
                          Functions.LOG_ERROR);

@@ -15,6 +15,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.VoidResponse;
@@ -24,8 +25,6 @@ import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.schedulers.Schedulers;
-
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 @Singleton public class QuestionsPresenter extends Presenter {
     private final ApiService apiService;
@@ -45,7 +44,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         this.apiService = apiService;
         this.apiSessionManager = apiSessionManager;
 
-        Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
     }
 

@@ -14,13 +14,13 @@ import android.support.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -167,7 +167,7 @@ public abstract class Share {
             });
 
             writeImage.subscribeOn(Schedulers.io())
-                      .observeOn(AndroidSchedulers.mainThread())
+                      .observeOn(Rx.mainThreadScheduler())
                       .subscribe(ignored -> {
                           intent.putExtra(Intent.EXTRA_STREAM, imageUri);
                           from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));

@@ -24,16 +24,14 @@ import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.Peripheral;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PendingObservables;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 @Singleton public class HardwarePresenter extends Presenter {
     public static final String ACTION_CONNECTION_LOST = HardwarePresenter.class.getName() + ".ACTION_CONNECTION_LOST";
@@ -79,10 +77,10 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
             }
         };
 
-        Observable<Intent> logOutSignal = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
 
-        Observable<Intent> disconnectSignal = fromLocalBroadcast(context, new IntentFilter(Peripheral.ACTION_DISCONNECTED));
+        Observable<Intent> disconnectSignal = Rx.fromLocalBroadcast(context, new IntentFilter(Peripheral.ACTION_DISCONNECTED));
         disconnectSignal.subscribe(this::onPeripheralDisconnected, Functions.LOG_ERROR);
 
         this.bluetoothEnabled = bluetoothStack.isEnabled();
@@ -343,7 +341,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         }
 
         return peripheral.scanForWifiNetworks()
-                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .subscribeOn(Rx.mainThreadScheduler())
                          .doOnError(this.respondToError)
                          .map(networks -> {
                              sortWifiNetworks(networks);
@@ -373,7 +371,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         }
 
         return peripheral.setWifiNetwork(ssid, securityType, password)
-                         .subscribeOn(AndroidSchedulers.mainThread())
+                         .subscribeOn(Rx.mainThreadScheduler())
                          .doOnError(this.respondToError);
     }
 

@@ -155,11 +155,10 @@ dependencies {
     compile 'com.squareup.dagger:dagger:1.2.2'
 
     compile 'io.reactivex:rxjava:1.0.9'
-    compile 'io.reactivex:rxandroid:0.24.0'
 
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.1.0'
-    compile 'com.squareup.okhttp:okhttp:2.1.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     compile 'com.google.code.gson:gson:2.3.1'
 
@@ -183,7 +182,7 @@ dependencies {
     betaCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
 
 
-    testCompile "org.robolectric:robolectric:3.0-rc3"
+    testCompile "org.robolectric:robolectric:3.0"
     testCompile 'junit:junit:4.12'
 
     //noinspection GradleDynamicVersion
