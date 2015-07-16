@@ -182,7 +182,7 @@ dependencies {
     betaCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
 
 
-    testCompile "org.robolectric:robolectric:3.0-rc3"
+    testCompile "org.robolectric:robolectric:3.0"
     testCompile 'junit:junit:4.12'
 
     //noinspection GradleDynamicVersion
