@@ -121,6 +121,10 @@ public class HomeActivity
         }
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+            );
+            Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
         }
 
@@ -186,6 +190,10 @@ public class HomeActivity
         super.onNewIntent(intent);
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+            );
+            Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);

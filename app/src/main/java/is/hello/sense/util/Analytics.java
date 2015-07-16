@@ -83,6 +83,12 @@ public class Analytics {
          */
         String EVENT_TURN_ON_HIGH_POWER = "High power mode enabled";
 
+        /**
+         * When the app is activated by a third party through the AlarmClock intents.
+         */
+        String EVENT_ALARM_CLOCK_INTENT = "Alarm clock intent";
+        String PROP_ALARM_CLOCK_INTENT_NAME = "name";
+
 
         String PROP_BLUETOOTH_PAIRED_DEVICE_COUNT = "Paired device count";
         String PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT = "Connected device count";
@@ -276,11 +282,6 @@ public class Analytics {
          * User lands on screen which asks whether they want to pair another pill.
          */
         String EVENT_ANOTHER_PILL = "Onboarding Another Pill";
-
-        /**
-         * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"
-         */
-        String EVENT_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
 
         /**
          * When user lands on screen that tells partner to get app from hello.is/app
