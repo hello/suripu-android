@@ -83,6 +83,12 @@ public class Analytics {
          */
         String EVENT_TURN_ON_HIGH_POWER = "High power mode enabled";
 
+        /**
+         * When the app is activated by a third party through the AlarmClock intents.
+         */
+        String EVENT_ALARM_CLOCK_INTENT = "Alarm clock intent";
+        String PROP_ALARM_CLOCK_INTENT_NAME = "name";
+
 
         String PROP_BLUETOOTH_PAIRED_DEVICE_COUNT = "Paired device count";
         String PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT = "Connected device count";

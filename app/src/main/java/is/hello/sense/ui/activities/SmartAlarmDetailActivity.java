@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class SmartAlarmDetailActivity extends SenseActivity {
@@ -56,6 +58,10 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
         if (savedInstanceState == null) {
             if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
+                JSONObject properties = Analytics.createProperties(
+                    Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SET_ALARM"
+                );
+                Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
                 processSetAlarmIntent();
             } else {
                 this.alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
