@@ -122,9 +122,9 @@ public class SmartAlarmDetailActivity extends SenseActivity {
                 backConfirmation.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
                 backConfirmation.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
             }
-            backConfirmation.setNegativeButton(R.string.action_discard, (dialog, which) -> super.onBackPressed());
-            backConfirmation.setPositiveButton(R.string.action_keep_editing, null);
-            backConfirmation.setButtonDestructive(DialogInterface.BUTTON_NEGATIVE, true);
+            backConfirmation.setNegativeButton(R.string.action_keep_editing, null);
+            backConfirmation.setPositiveButton(R.string.action_discard, (dialog, which) -> super.onBackPressed());
+            backConfirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
             backConfirmation.show();
         } else {
             super.onBackPressed();
