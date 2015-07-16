@@ -18,7 +18,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -103,12 +102,7 @@ public class ApiModule {
 
     @Singleton @Provides Cache provideCache(@NonNull @ApiAppContext Context context) {
         File cacheDirectory = new File(context.getExternalCacheDir(), Constants.HTTP_CACHE_NAME);
-        try {
-            return new Cache(cacheDirectory, Constants.HTTP_CACHE_SIZE);
-        } catch (IOException e) {
-            Logger.warn(ApiModule.class.getSimpleName(), "Could not create local cache, ignoring.", e);
-            return null;
-        }
+        return new Cache(cacheDirectory, Constants.HTTP_CACHE_SIZE);
     }
 
     @Singleton @Provides OkHttpClient provideHttpClient(@NonNull Cache cache) {
