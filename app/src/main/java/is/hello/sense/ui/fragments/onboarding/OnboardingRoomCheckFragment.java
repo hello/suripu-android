@@ -171,7 +171,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             SensorState sensor = sensors.get(position);
             Unit unit = sensorUnits.get(position);
 
-            long value = sensor.getValue() != null ? sensor.getValue() : 0L;
+            long value = sensor.getValue() != null ? sensor.getValue().longValue() : 0L;
             int convertedValue = (int) unit.convert(value);
             long duration = scoreTicker.animateToValue(convertedValue, unit.getName(), finishedTicker -> {
                 if (!finishedTicker) {

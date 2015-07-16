@@ -2,13 +2,13 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 public class PasswordUpdate extends ApiResponse {
-    @JsonProperty("current_password")
+    @SerializedName("current_password")
     private String currentPassword;
 
-    @JsonProperty("new_password")
+    @SerializedName("new_password")
     private String newPassword;
 
     public PasswordUpdate(@NonNull String currentPassword, @NonNull String newPassword) {

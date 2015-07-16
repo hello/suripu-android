@@ -2,14 +2,15 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+
+import is.hello.sense.api.gson.Enums;
 
 public class AccountPreference extends ApiResponse {
-    @JsonProperty("pref")
+    @SerializedName("pref")
     private Key key;
 
-    @JsonProperty(value = "enabled", required = false)
+    @SerializedName("enabled")
     private boolean enabled;
 
 
@@ -43,7 +44,7 @@ public class AccountPreference extends ApiResponse {
                 '}';
     }
 
-    public enum Key {
+    public enum Key implements Enums.FromString {
         ENHANCED_AUDIO,
         TEMP_CELSIUS,
         TIME_TWENTY_FOUR_HOUR,
@@ -51,7 +52,6 @@ public class AccountPreference extends ApiResponse {
         PUSH_SCORE,
         UNKNOWN;
 
-        @JsonCreator
         public static Key fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }

@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -53,7 +53,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        DateTime date = presenter.getDateTimeAt(position);
+        LocalDate date = presenter.getDateAt(position);
         Timeline timeline = presenter.getCachedTimeline(date);
         holder.bind(date, timeline);
 
@@ -112,7 +112,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         public final SleepScoreDrawable scoreDrawable;
 
         private boolean hasTimeline = false;
-        private DateTime date;
+        private LocalDate date;
 
 
         //region Lifecycle
@@ -133,7 +133,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             itemView.setOnClickListener(this);
         }
 
-        private void bind(@NonNull DateTime date, @Nullable Timeline timeline) {
+        private void bind(@NonNull LocalDate date, @Nullable Timeline timeline) {
             this.date = date;
             dayNumber.setText(date.toString("d"));
             dayName.setText(date.toString("EE"));
@@ -174,7 +174,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         //region Hooks
 
         @Override
-        public DateTime getDate() {
+        public LocalDate getDate() {
             return date;
         }
 

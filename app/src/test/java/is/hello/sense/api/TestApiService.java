@@ -4,15 +4,19 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,21 +56,26 @@ import rx.schedulers.Schedulers;
 
 public final class TestApiService implements ApiService {
     private final Context context;
-    private final ObjectMapper objectMapper;
+    private final Gson gson;
 
-    public TestApiService(@NonNull Context context, @NonNull ObjectMapper objectMapper) {
+    public TestApiService(@NonNull Context context, @NonNull Gson gson) {
         this.context = context;
-        this.objectMapper = objectMapper;
+        this.gson = gson;
     }
 
 
-    private <T> Observable<T> loadResponse(@NonNull String filename, TypeReference<T> responseType) {
+    private <T> Observable<T> loadResponse(@NonNull String filename, @NonNull Type responseType) {
         AssetManager assetManager = context.getAssets();
         InputStream stream = null;
         try {
             stream = assetManager.open(filename + ".json");
-            T response = objectMapper.readValue(stream, responseType);
-            return safeJust(response);
+            JsonReader jsonReader = new JsonReader(new InputStreamReader(stream));
+            try {
+                T response = gson.fromJson(jsonReader, responseType);
+                return safeJust(response);
+            } finally {
+                jsonReader.close();
+            }
         } catch (IOException e) {
             return Observable.error(e);
         } finally {
@@ -92,8 +101,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> getAccount() {
-        return loadResponse("account", new TypeReference<Account>() {
-        });
+        return loadResponse("account", new TypeToken<Account>(){}.getType());
     }
 
     @Override
@@ -143,7 +151,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Timeline> timelineForDate(@NonNull @Path("date") String date) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
@@ -167,7 +175,7 @@ public final class TestApiService implements ApiService {
                                                        @NonNull @Path("type") TimelineEvent.Type type,
                                                        @Path("timestamp") long timestamp,
                                                        @NonNull @Body TimelineEvent.TimeAmendment amendment) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
@@ -185,7 +193,7 @@ public final class TestApiService implements ApiService {
     public Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
                                                     @NonNull @Path("type") TimelineEvent.Type type,
                                                     @Path("timestamp") long timestamp) {
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
+        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(
                 new TimelineBuilder()
                         .setDate(dateTime)
@@ -201,12 +209,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Insight>> currentInsights() {
-        return loadResponse("insights", new TypeReference<ArrayList<Insight>>() {});
+        return loadResponse("insights", new TypeToken<ArrayList<Insight>>(){}.getType());
     }
 
     @Override
     public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
-        return loadResponse("current_conditions", new TypeReference<RoomConditions>() {});
+        return loadResponse("current_conditions", new TypeToken<RoomConditions>(){}.getType());
     }
 
     @Override
@@ -223,7 +231,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
-        return loadResponse("questions", new TypeReference<ArrayList<Question>>() {});
+        return loadResponse("questions", new TypeToken<ArrayList<Question>>(){}.getType());
     }
 
     @Override
@@ -265,7 +273,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Alarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeReference<ArrayList<Alarm>>() {});
+        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>(){}.getType());
     }
 
     @Override
@@ -287,13 +295,13 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<TrendGraph>> allTrends() {
-        return loadResponse("all_trends", new TypeReference<ArrayList<TrendGraph>>() {});
+        return loadResponse("all_trends", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
     }
 
     @Override
     public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
                                                         @NonNull @Query("time_period") String timePeriod) {
-        return loadResponse("single_trend", new TypeReference<ArrayList<TrendGraph>>() {});
+        return loadResponse("single_trend", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
     }
 
     @Override
@@ -304,7 +312,7 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                            @Query("from_utc") long timestamp) {
-        return loadResponse("room_sensor_history", new TypeReference<RoomSensorHistory>() {});
+        return loadResponse("room_sensor_history", new TypeToken<RoomSensorHistory>(){}.getType());
     }
     
     

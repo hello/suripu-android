@@ -4,14 +4,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import is.hello.sense.api.gson.Enums;
 
 public class TrendGraph extends ApiResponse {
     public static final String TIME_PERIOD_DAY_OF_WEEK = "DOW";
@@ -22,22 +23,22 @@ public class TrendGraph extends ApiResponse {
     public static final String TIME_PERIOD_OVER_TIME_ALL = "ALL";
 
 
-    @JsonProperty("title")
+    @SerializedName("title")
     private String title;
 
-    @JsonProperty("data_type")
+    @SerializedName("data_type")
     private DataType dataType;
 
-    @JsonProperty("graph_type")
+    @SerializedName("graph_type")
     private GraphType graphType;
 
-    @JsonProperty("time_period")
+    @SerializedName("time_period")
     private String timePeriod;
 
-    @JsonProperty("options")
+    @SerializedName("options")
     private List<String> options;
 
-    @JsonProperty("data_points")
+    @SerializedName("data_points")
     private List<GraphSample> dataPoints;
 
 
@@ -107,19 +108,19 @@ public class TrendGraph extends ApiResponse {
 
 
     public static class GraphSample extends ApiResponse {
-        @JsonProperty("datetime")
+        @SerializedName("datetime")
         private DateTime dateTime;
 
-        @JsonProperty("y_value")
+        @SerializedName("y_value")
         private float yValue;
 
-        @JsonProperty("x_value")
+        @SerializedName("x_value")
         private String xValue;
 
-        @JsonProperty("offset_millis")
+        @SerializedName("offset_millis")
         private int offset;
 
-        @JsonProperty("data_label")
+        @SerializedName("data_label")
         private DataLabel dataLabel;
 
 
@@ -199,7 +200,7 @@ public class TrendGraph extends ApiResponse {
     }
 
 
-    public enum DataType {
+    public enum DataType implements Enums.FromString {
         NONE,
         SLEEP_SCORE,
         SLEEP_DURATION;
@@ -208,18 +209,16 @@ public class TrendGraph extends ApiResponse {
             return toString().toLowerCase();
         }
 
-        @JsonCreator
         public static DataType fromString(@Nullable String string) {
             return Enums.fromString(string, values(), NONE);
         }
     }
 
-    public enum DataLabel {
+    public enum DataLabel implements Enums.FromString {
         BAD,
         OK,
         GOOD;
 
-        @JsonCreator
         public static DataLabel fromString(@Nullable String string) {
             return Enums.fromString(string, values(), OK);
         }

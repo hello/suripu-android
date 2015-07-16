@@ -3,29 +3,29 @@ package is.hello.sense.api.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Insight extends ApiResponse {
-    @JsonProperty("account_id")
+    @SerializedName("account_id")
     private long accountId;
 
-    @JsonProperty("title")
+    @SerializedName("title")
     private String title;
 
-    @JsonProperty("message")
+    @SerializedName("message")
     private MarkupString message;
 
-    @JsonProperty("timestamp")
+    @SerializedName("timestamp")
     private DateTime created;
 
-    @JsonProperty("category")
+    @SerializedName("category")
     private InsightCategory category;
 
-    @JsonProperty("info_preview")
+    @SerializedName("info_preview")
     private String infoPreview;
 
 

@@ -3,16 +3,15 @@ package is.hello.sense.api.model;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTimeZone;
 
 public class SenseTimeZone extends ApiResponse {
-    @JsonProperty("timezone_offset")
+    @SerializedName("timezone_offset")
     public final int offsetMillis;
 
-    @JsonProperty("timezone_id")
+    @SerializedName("timezone_id")
     public final String timeZoneId;
 
     public static @NonNull SenseTimeZone fromDefault() {
@@ -23,9 +22,7 @@ public class SenseTimeZone extends ApiResponse {
         return new SenseTimeZone(timeZone.getOffset(System.currentTimeMillis()), timeZone.getID());
     }
 
-    @JsonCreator
-    public SenseTimeZone(@JsonProperty("timezone_offset") int offsetMillis,
-                         @JsonProperty("timezone_id") final String timeZoneId){
+    public SenseTimeZone(int offsetMillis, String timeZoneId){
         this.offsetMillis = offsetMillis;
         this.timeZoneId = timeZoneId;
     }

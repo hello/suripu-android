@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -38,9 +38,9 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     private TextView monthText;
     private RecyclerView recyclerView;
     private ZoomedOutTimelineLayoutManager layoutManager;
-    private DateTime startDate;
+    private LocalDate startDate;
 
-    public static ZoomedOutTimelineFragment newInstance(@NonNull DateTime startTime, @Nullable Timeline firstTimeline) {
+    public static ZoomedOutTimelineFragment newInstance(@NonNull LocalDate startTime, @Nullable Timeline firstTimeline) {
         ZoomedOutTimelineFragment fragment = new ZoomedOutTimelineFragment();
 
         Bundle arguments = new Bundle();
@@ -56,7 +56,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.startDate = (DateTime) getArguments().getSerializable(ARG_START_DATE);
+        this.startDate = (LocalDate) getArguments().getSerializable(ARG_START_DATE);
         presenter.setFirstDate(DateFormatter.lastNight());
 
         if (getArguments().containsKey(ARG_FIRST_TIMELINE)) {
@@ -93,7 +93,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
         Button todayButton = (Button) view.findViewById(R.id.fragment_zoomed_out_timeline_today);
         todayButton.setOnClickListener(this::jumpToToday);
 
-        int position = presenter.getDateTimePosition(startDate);
+        int position = presenter.getDatePosition(startDate);
         if (position == 0) {
             // The second item from the right at the beginning of the
             // navigator is a special case. Because the item is already
@@ -161,7 +161,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
                 recyclerView.smoothScrollBy(layoutManager.getItemWidth(), 0);
             }
         } else {
-            DateTime newDate = presenter.getDateTimeAt(position);
+            LocalDate newDate = presenter.getDateAt(position);
             Timeline timeline = presenter.getCachedTimeline(newDate);
             ((OnTimelineDateSelectedListener) getActivity()).onTimelineSelected(newDate, timeline);
         }
@@ -201,6 +201,6 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
 
     public interface OnTimelineDateSelectedListener {
-        void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline);
+        void onTimelineSelected(@NonNull LocalDate date, @Nullable Timeline timeline);
     }
 }

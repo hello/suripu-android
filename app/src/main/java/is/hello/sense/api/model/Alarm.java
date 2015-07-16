@@ -4,9 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -23,47 +21,46 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Alarm extends ApiResponse {
     public static final int FUTURE_CUT_OFF_MINUTES = 5;
 
 
-    @JsonProperty("id")
+    @SerializedName("id")
     private String id;
 
-    @JsonProperty("year")
+    @SerializedName("year")
     private int year;
 
-    @JsonProperty("month")
+    @SerializedName("month")
     private int month;
 
-    @JsonProperty("day_of_month")
+    @SerializedName("day_of_month")
     private int dayOfMonth;
 
-    @JsonProperty("hour")
+    @SerializedName("hour")
     private int hourOfDay;
 
-    @JsonProperty("minute")
+    @SerializedName("minute")
     private int minuteOfHour;
 
-    @JsonProperty("repeated")
+    @SerializedName("repeated")
     private boolean repeated;
 
 
-    @JsonProperty("enabled")
+    @SerializedName("enabled")
     private boolean enabled;
 
-    @JsonProperty("editable")
+    @SerializedName("editable")
     private boolean editable;
 
 
-    @JsonProperty("day_of_week")
+    @SerializedName("day_of_week")
     private Set<Integer> daysOfWeek;
 
-    @JsonProperty("sound")
+    @SerializedName("sound")
     private Sound sound;
 
-    @JsonProperty("smart")
+    @SerializedName("smart")
     private boolean smart;
 
 
@@ -83,25 +80,21 @@ public class Alarm extends ApiResponse {
         return id;
     }
 
-    @JsonIgnore
     public LocalTime getTime() {
         return new LocalTime(hourOfDay, minuteOfHour);
     }
 
-    @JsonIgnore
     public void setTime(@NonNull LocalTime time) {
         this.hourOfDay = time.getHourOfDay();
         this.minuteOfHour = time.getMinuteOfHour();
     }
 
-    @JsonIgnore
     public DateTime getExpectedRingTime() {
         return new DateTime(year, month, dayOfMonth, hourOfDay, minuteOfHour, DateTimeZone.UTC);
     }
 
-    @JsonIgnore
     public void setRingOnce() {
-        DateTime today = DateFormatter.now();
+        DateTime today = DateFormatter.nowDateTime();
         if (getTime().isBefore(today.toLocalTime())) {
             DateTime tomorrow = today.plusDays(1);
             this.year = tomorrow.getYear();
@@ -235,19 +228,17 @@ public class Alarm extends ApiResponse {
     }
 
     public static class Sound extends ApiResponse {
-        @JsonProperty("id")
+        @SerializedName("id")
         public final long id;
 
-        @JsonProperty("name")
+        @SerializedName("name")
         public final String name;
 
-        @JsonProperty("url")
+        @SerializedName("url")
         public final String url;
 
 
-        public Sound(@JsonProperty("id") long id,
-                     @JsonProperty("name") String name,
-                     @JsonProperty("url") String url) {
+        public Sound(long id, String name, String url) {
             this.id = id;
             this.name = name;
             this.url = url;

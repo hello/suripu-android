@@ -2,31 +2,29 @@ package is.hello.sense.util.markup;
 
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 
 import is.hello.sense.util.markup.text.MarkupString;
 
-public class MarkupDeserializer extends StdDeserializer<MarkupString> {
+public class MarkupDeserializer implements JsonDeserializer<MarkupString> {
     private final MarkupProcessor processor;
 
     public MarkupDeserializer(@NonNull MarkupProcessor processor) {
-        super(MarkupString.class);
-
         this.processor = processor;
     }
 
     @Override
-    public MarkupString deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-        if (parser.getCurrentToken() != JsonToken.VALUE_STRING) {
-            throw context.mappingException("expected string");
+    public MarkupString deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        if (!json.isJsonPrimitive() || !json.getAsJsonPrimitive().isString()) {
+            throw new JsonParseException("Markup value is not a string");
         }
 
-        String markup = parser.getValueAsString();
+        String markup = json.getAsJsonPrimitive().getAsString();
         return processor.render(markup);
     }
 }

@@ -1,23 +1,23 @@
 package is.hello.sense.api.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class InsightInfo extends ApiResponse {
-    @JsonProperty("id")
+    @SerializedName("id")
     private long id;
 
-    @JsonProperty("category")
+    @SerializedName("category")
     private InsightCategory category;
 
-    @JsonProperty("title")
+    @SerializedName("title")
     private String title;
 
-    @JsonProperty("text")
+    @SerializedName("text")
     private MarkupString text;
 
-    @JsonProperty("image_url")
+    @SerializedName("image_url")
     private String imageUrl;
 
 

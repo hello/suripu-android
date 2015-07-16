@@ -1,12 +1,12 @@
 package is.hello.sense.api.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 public class ErrorResponse extends ApiResponse {
-    @JsonProperty("code")
+    @SerializedName("code")
     private int code;
 
-    @JsonProperty("message")
+    @SerializedName("message")
     private String message;
 
 

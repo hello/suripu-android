@@ -4,44 +4,41 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.annotations.SerializedName;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 import java.util.List;
 
+import is.hello.sense.api.gson.Enums;
+
 public class Question extends ApiResponse {
-    @JsonProperty("id")
+    @SerializedName("id")
     private long id;
 
-    @JsonProperty("account_question_id")
+    @SerializedName("account_question_id")
     private long accountId;
 
-    @JsonProperty("text")
+    @SerializedName("text")
     private String text;
 
-    @JsonProperty("type")
+    @SerializedName("type")
     private Type type;
 
-    @JsonProperty("ask_local_date")
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private LocalDateTime askDate;
+    @SerializedName("ask_local_date")
+    private DateTime askDate;
 
-    @JsonProperty("ask_time")
+    @SerializedName("ask_time")
     private AskTime askTime;
 
-    @JsonProperty("choices")
-    @JsonDeserialize(contentAs = Choice.class)
+    @SerializedName("choices")
     private List<Choice> choices;
 
 
     @VisibleForTesting
     public static Question create(long id, long accountId,
                                   String text, Type type,
-                                  LocalDateTime askDate, AskTime askTime,
+                                  DateTime askDate, AskTime askTime,
                                   List<Choice> choices) {
         Question question = new Question();
 
@@ -77,7 +74,7 @@ public class Question extends ApiResponse {
         return askTime;
     }
 
-    public LocalDateTime getAskDate() {
+    public DateTime getAskDate() {
         return askDate;
     }
 
@@ -99,13 +96,13 @@ public class Question extends ApiResponse {
     }
 
     public static class Choice {
-        @JsonProperty("id")
+        @SerializedName("id")
         private long id;
 
-        @JsonProperty("text")
+        @SerializedName("text")
         private String text;
 
-        @JsonProperty("question_id")
+        @SerializedName("question_id")
         private Long questionId;
 
 
@@ -132,7 +129,7 @@ public class Question extends ApiResponse {
         }
     }
 
-    public enum Type {
+    public enum Type implements Enums.FromString {
         CHOICE,
         CHECKBOX,
         QUANTITY,
@@ -141,20 +138,18 @@ public class Question extends ApiResponse {
         TEXT,
         UNKNOWN;
 
-        @JsonCreator
         public static Type fromString(@NonNull String string) {
             return Enums.fromString(string.toUpperCase(), values(), UNKNOWN);
         }
     }
 
-    public enum AskTime {
+    public enum AskTime implements Enums.FromString {
         MORNING,
         AFTERNOON,
         EVENING,
         ANYTIME,
         UNKNOWN;
 
-        @JsonCreator
         public static AskTime fromString(@NonNull String string) {
             return Enums.fromString(string.toUpperCase(), values(), UNKNOWN);
         }

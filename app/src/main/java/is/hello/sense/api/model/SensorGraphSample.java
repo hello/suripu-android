@@ -1,6 +1,6 @@
 package is.hello.sense.api.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -8,13 +8,13 @@ import org.joda.time.DateTimeZone;
 import is.hello.sense.api.ApiService;
 
 public class SensorGraphSample extends ApiResponse {
-    @JsonProperty("value")
+    @SerializedName("value")
     private float value;
 
-    @JsonProperty("datetime")
+    @SerializedName("datetime")
     private DateTime time;
 
-    @JsonProperty("offset_millis")
+    @SerializedName("offset_millis")
     private int offset;
 
 

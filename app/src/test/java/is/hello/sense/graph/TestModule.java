@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import javax.inject.Singleton;
 
@@ -102,16 +102,16 @@ public final class TestModule {
         return new MarkupProcessor();
     }
 
-    @Singleton @Provides ObjectMapper provideObjectMapper(@NonNull MarkupProcessor markupProcessor) {
-        return ApiModule.createConfiguredObjectMapper(markupProcessor);
+    @Singleton @Provides Gson provideGson(@NonNull MarkupProcessor markupProcessor) {
+        return ApiModule.createConfiguredGson(markupProcessor);
     }
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
         return applicationContext.getSharedPreferences("test_suite_preferences", Context.MODE_PRIVATE);
     }
 
-    @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull ObjectMapper objectMapper) {
-        return new TestApiService(context, objectMapper);
+    @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull Gson gson) {
+        return new TestApiService(context, gson);
     }
 
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
