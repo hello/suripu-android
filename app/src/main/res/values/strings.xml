@@ -75,6 +75,12 @@
     <string name="info_sense_pairing_mode_help">Before you connect your phone, Sense needs to be put into Pairing Mode.\n\nPlace your hand directly on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
+    <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
+    <string name="title_connecting_network_ip_retrieved">@string/title_connecting_network</string>
+    <string name="title_connecting_network_dns_resolved">@string/title_connecting_network</string>
+    <string name="title_connecting_network_socket_connected">@string/title_connecting_network</string>
+    <string name="title_connecting_network_request_sent">@string/title_connecting_network</string>
+    <string name="title_connecting_network_connect_failed">Failed to Connect, Retrying</string>
     <string name="wifi_network_secured">Secured Network</string>
     <string name="wifi_network_was_scanned">Scanned</string>
     <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>

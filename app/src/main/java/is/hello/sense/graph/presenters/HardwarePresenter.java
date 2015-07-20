@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.PeripheralConnectionError;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
@@ -361,16 +362,16 @@ import rx.functions.Action1;
                 .doOnError(this.respondToError));
     }
 
-    public Observable<Void> sendWifiCredentials(@NonNull String ssid,
-                                                @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
-                                                @NonNull String password) {
+    public Observable<wifi_connection_state> sendWifiCredentials(@NonNull String ssid,
+                                                                 @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
+                                                                 @NonNull String password) {
         logEvent("sendWifiCredentials()");
 
         if (peripheral == null) {
             return noDeviceError();
         }
 
-        return peripheral.setWifiNetwork(ssid, securityType, password)
+        return peripheral.connectToWiFiNetwork(ssid, securityType, password)
                          .subscribeOn(Rx.mainThreadScheduler())
                          .doOnError(this.respondToError);
     }

@@ -11,4 +11,10 @@
     <string name="label_custom_endpoint_url">URL</string>
     <string name="label_custom_endpoint_client_id">Client ID</string>
     <string name="label_custom_endpoint_client_secret">Client Secret</string>
+
+    <string name="title_connecting_network_wlan_connected">WLAN Connected</string>
+    <string name="title_connecting_network_ip_retrieved">Got IP Address</string>
+    <string name="title_connecting_network_dns_resolved">DNS Resolved</string>
+    <string name="title_connecting_network_socket_connected">Socket Connected</string>
+    <string name="title_connecting_network_request_sent">Request Sent</string>
 </resources>

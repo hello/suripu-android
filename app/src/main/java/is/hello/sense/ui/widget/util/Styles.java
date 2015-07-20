@@ -37,6 +37,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
+import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.common.UserSupport;
@@ -117,6 +118,28 @@ public final class Styles {
             default:
             case CONNECTED:
                 return R.string.title_connecting;
+        }
+    }
+
+    public static @StringRes int getConnectStatusMessage(@NonNull SenseCommandProtos.wifi_connection_state status) {
+        switch (status) {
+            case WLAN_CONNECTED:
+                return R.string.title_connecting_network_wlan_connected;
+            case IP_RETRIEVED:
+                return R.string.title_connecting_network_ip_retrieved;
+            case DNS_RESOLVED:
+                return R.string.title_connecting_network_dns_resolved;
+            case SOCKET_CONNECTED:
+                return R.string.title_connecting_network_socket_connected;
+            case REQUEST_SENT:
+                return R.string.title_connecting_network_request_sent;
+            case DNS_FAILED:
+            case CONNECT_FAILED:
+                return R.string.title_connecting_network_connect_failed;
+            case NO_WLAN_CONNECTED:
+            case WLAN_CONNECTING:
+            default:
+                return R.string.title_connecting_network;
         }
     }
 

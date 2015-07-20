@@ -36,6 +36,7 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -270,12 +271,16 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
             }
 
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), ignored -> {
-                this.hasConnectedToNetwork = true;
-                preferences.edit()
-                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
-                        .apply();
-                sendAccessToken();
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), state -> {
+                if (state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
+                    this.hasConnectedToNetwork = true;
+                    preferences.edit()
+                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                            .apply();
+                    sendAccessToken();
+                } else {
+                    showBlockingActivity(Styles.getConnectStatusMessage(state));
+                }
             }, e -> presentError(e, "Setting WiFi"));
         }, e -> presentError(e, "Turning on LEDs"));
     }
