@@ -1,6 +1,7 @@
 package is.hello.sense.api.gson;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -31,12 +32,21 @@ public class GsonJodaTime {
 
         @Override
         public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonNull()) {
+                return null;
+            }
+
             JsonPrimitive primitive = json.getAsJsonPrimitive();
             if (primitive.isNumber()) {
                 long timestamp = primitive.getAsLong();
                 return new DateTime(timestamp, DateTimeZone.UTC);
             } else if (primitive.isString()) {
-                return formatter.parseDateTime(primitive.getAsString());
+                String asString = primitive.getAsString();
+                if (TextUtils.isEmpty(asString)) {
+                    return null;
+                } else {
+                    return formatter.parseDateTime(asString);
+                }
             } else {
                 throw new JsonParseException("Unexpected primitive " + primitive);
             }
@@ -64,12 +74,21 @@ public class GsonJodaTime {
 
         @Override
         public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonNull()) {
+                return null;
+            }
+
             JsonPrimitive primitive = json.getAsJsonPrimitive();
             if (primitive.isNumber()) {
                 long timestamp = primitive.getAsLong();
                 return new LocalDate(timestamp);
             } else if (primitive.isString()) {
-                return formatter.parseLocalDate(primitive.getAsString());
+                String asString = primitive.getAsString();
+                if (TextUtils.isEmpty(asString)) {
+                    return null;
+                } else {
+                    return formatter.parseLocalDate(asString);
+                }
             } else {
                 throw new JsonParseException("Unexpected primitive " + primitive);
             }
@@ -90,12 +109,21 @@ public class GsonJodaTime {
 
         @Override
         public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonNull()) {
+                return null;
+            }
+
             JsonPrimitive primitive = json.getAsJsonPrimitive();
             if (primitive.isNumber()) {
                 long timestamp = primitive.getAsLong();
                 return new LocalTime(timestamp);
             } else if (primitive.isString()) {
-                return format.parseLocalTime(primitive.getAsString());
+                String asString = primitive.getAsString();
+                if (TextUtils.isEmpty(asString)) {
+                    return null;
+                } else {
+                    return format.parseLocalTime(asString);
+                }
             } else {
                 throw new JsonParseException("Unexpected primitive " + primitive);
             }
