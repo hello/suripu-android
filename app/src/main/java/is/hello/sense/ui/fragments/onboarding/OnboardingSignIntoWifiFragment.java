@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
@@ -265,13 +267,24 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
             );
+            String updateEvent;
             if (isWifiOnlySession()) {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
+                updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
             } else {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
+                updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
             }
 
+            AtomicReference<SenseCommandProtos.wifi_connection_state> lastState = new AtomicReference<>(null);
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), state -> {
+                JSONObject updateProperties = Analytics.createProperties(
+                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, state.toString()
+                );
+                Analytics.trackEvent(updateEvent, updateProperties);
+
+                lastState.set(state);
+
                 if (state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
                     this.hasConnectedToNetwork = true;
                     preferences.edit()
@@ -281,7 +294,10 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 } else {
                     showBlockingActivity(Styles.getConnectStatusMessage(state));
                 }
-            }, e -> presentError(e, "Setting WiFi"));
+            }, e -> {
+                String operation = lastState.get() == null ? "Setting WiFi" : lastState.get().toString();
+                presentError(e, operation);
+            });
         }, e -> presentError(e, "Turning on LEDs"));
     }
 
