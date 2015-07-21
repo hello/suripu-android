@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
+import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -276,23 +277,25 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
             }
 
-            AtomicReference<SenseCommandProtos.wifi_connection_state> lastState = new AtomicReference<>(null);
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), state -> {
+            AtomicReference<SensePeripheral.WiFiConnectStatus> lastState = new AtomicReference<>(null);
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
                 JSONObject updateProperties = Analytics.createProperties(
-                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, state.toString()
+                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
+                    Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
+                    Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
                 );
                 Analytics.trackEvent(updateEvent, updateProperties);
 
-                lastState.set(state);
+                lastState.set(status);
 
-                if (state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
+                if (status.state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
                     this.hasConnectedToNetwork = true;
                     preferences.edit()
                             .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
                             .apply();
                     sendAccessToken();
                 } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(state));
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, e -> {
                 String operation = lastState.get() == null ? "Setting WiFi" : lastState.get().toString();

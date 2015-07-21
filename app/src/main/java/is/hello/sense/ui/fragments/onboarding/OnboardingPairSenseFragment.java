@@ -223,7 +223,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     checkConnectivityAndContinue();
                 } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, e -> presentError(e, "Connecting to Sense"));
         }
