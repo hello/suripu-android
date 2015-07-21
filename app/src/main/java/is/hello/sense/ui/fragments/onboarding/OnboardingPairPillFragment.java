@@ -152,7 +152,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     pairPill();
                 } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, this::presentError);
             return;
