@@ -259,6 +259,24 @@ public class Analytics {
         String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
+         * Internal logging updates from Sense.
+         *
+         * @see #PROP_SENSE_WIFI_STATUS
+         */
+        String EVENT_SENSE_WIFI_UPDATE = "Onboarding Sense WiFi Update";
+
+        /**
+         * Internal logging updates from Sense in app.
+         *
+         * @see #PROP_SENSE_WIFI_STATUS
+         */
+        String EVENT_SENSE_WIFI_UPDATE_IN_APP = "Sense WiFi Update";
+
+        String PROP_SENSE_WIFI_STATUS = "status";
+        String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
+        String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
+
+        /**
          * When the user lands on the "Sleep Pill" intro screen.
          */
         String EVENT_PILL_INTRO = "Onboarding Sleep Pill";

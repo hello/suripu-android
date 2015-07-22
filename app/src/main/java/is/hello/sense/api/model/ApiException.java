@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import javax.net.ssl.SSLException;
+
 import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
@@ -82,7 +84,12 @@ public class ApiException extends Exception implements Errors.Reporting {
     @Override
     public StringRef getDisplayMessage() {
         if (isNetworkError()) {
-            return StringRef.from(R.string.error_network_unavailable);
+            Throwable cause = networkStackError.getCause();
+            if (cause instanceof SSLException) {
+                return StringRef.from(R.string.error_network_ssl_failure);
+            } else {
+                return StringRef.from(R.string.error_network_unavailable);
+            }
         } else if (getErrorResponse() != null) {
             RegistrationError registrationError = RegistrationError.fromString(getErrorResponse().getMessage());
             if (registrationError != RegistrationError.UNKNOWN) {

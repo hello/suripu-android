@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Errors;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
@@ -187,7 +189,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void conditionUnavailable(@NonNull Throwable e) {
         Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
         readingText.setText(R.string.missing_data_placeholder);
-        messageText.setText(e.getMessage());
+        StringRef errorMessage = Errors.getDisplayMessage(e);
+        if (errorMessage != null) {
+            messageText.setText(errorMessage.resolve(getActivity()));
+        } else {
+            messageText.setText(R.string.dialog_error_generic_message);
+        }
         insightText.setText(null);
     }
 

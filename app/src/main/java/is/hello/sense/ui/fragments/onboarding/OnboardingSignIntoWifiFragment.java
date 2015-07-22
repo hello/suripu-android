@@ -24,9 +24,12 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
+import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -36,6 +39,7 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -264,19 +268,39 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
             );
+            String updateEvent;
             if (isWifiOnlySession()) {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
+                updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
             } else {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
+                updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
             }
 
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), ignored -> {
-                this.hasConnectedToNetwork = true;
-                preferences.edit()
-                        .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
-                        .apply();
-                sendAccessToken();
-            }, e -> presentError(e, "Setting WiFi"));
+            AtomicReference<SensePeripheral.WiFiConnectStatus> lastState = new AtomicReference<>(null);
+            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
+                JSONObject updateProperties = Analytics.createProperties(
+                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
+                    Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
+                    Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
+                );
+                Analytics.trackEvent(updateEvent, updateProperties);
+
+                lastState.set(status);
+
+                if (status.state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
+                    this.hasConnectedToNetwork = true;
+                    preferences.edit()
+                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
+                            .apply();
+                    sendAccessToken();
+                } else {
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
+                }
+            }, e -> {
+                String operation = lastState.get() == null ? "Setting WiFi" : lastState.get().toString();
+                presentError(e, operation);
+            });
         }, e -> presentError(e, "Turning on LEDs"));
     }
 
@@ -331,8 +355,12 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-            dialogFragment.setErrorOperation(operation);
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+                    .withOperation(operation)
+                    .withSupportLink();
+
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
 

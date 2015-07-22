@@ -20,6 +20,7 @@ import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.Peripheral;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -201,6 +202,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
             dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
             dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> LoadingDialogFragment.close(getFragmentManager()));
+            dialog.setCancelable(false);
             dialog.show();
         } else {
             completePeripheralPair();
@@ -223,7 +225,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     checkConnectivityAndContinue();
                 } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, e -> presentError(e, "Connecting to Sense"));
         }
@@ -234,12 +236,15 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             if (OPERATION_LINK_ACCOUNT.equals(operation)) {
                 this.linkAccountFailures++;
                 if (linkAccountFailures >= LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI) {
-                    ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_link_account_failed_multiple_times);
-                    dialogFragment.setAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network);
+                    ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                            .withMessage(StringRef.from(R.string.error_link_account_failed_multiple_times))
+                            .withAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network)
+                            .withOperation(operation)
+                            .withSupportLink()
+                            .build();
+
                     dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_WIFI);
-                    dialogFragment.setErrorOperation(operation);
-                    dialogFragment.setShowSupportLink(true);
-                    dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                    dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
 
                     Analytics.trackError(e, operation);
                     return;
@@ -260,8 +265,11 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
                 Analytics.trackError(e, operation);
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-                dialogFragment.setErrorOperation(operation);
+                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e)
+                        .withUnstableBluetoothHelp()
+                        .withOperation(operation)
+                        .build();
+                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             }
         });
     }

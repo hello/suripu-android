@@ -15,13 +15,13 @@ import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheralError;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
@@ -152,7 +152,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     pairPill();
                 } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, this::presentError);
             return;
@@ -178,25 +178,22 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             skipButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.VISIBLE);
 
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+            errorDialogBuilder.withOperation("Pair Pill");
             if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-                MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(getString(R.string.error_title_sleep_pill_scan_timeout), getString(R.string.error_message_sleep_pill_scan_timeout));
-                messageDialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
-
-                Analytics.trackError(e, "Pair Pill");
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_network_failure_pair_pill));
-                dialogFragment.setErrorOperation("Pair Pill");
-                dialogFragment.setShowSupportLink(true);
-                dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
+                errorDialogBuilder.withSupportLink();
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.DEVICE_ALREADY_PAIRED)) {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_pill_already_paired));
-                dialogFragment.setErrorOperation("Pair Pill");
-                dialogFragment.setShowSupportLink(true);
-                dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_pill_already_paired));
+                errorDialogBuilder.withSupportLink();
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-                dialogFragment.setErrorOperation("Pair Pill");
+                errorDialogBuilder.withUnstableBluetoothHelp();
             }
+
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
 }

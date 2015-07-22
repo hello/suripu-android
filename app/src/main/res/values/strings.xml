@@ -28,7 +28,6 @@
     <string name="device_state_unknown">Unknown</string>
 
     <string name="dialog_error_title">Error</string>
-    <string name="dialog_error_title_fatal">Fatal Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_loading_message">Loading…</string>
     <string name="timeline_error_message">Could not load timeline</string>
@@ -75,6 +74,12 @@
     <string name="info_sense_pairing_mode_help">Before you connect your phone, Sense needs to be put into Pairing Mode.\n\nPlace your hand directly on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
+    <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
+    <string name="title_connecting_network_ip_retrieved">@string/title_connecting_network</string>
+    <string name="title_connecting_network_dns_resolved">@string/title_connecting_network</string>
+    <string name="title_connecting_network_socket_connected">@string/title_connecting_network</string>
+    <string name="title_connecting_network_request_sent">@string/title_connecting_network</string>
+    <string name="title_connecting_network_connect_failed">Failed to Connect, Retrying</string>
     <string name="wifi_network_secured">Secured Network</string>
     <string name="wifi_network_was_scanned">Scanned</string>
     <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>
@@ -173,7 +178,7 @@ so you can sleep better.</string>
     <string name="action_setup_another_pill">Set up another Sleep Pill now</string>
     <string name="action_no_thanks">Not Right Now</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the Sense app.</string>
-    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode. Have your partner visit <b>senseapp.com</b> on their mobile device to download the Sense app, and create a new account.\n\nThey will be given instructions to set up their Sleep Pill.</string>
+    <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode. Have your partner visit <b>http://senseapp.com</b> on their mobile device to download the Sense app, and create a new account.\n\nThey will be given instructions to set up their Sleep Pill.</string>
     <string name="label_finding_wifi_networks">Finding Wifi Networks…</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
@@ -374,6 +379,7 @@ so you can sleep better.</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
     <string name="error_network_unavailable">Check your connection and try again.</string>
+    <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
     <string name="error_no_email_client">Could not find an email app.</string>
@@ -429,9 +435,15 @@ so you can sleep better.</string>
     <string name="action_timeline_event_remove">Remove this event</string>
     <string name="action_timeline_event_incorrect">Mark as incorrect</string>
 
-    <string name="condition_short_hand_alert">was uncomfortable</string>
-    <string name="condition_short_hand_warning">was not ideal</string>
-    <string name="condition_short_hand_ideal">was ideal</string>
+    <string name="condition_short_hand_alert_sound">way too loud</string>
+    <string name="condition_short_hand_alert_aqi">poor</string>
+    <string name="condition_short_hand_alert_light">way too bright</string>
+    <string name="condition_short_hand_alert">uncomfortable</string>
+    <string name="condition_short_hand_warning_sound">a little loud</string>
+    <string name="condition_short_hand_warning_aqi">okay</string>
+    <string name="condition_short_hand_warning_light">a bit bright</string>
+    <string name="condition_short_hand_warning">not ideal</string>
+    <string name="condition_short_hand_ideal">just right</string>
     <string name="dialog_title_alarm_sound_volume_low">Low Volume</string>
     <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm sound preview. Would you like us to turn it up?</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>

@@ -18,6 +18,7 @@ import is.hello.sense.R;
 public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     private final LayoutInflater layoutInflater;
     private final Resources resources;
+    private @Nullable TextUtils.TruncateAt ellipsize = null;
 
     public StaticItemAdapter(Context context) {
         super(context, R.layout.item_static_text);
@@ -26,6 +27,10 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         this.resources = context.getResources();
     }
 
+    public void setEllipsize(@Nullable TextUtils.TruncateAt ellipsize) {
+        this.ellipsize = ellipsize;
+        notifyDataSetChanged();
+    }
 
     //region Adding Items
 
@@ -148,6 +153,8 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
                 TextItemViewHolder holder = (TextItemViewHolder) view.getTag();
                 holder.title.setText(textItem.getTitle());
                 holder.detail.setText(textItem.getDetail());
+                holder.detail.setEllipsize(ellipsize);
+                holder.detail.setSingleLine(ellipsize != null);
 
                 break;
             }

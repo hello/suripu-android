@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
@@ -198,8 +199,11 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
                 DeviceListFragment.startStandaloneFrom(getActivity());
             };
         } else {
-            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
-                    StringRef.from(e.getMessage()));
+            StringRef errorMessage = Errors.getDisplayMessage(e);
+            if (errorMessage == null) {
+                errorMessage = StringRef.from(R.string.dialog_error_generic_message);
+            }
+            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title, errorMessage);
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         }
@@ -212,15 +216,15 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void presentError(Throwable e) {
         finishLoading(true);
 
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
+
         } else if (ApiException.statusEquals(e, 400)) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_clock_drift));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
         }
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
 

@@ -175,8 +175,12 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
 
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-            dialogFragment.setErrorOperation("Scan for networks");
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+                    .withOperation("Scan for networks")
+                    .withSupportLink();
+
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }, null);
     }
 
@@ -188,7 +192,11 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         rescanButton.setVisibility(View.VISIBLE);
         rescanButton.setEnabled(true);
 
-        ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-        dialogFragment.setErrorOperation("Scan for networks");
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+                .withOperation("Scan for networks")
+                .withSupportLink();
+
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }

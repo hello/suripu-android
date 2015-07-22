@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.SessionLogger;
@@ -104,8 +105,11 @@ public class SessionLogViewerActivity extends SenseActivity {
                     .fadeOut(View.GONE)
                     .start();
 
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(description);
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+                    .withMessage(StringRef.from(description))
+                    .withContextInfo(failingUrl)
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }
     }
 }

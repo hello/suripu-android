@@ -361,16 +361,16 @@ import rx.functions.Action1;
                 .doOnError(this.respondToError));
     }
 
-    public Observable<Void> sendWifiCredentials(@NonNull String ssid,
-                                                @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
-                                                @NonNull String password) {
+    public Observable<SensePeripheral.WiFiConnectStatus> sendWifiCredentials(@NonNull String ssid,
+                                                                             @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
+                                                                             @NonNull String password) {
         logEvent("sendWifiCredentials()");
 
         if (peripheral == null) {
             return noDeviceError();
         }
 
-        return peripheral.setWifiNetwork(ssid, securityType, password)
+        return peripheral.connectToWiFiNetwork(ssid, securityType, password)
                          .subscribeOn(Rx.mainThreadScheduler())
                          .doOnError(this.respondToError);
     }

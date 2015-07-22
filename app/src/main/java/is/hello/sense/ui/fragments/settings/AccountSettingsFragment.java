@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,6 +96,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
+        adapter.setEllipsize(TextUtils.TruncateAt.END);
 
         adapter.addSectionTitle(R.string.title_info);
         this.nameItem = adapter.addTextItem(R.string.label_name, R.string.missing_data_placeholder, this::changeName);
@@ -236,9 +238,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     public void accountUnavailable(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(e);
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
-        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void bindAccountPreferences(@NonNull HashMap<AccountPreference.Key, Object> settings) {

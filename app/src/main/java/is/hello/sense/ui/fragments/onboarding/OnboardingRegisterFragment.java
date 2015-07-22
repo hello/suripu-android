@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
@@ -198,22 +199,26 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
         bindAndSubscribe(apiService.createAccount(newAccount), this::login, error -> {
             LoadingDialogFragment.close(getFragmentManager());
-            if (ApiException.statusEquals(error, 409)) {
-                String errorMessage = getString(R.string.error_account_email_taken, newAccount.getEmail());
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(errorMessage);
-                dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-            } else if (ApiException.statusEquals(error, 400)) {
+
+            if (ApiException.statusEquals(error, 400)) {
                 ApiException apiError = (ApiException) error;
                 ErrorResponse errorResponse = apiError.getErrorResponse();
                 if (errorResponse != null) {
                     RegistrationError registrationError = RegistrationError.fromString(errorResponse.getMessage());
                     displayRegistrationError(registrationError);
-                } else {
-                    ErrorDialogFragment.presentError(getFragmentManager(), error);
+
+                    return;
                 }
-            } else {
-                ErrorDialogFragment.presentError(getFragmentManager(), error);
             }
+
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error);
+
+            if (ApiException.statusEquals(error, 409)) {
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, newAccount.getEmail()));
+            }
+
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
 
@@ -221,7 +226,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
-            preferences.pullAccountPreferences().subscribe();
+            preferences.pushAccountPreferences().subscribe();
 
             Analytics.trackRegistration(session.getAccountId(), createdAccount.getName(), DateTime.now());
 

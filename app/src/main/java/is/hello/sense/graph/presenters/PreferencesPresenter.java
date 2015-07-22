@@ -115,7 +115,8 @@ import rx.subscriptions.Subscriptions;
         AccountPreference use24Time = new AccountPreference(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
         use24Time.setEnabled(getUse24Time());
         AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELSIUS);
-        useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, UsCustomaryUnitSystem.NAME)));
+        String defaultSystemName = UnitSystem.getLocaleUnitSystemName(Locale.getDefault());
+        useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, defaultSystemName)));
 
         return Observable.combineLatest(accountPresenter.updatePreference(use24Time),
                                         accountPresenter.updatePreference(useMetric),
