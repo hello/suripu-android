@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,6 +96,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
+        adapter.setEllipsize(TextUtils.TruncateAt.END);
 
         adapter.addSectionTitle(R.string.title_info);
         this.nameItem = adapter.addTextItem(R.string.label_name, R.string.missing_data_placeholder, this::changeName);
