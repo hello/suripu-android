@@ -31,7 +31,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     private static final String ARG_ERROR_OPERATION = ErrorDialogFragment.class.getName() + ".ARG_ERROR_OPERATION";
 
     private static final String ARG_SHOW_SUPPORT_LINK = ErrorDialogFragment.class.getName() + ".ARG_SHOW_SUPPORT_LINK";
-    private static final String ARG_FATAL_MESSAGE_RES = ErrorDialogFragment.class.getName() + ".ARG_FATAL_MESSAGE_RES";
+    private static final String ARG_ADDENDUM_RES = ErrorDialogFragment.class.getName() + ".ARG_ADDENDUM_RES";
 
     private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
     private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
@@ -41,53 +41,56 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     //region Creation
 
     public static ErrorDialogFragment presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
-        ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(e);
+        ErrorDialogFragment fragment = new Builder()
+                .setError(e)
+                .create();
         fragment.showAllowingStateLoss(fm, TAG);
         return fragment;
     }
 
     public static ErrorDialogFragment presentBluetoothError(@NonNull FragmentManager fm, @NonNull Throwable e) {
-        ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(e);
+        Builder builder = new Builder()
+                .setError(e)
+                .setShowSupportLink(true);
+
         if (BluetoothError.isFatal(e)) {
             Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
             intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri()));
-            dialogFragment.setAction(intent, R.string.action_more_info);
-            dialogFragment.setAddendum(R.string.error_addendum_unstable_stack);
+            builder.setAction(intent, R.string.action_more_info);
+            builder.setAddendum(R.string.error_addendum_unstable_stack);
         }
-        dialogFragment.setShowSupportLink(true);
-        dialogFragment.showAllowingStateLoss(fm, TAG);
 
+        ErrorDialogFragment dialogFragment = builder.create();
+        dialogFragment.showAllowingStateLoss(fm, TAG);
         return dialogFragment;
     }
 
+    @Deprecated
     public static ErrorDialogFragment newInstance(@Nullable Throwable e) {
-        ErrorDialogFragment fragment = new ErrorDialogFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_ERROR_MESSAGE, Errors.getDisplayMessage(e));
-        arguments.putString(ARG_ERROR_TYPE, Errors.getType(e));
-        arguments.putString(ARG_ERROR_CONTEXT, Errors.getContextInfo(e));
-        fragment.setArguments(arguments);
-
-        return fragment;
+        return new Builder()
+                .setError(e)
+                .create();
     }
 
+    @Deprecated
     public static ErrorDialogFragment newInstance(@NonNull String message) {
-        return newInstance(StringRef.from(message));
+        return new Builder()
+                .setMessage(StringRef.from(message))
+                .create();
     }
 
+    @Deprecated
     public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
-        return newInstance(StringRef.from(messageRes));
+        return new Builder()
+                .setMessage(StringRef.from(messageRes))
+                .create();
     }
 
+    @Deprecated
     public static ErrorDialogFragment newInstance(@NonNull StringRef message) {
-        ErrorDialogFragment fragment = new ErrorDialogFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_ERROR_MESSAGE, message);
-        fragment.setArguments(arguments);
-
-        return fragment;
+        return new Builder()
+                .setMessage(message)
+                .create();
     }
 
     //endregion
@@ -106,7 +109,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
-        boolean isFatal = getArguments().containsKey(ARG_FATAL_MESSAGE_RES);
+        boolean isFatal = getArguments().containsKey(ARG_ADDENDUM_RES);
         if (isFatal) {
             dialog.setTitle(R.string.dialog_error_title_fatal);
             dialog.setTitleColor(getResources().getColor(R.color.destructive_accent));
@@ -161,9 +164,9 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             message = getString(R.string.dialog_error_generic_message);
         }
 
-        if (getArguments().containsKey(ARG_FATAL_MESSAGE_RES)) {
+        if (getArguments().containsKey(ARG_ADDENDUM_RES)) {
             SpannableStringBuilder messageBuilder = new SpannableStringBuilder(message);
-            int fatalMessageRes = getArguments().getInt(ARG_FATAL_MESSAGE_RES);
+            int fatalMessageRes = getArguments().getInt(ARG_ADDENDUM_RES);
             messageBuilder.append(getText(fatalMessageRes));
             return messageBuilder;
         } else {
@@ -175,8 +178,9 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     //region Errors
 
+    @Deprecated
     private void setAddendum(@StringRes int messageRes) {
-        getArguments().putInt(ARG_FATAL_MESSAGE_RES, messageRes);
+        getArguments().putInt(ARG_ADDENDUM_RES, messageRes);
     }
 
     private @Nullable StringRef getErrorMessage() {
@@ -195,6 +199,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         return getArguments().getString(ARG_ERROR_OPERATION);
     }
 
+    @Deprecated
     public void setErrorOperation(@Nullable String errorType) {
         getArguments().putString(ARG_ERROR_OPERATION, errorType);
     }
@@ -208,19 +213,82 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         return getArguments().getBoolean(ARG_SHOW_SUPPORT_LINK, false);
     }
 
+    @Deprecated
     public void setShowSupportLink(boolean show) {
         getArguments().putBoolean(ARG_SHOW_SUPPORT_LINK, show);
     }
 
+    @Deprecated
     public void setAction(@NonNull Intent intent, @StringRes int titleRes) {
         getArguments().putParcelable(ARG_ACTION_INTENT, intent);
         getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
 
+    @Deprecated
     public void setAction(int resultCode, @StringRes int titleRes) {
         getArguments().putInt(ARG_ACTION_RESULT_CODE, resultCode);
         getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
 
     //endregion
+
+
+    public static class Builder {
+        private final Bundle arguments = new Bundle();
+
+        public Builder setError(Throwable e) {
+            setMessage(Errors.getDisplayMessage(e));
+            setType(Errors.getType(e));
+            setContextInfo(Errors.getContextInfo(e));
+            return this;
+        }
+
+        public Builder setMessage(StringRef message) {
+            arguments.putParcelable(ARG_ERROR_MESSAGE, message);
+            return this;
+        }
+
+        public Builder setType(String type) {
+            arguments.putString(ARG_ERROR_TYPE, type);
+            return this;
+        }
+
+        public Builder setContextInfo(String contextInfo) {
+            arguments.putString(ARG_ERROR_CONTEXT, contextInfo);
+            return this;
+        }
+
+        public Builder setOperation(String operation) {
+            arguments.putString(ARG_ERROR_OPERATION, operation);
+            return this;
+        }
+
+        public Builder setShowSupportLink(boolean show) {
+            arguments.putBoolean(ARG_SHOW_SUPPORT_LINK, show);
+            return this;
+        }
+
+        public Builder setAddendum(@StringRes int messageRes) {
+            arguments.putInt(ARG_ADDENDUM_RES, messageRes);
+            return this;
+        }
+
+        public Builder setAction(@NonNull Intent intent, @StringRes int titleRes) {
+            arguments.putParcelable(ARG_ACTION_INTENT, intent);
+            arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
+            return this;
+        }
+
+        public Builder setAction(int resultCode, @StringRes int titleRes) {
+            arguments.putInt(ARG_ACTION_RESULT_CODE, resultCode);
+            arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
+            return this;
+        }
+
+        public ErrorDialogFragment create() {
+            ErrorDialogFragment instance = new ErrorDialogFragment();
+            instance.setArguments(arguments);
+            return instance;
+        }
+    }
 }
