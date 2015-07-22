@@ -413,7 +413,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
             adapter.bindEvents(timeline.getEvents());
 
-            toolbar.setShareVisible(hasEvents);
+            toolbar.setShareVisible(hasEvents && !homeActivity.isUndersideVisible());
         });
 
         if (hasEvents) {
