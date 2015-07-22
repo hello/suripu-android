@@ -182,10 +182,8 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     public void pullingPreferencesFailed(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
 
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                .setError(e)
-                .create();
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
-        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }

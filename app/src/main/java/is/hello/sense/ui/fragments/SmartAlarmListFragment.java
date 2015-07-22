@@ -216,15 +216,14 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void presentError(Throwable e) {
         finishLoading(true);
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
-        errorDialogBuilder.setError(e);
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
-            errorDialogBuilder.setMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
+            errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
 
         } else if (ApiException.statusEquals(e, 400)) {
-            errorDialogBuilder.setMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
+            errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
         }
-        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 

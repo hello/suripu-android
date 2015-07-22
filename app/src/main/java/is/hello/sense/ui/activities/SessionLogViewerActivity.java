@@ -106,9 +106,9 @@ public class SessionLogViewerActivity extends SenseActivity {
                     .start();
 
             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .setMessage(StringRef.from(description))
-                    .setContextInfo(failingUrl)
-                    .create();
+                    .withMessage(StringRef.from(description))
+                    .withContextInfo(failingUrl)
+                    .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }
     }

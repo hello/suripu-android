@@ -171,7 +171,10 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void presentError(Throwable e) {
         hideLoadingIndicator();
-        ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e)
+                .withSupportLink()
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     //endregion

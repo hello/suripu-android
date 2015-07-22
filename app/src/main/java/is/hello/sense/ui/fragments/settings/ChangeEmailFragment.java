@@ -112,13 +112,13 @@ public class ChangeEmailFragment extends InjectionFragment {
     public void presentError(@Nullable Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
-        errorDialogBuilder.setError(e);
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+
         if (ApiException.statusEquals(e, 409)) {
-            errorDialogBuilder.setMessage(StringRef.from(R.string.error_account_email_taken, email.getText().toString()));
+            errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, email.getText().toString()));
         }
 
-        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }

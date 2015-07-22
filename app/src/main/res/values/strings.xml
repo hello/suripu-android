@@ -28,7 +28,6 @@
     <string name="device_state_unknown">Unknown</string>
 
     <string name="dialog_error_title">Error</string>
-    <string name="dialog_error_title_fatal">Fatal Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_loading_message">Loading…</string>
     <string name="timeline_error_message">Could not load timeline</string>

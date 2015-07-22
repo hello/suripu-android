@@ -113,18 +113,18 @@ public class ChangePasswordFragment extends InjectionFragment {
 
         if (!AccountPresenter.validatePassword(newPassword.getText())) {
             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .setMessage(StringRef.from(R.string.error_account_password_too_short))
-                    .create();
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                    .withMessage(StringRef.from(R.string.error_account_password_too_short))
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             newPassword.requestFocus();
             return;
         }
 
         if (!TextUtils.equals(newPassword.getText(), confirmNewPassword.getText())) {
             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .setMessage(StringRef.from(R.string.error_mismatching_new_passwords))
-                    .create();
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                    .withMessage(StringRef.from(R.string.error_mismatching_new_passwords))
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             return;
         }
 
@@ -151,13 +151,12 @@ public class ChangePasswordFragment extends InjectionFragment {
     public void presentError(@Nullable Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
-        errorDialogBuilder.setError(e);
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
         if (ApiException.statusEquals(e, 409)) {
-            errorDialogBuilder.setMessage(StringRef.from(R.string.error_message_current_pw_wrong));
+            errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_current_pw_wrong));
         }
 
-        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }

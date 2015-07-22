@@ -211,14 +211,13 @@ public class OnboardingRegisterFragment extends InjectionFragment {
                 }
             }
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
-            errorDialogBuilder.setError(error);
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error);
 
             if (ApiException.statusEquals(error, 409)) {
-                errorDialogBuilder.setMessage(StringRef.from(R.string.error_account_email_taken, newAccount.getEmail()));
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, newAccount.getEmail()));
             }
 
-            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }

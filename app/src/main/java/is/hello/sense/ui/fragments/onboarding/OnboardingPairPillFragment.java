@@ -178,22 +178,21 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             skipButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.VISIBLE);
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
-            errorDialogBuilder.setError(e);
-            errorDialogBuilder.setOperation("Pair Pill");
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+            errorDialogBuilder.withOperation("Pair Pill");
             if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-                errorDialogBuilder.setMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
-                errorDialogBuilder.setMessage(StringRef.from(R.string.error_network_failure_pair_pill));
-                errorDialogBuilder.setShowSupportLink(true);
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
+                errorDialogBuilder.withSupportLink();
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.DEVICE_ALREADY_PAIRED)) {
-                errorDialogBuilder.setMessage(StringRef.from(R.string.error_pill_already_paired));
-                errorDialogBuilder.setShowSupportLink(true);
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_pill_already_paired));
+                errorDialogBuilder.withSupportLink();
             } else {
-                errorDialogBuilder.showBluetoothInfo();
+                errorDialogBuilder.withUnstableBluetoothHelp();
             }
 
-            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }

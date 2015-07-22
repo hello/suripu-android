@@ -47,10 +47,10 @@ public class VideoPlayerActivity extends SenseActivity {
 
         videoView.setOnErrorListener((player, what, extra) -> {
             ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
-            errorDialogBuilder.setMessage(StringRef.from(R.string.video_playback_generic_error));
-            errorDialogBuilder.setContextInfo(what + " " + extra);
+            errorDialogBuilder.withMessage(StringRef.from(R.string.video_playback_generic_error));
+            errorDialogBuilder.withContextInfo(what + " " + extra);
 
-            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
 
             return true;

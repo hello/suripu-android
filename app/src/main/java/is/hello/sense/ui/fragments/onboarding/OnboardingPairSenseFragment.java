@@ -237,14 +237,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 this.linkAccountFailures++;
                 if (linkAccountFailures >= LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI) {
                     ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                            .setMessage(StringRef.from(R.string.error_link_account_failed_multiple_times))
-                            .setAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network)
-                            .setOperation(operation)
-                            .setShowSupportLink(true)
-                            .create();
+                            .withMessage(StringRef.from(R.string.error_link_account_failed_multiple_times))
+                            .withAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network)
+                            .withOperation(operation)
+                            .withSupportLink()
+                            .build();
 
                     dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_WIFI);
-                    dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                    dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
 
                     Analytics.trackError(e, operation);
                     return;
@@ -265,10 +265,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
                 Analytics.trackError(e, operation);
             } else {
-                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                        .setError(e)
-                        .showBluetoothInfo()
-                        .setOperation(operation).create();
+                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e)
+                        .withUnstableBluetoothHelp()
+                        .withOperation(operation)
+                        .build();
                 dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             }
         });

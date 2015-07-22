@@ -120,9 +120,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .setMessage(StringRef.from(R.string.error_account_incomplete_credentials))
-                    .create();
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+                    .withMessage(StringRef.from(R.string.error_account_incomplete_credentials))
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             return;
         }
 
@@ -141,14 +141,14 @@ public class OnboardingSignInFragment extends InjectionFragment {
             getOnboardingActivity().showHomeActivity();
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
+
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error);
             if (ApiException.statusEquals(error, 401)) {
-                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                        .setMessage(StringRef.from(R.string.error_account_invalid_credentials))
-                        .create();
-                dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-            } else {
-                ErrorDialogFragment.presentError(getFragmentManager(), error);
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_invalid_credentials));
             }
+
+            ErrorDialogFragment dialogFragment = errorDialogBuilder.build();
+            dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
 
