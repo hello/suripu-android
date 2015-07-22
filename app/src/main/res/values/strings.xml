@@ -380,6 +380,7 @@ so you can sleep better.</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
     <string name="error_network_unavailable">Check your connection and try again.</string>
+    <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
     <string name="error_no_email_client">Could not find an email app.</string>

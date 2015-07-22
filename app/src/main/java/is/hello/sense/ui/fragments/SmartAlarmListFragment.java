@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
@@ -198,8 +199,11 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
                 DeviceListFragment.startStandaloneFrom(getActivity());
             };
         } else {
-            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
-                    StringRef.from(e.getMessage()));
+            StringRef errorMessage = Errors.getDisplayMessage(e);
+            if (errorMessage == null) {
+                errorMessage = StringRef.from(R.string.dialog_error_generic_message);
+            }
+            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title, errorMessage);
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         }
