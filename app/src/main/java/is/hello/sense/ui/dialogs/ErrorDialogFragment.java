@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 import android.text.SpannableStringBuilder;
 
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
@@ -61,10 +62,11 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         dialog.setMessage(message);
 
         Bundle arguments = getArguments();
+
         String errorType = arguments.getString(ARG_ERROR_TYPE);
         String contextInfo = arguments.getString(ARG_CONTEXT_INFO);
         String operation = arguments.getString(ARG_OPERATION);
-        Analytics.trackError(message.toString(), errorType, contextInfo, operation);
+        trackError(message.toString(), errorType, contextInfo, operation);
 
         if (getTargetFragment() != null) {
             dialog.setNegativeButton(android.R.string.ok, (ignored, which) -> {
@@ -94,7 +96,22 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         return dialog;
     }
 
-    private CharSequence generateDisplayMessage() {
+    //endregion
+
+
+    //region Internal
+
+    /**
+     * Hook for test case.
+     */
+    @VisibleForTesting void trackError(@NonNull String message,
+                                       @Nullable String errorType,
+                                       @Nullable String errorContext,
+                                       @Nullable String errorOperation) {
+        Analytics.trackError(message, errorType, errorContext, errorOperation);
+    }
+
+    @VisibleForTesting CharSequence generateDisplayMessage() {
         Bundle arguments = getArguments();
 
         CharSequence message;
@@ -126,7 +143,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
 
     public static class Builder {
-        private final Bundle arguments = new Bundle();
+        protected final Bundle arguments = new Bundle();
 
         public Builder() {
         }
