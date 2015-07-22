@@ -201,7 +201,7 @@ public class SenseAlertDialog extends Dialog {
      * @see android.content.DialogInterface#BUTTON_POSITIVE
      * @see android.content.DialogInterface#BUTTON_NEGATIVE
      */
-    protected Button getButton(int which) {
+    public Button getButton(int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 return positiveButton;

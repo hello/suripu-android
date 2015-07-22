@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
@@ -118,8 +119,10 @@ public class OnboardingSignInFragment extends InjectionFragment {
         String password = this.passwordText.getText().toString();
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_incomplete_credentials));
-            errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+                    .withMessage(StringRef.from(R.string.error_account_incomplete_credentials))
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             return;
         }
 
@@ -138,12 +141,14 @@ public class OnboardingSignInFragment extends InjectionFragment {
             getOnboardingActivity().showHomeActivity();
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
+
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error);
             if (ApiException.statusEquals(error, 401)) {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_invalid_credentials));
-                dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-            } else {
-                ErrorDialogFragment.presentError(getFragmentManager(), error);
+                errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_invalid_credentials));
             }
+
+            ErrorDialogFragment dialogFragment = errorDialogBuilder.build();
+            dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
 

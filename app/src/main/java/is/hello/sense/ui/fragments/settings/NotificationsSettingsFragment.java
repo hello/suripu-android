@@ -127,9 +127,9 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     public void preferencesUnavailable(@NonNull Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
 
-        ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(e);
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
-        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     //endregion

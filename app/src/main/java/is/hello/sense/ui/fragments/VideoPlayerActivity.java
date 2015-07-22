@@ -8,6 +8,7 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -45,8 +46,13 @@ public class VideoPlayerActivity extends SenseActivity {
         videoView.setOnPreparedListener((player) -> animate(loadingIndicator).fadeOut(View.GONE).start());
 
         videoView.setOnErrorListener((player, what, extra) -> {
-            ErrorDialogFragment fragment = ErrorDialogFragment.newInstance(getString(R.string.video_playback_generic_error));
-            fragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
+            errorDialogBuilder.withMessage(StringRef.from(R.string.video_playback_generic_error));
+            errorDialogBuilder.withContextInfo(what + " " + extra);
+
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
             return true;
         });
         videoView.setOnCompletionListener((player) -> finish());

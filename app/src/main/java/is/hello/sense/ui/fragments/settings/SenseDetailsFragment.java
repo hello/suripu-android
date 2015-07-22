@@ -308,8 +308,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
             Analytics.trackError(e, "Sense Details");
         } else {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-            dialogFragment.setErrorOperation("Sense Details");
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+                    .withOperation("Sense Details")
+                    .withSupportLink();
+
+            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }
 
         showRestrictedSenseActions();
