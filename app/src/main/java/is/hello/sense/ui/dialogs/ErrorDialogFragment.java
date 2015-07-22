@@ -54,43 +54,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
                 .setShowSupportLink(true);
 
         if (BluetoothError.isFatal(e)) {
-            Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
-            intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri()));
-            builder.setAction(intent, R.string.action_more_info);
-            builder.setAddendum(R.string.error_addendum_unstable_stack);
+            builder.showBluetoothInfo();
         }
 
         ErrorDialogFragment dialogFragment = builder.create();
         dialogFragment.showAllowingStateLoss(fm, TAG);
         return dialogFragment;
-    }
-
-    @Deprecated
-    public static ErrorDialogFragment newInstance(@Nullable Throwable e) {
-        return new Builder()
-                .setError(e)
-                .create();
-    }
-
-    @Deprecated
-    public static ErrorDialogFragment newInstance(@NonNull String message) {
-        return new Builder()
-                .setMessage(StringRef.from(message))
-                .create();
-    }
-
-    @Deprecated
-    public static ErrorDialogFragment newInstance(@StringRes int messageRes) {
-        return new Builder()
-                .setMessage(StringRef.from(messageRes))
-                .create();
-    }
-
-    @Deprecated
-    public static ErrorDialogFragment newInstance(@NonNull StringRef message) {
-        return new Builder()
-                .setMessage(message)
-                .create();
     }
 
     //endregion
@@ -178,11 +147,6 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     //region Errors
 
-    @Deprecated
-    private void setAddendum(@StringRes int messageRes) {
-        getArguments().putInt(ARG_ADDENDUM_RES, messageRes);
-    }
-
     private @Nullable StringRef getErrorMessage() {
         return getArguments().getParcelable(ARG_ERROR_MESSAGE);
     }
@@ -211,23 +175,6 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     public boolean showSupportLink() {
         return getArguments().getBoolean(ARG_SHOW_SUPPORT_LINK, false);
-    }
-
-    @Deprecated
-    public void setShowSupportLink(boolean show) {
-        getArguments().putBoolean(ARG_SHOW_SUPPORT_LINK, show);
-    }
-
-    @Deprecated
-    public void setAction(@NonNull Intent intent, @StringRes int titleRes) {
-        getArguments().putParcelable(ARG_ACTION_INTENT, intent);
-        getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
-    }
-
-    @Deprecated
-    public void setAction(int resultCode, @StringRes int titleRes) {
-        getArguments().putInt(ARG_ACTION_RESULT_CODE, resultCode);
-        getArguments().putInt(ARG_ACTION_TITLE_RES, titleRes);
     }
 
     //endregion
@@ -282,6 +229,14 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         public Builder setAction(int resultCode, @StringRes int titleRes) {
             arguments.putInt(ARG_ACTION_RESULT_CODE, resultCode);
             arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
+            return this;
+        }
+
+        public Builder showBluetoothInfo() {
+            Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
+            intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri()));
+            setAction(intent, R.string.action_more_info);
+            setAddendum(R.string.error_addendum_unstable_stack);
             return this;
         }
 

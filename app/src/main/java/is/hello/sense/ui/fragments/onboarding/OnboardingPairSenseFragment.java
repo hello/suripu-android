@@ -20,6 +20,7 @@ import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.Peripheral;
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -235,11 +236,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             if (OPERATION_LINK_ACCOUNT.equals(operation)) {
                 this.linkAccountFailures++;
                 if (linkAccountFailures >= LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI) {
-                    ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_link_account_failed_multiple_times);
-                    dialogFragment.setAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network);
+                    ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                            .setMessage(StringRef.from(R.string.error_link_account_failed_multiple_times))
+                            .setAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network)
+                            .setOperation(operation)
+                            .setShowSupportLink(true)
+                            .create();
+
                     dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_WIFI);
-                    dialogFragment.setErrorOperation(operation);
-                    dialogFragment.setShowSupportLink(true);
                     dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
 
                     Analytics.trackError(e, operation);
@@ -261,8 +265,11 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
                 Analytics.trackError(e, operation);
             } else {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.presentBluetoothError(getFragmentManager(), e);
-                dialogFragment.setErrorOperation(operation);
+                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                        .setError(e)
+                        .showBluetoothInfo()
+                        .setOperation(operation).create();
+                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             }
         });
     }

@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
@@ -110,12 +111,14 @@ public class ChangeEmailFragment extends InjectionFragment {
 
     public void presentError(@Nullable Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
+
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
+        errorDialogBuilder.setError(e);
         if (ApiException.statusEquals(e, 409)) {
-            String errorMessage = getString(R.string.error_account_email_taken, email.getText());
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(errorMessage);
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            errorDialogBuilder.setMessage(StringRef.from(R.string.error_account_email_taken, email.getText().toString()));
         }
+
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }

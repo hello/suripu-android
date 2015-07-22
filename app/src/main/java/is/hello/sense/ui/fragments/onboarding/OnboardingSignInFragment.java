@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
@@ -118,7 +119,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
         String password = this.passwordText.getText().toString();
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_incomplete_credentials));
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+                    .setMessage(StringRef.from(R.string.error_account_incomplete_credentials))
+                    .create();
             errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             return;
         }
@@ -139,7 +142,9 @@ public class OnboardingSignInFragment extends InjectionFragment {
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             if (ApiException.statusEquals(error, 401)) {
-                ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_account_invalid_credentials));
+                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                        .setMessage(StringRef.from(R.string.error_account_invalid_credentials))
+                        .create();
                 dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
             } else {
                 ErrorDialogFragment.presentError(getFragmentManager(), error);

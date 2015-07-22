@@ -21,6 +21,7 @@ import org.joda.time.LocalTime;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
@@ -301,12 +302,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         if (alarm.getSound() == null) {
             LoadingDialogFragment.close(getFragmentManager());
 
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_no_smart_alarm_sound);
+            ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                    .setMessage(StringRef.from(R.string.error_no_smart_alarm_sound))
+                    .create();
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else if (smartAlarmPresenter.isAlarmTooSoon(alarm)) {
             LoadingDialogFragment.close(getFragmentManager());
 
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(R.string.error_alarm_too_soon);
+            ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                    .setMessage(StringRef.from(R.string.error_alarm_too_soon))
+                    .create();
             dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
         } else {
             if (alarm.getDaysOfWeek().isEmpty()) {
@@ -345,18 +350,17 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void presentError(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();
+        errorDialogBuilder.setError(e);
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_day_overlap));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            errorDialogBuilder.setMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         } else if (ApiException.statusEquals(e, 400)) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_clock_drift));
-            dialogFragment.setAction(new Intent(Settings.ACTION_DATE_SETTINGS), R.string.action_settings);
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+            errorDialogBuilder.setMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
+            errorDialogBuilder.setAction(new Intent(Settings.ACTION_DATE_SETTINGS), R.string.action_settings);
         } else if (ApiException.statusEquals(e, 412)) {
-            ErrorDialogFragment dialogFragment = ErrorDialogFragment.newInstance(getString(R.string.error_smart_alarm_requires_device));
-            dialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            errorDialogBuilder.setMessage(StringRef.from(getString(R.string.error_smart_alarm_requires_device)));
         }
+        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.create();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }
