@@ -238,9 +238,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     public void accountUnavailable(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(e);
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
-        errorDialogFragment.show(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void bindAccountPreferences(@NonNull HashMap<AccountPreference.Key, Object> settings) {
