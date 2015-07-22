@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.Subscriptions;
 
 public final class Views {
@@ -88,7 +88,7 @@ public final class Views {
             };
             s.add(Subscriptions.create(() -> view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)));
             view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
-        }).subscribeOn(AndroidSchedulers.mainThread());
+        }).subscribeOn(Rx.mainThreadScheduler());
     }
 
     public static void setSafeOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener) {

@@ -201,6 +201,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
             dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
             dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> LoadingDialogFragment.close(getFragmentManager()));
+            dialog.setCancelable(false);
             dialog.show();
         } else {
             completePeripheralPair();
@@ -223,7 +224,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
                     checkConnectivityAndContinue();
                 } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, e -> presentError(e, "Connecting to Sense"));
         }

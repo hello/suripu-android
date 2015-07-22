@@ -8,9 +8,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ImageLoader {
@@ -33,7 +33,7 @@ public class ImageLoader {
         });
 
         return operation.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
+                        .observeOn(Rx.mainThreadScheduler());
     }
 
     public static Observable<Bitmap> withUrl(@NonNull String url) {

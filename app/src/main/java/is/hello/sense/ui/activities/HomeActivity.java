@@ -21,11 +21,12 @@ import android.widget.RelativeLayout;
 
 import com.squareup.seismic.ShakeDetector;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -62,7 +63,6 @@ import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class HomeActivity
         extends ScopedInjectionActivity
@@ -121,6 +121,10 @@ public class HomeActivity
         }
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+            );
+            Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
         }
 
@@ -186,6 +190,10 @@ public class HomeActivity
         super.onNewIntent(intent);
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
+            JSONObject properties = Analytics.createProperties(
+                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+            );
+            Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);
@@ -196,7 +204,7 @@ public class HomeActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        Observable<Intent> onLogOut = fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         bindAndSubscribe(onLogOut,
                          ignored -> {
                              startActivity(new Intent(this, OnboardingActivity.class));
@@ -315,7 +323,7 @@ public class HomeActivity
                         slidingLayersView.close();
                     }
 
-                    DateTime date = Notification.getDate(notification);
+                    LocalDate date = Notification.getDate(notification);
                     TimelineFragment fragment = TimelineFragment.newInstance(date, null, false);
                     viewPager.setCurrentFragment(fragment);
 
@@ -637,7 +645,7 @@ public class HomeActivity
 
     //region Timeline Navigation
 
-    public void showTimelineNavigator(@NonNull DateTime startDate, @Nullable Timeline timeline) {
+    public void showTimelineNavigator(@NonNull LocalDate startDate, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
         ZoomedOutTimelineFragment navigatorFragment = ZoomedOutTimelineFragment.newInstance(startDate, timeline);
@@ -650,7 +658,7 @@ public class HomeActivity
     }
 
     @Override
-    public void onTimelineSelected(@NonNull DateTime date, @Nullable Timeline timeline) {
+    public void onTimelineSelected(@NonNull LocalDate date, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
         TimelineFragment currentFragment = viewPager.getCurrentFragment();

@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import dagger.ObjectGraph;
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
@@ -18,9 +19,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 public class SenseApplication extends Application {
     public static final String ACTION_BUILT_GRAPH = SenseApplication.class.getName() + ".ACTION_BUILT_GRAPH";
@@ -45,8 +43,8 @@ public class SenseApplication extends Application {
 
         buildGraph();
 
-        Observable<Intent> onLogOut = fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        onLogOut.observeOn(AndroidSchedulers.mainThread())
+        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        onLogOut.observeOn(Rx.mainThreadScheduler())
                 .subscribe(ignored -> {
                     Logger.info(getClass().getSimpleName(), "Clearing internal preferences.");
 

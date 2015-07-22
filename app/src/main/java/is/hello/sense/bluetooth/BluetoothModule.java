@@ -12,8 +12,6 @@ import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.util.Analytics;
-import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * A partial object graph that vends a configured BluetoothStack object.
@@ -24,10 +22,6 @@ import rx.android.schedulers.AndroidSchedulers;
 @Module(library = true, complete = false)
 @SuppressWarnings("UnusedDeclaration")
 public class BluetoothModule {
-    @Provides Scheduler provideScheduler() {
-        return AndroidSchedulers.mainThread();
-    }
-
     @Provides ErrorListener provideErrorListener() {
         return new ErrorListener() {
             @Override
@@ -40,7 +34,6 @@ public class BluetoothModule {
     }
 
     @Provides @Singleton BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
-                                                            @NonNull Scheduler scheduler,
                                                             @NonNull ErrorListener errorListener) {
         return new Buruberi()
                 .setApplicationContext(applicationContext)

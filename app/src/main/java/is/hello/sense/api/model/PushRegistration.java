@@ -3,21 +3,21 @@ package is.hello.sense.api.model;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 public final class PushRegistration extends ApiResponse {
     public static final String OS_ANDROID = "android";
 
-    @JsonProperty("os")
+    @SerializedName("os")
     public final String os;
 
-    @JsonProperty("version")
+    @SerializedName("version")
     public final String version;
 
-    @JsonProperty("app_version")
+    @SerializedName("app_version")
     public final String appVersion;
 
-    @JsonProperty("token")
+    @SerializedName("token")
     public final String deviceToken;
 
 

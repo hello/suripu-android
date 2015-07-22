@@ -57,32 +57,40 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns a DateTime representing the current instant in time,
      * shifted into the user's local device time zone.
      */
-    public static @NonNull DateTime now() {
+    public static @NonNull DateTime nowDateTime() {
         return DateTime.now(DateTimeZone.getDefault());
+    }
+
+    /**
+     * Returns a LocalDate representing the current instant,
+     * shifted into the user's local device time zone.
+     */
+    public static @NonNull LocalDate nowLocalDate() {
+        return LocalDate.now(DateTimeZone.getDefault());
     }
 
     /**
      * Returns the date considered to represent last night.
      */
-    public static @NonNull DateTime lastNight() {
-        return now().minusDays(1);
+    public static @NonNull LocalDate lastNight() {
+        return nowLocalDate().minusDays(1);
     }
 
     /**
      * Returns whether or not a given date is considered to be last night.
      */
-    public static boolean isLastNight(@NonNull DateTime instant) {
-        Interval interval = new Interval(Days.ONE, now().withTimeAtStartOfDay());
-        return interval.contains(instant);
+    public static boolean isLastNight(@NonNull LocalDate instant) {
+        Interval interval = new Interval(Days.ONE, nowDateTime().withTimeAtStartOfDay());
+        return interval.contains(instant.toDateTimeAtStartOfDay());
     }
 
     /**
      * Returns whether or not a given date is considered to
      * be within the week before the present day.
      */
-    public static boolean isInLastWeek(@NonNull DateTime instant) {
-        Interval interval = new Interval(Weeks.ONE, now().withTimeAtStartOfDay());
-        return interval.contains(instant);
+    public static boolean isInLastWeek(@NonNull LocalDate instant) {
+        Interval interval = new Interval(Weeks.ONE, nowDateTime().withTimeAtStartOfDay());
+        return interval.contains(instant.toDateTimeAtStartOfDay());
     }
 
     //endregion
@@ -90,7 +98,7 @@ import is.hello.sense.ui.widget.util.Styles;
 
     //region Core Formatters
 
-    public @NonNull String formatAsTimelineDate(@Nullable DateTime date) {
+    public @NonNull String formatAsTimelineDate(@Nullable LocalDate date) {
         if (date != null) {
             if (isLastNight(date)) {
                 return context.getString(R.string.format_date_last_night);
@@ -104,9 +112,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull String formatAsTimelineNavigatorDate(@Nullable DateTime date) {
+    public @NonNull String formatAsTimelineNavigatorDate(@Nullable LocalDate date) {
         if (date != null) {
-            if (!date.year().equals(now().year())) {
+            if (!date.year().equals(nowLocalDate().year())) {
                 return date.toString(context.getString(R.string.format_date_month_year));
             } else {
                 return date.toString(context.getString(R.string.format_date_month));

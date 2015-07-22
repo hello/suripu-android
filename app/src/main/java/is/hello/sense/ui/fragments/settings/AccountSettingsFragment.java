@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,6 +96,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
+        adapter.setEllipsize(TextUtils.TruncateAt.END);
 
         adapter.addSectionTitle(R.string.title_info);
         this.nameItem = adapter.addTextItem(R.string.label_name, R.string.missing_data_placeholder, this::changeName);
@@ -328,17 +330,20 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void signOut() {
         Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
 
-        SenseAlertDialog builder = new SenseAlertDialog(getActivity());
-        builder.setTitle(R.string.dialog_title_log_out);
-        builder.setMessage(R.string.dialog_message_log_out);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.setPositiveButton(R.string.action_log_out, (dialog, which) -> {
-            accountPresenter.logOut();
+        SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());
+        signOutDialog.setTitle(R.string.dialog_title_log_out);
+        signOutDialog.setMessage(R.string.dialog_message_log_out);
+        signOutDialog.setNegativeButton(android.R.string.cancel, null);
+        signOutDialog.setPositiveButton(R.string.action_log_out, (dialog, which) -> {
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
-            getActivity().finish();
+            // Let the dialog finish dismissing before we block the main thread.
+            listView.post(() -> {
+                getActivity().finish();
+                accountPresenter.logOut();
+            });
         });
-        builder.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
-        builder.show();
+        signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+        signOutDialog.show();
     }
 
     //endregion

@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +57,7 @@ public class InsightsAdapterTests extends SenseTestCase {
     @Test
     public void questionRendering() throws Exception {
         Question question = Question.create(0, 0, "Do you like to travel through space and time?",
-                Question.Type.CHOICE, LocalDateTime.now(), Question.AskTime.ANYTIME, null);
+                Question.Type.CHOICE, DateTime.now(), Question.AskTime.ANYTIME, null);
 
         adapter.bindData(Pair.create(null, question));
 

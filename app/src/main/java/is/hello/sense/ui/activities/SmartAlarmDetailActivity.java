@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class SmartAlarmDetailActivity extends SenseActivity {
@@ -56,6 +58,10 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
         if (savedInstanceState == null) {
             if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
+                JSONObject properties = Analytics.createProperties(
+                    Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SET_ALARM"
+                );
+                Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
                 processSetAlarmIntent();
             } else {
                 this.alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
@@ -122,9 +128,9 @@ public class SmartAlarmDetailActivity extends SenseActivity {
                 backConfirmation.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
                 backConfirmation.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
             }
-            backConfirmation.setNegativeButton(R.string.action_discard, (dialog, which) -> super.onBackPressed());
-            backConfirmation.setPositiveButton(R.string.action_keep_editing, null);
-            backConfirmation.setButtonDestructive(DialogInterface.BUTTON_NEGATIVE, true);
+            backConfirmation.setNegativeButton(R.string.action_keep_editing, null);
+            backConfirmation.setPositiveButton(R.string.action_discard, (dialog, which) -> super.onBackPressed());
+            backConfirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
             backConfirmation.show();
         } else {
             super.onBackPressed();

@@ -38,9 +38,6 @@ public abstract class SenseTestCase {
 
             // Currently not automatic
             FileFsFile assets = FileFsFile.from("src", "test", "assets");
-
-            // Works around this issue until an update is pushed:
-            // <https://github.com/robolectric/robolectric/issues/1623>
             return new AndroidManifest(
                     appManifest.getAndroidManifestFile(),
                     appManifest.getResDirectory(),

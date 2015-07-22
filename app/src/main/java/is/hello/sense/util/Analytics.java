@@ -83,6 +83,12 @@ public class Analytics {
          */
         String EVENT_TURN_ON_HIGH_POWER = "High power mode enabled";
 
+        /**
+         * When the app is activated by a third party through the AlarmClock intents.
+         */
+        String EVENT_ALARM_CLOCK_INTENT = "Alarm clock intent";
+        String PROP_ALARM_CLOCK_INTENT_NAME = "name";
+
 
         String PROP_BLUETOOTH_PAIRED_DEVICE_COUNT = "Paired device count";
         String PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT = "Connected device count";
@@ -253,6 +259,24 @@ public class Analytics {
         String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
+         * Internal logging updates from Sense.
+         *
+         * @see #PROP_SENSE_WIFI_STATUS
+         */
+        String EVENT_SENSE_WIFI_UPDATE = "Onboarding Sense WiFi Update";
+
+        /**
+         * Internal logging updates from Sense in app.
+         *
+         * @see #PROP_SENSE_WIFI_STATUS
+         */
+        String EVENT_SENSE_WIFI_UPDATE_IN_APP = "Sense WiFi Update";
+
+        String PROP_SENSE_WIFI_STATUS = "status";
+        String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
+        String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
+
+        /**
          * When the user lands on the "Sleep Pill" intro screen.
          */
         String EVENT_PILL_INTRO = "Onboarding Sleep Pill";
@@ -276,11 +300,6 @@ public class Analytics {
          * User lands on screen which asks whether they want to pair another pill.
          */
         String EVENT_ANOTHER_PILL = "Onboarding Another Pill";
-
-        /**
-         * When user lands on the screen that tells them "To connect a second Sleep Pill, Sense needs to be put into pairing mode"
-         */
-        String EVENT_PAIRING_MODE_OFF = "Onboarding Pairing Mode Off";
 
         /**
          * When user lands on screen that tells partner to get app from hello.is/app

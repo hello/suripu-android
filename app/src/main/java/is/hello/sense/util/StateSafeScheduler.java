@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 
 import java.util.concurrent.TimeUnit;
 
+import is.hello.buruberi.util.Rx;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
@@ -32,7 +32,7 @@ public class StateSafeScheduler extends Scheduler {
      * Creates a ResumeScheduler targeting the main thread.
      */
     public StateSafeScheduler(@NonNull StateSafeExecutor targetExecutor) {
-        this(targetExecutor, AndroidSchedulers.mainThread());
+        this(targetExecutor, Rx.mainThreadScheduler());
     }
 
     @Override

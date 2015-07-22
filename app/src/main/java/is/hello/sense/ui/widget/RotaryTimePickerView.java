@@ -85,7 +85,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         minutePicker.setOnSelectionListener(this);
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
-        minutePicker.setWrapsAround(false);
+        minutePicker.setWrapsAround(true);
         minutePicker.setItemGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         minutePicker.setItemHorizontalPadding(hourMinutePadding);
         addView(minutePicker, pickerLayoutParams);

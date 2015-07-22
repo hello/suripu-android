@@ -42,7 +42,7 @@ public class TimelineEventBuilder {
 
     public TimelineEventBuilder() {
         event.validActions = new ArrayList<>();
-        setShiftedTimestamp(DateFormatter.now());
+        setShiftedTimestamp(DateFormatter.nowDateTime());
         setDuration(60, TimeUnit.SECONDS);
         setSleepDepth(60, TimelineEvent.SleepState.MEDIUM);
         setType(TimelineEvent.Type.IN_BED);

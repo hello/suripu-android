@@ -1,6 +1,6 @@
 package is.hello.sense.graph.presenters;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class TimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void update() throws Exception {
-        presenter.setDateWithTimeline(DateTime.now(), null);
+        presenter.setDateWithTimeline(LocalDate.now(), null);
 
         Sync.wrap(presenter.timeline)
             .assertNotNull();
@@ -31,7 +31,7 @@ public class TimelinePresenterTests extends InjectionTestCase {
     @Test
     public void cache() throws Exception {
         Timeline timeline = new TimelineBuilder()
-                .setDate(DateTime.now())
+                .setDate(LocalDate.now())
                 .setMessage(new MarkupString("This is a test"))
                 .build();
         presenter.setDateWithTimeline(timeline.getDate(), timeline);
@@ -42,7 +42,7 @@ public class TimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void amendEventTime() throws Exception {
-        presenter.setDateWithTimeline(DateTime.now(), null);
+        presenter.setDateWithTimeline(LocalDate.now(), null);
 
         TimelineEvent timelineEvent = new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GOT_IN_BED)
@@ -57,7 +57,7 @@ public class TimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void verifyEvent() throws Exception {
-        presenter.setDateWithTimeline(DateTime.now(), null);
+        presenter.setDateWithTimeline(LocalDate.now(), null);
 
         TimelineEvent timelineEvent = new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GENERIC_MOTION)
@@ -69,7 +69,7 @@ public class TimelinePresenterTests extends InjectionTestCase {
 
     @Test
     public void deleteEvent() throws Exception {
-        presenter.setDateWithTimeline(DateTime.now(), null);
+        presenter.setDateWithTimeline(LocalDate.now(), null);
 
         TimelineEvent timelineEvent = new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GENERIC_MOTION)

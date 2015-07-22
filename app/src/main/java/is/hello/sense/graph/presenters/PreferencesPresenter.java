@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -27,8 +28,6 @@ import rx.Observable;
 import rx.Subscription;
 import rx.functions.Func2;
 import rx.subscriptions.Subscriptions;
-
-import static rx.android.content.ContentObservable.fromLocalBroadcast;
 
 @Singleton public class PreferencesPresenter extends Presenter {
     public static final String UNIT_SYSTEM = "unit_system_name";
@@ -60,7 +59,7 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         this.sharedPreferences = sharedPreferences;
         this.accountPresenter = accountPresenter;
 
-        Observable<Intent> logOut = fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        Observable<Intent> logOut = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOut.subscribe(ignored -> clear(), Functions.LOG_ERROR);
     }
 
@@ -116,7 +115,8 @@ import static rx.android.content.ContentObservable.fromLocalBroadcast;
         AccountPreference use24Time = new AccountPreference(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
         use24Time.setEnabled(getUse24Time());
         AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELSIUS);
-        useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, UsCustomaryUnitSystem.NAME)));
+        String defaultSystemName = UnitSystem.getLocaleUnitSystemName(Locale.getDefault());
+        useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, defaultSystemName)));
 
         return Observable.combineLatest(accountPresenter.updatePreference(use24Time),
                                         accountPresenter.updatePreference(useMetric),

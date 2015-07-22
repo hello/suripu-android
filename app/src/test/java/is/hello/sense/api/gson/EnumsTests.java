@@ -1,8 +1,6 @@
-package is.hello.sense.api.model;
+package is.hello.sense.api.gson;
 
 import android.support.annotation.Nullable;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 
 import org.junit.Test;
 
@@ -27,13 +25,12 @@ public class EnumsTests extends SenseTestCase {
         assertEquals(TestEnum.VALUE1, TestEnum.fromString("vALuE1"));
     }
 
-    private enum TestEnum {
+    private enum TestEnum implements Enums.FromString {
         VALUE1,
         VALUE2,
         VALUE3,
         UNKNOWN;
 
-        @JsonCreator
         public static TestEnum fromString(@Nullable String value) {
             return Enums.fromString(value, values(), UNKNOWN);
         }

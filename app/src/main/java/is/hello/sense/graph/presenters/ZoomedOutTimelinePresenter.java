@@ -7,31 +7,31 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.LruCache;
 
-import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.Timeline;
 import rx.Observable;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class ZoomedOutTimelinePresenter extends Presenter {
     private static final int CACHE_LIMIT = 10;
 
     private static final String STATE_KEY_FIRST_DATE = "firstDate";
-    private DateTime firstDate;
+    private LocalDate firstDate;
 
     private final List<DataView> dataViews = new ArrayList<>();
-    private Scheduler updateScheduler = AndroidSchedulers.mainThread();
+    private Scheduler updateScheduler = Rx.mainThreadScheduler();
 
     private final ApiService apiService;
-    private final LruCache<DateTime, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
+    private final LruCache<LocalDate, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
 
 
     //region Lifecycle
@@ -44,7 +44,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
 
-        setFirstDate((DateTime) savedState.getSerializable(STATE_KEY_FIRST_DATE));
+        setFirstDate((LocalDate) savedState.getSerializable(STATE_KEY_FIRST_DATE));
     }
 
     @Nullable
@@ -69,17 +69,17 @@ public class ZoomedOutTimelinePresenter extends Presenter {
 
     //region Dates
 
-    public void setFirstDate(@NonNull DateTime firstDate) {
+    public void setFirstDate(@NonNull LocalDate firstDate) {
         this.firstDate = firstDate;
         cachedTimelines.evictAll();
     }
 
-    public @NonNull DateTime getDateTimeAt(int position) {
-        return firstDate.minusDays(position).withTimeAtStartOfDay();
+    public @NonNull LocalDate getDateAt(int position) {
+        return firstDate.minusDays(position);
     }
 
-    public int getDateTimePosition(@NonNull DateTime dateTime) {
-        return Days.daysBetween(dateTime.toLocalDate(), firstDate.toLocalDate()).getDays() - 1;
+    public int getDatePosition(@NonNull LocalDate dateTime) {
+        return Days.daysBetween(dateTime, firstDate).getDays() - 1;
     }
 
     //endregion
@@ -87,7 +87,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
 
     //region Vending Timelines
 
-    public void cacheTimeline(@NonNull DateTime date, @Nullable Timeline timeline) {
+    public void cacheTimeline(@NonNull LocalDate date, @Nullable Timeline timeline) {
         if (timeline != null) {
             cachedTimelines.put(date, timeline);
         } else {
@@ -95,16 +95,16 @@ public class ZoomedOutTimelinePresenter extends Presenter {
         }
     }
 
-    public @Nullable Timeline getCachedTimeline(@NonNull DateTime date) {
+    public @Nullable Timeline getCachedTimeline(@NonNull LocalDate date) {
         return cachedTimelines.get(date);
     }
 
-    public Observable<Timeline> retrieveTimeline(@NonNull DateTime date) {
+    public Observable<Timeline> retrieveTimeline(@NonNull LocalDate date) {
         return apiService.timelineForDate(date.toString(ApiService.DATE_FORMAT))
                          .observeOn(updateScheduler);
     }
 
-    public Observable<Timeline> retrieveAndCacheTimeline(@NonNull DateTime date) {
+    public Observable<Timeline> retrieveAndCacheTimeline(@NonNull LocalDate date) {
         Timeline existingTimeline = cachedTimelines.get(date);
         if (existingTimeline != null) {
             return Observable.just(existingTimeline);
@@ -151,7 +151,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     //region For Tests
 
     @VisibleForTesting
-    LruCache<DateTime, Timeline> getCachedTimelines() {
+    LruCache<LocalDate, Timeline> getCachedTimelines() {
         return cachedTimelines;
     }
 
@@ -164,7 +164,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
 
 
     public interface DataView {
-        DateTime getDate();
+        LocalDate getDate();
         boolean wantsUpdates();
         void onUpdateAvailable(@NonNull Timeline timeline);
         void onUpdateFailed(Throwable e);

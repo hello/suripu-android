@@ -1,59 +1,53 @@
 package is.hello.sense.api.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-import is.hello.sense.api.ApiService;
 import is.hello.sense.units.UnitOperations;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends ApiResponse implements Cloneable {
-    @JsonIgnore
+    @Expose(deserialize = false, serialize = true)
     private String id;
 
-    @JsonProperty("email")
+    @SerializedName("email")
     private String email;
 
-    @JsonProperty("tz")
+    @SerializedName("tz")
     private int timeZoneOffset;
 
-    @JsonProperty("name")
+    @SerializedName("name")
     private String name;
 
-    @JsonProperty("gender")
+    @SerializedName("gender")
     private Gender gender;
 
-    @JsonProperty("height")
+    @SerializedName("height")
     private Integer height;
 
-    @JsonProperty("weight")
+    @SerializedName("weight")
     private Integer weight;
 
-    @JsonProperty("dob")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
+    @SerializedName("dob")
     private LocalDate birthDate;
 
-    @JsonProperty("password")
+    @SerializedName("password")
     private String password;
 
-    @JsonProperty("last_modified")
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @SerializedName("last_modified")
     private DateTime lastModified;
 
-    @JsonProperty("email_verified")
+    @SerializedName("email_verified")
     private boolean emailVerified;
 
-    @JsonProperty("lat")
+    @SerializedName("lat")
     private Double latitude;
 
-    @JsonProperty("long")
+    @SerializedName("long")
     private Double longitude;
 
 
@@ -66,12 +60,10 @@ public class Account extends ApiResponse implements Cloneable {
     }
 
 
-    @JsonIgnore
     public String getId() {
         return id;
     }
 
-    @JsonProperty("id")
     public void setId(String id) {
         this.id = id;
     }

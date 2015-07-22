@@ -13,7 +13,7 @@ import java.io.File;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.model.Enums;
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;

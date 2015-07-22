@@ -3,41 +3,38 @@ package is.hello.sense.api.model.v2;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Timeline extends ApiResponse {
     @VisibleForTesting
-    @JsonProperty("score")
+    @SerializedName("score")
     @Nullable Integer score;
 
     @VisibleForTesting
-    @JsonProperty("score_condition")
+    @SerializedName("score_condition")
     ScoreCondition scoreCondition;
 
     @VisibleForTesting
-    @JsonProperty("message")
+    @SerializedName("message")
     MarkupString message;
 
     @VisibleForTesting
-    @JsonProperty("date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApiService.DATE_FORMAT)
-    DateTime date;
+    @SerializedName("date")
+    LocalDate date;
 
     @VisibleForTesting
-    @JsonProperty("events")
+    @SerializedName("events")
     ArrayList<TimelineEvent> events;
 
     @VisibleForTesting
-    @JsonProperty("metrics")
+    @SerializedName("metrics")
     ArrayList<TimelineMetric> metrics;
 
 
@@ -53,7 +50,7 @@ public class Timeline extends ApiResponse {
         return message;
     }
 
-    public DateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

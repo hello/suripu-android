@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 
 import java.io.Serializable;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.graph.Scope;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 
 public abstract class ScopedValuePresenter<T extends Serializable> extends ValuePresenter<T> {
     private @Nullable Scope scope;
@@ -33,7 +33,7 @@ public abstract class ScopedValuePresenter<T extends Serializable> extends Value
         }
 
         // A normal subscribe call would drop the subscription onError, that's not what we want.
-        this.scopeUpdateSubscription = subject.observeOn(AndroidSchedulers.mainThread()).unsafeSubscribe(new Subscriber<T>() {
+        this.scopeUpdateSubscription = subject.observeOn(Rx.mainThreadScheduler()).unsafeSubscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
 

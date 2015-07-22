@@ -4,8 +4,9 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 
-public enum RegistrationError {
+public enum RegistrationError implements Enums.FromString {
     NAME_TOO_LONG(R.string.error_account_name_too_long),
     NAME_TOO_SHORT(R.string.error_account_name_too_short),
     EMAIL_INVALID(R.string.error_account_email_invalid),
