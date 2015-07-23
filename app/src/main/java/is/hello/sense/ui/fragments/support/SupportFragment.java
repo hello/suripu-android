@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.support;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,7 +10,7 @@ import android.widget.ListView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 
@@ -25,15 +24,16 @@ public class SupportFragment extends SenseFragment implements AdapterView.OnItem
         listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
-        adapter.addTextItem(R.string.action_user_guide, 0, () -> UserSupport.showUserGuide(getActivity()));
-        adapter.addTextItem(R.string.title_contact_us, 0, () -> UserSupport.showContactForm(getActivity()));
+        adapter.addTextItem(R.string.action_user_guide, 0, () -> {
+            UserSupport.showUserGuide(getActivity());
+        });
+        adapter.addTextItem(R.string.title_contact_us, 0, () -> {
+            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(new ContactTopicFragment(),
+                    getString(R.string.title_select_a_topic), true);
+        });
         adapter.addTextItem(R.string.title_my_tickets, 0, () -> {
-            Bundle arguments = FragmentNavigationActivity.getArguments(getString(R.string.title_my_tickets),
-                    TicketListFragment.class, null);
-
-            Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
-            intent.putExtras(arguments);
-            startActivity(intent);
+            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(new TicketListFragment(),
+                    getString(R.string.title_my_tickets), true);
         });
         listView.setAdapter(adapter);
 
