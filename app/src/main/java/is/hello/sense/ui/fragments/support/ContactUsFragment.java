@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.support;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +20,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.zendesk.sdk.attachment.AttachmentHelper;
 import com.zendesk.sdk.attachment.ImageUploadHelper;
@@ -48,18 +51,15 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class ContactUsFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener {
     private static final String ARG_SUPPORT_TOPIC = ContactUsFragment.class.getName() + ".ARG_SUPPORT_TOPIC";
 
     private static final int REQUEST_CODE_TAKE_IMAGE = 0x01;
-    // Don't change this request code, otherwise we can't take advantage of
-    // ImagePicker#getFilesFromActivityOnResult dealing with content provider
-    // bs for us.
-    private static final int REQUEST_CODE_PICK_IMAGE = 4567;
+    private static final int REQUEST_CODE_PICK_IMAGE = 0x02;
 
     @Inject ZendeskPresenter zendeskPresenter;
 
@@ -112,6 +112,14 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
         this.text = (EditText) view.findViewById(R.id.fragment_contact_us_text);
         text.addTextChangedListener(this);
 
+        LinearLayout textContainer = (LinearLayout) view.findViewById(R.id.fragment_contact_us_container);
+        textContainer.setOnClickListener(ignored -> {
+            text.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(text, 0);
+        });
+
         this.attachmentHost = (AttachmentContainerHost) view.findViewById(R.id.fragment_contact_us_attachment_host);
         attachmentHost.setState(imageUploadHelper);
         attachmentHost.setAttachmentsDeletable(true);
@@ -126,10 +134,14 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
     public void onDestroyView() {
         super.onDestroyView();
 
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
+
         text.removeTextChangedListener(this);
 
         this.text = null;
         this.attachmentHost = null;
+        this.addAttachmentItem = null;
         this.sendItem = null;
     }
 
@@ -139,6 +151,11 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
 
         outState.putString("pendingCapturePath", pendingCapturePath);
     }
+
+    //endregion
+
+
+    //region Menu
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -172,7 +189,10 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
         boolean hasText = !TextUtils.isEmpty(text.getText());
         boolean uploadsInactive = imageUploadHelper.isImageUploadCompleted();
         addAttachmentItem.setEnabled(uploadsInactive);
+        addAttachmentItem.getIcon().setAlpha(uploadsInactive ? 0xFF : 0x77);
+
         sendItem.setEnabled(hasText && uploadsInactive);
+        sendItem.getIcon().setAlpha(hasText && uploadsInactive ? 0xFF : 0x77);
     }
 
     //endregion
@@ -296,7 +316,9 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
 
     @Override
     public void imageUploadError(ErrorResponse errorResponse, File file) {
-        Logger.debug(getClass().getSimpleName(), "imageUploadError(" + errorResponse + ", " + file + ")");
+        Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
+                errorResponse.getResponseBody(), "Zendesk Attachment Upload");
+
         AttachmentHelper.showAttachmentTryAgainDialog(getActivity(), file,
                 errorResponse, imageUploadHelper, attachmentHost);
     }
@@ -309,9 +331,9 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
     private void send() {
         LoadingDialogFragment.show(getFragmentManager());
         Observable<ZendeskFeedbackConfiguration> prepare = zendeskPresenter.prepareForFeedback(supportTopic);
-        Observable<CreateRequest> submit = prepare.flatMap(config -> zendeskPresenter.submitFeedback(config,
+        Observable<CreateRequest> send = prepare.flatMap(config -> zendeskPresenter.sendFeedback(config,
                 text.getText().toString(), imageUploadHelper.getUploadTokens()));
-        bindAndSubscribe(submit,
+        bindAndSubscribe(send,
                 ignored -> {
                     LoadingDialogFragment.close(getFragmentManager());
                     ((FragmentNavigation) getActivity()).popFragment(this, false);

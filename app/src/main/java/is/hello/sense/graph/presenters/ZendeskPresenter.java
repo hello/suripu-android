@@ -17,6 +17,7 @@ import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
@@ -28,14 +29,16 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
+import rx.Subscriber;
 
 public class ZendeskPresenter extends Presenter {
-    public static final String APP_ID = "mobile_sdk_client_510ec7f059736bb60c17";
-    public static final String CLIENT_ID = "7bb3a86905b08e1083752af7b1d4a430afb1a051b6dae18a";
-    public static final String HOST = "https://helloinc.zendesk.com";
+    private static final String APP_ID = "mobile_sdk_client_510ec7f059736bb60c17";
+    private static final String CLIENT_ID = "7bb3a86905b08e1083752af7b1d4a430afb1a051b6dae18a";
+    private static final String HOST = "https://helloinc.zendesk.com";
 
-    public static final long CUSTOM_FIELD_ID_TOPIC = 24321669L;
+    private static final long CUSTOM_FIELD_ID_TOPIC = 24321669L;
 
     private final Context context;
     private final ApiService apiService;
@@ -60,6 +63,8 @@ public class ZendeskPresenter extends Presenter {
 
 
     private Observable<Account> getSenseAccount() {
+        logEvent("getSenseAccount()");
+
         Account cached = cachedAccount.get();
         if (cached != null) {
             return Observable.just(cached);
@@ -68,52 +73,34 @@ public class ZendeskPresenter extends Presenter {
         }
     }
 
-    private Observable<ZendeskConfig> initializeSdkIfNeeded() {
-        ZendeskConfig config = ZendeskConfig.INSTANCE;
-        if (config.isInitialized()) {
-            return Observable.just(config);
-        }
-
+    private Observable<String> initializeSdkIfNeeded() {
         logEvent("initialize sdk");
 
+        ZendeskConfig config = ZendeskConfig.INSTANCE;
+        if (config.isInitialized()) {
+            return Observable.just("already initialized");
+        }
+
         return Observable.create(subscriber -> {
-            ZendeskCallback<String> callback = new ZendeskCallback<String>() {
-                @Override
-                public void onSuccess(String response) {
-                    logEvent("sdk initialized");
-
-                    subscriber.onNext(config);
-                    subscriber.onCompleted();
-                }
-
-                @Override
-                public void onError(ErrorResponse errorResponse) {
-                    ZendeskException e = new ZendeskException(errorResponse);
-                    subscriber.onError(e);
-                }
-            };
-            config.init(context, HOST, CLIENT_ID, APP_ID, callback);
+            config.init(context, HOST, CLIENT_ID, APP_ID, new CallbackAdapter<>(subscriber));
         });
     }
 
     public Observable<Pair<ZendeskConfig, Account>> initializeIfNeeded() {
-        ZendeskConfig existingConfig = ZendeskConfig.INSTANCE;
-        Account cachedAccount = this.cachedAccount.get();
-        if (existingConfig.isInitialized() && cachedAccount != null) {
-            return Observable.just(Pair.create(existingConfig, cachedAccount));
-        }
-
         logEvent("initialize identity");
 
-        Observable<Pair<ZendeskConfig, Account>> dependencies = Observable.combineLatest(
+        ZendeskConfig config = ZendeskConfig.INSTANCE;
+        Account cachedAccount = this.cachedAccount.get();
+        if (config.isInitialized() && cachedAccount != null) {
+            return Observable.just(Pair.create(config, cachedAccount));
+        }
+
+        Observable<Account> dependencies = Observable.combineLatest(
                 initializeSdkIfNeeded(),
                 getSenseAccount(),
-                Pair::new
+                (ignored, account) -> account
         );
-        return dependencies.map(configAndAccount -> {
-            ZendeskConfig config = configAndAccount.first;
-            Account account = configAndAccount.second;
-
+        return dependencies.map(account -> {
             Identity identity = new AnonymousIdentity.Builder()
                     .withExternalIdentifier(account.getId())
                     .withNameIdentifier(account.getName())
@@ -121,7 +108,7 @@ public class ZendeskPresenter extends Presenter {
                     .build();
             config.setIdentity(identity);
 
-            return configAndAccount;
+            return Pair.create(config, account);
         });
     }
 
@@ -145,10 +132,7 @@ public class ZendeskPresenter extends Presenter {
 
                 @Override
                 public String getAdditionalInfo() {
-                    String additionalInfo = "\n\n\n\n-----\n";
-                    additionalInfo += "Id: " + account.getId();
-                    additionalInfo += "\nSense Id: " + "";
-                    return additionalInfo;
+                    return String.format(Locale.US, "Id: %s\nSense Id: %s", account.getId(), Analytics.getSenseId());
                 }
 
                 @Override
@@ -159,27 +143,42 @@ public class ZendeskPresenter extends Presenter {
         });
     }
 
-    public Observable<CreateRequest> submitFeedback(@NonNull ZendeskFeedbackConfiguration config,
-                                                    @NonNull String feedback,
-                                                    @NonNull List<String> attachmentIds) {
-        return Observable.create(subscriber -> {
-            ZendeskFeedbackConnector connector = new ZendeskFeedbackConnector(context, config);
-            connector.sendFeedback(feedback, attachmentIds, new ZendeskCallback<CreateRequest>() {
-                @Override
-                public void onSuccess(CreateRequest createRequest) {
-                    subscriber.onNext(createRequest);
-                    subscriber.onCompleted();
-                }
+    public Observable<CreateRequest> sendFeedback(@NonNull ZendeskFeedbackConfiguration config,
+                                                  @NonNull String feedback,
+                                                  @NonNull List<String> attachmentIds) {
+        logEvent("sendFeedback()");
 
-                @Override
-                public void onError(ErrorResponse errorResponse) {
-                    ZendeskException e = new ZendeskException(errorResponse);
-                    subscriber.onError(e);
-                }
-            });
+        return Observable.create(subscriber -> {
+            if (!ZendeskConfig.INSTANCE.isInitialized()) {
+                subscriber.onError(new IllegalStateException("sendFeedback() cannot be used before initializing the Zendesk SDK"));
+                return;
+            }
+
+            ZendeskFeedbackConnector connector = new ZendeskFeedbackConnector(context, config);
+            connector.sendFeedback(feedback, attachmentIds, new CallbackAdapter<>(subscriber));
         });
     }
 
+
+    static class CallbackAdapter<T> extends ZendeskCallback<T> {
+        private final Subscriber<? super T> subscriber;
+
+        CallbackAdapter(@NonNull Subscriber<? super T> subscriber) {
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void onSuccess(T response) {
+            subscriber.onNext(response);
+            subscriber.onCompleted();
+        }
+
+        @Override
+        public void onError(ErrorResponse errorResponse) {
+            ZendeskException e = new ZendeskException(errorResponse);
+            subscriber.onError(e);
+        }
+    }
 
     public static class ZendeskException extends Exception implements Errors.Reporting {
         private final ErrorResponse response;

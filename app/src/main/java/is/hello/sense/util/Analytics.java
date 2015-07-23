@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -22,6 +24,7 @@ import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
@@ -515,6 +518,18 @@ public class Analytics {
         if (provider != null) {
             provider.getPeople().set(Global.GLOBAL_PROP_SENSE_ID, senseId);
         }
+
+        Context context = SenseApplication.getInstance();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit()
+                   .putString(PreferencesPresenter.PAIRED_SENSE_ID, senseId)
+                   .apply();
+    }
+
+    public static String getSenseId() {
+        Context context = SenseApplication.getInstance();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(PreferencesPresenter.PAIRED_SENSE_ID, "");
     }
 
     //endregion
