@@ -458,4 +458,8 @@ so you can sleep better.</string>
     <string name="action_attach">Attach</string>
     <string name="hint_contact_us_text">Describe the issue you are having</string>
     <string name="title_contact_us">Contact us</string>
+    <string name="action_take_photo">Take photo</string>
+    <string name="action_pick_image">Choose photo</string>
+    <string name="action_add_attachment">Add Attachment</string>
+    <string name="error_image_capture_failed">Could not start camera</string>
 </resources>

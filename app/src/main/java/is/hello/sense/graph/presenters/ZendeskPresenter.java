@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 import com.zendesk.sdk.feedback.impl.ZendeskFeedbackConnector;
@@ -16,6 +17,7 @@ import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
@@ -37,6 +39,7 @@ public class ZendeskPresenter extends Presenter {
 
     private final Context context;
     private final ApiService apiService;
+    private final AtomicReference<Account> cachedAccount = new AtomicReference<>();
 
     //region Lifecycle
 
@@ -46,8 +49,24 @@ public class ZendeskPresenter extends Presenter {
         this.apiService = apiService;
     }
 
+    @Override
+    protected boolean onForgetDataForLowMemory() {
+        cachedAccount.set(null);
+
+        return true;
+    }
+
     //endregion
 
+
+    private Observable<Account> getSenseAccount() {
+        Account cached = cachedAccount.get();
+        if (cached != null) {
+            return Observable.just(cached);
+        } else {
+            return apiService.getAccount().doOnNext(cachedAccount::set);
+        }
+    }
 
     private Observable<ZendeskConfig> initializeSdkIfNeeded() {
         ZendeskConfig config = ZendeskConfig.INSTANCE;
@@ -77,52 +96,66 @@ public class ZendeskPresenter extends Presenter {
         });
     }
 
-    private Observable<ZendeskConfig> initializeIdentity(@NonNull Account account) {
+    public Observable<Pair<ZendeskConfig, Account>> initializeIfNeeded() {
+        ZendeskConfig existingConfig = ZendeskConfig.INSTANCE;
+        Account cachedAccount = this.cachedAccount.get();
+        if (existingConfig.isInitialized() && cachedAccount != null) {
+            return Observable.just(Pair.create(existingConfig, cachedAccount));
+        }
+
         logEvent("initialize identity");
 
-        return initializeSdkIfNeeded().map(config -> {
+        Observable<Pair<ZendeskConfig, Account>> dependencies = Observable.combineLatest(
+                initializeSdkIfNeeded(),
+                getSenseAccount(),
+                Pair::new
+        );
+        return dependencies.map(configAndAccount -> {
+            ZendeskConfig config = configAndAccount.first;
+            Account account = configAndAccount.second;
+
             Identity identity = new AnonymousIdentity.Builder()
                     .withExternalIdentifier(account.getId())
                     .withNameIdentifier(account.getName())
                     .withEmailIdentifier(account.getEmail())
                     .build();
             config.setIdentity(identity);
-            return config;
+
+            return configAndAccount;
         });
     }
 
     public Observable<ZendeskFeedbackConfiguration> prepareForFeedback(@NonNull SupportTopic supportTopic) {
         logEvent("prepareForFeedback(" + supportTopic + ")");
 
-        return apiService.getAccount().flatMap(account -> {
-            logEvent("prepareForFeedback: account loaded");
+        return initializeIfNeeded().map(configAndAccount -> {
+            logEvent("prepareForFeedback: done");
 
-            return initializeIdentity(account).map(c -> {
-                logEvent("prepareForFeedback: done");
+            ZendeskConfig config = configAndAccount.first;
+            Account account = configAndAccount.second;
 
-                CustomField topicId = new CustomField(CUSTOM_FIELD_ID_TOPIC, supportTopic.topic);
-                c.setCustomFields(Lists.newArrayList(topicId));
+            CustomField topicId = new CustomField(CUSTOM_FIELD_ID_TOPIC, supportTopic.topic);
+            config.setCustomFields(Lists.newArrayList(topicId));
 
-                return new ZendeskFeedbackConfiguration() {
-                    @Override
-                    public List<String> getTags() {
-                        return Lists.newArrayList(Build.MODEL, Build.VERSION.RELEASE);
-                    }
+            return new ZendeskFeedbackConfiguration() {
+                @Override
+                public List<String> getTags() {
+                    return Lists.newArrayList(Build.MODEL, Build.VERSION.RELEASE);
+                }
 
-                    @Override
-                    public String getAdditionalInfo() {
-                        String additionalInfo = "\n\n\n\n-----\n";
-                        additionalInfo += "Id: " + account.getId();
-                        additionalInfo += "\nSense Id: " + "";
-                        return additionalInfo;
-                    }
+                @Override
+                public String getAdditionalInfo() {
+                    String additionalInfo = "\n\n\n\n-----\n";
+                    additionalInfo += "Id: " + account.getId();
+                    additionalInfo += "\nSense Id: " + "";
+                    return additionalInfo;
+                }
 
-                    @Override
-                    public String getRequestSubject() {
-                        return "Android Ticket for Sense " + BuildConfig.VERSION_NAME;
-                    }
-                };
-            });
+                @Override
+                public String getRequestSubject() {
+                    return "Android Ticket for Sense " + BuildConfig.VERSION_NAME;
+                }
+            };
         });
     }
 

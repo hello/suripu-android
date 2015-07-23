@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollbars="vertical"
     android:background="@color/background_light">
 
-    <Button
-        android:id="@+id/fragment_contact_us_attach"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_small"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:text="@string/action_attach"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
-
-    <EditText
-        android:id="@+id/fragment_contact_us_text"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/fragment_contact_us_attach"
-        android:padding="@dimen/gap_small"
-        android:gravity="top|start"
-        android:scrollbars="vertical"
-        android:background="@null"
-        android:hint="@string/hint_contact_us_text"
-        android:inputType="textMultiLine"
-        android:imeOptions="actionNone|flagNoExtractUi"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/fragment_contact_us_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/gap_medium"
+            android:gravity="top|start"
+            android:background="@null"
+            android:hint="@string/hint_contact_us_text"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNone|flagNoExtractUi">
+
+            <requestFocus />
+
+        </EditText>
+
+        <com.zendesk.sdk.feedback.ui.AttachmentContainerHost
+            android:id="@+id/fragment_contact_us_attachment_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+
+</ScrollView>

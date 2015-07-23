@@ -75,7 +75,7 @@ public class SelectTopicFragment extends InjectionFragment implements AdapterVie
         SupportTopic topic = (SupportTopic) parent.getItemAtPosition(position);
         ContactUsFragment contactUsFragment = ContactUsFragment.newInstance(topic);
         ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(contactUsFragment,
-                getString(R.string.title_contact_us), true);
+                topic.displayName, true);
     }
 
 

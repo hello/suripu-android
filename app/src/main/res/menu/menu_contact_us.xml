@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/action_add_attachment"
+        android:title="@string/action_add_attachment"
+        android:icon="@drawable/action_add"
+        android:showAsAction="always" />
+    <item
         android:id="@+id/action_send"
         android:title="@string/action_send"
+        android:icon="@drawable/action_send"
         android:showAsAction="always" />
 </menu>
