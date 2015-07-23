@@ -27,7 +27,6 @@ import android.widget.LinearLayout;
 import com.zendesk.sdk.attachment.AttachmentHelper;
 import com.zendesk.sdk.attachment.ImageUploadHelper;
 import com.zendesk.sdk.attachment.UriToFileUtil;
-import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 import com.zendesk.sdk.feedback.ui.AttachmentContainerHost;
 import com.zendesk.sdk.model.CreateRequest;
 import com.zendesk.sdk.model.network.UploadResponse;
@@ -52,7 +51,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.zendesk.ZendeskPresenter;
+import is.hello.sense.zendesk.TicketsPresenter;
 import rx.Observable;
 
 public class ContactSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener {
@@ -61,7 +60,8 @@ public class ContactSubmitFragment extends InjectionFragment implements TextWatc
     private static final int REQUEST_CODE_TAKE_IMAGE = 0x01;
     private static final int REQUEST_CODE_PICK_IMAGE = 0x02;
 
-    @Inject ZendeskPresenter zendeskPresenter;
+    @Inject
+    TicketsPresenter ticketsPresenter;
 
     private SupportTopic supportTopic;
 
@@ -99,7 +99,7 @@ public class ContactSubmitFragment extends InjectionFragment implements TextWatc
         this.supportTopic = (SupportTopic) getArguments().getSerializable(ARG_SUPPORT_TOPIC);
         this.imageUploadHelper = new ImageUploadHelper(this);
 
-        addPresenter(zendeskPresenter);
+        addPresenter(ticketsPresenter);
 
         setRetainInstance(true);
     }
@@ -211,7 +211,7 @@ public class ContactSubmitFragment extends InjectionFragment implements TextWatc
 
         chooseSource.setOnOptionSelectedListener(option -> {
             LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(zendeskPresenter.initializeIfNeeded(),
+            bindAndSubscribe(ticketsPresenter.initializeIfNeeded(),
                     config -> {
                         LoadingDialogFragment.close(getFragmentManager());
                         switch (option.getOptionId()) {
@@ -330,10 +330,10 @@ public class ContactSubmitFragment extends InjectionFragment implements TextWatc
 
     private void send() {
         LoadingDialogFragment.show(getFragmentManager());
-        Observable<ZendeskFeedbackConfiguration> prepare = zendeskPresenter.prepareForFeedback(supportTopic);
-        Observable<CreateRequest> send = prepare.flatMap(config -> zendeskPresenter.sendFeedback(config,
-                text.getText().toString(), imageUploadHelper.getUploadTokens()));
-        bindAndSubscribe(send,
+
+        Observable<CreateRequest> openTicket = ticketsPresenter.createTicket(supportTopic,
+                text.getText().toString(), imageUploadHelper.getUploadTokens());
+        bindAndSubscribe(openTicket,
                 ignored -> {
                     LoadingDialogFragment.close(getFragmentManager());
                     ((FragmentNavigation) getActivity()).popFragment(this, false);

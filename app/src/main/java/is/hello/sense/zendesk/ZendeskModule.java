@@ -6,7 +6,7 @@ import is.hello.sense.ui.fragments.support.ContactTopicFragment;
 import is.hello.sense.ui.fragments.support.TicketListFragment;
 
 @Module(complete = false, injects = {
-        ZendeskPresenter.class,
+        TicketsPresenter.class,
         ContactTopicFragment.class,
         ContactSubmitFragment.class,
         TicketListFragment.class,
