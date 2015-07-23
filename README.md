@@ -47,6 +47,8 @@ The majority of the project is written in the Model-View-Presenter pattern. All 
 
 The project extensively uses dependency injection through `Dagger` to increase testable surface, and ease singleton creep. Convenience classes are provided that will perform dependency injection for you transparently. See `InjectionActivity`, `InjectionFragment`, `InjectionDialogFragment`, and `InjectionTestCase`. When using one of these classes, you only need to add your subclass to the appropriate module for `@Inject` fields to be satisifed.
 
+All fragments should extend `SenseFragment`, and all dialog fragments should extend `SenseDialogFragment`. By doing this, you gain convenience facilities, and enable easier migration to support library fragments in the future if we decide to support older versions of Android.
+
 Presenters and their views are loosely coupled through dependency injection. The general composition pattern is to use retained fragments for all major UI components, and to bind to the presenter's subjects in `onViewCreated`. The most common type of presenter, a single value presenter, can be created quickly by subclassing the `ValuePresenter` class. This will give you updating, low memory management, and state serialization for free.
 
 Modules
