@@ -1,9 +1,8 @@
-package is.hello.sense.graph.presenters;
+package is.hello.sense.zendesk;
 
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
@@ -22,13 +21,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 import rx.Subscriber;
@@ -180,24 +178,4 @@ public class ZendeskPresenter extends Presenter {
         }
     }
 
-    public static class ZendeskException extends Exception implements Errors.Reporting {
-        private final ErrorResponse response;
-
-        public ZendeskException(@NonNull ErrorResponse response) {
-            super(response.getReason());
-            this.response = response;
-        }
-
-        @Nullable
-        @Override
-        public String getContextInfo() {
-            return response.getStatus() + ": " + response.getUrl();
-        }
-
-        @NonNull
-        @Override
-        public StringRef getDisplayMessage() {
-            return StringRef.from(response.getReason());
-        }
-    }
 }

@@ -45,7 +45,6 @@ import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.presenters.ZendeskPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -53,6 +52,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.zendesk.ZendeskPresenter;
 import rx.Observable;
 
 public class ContactSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener {

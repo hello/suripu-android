@@ -14,11 +14,11 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
-import is.hello.sense.graph.ZendeskModule;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
+import is.hello.sense.zendesk.ZendeskModule;
 import rx.Observable;
 
 public class SenseApplication extends Application {

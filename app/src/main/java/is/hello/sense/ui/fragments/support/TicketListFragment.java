@@ -8,10 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.zendesk.ZendeskPresenter;
 
 public class TicketListFragment extends InjectionFragment {
+    @Inject ZendeskPresenter zendeskPresenter;
 
     private ProgressBar activityIndicator;
 

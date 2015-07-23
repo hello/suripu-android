@@ -1,7 +1,6 @@
-package is.hello.sense.graph;
+package is.hello.sense.zendesk;
 
 import dagger.Module;
-import is.hello.sense.graph.presenters.ZendeskPresenter;
 import is.hello.sense.ui.fragments.support.ContactSubmitFragment;
 import is.hello.sense.ui.fragments.support.ContactTopicFragment;
 import is.hello.sense.ui.fragments.support.TicketListFragment;

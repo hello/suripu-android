@@ -65,6 +65,7 @@ import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
+import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
     includes = {ApiModule.class, BluetoothModule.class, ZendeskModule.class, DebugModule.class},
