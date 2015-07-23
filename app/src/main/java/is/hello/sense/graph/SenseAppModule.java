@@ -67,7 +67,7 @@ import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 
 @Module(
-    includes = {ApiModule.class, BluetoothModule.class, DebugModule.class},
+    includes = {ApiModule.class, BluetoothModule.class, ZendeskModule.class, DebugModule.class},
     injects = {
         SenseApplication.class,
         NotificationReceiver.class,

@@ -9,15 +9,13 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.File;
-
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.ui.activities.SupportActivity;
+import is.hello.sense.ui.fragments.support.SelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.SessionLogger;
 import is.hello.sense.util.Share;
 
 public class UserSupport {
@@ -58,11 +56,12 @@ public class UserSupport {
     public static void showEmailSupport(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
 
-        Share.email(SUPPORT_EMAIL)
-             .withSubject(from.getString(R.string.support_email_subject))
-             .withBody(getEmailBody(from))
-             .withAttachment(Uri.fromFile(new File(SessionLogger.getLogFilePath(from))))
-             .send(from);
+        Intent intent = new Intent(from, FragmentNavigationActivity.class);
+        intent.putExtras(FragmentNavigationActivity.getArguments(
+                from.getString(R.string.support_email_subject),
+                SelectTopicFragment.class,
+                null));
+        from.startActivity(intent);
     }
 
     public static void showEmailFeedback(@NonNull Activity from) {

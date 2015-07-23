@@ -36,6 +36,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
+import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
@@ -314,8 +315,12 @@ public final class TestApiService implements ApiService {
                                                            @Query("from_utc") long timestamp) {
         return loadResponse("room_sensor_history", new TypeToken<RoomSensorHistory>(){}.getType());
     }
-    
-    
+
+    @Override
+    public Observable<ArrayList<SupportTopic>> supportTopics() {
+        return unimplemented();
+    }
+
     private static <T> Observable<T> safeJust(T value) {
         Observable<T> observable = Observable.create(s -> {
             if (s.isUnsubscribed()) {
