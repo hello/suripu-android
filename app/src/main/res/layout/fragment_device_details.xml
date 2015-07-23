@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_outer"
-            layout="@layout/footer_help" />
+            layout="@layout/item_device_support_footer" />
 
     </LinearLayout>
 

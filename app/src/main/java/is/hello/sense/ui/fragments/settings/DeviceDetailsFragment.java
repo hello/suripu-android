@@ -65,7 +65,7 @@ public abstract class DeviceDetailsFragment extends InjectionFragment {
 
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
-        TextView footer = (TextView) view.findViewById(R.id.footer_help);
+        TextView footer = (TextView) view.findViewById(R.id.item_device_support_footer);
         Styles.initializeSupportFooter(getActivity(), footer);
 
         return view;

@@ -263,13 +263,13 @@ public final class Styles {
 
             SimpleClickableSpan clickableSpan;
             switch (url) {
-                case "#support": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showSupport(activity));
+                case "#user-guide": {
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showUserGuide(activity));
                     break;
                 }
 
-                case "#email": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showEmailSupport(activity));
+                case "#contact": {
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showContactForm(activity));
                     break;
                 }
 

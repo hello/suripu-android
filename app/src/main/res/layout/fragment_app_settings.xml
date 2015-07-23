@@ -65,24 +65,13 @@
             style="@style/AppTheme.Card">
 
             <TextView
-                android:id="@+id/fragment_app_settings_feedback"
+                android:id="@+id/fragment_app_settings_support"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_feedback"
-                style="@style/AppTheme.Card.Item"/>
-
-            <View style="@style/Divider.Horizontal"/>
-
-            <TextView
-                android:id="@+id/fragment_app_settings_user_guide"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/action_user_guide"
+                android:text="@string/action_support"
                 style="@style/AppTheme.Card.Item"/>
 
         </is.hello.sense.ui.widget.RoundedLinearLayout>
-
-        <include layout="@layout/footer_help" />
 
         <TextView
             android:id="@+id/fragment_app_settings_version"

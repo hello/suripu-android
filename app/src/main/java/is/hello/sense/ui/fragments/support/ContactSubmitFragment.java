@@ -55,8 +55,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-public class ContactUsFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener {
-    private static final String ARG_SUPPORT_TOPIC = ContactUsFragment.class.getName() + ".ARG_SUPPORT_TOPIC";
+public class ContactSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener {
+    private static final String ARG_SUPPORT_TOPIC = ContactSubmitFragment.class.getName() + ".ARG_SUPPORT_TOPIC";
 
     private static final int REQUEST_CODE_TAKE_IMAGE = 0x01;
     private static final int REQUEST_CODE_PICK_IMAGE = 0x02;
@@ -77,8 +77,8 @@ public class ContactUsFragment extends InjectionFragment implements TextWatcher,
 
     //region Lifecycle
 
-    public static ContactUsFragment newInstance(@NonNull SupportTopic topic) {
-        ContactUsFragment fragment = new ContactUsFragment();
+    public static ContactSubmitFragment newInstance(@NonNull SupportTopic topic) {
+        ContactSubmitFragment fragment = new ContactSubmitFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_SUPPORT_TOPIC, topic);

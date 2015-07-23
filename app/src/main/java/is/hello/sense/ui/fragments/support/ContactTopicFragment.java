@@ -22,7 +22,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
-public class SelectTopicFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class ContactTopicFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     @Inject ApiService apiService;
 
     private ProgressBar loadingIndicator;
@@ -73,8 +73,8 @@ public class SelectTopicFragment extends InjectionFragment implements AdapterVie
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         SupportTopic topic = (SupportTopic) parent.getItemAtPosition(position);
-        ContactUsFragment contactUsFragment = ContactUsFragment.newInstance(topic);
-        ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(contactUsFragment,
+        ContactSubmitFragment contactSubmitFragment = ContactSubmitFragment.newInstance(topic);
+        ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(contactSubmitFragment,
                 topic.displayName, true);
     }
 

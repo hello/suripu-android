@@ -13,16 +13,6 @@
         android:showAsAction="never" />
 
     <item
-        android:id="@+id/support_contact"
-        android:title="@string/action_email_support"
-        android:showAsAction="never" />
-
-    <item
-        android:id="@+id/support_feedback"
-        android:title="@string/action_feedback"
-        android:showAsAction="never" />
-
-    <item
         android:id="@+id/support_acknowledgements"
         android:title="@string/title_acknowledgements"
         android:showAsAction="never" />
