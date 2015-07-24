@@ -28,7 +28,7 @@ public class SupportFragment extends SenseFragment implements AdapterView.OnItem
             UserSupport.showUserGuide(getActivity());
         });
         adapter.addTextItem(R.string.title_contact_us, 0, () -> {
-            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(new ContactTopicFragment(),
+            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(new TicketSelectTopicFragment(),
                     getString(R.string.title_select_a_topic), true);
         });
         adapter.addTextItem(R.string.title_my_tickets, 0, () -> {

@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.ui.activities.SupportActivity;
-import is.hello.sense.ui.fragments.support.ContactTopicFragment;
+import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
@@ -44,7 +44,7 @@ public class UserSupport {
         Intent intent = new Intent(from, FragmentNavigationActivity.class);
         intent.putExtras(FragmentNavigationActivity.getArguments(
                 from.getString(R.string.title_select_a_topic),
-                ContactTopicFragment.class,
+                TicketSelectTopicFragment.class,
                 null));
         from.startActivity(intent);
     }

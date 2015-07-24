@@ -3,6 +3,7 @@ package is.hello.sense.zendesk;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 import com.zendesk.sdk.feedback.impl.ZendeskFeedbackConnector;
@@ -12,7 +13,6 @@ import com.zendesk.sdk.model.Request;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.sdk.network.impl.ZendeskRequestProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,38 +25,53 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.graph.presenters.ValuePresenter;
+import is.hello.sense.graph.SafeObserverWrapper;
+import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
+import rx.Subscription;
 
-public class TicketsPresenter extends ValuePresenter<ArrayList<Request>> {
+public class TicketsPresenter extends Presenter {
     private static final long CUSTOM_FIELD_ID_TOPIC = 24321669L;
 
     @Inject Context context;
     @Inject ApiService apiService;
     @Inject ApiSessionManager sessionManager;
 
-    public final PresenterSubject<ArrayList<Request>> tickets = this.subject;
+    // Request doesn't implement Serializable,
+    // so we can't use ValuePresenter<T>. Yay.
+    public final PresenterSubject<List<Request>> tickets = PresenterSubject.create();
+    private @Nullable Subscription updateSubscription;
 
     //region Lifecycle
 
     @Override
-    protected boolean isDataDisposable() {
+    protected boolean onForgetDataForLowMemory() {
+        tickets.forget();
+
         return true;
     }
 
     @Override
-    protected boolean canUpdate() {
-        return true;
+    protected void onReloadForgottenData() {
+        update();
     }
+    //endregion
 
-    @Override
-    protected Observable<ArrayList<Request>> provideUpdateObservable() {
-        Observable<List<Request>> tickets = ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+
+    //region Updating
+
+    public void update() {
+        if (updateSubscription != null) {
+            updateSubscription.unsubscribe();
+            this.updateSubscription = null;
+        }
+
+        Observable<List<Request>> updateObservable = ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
             ZendeskRequestProvider provider = new ZendeskRequestProvider();
             provider.getRequests("new,open,pending,hold,solved", callback);
         });
-        return tickets.map(ArrayList::new);
+        this.updateSubscription = updateObservable.subscribe(new SafeObserverWrapper<>(tickets));
     }
 
     //endregion

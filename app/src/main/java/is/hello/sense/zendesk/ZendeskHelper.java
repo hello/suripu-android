@@ -57,6 +57,7 @@ public class ZendeskHelper {
         });
     }
 
+
     static class CallbackAdapter<T> extends ZendeskCallback<T> {
         private final Subscriber<? super T> subscriber;
 

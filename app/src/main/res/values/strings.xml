@@ -451,8 +451,14 @@ so you can sleep better.</string>
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
-    <string name="error_image_capture_failed">Could not start camera</string>
+    <string name="error_image_capture_failed">Could not start camera.</string>
+    <string name="error_pick_image_failed">Could not start photo picker.</string>
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
     <string name="title_comment">Comment</string>
+    <string name="action_view_attachment">View Attachment</string>
+    <plurals name="item_support_comment_detail_attachments">
+        <item quantity="one">%1$s – %2$d attachment</item>
+        <item quantity="other">%1$s – %2$d attachments</item>
+    </plurals>
 </resources>

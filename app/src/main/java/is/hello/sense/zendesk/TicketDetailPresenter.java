@@ -35,10 +35,6 @@ public class TicketDetailPresenter extends Presenter {
 
     //region Lifecycle
 
-    @Inject public TicketDetailPresenter() {
-
-    }
-
     @Override
     protected boolean onForgetDataForLowMemory() {
         comments.forget();
