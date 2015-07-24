@@ -4,9 +4,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.zendesk.sdk.model.Comment;
+import com.zendesk.sdk.model.EndUserComment;
 import com.zendesk.sdk.model.network.CommentsResponse;
 import com.zendesk.sdk.network.RequestProvider;
 import com.zendesk.sdk.network.impl.ZendeskRequestProvider;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -68,6 +72,20 @@ public class TicketDetailPresenter extends Presenter {
     public void setTicketId(@NonNull String ticketId) {
         this.ticketId = ticketId;
         update();
+    }
+
+    //endregion
+
+
+    //region Submitting
+
+    public Observable<Comment> submitComment(@NonNull String text, @NonNull List<String> attachmentTokens) {
+        return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+            EndUserComment comment = new EndUserComment();
+            comment.setValue(text);
+            comment.setAttachments(attachmentTokens);
+            requestProvider.addComment(ticketId, comment, callback);
+        });
     }
 
     //endregion

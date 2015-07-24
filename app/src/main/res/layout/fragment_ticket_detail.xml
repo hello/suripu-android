@@ -3,9 +3,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/fragment_ticket_detail_reply_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@color/background_light"
+        android:baselineAligned="false"
+        android:gravity="center_horizontal">
+
+        <ImageButton
+            android:id="@+id/fragment_ticket_detail_comment_attach"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:contentDescription="@string/action_add_attachment"
+            android:src="@drawable/action_add"/>
+
+        <EditText
+            android:id="@+id/fragment_ticket_detail_comment_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/gap_small"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNone"
+            android:hint="@string/title_comment" />
+
+        <ImageButton
+            android:id="@+id/fragment_ticket_detail_comment_send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:contentDescription="@string/action_send"
+            android:src="@drawable/action_send"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/fragment_ticket_detail_divider"
+        android:layout_above="@id/fragment_ticket_detail_reply_bar"
+        style="@style/Divider.Horizontal" />
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/fragment_ticket_detail_divider"/>
 
 </RelativeLayout>

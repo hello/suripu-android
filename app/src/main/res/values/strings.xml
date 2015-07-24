@@ -454,4 +454,5 @@ so you can sleep better.</string>
     <string name="error_image_capture_failed">Could not start camera</string>
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
+    <string name="title_comment">Comment</string>
 </resources>
