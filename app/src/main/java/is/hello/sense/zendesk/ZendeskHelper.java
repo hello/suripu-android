@@ -57,6 +57,10 @@ public class ZendeskHelper {
         });
     }
 
+    public static String sanitizeTag(@NonNull String tag) {
+        return tag.replaceAll(" |\\-|,", "_");
+    }
+
 
     static class CallbackAdapter<T> extends ZendeskCallback<T> {
         private final Subscriber<? super T> subscriber;

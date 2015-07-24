@@ -91,7 +91,8 @@ public class TicketsPresenter extends Presenter {
             ZendeskFeedbackConfiguration configuration = new ZendeskFeedbackConfiguration() {
                 @Override
                 public List<String> getTags() {
-                    return Lists.newArrayList(Build.MODEL, Build.VERSION.RELEASE);
+                    return Lists.newArrayList(ZendeskHelper.sanitizeTag(Build.MODEL),
+                            ZendeskHelper.sanitizeTag(Build.VERSION.RELEASE));
                 }
 
                 @Override
