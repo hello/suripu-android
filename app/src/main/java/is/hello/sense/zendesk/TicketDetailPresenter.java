@@ -76,6 +76,8 @@ public class TicketDetailPresenter extends Presenter {
     //region Submitting
 
     public Observable<Comment> submitComment(@NonNull String text, @NonNull List<String> attachmentTokens) {
+        logEvent("submitComment()");
+
         return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
             EndUserComment comment = new EndUserComment();
             comment.setValue(text);

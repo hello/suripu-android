@@ -9,33 +9,45 @@ import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
 
 public class ZendeskHelper {
+    public static final String LOG_TAG = "Zendesk";
+
     private static final String APP_ID = "mobile_sdk_client_510ec7f059736bb60c17";
     private static final String CLIENT_ID = "7bb3a86905b08e1083752af7b1d4a430afb1a051b6dae18a";
     private static final String HOST = "https://helloinc.zendesk.com";
 
     public static Observable<ZendeskConfig> initializeIfNeeded(@NonNull Context context,
                                                                @NonNull Observable<Account> account) {
-        ZendeskConfig config = ZendeskConfig.INSTANCE;
-        if (config.isInitialized()) {
-            return Observable.just(config);
+        Logger.debug(LOG_TAG, "initializeIfNeeded(" + context + ", " + account + ")");
+
+        if (ZendeskConfig.INSTANCE.isInitialized() && ZendeskConfig.INSTANCE.isAuthenticationAvailable()) {
+            Logger.debug(LOG_TAG, "Initialization not needed, skipping");
+
+            return Observable.just(ZendeskConfig.INSTANCE);
         }
 
-        return account.flatMap(a -> Observable.create(subscriber -> {
+        return account.flatMap(a -> Observable.<ZendeskConfig>create(subscriber -> {
+            ZendeskConfig config = ZendeskConfig.INSTANCE;
             config.init(context, HOST, CLIENT_ID, APP_ID, new ZendeskCallback<String>() {
                 @Override
                 public void onSuccess(String ignored) {
+                    Logger.debug(LOG_TAG, "Initialized Zendesk");
+
                     Identity identity = new AnonymousIdentity.Builder()
                             .withExternalIdentifier(a.getId())
                             .withNameIdentifier(a.getName())
                             .withEmailIdentifier(a.getEmail())
                             .build();
                     config.setIdentity(identity);
+
+                    Logger.debug(LOG_TAG, "Established identity " + identity);
 
                     subscriber.onNext(config);
                     subscriber.onCompleted();
@@ -46,14 +58,15 @@ public class ZendeskHelper {
                     subscriber.onError(new ZendeskException(errorResponse));
                 }
             });
-        }));
+        }).subscribeOn(Rx.mainThreadScheduler()));
     }
 
     public static <T> Observable<T> doAction(@NonNull Context context,
                                              @NonNull Observable<Account> account,
                                              @NonNull Action1<ZendeskCallback<T>> command) {
         return initializeIfNeeded(context, account).flatMap(ignored -> {
-            return Observable.create(s -> command.call(new CallbackAdapter<>(s)));
+            return Observable.<T>create(s -> command.call(new CallbackAdapter<>(s)))
+                             .subscribeOn(Rx.mainThreadScheduler());
         });
     }
 

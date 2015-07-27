@@ -78,12 +78,16 @@ public class TicketsPresenter extends Presenter {
 
 
     public Observable<ZendeskConfig> initializeIfNeeded() {
+        logEvent("initializeIfNeeded()");
+
         return ZendeskHelper.initializeIfNeeded(context, apiService.getAccount());
     }
 
     public Observable<CreateRequest> createTicket(@NonNull SupportTopic onTopic,
                                                   @NonNull String text,
                                                   @NonNull List<String> attachmentTokens) {
+        logEvent("createTicket()");
+
         return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
             CustomField topicId = new CustomField(CUSTOM_FIELD_ID_TOPIC, onTopic.topic);
             ZendeskConfig.INSTANCE.setCustomFields(Lists.newArrayList(topicId));
