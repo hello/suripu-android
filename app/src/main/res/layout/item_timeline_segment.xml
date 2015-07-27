@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/timeline_segment_event_offset_max"
         android:layout_marginBottom="@dimen/timeline_segment_event_offset_max"
-        android:background="@drawable/background_timeline_event"
+        android:background="@drawable/background_timeline_event_selector"
         tools:ignore="UselessParent">
 
         <TextView
