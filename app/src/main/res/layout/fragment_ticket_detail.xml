@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/fragment_ticket_detail_reply_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@color/background_light"
+        android:baselineAligned="false"
+        android:gravity="center_horizontal">
+
+        <ImageButton
+            android:id="@+id/fragment_ticket_detail_comment_attach"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:contentDescription="@string/action_add_attachment"
+            android:src="@drawable/action_attach"/>
+
+        <EditText
+            android:id="@+id/fragment_ticket_detail_comment_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/gap_small"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNone"
+            android:hint="@string/title_comment" />
+
+        <ImageButton
+            android:id="@+id/fragment_ticket_detail_comment_send"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:contentDescription="@string/action_send"
+            android:src="@drawable/action_send"/>
+
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/fragment_ticket_detail_comment_attachments_scroller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_ticket_detail_reply_bar"
+        android:scrollbars="horizontal"
+        android:background="@color/background_light">
+
+        <com.zendesk.sdk.feedback.ui.AttachmentContainerHost
+            android:id="@+id/fragment_ticket_detail_comment_attachments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+
+    </HorizontalScrollView>
+
+    <View
+        android:id="@+id/fragment_ticket_detail_divider"
+        android:layout_above="@id/fragment_ticket_detail_comment_attachments_scroller"
+        style="@style/Divider.Horizontal" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/fragment_ticket_detail_divider"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="@dimen/shadow_size"
+        style="@style/AppTheme.ListView.Cards.Compact" />
+
+    <ProgressBar
+        android:id="@+id/fragment_ticket_detail_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

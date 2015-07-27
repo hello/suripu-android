@@ -153,7 +153,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
                 .withSupportLink()
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
-        String expectedMessage = MESSAGE + "\\n\\nHaving trouble? Email support";
+        String expectedMessage = MESSAGE + "\\n\\nHaving trouble? Contact support";
         assertEquals(expectedMessage, dialog.getMessage().toString());
         assertArrayEquals(new String[]{expectedMessage, "java.lang.IllegalStateException", null, null},
                 getTrackedError(dialogFragment));

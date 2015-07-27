@@ -35,6 +35,7 @@ import rx.subscriptions.Subscriptions;
 
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
     public static final String PAIRED_DEVICE_SSID = "paired_device_ssid";
+    public static final String PAIRED_SENSE_ID = "paired_sense_id";
     public static final String PAIRED_PILL_ID = "paired_pill_id";
 
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";

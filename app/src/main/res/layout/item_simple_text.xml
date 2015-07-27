@@ -12,4 +12,5 @@
     android:gravity="start|center_vertical"
     android:textAppearance="@style/AppTheme.Text.Body"
     android:lineSpacingMultiplier="@dimen/line_multiple_body"
-    android:text="@string/app_name"/>
+    android:text="@string/app_name"
+    android:background="@drawable/selectable_dark_bounded"/>

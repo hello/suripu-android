@@ -18,7 +18,6 @@ import android.webkit.WebViewClient;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Share;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -135,16 +134,6 @@ public class SupportActivity extends SenseActivity {
 
             case R.id.support_refresh: {
                 webView.reload();
-                return true;
-            }
-
-            case R.id.support_contact: {
-                UserSupport.showSupport(this);
-                return true;
-            }
-
-            case R.id.support_feedback: {
-                UserSupport.showEmailFeedback(this);
                 return true;
             }
 

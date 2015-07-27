@@ -5,26 +5,19 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.File;
-
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.ui.activities.SupportActivity;
+import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.SessionLogger;
-import is.hello.sense.util.Share;
 
 public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
-    public static final String SUPPORT_EMAIL = "support@hello.is";
-    public static final String FEEDBACK_EMAIL = "feedback@hello.is";
 
     public static void openUri(@NonNull Context from, @NonNull Uri uri) {
         try {
@@ -38,40 +31,22 @@ public class UserSupport {
         }
     }
 
-    public static void showSupport(@NonNull Context from) {
+    public static void showUserGuide(@NonNull Context from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
 
         Uri supportUrl = Uri.parse("https://support.hello.is");
         from.startActivity(SupportActivity.getIntent(from, supportUrl));
     }
 
-    public static String getEmailBody(@NonNull Activity from) {
-        return from.getString(
-            R.string.support_email_body,
-            from.getString(R.string.app_name),
-            BuildConfig.VERSION_NAME,
-            Build.VERSION.RELEASE,
-            Build.MODEL
-        );
-    }
-
-    public static void showEmailSupport(@NonNull Activity from) {
+    public static void showContactForm(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
 
-        Share.email(SUPPORT_EMAIL)
-             .withSubject(from.getString(R.string.support_email_subject))
-             .withBody(getEmailBody(from))
-             .withAttachment(Uri.fromFile(new File(SessionLogger.getLogFilePath(from))))
-             .send(from);
-    }
-
-    public static void showEmailFeedback(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SEND_FEEDBACK, null);
-
-        Share.email(FEEDBACK_EMAIL)
-             .withSubject(from.getString(R.string.feedback_email_subject_fmt, BuildConfig.VERSION_NAME))
-             .withBody(getEmailBody(from))
-             .send(from);
+        Intent intent = new Intent(from, FragmentNavigationActivity.class);
+        intent.putExtras(FragmentNavigationActivity.getArguments(
+                from.getString(R.string.title_select_a_topic),
+                TicketSelectTopicFragment.class,
+                null));
+        from.startActivity(intent);
     }
 
     public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {

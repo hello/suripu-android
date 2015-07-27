@@ -18,6 +18,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
+import is.hello.sense.zendesk.ZendeskModule;
 import rx.Observable;
 
 public class SenseApplication extends Application {
@@ -59,7 +60,8 @@ public class SenseApplication extends Application {
         this.graph = ObjectGraph.create(
                 new ApiModule(this),
                 new SenseAppModule(this),
-                new BluetoothModule()
+                new BluetoothModule(),
+                new ZendeskModule()
         );
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_BUILT_GRAPH));
 

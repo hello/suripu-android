@@ -16,9 +16,8 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.UndersideTabFragment;
-import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
@@ -49,14 +48,8 @@ public class AppSettingsFragment extends UndersideTabFragment {
         View unitsItem = view.findViewById(R.id.fragment_app_settings_units);
         Views.setSafeOnClickListener(unitsItem, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time));
 
-        View feedbackItem = view.findViewById(R.id.fragment_app_settings_feedback);
-        Views.setSafeOnClickListener(feedbackItem, ignored -> UserSupport.showEmailFeedback(getActivity()));
-
-        View userGuideItem = view.findViewById(R.id.fragment_app_settings_user_guide);
-        Views.setSafeOnClickListener(userGuideItem, ignored -> UserSupport.showSupport(getActivity()));
-
-        TextView footer = (TextView) view.findViewById(R.id.footer_help);
-        Styles.initializeSupportFooter(getActivity(), footer);
+        View supportItem = view.findViewById(R.id.fragment_app_settings_support);
+        Views.setSafeOnClickListener(supportItem, ignored -> showFragment(SupportFragment.class, R.string.action_support));
 
         TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));

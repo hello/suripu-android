@@ -129,8 +129,8 @@ so you can sleep better.</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
     <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
-    <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#email">Email support</a></b></string>
-    <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#email">Email support</a></b></string>
+    <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#contact">Contact support</a></b></string>
+    <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#contact">Contact support</a></b></string>
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory reset</string>
@@ -280,7 +280,6 @@ so you can sleep better.</string>
     <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
-    <string name="support_footer">If you‘re having trouble, please contact us at <a href="#email">support@hello.is</a></string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"WiFi network: "</string>
@@ -383,15 +382,6 @@ so you can sleep better.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
     <string name="error_no_email_client">Could not find an email app.</string>
-    <string name="support_email_subject">Sense Support</string>
-    <!--
-        %1$s = app name
-        %2$s = app version
-        %3$s = os version
-        %4$s = device model
-      -->
-    <string name="support_email_body">\n---\n\n%1$s %2$s on Android %3$s (%4$s)</string>
-    <string name="feedback_email_subject_fmt">Feedback for Sense %1$s</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
     <string name="timeline_share_last_night_fmt">Last night #mysleepscore was %1$s — http://hello.is</string>
     <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
@@ -454,4 +444,21 @@ so you can sleep better.</string>
     <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair a Sense to view current conditions.</string>
     <string name="message_timeline_no_actions_title">No Actions Available</string>
     <string name="message_timeline_no_actions_body">The event you selected does not have any actions available.</string>
+    <string name="action_send">Send</string>
+    <string name="action_attach">Attach</string>
+    <string name="hint_contact_us_text">Describe the issue you are having</string>
+    <string name="title_contact_us">Contact us</string>
+    <string name="action_take_photo">Take photo</string>
+    <string name="action_pick_image">Choose photo</string>
+    <string name="action_add_attachment">Add Attachment</string>
+    <string name="error_image_capture_failed">Could not start camera.</string>
+    <string name="error_pick_image_failed">Could not start photo picker.</string>
+    <string name="title_select_a_topic">Select a topic</string>
+    <string name="title_my_tickets">My tickets</string>
+    <string name="title_comment">Comment</string>
+    <string name="action_view_attachment">View Attachment</string>
+    <plurals name="item_support_comment_detail_attachments">
+        <item quantity="one">%1$s – %2$d attachment</item>
+        <item quantity="other">%1$s – %2$d attachments</item>
+    </plurals>
 </resources>

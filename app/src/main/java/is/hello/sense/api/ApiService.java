@@ -21,6 +21,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
+import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
@@ -225,6 +226,14 @@ public interface ApiService {
     @GET("/v1/insights/trends/graph")
     Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
                                                  @NonNull @Query("time_period") String timePeriod);
+
+    //endregion
+
+
+    //region Support
+
+    @GET("/v1/support/topics")
+    Observable<ArrayList<SupportTopic>> supportTopics();
 
     //endregion
 }

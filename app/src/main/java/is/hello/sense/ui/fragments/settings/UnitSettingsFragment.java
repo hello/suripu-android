@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -24,6 +22,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.units.systems.MetricUnitSystem;
 import is.hello.sense.units.systems.UsCustomaryUnitSystem;
@@ -146,29 +145,30 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
 
 
     public void updateUnitSystem() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setCancelable(true);
+        SenseBottomSheet bottomSheet = new SenseBottomSheet(getActivity());
+        bottomSheet.setTitle(R.string.setting_title_units);
+
+        bottomSheet.addOption(new SenseBottomSheet.Option(0)
+                .setTitle(R.string.unit_system_us_customary));
+        bottomSheet.addOption(new SenseBottomSheet.Option(1)
+                .setTitle(R.string.unit_system_metric));
 
         String[] unitSystemIds = {
                 UsCustomaryUnitSystem.NAME,
                 MetricUnitSystem.NAME,
         };
-        String[] unitSystemNames = {
-                getString(R.string.unit_system_us_customary),
-                getString(R.string.unit_system_metric),
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.item_simple_text, unitSystemNames);
-        builder.setAdapter(adapter, (dialog, position) -> {
+        bottomSheet.setOnOptionSelectedListener(option -> {
+            int which = option.getOptionId();
+
             preferencesPresenter.edit()
-                    .putString(PreferencesPresenter.UNIT_SYSTEM, unitSystemIds[position])
+                    .putString(PreferencesPresenter.UNIT_SYSTEM, unitSystemIds[which])
                     .commit();
             preferencesPresenter.pushAccountPreferences().subscribe();
+
+            return true;
         });
 
-        AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.getListView().setDivider(null);
-        dialog.show();
+        bottomSheet.show();
     }
 
     public void updateUse24Time() {
