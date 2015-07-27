@@ -150,6 +150,7 @@ public class TicketDetailFragment extends InjectionFragment implements ImageUplo
         this.attach = null;
         this.commentText = null;
         this.sendComment = null;
+        this.loadingIndicator = null;
     }
 
     @Override
