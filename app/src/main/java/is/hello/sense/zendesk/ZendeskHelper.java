@@ -40,8 +40,12 @@ public class ZendeskHelper {
                 public void onSuccess(String ignored) {
                     Logger.debug(LOG_TAG, "Initialized Zendesk");
 
+                    // !! Important: do not specify an external identifier.
+                    // Zendesk implements anonymous identity incorrectly.
+                    // If the user uses Zendesk from another device, with
+                    // the same identifier, authentication will fail upon
+                    // the first request made to Zendesk.
                     Identity identity = new AnonymousIdentity.Builder()
-                            .withExternalIdentifier(a.getId())
                             .withNameIdentifier(a.getName())
                             .withEmailIdentifier(a.getEmail())
                             .build();
