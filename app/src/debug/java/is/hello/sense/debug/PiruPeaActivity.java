@@ -70,7 +70,6 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         peripheralActions.addTextItem("Disconnect", null, this::disconnect);
         peripheralActions.addTextItem("Pairing Mode", null, this::putIntoPairingMode);
         peripheralActions.addTextItem("Normal Mode", null, this::putIntoNormalMode);
-        peripheralActions.addTextItem("Clear Paired Phone", null, this::clearPairedPhone);
         peripheralActions.addTextItem("Device Factory Reset", null, this::factoryReset);
         peripheralActions.addTextItem("Get WiFi Network", null, this::getWifiNetwork);
         peripheralActions.addTextItem("Set WiFi Network", null, this::setWifiNetwork);
@@ -205,10 +204,6 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void putIntoNormalMode() {
         runSimpleCommand(selectedPeripheral.putIntoNormalMode());
-    }
-
-    public void clearPairedPhone() {
-        runSimpleCommand(selectedPeripheral.clearPairedPhone());
     }
 
     public void factoryReset() {
