@@ -24,7 +24,7 @@ import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.PeripheralConnectionError;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.Peripheral;
+import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
@@ -83,10 +83,10 @@ import rx.functions.Action1;
         Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
 
-        Observable<Intent> disconnectSignal = Rx.fromLocalBroadcast(context, new IntentFilter(Peripheral.ACTION_DISCONNECTED));
+        Observable<Intent> disconnectSignal = Rx.fromLocalBroadcast(context, new IntentFilter(GattPeripheral.ACTION_DISCONNECTED));
         disconnectSignal.subscribe(this::onPeripheralDisconnected, Functions.LOG_ERROR);
 
-        this.bluetoothEnabled = bluetoothStack.isEnabled();
+        this.bluetoothEnabled = bluetoothStack.enabled();
         bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
     }
 
@@ -105,7 +105,7 @@ import rx.functions.Action1;
     public void onPeripheralDisconnected(@NonNull Intent intent) {
         if (peripheral != null) {
             String currentAddress = peripheral.getAddress();
-            String intentAddress = intent.getStringExtra(Peripheral.EXTRA_ADDRESS);
+            String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
             if (TextUtils.equals(currentAddress, intentAddress)) {
                 logEvent("broadcasting disconnect");
 
@@ -165,11 +165,11 @@ import rx.functions.Action1;
         return (peripheral != null && peripheral.isConnected());
     }
 
-    public @Peripheral.BondStatus int getBondStatus() {
+    public @GattPeripheral.BondStatus int getBondStatus() {
         if (peripheral != null) {
             return peripheral.getBondStatus();
         } else {
-            return Peripheral.BOND_NONE;
+            return GattPeripheral.BOND_NONE;
         }
     }
 

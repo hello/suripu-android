@@ -11,8 +11,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.test.TestBluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.test.TestBluetoothStackBehavior;
+import is.hello.buruberi.bluetooth.stacks.test.FakeBluetoothStack;
+import is.hello.buruberi.bluetooth.stacks.test.FakeBluetoothStackBehavior;
 import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
@@ -118,11 +118,12 @@ public final class TestModule {
         return new TestApiSessionManager(context);
     }
 
-    @Singleton @Provides TestBluetoothStackBehavior provideBluetoothStackConfig() {
-        return new TestBluetoothStackBehavior();
+    @Singleton @Provides
+    FakeBluetoothStackBehavior provideBluetoothStackConfig() {
+        return new FakeBluetoothStackBehavior();
     }
 
-    @Provides @Singleton BluetoothStack providesBluetoothStack(@NonNull TestBluetoothStackBehavior stackConfig) {
-        return new TestBluetoothStack(stackConfig);
+    @Provides @Singleton BluetoothStack providesBluetoothStack(@NonNull FakeBluetoothStackBehavior stackConfig) {
+        return new FakeBluetoothStack(stackConfig);
     }
 }
