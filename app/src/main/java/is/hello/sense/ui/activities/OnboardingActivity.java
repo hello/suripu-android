@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -8,24 +7,18 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.widget.ArrayAdapter;
-
-import com.squareup.seismic.ShakeDetector;
 
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.DevicesInfo;
-import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -61,7 +54,6 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.RateLimitingShakeListener;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -73,16 +65,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
     @Inject ApiService apiService;
-    @Inject ApiSessionManager apiSessionManager;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
     private BluetoothAdapter bluetoothAdapter;
 
     private @Nullable Account account;
     private @Nullable DevicesInfo devicesInfo;
-
-    private @Nullable SensorManager sensorManager;
-    private @Nullable ShakeDetector shakeDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +79,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
-        }
-
-        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            this.shakeDetector = new ShakeDetector(new RateLimitingShakeListener(this::showDebugOptions));
         }
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -142,24 +125,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     showSenseColorsInfo();
                     break;
             }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (shakeDetector != null && sensorManager != null) {
-            shakeDetector.start(sensorManager);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (shakeDetector != null) {
-            shakeDetector.stop();
         }
     }
 
@@ -243,50 +208,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             stateSafeExecutor.execute(super::onBackPressed);
         }
     }
-
-
-    //region Debug Options
-
-    public void showDebugOptions() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        ArrayAdapter<String> options = new ArrayAdapter<>(this, R.layout.item_simple_text, new String[] {
-                "Debug",
-                "Skip Onboarding",
-                "Restart Onboarding",
-        });
-        builder.setAdapter(options, (dialog, which) -> {
-            switch (which) {
-                case 0: {
-                    Intent intent = new Intent(this, DebugActivity.class);
-                    startActivity(intent);
-                    break;
-                }
-
-                case 1: {
-                    showHomeActivity();
-                    break;
-                }
-
-                case 2: {
-                    apiSessionManager.logOut();
-                    getSharedPreferences(Constants.INTERNAL_PREFS, 0)
-                            .edit()
-                            .clear()
-                            .apply();
-                    recreate();
-                    break;
-                }
-
-                default: {
-                    break;
-                }
-            }
-        });
-        builder.setCancelable(true);
-        builder.create().show();
-    }
-
-    //endregion
 
 
     //region Steps

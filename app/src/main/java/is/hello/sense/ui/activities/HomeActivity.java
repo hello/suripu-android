@@ -4,10 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ComponentCallbacks2;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
@@ -19,15 +17,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
-import com.squareup.seismic.ShakeDetector;
-
 import org.joda.time.LocalDate;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -58,7 +53,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.RateLimitingShakeListener;
 import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
@@ -87,9 +81,6 @@ public class HomeActivity
 
     private boolean isFirstActivityRun;
     private boolean showUnderside;
-
-    private @Nullable SensorManager sensorManager;
-    private @Nullable ShakeDetector shakeDetector;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
     private TimelineFragmentAdapter viewPagerAdapter;
@@ -129,15 +120,6 @@ public class HomeActivity
         }
 
         devicesPresenter.update();
-
-
-        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            this.shakeDetector = new ShakeDetector(new RateLimitingShakeListener(() -> {
-                Intent intent = new Intent(this, DebugActivity.class);
-                startActivity(intent);
-            }));
-        }
 
 
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
@@ -238,10 +220,6 @@ public class HomeActivity
     protected void onResume() {
         super.onResume();
 
-        if (shakeDetector != null && sensorManager != null) {
-            shakeDetector.start(sensorManager);
-        }
-
         Distribution.checkForUpdates(this);
 
         if (showUnderside) {
@@ -276,15 +254,6 @@ public class HomeActivity
         }
 
         presenterContainer.onContainerResumed();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (shakeDetector != null) {
-            shakeDetector.stop();
-        }
     }
 
     @Override
@@ -502,7 +471,7 @@ public class HomeActivity
         }
 
         DeviceIssueDialogFragment deviceIssueDialogFragment = DeviceIssueDialogFragment.newInstance(issue);
-        deviceIssueDialogFragment.show(getFragmentManager(), DeviceIssueDialogFragment.TAG);
+        deviceIssueDialogFragment.showAllowingStateLoss(getFragmentManager(), DeviceIssueDialogFragment.TAG);
     }
 
     //endregion
