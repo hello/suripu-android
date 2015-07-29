@@ -123,24 +123,31 @@ public class TimelineAdapterTests extends SenseTestCase {
 
     private List<TimelineEvent> generateSimpleTimeline() {
         List<TimelineEvent> events = new ArrayList<>();
+        DateTime base = DateTime.now();
+
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.IN_BED)
+                .setShiftedTimestamp(base.withTime(1, 20, 0, 0))
                 .build());
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.LIGHTS_OUT)
                 .setMessage(new MarkupString("Blah blah blah"))
+                .setShiftedTimestamp(base.withTime(1, 30, 0, 0))
                 .build());
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.FELL_ASLEEP)
                 .setMessage(new MarkupString("Blah blah blah"))
+                .setShiftedTimestamp(base.withTime(2, 0, 0, 0))
                 .build());
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.IN_BED)
                 .setDuration(30, TimeUnit.MINUTES)
+                .setShiftedTimestamp(base.withTime(3, 30, 0, 0))
                 .build());
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GENERIC_MOTION)
                 .setMessage(new MarkupString("Y u mov so much???"))
+                .setShiftedTimestamp(base.withTime(4, 45, 0, 0))
                 .build());
         return events;
     }
@@ -283,6 +290,38 @@ public class TimelineAdapterTests extends SenseTestCase {
         assertEquals(0.8f, holder3.drawable.getStolenTopSleepDepthFraction(), 0f);
         assertEquals(0.4f, holder3.drawable.getSleepDepthFraction(), 0f);
         assertEquals(0f, holder3.drawable.getStolenBottomSleepDepthFraction(), 0f);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void use24TimeUpdating() throws Exception {
+        adapter.setUse24Time(false);
+
+        List<TimelineEvent> events = new ArrayList<>();
+        DateTime timestamp = DateTime.now().withTime(0, 30, 0, 0);
+        events.add(new TimelineEventBuilder()
+                .setType(TimelineEvent.Type.GOT_IN_BED)
+                .setSleepDepth(0, TimelineEvent.SleepState.AWAKE)
+                .setMessage(new MarkupString("Whatevs"))
+                .setShiftedTimestamp(timestamp)
+                .build());
+        adapter.bindEvents(events);
+
+        int headerCount = adapter.getHeaderCount();
+
+        TimelineAdapter.EventViewHolder holder12Hour = createAndBindView(adapter, fakeParent,
+                TimelineAdapter.VIEW_TYPE_EVENT, headerCount);
+
+        assertEquals("12 AM", holder12Hour.drawable.getTimestamp().toString());
+        assertEquals("12:30 AM", holder12Hour.dateText.getText().toString());
+
+        adapter.setUse24Time(true);
+
+        TimelineAdapter.EventViewHolder holder24Hour = createAndBindView(adapter, fakeParent,
+                TimelineAdapter.VIEW_TYPE_EVENT, headerCount);
+
+        assertEquals("00:00", holder24Hour.drawable.getTimestamp().toString());
+        assertEquals("00:30", holder24Hour.dateText.getText().toString());
     }
 
     //endregion

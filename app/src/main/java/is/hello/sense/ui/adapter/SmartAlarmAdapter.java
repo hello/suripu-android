@@ -176,7 +176,7 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
             enabled.setOnClickListener(onClickListener);
             if (use24Time) {
                 timePeriod.setVisibility(View.GONE);
-                time.setText(alarm.getTime().toString("H:mm"));
+                time.setText(alarm.getTime().toString("HH:mm"));
             } else {
                 timePeriod.setVisibility(View.VISIBLE);
                 time.setText(alarm.getTime().toString("h:mm"));

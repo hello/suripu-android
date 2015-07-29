@@ -13,14 +13,14 @@
     <string name="format_date_month_year">MMMM yyyy</string>
 
     <string name="format_time_12_hr">h:mm a</string>
-    <string name="format_time_24_hr">H:mm</string>
+    <string name="format_time_24_hr">HH:mm</string>
 
     <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
-    <string name="format_day_and_time_24_hr">EEEE – H:mm</string>
+    <string name="format_day_and_time_24_hr">EEEE – HH:mm</string>
 
-    <string name="format_timeline_segment_time_24_hr">H</string>
+    <string name="format_timeline_segment_time_24_hr">HH</string>
     <string name="format_timeline_segment_time_12_hr">h</string>
-    <string name="format_timeline_event_time_24_hr">H:mm</string>
+    <string name="format_timeline_event_time_24_hr">HH:mm</string>
     <string name="format_timeline_event_time_12_hr">h:mm</string>
     <string name="format_timeline_24_hr_period">:00</string>
     <string name="format_timeline_12_hr_period">a</string>

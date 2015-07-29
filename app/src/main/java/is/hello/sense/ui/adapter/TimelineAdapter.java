@@ -174,11 +174,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     public void setUse24Time(boolean use24Time) {
-        this.use24Time = use24Time;
-
-        for (int i = 0, size = itemTimes.size(); i < size; i++) {
-            int positionWithTime = itemTimes.keyAt(i);
-            notifyItemChanged(positionWithTime);
+        if (this.use24Time != use24Time) {
+            this.use24Time = use24Time;
+            notifyItemRangeChanged(headers.length, events.size());
         }
     }
 
