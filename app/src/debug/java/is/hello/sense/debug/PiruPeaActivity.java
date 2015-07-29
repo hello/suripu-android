@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
@@ -272,7 +271,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
             showLoadingIndicator();
             hardwarePresenter.setPeripheral(selectedPeripheral);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                if (status == SensePeripheral.ConnectStatus.CONNECTED) {
                     hideLoadingIndicator();
                     listView.setAdapter(peripheralActions);
                 }

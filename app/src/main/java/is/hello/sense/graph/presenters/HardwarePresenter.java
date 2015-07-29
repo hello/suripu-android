@@ -15,7 +15,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
@@ -283,7 +282,7 @@ import rx.functions.Action1;
         });
     }
 
-    public Observable<HelloPeripheral.ConnectStatus> connectToPeripheral() {
+    public Observable<SensePeripheral.ConnectStatus> connectToPeripheral() {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
         if (peripheral == null) {
@@ -293,7 +292,7 @@ import rx.functions.Action1;
         if (peripheral.isConnected()) {
             logEvent("already paired with peripheral " + peripheral);
 
-            return Observable.just(HelloPeripheral.ConnectStatus.CONNECTED);
+            return Observable.just(SensePeripheral.ConnectStatus.CONNECTED);
         }
 
         return pending.bind(TOKEN_CONNECT, () -> {

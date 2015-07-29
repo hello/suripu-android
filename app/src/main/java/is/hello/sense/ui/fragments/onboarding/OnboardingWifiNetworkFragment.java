@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
+import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
@@ -135,7 +135,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
 
         if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != HelloPeripheral.ConnectStatus.CONNECTED) {
+                if (status != SensePeripheral.ConnectStatus.CONNECTED) {
                     return;
                 }
 

@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
@@ -222,7 +221,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         } else {
             showBlockingActivity(R.string.title_connecting);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                if (status == SensePeripheral.ConnectStatus.CONNECTED) {
                     checkConnectivityAndContinue();
                 } else {
                     showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));

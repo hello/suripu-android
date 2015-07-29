@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.sense.R;
@@ -282,7 +281,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
-                                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                                 if (status == SensePeripheral.ConnectStatus.CONNECTED) {
                                      checkConnectivityState();
                                  }
                              },

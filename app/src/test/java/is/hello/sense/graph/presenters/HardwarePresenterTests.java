@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SenseIdentifiers;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
@@ -55,7 +54,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     @Before
     public void initialize() throws Exception {
-        HelloPeripheral.Tests.setPeripheralService(peripheral, null);
+        SensePeripheral.Testing.setPeripheralService(peripheral, null);
     }
 
     @After
@@ -73,7 +72,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
         peripheralBehavior.setSubscriptionResponse(Either.right(error));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
-        HelloPeripheral.Tests.setPeripheralService(peripheral, new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY));
+        SensePeripheral.Testing.setPeripheralService(peripheral, new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY));
 
         assertThrows(() -> {
             Sync.last(presenter.currentWifiNetwork());
@@ -105,7 +104,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
     @Test
     public void connectivityGetters() throws Exception {
         TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
-        HelloPeripheral.Tests.setPeripheralService(peripheral, service);
+        SensePeripheral.Testing.setPeripheralService(peripheral, service);
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
         peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
@@ -122,7 +121,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertFalse(presenter.hasPeripheral());
         assertFalse(presenter.isConnected());
 
-        HelloPeripheral.Tests.setPeripheralService(peripheral, null);
+        SensePeripheral.Testing.setPeripheralService(peripheral, null);
     }
 
     @Test
@@ -160,7 +159,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
     @Test
     public void clearPeripheral() throws Exception {
         TestPeripheralService service = new TestPeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
-        HelloPeripheral.Tests.setPeripheralService(peripheral, service);
+        SensePeripheral.Testing.setPeripheralService(peripheral, service);
         HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
 
         peripheralBehavior.setConnectionStatus(Peripheral.STATUS_CONNECTED);
@@ -176,7 +175,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
         assertTrue(peripheralBehavior.wasMethodCalled(TestPeripheralBehavior.Method.DISCONNECT));
 
-        HelloPeripheral.Tests.setPeripheralService(peripheral, null);
+        SensePeripheral.Testing.setPeripheralService(peripheral, null);
     }
 
 

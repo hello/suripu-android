@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
@@ -248,7 +247,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
         if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != HelloPeripheral.ConnectStatus.CONNECTED)
+                if (status != SensePeripheral.ConnectStatus.CONNECTED)
                     return;
 
                 sendWifiCredentials();
