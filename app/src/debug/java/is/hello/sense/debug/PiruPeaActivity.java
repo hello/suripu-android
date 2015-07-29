@@ -19,9 +19,10 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
@@ -246,19 +247,19 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void busyLedAnimation() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.BUSY));
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.BUSY));
     }
 
     public void trippyLedAnimation() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY));
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.TRIPPY));
     }
 
     public void stopAnimationWithFade() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.FADE_OUT));
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.FADE_OUT));
     }
 
     public void stopAnimationWithoutFade() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SensePeripheral.LedAnimation.STOP));
+        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.STOP));
     }
 
     //endregion
@@ -272,7 +273,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
             showLoadingIndicator();
             hardwarePresenter.setPeripheral(selectedPeripheral);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                if (status == Operation.CONNECTED) {
                     hideLoadingIndicator();
                     listView.setAdapter(peripheralActions);
                 }

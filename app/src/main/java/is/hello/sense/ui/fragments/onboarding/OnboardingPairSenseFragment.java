@@ -15,11 +15,11 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
-import is.hello.buruberi.bluetooth.stacks.Peripheral;
+import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
@@ -212,7 +212,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     public void completePeripheralPair() {
         Analytics.setSenseId(hardwarePresenter.getDeviceId());
 
-        if (hardwarePresenter.getBondStatus() == Peripheral.BOND_BONDED) {
+        if (hardwarePresenter.getBondStatus() == GattPeripheral.BOND_BONDED) {
             showBlockingActivity(R.string.title_clearing_bond);
             bindAndSubscribe(hardwarePresenter.clearBond(),
                     ignored -> {
@@ -222,7 +222,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         } else {
             showBlockingActivity(R.string.title_connecting);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                if (status == Operation.CONNECTED) {
                     checkConnectivityAndContinue();
                 } else {
                     showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));

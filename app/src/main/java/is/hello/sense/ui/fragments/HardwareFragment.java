@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -60,7 +60,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showHardwareActivity(@NonNull Runnable onCompletion,
                                         @NonNull Action1<Throwable> onError) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY),
+        bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
@@ -71,7 +71,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected void hideHardwareActivity(@NonNull Runnable onCompletion,
                                         @Nullable Action1<Throwable> onError) {
         if (hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.TRIPPY),
+            bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
                              e -> {
                                  Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity.", e);
@@ -87,7 +87,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.STOP),
+        bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.STOP),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);

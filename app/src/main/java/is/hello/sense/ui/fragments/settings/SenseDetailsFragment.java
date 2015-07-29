@@ -23,9 +23,11 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.HelloPeripheral;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
+import is.hello.buruberi.bluetooth.devices.model.SenseNetworkStatus;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.functional.Functions;
@@ -48,7 +50,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
+import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
     private static final int REQUEST_CODE_WIFI = 0x94;
@@ -69,7 +71,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
 
-    private @Nullable SensePeripheral.SenseWifiNetwork currentWifiNetwork;
+    private @Nullable
+    SenseNetworkStatus currentWifiNetwork;
 
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
@@ -228,7 +231,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         clearActions();
     }
 
-    private void showConnectedSenseActions(@Nullable SensePeripheral.SenseWifiNetwork network) {
+    private void showConnectedSenseActions(@Nullable SenseNetworkStatus network) {
         pairingMode.setEnabled(true);
         changeWiFi.setEnabled(true);
 
@@ -282,7 +285,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
-                                 if (status == HelloPeripheral.ConnectStatus.CONNECTED) {
+                                 if (status == Operation.CONNECTED) {
                                      checkConnectivityState();
                                  }
                              },
@@ -293,7 +296,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void presentError(@NonNull Throwable e) {
         hideAlert();
         LoadingDialogFragment.close(getFragmentManager());
-        runLedAnimation(SensePeripheral.LedAnimation.STOP).subscribe(Functions.NO_OP, Functions.LOG_ERROR);
+        runLedAnimation(SenseLedAnimation.STOP).subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
         if (e instanceof PeripheralNotFoundError) {
             hardwarePresenter.trackPeripheralNotFound();
@@ -345,7 +348,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     //region Sense Actions
 
-    private Observable<Void> runLedAnimation(@NonNull SensePeripheral.LedAnimation animation) {
+    private Observable<Void> runLedAnimation(@NonNull SenseLedAnimation animation) {
         if (hardwarePresenter.isConnected()) {
             return hardwarePresenter.runLedAnimation(animation);
         } else {
@@ -377,7 +380,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         LoadingDialogFragment.show(getFragmentManager(),
                 getString(R.string.dialog_loading_message),
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
-        hardwarePresenter.runLedAnimation(SensePeripheral.LedAnimation.BUSY)
+        hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY)
                 .subscribe(ignored -> {
                     bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
                             ignored1 -> {
@@ -442,7 +445,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         LoadingDialogFragment.show(getFragmentManager(),
                 getString(R.string.dialog_loading_message),
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
-        runLedAnimation(SensePeripheral.LedAnimation.BUSY).subscribe(ignored -> {
+        runLedAnimation(SenseLedAnimation.BUSY).subscribe(ignored -> {
             this.blockConnection = true;
 
             bindAndSubscribe(hardwarePresenter.factoryReset(device),

@@ -18,7 +18,7 @@ import com.squareup.seismic.ShakeDetector;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;

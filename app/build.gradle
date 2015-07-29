@@ -197,7 +197,7 @@ dependencies {
     compile 'com.squareup:seismic:1.0.1'
     compile 'me.grantland:autofittextview:0.2.1'
 
-    compile project(':buruberi:library')
+    compile project(':buruberi:core')
 
     // !! If you remove this, remove the above workaround.
     compile 'com.zendesk:sdk:1.3.2.1'
