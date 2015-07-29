@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.SenseIdentifiers;
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
@@ -129,7 +130,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         HardwarePresenter.Tests.setPeripheral(presenter, null);
 
         assertThrowsNoDeviceError(presenter.connectToPeripheral());
-        assertThrowsNoDeviceError(presenter.runLedAnimation(SensePeripheral.LedAnimation.STOP));
+        assertThrowsNoDeviceError(presenter.runLedAnimation(SenseLedAnimation.STOP));
         assertThrowsNoDeviceError(presenter.scanForWifiNetworks());
         assertThrowsNoDeviceError(presenter.currentWifiNetwork());
         assertThrowsNoDeviceError(presenter.sendWifiCredentials("1234", sec_type.SL_SCAN_SEC_TYPE_OPEN, ""));

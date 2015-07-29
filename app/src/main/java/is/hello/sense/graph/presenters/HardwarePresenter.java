@@ -16,12 +16,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseConnectToWiFiUpdate;
+import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
+import is.hello.buruberi.bluetooth.devices.model.SenseNetworkStatus;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.PeripheralConnectionError;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.Peripheral;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.model.Device;
@@ -282,7 +286,7 @@ import rx.functions.Action1;
         });
     }
 
-    public Observable<SensePeripheral.ConnectStatus> connectToPeripheral() {
+    public Observable<Operation> connectToPeripheral() {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
         if (peripheral == null) {
@@ -292,7 +296,7 @@ import rx.functions.Action1;
         if (peripheral.isConnected()) {
             logEvent("already paired with peripheral " + peripheral);
 
-            return Observable.just(SensePeripheral.ConnectStatus.CONNECTED);
+            return Observable.just(Operation.CONNECTED);
         }
 
         return pending.bind(TOKEN_CONNECT, () -> {
@@ -317,7 +321,7 @@ import rx.functions.Action1;
                 .map(ignored -> null);
     }
 
-    public Observable<Void> runLedAnimation(@NonNull SensePeripheral.LedAnimation animationType) {
+    public Observable<Void> runLedAnimation(@NonNull SenseLedAnimation animationType) {
         logEvent("runLedAnimation()");
 
         if (peripheral == null) {
@@ -349,7 +353,7 @@ import rx.functions.Action1;
                          });
     }
 
-    public Observable<SensePeripheral.SenseWifiNetwork> currentWifiNetwork() {
+    public Observable<SenseNetworkStatus> currentWifiNetwork() {
         logEvent("currentWifiNetwork()");
 
         if (peripheral == null) {
@@ -360,7 +364,7 @@ import rx.functions.Action1;
                 .doOnError(this.respondToError));
     }
 
-    public Observable<SensePeripheral.WiFiConnectStatus> sendWifiCredentials(@NonNull String ssid,
+    public Observable<SenseConnectToWiFiUpdate> sendWifiCredentials(@NonNull String ssid,
                                                                              @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
                                                                              @NonNull String password) {
         logEvent("sendWifiCredentials()");

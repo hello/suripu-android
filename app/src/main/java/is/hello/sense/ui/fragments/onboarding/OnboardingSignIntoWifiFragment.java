@@ -28,8 +28,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseConnectToWiFiUpdate;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
@@ -247,7 +248,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
         if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != SensePeripheral.ConnectStatus.CONNECTED)
+                if (status != Operation.CONNECTED)
                     return;
 
                 sendWifiCredentials();
@@ -276,7 +277,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
             }
 
-            AtomicReference<SensePeripheral.WiFiConnectStatus> lastState = new AtomicReference<>(null);
+            AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
                 JSONObject updateProperties = Analytics.createProperties(
                     Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),

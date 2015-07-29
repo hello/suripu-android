@@ -36,7 +36,8 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
+import is.hello.buruberi.bluetooth.devices.model.SenseConnectToWiFiUpdate;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.common.UserSupport;
@@ -103,7 +104,7 @@ public final class Styles {
     }
 
 
-    public static @StringRes int getWiFiConnectStatusMessage(@NonNull SensePeripheral.ConnectStatus status) {
+    public static @StringRes int getWiFiConnectStatusMessage(@NonNull Operation status) {
         switch (status) {
             case CONNECTING:
                 return R.string.title_connecting;
@@ -120,7 +121,7 @@ public final class Styles {
         }
     }
 
-    public static @StringRes int getWiFiConnectStatusMessage(@NonNull SensePeripheral.WiFiConnectStatus status) {
+    public static @StringRes int getWiFiConnectStatusMessage(@NonNull SenseConnectToWiFiUpdate status) {
         switch (status.state) {
             case WLAN_CONNECTED:
                 return R.string.title_connecting_network_wlan_connected;

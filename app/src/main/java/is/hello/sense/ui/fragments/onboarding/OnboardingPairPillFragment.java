@@ -11,10 +11,10 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.SensePeripheralError;
+import is.hello.buruberi.bluetooth.devices.errors.SensePeripheralError;
 import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
+import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
@@ -149,7 +149,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         if (!hardwarePresenter.isConnected()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == SensePeripheral.ConnectStatus.CONNECTED) {
+                if (status == Operation.CONNECTED) {
                     pairPill();
                 } else {
                     showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
