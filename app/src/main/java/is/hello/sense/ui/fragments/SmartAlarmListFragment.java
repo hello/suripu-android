@@ -75,16 +75,16 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
         this.emptyPrompt = view.findViewById(R.id.fragment_smart_alarm_list_first_prompt);
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
-        this.adapter = new SmartAlarmAdapter(getActivity(), this);
-        listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
 
         View spacer = new View(getActivity());
         spacer.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         ListViews.addFooterView(listView, spacer, null, false);
-
         Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER | Styles.CARD_SPACING_USE_COMPACT);
+
+        this.adapter = new SmartAlarmAdapter(getActivity(), this);
+        listView.setAdapter(adapter);
 
         this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);
