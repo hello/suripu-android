@@ -19,7 +19,7 @@ import is.hello.buruberi.bluetooth.devices.SensePeripheral;
 import is.hello.buruberi.bluetooth.devices.model.SenseConnectToWiFiUpdate;
 import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
 import is.hello.buruberi.bluetooth.devices.model.SenseNetworkStatus;
-import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.PeripheralConnectionError;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;

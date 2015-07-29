@@ -50,7 +50,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_connection_state;
+import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
     private static final int REQUEST_CODE_WIFI = 0x94;

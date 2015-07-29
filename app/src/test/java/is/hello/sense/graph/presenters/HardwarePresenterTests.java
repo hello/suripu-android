@@ -29,8 +29,8 @@ import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
-import static is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint;
-import static is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
+import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
 import static org.junit.Assert.assertEquals;

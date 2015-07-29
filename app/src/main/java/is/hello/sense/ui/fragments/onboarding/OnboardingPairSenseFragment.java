@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.Peripheral;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;

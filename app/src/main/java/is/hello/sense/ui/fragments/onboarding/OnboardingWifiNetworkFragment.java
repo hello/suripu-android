@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
-import is.hello.buruberi.bluetooth.devices.transmission.protobuf.SenseCommandProtos;
+import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
