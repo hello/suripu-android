@@ -91,6 +91,11 @@ public final class OnboardingSimpleStepViewBuilder {
         return this;
     }
 
+    public OnboardingSimpleStepViewBuilder setToolbarOnHelpLongClickListener(@Nullable View.OnLongClickListener onHelpLongClickListener) {
+        toolbar.setOnHelpLongClickListener(onHelpLongClickListener);
+        return this;
+    }
+
     public OnboardingSimpleStepViewBuilder setCompact(boolean compact) {
         toolbar.setCompact(compact);
 

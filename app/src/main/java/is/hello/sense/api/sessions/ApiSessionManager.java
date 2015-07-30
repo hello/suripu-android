@@ -74,8 +74,10 @@ public abstract class ApiSessionManager {
     }
 
     public void logOut() {
-        setSession(null);
-        LocalBroadcastManager.getInstance(context)
-                             .sendBroadcast(new Intent(ACTION_LOGGED_OUT));
+        if (hasSession()) {
+            setSession(null);
+            LocalBroadcastManager.getInstance(context)
+                                 .sendBroadcast(new Intent(ACTION_LOGGED_OUT));
+        }
     }
 }

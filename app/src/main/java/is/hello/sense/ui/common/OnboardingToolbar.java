@@ -13,9 +13,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
 
 public class OnboardingToolbar {
     private final Fragment fragment;
@@ -25,6 +27,7 @@ public class OnboardingToolbar {
     private final View helpButton;
 
     private @Nullable View.OnClickListener onHelpClickListener;
+    private @Nullable View.OnLongClickListener onHelpLongClickListener;
 
     public static OnboardingToolbar of(@NonNull Fragment fragment, @NonNull View view) {
         return new OnboardingToolbar(fragment, view.findViewById(R.id.sub_fragment_onboarding_toolbar));
@@ -39,6 +42,7 @@ public class OnboardingToolbar {
 
         this.helpButton = toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
         Views.setSafeOnClickListener(helpButton, this::onHelp);
+        helpButton.setOnLongClickListener(this::onHelpLongClick);
 
         setWantsBackButton(false);
         setWantsHelpButton(false);
@@ -63,6 +67,20 @@ public class OnboardingToolbar {
     private void onHelp(View view) {
         if (onHelpClickListener != null) {
             onHelpClickListener.onClick(view);
+        }
+    }
+
+    private boolean onHelpLongClick(View view) {
+        if (onHelpLongClickListener != null) {
+            return onHelpLongClickListener.onLongClick(view);
+        } else if (BuildConfig.DEBUG_SCREEN_ENABLED) {
+            Activity activity = fragment.getActivity();
+            if (activity != null) {
+                Distribution.startDebugActivity(activity);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -95,6 +113,13 @@ public class OnboardingToolbar {
 
     public OnboardingToolbar setOnHelpClickListener(@Nullable View.OnClickListener onHelpClickListener) {
         this.onHelpClickListener = onHelpClickListener;
+        setWantsHelpButton(onHelpClickListener != null);
+
+        return this;
+    }
+
+    public OnboardingToolbar setOnHelpLongClickListener(@Nullable View.OnLongClickListener onHelpLongClickListener) {
+        this.onHelpLongClickListener = onHelpLongClickListener;
         setWantsHelpButton(onHelpClickListener != null);
 
         return this;

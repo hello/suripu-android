@@ -53,4 +53,9 @@ public class PersistentApiSessionManager extends ApiSessionManager {
 
         return null;
     }
+
+    @Override
+    public boolean hasSession() {
+        return preferences.contains(SESSION_KEY);
+    }
 }

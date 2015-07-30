@@ -151,7 +151,13 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
         OnboardingToolbar.of(this, view)
                 .setWantsBackButton(true)
-                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI));
+                .setOnHelpClickListener(ignored -> {
+                    UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI);
+                })
+                .setOnHelpLongClickListener(ignored -> {
+                    showSupportOptions();
+                    return true;
+                });
 
         return view;
     }

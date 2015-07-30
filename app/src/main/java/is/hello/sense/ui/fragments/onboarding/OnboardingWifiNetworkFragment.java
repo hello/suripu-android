@@ -84,7 +84,13 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
 
         OnboardingToolbar.of(this, view)
                 .setWantsBackButton(false)
-                .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN));
+                .setOnHelpClickListener(ignored -> {
+                    UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN);
+                })
+                .setOnHelpLongClickListener(ignored -> {
+                    showSupportOptions();
+                    return true;
+                });
 
         return view;
     }

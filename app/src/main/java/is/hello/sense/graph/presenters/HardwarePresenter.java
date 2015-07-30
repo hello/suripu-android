@@ -438,8 +438,18 @@ import rx.functions.Action1;
             Observable<VoidResponse> resetBackEnd = devicesPresenter.removeSenseAssociations(apiDevice);
             Observable<Void> resetSense = peripheral.factoryReset();
             return resetBackEnd.flatMap(ignored -> resetSense)
-                               .doOnError(this.respondToError);
+                    .doOnError(this.respondToError);
         });
+    }
+
+    public Observable<Void> unsafeFactoryReset() {
+        logEvent("unsafeFactoryReset()");
+
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return pending.bind(TOKEN_FACTORY_RESET, () -> peripheral.factoryReset().doOnError(this.respondToError));
     }
 
     public void clearPeripheral() {

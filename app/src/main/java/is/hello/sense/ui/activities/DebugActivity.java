@@ -110,7 +110,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("Show Room Check", null, this::showRoomCheck);
         debugActionItems.addTextItem("Forget welcome dialogs", null, this::clearHandholdingSettings);
         debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
-        debugActionItems.addTextItem("Clear OAuth Session", null, this::clearOAuthSession);
+        debugActionItems.addTextItem("Log Out", null, this::logOut);
 
         if (Crashlytics.getInstance().isInitialized()) {
             debugActionItems.addTextItem("Crash", null, this::crash);
@@ -161,10 +161,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         }
     }
 
-    public void clearOAuthSession() {
-        sessionManager.setSession(null);
-    }
-
     public void crash() {
         SenseAlertDialog confirm = new SenseAlertDialog(this);
         confirm.setTitle("Are you sure?");
@@ -176,6 +172,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         confirm.setNegativeButton(android.R.string.cancel, null);
         confirm.setButtonDestructive(SenseAlertDialog.BUTTON_POSITIVE, true);
         confirm.show();
+    }
+
+    public void logOut() {
+        sessionManager.logOut();
+        finish();
     }
 
 
