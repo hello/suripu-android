@@ -3,7 +3,6 @@ package is.hello.sense.ui.common;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +17,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
+import is.hello.sense.util.Distribution;
 
 public class OnboardingToolbar {
     private final Fragment fragment;
@@ -77,13 +76,7 @@ public class OnboardingToolbar {
         } else if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             Activity activity = fragment.getActivity();
             if (activity != null) {
-                try {
-                    Class<?> debugActivityClass = Class.forName("is.hello.sense.ui.activities.DebugActivity");
-                    Intent intent = new Intent(activity, debugActivityClass);
-                    activity.startActivity(intent);
-                } catch (ClassNotFoundException e) {
-                    Logger.debug(getClass().getSimpleName(), "DebugActivity not found", e);
-                }
+                Distribution.startDebugActivity(activity);
             }
             return true;
         } else {

@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +16,12 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -54,6 +57,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 
 import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
 
@@ -126,6 +130,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                     break;
             }
         }
+
+        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        subscribe(onLogOut, ignored -> {
+            // #recreate() doesn't work. This does.
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }, Functions.LOG_ERROR);
     }
 
     @Override

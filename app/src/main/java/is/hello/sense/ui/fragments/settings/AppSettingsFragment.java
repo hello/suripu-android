@@ -13,13 +13,13 @@ import android.widget.TextView;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.UndersideTabFragment;
 import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
 
 public class AppSettingsFragment extends UndersideTabFragment {
     @Override
@@ -54,7 +54,7 @@ public class AppSettingsFragment extends UndersideTabFragment {
         TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            Views.setSafeOnClickListener(version, v -> startActivity(new Intent(getActivity(), DebugActivity.class)));
+            Views.setSafeOnClickListener(version, ignored -> Distribution.startDebugActivity(getActivity()));
         }
 
         return view;

@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -17,8 +16,11 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
@@ -126,14 +128,16 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showSupportOptions() {
         SenseBottomSheet options = new SenseBottomSheet(getActivity());
+        options.setTitle(R.string.action_support);
         options.addOption(new SenseBottomSheet.Option(0)
                 .setTitle(R.string.action_factory_reset)
                 .setTitleColor(getResources().getColor(R.color.destructive_accent))
-                .setDescription(R.string.description_factory_reset));
+                .setDescription(R.string.description_recovery_factory_reset));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             options.addOption(new SenseBottomSheet.Option(1)
-                    .setTitle("Debug Options")
-                    .setDescription("For if you're stuck."));
+                    .setTitle("Debug")
+                    .setTitleColor(getResources().getColor(R.color.light_accent))
+                    .setDescription("If you're adventurous, but here there be dragons."));
         }
         options.setOnOptionSelectedListener(option -> {
             switch (option.getOptionId()) {
@@ -142,13 +146,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                     break;
                 }
                 case 1: {
-                    try {
-                        Class<?> debugActivityClass = Class.forName("is.hello.sense.ui.activities.DebugActivity");
-                        Intent intent = new Intent(getActivity(), debugActivityClass);
-                        startActivity(intent);
-                    } catch (ClassNotFoundException e) {
-                        Logger.debug(getClass().getSimpleName(), "DebugActivity not found", e);
-                    }
+                    Distribution.startDebugActivity(getActivity());
                     break;
                 }
                 default: {
@@ -178,9 +176,7 @@ public abstract class HardwareFragment extends InjectionFragment {
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
                     ignored -> performRecoveryFactoryReset(),
                     this::presentFactoryResetError);
-        }
-
-        if (!hardwarePresenter.isConnected()) {
+        } else if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                     state -> {
                         if (state != Operation.CONNECTED) {
@@ -189,22 +185,29 @@ public abstract class HardwareFragment extends InjectionFragment {
                         performRecoveryFactoryReset();
                     },
                     this::presentFactoryResetError);
-        }
+        } else {
+            showHardwareActivity(() -> {
+                bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
+                        ignored -> {
+                            hideBlockingActivity(true, () -> {
+                                Analytics.setSenseId("unpaired");
 
-        showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
-                    ignored -> {
-                        hideBlockingActivity(true, () -> {
-                            getOnboardingActivity().showSetupSense();
-                        });
-                    },
-                    this::presentFactoryResetError);
-        }, this::presentFactoryResetError);
+                                MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                        R.string.message_power_cycle_sense_factory_reset);
+                                powerCycleDialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+
+                                getOnboardingActivity().showSetupSense();
+                            });
+                        },
+                        this::presentFactoryResetError);
+            }, this::presentFactoryResetError);
+        }
     }
 
     private void presentFactoryResetError(Throwable e) {
         hideBlockingActivity(false, () -> {
             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e)
+                    .withOperation("Recovery Factory Reset")
                     .withSupportLink()
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

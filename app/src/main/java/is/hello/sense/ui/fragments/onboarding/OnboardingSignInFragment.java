@@ -36,6 +36,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
@@ -71,6 +72,13 @@ public class OnboardingSignInFragment extends InjectionFragment {
         Button forgotPassword = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_forgot_password);
         forgotPassword.setOnClickListener(this::forgotPassword);
         view.removeView(forgotPassword);
+
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
+            forgotPassword.setOnLongClickListener(ignored -> {
+                Distribution.startDebugActivity(getActivity());
+                return true;
+            });
+        }
 
         OnboardingToolbar.of(this, view)
                 .setWantsBackButton(true)

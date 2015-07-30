@@ -415,6 +415,7 @@ so you can sleep better.</string>
     <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
     <string name="description_factory_reset">If you want to reset Sense to factory settings, and remove it from this account.</string>
     <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
+    <string name="description_recovery_factory_reset">If you‘re stuck, and nothing else has worked.</string>
     <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
