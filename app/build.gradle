@@ -205,6 +205,10 @@ dependencies {
     betaCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
 
 
+    // Necessary to be able to compile and run tests with
+    // Android Studio 1.3 + build tools 1.3. Remove when
+    // retrolambda releases an update.
+    testCompile files(System.getenv('JAVA_HOME') + '/jre/lib/rt.jar')
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'junit:junit:4.12'
 
