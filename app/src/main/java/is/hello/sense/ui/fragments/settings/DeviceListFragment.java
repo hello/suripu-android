@@ -27,6 +27,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
@@ -145,6 +146,8 @@ public class DeviceListFragment extends InjectionFragment implements AdapterView
         adapter.bindDevices(devices);
         loadingIndicator.setVisibility(View.GONE);
         supportInfoFooter.setVisibility(View.VISIBLE);
+
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_pill_color);
     }
 
     public void devicesUnavailable(Throwable e) {
