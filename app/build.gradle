@@ -159,7 +159,7 @@ retrolambda {
  */
 tasks.whenTaskAdded { theTask ->
     def taskName = theTask.name.toString()
-    if ("testDebug".toString().equals(taskName)) {
+    if ("testDebugUnitTest".toString().equals(taskName)) {
         /**
          * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
          * option to that task's jvmArgs.  This allows us to turn off byte code verification when
