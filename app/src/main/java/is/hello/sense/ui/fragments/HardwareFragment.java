@@ -128,7 +128,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showSupportOptions() {
         SenseBottomSheet options = new SenseBottomSheet(getActivity());
-        options.setTitle(R.string.action_support);
+        options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
                 .setTitle(R.string.action_factory_reset)
                 .setTitleColor(getResources().getColor(R.color.destructive_accent))

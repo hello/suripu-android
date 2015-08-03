@@ -133,7 +133,7 @@ so you can sleep better.</string>
     <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#contact">Contact support</a></b></string>
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
-    <string name="action_factory_reset">Factory reset</string>
+    <string name="action_factory_reset">Factory Reset</string>
     <string name="dialog_title_factory_reset">Factory Reset</string>
     <string name="dialog_message_factory_reset">This will disconnect your account from this Sense, as well as any Sleep Pills you have paired. You will need to pair with another Sense to continue using the application. You should only perform a factory reset if you are giving your Sense to someone else. This operation cannot be undone.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
@@ -417,7 +417,7 @@ so you can sleep better.</string>
     <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
     <string name="description_factory_reset">If you want to reset Sense to factory settings, and remove it from this account.</string>
     <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
-    <string name="description_recovery_factory_reset">If you‘re stuck, and nothing else has worked.</string>
+    <string name="description_recovery_factory_reset">If you want to reset Sense to factory settings.</string>
     <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
@@ -460,6 +460,7 @@ so you can sleep better.</string>
     <string name="title_my_tickets">My tickets</string>
     <string name="title_comment">Comment</string>
     <string name="action_view_attachment">View Attachment</string>
+    <string name="title_recovery_options">Support options</string>
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>
         <item quantity="other">%1$s – %2$d attachments</item>
