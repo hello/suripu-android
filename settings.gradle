@@ -1,2 +1,1 @@
-include ':app', ':buruberi:core'
-project(':buruberi:core').projectDir = new File('../buruberi/core')
+include ':app'
