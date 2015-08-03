@@ -11,13 +11,13 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import is.hello.buruberi.bluetooth.devices.errors.SensePeripheralError;
-import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.sense.errors.SensePeripheralError;
+import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;

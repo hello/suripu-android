@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_bluetooth_malformed_wifi_password">Password contains invalid characters, or is the wrong length.</string>
+    <string name="error_bluetooth_wep_password_nul">Sense does not support WEP passwords containing “00”.</string>
+    <string name="error_bluetooth_empty_wifi_password">WiFi network passwords cannot be empty.</string>
+    <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
+    <string name="error_sense_device_db_full">Your Sense cannot be paired to any more devices.</string>
+    <string name="error_wifi_connection_failed">Sense could not connect to the WiFi network. Make sure you‘re within range, double check your password, and try again.</string>
+    <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the WiFi network you selected.</string>
+    <string name="error_network_failure">The operation could not be completed due to connectivity issues. Please try again.</string>
+    <string name="error_generic_sense_failure">The operation could not be completed due to an internal error. Please try again.</string>
+    <string name="error_force_push_data">Sense could not immediately upload available sensor data.</string>
+    <string name="error_invalid_account_id">Your account could not be linked with Sense.</string>
+    <string name="error_factory_reset_wlan_failure">Sense could not be factory reset.</string>
+    <string name="error_server_connection_timeout">Sense could not communicate with the server. Please check your WiFi connection and try again.</string>
+    <string name="error_wifi_ssl_failure">Sense could not establish a secure connection with SSL to the server.</string>
+    <string name="error_wifi_hello_key_failure">Sense is not provisioned correctly. Please contact support for directions.</string>
+</resources>

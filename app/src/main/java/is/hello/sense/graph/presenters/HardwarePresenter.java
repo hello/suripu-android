@@ -15,11 +15,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.model.SenseConnectToWiFiUpdate;
-import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
-import is.hello.buruberi.bluetooth.devices.model.SenseNetworkStatus;
-import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.PeripheralConnectionError;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
@@ -31,6 +26,11 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.sense.SensePeripheral;
+import is.hello.sense.bluetooth.sense.model.SenseConnectToWiFiUpdate;
+import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
+import is.hello.sense.bluetooth.sense.model.SenseNetworkStatus;
+import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PendingObservables;
 import rx.Observable;
@@ -165,7 +165,7 @@ import rx.functions.Action1;
         return (peripheral != null && peripheral.isConnected());
     }
 
-    public @GattPeripheral.BondStatus int getBondStatus() {
+    public int getBondStatus() {
         if (peripheral != null) {
             return peripheral.getBondStatus();
         } else {

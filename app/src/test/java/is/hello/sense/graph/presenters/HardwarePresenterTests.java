@@ -11,9 +11,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.SenseIdentifiers;
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
 import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
@@ -24,15 +21,18 @@ import is.hello.buruberi.bluetooth.stacks.test.FakePeripheralBehavior;
 import is.hello.buruberi.bluetooth.stacks.test.FakePeripheralService;
 import is.hello.buruberi.util.Either;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.bluetooth.sense.SenseIdentifiers;
+import is.hello.sense.bluetooth.sense.SensePeripheral;
+import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
-import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_endpoint;
-import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
+import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

@@ -196,7 +196,7 @@ dependencies {
 
     compile 'me.grantland:autofittextview:0.2.1'
 
-    compile project(':buruberi:core')
+    compile 'is.hello.buruberi:core:0.0.1-SNAPSHOT'
 
     // !! If you remove this, remove the above workaround.
     compile 'com.zendesk:sdk:1.3.2.1'

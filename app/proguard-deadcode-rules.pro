@@ -10,7 +10,7 @@
 -dontwarn retrofit.**
 -dontwarn rx.**
 -dontwarn com.google.protobuf.**
--dontwarn is.hello.buruberi.bluetooth.devices.transmission.protobuf.**
+-dontwarn is.hello.sense.bluetooth.sense.transmission.protobuf.**
 
 -keepclassmembers class * {
     static final % *;
@@ -23,7 +23,7 @@
 -keep class org.apache.james.mime4j.** { *; }
 -keep class javax.inject.** { *; }
 -keep class retrofit.** { *; }
--keep class is.hello.buruberi.bluetooth.devices.transmission.protobuf.** { *; }
+-keep class is.hello.sense.bluetooth.sense.transmission.protobuf.** { *; }
 -keep class com.hello.ble.protobuf.** { *; }
 
 -keepattributes *Annotation*,EnclosingMethod

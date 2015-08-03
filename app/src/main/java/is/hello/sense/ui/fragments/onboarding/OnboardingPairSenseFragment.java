@@ -15,8 +15,6 @@ import org.json.JSONObject;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
@@ -25,6 +23,8 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.bluetooth.sense.SensePeripheral;
+import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.UserSupport;
