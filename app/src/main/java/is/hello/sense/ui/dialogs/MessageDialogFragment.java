@@ -1,16 +1,17 @@
 package is.hello.sense.ui.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.buruberi.util.StringRef;
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 
-public final class MessageDialogFragment extends DialogFragment {
+public final class MessageDialogFragment extends SenseDialogFragment {
     public static final String TAG = MessageDialogFragment.class.getSimpleName();
 
     private static final String ARG_TITLE = MessageDialogFragment.class.getName() + ".ARG_TITLE";
@@ -21,8 +22,8 @@ public final class MessageDialogFragment extends DialogFragment {
         MessageDialogFragment dialogFragment = new MessageDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_TITLE, title);
-        arguments.putSerializable(ARG_MESSAGE, message);
+        arguments.putParcelable(ARG_TITLE, title);
+        arguments.putParcelable(ARG_MESSAGE, message);
         dialogFragment.setArguments(arguments);
 
         return dialogFragment;
@@ -39,13 +40,18 @@ public final class MessageDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        Activity activity = getActivity();
+        SenseAlertDialog dialog = new SenseAlertDialog(activity);
 
-        StringRef title = (StringRef) getArguments().getSerializable(ARG_TITLE);
-        dialog.setTitle(title.resolve(getActivity()));
+        StringRef title = getArguments().getParcelable(ARG_TITLE);
+        if (title != null) {
+            dialog.setTitle(title.resolve(activity));
+        }
 
-        StringRef message = (StringRef) getArguments().getSerializable(ARG_MESSAGE);
-        dialog.setMessage(message.resolve(getActivity()));
+        StringRef message = getArguments().getParcelable(ARG_MESSAGE);
+        if (message != null) {
+            dialog.setMessage(message.resolve(activity));
+        }
 
         dialog.setPositiveButton(android.R.string.ok, null);
 

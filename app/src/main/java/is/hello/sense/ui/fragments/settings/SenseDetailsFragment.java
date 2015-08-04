@@ -71,8 +71,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
 
-    private @Nullable
-    SenseNetworkStatus currentWifiNetwork;
+    private @Nullable SenseNetworkStatus currentWifiNetwork;
 
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
@@ -442,19 +441,24 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     private void completeFactoryReset() {
-        LoadingDialogFragment.show(getFragmentManager(),
-                getString(R.string.dialog_loading_message),
+        LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.newInstance(getString(R.string.dialog_loading_message),
                 LoadingDialogFragment.OPAQUE_BACKGROUND);
+        // Whenever this class gets redone in true MVP style,
+        // this can probably be removed by the presenter managing
+        // the loading view state. Relevant issue [#97240482].
+        loadingDialogFragment.setLockOrientation();
+        loadingDialogFragment.showAllowingStateLoss(getFragmentManager(), LoadingDialogFragment.TAG);
         runLedAnimation(SenseLedAnimation.BUSY).subscribe(ignored -> {
             this.blockConnection = true;
 
             bindAndSubscribe(hardwarePresenter.factoryReset(device),
                     device -> {
-                        LoadingDialogFragment.close(getFragmentManager());
+                        loadingDialogFragment.dismissSafely();
                         Analytics.setSenseId("unpaired");
 
-                        MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset, R.string.message_power_cycle_sense_factory_reset);
-                        powerCycleDialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+                        MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                R.string.message_power_cycle_sense_factory_reset);
+                        powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                         finishWithResult(RESULT_REPLACED_DEVICE, null);
                     },

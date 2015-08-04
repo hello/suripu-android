@@ -1,7 +1,9 @@
 package is.hello.sense.ui.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -30,6 +32,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
     private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_FLAGS = LoadingDialogFragment.class.getName() + ".ARG_FLAGS";
     private static final String ARG_DISMISS_MSG = LoadingDialogFragment.class.getName() + ".ARG_DISMISS_MSG";
+    private static final String ARG_LOCK_ORIENTATION = LoadingDialogFragment.class.getName() + ".ARG_LOCK_ORIENTATION";
 
 
     //region Config
@@ -47,6 +50,8 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
     private TextView titleText;
     private ProgressBar activityIndicator;
     private ImageView checkMark;
+
+    private @Nullable Integer oldOrientation;
 
 
     //region Shortcuts
@@ -133,9 +138,25 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
             }
 
             titleText.setText(arguments.getString(ARG_TITLE));
+
+            boolean lockOrientation = getArguments().getBoolean(ARG_LOCK_ORIENTATION, false);
+            if (lockOrientation) {
+                Activity activity = getActivity();
+                oldOrientation = activity.getRequestedOrientation();
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            }
         }
 
         return dialog;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (oldOrientation != null) {
+            getActivity().setRequestedOrientation(oldOrientation);
+        }
     }
 
     //endregion
@@ -152,6 +173,16 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     public void setDismissMessage(@StringRes int messageRes) {
         getArguments().putInt(ARG_DISMISS_MSG, messageRes);
+    }
+
+    /**
+     * Causes orientation changes to be blocked for the
+     * duration of the loading dialog being visible.
+     * <p />
+     * Probably not something we want to support long-term.
+     */
+    public void setLockOrientation() {
+        getArguments().putBoolean(ARG_LOCK_ORIENTATION, true);
     }
 
     //endregion
