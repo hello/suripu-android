@@ -222,6 +222,24 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
     //region Callbacks
 
+    @Override
+    public void onSelectionRolledOver(@NonNull RotaryPickerView picker, @NonNull RotaryPickerView.RolloverDirection direction) {
+        if (!use24Time && picker == hourPicker) {
+            int newValue = periodPicker.getValue() == PERIOD_AM
+                    ? PERIOD_PM
+                    : PERIOD_AM;
+            periodPicker.setValue(newValue, true);
+        } else if (picker == minutePicker) {
+            switch (direction) {
+                case FORWARD:
+                    hourPicker.increment();
+                    break;
+                case BACKWARD:
+                    hourPicker.decrement();
+                    break;
+            }
+        }
+    }
 
     @Override
     public void onSelectionWillChange() {

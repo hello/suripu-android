@@ -42,6 +42,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     private int maxValue = 100;
     private int value = 0;
     private boolean wrapsAround = false;
+    private int wrapAroundValue;
 
     private @StyleRes int itemTextAppearance = DEFAULT_ITEM_TEXT_APPEARANCE;
     private @Nullable Drawable itemBackground;
@@ -193,6 +194,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         }
 
         this.minValue = minValue;
+        setWrapAroundValue(maxValue - minValue);
         adapter.notifyDataSetChanged();
     }
 
@@ -202,7 +204,12 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         }
 
         this.maxValue = maxValue;
+        setWrapAroundValue(maxValue - minValue);
         adapter.notifyDataSetChanged();
+    }
+
+    public void setWrapAroundValue(int wrapAroundValue) {
+        this.wrapAroundValue = wrapAroundValue;
     }
 
     public void setValue(int newValue, boolean animate) {
@@ -221,6 +228,22 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         }
 
         this.value = constrainedValue;
+    }
+
+    public void increment() {
+        int newValue = value + 1;
+        if (newValue == maxValue) {
+            newValue = minValue;
+        }
+        setValue(newValue, true);
+    }
+
+    public void decrement() {
+        int newValue = value - 1;
+        if (newValue == minValue) {
+            newValue = maxValue;
+        }
+        setValue(newValue, true);
     }
 
     public int getValue() {
@@ -294,6 +317,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     class ScrollListener extends RecyclerView.OnScrollListener {
         private int previousState = SCROLL_STATE_IDLE;
+        private int lastWrapAroundPosition = NO_POSITION;
 
         private View findCenterView() {
             int containerMidY = (getMeasuredHeight() / 2);
@@ -310,6 +334,28 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             RotaryPickerView.this.value = newValue;
             if (onSelectionListener != null) {
                 onSelectionListener.onSelectionChanged(newValue);
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (wrapsAround && onSelectionListener != null) {
+                View centerView = findCenterView();
+                int adapterPosition = getChildAdapterPosition(centerView);
+                if (adapterPosition == lastWrapAroundPosition) {
+                    return;
+                }
+
+                int position = adapterPosition % adapter.getBoundedItemCount();
+                if (position == wrapAroundValue) {
+                    RolloverDirection direction = dy > 0f
+                            ? RolloverDirection.FORWARD
+                            : RolloverDirection.BACKWARD;
+                    onSelectionListener.onSelectionRolledOver(RotaryPickerView.this, direction);
+                    this.lastWrapAroundPosition = adapterPosition;
+                } else {
+                    this.lastWrapAroundPosition = NO_POSITION;
+                }
             }
         }
 
@@ -470,8 +516,14 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     //region Interfaces
 
     public interface OnSelectionListener {
+        void onSelectionRolledOver(@NonNull RotaryPickerView picker, @NonNull RolloverDirection direction);
         void onSelectionWillChange();
         void onSelectionChanged(int newValue);
+    }
+
+    public enum RolloverDirection {
+        FORWARD,
+        BACKWARD,
     }
 
     //endregion
