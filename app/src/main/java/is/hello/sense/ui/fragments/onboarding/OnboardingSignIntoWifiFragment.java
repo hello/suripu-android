@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.InputFilter;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -30,11 +29,14 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.bluetooth.sense.errors.SenseSetWifiValidationError;
 import is.hello.sense.bluetooth.sense.model.SenseConnectToWiFiUpdate;
 import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -202,22 +204,27 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     private void updatePasswordField() {
         sec_type securityType = getSecurityType();
         if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP) {
-            networkPassword.setFilters(new InputFilter[]{new HexInputFilter()});
             networkPassword.setVisibility(View.VISIBLE);
-            if (!HexInputFilter.isValidHex(networkPassword.getText())) {
-                networkPassword.setText(null);
-            }
             networkPassword.requestFocus();
         } else if (securityType == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
-            networkPassword.setFilters(new InputFilter[0]);
             networkPassword.setVisibility(View.GONE);
             networkPassword.setText(null);
             networkPassword.clearFocus();
         } else {
-            networkPassword.setFilters(new InputFilter[0]);
             networkPassword.setVisibility(View.VISIBLE);
             networkPassword.requestFocus();
         }
+    }
+
+    private boolean validatePasswordAsWepKey(@NonNull String password) {
+        for (int i = 0, length = password.length(); i < length; i++) {
+            char c = Character.toLowerCase(password.charAt(i));
+            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -237,9 +244,17 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
         String networkName = this.networkName.getText().toString();
         String password = this.networkPassword.getText().toString();
 
+        sec_type securityType = getSecurityType();
         if (TextUtils.isEmpty(networkName) ||
-                (TextUtils.isEmpty(password) && network != null &&
-                        network.getSecurityType() != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
+                (TextUtils.isEmpty(password) &&
+                        securityType != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
+            return;
+        }
+
+        if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP &&
+                !validatePasswordAsWepKey(password)) {
+            presentError(new SenseSetWifiValidationError(SenseSetWifiValidationError.Reason.MALFORMED_BYTES),
+                    "WEP Validation");
             return;
         }
 
@@ -268,8 +283,6 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 sendAccessToken();
                 return;
             }
-
-            sec_type securityType = getSecurityType();
 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
@@ -362,8 +375,16 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
             ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
-                    .withOperation(operation)
-                    .withSupportLink();
+                    .withOperation(operation);
+
+            if (e instanceof SenseSetWifiValidationError &&
+                    ((SenseSetWifiValidationError) e).reason == SenseSetWifiValidationError.Reason.MALFORMED_BYTES) {
+                Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
+                intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri()));
+                errorDialogBuilder.withAction(intent, R.string.action_support);
+            } else {
+                errorDialogBuilder.withSupportLink();
+            }
 
             ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -409,32 +430,4 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
         }
     }
 
-    private static class HexInputFilter implements InputFilter {
-        private static boolean isHex(char c) {
-            char lowerC = Character.toLowerCase(c);
-            return ((lowerC >= '0' && lowerC <= '9') ||
-                    (lowerC >= 'a' && lowerC <= 'f'));
-        }
-
-        private static boolean isValidHex(@NonNull CharSequence sequence) {
-            for (int i = 0, length = sequence.length(); i < length; i++) {
-                if (!isHex(sequence.charAt(i))) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            for (int i = start; i < end; i++) {
-                if (!isHex(source.charAt(i))) {
-                    return source.subSequence(start, end - 1);
-                }
-            }
-
-            return null;
-        }
-    }
 }

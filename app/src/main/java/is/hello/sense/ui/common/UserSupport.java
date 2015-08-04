@@ -79,6 +79,7 @@ public class UserSupport {
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),
         CANNOT_CONNECT_TO_SENSE("https://support.hello.is/hc/en-us/articles/205493075"),
         SENSE_NO_WIFI("https://support.hello.is/hc/en-us/articles/205493285"),
+        SENSE_ASCII_WEP("https://support.hello.is/hc/en-us/articles/205019779"),
         SLEEP_PILL_MISSING("https://support.hello.is/hc/en-us/articles/204797159"),
         PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289");
 
