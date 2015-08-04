@@ -1,8 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,6 +22,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
@@ -63,11 +62,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject HardwarePresenter hardwarePresenter;
+    @Inject BluetoothStack bluetoothStack;
 
     private View pairingMode;
     private View changeWiFi;
 
-    private BluetoothAdapter bluetoothAdapter;
     private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
 
@@ -111,8 +110,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         devicesPresenter.update();
         addPresenter(devicesPresenter);
-
-        this.bluetoothAdapter = ((BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
     }
 
     @Override
@@ -139,7 +136,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onResume() {
         super.onResume();
 
-        if (bluetoothAdapter.isEnabled() && !blockConnection) {
+        if (bluetoothStack.isEnabled() && !blockConnection) {
             connectToPeripheral();
         }
     }

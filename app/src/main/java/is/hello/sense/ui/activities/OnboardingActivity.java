@@ -3,9 +3,6 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -71,7 +68,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
-    private BluetoothAdapter bluetoothAdapter;
+    @Inject BluetoothStack bluetoothStack;
 
     private @Nullable Account account;
     private @Nullable DevicesInfo devicesInfo;
@@ -84,9 +81,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
         }
-
-        BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        this.bluetoothAdapter = bluetoothManager.getAdapter();
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
@@ -271,7 +265,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             this.account = account;
         }
 
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothStack.isEnabled()) {
             Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
             bindAndSubscribe(hardwarePresenter.closestPeripheral(),
                     peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
@@ -325,7 +319,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public void showSetupSense() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothStack.isEnabled()) {
             OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.title_setup_sense);
             builder.setSubheadingText(R.string.info_setup_sense);
