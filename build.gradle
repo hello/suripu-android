@@ -15,6 +15,29 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        /*
+         * You will need to define the following properties in "$HOME/.gradle/gradle.properties"
+         *
+         *   helloAwsAccessKeyID=<Your access key>
+         *   helloAwsSecretKey=<Your secret key>
+         *
+         * Unfortunately, Android Studio on OS X does not properly
+         * inherit environment variables defined in your .*profile.
+         */
+        maven {
+            url 's3://hello-maven/snapshot'
+            credentials(AwsCredentials) {
+                accessKey helloAwsAccessKeyID
+                secretKey helloAwsSecretKey
+            }
+        }
+        maven {
+            url 's3://hello-maven/release'
+            credentials(AwsCredentials) {
+                accessKey helloAwsAccessKeyID
+                secretKey helloAwsSecretKey
+            }
+        }
     }
 }
 

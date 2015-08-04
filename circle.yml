@@ -6,12 +6,11 @@ general:
     ignore:
       - /no\-test\-.*/
 dependencies:
-  pre:
-    - rm -rf ../buruberi
-    - git clone --depth 1 --branch master git@github.com:hello/buruberi.git ../buruberi
+  override:
     - echo y | android update sdk --no-ui --all --filter "extra-android-support"
+    - ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
 test:
   override:
-    - ./gradlew clean testDebug -PdisablePreDex
+    - ./gradlew clean testDebug -PdisablePreDex -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
     - cp -r app/build/reports/tests/* $CIRCLE_TEST_REPORTS

@@ -23,13 +23,13 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
-import is.hello.buruberi.bluetooth.devices.model.SenseNetworkStatus;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.bluetooth.sense.SensePeripheral;
+import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
+import is.hello.sense.bluetooth.sense.model.SenseNetworkStatus;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -50,7 +50,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.buruberi.bluetooth.devices.model.protobuf.SenseCommandProtos.wifi_connection_state;
+import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
     private static final int REQUEST_CODE_WIFI = 0x94;

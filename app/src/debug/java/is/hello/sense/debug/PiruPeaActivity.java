@@ -19,14 +19,14 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.devices.SensePeripheral;
-import is.hello.buruberi.bluetooth.devices.model.SenseLedAnimation;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.bluetooth.sense.SensePeripheral;
+import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
