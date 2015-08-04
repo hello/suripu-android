@@ -10,6 +10,9 @@ import org.joda.time.DateTime;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Insight extends ApiResponse {
+    public static final String CATEGORY_GENERIC = "GENERIC";
+    public static final String CATEGORY_IN_APP_ERROR = Insight.class.getName() + ".CATEGORY_IN_APP_ERROR";
+
     @SerializedName("account_id")
     private long accountId;
 
@@ -23,7 +26,7 @@ public class Insight extends ApiResponse {
     private DateTime created;
 
     @SerializedName("category")
-    private InsightCategory category;
+    private String category;
 
     @SerializedName("info_preview")
     private String infoPreview;
@@ -32,7 +35,7 @@ public class Insight extends ApiResponse {
     public static Insight createError(@NonNull String message) {
         Insight insight = new Insight();
         insight.message = new MarkupString(message);
-        insight.category = InsightCategory.IN_APP_ERROR;
+        insight.category = CATEGORY_IN_APP_ERROR;
         return insight;
     }
 
@@ -41,7 +44,7 @@ public class Insight extends ApiResponse {
                                  String title,
                                  MarkupString message,
                                  DateTime created,
-                                 InsightCategory category,
+                                 String category,
                                  String infoPreview) {
         Insight insight = new Insight();
         insight.accountId = accountId;
@@ -70,7 +73,7 @@ public class Insight extends ApiResponse {
         return created;
     }
 
-    public InsightCategory getCategory() {
+    public String getCategory() {
         return category;
     }
 

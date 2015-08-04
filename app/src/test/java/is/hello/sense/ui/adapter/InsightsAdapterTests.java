@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
@@ -79,7 +78,7 @@ public class InsightsAdapterTests extends SenseTestCase {
     public void insightRendering() throws Exception {
         Insight insight = Insight.create(0, "Light is bad",
                 new MarkupString("You should have less of it"), DateTime.now().minusDays(5),
-                InsightCategory.LIGHT, "Too much light makes you sleep poorly");
+                "LIGHT", "Too much light makes you sleep poorly");
 
         adapter.bindData(Pair.create(Lists.newArrayList(insight), null));
 

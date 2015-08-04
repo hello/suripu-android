@@ -27,7 +27,6 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
@@ -306,7 +305,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") InsightCategory category) {
+    public Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") String category) {
         return unimplemented();
     }
 

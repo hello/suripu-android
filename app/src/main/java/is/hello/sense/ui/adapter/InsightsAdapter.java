@@ -21,7 +21,6 @@ import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -213,7 +212,7 @@ public class InsightsAdapter extends BaseAdapter {
         InsightViewHolder holder = (InsightViewHolder) view.getTag();
 
         DateTime insightCreated = insight.getCreated();
-        if (insightCreated == null && insight.getCategory() == InsightCategory.IN_APP_ERROR) {
+        if (insightCreated == null && Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
             holder.date.setText(R.string.dialog_error_title);
         } else {
             CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);

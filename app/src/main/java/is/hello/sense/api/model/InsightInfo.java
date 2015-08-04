@@ -9,7 +9,7 @@ public class InsightInfo extends ApiResponse {
     private long id;
 
     @SerializedName("category")
-    private InsightCategory category;
+    private String category;
 
     @SerializedName("title")
     private String title;
@@ -25,7 +25,7 @@ public class InsightInfo extends ApiResponse {
         return id;
     }
 
-    public InsightCategory getCategory() {
+    public String getCategory() {
         return category;
     }
 

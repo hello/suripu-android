@@ -18,7 +18,6 @@ import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
@@ -48,8 +47,8 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
         InsightInfoDialogFragment dialogFragment = new InsightInfoDialogFragment();
 
         Bundle arguments = new Bundle();
-        if (insight.getCategory() != InsightCategory.GENERIC) {
-            arguments.putString(ARG_INSIGHT_CATEGORY, insight.getCategory().toString());
+        if (!Insight.CATEGORY_GENERIC.equalsIgnoreCase(insight.getCategory())) {
+            arguments.putString(ARG_INSIGHT_CATEGORY, insight.getCategory());
         } else {
             arguments.putString(ARG_INSIGHT_TITLE, insight.getTitle());
             arguments.putParcelable(ARG_INSIGHT_MESSAGE, insight.getMessage());
@@ -63,9 +62,10 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.hasCategory = getArguments().containsKey(ARG_INSIGHT_CATEGORY);
+        Bundle arguments = getArguments();
+        this.hasCategory = arguments.containsKey(ARG_INSIGHT_CATEGORY);
         if (hasCategory) {
-            InsightCategory category = InsightCategory.fromString(getArguments().getString(ARG_INSIGHT_CATEGORY));
+            String category = arguments.getString(ARG_INSIGHT_CATEGORY);
             presenter.setInsightCategory(category);
             addPresenter(presenter);
         }

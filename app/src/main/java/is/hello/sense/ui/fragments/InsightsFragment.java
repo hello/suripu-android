@@ -16,7 +16,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightCategory;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -115,7 +114,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
         }
 
         Insight insight = (Insight) item;
-        if (insight.getCategory() != InsightCategory.IN_APP_ERROR) {
+        if (!Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
             Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 
             InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
