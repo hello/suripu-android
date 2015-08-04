@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="error_bluetooth_malformed_wifi_password">Password contains invalid characters, or is the wrong length.</string>
+    <string name="error_bluetooth_malformed_wifi_password">Sense does not support ASCII passwords for WEP networks. Please enter your WEP key in hexadecimal format. If you aren’t sure what this is, please visit Support for more details.</string>
     <string name="error_bluetooth_wep_password_nul">Sense does not support WEP passwords containing “00”.</string>
     <string name="error_bluetooth_empty_wifi_password">WiFi network passwords cannot be empty.</string>
     <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
