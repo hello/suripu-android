@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/background_raised_item_clicked">
+    android:color="@color/background_dark_item_clicked">
     <item android:drawable="@drawable/background_timeline_header_card" />
 </ripple>
