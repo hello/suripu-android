@@ -80,7 +80,7 @@ All tests are run within Robolectric on both your local computer, and on circleC
 To update the Sense protobuf definitions used by the project, grab the latest [morpheus_ble.proto](https://github.com/hello/proto/blob/master/morpheus_ble.proto) from the internal proto repository. You will need to alter the output package of the protobuf like so:
 
 ```protobuf
-option java_package = "is.hello.buruberi.bluetooth.devices.model.protobuf";
+option java_package = "is.hello.sense.bluetooth.sense.model.protobuf";
 ```
 
 and specify that you want to target the lite runtime by adding this option below any existing ones:
