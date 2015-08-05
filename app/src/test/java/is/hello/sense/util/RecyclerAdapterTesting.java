@@ -45,6 +45,10 @@ public class RecyclerAdapterTesting {
         }
 
 
+        public void reset() {
+            changes.clear();
+        }
+
         public boolean hasObservedChange(@NonNull Change.Type type, @NonNull int... values) {
             for (Change change : changes) {
                 if (change.type == type && Arrays.equals(change.values, values)) {
