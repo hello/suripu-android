@@ -449,21 +449,6 @@
 
     <!-- Other -->
 
-    <style name="AppTheme.ListView" />
-
-    <style name="AppTheme.ListView.Cards">
-        <item name="android:paddingLeft">@dimen/gap_card_sides</item>
-        <item name="android:paddingRight">@dimen/gap_card_sides</item>
-        <item name="android:divider">@color/transparent</item>
-        <item name="android:dividerHeight">@dimen/gap_card_spacing</item>
-        <item name="android:scrollbars">none</item>
-        <item name="android:listSelector">@color/transparent</item>
-    </style>
-
-    <style name="AppTheme.ListView.Cards.Compact">
-        <item name="android:dividerHeight">@dimen/gap_card_spacing_compact</item>
-    </style>
-
     <style name="AppTheme.Card">
         <item name="android:background">@drawable/raised_item_normal</item>
         <item name="android:paddingLeft">@dimen/gap_raised_item_inset_side</item>
