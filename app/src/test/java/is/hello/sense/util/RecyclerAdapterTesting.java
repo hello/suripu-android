@@ -10,14 +10,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+
 public class RecyclerAdapterTesting {
     @SuppressWarnings("unchecked")
     public static <VH extends RecyclerView.ViewHolder> VH createAndBindView(@NonNull RecyclerView.Adapter adapter,
                                                                             @NonNull ViewGroup parent,
                                                                             int viewId,
                                                                             int adapterPosition) {
-        VH holder = (VH) adapter.createViewHolder(parent, viewId);
+        VH holder = spy((VH) adapter.createViewHolder(parent, viewId));
         adapter.bindViewHolder(holder, adapterPosition);
+        doReturn(adapterPosition).when(holder).getAdapterPosition();
         return holder;
     }
 

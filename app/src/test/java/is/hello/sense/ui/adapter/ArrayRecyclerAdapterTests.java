@@ -1,6 +1,8 @@
 package is.hello.sense.ui.adapter;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.junit.After;
@@ -8,10 +10,12 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.RecyclerAdapterTesting;
+import is.hello.sense.util.RecyclerAdapterTesting.Observer.Change.Type;
 
 import static is.hello.sense.AssertExtensions.assertThrows;
 import static org.junit.Assert.assertEquals;
@@ -52,7 +56,7 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         );
         adapter.replaceAll(firstBatch);
 
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
+        observer.assertChangeOccurred(Type.INSERTED,
                 0, 2);
 
         List<String> secondBatch = Lists.newArrayList(
@@ -61,9 +65,9 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
                 "world"
         );
         adapter.replaceAll(secondBatch);
-        assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
+        assertTrue(observer.hasObservedChange(Type.CHANGED,
                 0, 2));
-        assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
+        assertTrue(observer.hasObservedChange(Type.INSERTED,
                 2, 1));
     }
 
@@ -80,7 +84,7 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
 
         adapter.replaceAll(strings);
 
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
+        observer.assertChangeOccurred(Type.CHANGED,
                 0, 2);
     }
 
@@ -100,10 +104,8 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         );
         adapter.replaceAll(secondBatch);
 
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
-                0, 1);
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.REMOVED,
-                1, 1);
+        observer.assertChangeOccurred(Type.CHANGED, 0, 1);
+        observer.assertChangeOccurred(Type.REMOVED, 1, 1);
     }
     
     //endregion
@@ -139,7 +141,7 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         assertEquals(2, adapter.getItemCount());
         assertEquals("hello", adapter.getItem(0));
         assertEquals("world", adapter.getItem(1));
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.INSERTED, 0, 2);
+        observer.assertChangeOccurred(Type.INSERTED, 0, 2);
     }
 
     @Test
@@ -147,7 +149,7 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         adapter.add("hello");
         assertEquals(1, adapter.getItemCount());
         assertEquals("hello", adapter.getItem(0));
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.INSERTED, 0, 1);
+        observer.assertChangeOccurred(Type.INSERTED, 0, 1);
     }
 
     @Test
@@ -156,7 +158,7 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         assertEquals(1, adapter.getItemCount());
         adapter.remove(0);
         assertEquals(0, adapter.getItemCount());
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.REMOVED, 0, 1);
+        observer.assertChangeOccurred(Type.REMOVED, 0, 1);
     }
 
     @Test
@@ -167,7 +169,7 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         adapter.set(0, "world");
         assertEquals(1, adapter.getItemCount());
         assertEquals("world", adapter.getItem(0));
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED, 0, 1);
+        observer.assertChangeOccurred(Type.CHANGED, 0, 1);
     }
 
     @Test
@@ -184,9 +186,29 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         assertEquals(2, adapter.getItemCount());
         adapter.clear();
         assertEquals(0, adapter.getItemCount());
-        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.REMOVED, 0, 2);
+        observer.assertChangeOccurred(Type.REMOVED, 0, 2);
     }
 
+
+    //endregion
+
+
+    //region Clicks
+
+    @Test
+    public void onClick() throws Exception {
+        adapter.add("test");
+
+        AtomicInteger clickedPosition = new AtomicInteger(RecyclerView.NO_POSITION);
+        adapter.setOnItemClickedListener((position, item) -> clickedPosition.set(position));
+
+        FrameLayout fakeParent = new FrameLayout(getContext());
+        ArrayRecyclerAdapter.ViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(0), 0);
+        holder.onClick(holder.itemView);
+
+        assertEquals(0, clickedPosition.get());
+    }
 
     //endregion
 
@@ -199,7 +221,9 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         @Override
         public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             TextView textView = new TextView(parent.getContext());
-            return new ViewHolder(textView);
+            ViewHolder viewHolder = new ViewHolder(textView);
+            textView.setOnClickListener(viewHolder);
+            return viewHolder;
         }
 
         @Override

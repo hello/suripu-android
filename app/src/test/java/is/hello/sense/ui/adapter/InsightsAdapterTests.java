@@ -18,7 +18,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.ListAdapterTesting;
+import is.hello.sense.util.RecyclerAdapterTesting;
 import is.hello.sense.util.markup.text.MarkupString;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 public class InsightsAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
-    private final FakeListener listener = new FakeListener();
+    private final FakeInteractionListener listener = new FakeInteractionListener();
     private final DateFormatter dateFormatter = new DateFormatter(getContext());
     private InsightsAdapter adapter;
 
@@ -50,7 +50,7 @@ public class InsightsAdapterTests extends SenseTestCase {
     @Test
     public void loadingIndicatorHook() throws Exception {
         adapter.bindData(Pair.create(null, null));
-        assertTrue(listener.wasCallbackCalled(FakeListener.Callback.DISMISS_LOADING_INDICATOR));
+        assertTrue(listener.wasCallbackCalled(FakeInteractionListener.Callback.DISMISS_LOADING_INDICATOR));
     }
 
     @Test
@@ -60,18 +60,18 @@ public class InsightsAdapterTests extends SenseTestCase {
 
         adapter.bindData(Pair.create(null, question));
 
-        assertEquals(1, adapter.getCount());
+        assertEquals(1, adapter.getItemCount());
 
-        View view = adapter.getView(0, null, fakeParent);
-        InsightsAdapter.QuestionViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        InsightsAdapter.QuestionViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, InsightsAdapter.TYPE_QUESTION, 0);
 
         assertEquals("Do you like to travel through space and time?", holder.title.getText().toString());
 
         holder.skip(fakeParent);
-        assertTrue(listener.wasCallbackCalled(FakeListener.Callback.SKIP_QUESTION));
+        assertTrue(listener.wasCallbackCalled(FakeInteractionListener.Callback.SKIP_QUESTION));
 
         holder.answer(fakeParent);
-        assertTrue(listener.wasCallbackCalled(FakeListener.Callback.ANSWER_QUESTION));
+        assertTrue(listener.wasCallbackCalled(FakeInteractionListener.Callback.ANSWER_QUESTION));
     }
 
     @Test
@@ -82,10 +82,10 @@ public class InsightsAdapterTests extends SenseTestCase {
 
         adapter.bindData(Pair.create(Lists.newArrayList(insight), null));
 
-        assertEquals(1, adapter.getCount());
+        assertEquals(1, adapter.getItemCount());
 
-        View view = adapter.getView(0, null, fakeParent);
-        InsightsAdapter.InsightViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        InsightsAdapter.InsightViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, InsightsAdapter.TYPE_INSIGHT, 0);
 
         assertEquals("5 days ago", holder.date.getText().toString());
         assertEquals("Too much light makes you sleep poorly", holder.preview.getText().toString());
@@ -96,7 +96,7 @@ public class InsightsAdapterTests extends SenseTestCase {
     //endregion
 
 
-    static class FakeListener implements InsightsAdapter.Listener {
+    static class FakeInteractionListener implements InsightsAdapter.InteractionListener {
         final List<Callback> callbacks = new ArrayList<>();
 
         @Override
@@ -114,6 +114,10 @@ public class InsightsAdapterTests extends SenseTestCase {
             callbacks.add(Callback.ANSWER_QUESTION);
         }
 
+        @Override
+        public void onInsightClicked(@NonNull Insight insight) {
+            callbacks.add(Callback.INSIGHT_CLICKED);
+        }
 
         void clear() {
             callbacks.clear();
@@ -128,6 +132,7 @@ public class InsightsAdapterTests extends SenseTestCase {
             DISMISS_LOADING_INDICATOR,
             SKIP_QUESTION,
             ANSWER_QUESTION,
+            INSIGHT_CLICKED,
         }
     }
 }

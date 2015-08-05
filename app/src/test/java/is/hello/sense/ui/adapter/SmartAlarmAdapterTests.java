@@ -1,7 +1,7 @@
 package is.hello.sense.ui.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import org.joda.time.DateTimeConstants;
@@ -16,7 +16,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.LambdaVar;
-import is.hello.sense.util.ListAdapterTesting;
+import is.hello.sense.util.RecyclerAdapterTesting;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -57,10 +57,10 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
 
         adapter.bindMessage(message);
 
-        assertEquals(1, adapter.getCount());
+        assertEquals(1, adapter.getItemCount());
 
-        View view = adapter.getView(0, null, fakeParent);
-        SmartAlarmAdapter.MessageViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        SmartAlarmAdapter.MessageViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, SmartAlarmAdapter.VIEW_ID_MESSAGE, 0);
         assertEquals("Sense (A)", holder.titleText.getText().toString());
         assertEquals("Blah blah blah", holder.messageText.getText().toString());
         assertEquals("OK", holder.actionButton.getText().toString());
@@ -90,15 +90,15 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         adapter.bindAlarms(Lists.newArrayList(alarm1, alarm2));
 
 
-        View view1 = adapter.getView(0, null, fakeParent);
-        SmartAlarmAdapter.AlarmViewHolder holder1 = ListAdapterTesting.getViewHolder(view1);
+        SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
         assertTrue(holder1.enabled.isChecked());
         assertEquals("Smart Alarm  ―  Sun, Sat", holder1.repeat.getText().toString());
         assertEquals("8:30", holder1.time.getText().toString());
         assertEquals("AM", holder1.timePeriod.getText().toString());
 
-        View view2 = adapter.getView(1, null, fakeParent);
-        SmartAlarmAdapter.AlarmViewHolder holder2 = ListAdapterTesting.getViewHolder(view2);
+        SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
         assertFalse(holder2.enabled.isChecked());
         assertEquals("Smart Alarm", holder2.repeat.getText().toString());
         assertEquals("5:45", holder2.time.getText().toString());
@@ -125,15 +125,15 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         adapter.bindAlarms(Lists.newArrayList(alarm1, alarm2));
 
 
-        View view1 = adapter.getView(0, null, fakeParent);
-        SmartAlarmAdapter.AlarmViewHolder holder1 = ListAdapterTesting.getViewHolder(view1);
+        SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
         assertTrue(holder1.enabled.isChecked());
         assertEquals("Alarm  ―  Sun, Sat", holder1.repeat.getText().toString());
         assertEquals("8:30", holder1.time.getText().toString());
         assertEquals("AM", holder1.timePeriod.getText().toString());
 
-        View view2 = adapter.getView(1, null, fakeParent);
-        SmartAlarmAdapter.AlarmViewHolder holder2 = ListAdapterTesting.getViewHolder(view2);
+        SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
         assertFalse(holder2.enabled.isChecked());
         assertEquals("Alarm", holder2.repeat.getText().toString());
         assertEquals("5:45", holder2.time.getText().toString());
@@ -153,8 +153,8 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         adapter.bindAlarms(Lists.newArrayList(alarm));
 
 
-        View view = adapter.getView(0, null, fakeParent);
-        SmartAlarmAdapter.AlarmViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        SmartAlarmAdapter.AlarmViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
 
         holder.enabled.performClick();
         assertTrue(alarmEnabledChangedListener.called);
@@ -165,11 +165,21 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
     //endregion
 
 
-    static class FakeAlarmEnabledChangedListener implements SmartAlarmAdapter.OnAlarmEnabledChanged {
+    static class FakeAlarmEnabledChangedListener implements SmartAlarmAdapter.InteractionListener {
         boolean called = false;
         int position = RecyclerView.NO_POSITION;
         Boolean enabled = null;
 
+
+        @Override
+        public void onAlarmClicked(int position, @NonNull Alarm alarm) {
+
+        }
+
+        @Override
+        public boolean onAlarmLongClicked(int position, @NonNull Alarm alarm) {
+            return false;
+        }
 
         @Override
         public void onAlarmEnabledChanged(int position, boolean enabled) {

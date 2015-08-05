@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +23,8 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.ui.widget.util.Views;
 
 public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.BaseViewHolder> {
-    private static final int VIEW_ID_ALARM = 0;
-    private static final int VIEW_ID_MESSAGE = 1;
+    @VisibleForTesting static final int VIEW_ID_ALARM = 0;
+    @VisibleForTesting static final int VIEW_ID_MESSAGE = 1;
 
     private final LayoutInflater inflater;
     private final InteractionListener interactionListener;
