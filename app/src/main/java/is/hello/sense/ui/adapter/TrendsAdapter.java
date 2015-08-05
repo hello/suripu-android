@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 
-public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
+public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered, TrendsAdapter.ViewHolder> {
     private final LayoutInflater inflater;
     private final Resources resources;
     private final int graphTintColor;
@@ -30,7 +29,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
     private @Nullable OnTrendOptionSelected onTrendOptionSelected;
 
     public TrendsAdapter(@NonNull Context context) {
-        super(context, R.layout.item_trend);
+        super(new ArrayList<>());
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
@@ -38,25 +37,19 @@ public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
     }
 
 
-    public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
-        clear();
-        addAll(trends);
-    }
-
     public void setOnTrendOptionSelected(@Nullable OnTrendOptionSelected onTrendOptionSelected) {
         this.onTrendOptionSelected = onTrendOptionSelected;
     }
 
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.item_trend, parent, false);
-            view.setTag(new ViewHolder(view));
-        }
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.item_trend, parent, false);
+        return new ViewHolder(view);
+    }
 
-        ViewHolder holder = (ViewHolder) view.getTag();
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
         TrendsPresenter.Rendered rendered = getItem(position);
 
         TrendGraph graph = rendered.graph;
@@ -81,12 +74,10 @@ public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
             LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
             lineGraph.setMarkers(holder.graphAdapter.getMarkers());
         }
-
-        return view;
     }
 
 
-    class ViewHolder implements SelectorView.OnSelectionChangedListener {
+    class ViewHolder extends ArrayRecyclerAdapter.ViewHolder implements SelectorView.OnSelectionChangedListener {
         final ViewGroup itemView;
         final TextView title;
         final GraphView graphView;
@@ -94,6 +85,8 @@ public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
         @Nullable SelectorView optionSelector;
 
         ViewHolder(@NonNull View view) {
+            super(view);
+
             this.itemView = (ViewGroup) view;
             this.title = (TextView) view.findViewById(R.id.item_trend_title);
             this.graphView = (GraphView) view.findViewById(R.id.item_trend_graph);
@@ -103,7 +96,7 @@ public class TrendsAdapter extends ArrayAdapter<TrendsPresenter.Rendered> {
 
         void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
-                this.optionSelector = new SelectorView(getContext());
+                this.optionSelector = new SelectorView(itemView.getContext());
                 optionSelector.setBackground(new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.INLINE));
                 optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
