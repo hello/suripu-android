@@ -29,7 +29,7 @@ public class RecyclerAdapterTesting {
         public final List<Change> changes = new ArrayList<>();
 
         public void onChanged() {
-            changes.add(new Change(Change.Type.UNKNOWN));
+            changes.add(new Change(Change.Type.DATA_SET_CHANGED));
         }
 
         public void onItemRangeChanged(int positionStart, int itemCount) {
@@ -80,7 +80,7 @@ public class RecyclerAdapterTesting {
             }
 
             public enum Type {
-                UNKNOWN,
+                DATA_SET_CHANGED,
                 CHANGED,
                 INSERTED,
                 REMOVED,
