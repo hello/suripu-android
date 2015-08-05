@@ -62,15 +62,14 @@
         android:layout_above="@id/fragment_ticket_detail_comment_attachments_scroller"
         style="@style/Divider.Horizontal" />
 
-    <ListView
-        android:id="@android:id/list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_ticket_detail_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/fragment_ticket_detail_divider"
         android:requiresFadingEdge="vertical"
         android:fadingEdge="vertical"
-        android:fadingEdgeLength="@dimen/shadow_size"
-        style="@style/AppTheme.ListView.Cards.Compact" />
+        android:fadingEdgeLength="@dimen/shadow_size" />
 
     <ProgressBar
         android:id="@+id/fragment_ticket_detail_loading"

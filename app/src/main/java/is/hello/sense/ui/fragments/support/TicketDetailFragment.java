@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -14,11 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,6 +32,7 @@ import com.zendesk.service.ErrorResponse;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,17 +40,20 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.CardItemDecoration;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.zendesk.AttachmentPicker;
 import is.hello.sense.zendesk.TicketDetailPresenter;
 
-public class TicketDetailFragment extends InjectionFragment implements ImageUploadHelper.ImageUploadProgressListener, TextWatcher, AdapterView.OnItemClickListener {
+public class TicketDetailFragment extends InjectionFragment
+        implements ImageUploadHelper.ImageUploadProgressListener, TextWatcher,
+            ArrayRecyclerAdapter.OnItemClickedListener<CommentResponse> {
     private static final String ARG_TICKET_ID = TicketDetailFragment.class.getName() + ".ARG_TICKET_ID";
     private static final String ARG_TICKET_SUBJECT = TicketDetailFragment.class.getName() + ".ARG_TICKET_SUBJECT";
 
@@ -104,12 +107,15 @@ public class TicketDetailFragment extends InjectionFragment implements ImageUplo
         //noinspection Convert2MethodRef
         attachmentHost.setAttachmentContainerListener(f -> imageUploadHelper.removeImage(f));
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER | Styles.CARD_SPACING_USE_COMPACT);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_ticket_detail_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), true));
+        recyclerView.setItemAnimator(null);
 
         this.adapter = new CommentAdapter(getActivity());
-        listView.setAdapter(adapter);
+        adapter.setOnItemClickedListener(this);
+        recyclerView.setAdapter(adapter);
 
         this.attach = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_attach);
         Views.setSafeOnClickListener(attach, ignored -> attachmentPicker.showOptions());
@@ -262,8 +268,7 @@ public class TicketDetailFragment extends InjectionFragment implements ImageUplo
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        CommentResponse comment = (CommentResponse) parent.getItemAtPosition(position);
+    public void onItemClicked(int position, CommentResponse comment) {
         if (comment != null && !Lists.isEmpty(comment.getAttachments())) {
             SenseBottomSheet attachmentPicker = new SenseBottomSheet(getActivity());
             attachmentPicker.setTitle(R.string.action_view_attachment);
@@ -292,26 +297,25 @@ public class TicketDetailFragment extends InjectionFragment implements ImageUplo
     //endregion
 
 
-    static class CommentAdapter extends ArrayAdapter<CommentResponse> {
+    static class CommentAdapter extends ArrayRecyclerAdapter<CommentResponse, CommentAdapter.ViewHolder> {
         private final Resources resources;
         private final LayoutInflater inflater;
 
         public CommentAdapter(@NonNull Context context) {
-            super(context, R.layout.item_support_comment);
+            super(new ArrayList<>());
 
             this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_support_comment, parent, false);
-                view.setTag(new ViewHolder(view));
-            }
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = inflater.inflate(R.layout.item_support_comment, parent, false);
+            return new ViewHolder(view);
+        }
 
-            ViewHolder holder = (ViewHolder) view.getTag();
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
             CommentResponse comment = getItem(position);
             holder.body.setText(comment.getBody());
 
@@ -322,22 +326,24 @@ public class TicketDetailFragment extends InjectionFragment implements ImageUplo
                 String detailString = resources.getQuantityString(R.plurals.item_support_comment_detail_attachments,
                         attachmentCount, date, attachmentCount);
                 holder.detail.setText(detailString);
-                view.setBackgroundResource(R.drawable.background_timeline_header_card_selector);
+                holder.itemView.setBackgroundResource(R.drawable.background_timeline_header_card_selector);
             } else {
                 holder.detail.setText(date);
-                view.setBackgroundResource(R.drawable.background_timeline_header_card);
+                holder.itemView.setBackgroundResource(R.drawable.background_timeline_header_card);
             }
-
-            return view;
         }
 
-        static class ViewHolder {
+        class ViewHolder extends ArrayRecyclerAdapter.ViewHolder {
             final TextView body;
             final TextView detail;
 
             ViewHolder(@NonNull View view) {
+                super(view);
+
                 this.body = (TextView) view.findViewById(R.id.item_support_comment_body);
                 this.detail = (TextView) view.findViewById(R.id.item_support_comment_detail);
+
+                view.setOnClickListener(this);
             }
         }
     }
