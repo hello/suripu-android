@@ -229,6 +229,7 @@ public final class Styles {
         paint.setStrokeCap(Paint.Cap.ROUND);
     }
 
+    @Deprecated
     public static void addCardSpacing(@NonNull ListView listView, @CardSpacing int spacing) {
         Context context = listView.getContext();
         Resources resources = listView.getResources();
