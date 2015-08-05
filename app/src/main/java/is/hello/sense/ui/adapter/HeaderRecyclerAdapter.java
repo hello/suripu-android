@@ -13,6 +13,10 @@ import java.util.List;
 public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static int VIEW_ID_HEADER_FOOTER = Integer.MIN_VALUE;
 
+    private final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT);
+
     @VisibleForTesting final List<View> headers = new ArrayList<>();
     @VisibleForTesting final List<View> footers = new ArrayList<>();
     @VisibleForTesting final RecyclerView.Adapter adapter;
@@ -80,7 +84,9 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_ID_HEADER_FOOTER) {
-            return new HeaderFooterViewHolder(new FrameLayout(parent.getContext()));
+            FrameLayout frameLayout = new FrameLayout(parent.getContext());
+            frameLayout.setLayoutParams(layoutParams);
+            return new HeaderFooterViewHolder(frameLayout);
         } else {
             return adapter.createViewHolder(parent, viewType);
         }
@@ -102,7 +108,7 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             FrameLayout root = ((HeaderFooterViewHolder) holder).root;
             if (view.getParent() != root) {
                 root.removeAllViews();
-                root.addView(view);
+                root.addView(view, layoutParams);
             }
         } else {
             adapter.bindViewHolder(holder, position - headersSize);

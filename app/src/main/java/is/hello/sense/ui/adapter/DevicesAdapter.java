@@ -8,20 +8,22 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.widget.util.Views;
 
-public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClickListener {
-    private static final int ID_EXISTS = 0;
-    private static final int ID_PLACEHOLDER = 1;
+public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.BaseViewHolder>
+        implements View.OnClickListener {
+    private static final int TYPE_EXISTS = 0;
+    private static final int TYPE_PLACEHOLDER = 1;
 
     private final LayoutInflater inflater;
     private final Resources resources;
@@ -30,7 +32,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
     private @Nullable OnPairNewDeviceListener onPairNewDeviceListener;
 
     public DevicesAdapter(@NonNull Context context, @NonNull PreferencesPresenter preferences) {
-        super(context, R.layout.item_device);
+        super(new ArrayList<>());
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
@@ -43,8 +45,6 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
     }
 
     public void bindDevices(@NonNull List<Device> devices) {
-        clear();
-
         Device sense = null;
         Device sleepPill = null;
 
@@ -64,7 +64,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
             sleepPill = Device.createPlaceholder(Device.Type.PILL);
         }
 
-        addAll(sense, sleepPill);
+        replaceAll(Lists.newArrayList(sense, sleepPill));
     }
 
     public void devicesUnavailable(@SuppressWarnings("UnusedParameters") Throwable e) {
@@ -73,38 +73,36 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
 
 
     @Override
-    public int getViewTypeCount() {
-        return 2;
-    }
-
-    @Override
     public int getItemViewType(int position) {
         Device device = getItem(position);
         if (device.exists()) {
-            return ID_EXISTS;
+            return TYPE_EXISTS;
         } else {
-            return ID_PLACEHOLDER;
+            return TYPE_PLACEHOLDER;
         }
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            if (getItemViewType(position) == ID_EXISTS) {
-                view = inflater.inflate(R.layout.item_device, parent, false);
-                view.setTag(new DeviceViewHolder(view));
-            } else {
-                view = inflater.inflate(R.layout.item_device_placeholder, parent, false);
-                view.setTag(new PlaceholderViewHolder(view));
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case TYPE_EXISTS: {
+                View view = inflater.inflate(R.layout.item_device, parent, false);
+                return new DeviceViewHolder(view);
+            }
+            case TYPE_PLACEHOLDER: {
+                View view = inflater.inflate(R.layout.item_device_placeholder, parent, false);
+                return new PlaceholderViewHolder(view);
+            }
+            default: {
+                throw new IllegalArgumentException();
             }
         }
+    }
 
-        ViewHolder holder = (ViewHolder) view.getTag();
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
         Device device = getItem(position);
         holder.display(device);
-
-        return view;
     }
 
     @Override
@@ -116,10 +114,12 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
     }
 
 
-    abstract class ViewHolder {
+    abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         final TextView title;
 
-        ViewHolder(@NonNull View view) {
+        BaseViewHolder(@NonNull View view) {
+            super(view);
+
             this.title = (TextView) view.findViewById(R.id.item_device_name);
         }
 
@@ -131,7 +131,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
         }
     }
 
-    class DeviceViewHolder extends ViewHolder {
+    class DeviceViewHolder extends BaseViewHolder {
         final TextView lastSeen;
         final TextView status1;
         final TextView status1Label;
@@ -146,6 +146,8 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
             this.status1Label = (TextView) view.findViewById(R.id.item_device_status_label);
             this.status2 = (TextView) view.findViewById(R.id.item_device_status2);
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
+
+            view.setOnClickListener(this);
         }
 
         @Override
@@ -157,7 +159,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
         void display(@NonNull Device device) {
             super.display(device);
 
-            lastSeen.setText(device.getLastUpdatedDescription(getContext()));
+            lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
                 lastSeen.setTextColor(resources.getColor(R.color.destructive_accent));
             } else {
@@ -177,10 +179,10 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                             status1.setText(R.string.device_network_unknown);
                             status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
                         }
-                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
+                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
                     } else {
                         status1.setText(networkName);
-                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
+                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold);
                         status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
                     }
 
@@ -201,9 +203,9 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
                     }
                     status1.setText(state.nameRes);
                     if (state == Device.State.UNKNOWN) {
-                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
+                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
                     } else {
-                        status1.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Bold);
+                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold);
                     }
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 
@@ -221,7 +223,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> implements View.OnClick
         }
     }
 
-    class PlaceholderViewHolder extends ViewHolder {
+    class PlaceholderViewHolder extends BaseViewHolder {
         final TextView message;
         final Button actionButton;
 
