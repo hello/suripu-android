@@ -334,6 +334,11 @@ public class Analytics {
          */
         String EVENT_HELP = "Onboarding Help";
         String PROP_HELP_STEP = "onboarding_step";
+
+        /**
+         * When the user long presses on the help button and accesses our secret support menu.
+         */
+        String EVENT_SUPPORT_OPTIONS = "Support options activated";
     }
 
     public interface Timeline {
