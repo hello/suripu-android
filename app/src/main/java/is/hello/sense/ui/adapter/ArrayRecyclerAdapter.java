@@ -31,6 +31,28 @@ public abstract class ArrayRecyclerAdapter<T, VH extends ArrayRecyclerAdapter.Vi
         return storage.get(position);
     }
 
+    public boolean replaceAll(@NonNull Collection<? extends T> collection) {
+        int oldSize = getItemCount();
+        int newSize = collection.size();
+
+        storage.clear();
+        if (!storage.addAll(collection)) {
+            return false;
+        }
+
+        if (oldSize > newSize) {
+            notifyItemRangeRemoved(newSize, oldSize - newSize);
+            notifyItemRangeChanged(0, newSize);
+        } else if (newSize > oldSize) {
+            notifyItemRangeInserted(oldSize, newSize - oldSize);
+            notifyItemRangeChanged(0, oldSize);
+        } else {
+            notifyItemRangeChanged(0, newSize);
+        }
+
+        return true;
+    }
+
     public boolean addAll(@NonNull Collection<? extends T> collection) {
         int oldSize = storage.size();
         if (storage.addAll(collection)) {

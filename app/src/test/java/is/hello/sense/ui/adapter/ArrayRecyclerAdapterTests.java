@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
@@ -37,6 +38,76 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
 
     //endregion
 
+    
+    //region Replace All
+
+    @Test
+    public void replaceAllInsertion() throws Exception {
+        RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
+        adapter.registerAdapterDataObserver(observer);
+
+        List<String> firstBatch = Lists.newArrayList(
+                "hello",
+                "world"
+        );
+        adapter.replaceAll(firstBatch);
+
+        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
+                0, 2);
+
+        List<String> secondBatch = Lists.newArrayList(
+                "goodbye",
+                "cruel",
+                "world"
+        );
+        adapter.replaceAll(secondBatch);
+        assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
+                0, 2));
+        assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
+                2, 1));
+    }
+
+    @Test
+    public void replaceAllChange() throws Exception {
+        List<String> strings = Lists.newArrayList(
+                "hello",
+                "world"
+        );
+        adapter.replaceAll(strings);
+
+        RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
+        adapter.registerAdapterDataObserver(observer);
+
+        adapter.replaceAll(strings);
+
+        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
+                0, 2);
+    }
+
+    @Test
+    public void replaceAllRemove() throws Exception {
+        List<String> firstBatch = Lists.newArrayList(
+                "hello",
+                "world"
+        );
+        adapter.replaceAll(firstBatch);
+
+        RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
+        adapter.registerAdapterDataObserver(observer);
+
+        List<String> secondBatch = Lists.newArrayList(
+                "goodbye"
+        );
+        adapter.replaceAll(secondBatch);
+
+        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
+                0, 1);
+        observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.REMOVED,
+                1, 1);
+    }
+    
+    //endregion
+    
 
     //region Operations
 
