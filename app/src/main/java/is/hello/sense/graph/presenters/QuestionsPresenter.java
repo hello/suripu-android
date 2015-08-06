@@ -151,7 +151,7 @@ import rx.schedulers.Schedulers;
     public void skipQuestion() {
         currentQuestion.take(1)
                        .subscribe(question -> {
-                                   apiService.skipQuestion(question.getAccountId(), question.getId())
+                                   apiService.skipQuestion(question.getAccountId(), question.getId(), "")
                                              .subscribe(ignored -> logEvent("skipped question"),
                                                         Functions.LOG_ERROR);
                                },
