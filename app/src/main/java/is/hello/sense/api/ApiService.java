@@ -127,9 +127,11 @@ public interface ApiService {
                                              @Path("timestamp") long timestamp);
 
     @PUT("/v2/timeline/{date}/events/{type}/{timestamp}")
+    @Headers("Content-Type: application/json")
     Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
                                                  @NonNull @Path("type") TimelineEvent.Type type,
-                                                 @Path("timestamp") long timestamp);
+                                                 @Path("timestamp") long timestamp,
+                                                 @NonNull @Body String stupidOkHttp);
 
     //endregion
 
@@ -177,7 +179,8 @@ public interface ApiService {
     @PUT("/v1/questions/skip")
     @Headers("Content-Type: application/json")
     Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
-                                          @Query("id") long questionId);
+                                          @Query("id") long questionId,
+                                          @NonNull @Body String stupidOkHttp);
 
     //endregion
 

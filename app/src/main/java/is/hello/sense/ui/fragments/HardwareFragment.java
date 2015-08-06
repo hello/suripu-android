@@ -127,6 +127,8 @@ public abstract class HardwareFragment extends InjectionFragment {
     //region Recovery
 
     protected void showSupportOptions() {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SUPPORT_OPTIONS, null);
+
         SenseBottomSheet options = new SenseBottomSheet(getActivity());
         options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
@@ -159,6 +161,8 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void promptForRecoveryFactoryReset() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
+
         SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.dialog_title_factory_reset);
         confirmation.setMessage(R.string.dialog_message_factory_reset);
@@ -194,7 +198,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
                                 MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
                                         R.string.message_power_cycle_sense_factory_reset);
-                                powerCycleDialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+                                powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                                 getOnboardingActivity().showSetupSense();
                             });

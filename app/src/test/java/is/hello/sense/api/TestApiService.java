@@ -166,7 +166,8 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
                                                         @NonNull @Path("type") TimelineEvent.Type type,
-                                                        @Path("timestamp") long timestamp) {
+                                                        @Path("timestamp") long timestamp,
+                                                        @NonNull @Body String stupidOkHttp) {
         return safeJust(new VoidResponse());
     }
 
@@ -242,7 +243,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> skipQuestion(@Query("account_question_id") long accountId,
-                                                 @Query("id") long questionId) {
+                                                 @Query("id") long questionId,
+                                                 @NonNull @Body String stupidOkHttp) {
         return safeJust(new VoidResponse());
     }
 
