@@ -54,7 +54,7 @@ public final class CardItemDecoration extends RecyclerView.ItemDecoration {
             }
 
             if (position == lastPosition) {
-                outRect.bottom = contentInset.bottom;
+                outRect.bottom += contentInset.bottom;
             }
         }
     }
