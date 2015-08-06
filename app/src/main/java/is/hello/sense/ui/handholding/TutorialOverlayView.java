@@ -29,7 +29,6 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
@@ -51,7 +50,6 @@ public class TutorialOverlayView extends RelativeLayout {
 
     private @Nullable ViewGroup container;
     private @Nullable Runnable onDismiss;
-    private @Nullable AnimatorContext animatorContext;
 
     //region Creation
 
@@ -132,10 +130,6 @@ public class TutorialOverlayView extends RelativeLayout {
 
     //region Showing
 
-    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
-        this.animatorContext = animatorContext;
-    }
-
     public void setOnDismiss(@Nullable Runnable onDismiss) {
         this.onDismiss = onDismiss;
     }
@@ -153,7 +147,7 @@ public class TutorialOverlayView extends RelativeLayout {
         bindAndSubscribe(Views.observeNextLayout(this),
                          ignored -> {
                              descriptionText.setTranslationY(descriptionText.getMeasuredHeight());
-                             PropertyAnimatorProxy.animate(descriptionText, animatorContext)
+                             PropertyAnimatorProxy.animate(descriptionText)
                                      .translationY(0f)
                                      .alpha(1f)
                                      .start();
@@ -165,7 +159,7 @@ public class TutorialOverlayView extends RelativeLayout {
         if (container != null) {
             if (animate) {
                 ViewGroup oldContainer = container;
-                PropertyAnimatorProxy.animate(this, animatorContext)
+                PropertyAnimatorProxy.animate(this)
                         .setDuration(Animation.DURATION_VERY_FAST)
                         .fadeOut(GONE)
                         .addOnAnimationCompleted(finished -> {

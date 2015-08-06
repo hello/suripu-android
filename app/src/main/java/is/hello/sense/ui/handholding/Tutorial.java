@@ -30,7 +30,11 @@ public enum Tutorial {
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
                    Gravity.BOTTOM,
                    R.id.activity_home_container,
-                   Interaction.SWIPE_RIGHT);
+                   Interaction.SWIPE_RIGHT),
+    ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
+                      Gravity.BOTTOM,
+                      R.id.view_timeline_toolbar_title,
+                      Interaction.TAP);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;

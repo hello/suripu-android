@@ -405,6 +405,7 @@ so you can sleep better.</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
 
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
+    <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
