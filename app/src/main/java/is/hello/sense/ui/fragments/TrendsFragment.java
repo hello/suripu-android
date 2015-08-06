@@ -4,10 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.CardItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
@@ -52,13 +54,15 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         swipeRefreshLayout.setOnRefreshListener(trendsPresenter::update);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
-
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_trends_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), false));
+        recyclerView.setItemAnimator(null);
 
         this.trendsAdapter = new TrendsAdapter(getActivity());
         trendsAdapter.setOnTrendOptionSelected(this);
-        listView.setAdapter(trendsAdapter);
+        recyclerView.setAdapter(trendsAdapter);
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.noDataPlaceholder = (TextView) view.findViewById(R.id.fragment_trends_placeholder);
@@ -100,7 +104,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
         swipeRefreshLayout.setRefreshing(false);
-        trendsAdapter.bindTrends(trends);
+        trendsAdapter.replaceAll(trends);
 
         initialActivityIndicator.setVisibility(View.GONE);
         if (Lists.isEmpty(trends)) {

@@ -3,13 +3,13 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
+import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -21,26 +21,21 @@ import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.SafeOnClickListener;
 
-public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListener {
-    private static final int VIEW_ID_ALARM = 0;
-    private static final int VIEW_ID_MESSAGE = 1;
-    private static final int VIEW_ID_COUNT = 2;
+public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.BaseViewHolder> {
+    @VisibleForTesting static final int VIEW_ID_ALARM = 0;
+    @VisibleForTesting static final int VIEW_ID_MESSAGE = 1;
 
-    private final Context context;
     private final LayoutInflater inflater;
-    private final OnAlarmEnabledChanged onAlarmEnabledChanged;
-    private final SafeOnClickListener onClickListener = new SafeOnClickListener(this);
+    private final InteractionListener interactionListener;
 
     private final List<Alarm> alarms = new ArrayList<>();
-    private @Nullable Message currentMessage;
+    private Message currentMessage;
     private boolean use24Time = false;
 
-    public SmartAlarmAdapter(@NonNull Context context, @NonNull OnAlarmEnabledChanged onAlarmEnabledChanged) {
-        this.context = context;
+    public SmartAlarmAdapter(@NonNull Context context, @NonNull InteractionListener interactionListener) {
         this.inflater = LayoutInflater.from(context);
-        this.onAlarmEnabledChanged = onAlarmEnabledChanged;
+        this.interactionListener = interactionListener;
     }
 
     //region Binding
@@ -63,10 +58,6 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
         notifyDataSetChanged();
     }
 
-    public boolean isShowingMessage() {
-        return (currentMessage != null);
-    }
-
     public void clearMessage() {
         this.currentMessage = null;
         notifyDataSetChanged();
@@ -77,8 +68,9 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
 
     //region Data
 
+
     @Override
-    public int getCount() {
+    public int getItemCount() {
         if (currentMessage != null) {
             return 1;
         } else {
@@ -87,26 +79,8 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
     }
 
     @Override
-    public Object getItem(int position) {
-        if (currentMessage != null) {
-            if (position > 0) {
-                throw new IndexOutOfBoundsException();
-            }
-
-            return currentMessage;
-        } else {
-            return alarms.get(position);
-        }
-    }
-
-    @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_ID_COUNT;
     }
 
     @Override
@@ -123,57 +97,64 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
 
     //region Views
 
+
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (currentMessage != null) {
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_message_card, parent, false);
-                view.setTag(new MessageViewHolder(view));
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_ID_MESSAGE: {
+                View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                return new MessageViewHolder(view);
             }
-
-            MessageViewHolder holder = (MessageViewHolder) view.getTag();
-            holder.bind(currentMessage);
-
-        } else {
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_smart_alarm, parent, false);
-                view.setTag(new AlarmViewHolder(view));
+            case VIEW_ID_ALARM: {
+                View view = inflater.inflate(R.layout.item_smart_alarm, parent, false);
+                return new AlarmViewHolder(view);
             }
+            default: {
+                throw new IllegalArgumentException();
+            }
+        }
+    }
 
-            Alarm alarm = alarms.get(position);
-            AlarmViewHolder holder = (AlarmViewHolder) view.getTag();
-            holder.bind(position, alarm);
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        holder.bind(position);
+    }
+
+
+    abstract static class BaseViewHolder extends RecyclerView.ViewHolder {
+        BaseViewHolder(@NonNull View itemView) {
+            super(itemView);
         }
 
-        return view;
+        abstract void bind(int position);
     }
 
-    @Override
-    public void onClick(View view) {
-        int position = (Integer) view.getTag();
-        boolean enabled = ((CompoundButton) view).isChecked();
-        onAlarmEnabledChanged.onAlarmEnabledChanged(position, enabled);
-    }
-
-
-    class AlarmViewHolder {
+    class AlarmViewHolder extends BaseViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
         final CompoundButton enabled;
         final TextView time;
         final TextView timePeriod;
         final TextView repeat;
 
         AlarmViewHolder(@NonNull View view) {
+            super(view);
+
             this.enabled = (CompoundButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
             this.timePeriod = (TextView) view.findViewById(R.id.item_smart_alarm_time_period);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
+
+            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
         }
 
-        void bind(int position, @NonNull Alarm alarm) {
+        @Override
+        void bind(int position) {
+            Alarm alarm = alarms.get(position);
+
             enabled.setTag(position);
             enabled.setChecked(alarm.isEnabled());
-            enabled.setOnClickListener(onClickListener);
+            enabled.setOnClickListener(this);
             if (use24Time) {
                 timePeriod.setVisibility(View.GONE);
                 time.setText(alarm.getTime().toString("HH:mm"));
@@ -182,42 +163,65 @@ public class SmartAlarmAdapter extends BaseAdapter implements View.OnClickListen
                 time.setText(alarm.getTime().toString("h:mm"));
                 timePeriod.setText(alarm.getTime().toString("a"));
             }
-            repeat.setText(alarm.getDaysOfWeekSummary(context));
+            repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
+        }
+
+        @Override
+        public void onClick(View sender) {
+            int position = getAdapterPosition();
+            if (sender == enabled) {
+                interactionListener.onAlarmEnabledChanged(position, enabled.isChecked());
+            } else {
+                Alarm alarm = alarms.get(position);
+                interactionListener.onAlarmClicked(position, alarm);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View ignored) {
+            int position = getAdapterPosition();
+            Alarm alarm = alarms.get(position);
+            return interactionListener.onAlarmLongClicked(position, alarm);
         }
     }
 
-    class MessageViewHolder {
+    class MessageViewHolder extends BaseViewHolder {
         final TextView titleText;
         final TextView messageText;
         final Button actionButton;
 
         MessageViewHolder(@NonNull View view) {
+            super(view);
+
             this.titleText = (TextView) view.findViewById(R.id.item_message_card_title);
             this.messageText = (TextView) view.findViewById(R.id.item_message_card_message);
             this.actionButton = (Button) view.findViewById(R.id.item_message_card_action);
         }
 
-        void bind(@NonNull Message message) {
+        @Override
+        void bind(int ignored) {
             titleText.setAllCaps(false);
-            titleText.setTextAppearance(context, message.titleStyleRes);
-            if (message.titleIconRes != 0) {
-                titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(message.titleIconRes, 0, 0, 0);
+            titleText.setTextAppearance(titleText.getContext(), currentMessage.titleStyleRes);
+            if (currentMessage.titleIconRes != 0) {
+                titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(currentMessage.titleIconRes, 0, 0, 0);
             } else {
                 titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
             }
-            titleText.setText(message.titleRes);
-            messageText.setText(message.message.resolve(context));
+            titleText.setText(currentMessage.titleRes);
+            messageText.setText(currentMessage.message.resolve(messageText.getContext()));
 
-            actionButton.setText(message.actionRes);
-            Views.setSafeOnClickListener(actionButton, message.onClickListener);
+            actionButton.setText(currentMessage.actionRes);
+            Views.setSafeOnClickListener(actionButton, currentMessage.onClickListener);
         }
     }
 
     //endregion
 
 
-    public interface OnAlarmEnabledChanged {
+    public interface InteractionListener {
         void onAlarmEnabledChanged(int position, boolean enabled);
+        void onAlarmClicked(int position, @NonNull Alarm alarm);
+        boolean onAlarmLongClicked(int position, @NonNull Alarm alarm);
     }
 
     public static class Message {

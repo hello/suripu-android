@@ -13,9 +13,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_medium"
-            android:layout_marginLeft="@dimen/gap_card_sides"
-            android:layout_marginRight="@dimen/gap_card_sides"
-            android:layout_marginBottom="@dimen/gap_card_spacing"
+            android:layout_marginLeft="@dimen/gap_card_horizontal"
+            android:layout_marginRight="@dimen/gap_card_horizontal"
+            android:layout_marginBottom="@dimen/gap_card_inter"
             android:orientation="vertical"
             style="@style/AppTheme.Card">
 
@@ -58,8 +58,8 @@
         <is.hello.sense.ui.widget.RoundedLinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_card_sides"
-            android:layout_marginRight="@dimen/gap_card_sides"
+            android:layout_marginLeft="@dimen/gap_card_horizontal"
+            android:layout_marginRight="@dimen/gap_card_horizontal"
             android:layout_marginBottom="@dimen/gap_large"
             android:orientation="vertical"
             style="@style/AppTheme.Card">

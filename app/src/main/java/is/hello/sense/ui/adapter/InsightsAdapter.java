@@ -3,12 +3,13 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -27,33 +28,32 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class InsightsAdapter extends BaseAdapter {
-    private static final int TYPE_QUESTION = 0;
-    private static final int TYPE_INSIGHT = 1;
-    private static final int TYPE_COUNT = 2;
+public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseViewHolder> {
+    @VisibleForTesting static final int TYPE_QUESTION = 0;
+    @VisibleForTesting static final int TYPE_INSIGHT = 1;
 
     private final Context context;
     private final LayoutInflater inflater;
     private final DateFormatter dateFormatter;
-    private final Listener listener;
+    private final InteractionListener interactionListener;
 
     private @Nullable List<Insight> insights;
     private Question currentQuestion;
 
     public InsightsAdapter(@NonNull Context context,
                            @NonNull DateFormatter dateFormatter,
-                           @NonNull Listener listener) {
+                           @NonNull InteractionListener interactionListener) {
         this.context = context;
         this.dateFormatter = dateFormatter;
         this.inflater = LayoutInflater.from(context);
-        this.listener = listener;
+        this.interactionListener = interactionListener;
     }
 
 
     //region Bindings
 
     public void bindData(@NonNull Pair<List<Insight>, Question> data) {
-        listener.onDismissLoadingIndicator();
+        interactionListener.onDismissLoadingIndicator();
 
         this.insights = data.first;
         this.currentQuestion = data.second;
@@ -65,7 +65,7 @@ public class InsightsAdapter extends BaseAdapter {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 
-        listener.onDismissLoadingIndicator();
+        interactionListener.onDismissLoadingIndicator();
         this.insights = new ArrayList<>();
         this.currentQuestion = null;
 
@@ -91,7 +91,7 @@ public class InsightsAdapter extends BaseAdapter {
     //region Adapter
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         int count = 0;
         if (insights != null) {
             count += insights.size();
@@ -114,24 +114,8 @@ public class InsightsAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
-        if (position == 0 && currentQuestion != null) {
-            return currentQuestion;
-        } else if (insights != null) {
-            return getInsightItem(position);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return TYPE_COUNT;
     }
 
     @Override
@@ -143,45 +127,49 @@ public class InsightsAdapter extends BaseAdapter {
         }
     }
 
+    //endregion
+
+
+    //region Views
+
+
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        switch (getItemViewType(position)) {
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
             case TYPE_QUESTION: {
-                return getQuestionView(convertView, parent);
+                View view = inflater.inflate(R.layout.sub_fragment_new_question, parent, false);
+                return new QuestionViewHolder(view);
             }
-
             case TYPE_INSIGHT: {
-                return getInsightView(position, convertView, parent);
+                View view = inflater.inflate(R.layout.item_insight, parent, false);
+                return new InsightViewHolder(view);
             }
-
             default: {
                 throw new IllegalArgumentException();
             }
         }
     }
 
-    //endregion
-
-
-    //region Views
-
-    private View getQuestionView(View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.sub_fragment_new_question, parent, false);
-            view.setTag(new QuestionViewHolder(view));
-        }
-
-        QuestionViewHolder holder = (QuestionViewHolder) view.getTag();
-        holder.title.setText(currentQuestion.getText());
-
-        return view;
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        holder.bind(position);
     }
 
-    class QuestionViewHolder {
+
+    abstract class BaseViewHolder extends RecyclerView.ViewHolder {
+        BaseViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+        abstract void bind(int position);
+    }
+
+    class QuestionViewHolder extends BaseViewHolder {
         final TextView title;
 
         QuestionViewHolder(@NonNull View view) {
+            super(view);
+
             this.title = (TextView) view.findViewById(R.id.sub_fragment_new_question_title);
 
             Button skip = (Button) view.findViewById(R.id.sub_fragment_new_question_skip);
@@ -191,68 +179,76 @@ public class InsightsAdapter extends BaseAdapter {
             Views.setSafeOnClickListener(answer, this::answer);
         }
 
-        public void skip(@NonNull View ignored) {
-            listener.onSkipQuestion();
+        void skip(@NonNull View ignored) {
+            interactionListener.onSkipQuestion();
         }
 
-        public void answer(@NonNull View ignored) {
-            listener.onAnswerQuestion();
+        void answer(@NonNull View ignored) {
+            interactionListener.onAnswerQuestion();
+        }
+
+        @Override
+        void bind(int ignored) {
+            title.setText(currentQuestion.getText());
         }
     }
 
-
-    private View getInsightView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.item_insight, parent, false);
-            view.setTag(new InsightViewHolder(view));
-        }
-
-        Insight insight = getInsightItem(position);
-        InsightViewHolder holder = (InsightViewHolder) view.getTag();
-
-        DateTime insightCreated = insight.getCreated();
-        if (insightCreated == null && Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
-            holder.date.setText(R.string.dialog_error_title);
-        } else {
-            CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
-            holder.date.setText(insightDate);
-        }
-
-        if (!TextUtils.isEmpty(insight.getInfoPreview())) {
-            holder.previewDivider.setVisibility(View.VISIBLE);
-            holder.preview.setVisibility(View.VISIBLE);
-            holder.preview.setText(insight.getInfoPreview());
-        } else {
-            holder.previewDivider.setVisibility(View.GONE);
-            holder.preview.setVisibility(View.GONE);
-        }
-
-        holder.body.setText(insight.getMessage());
-
-        return view;
-    }
-
-    class InsightViewHolder {
+    class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
         final View previewDivider;
         final TextView preview;
 
         InsightViewHolder(@NonNull View view) {
+            super(view);
+
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.previewDivider = view.findViewById(R.id.item_insight_preview_divider);
             this.preview = (TextView) view.findViewById(R.id.item_insight_preview);
+
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        void bind(int position) {
+            Insight insight = getInsightItem(position);
+
+            DateTime insightCreated = insight.getCreated();
+            if (insightCreated == null && Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
+                date.setText(R.string.dialog_error_title);
+            } else {
+                CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
+                date.setText(insightDate);
+            }
+
+            if (!TextUtils.isEmpty(insight.getInfoPreview())) {
+                previewDivider.setVisibility(View.VISIBLE);
+                preview.setVisibility(View.VISIBLE);
+                preview.setText(insight.getInfoPreview());
+            } else {
+                previewDivider.setVisibility(View.GONE);
+                preview.setVisibility(View.GONE);
+            }
+
+            body.setText(insight.getMessage());
+        }
+
+
+        @Override
+        public void onClick(View ignored) {
+            Insight insight = getInsightItem(getAdapterPosition());
+            interactionListener.onInsightClicked(insight);
         }
     }
 
     //endregion
 
 
-    public interface Listener {
+    public interface InteractionListener {
         void onDismissLoadingIndicator();
         void onSkipQuestion();
         void onAnswerQuestion();
+        void onInsightClicked(@NonNull Insight insight);
     }
 }

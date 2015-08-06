@@ -7,14 +7,13 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,12 +27,15 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.CardItemDecoration;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
@@ -46,7 +48,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
-public class RoomConditionsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener {
+public class RoomConditionsFragment extends UndersideTabFragment implements ArrayRecyclerAdapter.OnItemClickedListener<RoomConditionsFragment.SensorEntry> {
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
     @Inject RoomConditionsPresenter presenter;
@@ -72,9 +74,13 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_cards_compact, container, false);
+        View view = inflater.inflate(R.layout.fragment_room_conditions, container, false);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), true));
+        recyclerView.setItemAnimator(null);
 
         // This order applies to:
         // - RoomSensorHistory
@@ -88,9 +94,8 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                 new SensorEntry(ApiService.SENSOR_NAME_LIGHT),
                 new SensorEntry(ApiService.SENSOR_NAME_SOUND),
         });
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER | Styles.CARD_SPACING_USE_COMPACT);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        adapter.setOnItemClickedListener(this);
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
@@ -143,7 +148,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         List<UnitSystem.Unit> units = result.units.toUnitList();
 
         adapter.setShowNoSenseMessage(false);
-        for (int i = 0, count = adapter.getCount(); i < count; i++) {
+        for (int i = 0, count = adapter.getItemCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
 
             SensorState sensor = sensors.get(i);
@@ -167,7 +172,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     public void conditionsUnavailable(@NonNull Throwable e) {
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
-        for (int i = 0, count = adapter.getCount(); i < count; i++) {
+        for (int i = 0, count = adapter.getItemCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
             sensorInfo.formatter = null;
             sensorInfo.sensorState = null;
@@ -181,20 +186,11 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
     //endregion
 
 
-    public void showSensorHistory(@NonNull String sensor) {
-        Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
-        intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensor);
-        startActivity(intent);
-    }
-
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (adapter.getShowNoSenseMessage()) {
-            return;
-        }
-
-        SensorEntry sensorEntry = (SensorEntry) adapterView.getItemAtPosition(position);
-        showSensorHistory(sensorEntry.sensorName);
+    public void onItemClicked(int position, SensorEntry sensorEntry) {
+        Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
+        intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorEntry.sensorName);
+        startActivity(intent);
     }
 
 
@@ -211,10 +207,9 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         }
     }
 
-    class Adapter extends ArrayAdapter<SensorEntry> {
+    class Adapter extends ArrayRecyclerAdapter<SensorEntry, Adapter.BaseViewHolder> {
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_NO_SENSE = 1;
-        private final int VIEW_ID_COUNT = 2;
 
         private final Resources resources;
         private final LayoutInflater inflater;
@@ -223,7 +218,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         private boolean showNoSenseMessage = false;
 
         Adapter(@NonNull Context context, @NonNull SensorEntry[] conditions) {
-            super(context, R.layout.item_room_sensor_condition, conditions);
+            super(Lists.newArrayList(conditions));
 
             this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
@@ -237,22 +232,13 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
             this.showNoSenseMessage = showNoSenseMessage;
         }
 
-        public boolean getShowNoSenseMessage() {
-            return showNoSenseMessage;
-        }
-
         @Override
-        public int getCount() {
+        public int getItemCount() {
             if (showNoSenseMessage) {
                 return 1;
             } else {
-                return super.getCount();
+                return super.getItemCount();
             }
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return VIEW_ID_COUNT;
         }
 
         @Override
@@ -265,15 +251,14 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (showNoSenseMessage) {
-                if (view == null) {
-                    view = inflater.inflate(R.layout.item_message_card, parent, false);
+        public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            switch (viewType) {
+                case VIEW_ID_NO_SENSE: {
+                    View view = inflater.inflate(R.layout.item_message_card, parent, false);
 
                     TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
                     title.setText(R.string.device_sense);
-                    title.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
+                    title.setTextAppearance(title.getContext(), R.style.AppTheme_Text_Body);
                     title.setAllCaps(false);
                     title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.sense_icon, 0, 0, 0);
 
@@ -285,28 +270,43 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
                     Views.setSafeOnClickListener(action, ignored -> {
                         DeviceListFragment.startStandaloneFrom(getActivity());
                     });
-                }
-            } else {
-                if (view == null) {
-                    view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
-                    view.setTag(new SensorViewHolder(view));
-                }
 
-                SensorEntry sensorEntry = getItem(position);
-                SensorViewHolder holder = (SensorViewHolder) view.getTag();
-                holder.bind(sensorEntry);
+                    return new BaseViewHolder(view);
+                }
+                case VIEW_ID_SENSOR: {
+                    View view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
+                    return new SensorViewHolder(view);
+                }
+                default: {
+                    throw new IllegalArgumentException();
+                }
             }
+        }
 
-            return view;
+        @Override
+        public void onBindViewHolder(BaseViewHolder holder, int position) {
+            holder.bind(position);
         }
 
 
-        class SensorViewHolder {
+        class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+            BaseViewHolder(@NonNull View itemView) {
+                super(itemView);
+            }
+
+            void bind(int position) {
+                // Do nothing
+            }
+        }
+
+        class SensorViewHolder extends BaseViewHolder {
             final TextView reading;
             final TextView message;
             final LineGraphDrawable lineGraphDrawable;
 
             SensorViewHolder(@NonNull View view) {
+                super(view);
+
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
 
@@ -317,9 +317,13 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Adap
 
                 View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);
+
+                view.setOnClickListener(this);
             }
 
-            void bind(@NonNull SensorEntry sensorEntry) {
+            @Override
+            void bind(int position) {
+                SensorEntry sensorEntry = getItem(position);
                 if (sensorEntry.sensorState != null) {
                     int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);
 

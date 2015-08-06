@@ -4,15 +4,17 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
@@ -32,21 +34,20 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
+import is.hello.sense.ui.widget.CardItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.util.ListViews;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SmartAlarmListFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, SmartAlarmAdapter.OnAlarmEnabledChanged {
+public class SmartAlarmListFragment extends UndersideTabFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
 
-    private ListView listView;
+    private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
     private View emptyPrompt;
     private ImageButton addButton;
@@ -74,17 +75,18 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
 
         this.emptyPrompt = view.findViewById(R.id.fragment_smart_alarm_list_first_prompt);
 
-        this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-        listView.setOnItemLongClickListener(this);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_smart_alarm_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(null);
 
-        View spacer = new View(getActivity());
-        spacer.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
-        ListViews.addFooterView(listView, spacer, null, false);
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER | Styles.CARD_SPACING_USE_COMPACT);
+        Resources resources = getResources();
+        CardItemDecoration decoration = new CardItemDecoration(resources, true);
+        decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
+        recyclerView.addItemDecoration(decoration);
 
         this.adapter = new SmartAlarmAdapter(getActivity(), this);
-        listView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
 
         this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);
@@ -107,7 +109,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.listView = null;
+        this.recyclerView = null;
         this.activityIndicator = null;
         this.emptyPrompt = null;
 
@@ -236,26 +238,13 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Adap
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (adapter.isShowingMessage()) {
-            return;
-        }
-
-        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_ALARM, null);
-
-        Alarm alarm = (Alarm) adapterView.getItemAtPosition(position);
-        int alarmPosition = ListViews.getAdapterPosition(listView, position);
-        editAlarm(alarm, alarmPosition);
+    public void onAlarmClicked(int position, @NonNull Alarm alarm) {
+        editAlarm(alarm, position);
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (adapter.isShowingMessage()) {
-            return false;
-        }
-
-        int alarmPosition = ListViews.getAdapterPosition(listView, position);
-        DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(alarmPosition);
+    public boolean onAlarmLongClicked(int position, @NonNull Alarm alarm) {
+        DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(position);
         deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
         deleteDialog.showAllowingStateLoss(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
         return true;

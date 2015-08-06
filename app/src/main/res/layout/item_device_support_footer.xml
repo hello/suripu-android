@@ -6,6 +6,7 @@
     android:paddingLeft="@dimen/gap_outer_footer"
     android:paddingRight="@dimen/gap_outer_footer"
     android:paddingBottom="@dimen/gap_medium"
+    android:gravity="center"
     android:textAppearance="@style/AppTheme.Text.Body.Footer"
     android:text="@string/devices_support_footer"
     android:lineSpacingMultiplier="@dimen/line_multiple_body"/>

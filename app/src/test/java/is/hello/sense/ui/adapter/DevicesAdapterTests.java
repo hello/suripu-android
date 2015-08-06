@@ -1,6 +1,5 @@
 package is.hello.sense.ui.adapter;
 
-import android.view.View;
 import android.widget.FrameLayout;
 
 import org.joda.time.DateTime;
@@ -17,7 +16,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.util.LambdaVar;
-import is.hello.sense.util.ListAdapterTesting;
+import is.hello.sense.util.RecyclerAdapterTesting;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,7 +65,7 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense1, sense2, pill1, pill2));
 
-        assertEquals(2, adapter.getCount());
+        assertEquals(2, adapter.getItemCount());
         assertEquals(sense1, adapter.getItem(0));
         assertEquals(pill1, adapter.getItem(1));
     }
@@ -83,8 +82,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense));
 
-        View view = adapter.getView(0, null, fakeParent);
-        DevicesAdapter.DeviceViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(0), 0);
 
         assertEquals("Sense", holder.title.getText().toString());
         assertEquals("2 hours ago", holder.lastSeen.getText().toString());
@@ -107,8 +106,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense));
 
-        View view = adapter.getView(0, null, fakeParent);
-        DevicesAdapter.DeviceViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(0), 0);
 
         assertEquals("Sense", holder.title.getText().toString());
         assertEquals("5 days ago", holder.lastSeen.getText().toString());
@@ -131,8 +130,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sleepPill));
 
-        View view = adapter.getView(1, null, fakeParent);
-        DevicesAdapter.DeviceViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(1), 1);
 
         assertEquals("Sleep Pill", holder.title.getText().toString());
         assertEquals("2 hours ago", holder.lastSeen.getText().toString());
@@ -154,8 +153,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sleepPill));
 
-        View view = adapter.getView(1, null, fakeParent);
-        DevicesAdapter.DeviceViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(1), 1);
 
         assertEquals("Sleep Pill", holder.title.getText().toString());
         assertEquals("2 hours ago", holder.lastSeen.getText().toString());
@@ -177,8 +176,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sleepPill));
 
-        View view = adapter.getView(1, null, fakeParent);
-        DevicesAdapter.DeviceViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(1), 1);
 
         assertEquals("Sleep Pill", holder.title.getText().toString());
         assertEquals("5 days ago", holder.lastSeen.getText().toString());
@@ -195,8 +194,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
         LambdaVar<Device.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
-        View view = adapter.getView(0, null, fakeParent);
-        DevicesAdapter.PlaceholderViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(0), 0);
 
         assertEquals("Sense", holder.title.getText().toString());
         assertEquals("Pair New Sense", holder.actionButton.getText().toString());
@@ -213,8 +212,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
         LambdaVar<Device.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
-        View view = adapter.getView(1, null, fakeParent);
-        DevicesAdapter.PlaceholderViewHolder holder = ListAdapterTesting.getViewHolder(view);
+        DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                fakeParent, adapter.getItemViewType(1), 1);
 
         assertEquals("Sleep Pill", holder.title.getText().toString());
         assertEquals("Pair New Pill", holder.actionButton.getText().toString());

@@ -1,14 +1,15 @@
 package is.hello.sense.ui.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import java.util.List;
 
@@ -22,12 +23,14 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.widget.CardItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-public class InsightsFragment extends UndersideTabFragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.Listener {
+public class InsightsFragment extends UndersideTabFragment
+        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
 
@@ -57,13 +60,14 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
         swipeRefreshLayout.setOnRefreshListener(this);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-
-        Styles.addCardSpacing(listView, Styles.CARD_SPACING_HEADER_AND_FOOTER);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), false));
+        recyclerView.setItemAnimator(null);
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
-        listView.setAdapter(insightsAdapter);
+        recyclerView.setAdapter(insightsAdapter);
 
         return view;
     }
@@ -107,13 +111,7 @@ public class InsightsFragment extends UndersideTabFragment implements AdapterVie
     //region Insights
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Object item = adapterView.getItemAtPosition(position);
-        if (!(item instanceof Insight)) {
-            return;
-        }
-
-        Insight insight = (Insight) item;
+    public void onInsightClicked(@NonNull Insight insight) {
         if (!Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
             Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 

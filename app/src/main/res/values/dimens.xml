@@ -13,11 +13,10 @@
 
     <!-- Cards -->
 
-    <dimen name="gap_card_sides">@dimen/gap_medium</dimen>
-    <dimen name="gap_card_spacing">@dimen/gap_medium</dimen>
-    <dimen name="gap_card_spacing_compact">8dp</dimen>
-    <dimen name="gap_card_header_footer_compact">8dp</dimen>
-    <dimen name="gap_card_header_footer">0dp</dimen><!-- actually covered by gap_card_spacing -->
+    <dimen name="gap_card_horizontal">@dimen/gap_medium</dimen>
+    <dimen name="gap_card_vertical">@dimen/gap_medium</dimen>
+    <dimen name="gap_card_inter">@dimen/gap_medium</dimen>
+    <dimen name="gap_card_inter_compact">8dp</dimen>
 
     <!-- Text -->
 

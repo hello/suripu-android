@@ -29,8 +29,6 @@ import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.annotation.Retention;
@@ -47,24 +45,6 @@ import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
     public static final boolean UNDERLINE_LINKS = false;
-
-    public static final int CARD_SPACING_HEADER = (1 << 1);
-    public static final int CARD_SPACING_FOOTER = (1 << 2);
-    public static final int CARD_SPACING_USE_COMPACT = (1 << 3);
-    public static final int CARD_SPACING_HEADER_AND_FOOTER = CARD_SPACING_HEADER | CARD_SPACING_FOOTER;
-
-    @IntDef(
-            value = {
-                    CARD_SPACING_HEADER,
-                    CARD_SPACING_FOOTER,
-                    CARD_SPACING_USE_COMPACT,
-                    CARD_SPACING_HEADER_AND_FOOTER
-            },
-            flag = true
-    )
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CardSpacing {}
-
 
     public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);
     public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
@@ -227,31 +207,6 @@ public final class Styles {
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
-    }
-
-    public static void addCardSpacing(@NonNull ListView listView, @CardSpacing int spacing) {
-        Context context = listView.getContext();
-        Resources resources = listView.getResources();
-
-        boolean isCompact = ((spacing & CARD_SPACING_USE_COMPACT) == CARD_SPACING_USE_COMPACT);
-        int spacingHeight;
-        if (isCompact) {
-            spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_card_header_footer_compact);
-        } else {
-            spacingHeight = resources.getDimensionPixelSize(R.dimen.gap_card_header_footer);
-        }
-        if ((spacing & CARD_SPACING_HEADER) == CARD_SPACING_HEADER) {
-            View topSpacing = new View(context);
-            topSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
-            ListViews.addHeaderView(listView, topSpacing, null, false);
-
-        }
-
-        if ((spacing & CARD_SPACING_FOOTER) == CARD_SPACING_FOOTER) {
-            View bottomSpacing = new View(context);
-            bottomSpacing.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, spacingHeight));
-            ListViews.addFooterView(listView, bottomSpacing, null, false);
-        }
     }
 
     public static SpannableStringBuilder resolveSupportLinks(@NonNull Activity activity,

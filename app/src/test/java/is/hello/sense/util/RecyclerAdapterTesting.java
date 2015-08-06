@@ -10,14 +10,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+
 public class RecyclerAdapterTesting {
     @SuppressWarnings("unchecked")
     public static <VH extends RecyclerView.ViewHolder> VH createAndBindView(@NonNull RecyclerView.Adapter adapter,
                                                                             @NonNull ViewGroup parent,
                                                                             int viewId,
                                                                             int adapterPosition) {
-        VH holder = (VH) adapter.createViewHolder(parent, viewId);
+        VH holder = spy((VH) adapter.createViewHolder(parent, viewId));
         adapter.bindViewHolder(holder, adapterPosition);
+        doReturn(adapterPosition).when(holder).getAdapterPosition();
         return holder;
     }
 
@@ -25,7 +29,7 @@ public class RecyclerAdapterTesting {
         public final List<Change> changes = new ArrayList<>();
 
         public void onChanged() {
-            changes.add(new Change(Change.Type.UNKNOWN));
+            changes.add(new Change(Change.Type.DATA_SET_CHANGED));
         }
 
         public void onItemRangeChanged(int positionStart, int itemCount) {
@@ -44,6 +48,10 @@ public class RecyclerAdapterTesting {
             changes.add(new Change(Change.Type.MOVED, fromPosition, toPosition, itemCount));
         }
 
+
+        public void reset() {
+            changes.clear();
+        }
 
         public boolean hasObservedChange(@NonNull Change.Type type, @NonNull int... values) {
             for (Change change : changes) {
@@ -72,7 +80,7 @@ public class RecyclerAdapterTesting {
             }
 
             public enum Type {
-                UNKNOWN,
+                DATA_SET_CHANGED,
                 CHANGED,
                 INSERTED,
                 REMOVED,

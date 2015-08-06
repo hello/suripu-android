@@ -12,8 +12,10 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/gap_outer"
-        style="@style/AppTheme.ListView.Cards">
+        android:paddingLeft="@dimen/gap_card_horizontal"
+        android:paddingRight="@dimen/gap_card_horizontal"
+        android:paddingTop="@dimen/gap_card_vertical"
+        android:paddingBottom="@dimen/gap_card_vertical">
 
         <LinearLayout
             android:id="@+id/fragment_device_details_alert"
