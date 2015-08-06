@@ -116,10 +116,6 @@ public class SenseAlertDialog extends Dialog {
         updatePaddingAndDividers();
     }
 
-    public void setTitleColor(int color) {
-        titleText.setTextColor(color);
-    }
-
     public void setMessage(@Nullable CharSequence message) {
         if (TextUtils.isEmpty(message)) {
             messageText.setVisibility(View.GONE);

@@ -399,7 +399,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void changeTimeZone() {
         SenseAlertDialog useCurrentPrompt = new SenseAlertDialog(getActivity());
 
-        useCurrentPrompt.setTitle(R.string.title_time_zone);
+        useCurrentPrompt.setTitle(R.string.title_use_current_time_zone);
 
         String name = DateTimeZone.getDefault().getName(System.currentTimeMillis());
         SpannableStringBuilder message = new SpannableStringBuilder(name);
