@@ -6,15 +6,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.WindowManager;
 
+import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -26,10 +30,12 @@ import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.bluetooth.sense.SensePeripheral;
 import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
 import is.hello.sense.bluetooth.sense.model.SenseNetworkStatus;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -62,6 +68,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Inject DevicesPresenter devicesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject HardwarePresenter hardwarePresenter;
+    @Inject AccountPresenter accountPresenter;
     @Inject BluetoothStack bluetoothStack;
 
     private View pairingMode;
@@ -390,8 +397,41 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     public void changeTimeZone() {
-        DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
-        ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment, getString(R.string.action_change_time_zone), true);
+        SenseAlertDialog useCurrentPrompt = new SenseAlertDialog(getActivity());
+
+        useCurrentPrompt.setTitle(R.string.title_time_zone);
+
+        String name = DateTimeZone.getDefault().getName(System.currentTimeMillis());
+        SpannableStringBuilder message = new SpannableStringBuilder(name);
+        message.setSpan(new StyleSpan(Typeface.BOLD), 0, message.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.insert(0, getString(R.string.message_use_current_time_zone));
+        useCurrentPrompt.setMessage(message);
+
+        useCurrentPrompt.setPositiveButton(R.string.action_set_this_time_zone, (dialog, which) -> {
+            SenseTimeZone senseTimeZone = SenseTimeZone.fromDateTimeZone(DateTimeZone.getDefault());
+            LoadingDialogFragment.show(getFragmentManager(),
+                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+            bindAndSubscribe(accountPresenter.updateTimeZone(senseTimeZone),
+                    ignored -> {
+                        Logger.info(getClass().getSimpleName(), "Updated time zone");
+
+                        JSONObject properties = Analytics.createProperties(
+                            Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
+                        );
+                        Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
+
+                        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                    },
+                    this::presentError);
+        });
+        useCurrentPrompt.setNegativeButton(R.string.action_select_time_zone_from_list, (dialog, which) -> {
+            DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
+            ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment,
+                    getString(R.string.action_change_time_zone), true);
+        });
+        useCurrentPrompt.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
+
+        useCurrentPrompt.show();
     }
 
     public void showAdvancedOptions() {

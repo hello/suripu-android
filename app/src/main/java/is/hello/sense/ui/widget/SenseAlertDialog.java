@@ -299,4 +299,6 @@ public class SenseAlertDialog extends Dialog {
         View view = getLayoutInflater().inflate(viewRes, container, false);
         setView(view);
     }
+
+
 }
