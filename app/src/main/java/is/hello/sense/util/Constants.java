@@ -13,6 +13,7 @@ public final class Constants {
 
     public static final String HANDHOLDING_PREFS = "handholding_prefs";
     public static final String HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO = "has_shown_timeline_adjust_intro";
+    public static final String HANDHOLDING_NUMBER_TIMELINES_SHOWN = "number_timelines_shown";
 
     /**
      * The point at which a gesture's velocity dictates that

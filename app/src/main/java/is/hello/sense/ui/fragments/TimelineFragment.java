@@ -159,7 +159,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
         toolbar.setOverflowOpen(homeActivity.isUndersideVisible());
 
-        toolbar.setTitleOnClickListener(ignored -> homeActivity.showTimelineNavigator(getDate(), getCachedTimeline()));
+        toolbar.setTitleOnClickListener(ignored -> {
+            Tutorial.ZOOM_OUT_TIMELINE.markShown(getActivity());
+            homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
+        });
         toolbar.setTitle(getTitle());
         toolbar.setTitleDimmed(homeActivity.isUndersideVisible());
 
@@ -362,13 +365,27 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         tutorialOverlay.setOnDismiss(() -> {
             this.tutorialOverlay = null;
         });
-        tutorialOverlay.setAnimatorContext(getAnimatorContext());
         tutorialOverlay.show(R.id.activity_home_container);
     }
 
     private void showHandholdingIfAppropriate() {
         if (WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
+        }
+
+        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(getActivity());
+        if (firstTimeline && showZoomOutTutorial) {
+            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+            int numberTimelinesShown = preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
+            if (numberTimelinesShown < 5) {
+                Logger.debug(getClass().getSimpleName(), "Incrementing timelines shown to " + (numberTimelinesShown + 1));
+
+                preferences.edit()
+                        .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, numberTimelinesShown + 1)
+                        .apply();
+
+                showZoomOutTutorial = false;
+            }
         }
 
         if (homeActivity.getWillShowUnderside()) {
@@ -378,6 +395,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
                 showTutorial(Tutorial.SWIPE_TIMELINE);
+            } else if (showZoomOutTutorial) {
+                showTutorial(Tutorial.ZOOM_OUT_TIMELINE);
             }
         }
     }
