@@ -33,6 +33,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     private final int itemWidth;
     private final int itemHeight;
     private int itemHorizontalPadding;
+    private boolean wrapAroundEventsEnabled = true;
 
     //endregion
 
@@ -217,6 +218,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
         int offset = itemHeight * unfocusedItems;
         int position = adapter.getItemPosition(newValue);
+
+        this.wrapAroundEventsEnabled = false;
         if (animate) {
             if (constrainedValue > this.value) {
                 smoothScrollToPosition(position + unfocusedItems);
@@ -225,6 +228,13 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             }
         } else {
             layoutManager.scrollToPositionWithOffset(position, offset);
+            post(() -> {
+                // #scrollToPositionWithOffset will fire one #onScrolled event
+                // on the next run-loop cycle when the recycler view re-lays out.
+                // This Runnable will execute after that, and everything will work
+                // more or less as intended.
+                this.wrapAroundEventsEnabled = true;
+            });
         }
 
         this.value = constrainedValue;
@@ -339,7 +349,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (wrapsAround && onSelectionListener != null) {
+            if (wrapAroundEventsEnabled && wrapsAround && onSelectionListener != null) {
                 View centerView = findCenterView();
                 int adapterPosition = getChildAdapterPosition(centerView);
                 if (adapterPosition == lastWrapAroundPosition) {
@@ -371,6 +381,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 int centerViewMidY = (centerView.getTop() + centerView.getBottom()) / 2;
                 int distanceToNotch = centerViewMidY - containerMidY;
                 if (distanceToNotch == 0) {
+                    RotaryPickerView.this.wrapAroundEventsEnabled = true;
                     updateValueFromView(centerView);
                 } else {
                     smoothScrollBy(0, distanceToNotch);
@@ -378,6 +389,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             } else if (previousState == SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
                 View centerView = findCenterView();
                 updateValueFromView(centerView);
+                RotaryPickerView.this.wrapAroundEventsEnabled = true;
             }
 
             this.previousState = newState;
