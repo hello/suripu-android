@@ -82,7 +82,7 @@
     <string name="title_connecting_network_connect_failed">Failed to Connect, Retrying</string>
     <string name="wifi_network_secured">Secured Network</string>
     <string name="wifi_network_was_scanned">Scanned</string>
-    <string name="title_choose_wifi_network">Connecting Sense to Wifi</string>
+    <string name="title_choose_wifi_network">Connecting Sense to WiFi</string>
     <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
     <string name="title_sign_into_wifi_selection">Enter password for</string>
     <string name="title_sign_into_wifi_selection_open">Connect to</string>
@@ -179,7 +179,7 @@ so you can sleep better.</string>
     <string name="action_no_thanks">Not Right Now</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the Sense app.</string>
     <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode. Have your partner visit <b>http://senseapp.com</b> on their mobile device to download the Sense app, and create a new account.\n\nThey will be given instructions to set up their Sleep Pill.</string>
-    <string name="label_finding_wifi_networks">Finding Wifi Networks…</string>
+    <string name="label_finding_wifi_networks">Finding WiFi Networks…</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
     <string name="dialog_message_troubleshoot_sense">We could not connect to your Sense. Please make sure your Sense is plugged in, nearby, and in Pairing Mode.</string>
