@@ -110,7 +110,7 @@ so you can sleep better.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
     <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
     <string name="title_sense_colors_1">Sense Colors</string>
-    <string name="info_sense_colors_1">Sense glows to tell you about the conditions in your bedroom – including temperature, humidity, light, and sound. Sense has three different colors.</string>
+    <string name="info_sense_colors_1">Sense glows to tell you about the conditions in your bedroom – including temperature, humidity, light, and noise. Sense has three different colors.</string>
     <string name="title_sense_colors_2">All good.</string>
     <string name="info_sense_colors_2">Sense glows green when the conditions in your room are just right for a good night‘s sleep.</string>
     <string name="title_sense_colors_3">Something‘s not right.</string>
@@ -124,7 +124,7 @@ so you can sleep better.</string>
     <string name="checking_condition_temperature">Checking Temperature</string>
     <string name="checking_condition_humidity">Checking Humidity</string>
     <string name="checking_condition_particulates">Checking Particulates</string>
-    <string name="checking_condition_sound">Checking Sound</string>
+    <string name="checking_condition_sound">Checking Noise</string>
     <string name="checking_condition_light">Checking Light</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
@@ -231,7 +231,7 @@ so you can sleep better.</string>
     <string name="onboarding_info_smart_alarm">Sense\'s Smart Alarm knows where you are in your sleep cycle and will wake you up at the right time for you. To dismiss the alarm, just wave your hand over Sense.</string>
     <string name="action_do_later">I\'ll do this later</string>
     <string name="action_set_smart_alarm_now">Set a Smart Alarm now</string>
-    <string name="condition_sound">Sound</string>
+    <string name="condition_sound">Noise</string>
     <string name="condition_light">Light</string>
 
     <string name="onboarding_room_check_title_success">Success!</string>
@@ -336,7 +336,7 @@ so you can sleep better.</string>
     <string name="welcome_dialog_timeline_title_events">Sleep Timeline</string>
     <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, noise disturbances, and more.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
-    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: temperature, humidity, air quality, light, and sound.\n
+    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: temperature, humidity, air quality, light, and noise.\n
 \nThese values update as Sense uploads new data. So as the conditions in your room change, it may take a few moments for them to be reflected here.\n\nTap a card to see more details.</string>
     <string name="welcome_dialog_trends_title">Trends</string>
     <string name="welcome_dialog_trends">To see how your sleep is changing over time, sometimes it’s helpful to take a step back. After a week using Sense, this view will show you historical data on your sleep patterns. If you don\'t see any data yet, check back later.</string>
@@ -350,8 +350,8 @@ so you can sleep better.</string>
     <string name="welcome_dialog_sensor_particulates">AQI stands for Air Quality Index, and is measured on a scale from 0–500. The lower the value, the better the air quality. Here you’ll see detailed information on the AQI in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_light_title">Light</string>
     <string name="welcome_dialog_sensor_light">Sense measures light in lux (lx), which is the standard unit of illuminance. Here you’ll see detailed information on the light levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
-    <string name="welcome_dialog_sensor_sound_title">Sound</string>
-    <string name="welcome_dialog_sensor_sound">Sense measures sound in decibels (dB). Here you’ll see detailed information on the sound levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
+    <string name="welcome_dialog_sensor_sound_title">Noise</string>
+    <string name="welcome_dialog_sensor_sound">Sense measures noise in decibels (dB). Here you’ll see detailed information on the noise levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_smart_alarm_title">Smart Alarm</string>
     <string name="welcome_dialog_smart_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle, up to 30 minutes before your requested wake-up time, making sure you wake up refreshed and at the right time for you.</string>
     <string name="welcome_dialog_pill_color_title">Sleep Pill Color</string>
@@ -461,6 +461,10 @@ so you can sleep better.</string>
     <string name="title_comment">Comment</string>
     <string name="action_view_attachment">View Attachment</string>
     <string name="title_recovery_options">Support options</string>
+    <string name="title_use_current_time_zone">Select time zone</string>
+    <string name="message_use_current_time_zone">"Sense‘s time zone should be set based on the physical location of your Sense. Usually, that‘s the same as your phone‘s time zone. Your phone‘s current time zone is: "</string>
+    <string name="action_set_this_time_zone">Use current</string>
+    <string name="action_select_time_zone_from_list">View list</string>
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>
         <item quantity="other">%1$s – %2$d attachments</item>
