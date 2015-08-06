@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget.timeline;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,17 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     private final AnimatorConfig config = AnimatorConfig.DEFAULT;
 
-    private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
-    private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
+    private final List<Transaction> pending = new ArrayList<>();
+    private final List<Transaction> running = new ArrayList<>();
+
+    private boolean removeAnimationEnabled = false;
 
     public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext, int headerCount) {
         super(animatorContext, headerCount);
+    }
+
+    public void setRemoveAnimationEnabled(boolean removeAnimationEnabled) {
+        this.removeAnimationEnabled = removeAnimationEnabled;
     }
 
     @Override
@@ -34,12 +41,30 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
             dispatchAnimationWillStart(f);
 
             long delay = DELAY;
-            for (RecyclerView.ViewHolder item : pending) {
-                dispatchAddStarting(item);
+            for (Transaction transaction : pending) {
+                RecyclerView.ViewHolder target = transaction.target;
+                dispatchAddStarting(target);
 
-                f.animate(item.itemView)
-                 .setStartDelay(delay)
-                 .fadeIn();
+                switch (transaction.action) {
+                    case ADD: {
+                        f.animate(target.itemView)
+                         .setStartDelay(delay)
+                         .fadeIn();
+
+                        break;
+                    }
+                    case REMOVE: {
+                        f.animate(target.itemView)
+                         .setStartDelay(delay)
+                         .fadeOut(View.VISIBLE);
+
+                        break;
+                    }
+                    default: {
+                        throw new IllegalArgumentException("Transaction type " +
+                                transaction.action + " currently unsupported.");
+                    }
+                }
 
                 delay += DELAY;
             }
@@ -47,12 +72,26 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
             running.addAll(pending);
             pending.clear();
         }, finished -> {
-            for (RecyclerView.ViewHolder item : running) {
+            for (Transaction transaction : running) {
+                RecyclerView.ViewHolder target = transaction.target;
                 if (!finished) {
-                    item.itemView.setAlpha(1f);
+                    switch (transaction.action) {
+                        case ADD: {
+                            target.itemView.setAlpha(1f);
+                            break;
+                        }
+                        case REMOVE: {
+                            target.itemView.setAlpha(0f);
+                            break;
+                        }
+                        default: {
+                            throw new IllegalArgumentException("Transaction type " +
+                                    transaction.action + " currently unsupported.");
+                        }
+                    }
                 }
 
-                dispatchAddFinished(item);
+                dispatchAddFinished(target);
             }
 
             running.clear();
@@ -69,7 +108,19 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
         }
 
         holder.itemView.setAlpha(0f);
-        pending.add(holder);
+        pending.add(new Transaction(Action.ADD, holder));
+        return true;
+    }
+
+    @Override
+    public boolean animateRemove(RecyclerView.ViewHolder holder) {
+        if (!removeAnimationEnabled || !isViewHolderAnimated(holder)) {
+            dispatchRemoveFinished(holder);
+            return false;
+        }
+
+        holder.itemView.setAlpha(1f);
+        pending.add(new Transaction(Action.REMOVE, holder));
         return true;
     }
 
@@ -80,8 +131,8 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public void endAnimations() {
-        for (RecyclerView.ViewHolder item : running) {
-            PropertyAnimatorProxy.stop(item.itemView);
+        for (Transaction transaction : running) {
+            PropertyAnimatorProxy.stop(transaction.target.itemView);
         }
     }
 

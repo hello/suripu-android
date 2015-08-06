@@ -31,8 +31,8 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
         return animatorContext;
     }
 
-    protected static void sortByPosition(@NonNull List<? extends RecyclerView.ViewHolder> viewHolders) {
-        Collections.sort(viewHolders, (l, r) -> Functions.compareInts(l.getLayoutPosition(), r.getLayoutPosition()));
+    protected static void sortByPosition(@NonNull List<Transaction> viewHolders) {
+        Collections.sort(viewHolders, (l, r) -> Functions.compareInts(l.target.getLayoutPosition(), r.target.getLayoutPosition()));
     }
 
     protected boolean isViewHolderAnimated(@NonNull RecyclerView.ViewHolder viewHolder) {
@@ -103,6 +103,29 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
     public interface Listener {
         void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade);
         void onTimelineAnimationDidEnd(boolean finished);
+    }
+
+    //endregion
+
+
+    //region Transactions
+
+    protected static final class Transaction {
+        public final Action action;
+        public final RecyclerView.ViewHolder target;
+
+        public Transaction(@NonNull Action action,
+                           @NonNull RecyclerView.ViewHolder target) {
+            this.action = action;
+            this.target = target;
+        }
+    }
+
+    protected enum Action {
+        ADD,
+        REMOVE,
+        CHANGE,
+        MOVE,
     }
 
     //endregion
