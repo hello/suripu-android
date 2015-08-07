@@ -33,6 +33,7 @@ public class TimelineNoDataHeaderView extends LinearLayout {
 
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         setOrientation(VERTICAL);
+        setBackgroundResource(R.color.background_timeline);
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         layoutInflater.inflate(R.layout.view_timeline_no_data_header, this, true);

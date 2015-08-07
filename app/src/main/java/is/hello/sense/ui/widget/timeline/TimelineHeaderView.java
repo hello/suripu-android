@@ -29,6 +29,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.animation.Animation;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
@@ -376,13 +377,13 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Timeline Animations
 
     @Override
-    public void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade f) {
+    public void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade f) {
         f.animate(cardContainer)
          .fadeIn();
     }
 
     @Override
-    public void onTimelineAnimationDidEnd(boolean finished) {
+    public void onItemAnimatorDidStop(boolean finished) {
         if (!finished) {
             cardContainer.setVisibility(VISIBLE);
         }

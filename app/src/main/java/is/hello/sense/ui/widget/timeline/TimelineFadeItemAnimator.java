@@ -5,18 +5,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.widget.ExtendedItemAnimator;
 
 /**
  * A simple staggered fade-in animation.
  * <p />
  * Each item faded-in has the delay <code>{@link #DELAY} * index</code>.
  */
-public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
+public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
     public static final long DELAY = 20;
 
     private final AnimatorConfig config = AnimatorConfig.DEFAULT;
@@ -24,38 +26,50 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
     private final List<Transaction> pending = new ArrayList<>();
     private final List<Transaction> running = new ArrayList<>();
 
-    private boolean removeAnimationEnabled = false;
+    private boolean delayEnabled = true;
 
-    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext, int headerCount) {
-        super(animatorContext, headerCount);
+    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
+        super(animatorContext);
+
+        setEnabled(Action.ADD, true);
     }
 
-    public void setRemoveAnimationEnabled(boolean removeAnimationEnabled) {
-        this.removeAnimationEnabled = removeAnimationEnabled;
+    public void setDelayEnabled(boolean delayEnabled) {
+        this.delayEnabled = delayEnabled;
+    }
+
+    private long getDelayAmount() {
+        if (delayEnabled) {
+            return DELAY;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public void runPendingAnimations() {
-        sortByPosition(pending);
+        Collections.sort(pending);
         getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, f -> {
-            dispatchAnimationWillStart(f);
+            dispatchAnimationWillStart(config, f);
 
-            long delay = DELAY;
+            final long delayAmount = getDelayAmount();
+            long transactionDelay = delayAmount;
             for (Transaction transaction : pending) {
                 RecyclerView.ViewHolder target = transaction.target;
-                dispatchAddStarting(target);
 
                 switch (transaction.action) {
                     case ADD: {
+                        dispatchAddStarting(target);
                         f.animate(target.itemView)
-                         .setStartDelay(delay)
+                         .setStartDelay(transactionDelay)
                          .fadeIn();
 
                         break;
                     }
                     case REMOVE: {
+                        dispatchRemoveStarting(target);
                         f.animate(target.itemView)
-                         .setStartDelay(delay)
+                         .setStartDelay(transactionDelay)
                          .fadeOut(View.VISIBLE);
 
                         break;
@@ -66,7 +80,7 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
                     }
                 }
 
-                delay += DELAY;
+                transactionDelay += delayAmount;
             }
 
             running.addAll(pending);
@@ -78,10 +92,12 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
                     switch (transaction.action) {
                         case ADD: {
                             target.itemView.setAlpha(1f);
+                            dispatchAddFinished(target);
                             break;
                         }
                         case REMOVE: {
                             target.itemView.setAlpha(0f);
+                            dispatchRemoveFinished(target);
                             break;
                         }
                         default: {
@@ -90,8 +106,6 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
                         }
                     }
                 }
-
-                dispatchAddFinished(target);
             }
 
             running.clear();
@@ -102,7 +116,7 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
-        if (!isViewHolderAnimated(holder)) {
+        if (!isAnimatable(Action.ADD, holder)) {
             dispatchAddFinished(holder);
             return false;
         }
@@ -114,7 +128,7 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public boolean animateRemove(RecyclerView.ViewHolder holder) {
-        if (!removeAnimationEnabled || !isViewHolderAnimated(holder)) {
+        if (!isAnimatable(Action.REMOVE, holder)) {
             dispatchRemoveFinished(holder);
             return false;
         }

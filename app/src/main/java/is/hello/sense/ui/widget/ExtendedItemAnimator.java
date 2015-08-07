@@ -1,45 +1,53 @@
-package is.hello.sense.ui.widget.timeline;
+package is.hello.sense.ui.widget;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
+import rx.functions.Func1;
 
-public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnimator {
+public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
     private final AnimatorContext animatorContext;
-    private final int headerCount;
     private final List<Listener> listeners = new ArrayList<>();
+    private final SparseBooleanArray enabledAnimations = new SparseBooleanArray(2);
+    private @Nullable Func1<RecyclerView.ViewHolder, Boolean> filter;
 
-    protected boolean enabled = true;
-
-    protected AbstractTimelineItemAnimator(@NonNull AnimatorContext animatorContext, int headerCount) {
+    protected ExtendedItemAnimator(@NonNull AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
-        this.headerCount = headerCount;
         setSupportsChangeAnimations(false);
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+
+    //region Attributes
+
+    public void setFilter(@Nullable Func1<RecyclerView.ViewHolder, Boolean> filter) {
+        this.filter = filter;
+    }
+
+    public void setEnabled(@NonNull Action action, boolean enabled) {
+        enabledAnimations.put(action.ordinal(), enabled);
     }
 
     public AnimatorContext getAnimatorContext() {
         return animatorContext;
     }
 
-    protected static void sortByPosition(@NonNull List<Transaction> viewHolders) {
-        Collections.sort(viewHolders, (l, r) -> Functions.compareInts(l.target.getLayoutPosition(), r.target.getLayoutPosition()));
-    }
+    //endregion
 
-    protected boolean isViewHolderAnimated(@NonNull RecyclerView.ViewHolder viewHolder) {
-        return (enabled && viewHolder.getAdapterPosition() >= headerCount);
-    }
 
-    //region Default Implementations
+    //region Animations
+
+    protected boolean isAnimatable(@NonNull Action action, @NonNull RecyclerView.ViewHolder holder) {
+        return (enabledAnimations.get(action.ordinal()) &&
+                (filter == null || filter.call(holder)));
+    }
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
@@ -87,22 +95,23 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
         listeners.clear();
     }
 
-    protected void dispatchAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade) {
+    protected void dispatchAnimationWillStart(@Nullable AnimatorConfig config,
+                                              @NonNull AnimatorContext.TransactionFacade transactionFacade) {
         for (Listener listener : listeners) {
-            listener.onTimelineAnimationWillStart(transactionFacade);
+            listener.onItemAnimatorWillStart(config, transactionFacade);
         }
     }
 
     protected void dispatchAnimationDidEnd(boolean finished) {
         dispatchAnimationsFinished();
         for (int i = listeners.size() - 1; i >= 0; i--) {
-            listeners.get(i).onTimelineAnimationDidEnd(finished);
+            listeners.get(i).onItemAnimatorDidStop(finished);
         }
     }
 
     public interface Listener {
-        void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade);
-        void onTimelineAnimationDidEnd(boolean finished);
+        void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade transactionFacade);
+        void onItemAnimatorDidStop(boolean finished);
     }
 
     //endregion
@@ -110,7 +119,7 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
 
     //region Transactions
 
-    protected static final class Transaction {
+    protected static final class Transaction implements Comparable<Transaction> {
         public final Action action;
         public final RecyclerView.ViewHolder target;
 
@@ -119,9 +128,15 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
             this.action = action;
             this.target = target;
         }
+
+        @Override
+        public int compareTo(@NonNull Transaction another) {
+            return Functions.compareInts(target.getAdapterPosition(),
+                    another.target.getAdapterPosition());
+        }
     }
 
-    protected enum Action {
+    public enum Action {
         ADD,
         REMOVE,
         CHANGE,

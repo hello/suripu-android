@@ -154,6 +154,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         return headers.length;
     }
 
+    public View getHeader(int position) {
+        return headers[position];
+    }
+
+    public void replaceHeader(int position, @NonNull View newHeader) {
+        headers[position] = newHeader;
+        notifyItemRemoved(position);
+        notifyItemInserted(position);
+    }
+
     public boolean hasEvents() {
         return !events.isEmpty();
     }
@@ -380,6 +390,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         @Override
         public void bind(int position) {
             // Do nothing.
+        }
+
+        @Override
+        public void unbind() {
+            // RecyclerView is fairly lazy about removing child views,
+            // and we don't currently wrap our header views in FrameLayouts.
+            ViewGroup parent = (ViewGroup) itemView.getParent();
+            if (parent != null) {
+                parent.removeView(itemView);
+            }
         }
     }
 
