@@ -5,13 +5,10 @@ import android.app.Dialog;
 import android.content.ComponentCallbacks2;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -48,6 +45,7 @@ import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
@@ -91,6 +89,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
     private TimelineFadeItemAnimator itemAnimator;
+    private ColorDrawableCompat backgroundFill;
 
     private boolean controlsSharedChrome = false;
 
@@ -180,6 +179,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BackgroundDecoration(getResources(), headers.length));
 
+        int backgroundFillColor = getResources().getColor(R.color.timeline_background_fill);
+        this.backgroundFill = new ColorDrawableCompat(backgroundFillColor);
+        recyclerView.setBackground(backgroundFill);
+
         this.adapter = new TimelineAdapter(getActivity(), dateFormatter, headers);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
@@ -235,6 +238,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.layoutManager = null;
         this.adapter = null;
         this.itemAnimator = null;
+        this.backgroundFill = null;
 
         if (infoPopup != null) {
             infoPopup.dismiss();
@@ -652,30 +656,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     static class BackgroundDecoration extends RecyclerView.ItemDecoration {
-        private final Drawable background;
         private final int bottomPadding;
         private final int headerCount;
 
         public BackgroundDecoration(@NonNull Resources resources, int headerCount) {
-            this.background = ResourcesCompat.getDrawable(resources, R.color.timeline_background_fill, null);
             this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
             this.headerCount = headerCount;
-        }
-
-        @Override
-        public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-            int left = 0,
-                top = 0,
-                right = canvas.getWidth(),
-                bottom = canvas.getHeight();
-
-            RecyclerView.ViewHolder headerView = parent.findViewHolderForAdapterPosition(0);
-            if (headerView != null) {
-                top = headerView.itemView.getBottom();
-            }
-
-            background.setBounds(left, top, right, bottom);
-            background.draw(canvas);
         }
 
         @Override
