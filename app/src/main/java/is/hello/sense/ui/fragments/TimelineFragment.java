@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -13,6 +14,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -356,6 +358,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void update() {
+        transitionOutOfNoDataState();
         timelinePresenter.update();
     }
 
@@ -419,6 +422,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             int color = (int) a.getAnimatedValue();
             backgroundFill.setColor(color);
         });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                backgroundFill.setColor(newColor);
+            }
+        });
         return animator;
     }
 
@@ -430,7 +439,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         newHeader.setTitle(titleRes);
         newHeader.setMessage(message);
 
-        if (animationEnabled) {
+        if (animationEnabled && ViewCompat.isLaidOut(recyclerView)) {
             itemAnimator.setDelayEnabled(false);
             itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, true);
             itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
@@ -464,39 +473,12 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             return;
         }
 
-        if (animationEnabled) {
-            itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
-                final Animator crossFade = createBackgroundCrossFade(getResources().getColor(R.color.timeline_background_fill));
+        backgroundFill.setColor(getResources().getColor(R.color.timeline_background_fill));
 
-                @Override
-                public void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade transactionFacade) {
-                    if (config != null) {
-                        config.apply(crossFade);
-                    }
-                    getAnimatorContext().runWhenIdle(crossFade::start);
-                }
+        itemAnimator.setDelayEnabled(true);
+        itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
 
-                @Override
-                public void onItemAnimatorDidStop(boolean finished) {
-                    crossFade.cancel();
-
-                    itemAnimator.setDelayEnabled(true);
-                    itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
-
-                    itemAnimator.removeListener(this);
-                }
-            });
-
-            adapter.replaceHeader(1, headerView);
-            headerView.startPulsing();
-        } else {
-            backgroundFill.setColor(getResources().getColor(R.color.timeline_background_fill));
-
-            itemAnimator.setDelayEnabled(true);
-            itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
-
-            adapter.replaceHeader(1, headerView);
-        }
+        adapter.replaceHeader(1, headerView);
     }
 
     public void bindTimeline(@NonNull Timeline timeline) {
@@ -514,7 +496,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         });
 
         if (hasEvents) {
-            transitionOutOfNoDataState();
             headerView.bindScore(timeline.getScore(), timeline.getScoreCondition(), continuation);
         } else {
             transitionIntoNoDataState(R.drawable.timeline_state_no_data,
