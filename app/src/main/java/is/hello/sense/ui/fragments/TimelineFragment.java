@@ -325,11 +325,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
 
         bindAndSubscribe(timelinePresenter.latest(),
-                timeline -> {
-                    TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
-                    infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
-                },
-                Functions.LOG_ERROR);
+                         timeline -> {
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
+                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
+                         },
+                         Functions.LOG_ERROR);
     }
 
     //endregion
@@ -512,7 +512,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         adapter.clear();
 
         transitionIntoNoDataState(R.drawable.timeline_state_error,
-                R.string.dialog_error_title, getString(R.string.timeline_error_message));
+                R.string.dialog_error_title, getString(R.string.timeline_error_message, e.getMessage()));
     }
 
     //endregion
@@ -600,10 +600,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         }
 
         actions.setOnOptionSelectedListener((option) -> {
-            preferences
-                    .edit()
-                    .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
-                    .apply();
+            preferences.edit()
+                       .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
+                       .apply();
 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Timeline.PROP_TYPE, event.getType().toString()
