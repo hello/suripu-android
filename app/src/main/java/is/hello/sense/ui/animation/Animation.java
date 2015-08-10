@@ -3,10 +3,16 @@ package is.hello.sense.ui.animation;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.graphics.Rect;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
+import java.util.Set;
 
 import is.hello.sense.ui.widget.RectEvaluatorCompat;
 
@@ -34,6 +40,12 @@ public class Animation {
     public static final int DURATION_NORMAL = 250;
 
     public static final Interpolator INTERPOLATOR_DEFAULT = new DecelerateInterpolator();
+
+    /**
+     * The views that are currently animating.
+     */
+    static final Set<View> ANIMATING_VIEWS = new HashSet<>();
+
 
     public static long calculateDuration(float velocity, float totalArea) {
         long rawDuration = (long) (totalArea / velocity) * 1000 / 2;
@@ -79,5 +91,32 @@ public class Animation {
         });
         return frameAnimator;
     }
+
+
+    //region Animating Views
+
+    /**
+     * Stops any running animation on a given array of views.
+     */
+    public static void cancelAll(@NonNull View... forViews) {
+        for (View forView : forViews) {
+            forView.animate().cancel();
+            forView.clearAnimation();
+        }
+    }
+
+    /**
+     * Returns whether or not a given view is known to be animating.
+     */
+    public static boolean isAnimating(@NonNull View view) {
+        return ANIMATING_VIEWS.contains(view);
+    }
+
+    //endregion
+
+
+    @IntDef({View.VISIBLE, View.INVISIBLE, View.GONE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ViewVisibility {}
 
 }

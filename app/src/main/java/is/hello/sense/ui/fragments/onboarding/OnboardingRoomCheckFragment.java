@@ -42,9 +42,9 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
+import is.hello.sense.ui.animation.OnAnimationCompleted;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.sense.ui.animation.Animation.cancelAll;
 import static is.hello.sense.units.UnitSystem.Unit;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
@@ -178,7 +178,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     return;
                 }
 
-                animate(status, getAnimatorContext())
+                animatorFor(status, getAnimatorContext())
                         .fadeOut(View.VISIBLE)
                         .addOnAnimationCompleted(finishedStatus -> {
                             if (!finishedStatus) {
@@ -272,7 +272,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
         };
         if (animate) {
-            animate(dynamicContent, getAnimatorContext())
+            animatorFor(dynamicContent, getAnimatorContext())
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finishedFadeOut -> {
                         if (!finishedFadeOut) {
@@ -283,7 +283,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
                         inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
 
-                        animate(dynamicContent, getAnimatorContext())
+                        animatorFor(dynamicContent, getAnimatorContext())
                                 .fadeIn()
                                 .addOnAnimationCompleted(atEnd)
                                 .postStart();
@@ -298,7 +298,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private void stopAnimations() {
         scoreTicker.stopAnimating();
-        stop(status, dynamicContent);
+        cancelAll(status, dynamicContent);
 
         if (scoreAnimator != null) {
             scoreAnimator.cancel();

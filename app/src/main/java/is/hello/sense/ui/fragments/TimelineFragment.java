@@ -403,7 +403,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
         @Override
-        public void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade) {
+        public void onTimelineAnimationWillStart(@NonNull AnimatorContext.Transaction transaction) {
         }
 
         @Override

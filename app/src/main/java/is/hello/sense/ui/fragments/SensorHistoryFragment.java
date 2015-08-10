@@ -29,6 +29,7 @@ import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.BlockableScrollView;
@@ -43,7 +44,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener {
     @Inject RoomConditionsPresenter conditionsPresenter;
@@ -203,7 +204,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onSelectionChanged(int newSelectionIndex) {
         loadingIndicator.setScaleX(0f);
         loadingIndicator.setScaleY(0f);
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeIn()
                 .scale(1f)
                 .start();
@@ -235,7 +236,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             this.unitSystem = historyAndUnits.unitSystem;
 
-            animate(loadingIndicator)
+            animatorFor(loadingIndicator)
                     .fadeOut(View.GONE)
                     .scale(0f)
                     .start();

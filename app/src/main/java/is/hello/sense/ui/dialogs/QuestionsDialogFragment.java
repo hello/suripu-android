@@ -28,7 +28,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -36,7 +36,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class QuestionsDialogFragment extends InjectionDialogFragment implements CompoundButton.OnCheckedChangeListener {
     public static final String TAG = QuestionsDialogFragment.class.getSimpleName();
@@ -140,8 +140,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
 
         if (animate) {
-            animate(skipButton).fadeOut(View.INVISIBLE).start();
-            animate(nextButton).fadeIn().start();
+            animatorFor(skipButton).fadeOut(View.INVISIBLE).start();
+            animatorFor(nextButton).fadeIn().start();
         } else {
             skipButton.setVisibility(View.INVISIBLE);
             nextButton.setVisibility(View.VISIBLE);
@@ -154,8 +154,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
 
         if (animate) {
-            animate(nextButton).fadeOut(View.INVISIBLE).start();
-            animate(skipButton).fadeIn().start();
+            animatorFor(nextButton).fadeOut(View.INVISIBLE).start();
+            animatorFor(skipButton).fadeIn().start();
         } else {
             nextButton.setVisibility(View.INVISIBLE);
             skipButton.setVisibility(View.VISIBLE);
@@ -193,7 +193,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                 View child = superContainer.getChildAt(index);
                 boolean isLast = (index == count - 1);
 
-                PropertyAnimatorProxy animator = animate(child);
+                MultiAnimator animator = animatorFor(child);
                 animator.alpha(0f);
                 if (isLast) {
                     animator.addOnAnimationCompleted(finished -> {
@@ -223,11 +223,11 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
         superContainer.addView(thankYou);
 
-        animate(thankYouText)
+        animatorFor(thankYouText)
                 .fadeIn()
                 .start();
 
-        animate(thankYouImage)
+        animatorFor(thankYouImage)
                 .scale(1f)
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {
@@ -251,7 +251,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                 View child = choicesContainer.getChildAt(index);
                 boolean isLast = (index == count - 1);
 
-                PropertyAnimatorProxy animator = animate(child);
+                MultiAnimator animator = animatorFor(child);
                 animator.scale(0.5f);
                 animator.alpha(0f);
                 if (isLast) {
@@ -261,7 +261,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                         }
                     });
                 }
-                animator.setStartDelay(delay);
+                animator.withStartDelay(delay);
                 animator.start();
 
                 delay += DELAY_INCREMENT;
@@ -441,7 +441,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     private final View.OnTouchListener POP_LISTENER = (View view, MotionEvent motionEvent) -> {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                animate(view)
+                animatorFor(view)
                         .scale(0.8f)
                         .start();
                 break;
@@ -449,8 +449,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                PropertyAnimatorProxy.stop(view);
-                animate(view)
+                Animation.cancelAll(view);
+                animatorFor(view)
                         .simplePop(1.10f)
                         .start();
                 break;

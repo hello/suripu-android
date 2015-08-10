@@ -17,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -24,7 +25,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class ChangeEmailFragment extends InjectionFragment {
     @Inject AccountPresenter accountPresenter;
@@ -83,7 +84,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         email.setText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
             email.requestFocus();
-            animate(email).simplePop(1.4f).start();
+            animatorFor(email).simplePop(1.4f).start();
 
             return;
         }

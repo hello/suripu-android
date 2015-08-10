@@ -22,6 +22,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -30,7 +31,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class ChangePasswordFragment extends InjectionFragment {
     private static final String ARG_EMAIL = ChangePasswordFragment.class.getName() + ".ARG_EMAIL";
@@ -98,7 +99,7 @@ public class ChangePasswordFragment extends InjectionFragment {
         for (EditText editText : editTexts) {
             if (TextUtils.isEmpty(editText.getText())) {
                 editText.requestFocus();
-                animate(editText).simplePop(1.4f).start();
+                animatorFor(editText).simplePop(1.4f).start();
                 return true;
             }
         }
