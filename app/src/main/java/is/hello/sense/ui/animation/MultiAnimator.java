@@ -100,7 +100,7 @@ public final class MultiAnimator extends Animator implements Animator.AnimatorLi
 
     @Override
     public boolean isRunning() {
-        return Animation.ANIMATING_VIEWS.contains(target);
+        return Animation.isAnimating(target);
     }
 
     //endregion
@@ -157,7 +157,7 @@ public final class MultiAnimator extends Animator implements Animator.AnimatorLi
             }
         }
 
-        Animation.ANIMATING_VIEWS.add(target);
+        Animation.addAnimatingView(target);
     }
 
     @Override
@@ -173,7 +173,7 @@ public final class MultiAnimator extends Animator implements Animator.AnimatorLi
             animatorContext.endAnimation();
         }
 
-        Animation.ANIMATING_VIEWS.remove(target);
+        Animation.removeAnimatingView(target);
     }
 
     @Override
@@ -185,7 +185,7 @@ public final class MultiAnimator extends Animator implements Animator.AnimatorLi
             }
         }
 
-        Animation.ANIMATING_VIEWS.remove(target);
+        Animation.removeAnimatingView(target);
     }
 
     @Override

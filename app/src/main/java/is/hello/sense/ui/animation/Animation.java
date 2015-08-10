@@ -39,12 +39,15 @@ public class Animation {
      */
     public static final int DURATION_NORMAL = 250;
 
+    /**
+     * The default interpolator used by the <code>animation</code> package.
+     */
     public static final Interpolator INTERPOLATOR_DEFAULT = new DecelerateInterpolator();
 
     /**
      * The views that are currently animating.
      */
-    static final Set<View> ANIMATING_VIEWS = new HashSet<>();
+    private static final Set<View> animatingViews = new HashSet<>();
 
 
     public static long calculateDuration(float velocity, float totalArea) {
@@ -109,7 +112,21 @@ public class Animation {
      * Returns whether or not a given view is known to be animating.
      */
     public static boolean isAnimating(@NonNull View view) {
-        return ANIMATING_VIEWS.contains(view);
+        return animatingViews.contains(view);
+    }
+
+    /**
+     * Adds a view to the currently animating set.
+     */
+    public static void addAnimatingView(@NonNull View view) {
+        animatingViews.add(view);
+    }
+
+    /**
+     * Removes a view from the currently animating set.
+     */
+    public static void removeAnimatingView(@NonNull View view) {
+        animatingViews.remove(view);
     }
 
     //endregion
