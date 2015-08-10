@@ -96,9 +96,9 @@ public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
     }
 
     protected void dispatchAnimationWillStart(@Nullable AnimatorConfig config,
-                                              @NonNull AnimatorContext.TransactionFacade transactionFacade) {
+                                              @NonNull AnimatorContext.Transaction transaction) {
         for (Listener listener : listeners) {
-            listener.onItemAnimatorWillStart(config, transactionFacade);
+            listener.onItemAnimatorWillStart(config, transaction);
         }
     }
 
@@ -110,7 +110,7 @@ public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
     }
 
     public interface Listener {
-        void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade transactionFacade);
+        void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.Transaction transaction);
         void onItemAnimatorDidStop(boolean finished);
     }
 

@@ -161,11 +161,11 @@ public class AnimatorContext implements Animator.AnimatorListener {
      */
     public void transaction(@Nullable AnimatorConfig properties,
                             @TransactionOptions int options,
-                            @NonNull Action1<TransactionFacade> animations,
+                            @NonNull Action1<Transaction> animations,
                             @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         List<PropertyAnimatorProxy> animators = new ArrayList<>(2);
 
-        TransactionFacade facade = view -> {
+        Transaction facade = view -> {
             PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(view, this);
             if (properties != null) {
                 properties.apply(animator);
@@ -206,7 +206,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
      *
      * @see #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public void transaction(@NonNull Action1<TransactionFacade> animations,
+    public void transaction(@NonNull Action1<Transaction> animations,
                             @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
         transaction(null, AnimatorContext.OPTIONS_DEFAULT, animations, onCompleted);
     }
@@ -227,7 +227,7 @@ public class AnimatorContext implements Animator.AnimatorListener {
      *
      * @see #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)
      */
-    public interface TransactionFacade {
+    public interface Transaction {
         /**
          * Create a property animator proxy for a given view,
          * applying any properties provided, and queuing it

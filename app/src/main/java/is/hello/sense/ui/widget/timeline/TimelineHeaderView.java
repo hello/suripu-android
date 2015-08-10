@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
@@ -47,7 +48,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private final TextView scoreText;
 
     private final ViewGroup cardContainer;
-    private final TextView cardTitle;
     private final TextView cardContents;
 
     private boolean hasAnimated = false;
@@ -106,7 +106,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         this.cardContainer = (ViewGroup) findViewById(R.id.view_timeline_header_card);
         cardContainer.setVisibility(INVISIBLE);
 
-        this.cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
+        TextView cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
         Drawable end = cardTitle.getCompoundDrawablesRelative()[2];
         Drawables.setTintColor(end, resources.getColor(R.color.light_accent));
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
@@ -268,7 +268,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         cardContainer.setVisibility(VISIBLE);
     }
 
-    private void animateToScore(@Nullable Integer score, ScoreCondition condition, @NonNull Runnable fireAdapterAnimations) {
+    private void animateToScore(@Nullable Integer score,
+                                ScoreCondition condition,
+                                @NonNull Runnable fireAdapterAnimations) {
         if (score == null || !animationEnabled || hasAnimated || getVisibility() != VISIBLE) {
             setScore(score, condition);
             fireAdapterAnimations.run();
@@ -351,24 +353,9 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
 
     //region Binding
 
-    public void bindMessage(@Nullable CharSequence message) {
-        cardTitle.setText(R.string.label_sleep_summary);
-        cardContents.setText(message);
-    }
-
-    public void bindScore(@Nullable Integer score, ScoreCondition condition, @NonNull Runnable fireAdapterAnimations) {
-        animateToScore(score, condition, fireAdapterAnimations);
-    }
-
-    public void bindError(@NonNull Throwable e) {
-        cardTitle.setText(R.string.dialog_error_title);
-
-        cardContents.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        cardContents.setText(getResources().getString(R.string.timeline_error_message, e.getMessage()));
-
-        setScore(null, ScoreCondition.UNAVAILABLE);
-
-        setScoreClickEnabled(false);
+    public void bindTimeline(@NonNull Timeline timeline, @NonNull Runnable fireAdapterAnimations) {
+        cardContents.setText(timeline.getMessage());
+        animateToScore(timeline.getScore(), timeline.getScoreCondition(), fireAdapterAnimations);
     }
 
     //endregion
@@ -377,7 +364,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Timeline Animations
 
     @Override
-    public void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade f) {
+    public void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.Transaction f) {
         f.animate(cardContainer)
          .fadeIn();
     }

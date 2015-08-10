@@ -20,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -184,7 +185,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
-        itemAnimator.addListener(headerView);
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BottomInsetDecoration(getResources(), headers.length));
 
@@ -313,8 +313,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                     }
 
                     Share.text(shareCopy)
-                            .withSubject(getString(R.string.app_name))
-                            .send(getActivity());
+                         .withSubject(getString(R.string.app_name))
+                         .send(getActivity());
                 },
                 e -> {
                     Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
@@ -337,6 +337,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Hooks
 
+    @SuppressWarnings("ConstantConditions")
     public @NonNull LocalDate getDate() {
         return (LocalDate) getArguments().getSerializable(ARG_DATE);
     }
@@ -398,7 +399,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
         @Override
-        public void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade transactionFacade) {
+        public void onItemAnimatorWillStart(@Nullable AnimatorConfig config,
+                                            @NonNull AnimatorContext.Transaction transaction) {
         }
 
         @Override
@@ -446,7 +448,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 final Animator crossFade = createBackgroundCrossFade(getResources().getColor(R.color.background_timeline));
 
                 @Override
-                public void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.TransactionFacade transactionFacade) {
+                public void onItemAnimatorWillStart(@Nullable AnimatorConfig config,
+                                                    @NonNull AnimatorContext.Transaction transaction) {
                     if (config != null) {
                         config.apply(crossFade);
                     }
@@ -464,7 +467,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             backgroundFill.setColor(getResources().getColor(R.color.background_timeline));
         }
 
+        toolbar.setShareVisible(false);
         headerView.stopPulsing();
+        itemAnimator.removeListener(headerView);
         adapter.replaceHeader(1, newHeader);
     }
 
@@ -475,44 +480,51 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         backgroundFill.setColor(getResources().getColor(R.color.timeline_background_fill));
 
-        itemAnimator.setDelayEnabled(true);
+        itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
 
         adapter.replaceHeader(1, headerView);
+        headerView.startPulsing();
+
+        // Run after change listener
+        recyclerView.post(() -> {
+            itemAnimator.setDelayEnabled(true);
+            itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, true);
+        });
     }
 
     public void bindTimeline(@NonNull Timeline timeline) {
         boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
-        Runnable continuation = stateSafeExecutor.bind(() -> {
-            if (animationEnabled) {
-                itemAnimator.addListener(new HandholdingOneShotListener());
-            } else {
-                getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
-            }
-
-            adapter.bindEvents(timeline.getEvents());
-
-            toolbar.setShareVisible(hasEvents && !homeActivity.isUndersideVisible());
-        });
-
         if (hasEvents) {
-            headerView.bindScore(timeline.getScore(), timeline.getScoreCondition(), continuation);
+            Runnable continuation = stateSafeExecutor.bind(() -> {
+                if (animationEnabled) {
+                    itemAnimator.addListener(new HandholdingOneShotListener());
+                } else {
+                    getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
+                }
+
+                adapter.bindEvents(timeline.getEvents());
+
+                toolbar.setShareVisible(!homeActivity.isUndersideVisible());
+            });
+            itemAnimator.addListener(headerView);
+            headerView.bindTimeline(timeline, continuation);
         } else {
             transitionIntoNoDataState(R.drawable.timeline_state_no_data,
                     R.string.title_timeline_not_enough_data, timeline.getMessage());
         }
 
-        headerView.bindMessage(timeline.getMessage());
-
         headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
     public void timelineUnavailable(Throwable e) {
-        toolbar.setShareVisible(false);
-        adapter.clear();
-
-        transitionIntoNoDataState(R.drawable.timeline_state_error,
-                R.string.dialog_error_title, getString(R.string.timeline_error_message, e.getMessage()));
+        CharSequence message = getString(R.string.timeline_error_message, e.getMessage());
+        if (adapter.hasEvents()) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        } else {
+            transitionIntoNoDataState(R.drawable.timeline_state_error,
+                                      R.string.dialog_error_title, message);
+        }
     }
 
     //endregion
