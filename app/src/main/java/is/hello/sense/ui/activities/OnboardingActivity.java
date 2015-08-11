@@ -56,7 +56,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -459,12 +459,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 return (holder, onCompletion) -> {
                     int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
 
-                    animate(holder.contents)
-                            .setOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
+                    animatorFor(holder.contents)
+                            .addOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)
                             .start();
 
-                    animate(holder.primaryButton)
+                    animatorFor(holder.primaryButton)
                             .slideYAndFade(0f, slideAmount, 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();

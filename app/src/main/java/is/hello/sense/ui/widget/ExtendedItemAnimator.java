@@ -8,9 +8,8 @@ import android.util.SparseBooleanArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.AnimatorContext;
 import rx.functions.Func1;
 
 public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
@@ -95,10 +94,9 @@ public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
         listeners.clear();
     }
 
-    protected void dispatchAnimationWillStart(@Nullable AnimatorConfig config,
-                                              @NonNull AnimatorContext.Transaction transaction) {
+    protected void dispatchAnimationWillStart(@NonNull AnimatorContext.Transaction transaction) {
         for (Listener listener : listeners) {
-            listener.onItemAnimatorWillStart(config, transaction);
+            listener.onItemAnimatorWillStart(transaction);
         }
     }
 
@@ -110,7 +108,7 @@ public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
     }
 
     public interface Listener {
-        void onItemAnimatorWillStart(@Nullable AnimatorConfig config, @NonNull AnimatorContext.Transaction transaction);
+        void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction);
         void onItemAnimatorDidStop(boolean finished);
     }
 

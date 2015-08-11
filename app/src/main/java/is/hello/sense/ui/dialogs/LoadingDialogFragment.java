@@ -18,11 +18,11 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.SenseDialogFragment;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public final class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
@@ -192,20 +192,27 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
         if (titleText != null) {
-            animate(activityIndicator)
-                    .setDuration(Animation.DURATION_FAST)
+            animatorFor(activityIndicator)
+                    .withDuration(Anime.DURATION_FAST)
                     .fadeOut(View.INVISIBLE)
                     .start();
 
-            animate(titleText)
-                    .setDuration(Animation.DURATION_FAST)
+            animatorFor(titleText)
+                    .withDuration(Anime.DURATION_FAST)
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished)
                             return;
 
-                        animate(checkMark)
-                                .zoomInFrom(0f)
+                        animatorFor(checkMark)
+                                .addOnAnimationWillStart(() -> {
+                                    checkMark.setAlpha(0f);
+                                    checkMark.setScaleX(0f);
+                                    checkMark.setScaleY(0f);
+                                    checkMark.setVisibility(View.VISIBLE);
+                                })
+                                .alpha(1f)
+                                .scale(1f)
                                 .start();
 
 
@@ -216,7 +223,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                             titleText.setText(null);
                         }
 
-                        animate(titleText)
+                        animatorFor(titleText)
                                 .fadeIn()
                                 .addOnAnimationCompleted(finished1 -> {
                                     if (!finished1)

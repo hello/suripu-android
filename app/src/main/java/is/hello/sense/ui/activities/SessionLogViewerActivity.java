@@ -16,7 +16,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.SessionLogger;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SessionLogViewerActivity extends SenseActivity {
     private WebView webView;
@@ -83,7 +83,7 @@ public class SessionLogViewerActivity extends SenseActivity {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
 
-            animate(activityIndicator)
+            animatorFor(activityIndicator)
                     .fadeIn()
                     .start();
         }
@@ -92,7 +92,7 @@ public class SessionLogViewerActivity extends SenseActivity {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            animate(activityIndicator)
+            animatorFor(activityIndicator)
                     .fadeOut(View.GONE)
                     .start();
         }
@@ -101,7 +101,7 @@ public class SessionLogViewerActivity extends SenseActivity {
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
 
-            animate(activityIndicator)
+            animatorFor(activityIndicator)
                     .fadeOut(View.GONE)
                     .start();
 

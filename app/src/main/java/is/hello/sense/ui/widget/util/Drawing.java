@@ -42,32 +42,4 @@ public class Drawing {
         return Color.HSVToColor(alpha, hsv);
     }
 
-    /**
-     * {@link android.animation.ArgbEvaluator#evaluate(float, Object, Object)}
-     * without the costs of auto-boxing associated with it.
-     */
-    public static int interpolateColors(float fraction, int startColor, int endColor) {
-        int startA = (startColor >> 24) & 0xff;
-        int startR = (startColor >> 16) & 0xff;
-        int startG = (startColor >> 8) & 0xff;
-        int startB = startColor & 0xff;
-
-        int endA = (endColor >> 24) & 0xff;
-        int endR = (endColor >> 16) & 0xff;
-        int endG = (endColor >> 8) & 0xff;
-        int endB = endColor & 0xff;
-
-        return (startA + (int)(fraction * (endA - startA))) << 24 |
-                (startR + (int)(fraction * (endR - startR))) << 16 |
-                (startG + (int)(fraction * (endG - startG))) << 8 |
-                (startB + (int)(fraction * (endB - startB)));
-    }
-
-    /**
-     * {@link android.animation.FloatEvaluator#evaluate(float, Number, Number)}
-     * without the costs of auto-boxing associated with it.
-     */
-    public static float interpolateFloats(float fraction, float start, float end) {
-        return (start + fraction * (end - start));
-    }
 }

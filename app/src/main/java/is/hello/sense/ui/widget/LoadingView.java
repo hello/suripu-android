@@ -18,9 +18,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class LoadingView extends LinearLayout {
     public static final long DURATION_DONE_MESSAGE = 1000;
@@ -48,7 +49,7 @@ public class LoadingView extends LinearLayout {
 
         LayoutTransition layoutTransition = new LayoutTransition();
         for (int type = LayoutTransition.CHANGE_APPEARING; type <= LayoutTransition.CHANGING; type++) {
-            layoutTransition.setDuration(type, Animation.DURATION_NORMAL);
+            layoutTransition.setDuration(type, Anime.DURATION_NORMAL);
             layoutTransition.setStartDelay(type, 0);
         }
         layoutTransition.disableTransitionType(LayoutTransition.DISAPPEARING);
@@ -91,14 +92,14 @@ public class LoadingView extends LinearLayout {
     public void clearAnimation() {
         super.clearAnimation();
 
-        PropertyAnimatorProxy.stop(progressBar);
+        Anime.cancelAll(progressBar);
     }
 
     public void dismissProgressBar(boolean animated, @NonNull Runnable onDone) {
         if (animated) {
-            PropertyAnimatorProxy.animate(progressBar)
-                    .setDuration(getLayoutTransition().getDuration(LayoutTransition.DISAPPEARING))
-                    .setStartDelay(getLayoutTransition().getStartDelay(LayoutTransition.DISAPPEARING))
+            animatorFor(progressBar)
+                    .withDuration(getLayoutTransition().getDuration(LayoutTransition.DISAPPEARING))
+                    .withStartDelay(getLayoutTransition().getStartDelay(LayoutTransition.DISAPPEARING))
                     .scale(0)
                     .fadeOut(GONE)
                     .addOnAnimationCompleted(finished -> {
@@ -125,9 +126,9 @@ public class LoadingView extends LinearLayout {
                     if (view == doneView) {
                         doneView.setScaleX(0f);
                         doneView.setScaleY(0f);
-                        PropertyAnimatorProxy.animate(doneView)
-                                .setDuration(transition.getDuration(transitionType))
-                                .setStartDelay(transition.getStartDelay(transitionType))
+                        animatorFor(doneView)
+                                .withDuration(transition.getDuration(transitionType))
+                                .withStartDelay(transition.getStartDelay(transitionType))
                                 .scale(1f)
                                 .start();
                     }

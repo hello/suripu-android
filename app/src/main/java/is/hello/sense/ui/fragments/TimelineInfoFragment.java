@@ -42,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -49,7 +51,6 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
@@ -108,6 +109,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         Bundle arguments = getArguments();
 
+        //noinspection ConstantConditions
         this.scoreCondition = ScoreCondition.fromString(arguments.getString(ARG_SCORE_CONDITION));
         this.scoreColor = getResources().getColor(scoreCondition.colorRes);
         this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
@@ -175,7 +177,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 .with(createRecyclerReveal());
 
         compound.setInterpolator(new FastOutSlowInInterpolator());
-        compound.setDuration(Animation.DURATION_NORMAL);
+        compound.setDuration(Anime.DURATION_NORMAL);
 
         return compound;
     }
@@ -203,7 +205,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 .with(createRecyclerDismissal());
 
         compound.setInterpolator(new FastOutLinearInInterpolator());
-        compound.setDuration(Animation.DURATION_NORMAL);
+        compound.setDuration(Anime.DURATION_NORMAL);
 
         return compound;
     }
@@ -226,6 +228,15 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Showing
 
+    private static ValueAnimator createViewFrameAnimator(@NonNull View view, @NonNull Rect... rectangles) {
+        ValueAnimator frameAnimator = AnimatorTemplate.DEFAULT.createRectAnimator((Rect[]) rectangles);
+        frameAnimator.addUpdateListener(a -> {
+            Rect frame = (Rect) a.getAnimatedValue();
+            view.layout(frame.left, frame.top, frame.right, frame.bottom);
+        });
+        return frameAnimator;
+    }
+
     private Animator createFadeIn() {
         ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
@@ -235,7 +246,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
 
-                int statusBar = Drawing.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
+                int statusBar = Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
@@ -268,7 +279,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             Rect finalRect = Views.copyFrame(recycler);
             finalRect.top += header.getBottom();
-            animator = Animation.createViewFrameAnimator(recycler, initialRect, finalRect);
+            animator = createViewFrameAnimator(recycler, initialRect, finalRect);
 
             this.finalRecyclerLayoutParams = recycler.getLayoutParams();
 
@@ -310,7 +321,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             Rect initialRect = Views.copyFrame(recycler);
             initialRect.top += (header.getBottom() + header.getTranslationY());
-            animator = Animation.createViewFrameAnimator(recycler, initialRect, finalRect);
+            animator = createViewFrameAnimator(recycler, initialRect, finalRect);
         } else {
             animator = ObjectAnimator.ofFloat(recycler, "alpha", 1f, 0f);
         }
@@ -347,7 +358,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(1f - fraction);
 
-                int statusBar = Drawing.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
+                int statusBar = Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {

@@ -35,7 +35,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class DeviceListFragment extends InjectionFragment
         implements DevicesAdapter.OnPairNewDeviceListener,
@@ -124,7 +124,7 @@ public class DeviceListFragment extends InjectionFragment
             adapter.clear();
 
             supportInfoFooter.setVisibility(View.INVISIBLE);
-            animate(loadingIndicator)
+            animatorFor(loadingIndicator)
                     .fadeIn()
                     .start();
 

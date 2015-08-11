@@ -24,7 +24,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class ChangeEmailFragment extends InjectionFragment {
     @Inject AccountPresenter accountPresenter;
@@ -83,7 +83,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         email.setText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
             email.requestFocus();
-            animate(email).simplePop(1.4f).start();
+            animatorFor(email).simplePop(1.4f).start();
 
             return;
         }

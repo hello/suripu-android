@@ -12,9 +12,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -24,8 +24,8 @@ import is.hello.sense.ui.widget.PanImageView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
+import static is.hello.go99.Anime.cancelAll;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class OnboardingIntroductionFragment extends SenseFragment implements FragmentNavigation.BackInterceptingFragment {
     private BlockableFrameLayout rootView;
@@ -92,23 +92,23 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
 
 
     public void getStarted(@NonNull View sender) {
-        stop(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
+        cancelAll(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
 
         rootView.setTouchEnabled(false);
 
-        animate(getStartedActions)
+        animatorFor(getStartedActions)
                 .fadeOut(View.INVISIBLE)
                 .start();
 
-        animate(accountActions)
+        animatorFor(accountActions)
                 .fadeIn()
                 .start();
 
-        animate(infoText)
+        animatorFor(infoText)
                 .fadeOut(View.INVISIBLE)
                 .start();
 
-        animate(play)
+        animatorFor(play)
                 .slideXAndFade(0f, -(play.getMeasuredWidth() / 2), 1f, 0f)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
@@ -117,8 +117,8 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 })
                 .start();
 
-        animate(titleText)
-                .setDuration(Animation.DURATION_NORMAL / 2)
+        animatorFor(titleText)
+                .withDuration(Anime.DURATION_NORMAL / 2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.welcome);
@@ -132,7 +132,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 })
                 .start();
 
-        sceneBackground.animateToPanAmount(1f, Animation.DURATION_NORMAL, null);
+        sceneBackground.animateToPanAmount(1f, Anime.DURATION_NORMAL, null);
     }
 
     public void playIntroVideo(@NonNull View sender) {
@@ -158,28 +158,28 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
     }
 
     public void cancel(@NonNull View sender) {
-        stop(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
+        cancelAll(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
 
         rootView.setTouchEnabled(false);
 
-        animate(getStartedActions)
+        animatorFor(getStartedActions)
                 .fadeIn()
                 .start();
 
-        animate(accountActions)
+        animatorFor(accountActions)
                 .fadeOut(View.INVISIBLE)
                 .start();
 
-        animate(infoText)
+        animatorFor(infoText)
                 .fadeIn()
                 .start();
 
-        animate(play)
+        animatorFor(play)
                 .slideXAndFade(0f, play.getMeasuredWidth() / 2, 0f, 1f)
                 .start();
 
-        animate(titleText)
-                .setDuration(Animation.DURATION_NORMAL / 2)
+        animatorFor(titleText)
+                .withDuration(Anime.DURATION_NORMAL / 2)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     titleText.setText(R.string.title_introduction);
@@ -193,6 +193,6 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
                 })
                 .start();
 
-        sceneBackground.animateToPanAmount(0f, Animation.DURATION_NORMAL, null);
+        sceneBackground.animateToPanAmount(0f, Anime.DURATION_NORMAL, null);
     }
 }

@@ -37,7 +37,7 @@ import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;
@@ -120,19 +120,19 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     //region Activity
 
     private void showLoadingIndicator() {
-        animate(listView)
+        animatorFor(listView)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeIn()
                 .start();
     }
 
     private void hideLoadingIndicator() {
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animate(listView)
+        animatorFor(listView)
                 .fadeIn()
                 .start();
     }

@@ -18,10 +18,12 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.Views;
+
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class TimelineToolbar extends RelativeLayout {
     private final ImageButton overflow;
@@ -92,7 +94,7 @@ public class TimelineToolbar extends RelativeLayout {
         if (titleColorAnimator != null) {
             titleColorAnimator.cancel();
         }
-        PropertyAnimatorProxy.stop(share);
+        Anime.cancelAll(share);
     }
 
     public void setOverflowOnClickListener(@NonNull OnClickListener onClickListener) {
@@ -110,7 +112,7 @@ public class TimelineToolbar extends RelativeLayout {
         if (!ViewCompat.isAttachedToWindow(this)) {
             duration = 0;
         } else {
-            duration = Animation.DURATION_FAST;
+            duration = Anime.DURATION_FAST;
         }
 
         if (overflowOpen) {
@@ -141,8 +143,8 @@ public class TimelineToolbar extends RelativeLayout {
         }
 
         if (shareVisible) {
-            PropertyAnimatorProxy.animate(share)
-                    .setDuration(Animation.DURATION_FAST)
+            animatorFor(share)
+                    .withDuration(Anime.DURATION_FAST)
                     .fadeIn()
                     .addOnAnimationCompleted(finished -> {
                         if (!finished) {
@@ -152,8 +154,8 @@ public class TimelineToolbar extends RelativeLayout {
                     })
                     .start();
         } else {
-            PropertyAnimatorProxy.animate(share)
-                    .setDuration(Animation.DURATION_FAST)
+            animatorFor(share)
+                    .withDuration(Anime.DURATION_FAST)
                     .fadeOut(INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished) {
@@ -197,8 +199,8 @@ public class TimelineToolbar extends RelativeLayout {
             return;
         }
 
-        this.titleColorAnimator = Animation.createColorAnimator(startColor, endColor);
-        titleColorAnimator.setDuration(Animation.DURATION_FAST);
+        this.titleColorAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
+        titleColorAnimator.setDuration(Anime.DURATION_FAST);
         titleColorAnimator.addUpdateListener(a -> {
             int color = (int) a.getAnimatedValue();
             title.setTextColor(color);

@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -34,10 +36,6 @@ import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.InteractiveAnimator;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
@@ -47,16 +45,16 @@ import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.isAnimating;
+import static is.hello.go99.Anime.isAnimating;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class HomeActivity
         extends ScopedInjectionActivity
@@ -233,7 +231,7 @@ public class HomeActivity
             this.showUnderside = false;
         }
 
-        if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
+        /*if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS)*/ {
             if (isCurrentFragmentLastNight()) {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
                 TimelineFragment fragment = viewPager.getCurrentFragment();
@@ -438,7 +436,7 @@ public class HomeActivity
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
             int contentHeight = rootContainer.getMeasuredHeight();
 
-            animate(smartAlarmButton, animatorContext)
+            animatorFor(smartAlarmButton, animatorContext)
                     .translationY(contentHeight - smartAlarmButton.getTop())
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
@@ -453,7 +451,7 @@ public class HomeActivity
         if (smartAlarmButton.getVisibility() == View.INVISIBLE && !isAnimating(smartAlarmButton)) {
             smartAlarmButton.setVisibility(View.VISIBLE);
 
-            animate(smartAlarmButton, animatorContext)
+            animatorFor(smartAlarmButton, animatorContext)
                     .translationY(0f)
                     .start();
         }
@@ -564,11 +562,11 @@ public class HomeActivity
 
         @Override
         public void frame(float frameValue) {
-            float scale = Animation.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            float scale = Anime.interpolateFloats(frameValue, MIN_SCALE, MAX_SCALE);
             undersideContainer.setScaleX(scale);
             undersideContainer.setScaleY(scale);
 
-            float alpha = Animation.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
+            float alpha = Anime.interpolateFloats(frameValue, MIN_ALPHA, MAX_ALPHA);
             undersideContainer.setAlpha(alpha);
         }
 
@@ -577,16 +575,15 @@ public class HomeActivity
                            long duration,
                            @NonNull Interpolator interpolator,
                            @Nullable AnimatorContext animatorContext) {
-            float finalScale = Animation.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
-            float finalAlpha = Animation.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
-            animate(undersideContainer, animatorContext)
-                    .setDuration(duration)
-                    .setInterpolator(interpolator)
+            float finalScale = Anime.interpolateFloats(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Anime.interpolateFloats(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
+            animatorFor(undersideContainer, animatorContext)
+                    .withDuration(duration)
+                    .withInterpolator(interpolator)
                     .scale(finalScale)
                     .alpha(finalAlpha)
-                    .bindListeners(HomeActivity.this)
                     .addOnAnimationCompleted(finished -> {
-                        if (!finished)
+                        if (!finished || isFinishing() || isDestroyed())
                             return;
 
                         if (slidingLayersView.isOpen()) {
@@ -601,7 +598,7 @@ public class HomeActivity
 
         @Override
         public void cancel() {
-            PropertyAnimatorProxy.stop(undersideContainer);
+            Anime.cancelAll(undersideContainer);
 
             undersideContainer.setScaleX(MAX_SCALE);
             undersideContainer.setScaleY(MAX_SCALE);

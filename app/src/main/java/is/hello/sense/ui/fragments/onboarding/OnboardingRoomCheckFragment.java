@@ -25,14 +25,16 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
+import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
@@ -42,9 +44,8 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.OnAnimationCompleted;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
+import static is.hello.go99.Anime.cancelAll;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 import static is.hello.sense.units.UnitSystem.Unit;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
@@ -178,7 +179,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     return;
                 }
 
-                animate(status, getAnimatorContext())
+                animatorFor(status, getAnimatorContext())
                         .fadeOut(View.VISIBLE)
                         .addOnAnimationCompleted(finishedStatus -> {
                             if (!finishedStatus) {
@@ -202,7 +203,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
 
             int endColor = resources.getColor(sensor.getCondition().colorRes);
-            this.scoreAnimator = Animation.createColorAnimator(startColor, endColor);
+            this.scoreAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
             scoreAnimator.setDuration(duration);
             scoreAnimator.addUpdateListener(a -> {
                 int color = (int) a.getAnimatedValue();
@@ -272,7 +273,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
             Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
         };
         if (animate) {
-            animate(dynamicContent, getAnimatorContext())
+            animatorFor(dynamicContent, getAnimatorContext())
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finishedFadeOut -> {
                         if (!finishedFadeOut) {
@@ -283,7 +284,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
                         inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
 
-                        animate(dynamicContent, getAnimatorContext())
+                        animatorFor(dynamicContent, getAnimatorContext())
                                 .fadeIn()
                                 .addOnAnimationCompleted(atEnd)
                                 .postStart();
@@ -298,7 +299,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     private void stopAnimations() {
         scoreTicker.stopAnimating();
-        stop(status, dynamicContent);
+        cancelAll(status, dynamicContent);
 
         if (scoreAnimator != null) {
             scoreAnimator.cancel();
@@ -317,7 +318,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private void animateSenseToGray() {
         Drawable senseDrawable = sense.getDrawable();
         if (senseDrawable instanceof TransitionDrawable) {
-            ((TransitionDrawable) senseDrawable).reverseTransition(Animation.DURATION_NORMAL);
+            ((TransitionDrawable) senseDrawable).reverseTransition(Anime.DURATION_NORMAL);
         }
     }
 
@@ -349,7 +350,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         });
         transitionDrawable.setCrossFadeEnabled(true);
         sense.setImageDrawable(transitionDrawable);
-        transitionDrawable.startTransition(Animation.DURATION_NORMAL);
+        transitionDrawable.startTransition(Anime.DURATION_NORMAL);
     }
 
     //endregion

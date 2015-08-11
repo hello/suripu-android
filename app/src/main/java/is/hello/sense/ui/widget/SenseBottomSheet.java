@@ -29,7 +29,7 @@ import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import rx.functions.Action1;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
@@ -86,6 +86,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         setTitle(savedInstanceState.getString(SAVED_TITLE));
@@ -239,7 +240,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
                                @Nullable Action1<Boolean> onAnimationFinished) {
         if (this.replacementContent != null) {
             View oldContent = this.replacementContent;
-            animate(oldContent)
+            animatorFor(oldContent)
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         contentRoot.removeView(oldContent);
@@ -248,7 +249,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         } else {
             for (int i = 0, size = contentRoot.getChildCount(); i < size; i++) {
                 View child = contentRoot.getChildAt(i);
-                animate(child)
+                animatorFor(child)
                         .fadeOut(View.INVISIBLE)
                         .addOnAnimationCompleted(finished -> {
                             contentRoot.removeView(child);
@@ -265,7 +266,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         replacementContent.setVisibility(View.INVISIBLE);
         contentRoot.addView(replacementContent, layoutParams);
-        animate(replacementContent)
+        animatorFor(replacementContent)
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {
                     if (onAnimationFinished != null) {

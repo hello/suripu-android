@@ -22,15 +22,19 @@ import android.widget.RelativeLayout;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.Constants;
 
 public enum Tutorial {
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
                    Gravity.BOTTOM,
                    R.id.activity_home_container,
-                   Interaction.SWIPE_RIGHT);
+                   Interaction.SWIPE_RIGHT),
+    ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
+                      Gravity.BOTTOM,
+                      R.id.view_timeline_toolbar_title,
+                      Interaction.TAP);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;
@@ -119,7 +123,7 @@ public enum Tutorial {
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
         fadeIn.setInterpolator(new LinearInterpolator());
-        fadeIn.setDuration(Animation.DURATION_SLOW);
+        fadeIn.setDuration(Anime.DURATION_SLOW);
 
         AnimatorSet slideAndFadeIn = new AnimatorSet();
         slideAndFadeIn.setStartDelay(150);

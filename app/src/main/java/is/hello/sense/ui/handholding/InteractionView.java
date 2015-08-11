@@ -40,7 +40,7 @@ public class InteractionView extends View {
 
         borderPaint.setColor(resources.getColor(R.color.light_accent));
         borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setStrokeWidth(resources.getDimensionPixelSize(R.dimen.shadow_size));
+        borderPaint.setStrokeWidth(resources.getDimensionPixelSize(R.dimen.view_interaction_stroke));
 
         int area = resources.getDimensionPixelSize(R.dimen.view_interaction_area);
         setMinimumWidth(area);

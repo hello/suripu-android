@@ -41,7 +41,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
@@ -197,19 +197,19 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     }
 
     private void showLoadingIndicator() {
-        animate(listView)
+        animatorFor(listView)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeIn()
                 .start();
     }
 
     private void hideLoadingIndicator() {
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animate(listView)
+        animatorFor(listView)
                 .fadeIn()
                 .start();
     }

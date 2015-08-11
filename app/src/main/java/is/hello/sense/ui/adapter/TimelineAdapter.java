@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
-import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -556,7 +556,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
                     containerLayoutParams.topMargin = 0;
                     containerLayoutParams.bottomMargin = 0;
                 } else {
-                    float translation = Drawing.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
+                    float translation = Anime.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
                     container.setTranslationY(translation);
 
                     containerLayoutParams.topMargin = segmentEventOffsetMax;
@@ -567,7 +567,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
         public void setDistanceAmounts(float bottomDistanceAmount, float centerDistanceAmount) {
             if (this.bottomDistanceAmount != bottomDistanceAmount) {
-                float scale = Drawing.interpolateFloats(bottomDistanceAmount, EVENT_SCALE_MIN, EVENT_SCALE_MAX);
+                float scale = Anime.interpolateFloats(bottomDistanceAmount, EVENT_SCALE_MIN, EVENT_SCALE_MAX);
                 container.setScaleX(scale);
                 container.setScaleY(scale);
                 container.setAlpha(bottomDistanceAmount);
@@ -577,7 +577,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
             if (this.centerDistanceAmount != centerDistanceAmount) {
                 if (!excludedFromParallax) {
-                    float translation = Drawing.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
+                    float translation = Anime.interpolateFloats(centerDistanceAmount, 0f, segmentEventOffsetMax);
                     container.setTranslationY(translation);
                 }
 

@@ -31,6 +31,8 @@ import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
+import is.hello.go99.animators.AnimatorContext;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
@@ -40,9 +42,6 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -168,7 +167,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
         toolbar.setOverflowOpen(homeActivity.isUndersideVisible());
 
-        toolbar.setTitleOnClickListener(ignored -> homeActivity.showTimelineNavigator(getDate(), getCachedTimeline()));
+        toolbar.setTitleOnClickListener(ignored -> {
+            Tutorial.ZOOM_OUT_TIMELINE.markShown(getActivity());
+            homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
+        });
         toolbar.setTitle(getTitle());
         toolbar.setTitleDimmed(homeActivity.isUndersideVisible());
 
@@ -377,13 +379,27 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         tutorialOverlay.setOnDismiss(() -> {
             this.tutorialOverlay = null;
         });
-        tutorialOverlay.setAnimatorContext(getAnimatorContext());
         tutorialOverlay.show(R.id.activity_home_container);
     }
 
     private void showHandholdingIfAppropriate() {
         if (WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
+        }
+
+        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(getActivity());
+        if (firstTimeline && showZoomOutTutorial) {
+            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+            int numberTimelinesShown = preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
+            if (numberTimelinesShown < 5) {
+                Logger.debug(getClass().getSimpleName(), "Incrementing timelines shown to " + (numberTimelinesShown + 1));
+
+                preferences.edit()
+                        .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, numberTimelinesShown + 1)
+                        .apply();
+
+                showZoomOutTutorial = false;
+            }
         }
 
         if (homeActivity.getWillShowUnderside()) {
@@ -393,14 +409,15 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
                 showTutorial(Tutorial.SWIPE_TIMELINE);
+            } else if (showZoomOutTutorial) {
+                showTutorial(Tutorial.ZOOM_OUT_TIMELINE);
             }
         }
     }
 
     private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
         @Override
-        public void onItemAnimatorWillStart(@Nullable AnimatorConfig config,
-                                            @NonNull AnimatorContext.Transaction transaction) {
+        public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
         }
 
         @Override
@@ -419,7 +436,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     //region Binding
 
     private Animator createBackgroundCrossFade(int newColor) {
-        ValueAnimator animator = Animation.createColorAnimator(backgroundFill.getColor(), newColor);
+        ValueAnimator animator = AnimatorTemplate.DEFAULT.createColorAnimator(backgroundFill.getColor(), newColor);
         animator.addUpdateListener(a -> {
             int color = (int) a.getAnimatedValue();
             backgroundFill.setColor(color);
@@ -448,12 +465,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 final Animator crossFade = createBackgroundCrossFade(getResources().getColor(R.color.background_timeline));
 
                 @Override
-                public void onItemAnimatorWillStart(@Nullable AnimatorConfig config,
-                                                    @NonNull AnimatorContext.Transaction transaction) {
-                    if (config != null) {
-                        config.apply(crossFade);
-                    }
-                    getAnimatorContext().runWhenIdle(crossFade::start);
+                public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
+                    transaction.takeOwnership(crossFade);
                 }
 
                 @Override

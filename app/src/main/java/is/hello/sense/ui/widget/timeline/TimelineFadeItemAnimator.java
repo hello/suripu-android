@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.ExtendedItemAnimator;
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
+import is.hello.go99.animators.AnimatorTemplate;
 
 /**
  * A simple staggered fade-in animation.
@@ -21,7 +21,7 @@ import is.hello.sense.ui.widget.ExtendedItemAnimator;
 public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
     public static final long DELAY = 20;
 
-    private final AnimatorConfig config = AnimatorConfig.DEFAULT;
+    private final AnimatorTemplate config = AnimatorTemplate.DEFAULT;
 
     private final List<Transaction> pending = new ArrayList<>();
     private final List<Transaction> running = new ArrayList<>();
@@ -49,8 +49,8 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
     @Override
     public void runPendingAnimations() {
         Collections.sort(pending);
-        getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, f -> {
-            dispatchAnimationWillStart(config, f);
+        getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, t -> {
+            dispatchAnimationWillStart(t);
 
             final long delayAmount = getDelayAmount();
             long transactionDelay = delayAmount;
@@ -60,16 +60,16 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
                 switch (transaction.action) {
                     case ADD: {
                         dispatchAddStarting(target);
-                        f.animate(target.itemView)
-                         .setStartDelay(transactionDelay)
+                        t.animatorFor(target.itemView)
+                         .withStartDelay(transactionDelay)
                          .fadeIn();
 
                         break;
                     }
                     case REMOVE: {
                         dispatchRemoveStarting(target);
-                        f.animate(target.itemView)
-                         .setStartDelay(transactionDelay)
+                        t.animatorFor(target.itemView)
+                         .withStartDelay(transactionDelay)
                          .fadeOut(View.VISIBLE);
 
                         break;
@@ -140,13 +140,13 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
 
     @Override
     public void endAnimation(RecyclerView.ViewHolder item) {
-        PropertyAnimatorProxy.stop(item.itemView);
+        Anime.cancelAll(item.itemView);
     }
 
     @Override
     public void endAnimations() {
         for (Transaction transaction : running) {
-            PropertyAnimatorProxy.stop(transaction.target.itemView);
+            Anime.cancelAll(transaction.target.itemView);
         }
     }
 

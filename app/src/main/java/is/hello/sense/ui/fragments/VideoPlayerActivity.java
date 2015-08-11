@@ -13,7 +13,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class VideoPlayerActivity extends SenseActivity {
     private static final String EXTRA_URI = VideoPlayerActivity.class.getName() + ".EXTRA_URI";
@@ -43,7 +43,7 @@ public class VideoPlayerActivity extends SenseActivity {
 
 
         ProgressBar loadingIndicator = (ProgressBar) findViewById(R.id.fragment_video_loading);
-        videoView.setOnPreparedListener((player) -> animate(loadingIndicator).fadeOut(View.GONE).start());
+        videoView.setOnPreparedListener((player) -> animatorFor(loadingIndicator).fadeOut(View.GONE).start());
 
         videoView.setOnErrorListener((player, what, extra) -> {
             ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder();

@@ -15,8 +15,8 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
 
 public class PanImageView extends View {
     private @Nullable Drawable image;
@@ -158,7 +158,7 @@ public class PanImageView extends View {
         clearAnimation();
 
         this.currentAnimator = ValueAnimator.ofFloat(panAmount, endAmount);
-        currentAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
+        currentAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         currentAnimator.setDuration(duration);
         currentAnimator.addUpdateListener(a -> {
             this.panAmount = (float) a.getAnimatedValue();

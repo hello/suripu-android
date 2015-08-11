@@ -27,14 +27,16 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
+import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.StateSafeExecutor;
+
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout implements GestureInterceptingView {
     //region Property Fields
@@ -43,7 +45,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     private OnTransitionObserver<TFragment> onTransitionObserver;
     private FragmentManager fragmentManager;
     private @Nullable StateSafeExecutor stateSafeExecutor;
-    private final AnimatorConfig animationConfig = new AnimatorConfig(new DecelerateInterpolator());
+    private final AnimatorTemplate animationConfig = new AnimatorTemplate(new DecelerateInterpolator());
     private @Nullable AnimatorContext animatorContext;
     private @Nullable Decor decor;
 
@@ -241,7 +243,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         offScreenView.setBackground(fragmentPlaceholder);
         offScreenView.setVisibility(VISIBLE);
 
-        finishSwipe(position, Animation.DURATION_FAST);
+        finishSwipe(position, Anime.DURATION_FAST);
     }
 
     public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
@@ -416,10 +418,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void finishSwipe(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
-        animationConfig.apply(onScreenViewAnimator).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
-        animationConfig.apply(offScreenViewAnimator).setDuration(duration);
+        MultiAnimator onScreenViewAnimator = animatorFor(getOnScreenView(), animatorContext);
+        animationConfig.apply(onScreenViewAnimator).withDuration(duration);
+        MultiAnimator offScreenViewAnimator = animatorFor(getOffScreenView(), animatorContext);
+        animationConfig.apply(offScreenViewAnimator).withDuration(duration);
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewPortWidth : -viewPortWidth);
@@ -460,10 +462,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void snapBack(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
-        animationConfig.apply(onScreenViewAnimator).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
-        animationConfig.apply(offScreenViewAnimator).setDuration(duration);
+        MultiAnimator onScreenViewAnimator = animatorFor(getOnScreenView(), animatorContext);
+        animationConfig.apply(onScreenViewAnimator).withDuration(duration);
+        MultiAnimator offScreenViewAnimator = animatorFor(getOffScreenView(), animatorContext);
+        animationConfig.apply(offScreenViewAnimator).withDuration(duration);
 
         if (decor != null) {
             decor.onSwipeSnappedBack(duration, animationConfig, animatorContext);
@@ -572,7 +574,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         velocityTracker.computeCurrentVelocity(1000);
 
                         velocity = velocityTracker.getXVelocity();
-                        duration = Animation.calculateDuration(Math.abs(velocity), getMeasuredWidth());
+                        duration = Anime.calculateDuration(Math.abs(velocity), getMeasuredWidth());
 
                         velocityTracker.recycle();
                         this.velocityTracker = null;
@@ -628,7 +630,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         animatorContext.beginAnimation();
                     }
 
-                    PropertyAnimatorProxy.stop(onScreenView, getOffScreenView());
+                    Anime.cancelAll(onScreenView, getOffScreenView());
                     if (decor != null) {
                         decor.onSwipeConclusionInterrupted();
                     }
@@ -684,9 +686,9 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
             case MotionEvent.ACTION_UP: {
                 if (runningAnimation != RunningAnimation.NONE) {
                     if (runningAnimation == RunningAnimation.FINISH_SWIPE) {
-                        finishSwipe(currentPosition, Animation.DURATION_FAST);
+                        finishSwipe(currentPosition, Anime.DURATION_FAST);
                     } else if (runningAnimation == RunningAnimation.SNAP_BACK) {
-                        snapBack(currentPosition, Animation.DURATION_FAST);
+                        snapBack(currentPosition, Anime.DURATION_FAST);
                     }
 
                     if (animatorContext != null) {
@@ -877,10 +879,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
         void onSwipeBegan();
         void onSwipeMoved(float newAmount);
         void onSwipeSnappedBack(long duration,
-                                @NonNull AnimatorConfig animatorConfig,
+                                @NonNull AnimatorTemplate animatorTemplate,
                                 @Nullable AnimatorContext animatorContext);
         void onSwipeCompleted(long duration,
-                              @NonNull AnimatorConfig animatorConfig,
+                              @NonNull AnimatorTemplate animatorTemplate,
                               @Nullable AnimatorContext animatorContext);
         void onSwipeConclusionInterrupted();
     }

@@ -15,7 +15,7 @@ import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class ChangeNameFragment extends AccountEditingFragment {
     private TextView nameText;
@@ -46,7 +46,7 @@ public class ChangeNameFragment extends AccountEditingFragment {
         String name = AccountPresenter.normalizeInput(nameText.getText());
         nameText.setText(name);
         if (!AccountPresenter.validateName(name)) {
-            animate(nameText).simplePop(1.4f).start();
+            animatorFor(nameText).simplePop(1.4f).start();
             return;
         }
 
