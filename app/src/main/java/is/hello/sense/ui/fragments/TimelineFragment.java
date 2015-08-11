@@ -521,9 +521,16 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
         } else {
             transitionIntoNoDataState(header -> {
-                header.setDiagramResource(R.drawable.timeline_state_no_data);
-                header.setTitle(R.string.title_timeline_not_enough_data);
-                header.setMessage(timeline.getMessage());
+                // Indicates on-boarding just ended
+                if (homeActivity.getWillShowUnderside()) {
+                    header.setDiagramResource(R.drawable.timeline_state_first_night);
+                    header.setTitle(R.string.title_timeline_not_enough_data);
+                    header.setMessage(R.string.message_timeline_first_night);
+                } else {
+                    header.setDiagramResource(R.drawable.timeline_state_no_data);
+                    header.setTitle(R.string.title_timeline_not_enough_data);
+                    header.setMessage(timeline.getMessage());
+                }
             });
         }
 
