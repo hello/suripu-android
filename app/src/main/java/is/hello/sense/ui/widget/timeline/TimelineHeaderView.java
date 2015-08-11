@@ -35,7 +35,9 @@ import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.util.SafeOnClickListener;
 
-public class TimelineHeaderView extends RelativeLayout implements TimelineFadeItemAnimator.Listener {
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
+public class TimelineHeaderView extends RelativeLayout {
     private final Paint dividerPaint = new Paint();
     private final int dividerHeight;
 
@@ -327,22 +329,36 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
             scoreAnimator.addListener(animatorContext);
-            animatorContext.runWhenIdle(scoreAnimator::start);
+            animatorContext.startWhenIdle(scoreAnimator);
         }
     }
 
     private void animateScoreIntoPlace(@NonNull Runnable fireAdapterAnimations) {
-        animatorContext.transaction(t -> {
-            t.animatorFor(scoreContainer)
-             .withInterpolator(new FastOutSlowInInterpolator())
-             .translationY(0f);
-        }, finished -> {
-            if (!finished) {
-                scoreContainer.setTranslationY(0f);
-            }
+        animatorFor(scoreContainer, animatorContext)
+                .withInterpolator(new FastOutSlowInInterpolator())
+                .translationY(0f)
+                .addOnAnimationCompleted(finished -> {
+                    if (!finished) {
+                        scoreContainer.setTranslationY(0f);
+                    }
 
-            fireAdapterAnimations.run();
-        });
+                    fireAdapterAnimations.run();
+                    animateCardIntoView();
+                })
+                .start();
+    }
+
+    private void animateCardIntoView() {
+        // Intentionally not included in the animator context so
+        // that the `TimelineFadeItemAnimator` runs when intended.
+        animatorFor(cardContainer)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (!finished) {
+                        cardContainer.setVisibility(VISIBLE);
+                    }
+                })
+                .start();
     }
 
     //endregion
@@ -353,24 +369,6 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     public void bindTimeline(@NonNull Timeline timeline, @NonNull Runnable fireAdapterAnimations) {
         cardContents.setText(timeline.getMessage());
         animateToScore(timeline.getScore(), timeline.getScoreCondition(), fireAdapterAnimations);
-    }
-
-    //endregion
-
-
-    //region Timeline Animations
-
-    @Override
-    public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction t) {
-        t.animatorFor(cardContainer)
-         .fadeIn();
-    }
-
-    @Override
-    public void onItemAnimatorDidStop(boolean finished) {
-        if (!finished) {
-            cardContainer.setVisibility(VISIBLE);
-        }
     }
 
     //endregion

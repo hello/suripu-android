@@ -482,7 +482,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         toolbar.setShareVisible(false);
         headerView.stopPulsing();
-        itemAnimator.removeListener(headerView);
         adapter.replaceHeader(1, newHeader);
     }
 
@@ -520,7 +519,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
                 toolbar.setShareVisible(!homeActivity.isUndersideVisible());
             });
-            itemAnimator.addListener(headerView);
             headerView.bindTimeline(timeline, continuation);
         } else {
             transitionIntoNoDataState(R.drawable.timeline_state_no_data,
