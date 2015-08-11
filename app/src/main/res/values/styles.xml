@@ -184,41 +184,26 @@
 
     <style name="WindowAnimations.FadeOut">
         <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@anim/fade_out</item>
+        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
     </style>
 
     <style name="WindowAnimations.Fade">
-        <item name="android:windowEnterAnimation">@anim/fade_in</item>
-        <item name="android:windowExitAnimation">@anim/fade_out</item>
+        <item name="android:windowEnterAnimation">@anim/anime_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
     </style>
 
     <style name="WindowAnimations.BottomSlide">
-        <item name="android:windowEnterAnimation">@anim/bottom_slide_up</item>
-        <item name="android:windowExitAnimation">@anim/bottom_slide_down</item>
+        <item name="android:windowEnterAnimation">@anim/anime_bottom_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/anime_bottom_slide_down</item>
     </style>
 
     <style name="WindowAnimations.BottomSlide.FadeOutOnly">
-        <item name="android:windowExitAnimation">@anim/fade_out</item>
-    </style>
-
-    <style name="WindowAnimations.TopSlide">
-        <item name="android:windowEnterAnimation">@anim/top_slide_down</item>
-        <item name="android:windowExitAnimation">@anim/top_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
     </style>
 
     <style name="WindowAnimations.PopSlideAndFade">
         <item name="android:windowEnterAnimation">@anim/fade_and_pop_in</item>
         <item name="android:windowExitAnimation">@anim/fade_and_slide_out</item>
-    </style>
-    
-    <style name="WindowAnimations.BottomSlideUpAndFade">
-        <item name="android:windowEnterAnimation">@anim/fade_and_slide_up</item>
-        <item name="android:windowExitAnimation">@anim/fade_out</item>
-    </style>
-
-    <style name="WindowAnimations.BottomSlideDownAndFade">
-        <item name="android:windowEnterAnimation">@anim/fade_and_slide_down</item>
-        <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
     <!-- Buttons -->
