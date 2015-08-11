@@ -1,8 +1,5 @@
 package is.hello.sense.ui.animation;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.graphics.Rect;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -13,8 +10,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.Set;
-
-import is.hello.sense.ui.widget.RectEvaluatorCompat;
 
 public class Animation {
     /**
@@ -48,48 +43,6 @@ public class Animation {
      * The views that are currently animating.
      */
     private static final Set<View> animatingViews = new HashSet<>();
-
-
-    public static long calculateDuration(float velocity, float totalArea) {
-        long rawDuration = (long) (totalArea / velocity) * 1000 / 2;
-        return Math.max(Animation.DURATION_FAST, Math.min(Animation.DURATION_SLOW, rawDuration));
-    }
-
-    /**
-     * Creates and returns a ValueAnimator that will
-     * transition between the specified array of colors.
-     * <p/>
-     * Returned animator is configured to use the standard defaults.
-     */
-    public static ValueAnimator createColorAnimator(@NonNull int... colors) {
-        ValueAnimator colorAnimator = ValueAnimator.ofInt((int[]) colors);
-        colorAnimator.setEvaluator(new ArgbEvaluator());
-        colorAnimator.setInterpolator(INTERPOLATOR_DEFAULT);
-        colorAnimator.setDuration(DURATION_NORMAL);
-        return colorAnimator;
-    }
-
-    /**
-     * Creates and returns a ValueAnimator that will
-     * transition between the specified array of rectangles.
-     * <p/>
-     * The same Rect instance will be used in each call.
-     */
-    public static ValueAnimator createRectAnimator(@NonNull Rect... rectangles) {
-        ValueAnimator rectAnimator = ValueAnimator.ofObject(new RectEvaluatorCompat(), (Object[]) rectangles);
-        rectAnimator.setInterpolator(INTERPOLATOR_DEFAULT);
-        rectAnimator.setDuration(DURATION_NORMAL);
-        return rectAnimator;
-    }
-
-    public static ValueAnimator createViewFrameAnimator(@NonNull View view, @NonNull Rect... rectangles) {
-        ValueAnimator frameAnimator = createRectAnimator((Rect[]) rectangles);
-        frameAnimator.addUpdateListener(a -> {
-            Rect frame = (Rect) a.getAnimatedValue();
-            view.layout(frame.left, frame.top, frame.right, frame.bottom);
-        });
-        return frameAnimator;
-    }
 
 
     //region Animating Views

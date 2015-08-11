@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.widget.util.Views;
@@ -196,7 +197,7 @@ public class TimelineToolbar extends RelativeLayout {
             return;
         }
 
-        this.titleColorAnimator = Animation.createColorAnimator(startColor, endColor);
+        this.titleColorAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
         titleColorAnimator.setDuration(Animation.DURATION_FAST);
         titleColorAnimator.addUpdateListener(a -> {
             int color = (int) a.getAnimatedValue();

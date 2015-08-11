@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
@@ -33,6 +34,7 @@ import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.sense.ui.animation.OnAnimationCompleted;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
@@ -42,9 +44,8 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
-import is.hello.sense.ui.animation.OnAnimationCompleted;
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 import static is.hello.sense.ui.animation.Animation.cancelAll;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 import static is.hello.sense.units.UnitSystem.Unit;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
@@ -202,7 +203,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
 
             int endColor = resources.getColor(sensor.getCondition().colorRes);
-            this.scoreAnimator = Animation.createColorAnimator(startColor, endColor);
+            this.scoreAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
             scoreAnimator.setDuration(duration);
             scoreAnimator.addUpdateListener(a -> {
                 int color = (int) a.getAnimatedValue();

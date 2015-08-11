@@ -27,6 +27,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
@@ -574,7 +575,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         velocityTracker.computeCurrentVelocity(1000);
 
                         velocity = velocityTracker.getXVelocity();
-                        duration = Animation.calculateDuration(Math.abs(velocity), getMeasuredWidth());
+                        duration = Anime.calculateDuration(Math.abs(velocity), getMeasuredWidth());
 
                         velocityTracker.recycle();
                         this.velocityTracker = null;

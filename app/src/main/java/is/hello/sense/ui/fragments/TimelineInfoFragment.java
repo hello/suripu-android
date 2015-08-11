@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -109,6 +110,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         Bundle arguments = getArguments();
 
+        //noinspection ConstantConditions
         this.scoreCondition = ScoreCondition.fromString(arguments.getString(ARG_SCORE_CONDITION));
         this.scoreColor = getResources().getColor(scoreCondition.colorRes);
         this.darkenedScoreColor = Drawing.darkenColorBy(scoreColor, 0.2f);
@@ -227,6 +229,15 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Showing
 
+    private static ValueAnimator createViewFrameAnimator(@NonNull View view, @NonNull Rect... rectangles) {
+        ValueAnimator frameAnimator = AnimatorTemplate.DEFAULT.createRectAnimator((Rect[]) rectangles);
+        frameAnimator.addUpdateListener(a -> {
+            Rect frame = (Rect) a.getAnimatedValue();
+            view.layout(frame.left, frame.top, frame.right, frame.bottom);
+        });
+        return frameAnimator;
+    }
+
     private Animator createFadeIn() {
         ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
@@ -269,7 +280,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             Rect finalRect = Views.copyFrame(recycler);
             finalRect.top += header.getBottom();
-            animator = Animation.createViewFrameAnimator(recycler, initialRect, finalRect);
+            animator = createViewFrameAnimator(recycler, initialRect, finalRect);
 
             this.finalRecyclerLayoutParams = recycler.getLayoutParams();
 
@@ -311,7 +322,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             Rect initialRect = Views.copyFrame(recycler);
             initialRect.top += (header.getBottom() + header.getTranslationY());
-            animator = Animation.createViewFrameAnimator(recycler, initialRect, finalRect);
+            animator = createViewFrameAnimator(recycler, initialRect, finalRect);
         } else {
             animator = ObjectAnimator.ofFloat(recycler, "alpha", 1f, 0f);
         }

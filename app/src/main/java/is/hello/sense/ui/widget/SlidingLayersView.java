@@ -16,6 +16,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
@@ -404,7 +405,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = Animation.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = Anime.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {
