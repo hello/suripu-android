@@ -27,10 +27,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.util.SafeOnClickListener;
@@ -192,7 +191,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             scoreAnimator.cancel();
         }
 
-        Animation.cancelAll(scoreContainer, cardContainer);
+        Anime.cancelAll(scoreContainer, cardContainer);
     }
 
     public void startPulsing() {
@@ -209,7 +208,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         int startColor = getResources().getColor(R.color.light_accent);
         int endColor = getResources().getColor(R.color.border);
         pulseAnimator.addUpdateListener(a -> {
-            int color = Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
+            int color = is.hello.go99.Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
             scoreDrawable.setTrackColor(color);
         });
         pulseAnimator.addListener(new AnimatorListenerAdapter() {
@@ -282,14 +281,14 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             this.hasAnimated = true;
 
             this.scoreAnimator = ValueAnimator.ofInt(scoreDrawable.getValue(), score);
-            scoreAnimator.setDuration(Animation.DURATION_SLOW);
-            scoreAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
+            scoreAnimator.setDuration(Anime.DURATION_SLOW);
+            scoreAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
 
             int startColor = scoreDrawable.getFillColor();
             int endColor = getResources().getColor(condition.colorRes);
             scoreAnimator.addUpdateListener(a -> {
                 Integer newScore = (Integer) a.getAnimatedValue();
-                int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
+                int color = is.hello.go99.Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
 
                 scoreDrawable.setValue(newScore);
                 scoreDrawable.setFillColor(color);
@@ -331,8 +330,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     }
 
     private void animateScoreIntoPlace(@NonNull Runnable fireAdapterAnimations) {
-        animatorContext.transaction(f -> {
-            f.animate(scoreContainer)
+        animatorContext.transaction(t -> {
+            t.animatorFor(scoreContainer)
              .withInterpolator(new FastOutSlowInInterpolator())
              .translationY(0f);
         }, finished -> {
@@ -375,8 +374,8 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Timeline Animations
 
     @Override
-    public void onTimelineAnimationWillStart(@NonNull AnimatorContext.Transaction f) {
-        f.animate(cardContainer)
+    public void onTimelineAnimationWillStart(@NonNull AnimatorContext.Transaction t) {
+        t.animatorFor(cardContainer)
          .fadeIn();
     }
 

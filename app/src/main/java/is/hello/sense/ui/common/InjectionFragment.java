@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
-import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.StateSafeExecutor;
 import is.hello.sense.util.StateSafeScheduler;

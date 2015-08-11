@@ -22,13 +22,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -36,7 +36,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class QuestionsDialogFragment extends InjectionDialogFragment implements CompoundButton.OnCheckedChangeListener {
     public static final String TAG = QuestionsDialogFragment.class.getSimpleName();
@@ -80,7 +80,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         this.choicesContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
-        AnimatorConfig.DEFAULT.apply(transition);
+        AnimatorTemplate.DEFAULT.apply(transition);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
@@ -102,7 +102,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         this.choicesContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
-        AnimatorConfig.DEFAULT.apply(transition);
+        AnimatorTemplate.DEFAULT.apply(transition);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
@@ -176,9 +176,9 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
             if (drawable instanceof TransitionDrawable) {
                 TransitionDrawable transitionDrawable = (TransitionDrawable) drawable;
                 if (checked) {
-                    transitionDrawable.startTransition(Animation.DURATION_FAST);
+                    transitionDrawable.startTransition(Anime.DURATION_FAST);
                 } else {
-                    transitionDrawable.reverseTransition(Animation.DURATION_FAST);
+                    transitionDrawable.reverseTransition(Anime.DURATION_FAST);
                 }
             }
         }
@@ -449,7 +449,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                Animation.cancelAll(view);
+                Anime.cancelAll(view);
                 animatorFor(view)
                         .simplePop(1.10f)
                         .start();

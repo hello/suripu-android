@@ -20,8 +20,8 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.util.Analytics;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
-import static is.hello.sense.ui.animation.Animation.cancelAll;
+import static is.hello.go99.Anime.cancelAll;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class OnboardingDoneFragment extends Fragment {
     private final StepHandler stepHandler = new StepHandler(this);

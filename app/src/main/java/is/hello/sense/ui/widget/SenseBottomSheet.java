@@ -27,10 +27,9 @@ import java.util.Collection;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.MultiAnimator;
 import rx.functions.Action1;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_DIALOG_STATE = SenseBottomSheet.class.getSimpleName() + "#SAVED_DIALOG_STATE";
@@ -87,6 +86,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         setTitle(savedInstanceState.getString(SAVED_TITLE));

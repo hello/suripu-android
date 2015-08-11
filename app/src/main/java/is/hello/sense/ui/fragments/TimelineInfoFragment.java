@@ -51,7 +51,6 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
@@ -178,7 +177,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 .with(createRecyclerReveal());
 
         compound.setInterpolator(new FastOutSlowInInterpolator());
-        compound.setDuration(Animation.DURATION_NORMAL);
+        compound.setDuration(Anime.DURATION_NORMAL);
 
         return compound;
     }
@@ -206,7 +205,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 .with(createRecyclerDismissal());
 
         compound.setInterpolator(new FastOutLinearInInterpolator());
-        compound.setDuration(Animation.DURATION_NORMAL);
+        compound.setDuration(Anime.DURATION_NORMAL);
 
         return compound;
     }
@@ -247,7 +246,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
 
-                int statusBar = Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
+                int statusBar = is.hello.go99.Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
@@ -359,7 +358,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(1f - fraction);
 
-                int statusBar = Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
+                int statusBar = is.hello.go99.Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {

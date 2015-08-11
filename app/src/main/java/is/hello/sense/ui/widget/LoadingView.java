@@ -18,10 +18,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class LoadingView extends LinearLayout {
     public static final long DURATION_DONE_MESSAGE = 1000;
@@ -49,7 +49,7 @@ public class LoadingView extends LinearLayout {
 
         LayoutTransition layoutTransition = new LayoutTransition();
         for (int type = LayoutTransition.CHANGE_APPEARING; type <= LayoutTransition.CHANGING; type++) {
-            layoutTransition.setDuration(type, Animation.DURATION_NORMAL);
+            layoutTransition.setDuration(type, Anime.DURATION_NORMAL);
             layoutTransition.setStartDelay(type, 0);
         }
         layoutTransition.disableTransitionType(LayoutTransition.DISAPPEARING);
@@ -92,7 +92,7 @@ public class LoadingView extends LinearLayout {
     public void clearAnimation() {
         super.clearAnimation();
 
-        Animation.cancelAll(progressBar);
+        Anime.cancelAll(progressBar);
     }
 
     public void dismissProgressBar(boolean animated, @NonNull Runnable onDone) {

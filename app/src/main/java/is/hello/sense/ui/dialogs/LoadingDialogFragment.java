@@ -18,12 +18,11 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.SenseDialogFragment;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public final class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
@@ -194,12 +193,12 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
     public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
         if (titleText != null) {
             animatorFor(activityIndicator)
-                    .withDuration(Animation.DURATION_FAST)
+                    .withDuration(Anime.DURATION_FAST)
                     .fadeOut(View.INVISIBLE)
                     .start();
 
             animatorFor(titleText)
-                    .withDuration(Animation.DURATION_FAST)
+                    .withDuration(Anime.DURATION_FAST)
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished)

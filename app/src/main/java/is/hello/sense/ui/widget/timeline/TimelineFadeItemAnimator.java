@@ -6,9 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorConfig;
-import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
+import is.hello.go99.animators.AnimatorTemplate;
 
 /**
  * A simple staggered fade-in animation.
@@ -18,7 +18,7 @@ import is.hello.sense.ui.animation.AnimatorContext;
 public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
     public static final long DELAY = 20;
 
-    private final AnimatorConfig config = AnimatorConfig.DEFAULT;
+    private final AnimatorTemplate config = AnimatorTemplate.DEFAULT;
 
     private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
@@ -30,14 +30,14 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
     @Override
     public void runPendingAnimations() {
         sortByPosition(pending);
-        getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, f -> {
-            dispatchAnimationWillStart(f);
+        getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, t -> {
+            dispatchAnimationWillStart(t);
 
             long delay = DELAY;
             for (RecyclerView.ViewHolder item : pending) {
                 dispatchAddStarting(item);
 
-                f.animate(item.itemView)
+                t.animatorFor(item.itemView)
                  .withStartDelay(delay)
                  .fadeIn();
 
@@ -75,13 +75,13 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public void endAnimation(RecyclerView.ViewHolder item) {
-        Animation.cancelAll(item.itemView);
+        Anime.cancelAll(item.itemView);
     }
 
     @Override
     public void endAnimations() {
         for (RecyclerView.ViewHolder item : running) {
-            Animation.cancelAll(item.itemView);
+            Anime.cancelAll(item.itemView);
         }
     }
 

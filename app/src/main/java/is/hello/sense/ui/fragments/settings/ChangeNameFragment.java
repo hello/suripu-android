@@ -11,12 +11,11 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class ChangeNameFragment extends AccountEditingFragment {
     private TextView nameText;

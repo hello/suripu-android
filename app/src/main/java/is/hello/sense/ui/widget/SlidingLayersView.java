@@ -17,15 +17,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
+import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
     private int touchSlop;
@@ -159,7 +158,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             interactiveAnimator.prepare();
         }
 
-        animateOpen(Animation.DURATION_NORMAL);
+        animateOpen(Anime.DURATION_NORMAL);
     }
 
     public void close() {
@@ -172,7 +171,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
         stopAnimations();
 
-        animateClosed(Animation.DURATION_NORMAL);
+        animateClosed(Anime.DURATION_NORMAL);
     }
 
     public void toggle() {
@@ -313,7 +312,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void stopAnimations() {
         this.animating = false;
-        Animation.cancelAll(topView);
+        Anime.cancelAll(topView);
         if (interactiveAnimator != null) {
             interactiveAnimator.cancel();
         }
@@ -334,7 +333,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(1f, duration, Animation.INTERPOLATOR_DEFAULT, animatorContext);
+            interactiveAnimator.finish(1f, duration, Anime.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
@@ -357,7 +356,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 .start();
 
         if (interactiveAnimator != null) {
-            interactiveAnimator.finish(0f, duration, Animation.INTERPOLATOR_DEFAULT, animatorContext);
+            interactiveAnimator.finish(0f, duration, Anime.INTERPOLATOR_DEFAULT, animatorContext);
         }
     }
 
@@ -401,11 +400,11 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 float travelX = Math.abs(startEventX - event.getX()),
                       travelY = Math.abs(startEventY - event.getY());
                 if (velocityTracker == null || isOpen && travelX < touchSlop && travelY < touchSlop) {
-                    animateClosed(Animation.DURATION_NORMAL);
+                    animateClosed(Anime.DURATION_NORMAL);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = Anime.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = is.hello.go99.Anime.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {
