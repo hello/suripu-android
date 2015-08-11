@@ -562,11 +562,11 @@ public class HomeActivity
 
         @Override
         public void frame(float frameValue) {
-            float scale = is.hello.go99.Anime.interpolateFloats(frameValue, MIN_SCALE, MAX_SCALE);
+            float scale = Anime.interpolateFloats(frameValue, MIN_SCALE, MAX_SCALE);
             undersideContainer.setScaleX(scale);
             undersideContainer.setScaleY(scale);
 
-            float alpha = is.hello.go99.Anime.interpolateFloats(frameValue, MIN_ALPHA, MAX_ALPHA);
+            float alpha = Anime.interpolateFloats(frameValue, MIN_ALPHA, MAX_ALPHA);
             undersideContainer.setAlpha(alpha);
         }
 
@@ -575,8 +575,8 @@ public class HomeActivity
                            long duration,
                            @NonNull Interpolator interpolator,
                            @Nullable AnimatorContext animatorContext) {
-            float finalScale = is.hello.go99.Anime.interpolateFloats(finalFrameValue, MIN_SCALE, MAX_SCALE);
-            float finalAlpha = is.hello.go99.Anime.interpolateFloats(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
+            float finalScale = Anime.interpolateFloats(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Anime.interpolateFloats(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
             animatorFor(undersideContainer, animatorContext)
                     .withDuration(duration)
                     .withInterpolator(interpolator)

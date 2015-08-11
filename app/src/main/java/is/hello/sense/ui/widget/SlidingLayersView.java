@@ -404,7 +404,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
                     float velocity = Math.abs(velocityTracker.getYVelocity());
-                    long duration = is.hello.go99.Anime.calculateDuration(velocity, getMeasuredHeight());
+                    long duration = Anime.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {

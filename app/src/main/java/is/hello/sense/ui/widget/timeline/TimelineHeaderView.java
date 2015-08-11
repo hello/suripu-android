@@ -208,7 +208,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         int startColor = getResources().getColor(R.color.light_accent);
         int endColor = getResources().getColor(R.color.border);
         pulseAnimator.addUpdateListener(a -> {
-            int color = is.hello.go99.Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
+            int color = Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
             scoreDrawable.setTrackColor(color);
         });
         pulseAnimator.addListener(new AnimatorListenerAdapter() {
@@ -288,7 +288,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             int endColor = getResources().getColor(condition.colorRes);
             scoreAnimator.addUpdateListener(a -> {
                 Integer newScore = (Integer) a.getAnimatedValue();
-                int color = is.hello.go99.Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
+                int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
 
                 scoreDrawable.setValue(newScore);
                 scoreDrawable.setFillColor(color);

@@ -574,7 +574,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         velocityTracker.computeCurrentVelocity(1000);
 
                         velocity = velocityTracker.getXVelocity();
-                        duration = is.hello.go99.Anime.calculateDuration(Math.abs(velocity), getMeasuredWidth());
+                        duration = Anime.calculateDuration(Math.abs(velocity), getMeasuredWidth());
 
                         velocityTracker.recycle();
                         this.velocityTracker = null;

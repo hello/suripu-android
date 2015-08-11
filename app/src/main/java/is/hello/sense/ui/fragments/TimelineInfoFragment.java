@@ -246,7 +246,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
 
-                int statusBar = is.hello.go99.Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
+                int statusBar = Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
@@ -358,7 +358,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(1f - fraction);
 
-                int statusBar = is.hello.go99.Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
+                int statusBar = Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
