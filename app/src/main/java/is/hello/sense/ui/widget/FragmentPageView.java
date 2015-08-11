@@ -31,10 +31,12 @@ import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.StateSafeExecutor;
+
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public final class FragmentPageView<TFragment extends Fragment> extends FrameLayout implements GestureInterceptingView {
     //region Property Fields
@@ -416,10 +418,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void finishSwipe(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
-        animationConfig.apply(onScreenViewAnimator).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
-        animationConfig.apply(offScreenViewAnimator).setDuration(duration);
+        MultiAnimator onScreenViewAnimator = animatorFor(getOnScreenView(), animatorContext);
+        animationConfig.apply(onScreenViewAnimator).withDuration(duration);
+        MultiAnimator offScreenViewAnimator = animatorFor(getOffScreenView(), animatorContext);
+        animationConfig.apply(offScreenViewAnimator).withDuration(duration);
 
         offScreenViewAnimator.x(0f);
         onScreenViewAnimator.x(position == Position.BEFORE ? viewPortWidth : -viewPortWidth);
@@ -460,10 +462,10 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
     }
 
     private void snapBack(Position position, long duration) {
-        PropertyAnimatorProxy onScreenViewAnimator = PropertyAnimatorProxy.animate(getOnScreenView(), animatorContext);
-        animationConfig.apply(onScreenViewAnimator).setDuration(duration);
-        PropertyAnimatorProxy offScreenViewAnimator = PropertyAnimatorProxy.animate(getOffScreenView(), animatorContext);
-        animationConfig.apply(offScreenViewAnimator).setDuration(duration);
+        MultiAnimator onScreenViewAnimator = animatorFor(getOnScreenView(), animatorContext);
+        animationConfig.apply(onScreenViewAnimator).withDuration(duration);
+        MultiAnimator offScreenViewAnimator = animatorFor(getOffScreenView(), animatorContext);
+        animationConfig.apply(offScreenViewAnimator).withDuration(duration);
 
         if (decor != null) {
             decor.onSwipeSnappedBack(duration, animationConfig, animatorContext);
@@ -628,7 +630,7 @@ public final class FragmentPageView<TFragment extends Fragment> extends FrameLay
                         animatorContext.beginAnimation();
                     }
 
-                    PropertyAnimatorProxy.stop(onScreenView, getOffScreenView());
+                    Animation.cancelAll(onScreenView, getOffScreenView());
                     if (decor != null) {
                         decor.onSwipeConclusionInterrupted();
                     }

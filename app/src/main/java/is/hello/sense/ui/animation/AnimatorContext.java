@@ -17,6 +17,8 @@ import java.util.List;
 
 import rx.functions.Action1;
 
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+
 public class AnimatorContext implements Animator.AnimatorListener {
     private static final boolean DEBUG = false;
 
@@ -154,24 +156,36 @@ public class AnimatorContext implements Animator.AnimatorListener {
      * facade should then be used to construct animators. The callback
      * <em>should not</em> call start on the animators, this will be
      * done automatically by the animator context.
-     * @param properties    An optional animation properties to apply to each animator.
+     * @param config        An optional animator config to apply to each animator.
      * @param options       The options to apply to the transaction
      * @param animations    A callback that describes the animations to run against a given facade.
      * @param onCompleted   An optional listener to invoke when the longest animation completes.
      */
-    public void transaction(@Nullable AnimatorConfig properties,
+    public void transaction(@Nullable AnimatorConfig config,
                             @TransactionOptions int options,
-                            @NonNull Action1<TransactionFacade> animations,
-                            @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
-        List<PropertyAnimatorProxy> animators = new ArrayList<>(2);
+                            @NonNull Action1<Transaction> animations,
+                            @Nullable OnAnimationCompleted onCompleted) {
+        List<Animator> animators = new ArrayList<>(2);
 
-        TransactionFacade facade = view -> {
-            PropertyAnimatorProxy animator = PropertyAnimatorProxy.animate(view, this);
-            if (properties != null) {
-                properties.apply(animator);
+        Transaction facade = new Transaction() {
+            @Override
+            public MultiAnimator animate(@NonNull View view) {
+                MultiAnimator animator = animatorFor(view, AnimatorContext.this);
+                if (config != null) {
+                    config.apply(animator);
+                }
+                animators.add(animator);
+                return animator;
             }
-            animators.add(animator);
-            return animator;
+
+            @Override
+            public <T extends Animator> T take(@NonNull T animator) {
+                if (config != null) {
+                    config.apply(animator);
+                }
+                animators.add(animator);
+                return animator;
+            }
         };
         animations.call(facade);
 
@@ -183,31 +197,34 @@ public class AnimatorContext implements Animator.AnimatorListener {
     }
 
     /**
-     * Internal. Second half of {@link #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)}.
+     * Internal. Second half of {@link #transaction(AnimatorConfig, int, Action1, OnAnimationCompleted)}.
      */
-    private void startTransaction(@NonNull List<PropertyAnimatorProxy> animators,
-                                  @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
-        PropertyAnimatorProxy longestAnimator = null;
-        for (PropertyAnimatorProxy animator : animators) {
-            if (longestAnimator == null || animator.getTotalDuration() >= longestAnimator.getTotalDuration()) {
+    private void startTransaction(@NonNull List<Animator> animators,
+                                  @Nullable OnAnimationCompleted onCompleted) {
+        Animator longestAnimator = null;
+        long longestTotalDuration = 0;
+        for (Animator animator : animators) {
+            long totalDuration = animator.getStartDelay() + animator.getDuration();
+            if (longestAnimator == null || totalDuration >= longestTotalDuration) {
                 longestAnimator = animator;
+                longestTotalDuration = totalDuration;
             }
 
             animator.start();
         }
 
         if (longestAnimator != null && onCompleted != null) {
-            longestAnimator.addOnAnimationCompleted(onCompleted);
+            longestAnimator.addListener(new OnAnimationCompleted.Adapter(onCompleted));
         }
     }
 
     /**
      * Short-hand provided for common use-case.
      *
-     * @see #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)
+     * @see #transaction(AnimatorConfig, int, Action1, OnAnimationCompleted)
      */
-    public void transaction(@NonNull Action1<TransactionFacade> animations,
-                            @Nullable PropertyAnimatorProxy.OnAnimationCompleted onCompleted) {
+    public void transaction(@NonNull Action1<Transaction> animations,
+                            @Nullable OnAnimationCompleted onCompleted) {
         transaction(null, AnimatorContext.OPTIONS_DEFAULT, animations, onCompleted);
     }
 
@@ -225,9 +242,9 @@ public class AnimatorContext implements Animator.AnimatorListener {
     /**
      * Used for transaction callbacks to specify animations against views.
      *
-     * @see #transaction(AnimatorConfig, int, Action1, PropertyAnimatorProxy.OnAnimationCompleted)
+     * @see #transaction(AnimatorConfig, int, Action1, OnAnimationCompleted)
      */
-    public interface TransactionFacade {
+    public interface Transaction {
         /**
          * Create a property animator proxy for a given view,
          * applying any properties provided, and queuing it
@@ -236,7 +253,15 @@ public class AnimatorContext implements Animator.AnimatorListener {
          * <p/>
          * No external references to the returned animator should be made.
          */
-        PropertyAnimatorProxy animate(@NonNull View view);
+        MultiAnimator animate(@NonNull View view);
+
+        /**
+         * Takes ownership of a given animator, applying
+         * the transaction's configuration to it.
+         * <p />
+         * Use {@link #animate(View)} if you need a {@link MultiAnimator}.
+         */
+        <T extends Animator> T take(@NonNull T animator);
     }
 
     /**

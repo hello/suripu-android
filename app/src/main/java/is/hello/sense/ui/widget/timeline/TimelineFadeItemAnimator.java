@@ -6,9 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 
 /**
  * A simple staggered fade-in animation.
@@ -38,7 +38,7 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
                 dispatchAddStarting(item);
 
                 f.animate(item.itemView)
-                 .setStartDelay(delay)
+                 .withStartDelay(delay)
                  .fadeIn();
 
                 delay += DELAY;
@@ -75,13 +75,13 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public void endAnimation(RecyclerView.ViewHolder item) {
-        PropertyAnimatorProxy.stop(item.itemView);
+        Animation.cancelAll(item.itemView);
     }
 
     @Override
     public void endAnimations() {
         for (RecyclerView.ViewHolder item : running) {
-            PropertyAnimatorProxy.stop(item.itemView);
+            Animation.cancelAll(item.itemView);
         }
     }
 

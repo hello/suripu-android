@@ -22,6 +22,7 @@ import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -56,7 +57,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
@@ -459,12 +460,12 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 return (holder, onCompletion) -> {
                     int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
 
-                    animate(holder.contents)
-                            .setOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
+                    animatorFor(holder.contents)
+                            .addOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)
                             .start();
 
-                    animate(holder.primaryButton)
+                    animatorFor(holder.primaryButton)
                             .slideYAndFade(0f, slideAmount, 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();

@@ -11,11 +11,12 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class ChangeNameFragment extends AccountEditingFragment {
     private TextView nameText;
@@ -46,7 +47,7 @@ public class ChangeNameFragment extends AccountEditingFragment {
         String name = AccountPresenter.normalizeInput(nameText.getText());
         nameText.setText(name);
         if (!AccountPresenter.validateName(name)) {
-            animate(nameText).simplePop(1.4f).start();
+            animatorFor(nameText).simplePop(1.4f).start();
             return;
         }
 

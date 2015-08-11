@@ -20,10 +20,11 @@ import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.animation.InteractiveAnimator;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
+
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
     private int touchSlop;
@@ -311,7 +312,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void stopAnimations() {
         this.animating = false;
-        PropertyAnimatorProxy.stop(topView);
+        Animation.cancelAll(topView);
         if (interactiveAnimator != null) {
             interactiveAnimator.cancel();
         }
@@ -319,9 +320,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void animateOpen(long duration) {
         this.animating = true;
-        PropertyAnimatorProxy.animate(topView, animatorContext)
+        animatorFor(topView, animatorContext)
                 .y(getMeasuredHeight() - topViewOpenHeight)
-                .setDuration(duration)
+                .withDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.animating = false;
@@ -338,9 +339,9 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
 
     private void animateClosed(long duration) {
         this.animating = true;
-        PropertyAnimatorProxy.animate(topView, animatorContext)
+        animatorFor(topView, animatorContext)
                 .y(-shadowHeight)
-                .setDuration(duration)
+                .withDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.animating = false;

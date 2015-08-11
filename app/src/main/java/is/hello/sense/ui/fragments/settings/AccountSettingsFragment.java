@@ -26,6 +26,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -41,7 +42,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
@@ -197,19 +198,19 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     }
 
     private void showLoadingIndicator() {
-        animate(listView)
+        animatorFor(listView)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeIn()
                 .start();
     }
 
     private void hideLoadingIndicator() {
-        animate(loadingIndicator)
+        animatorFor(loadingIndicator)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animate(listView)
+        animatorFor(listView)
                 .fadeIn()
                 .start();
     }

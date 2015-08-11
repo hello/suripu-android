@@ -56,11 +56,6 @@ public final class AnimatorConfig {
         return animator;
     }
 
-    public PropertyAnimatorProxy apply(@NonNull PropertyAnimatorProxy animator) {
-        return animator.setDuration(duration)
-                       .setInterpolator(interpolator);
-    }
-
     public LayoutTransition apply(@NonNull LayoutTransition transition) {
         transition.setDuration(duration);
         return transition;

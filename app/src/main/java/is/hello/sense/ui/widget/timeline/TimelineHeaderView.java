@@ -30,7 +30,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -193,7 +192,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             scoreAnimator.cancel();
         }
 
-        PropertyAnimatorProxy.stop(scoreContainer, cardContainer);
+        Animation.cancelAll(scoreContainer, cardContainer);
     }
 
     public void startPulsing() {
@@ -334,7 +333,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     private void animateScoreIntoPlace(@NonNull Runnable fireAdapterAnimations) {
         animatorContext.transaction(f -> {
             f.animate(scoreContainer)
-             .setInterpolator(new FastOutSlowInInterpolator())
+             .withInterpolator(new FastOutSlowInInterpolator())
              .translationY(0f);
         }, finished -> {
             if (!finished) {
@@ -376,7 +375,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
     //region Timeline Animations
 
     @Override
-    public void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade f) {
+    public void onTimelineAnimationWillStart(@NonNull AnimatorContext.Transaction f) {
         f.animate(cardContainer)
          .fadeIn();
     }

@@ -20,8 +20,8 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.util.Analytics;
 
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.animate;
-import static is.hello.sense.ui.animation.PropertyAnimatorProxy.stop;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.sense.ui.animation.Animation.cancelAll;
 
 public class OnboardingDoneFragment extends Fragment {
     private final StepHandler stepHandler = new StepHandler(this);
@@ -64,11 +64,11 @@ public class OnboardingDoneFragment extends Fragment {
 
         stepHandler.cancelPending();
 
-        stop(message);
+        cancelAll(message);
     }
 
     public void showSecondMessage() {
-        animate(message)
+        animatorFor(message)
                 .fadeOut(View.INVISIBLE)
                 .addOnAnimationCompleted(finished -> {
                     message.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.onboarding_done_moon, 0, 0);

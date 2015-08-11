@@ -29,12 +29,13 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
+
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 @SuppressLint("ViewConstructor")
 public class TutorialOverlayView extends RelativeLayout {
@@ -147,7 +148,7 @@ public class TutorialOverlayView extends RelativeLayout {
         bindAndSubscribe(Views.observeNextLayout(this),
                          ignored -> {
                              descriptionText.setTranslationY(descriptionText.getMeasuredHeight());
-                             PropertyAnimatorProxy.animate(descriptionText)
+                             animatorFor(descriptionText)
                                      .translationY(0f)
                                      .alpha(1f)
                                      .start();
@@ -159,8 +160,8 @@ public class TutorialOverlayView extends RelativeLayout {
         if (container != null) {
             if (animate) {
                 ViewGroup oldContainer = container;
-                PropertyAnimatorProxy.animate(this)
-                        .setDuration(Animation.DURATION_VERY_FAST)
+                animatorFor(this)
+                        .withDuration(Animation.DURATION_VERY_FAST)
                         .fadeOut(GONE)
                         .addOnAnimationCompleted(finished -> {
                             oldContainer.removeView(this);
@@ -206,7 +207,7 @@ public class TutorialOverlayView extends RelativeLayout {
         postDelayed(() -> {
             interactionView.setAlpha(0f);
             addView(interactionView, layoutParams);
-            PropertyAnimatorProxy.animate(interactionView)
+            animatorFor(interactionView)
                     .fadeIn()
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
@@ -221,13 +222,13 @@ public class TutorialOverlayView extends RelativeLayout {
         if (interactionView != null) {
             interactionView.stopAnimation();
 
-            PropertyAnimatorProxy.animate(interactionView)
-                    .setDuration(Animation.DURATION_VERY_FAST)
+            animatorFor(interactionView)
+                    .withDuration(Animation.DURATION_VERY_FAST)
                     .fadeOut(View.GONE)
                     .start();
 
-            PropertyAnimatorProxy.animate(descriptionText)
-                    .setDuration(Animation.DURATION_VERY_FAST)
+            animatorFor(descriptionText)
+                    .withDuration(Animation.DURATION_VERY_FAST)
                     .fadeOut(View.GONE)
                     .start();
         }

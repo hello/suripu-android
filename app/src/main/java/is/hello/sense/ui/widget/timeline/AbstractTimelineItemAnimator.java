@@ -87,9 +87,9 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
         listeners.clear();
     }
 
-    protected void dispatchAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade) {
+    protected void dispatchAnimationWillStart(@NonNull AnimatorContext.Transaction transaction) {
         for (Listener listener : listeners) {
-            listener.onTimelineAnimationWillStart(transactionFacade);
+            listener.onTimelineAnimationWillStart(transaction);
         }
     }
 
@@ -101,7 +101,7 @@ public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnim
     }
 
     public interface Listener {
-        void onTimelineAnimationWillStart(@NonNull AnimatorContext.TransactionFacade transactionFacade);
+        void onTimelineAnimationWillStart(@NonNull AnimatorContext.Transaction transaction);
         void onTimelineAnimationDidEnd(boolean finished);
     }
 

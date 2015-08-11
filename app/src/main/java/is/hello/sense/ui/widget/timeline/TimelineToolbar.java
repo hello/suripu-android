@@ -20,8 +20,9 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.PropertyAnimatorProxy;
 import is.hello.sense.ui.widget.util.Views;
+
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class TimelineToolbar extends RelativeLayout {
     private final ImageButton overflow;
@@ -90,7 +91,7 @@ public class TimelineToolbar extends RelativeLayout {
         if (titleColorAnimator != null) {
             titleColorAnimator.cancel();
         }
-        PropertyAnimatorProxy.stop(share);
+        Animation.cancelAll(share);
     }
 
     public void setOverflowOnClickListener(@NonNull OnClickListener onClickListener) {
@@ -139,8 +140,8 @@ public class TimelineToolbar extends RelativeLayout {
         }
 
         if (shareVisible) {
-            PropertyAnimatorProxy.animate(share)
-                    .setDuration(Animation.DURATION_FAST)
+            animatorFor(share)
+                    .withDuration(Animation.DURATION_FAST)
                     .fadeIn()
                     .addOnAnimationCompleted(finished -> {
                         if (!finished) {
@@ -150,8 +151,8 @@ public class TimelineToolbar extends RelativeLayout {
                     })
                     .start();
         } else {
-            PropertyAnimatorProxy.animate(share)
-                    .setDuration(Animation.DURATION_FAST)
+            animatorFor(share)
+                    .withDuration(Animation.DURATION_FAST)
                     .fadeOut(INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
                         if (!finished) {
