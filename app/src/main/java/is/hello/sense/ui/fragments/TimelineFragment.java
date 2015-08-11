@@ -190,7 +190,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BottomInsetDecoration(getResources(), headers.length));
 
-        int backgroundFillColor = getResources().getColor(R.color.timeline_background_fill);
+        int backgroundFillColor = getResources().getColor(R.color.background_timeline);
         this.backgroundFill = new ColorDrawableCompat(backgroundFillColor);
         recyclerView.setBackground(backgroundFill);
 
@@ -210,8 +210,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         stateSafeExecutor.execute(headerView::startPulsing);
 
         bindAndSubscribe(timelinePresenter.timeline,
-                this::bindTimeline,
-                this::timelineUnavailable);
+                         this::bindTimeline,
+                         this::timelineUnavailable);
 
         bindAndSubscribe(preferences.observableUse24Time(),
                 adapter::setUse24Time,
@@ -490,12 +490,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             return;
         }
 
-        backgroundFill.setColor(getResources().getColor(R.color.timeline_background_fill));
-
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
 
         adapter.replaceHeader(1, headerView);
+        headerView.setBackgroundSolid(false, 0);
         headerView.startPulsing();
 
         // Run after change listener
@@ -508,7 +507,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     public void bindTimeline(@NonNull Timeline timeline) {
         boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         if (hasEvents) {
-            Runnable continuation = stateSafeExecutor.bind(() -> {
+            Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
+                int targetColor = getResources().getColor(R.color.timeline_background_fill);
+                Animator backgroundFade = createBackgroundCrossFade(targetColor);
+                backgroundFade.start();
+
+                toolbar.setShareVisible(!homeActivity.isUndersideVisible());
+            });
+            Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {
                     itemAnimator.addListener(new HandholdingOneShotListener());
                 } else {
@@ -516,13 +522,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 }
 
                 adapter.bindEvents(timeline.getEvents());
-
-                toolbar.setShareVisible(!homeActivity.isUndersideVisible());
             });
-            headerView.bindTimeline(timeline, continuation);
+            headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
         } else {
             transitionIntoNoDataState(R.drawable.timeline_state_no_data,
-                    R.string.title_timeline_not_enough_data, timeline.getMessage());
+                                      R.string.title_timeline_not_enough_data, timeline.getMessage());
         }
 
         headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);

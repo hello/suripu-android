@@ -28,19 +28,25 @@ import android.widget.TextView;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
+import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class TimelineHeaderView extends RelativeLayout {
-    private final Paint dividerPaint = new Paint();
+    private final Paint paint = new Paint();
     private final int dividerHeight;
+    private final int dividerColor;
 
+    private final int solidBackgroundColor;
+    private final Drawable gradientBackground;
+    private int gradientBackgroundAlpha = 0;
 
     private final View scoreContainer;
     private final SleepScoreDrawable scoreDrawable;
@@ -56,6 +62,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
     private @Nullable ValueAnimator scoreAnimator;
     private @Nullable ValueAnimator pulseAnimator;
+    private @Nullable ValueAnimator backgroundAnimator;
 
 
     //region Lifecycle
@@ -74,11 +81,12 @@ public class TimelineHeaderView extends RelativeLayout {
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         Resources resources = getResources();
-        int dividerColor = resources.getColor(R.color.timeline_header_border);
-        dividerPaint.setColor(dividerColor);
+        this.dividerColor = resources.getColor(R.color.timeline_header_border);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
-        setBackground(ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_header, null));
+        this.solidBackgroundColor = resources.getColor(R.color.background_timeline);
+        this.gradientBackground = ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_header, null);
+        gradientBackground.setAlpha(0);
 
 
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -128,8 +136,19 @@ public class TimelineHeaderView extends RelativeLayout {
         int right = canvas.getWidth(),
             bottom = canvas.getHeight();
 
-        canvas.drawRect(0, bottom - dividerHeight,
-                right, bottom, dividerPaint);
+        if (gradientBackgroundAlpha < 255) {
+            paint.setColor(solidBackgroundColor);
+            canvas.drawRect(0, 0, right, bottom, paint);
+        }
+
+        if (gradientBackgroundAlpha > 0) {
+            gradientBackground.setBounds(0, 0, right, bottom);
+            gradientBackground.draw(canvas);
+
+            paint.setColor(Drawing.colorWithAlpha(dividerColor, gradientBackgroundAlpha));
+            canvas.drawRect(0, bottom - dividerHeight,
+                            right, bottom, paint);
+        }
     }
 
     //endregion
@@ -176,6 +195,39 @@ public class TimelineHeaderView extends RelativeLayout {
         return cardContainer.getId();
     }
 
+    public void setBackgroundSolid(boolean backgroundSolid, int duration) {
+        int targetAlpha = backgroundSolid ? 0 : 255;
+        if (targetAlpha == gradientBackgroundAlpha) {
+            return;
+        }
+
+        if (backgroundAnimator != null) {
+            backgroundAnimator.cancel();
+        }
+
+        if (duration == 0) {
+            gradientBackground.setAlpha(targetAlpha);
+            this.gradientBackgroundAlpha = targetAlpha;
+            invalidate();
+        } else {
+            ValueAnimator alphaAnimator = ValueAnimator.ofInt(255 - targetAlpha, targetAlpha);
+            AnimatorTemplate.DEFAULT.apply(alphaAnimator);
+            alphaAnimator.addUpdateListener(a -> {
+                int alpha = (int) a.getAnimatedValue();
+                gradientBackground.setAlpha(alpha);
+                this.gradientBackgroundAlpha = alpha;
+                invalidate();
+            });
+            alphaAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    TimelineHeaderView.this.backgroundAnimator = null;
+                }
+            });
+            alphaAnimator.start();
+        }
+    }
+
     //endregion
 
 
@@ -191,6 +243,10 @@ public class TimelineHeaderView extends RelativeLayout {
 
         if (scoreAnimator != null) {
             scoreAnimator.cancel();
+        }
+
+        if (backgroundAnimator != null) {
+            backgroundAnimator.cancel();
         }
 
         Anime.cancelAll(scoreContainer, cardContainer);
@@ -265,13 +321,17 @@ public class TimelineHeaderView extends RelativeLayout {
 
         scoreContainer.setTranslationY(0f);
         cardContainer.setVisibility(VISIBLE);
+
+        setBackgroundSolid(true, 0);
     }
 
     private void animateToScore(@Nullable Integer score,
                                 ScoreCondition condition,
+                                @NonNull Runnable fireBackgroundAnimations,
                                 @NonNull Runnable fireAdapterAnimations) {
         if (score == null || !animationEnabled || hasAnimated || getVisibility() != VISIBLE) {
             setScore(score, condition);
+            fireBackgroundAnimations.run();
             fireAdapterAnimations.run();
         } else {
             stopPulsing();
@@ -320,7 +380,7 @@ public class TimelineHeaderView extends RelativeLayout {
                         TimelineHeaderView.this.scoreAnimator = null;
 
                         if (!wasCanceled) {
-                            animateScoreIntoPlace(fireAdapterAnimations);
+                            animateScoreIntoPlace(fireBackgroundAnimations, fireAdapterAnimations);
                         }
                     }
                 }
@@ -333,7 +393,8 @@ public class TimelineHeaderView extends RelativeLayout {
         }
     }
 
-    private void animateScoreIntoPlace(@NonNull Runnable fireAdapterAnimations) {
+    private void animateScoreIntoPlace(@NonNull Runnable fireBackgroundAnimations,
+                                       @NonNull Runnable fireAdapterAnimations) {
         animatorFor(scoreContainer, animatorContext)
                 .withInterpolator(new FastOutSlowInInterpolator())
                 .translationY(0f)
@@ -346,6 +407,9 @@ public class TimelineHeaderView extends RelativeLayout {
                     animateCardIntoView();
                 })
                 .start();
+
+        fireBackgroundAnimations.run();
+        setBackgroundSolid(false, Anime.DURATION_NORMAL);
     }
 
     private void animateCardIntoView() {
@@ -366,9 +430,14 @@ public class TimelineHeaderView extends RelativeLayout {
 
     //region Binding
 
-    public void bindTimeline(@NonNull Timeline timeline, @NonNull Runnable fireAdapterAnimations) {
+    public void bindTimeline(@NonNull Timeline timeline,
+                             @NonNull Runnable fireBackgroundAnimations,
+                             @NonNull Runnable fireAdapterAnimations) {
         cardContents.setText(timeline.getMessage());
-        animateToScore(timeline.getScore(), timeline.getScoreCondition(), fireAdapterAnimations);
+        animateToScore(timeline.getScore(),
+                       timeline.getScoreCondition(),
+                       fireBackgroundAnimations,
+                       fireAdapterAnimations);
     }
 
     //endregion

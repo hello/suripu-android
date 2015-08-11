@@ -113,7 +113,6 @@
 
     <!-- Timeline -->
 
-    <dimen name="timeline_header_estimated_height">382dp</dimen>
     <dimen name="timeline_gap_bottom">96dp</dimen>
 
     <dimen name="timeline_segment_min_height">16dp</dimen>
