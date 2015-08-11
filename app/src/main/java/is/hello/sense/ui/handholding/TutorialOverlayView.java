@@ -26,16 +26,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.buruberi.util.Rx;
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 @SuppressLint("ViewConstructor")
 public class TutorialOverlayView extends RelativeLayout {
@@ -161,7 +161,7 @@ public class TutorialOverlayView extends RelativeLayout {
             if (animate) {
                 ViewGroup oldContainer = container;
                 animatorFor(this)
-                        .withDuration(Animation.DURATION_VERY_FAST)
+                        .withDuration(Anime.DURATION_VERY_FAST)
                         .fadeOut(GONE)
                         .addOnAnimationCompleted(finished -> {
                             oldContainer.removeView(this);
@@ -223,12 +223,12 @@ public class TutorialOverlayView extends RelativeLayout {
             interactionView.stopAnimation();
 
             animatorFor(interactionView)
-                    .withDuration(Animation.DURATION_VERY_FAST)
+                    .withDuration(Anime.DURATION_VERY_FAST)
                     .fadeOut(View.GONE)
                     .start();
 
             animatorFor(descriptionText)
-                    .withDuration(Animation.DURATION_VERY_FAST)
+                    .withDuration(Anime.DURATION_VERY_FAST)
                     .fadeOut(View.GONE)
                     .start();
         }

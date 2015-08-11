@@ -11,10 +11,9 @@ import android.widget.VideoView;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.SenseActivity;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class VideoPlayerActivity extends SenseActivity {
     private static final String EXTRA_URI = VideoPlayerActivity.class.getName() + ".EXTRA_URI";

@@ -16,12 +16,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.util.Share;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SupportActivity extends SenseActivity {
     public static final String EXTRA_URL = SupportActivity.class.getName() + ".EXTRA_URL";
@@ -35,7 +34,7 @@ public class SupportActivity extends SenseActivity {
     private final Handler progressHandler = new Handler(msg -> {
         if (msg.what == MSG_SHOW_PROGRESS) {
             animatorFor(progress)
-                    .withDuration(Animation.DURATION_VERY_FAST)
+                    .withDuration(Anime.DURATION_VERY_FAST)
                     .fadeIn()
                     .start();
             progress.setVisibility(View.VISIBLE);
@@ -174,7 +173,7 @@ public class SupportActivity extends SenseActivity {
     private void hideProgress() {
         progressHandler.removeMessages(MSG_SHOW_PROGRESS);
         animatorFor(progress)
-                .withDuration(Animation.DURATION_VERY_FAST)
+                .withDuration(Anime.DURATION_VERY_FAST)
                 .fadeOut(View.GONE)
                 .start();
     }

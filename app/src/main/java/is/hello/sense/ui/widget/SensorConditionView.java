@@ -16,9 +16,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
-import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.widget.util.Drawables;
 
 public class SensorConditionView extends View {
@@ -242,8 +242,8 @@ public class SensorConditionView extends View {
         newFill.setAlpha(0);
 
         this.crossFade = ValueAnimator.ofFloat(0f, 1f);
-        crossFade.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
-        crossFade.setDuration(Animation.DURATION_SLOW);
+        crossFade.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+        crossFade.setDuration(Anime.DURATION_SLOW);
 
         Drawable oldFill = fill;
         if (oldFill == null) {

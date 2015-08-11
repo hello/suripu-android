@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.StringRef;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
@@ -34,7 +35,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.animation.AnimatorConfig;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -74,7 +74,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
 
         this.registrationErrorText = (TextView) inflater.inflate(R.layout.item_inline_field_error, container, false);
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
-        AnimatorConfig.DEFAULT.apply(credentialsContainer.getLayoutTransition());
+        AnimatorTemplate.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
         this.nameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_name);
         this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);

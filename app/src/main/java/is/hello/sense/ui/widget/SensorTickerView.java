@@ -9,7 +9,7 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import is.hello.sense.ui.animation.AnimatorContext;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 

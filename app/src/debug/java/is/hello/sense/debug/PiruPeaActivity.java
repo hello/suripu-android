@@ -31,14 +31,13 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject BluetoothStack stack;

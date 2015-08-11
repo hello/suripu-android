@@ -9,8 +9,8 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.widget.util.Drawing;
 
 public class ZoomedOutTimelineDecoration extends RecyclerView.ItemDecoration {
     private static final float MIN_SCALE = 0.7f;
@@ -48,11 +48,11 @@ public class ZoomedOutTimelineDecoration extends RecyclerView.ItemDecoration {
             float childCenter = (child.getLeft() + child.getRight()) / 2f;
             float distanceAmount = 1f - Math.abs((childCenter - recyclerCenter) / recyclerCenter);
 
-            float childScale = Drawing.interpolateFloats(distanceAmount, MIN_SCALE, MAX_SCALE);
+            float childScale = Anime.interpolateFloats(distanceAmount, MIN_SCALE, MAX_SCALE);
             child.setScaleX(childScale);
             child.setScaleY(childScale);
 
-            float childAlpha = Drawing.interpolateFloats(distanceAmount, MIN_ALPHA, MAX_ALPHA);
+            float childAlpha = Anime.interpolateFloats(distanceAmount, MIN_ALPHA, MAX_ALPHA);
             child.setAlpha(childAlpha);
         }
     }

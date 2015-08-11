@@ -13,11 +13,10 @@ import android.widget.ProgressBar;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.SessionLogger;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SessionLogViewerActivity extends SenseActivity {
     private WebView webView;

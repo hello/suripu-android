@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.animation.AnimatorContext;
 
 public abstract class AbstractTimelineItemAnimator extends RecyclerView.ItemAnimator {
     private final AnimatorContext animatorContext;

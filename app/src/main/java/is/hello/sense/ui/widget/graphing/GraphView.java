@@ -24,8 +24,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapterCache;
 import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
@@ -414,8 +414,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     protected void animateHighlightAlphaTo(int alpha, @Nullable Runnable onCompletion) {
         ValueAnimator alphaAnimator = ValueAnimator.ofInt(highlightPaint.getAlpha(), alpha);
-        alphaAnimator.setInterpolator(Animation.INTERPOLATOR_DEFAULT);
-        alphaAnimator.setDuration(Animation.DURATION_FAST);
+        alphaAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+        alphaAnimator.setDuration(Anime.DURATION_FAST);
 
         alphaAnimator.addUpdateListener(a -> {
             int newAlpha = (int) a.getAnimatedValue();

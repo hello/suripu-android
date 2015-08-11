@@ -22,8 +22,8 @@ import android.widget.RelativeLayout;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.util.Constants;
 
 public enum Tutorial {
@@ -123,7 +123,7 @@ public enum Tutorial {
 
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
         fadeIn.setInterpolator(new LinearInterpolator());
-        fadeIn.setDuration(Animation.DURATION_SLOW);
+        fadeIn.setDuration(Anime.DURATION_SLOW);
 
         AnimatorSet slideAndFadeIn = new AnimatorSet();
         slideAndFadeIn.setStartDelay(150);

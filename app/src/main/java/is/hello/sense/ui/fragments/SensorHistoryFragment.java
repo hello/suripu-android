@@ -29,7 +29,6 @@ import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.BlockableScrollView;
@@ -44,7 +43,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener {
     @Inject RoomConditionsPresenter conditionsPresenter;

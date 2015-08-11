@@ -22,7 +22,6 @@ import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.animation.MultiAnimator;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -57,7 +56,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
