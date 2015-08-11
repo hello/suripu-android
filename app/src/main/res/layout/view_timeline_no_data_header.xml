@@ -19,8 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_xlarge"
+        android:layout_marginRight="@dimen/gap_xlarge"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body.Bold" />
 
@@ -28,11 +28,21 @@
         android:id="@+id/view_timeline_no_data_header_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_xlarge"
+        android:layout_marginRight="@dimen/gap_xlarge"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body.MidSized"
         android:lineSpacingMultiplier="@dimen/line_multiple_body" />
+
+    <Button
+        android:id="@+id/view_timeline_no_data_header_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/gap_xlarge"
+        android:layout_marginRight="@dimen/gap_xlarge"
+        android:layout_marginBottom="@dimen/gap_outer"
+        android:visibility="gone"
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
 
 </merge>

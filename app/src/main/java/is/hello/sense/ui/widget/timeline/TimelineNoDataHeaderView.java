@@ -7,16 +7,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Views;
 
 public class TimelineNoDataHeaderView extends LinearLayout {
     private final ImageView diagram;
     private final TextView title;
     private final TextView message;
+    private final Button action;
 
     //region Lifecycle
 
@@ -41,6 +44,7 @@ public class TimelineNoDataHeaderView extends LinearLayout {
         this.diagram = (ImageView) findViewById(R.id.view_timeline_no_data_header_diagram);
         this.title = (TextView) findViewById(R.id.view_timeline_no_data_header_title);
         this.message = (TextView) findViewById(R.id.view_timeline_no_data_header_message);
+        this.action = (Button) findViewById(R.id.view_timeline_no_data_header_action);
     }
 
     //endregion
@@ -62,6 +66,12 @@ public class TimelineNoDataHeaderView extends LinearLayout {
 
     public void setMessage(@Nullable CharSequence newMessage) {
         message.setText(newMessage);
+    }
+
+    public void setAction(@StringRes int titleRes, @NonNull OnClickListener onClick) {
+        action.setText(titleRes);
+        Views.setSafeOnClickListener(action, onClick);
+        action.setVisibility(VISIBLE);
     }
 
     //endregion

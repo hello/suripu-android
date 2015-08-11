@@ -30,7 +30,7 @@
     <string name="dialog_error_title">Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_loading_message">Loading…</string>
-    <string name="timeline_error_message">Could not load timeline</string>
+    <string name="timeline_error_message">There was a problem retrieving your Sleep Timeline. Please try again in a few moments.</string>
 
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>

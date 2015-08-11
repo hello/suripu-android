@@ -10,10 +10,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -66,6 +64,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
+import rx.functions.Action1;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
@@ -450,13 +449,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         return animator;
     }
 
-    private void transitionIntoNoDataState(@DrawableRes int diagramRes,
-                                           @StringRes int titleRes,
-                                           @NonNull CharSequence message) {
+    private void transitionIntoNoDataState(@NonNull Action1<TimelineNoDataHeaderView> configurer) {
         TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getActivity());
-        newHeader.setDiagramResource(diagramRes);
-        newHeader.setTitle(titleRes);
-        newHeader.setMessage(message);
+        configurer.call(newHeader);
 
         if (animationEnabled && ViewCompat.isLaidOut(recyclerView)) {
             itemAnimator.setDelayEnabled(false);
@@ -525,20 +520,27 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             });
             headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
         } else {
-            transitionIntoNoDataState(R.drawable.timeline_state_no_data,
-                                      R.string.title_timeline_not_enough_data, timeline.getMessage());
+            transitionIntoNoDataState(header -> {
+                header.setDiagramResource(R.drawable.timeline_state_no_data);
+                header.setTitle(R.string.title_timeline_not_enough_data);
+                header.setMessage(timeline.getMessage());
+            });
         }
 
         headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
     public void timelineUnavailable(Throwable e) {
-        CharSequence message = getString(R.string.timeline_error_message, e.getMessage());
+        Analytics.trackError(e, "Loading Timeline");
+        CharSequence message = getString(R.string.timeline_error_message);
         if (adapter.hasEvents()) {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         } else {
-            transitionIntoNoDataState(R.drawable.timeline_state_error,
-                                      R.string.dialog_error_title, message);
+            transitionIntoNoDataState(header -> {
+                header.setDiagramResource(R.drawable.timeline_state_error);
+                header.setTitle(R.string.dialog_error_title);
+                header.setMessage(message);
+            });
         }
     }
 
