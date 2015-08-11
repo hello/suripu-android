@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -235,7 +236,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
 
-                int statusBar = Drawing.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
+                int statusBar = Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
@@ -347,7 +348,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(1f - fraction);
 
-                int statusBar = Drawing.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
+                int statusBar = Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {

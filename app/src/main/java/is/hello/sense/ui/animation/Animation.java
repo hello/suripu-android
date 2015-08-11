@@ -55,10 +55,6 @@ public class Animation {
         return Math.max(Animation.DURATION_FAST, Math.min(Animation.DURATION_SLOW, rawDuration));
     }
 
-    public static float interpolateFrame(float frameValue, float min, float max) {
-        return min + frameValue * (max - min);
-    }
-
     /**
      * Creates and returns a ValueAnimator that will
      * transition between the specified array of colors.

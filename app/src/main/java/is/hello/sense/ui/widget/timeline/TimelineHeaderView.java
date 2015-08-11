@@ -26,13 +26,13 @@ import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.animation.AnimatorContext;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.util.Drawables;
-import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.util.SafeOnClickListener;
 
 public class TimelineHeaderView extends RelativeLayout implements TimelineFadeItemAnimator.Listener {
@@ -209,7 +209,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
         int startColor = getResources().getColor(R.color.light_accent);
         int endColor = getResources().getColor(R.color.border);
         pulseAnimator.addUpdateListener(a -> {
-            int color = Drawing.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
+            int color = Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
             scoreDrawable.setTrackColor(color);
         });
         pulseAnimator.addListener(new AnimatorListenerAdapter() {
@@ -289,7 +289,7 @@ public class TimelineHeaderView extends RelativeLayout implements TimelineFadeIt
             int endColor = getResources().getColor(condition.colorRes);
             scoreAnimator.addUpdateListener(a -> {
                 Integer newScore = (Integer) a.getAnimatedValue();
-                int color = Drawing.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
+                int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
 
                 scoreDrawable.setValue(newScore);
                 scoreDrawable.setFillColor(color);

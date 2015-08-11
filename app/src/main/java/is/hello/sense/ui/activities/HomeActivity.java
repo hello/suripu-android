@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -53,8 +54,8 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 import static is.hello.sense.ui.animation.Animation.isAnimating;
+import static is.hello.sense.ui.animation.MultiAnimator.animatorFor;
 
 public class HomeActivity
         extends ScopedInjectionActivity
@@ -562,11 +563,11 @@ public class HomeActivity
 
         @Override
         public void frame(float frameValue) {
-            float scale = Animation.interpolateFrame(frameValue, MIN_SCALE, MAX_SCALE);
+            float scale = Anime.interpolateFloats(frameValue, MIN_SCALE, MAX_SCALE);
             undersideContainer.setScaleX(scale);
             undersideContainer.setScaleY(scale);
 
-            float alpha = Animation.interpolateFrame(frameValue, MIN_ALPHA, MAX_ALPHA);
+            float alpha = Anime.interpolateFloats(frameValue, MIN_ALPHA, MAX_ALPHA);
             undersideContainer.setAlpha(alpha);
         }
 
@@ -575,8 +576,8 @@ public class HomeActivity
                            long duration,
                            @NonNull Interpolator interpolator,
                            @Nullable AnimatorContext animatorContext) {
-            float finalScale = Animation.interpolateFrame(finalFrameValue, MIN_SCALE, MAX_SCALE);
-            float finalAlpha = Animation.interpolateFrame(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
+            float finalScale = Anime.interpolateFloats(finalFrameValue, MIN_SCALE, MAX_SCALE);
+            float finalAlpha = Anime.interpolateFloats(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
             animatorFor(undersideContainer, animatorContext)
                     .withDuration(duration)
                     .withInterpolator(interpolator)

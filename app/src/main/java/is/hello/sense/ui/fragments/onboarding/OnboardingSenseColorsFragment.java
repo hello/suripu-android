@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
-import is.hello.sense.ui.animation.Animation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
@@ -122,7 +122,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         if (position == finalItem - 1) {
-            float newY = Animation.interpolateFrame(positionOffset, nextButtonMaxY, nextButtonMinY);
+            float newY = Anime.interpolateFloats(positionOffset, nextButtonMaxY, nextButtonMinY);
             nextButton.setY(newY);
         }
     }
