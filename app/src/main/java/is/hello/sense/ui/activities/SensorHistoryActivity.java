@@ -79,11 +79,11 @@ public class SensorHistoryActivity extends SenseActivity {
                 break;
             }
             case ApiService.SENSOR_NAME_PARTICULATES: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_particulates;
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_airquality;
                 break;
             }
             case ApiService.SENSOR_NAME_SOUND: {
-                welcomeDialogRes = R.xml.welcome_dialog_sensor_sound;
+                welcomeDialogRes = R.xml.welcome_dialog_sensor_noise;
                 break;
             }
             case ApiService.SENSOR_NAME_LIGHT: {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dialog>
     <item
-        diagram="@drawable/welcome_dialog_sound"
+        diagram="@drawable/welcome_dialog_noise"
         title="@string/welcome_dialog_sensor_sound_title"
         message="@string/welcome_dialog_sensor_sound"/>
 </dialog>
