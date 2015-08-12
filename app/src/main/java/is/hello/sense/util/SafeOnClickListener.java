@@ -21,7 +21,7 @@ public class SafeOnClickListener implements View.OnClickListener {
     public void onClick(View view) {
         if ((AnimationUtils.currentAnimationTimeMillis() - lastInvocation) > ViewConfiguration.getDoubleTapTimeout()) {
             target.onClick(view);
-            this.lastInvocation = System.currentTimeMillis();
+            this.lastInvocation = AnimationUtils.currentAnimationTimeMillis();
         }
     }
 }
