@@ -51,7 +51,7 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
             dispatchAnimationWillStart(t);
 
             final long delayAmount = getDelayAmount();
-            long transactionDelay = delayAmount;
+            long transactionDelay = 0;
             for (Transaction transaction : pending) {
                 RecyclerView.ViewHolder target = transaction.target;
 

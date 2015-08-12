@@ -1,11 +1,17 @@
 package is.hello.sense.ui.widget.graphing;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+
+import is.hello.go99.animators.AnimatorTemplate;
 
 /**
  * The built-in ColorDrawable before API Level 21 (Lollipop) does not
@@ -15,6 +21,7 @@ import android.graphics.drawable.Drawable;
  */
 public class ColorDrawableCompat extends Drawable {
     private final Paint paint = new Paint();
+    private @Nullable ValueAnimator currentAnimator;
 
     public ColorDrawableCompat(int color) {
         setColor(color);
@@ -71,6 +78,43 @@ public class ColorDrawableCompat extends Drawable {
 
     public int getColor() {
         return paint.getColor();
+    }
+
+    public Animator colorAnimator(int newColor) {
+        if (currentAnimator != null) {
+            currentAnimator.cancel();
+        }
+
+        this.currentAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(getColor(), newColor);
+        currentAnimator.addUpdateListener(a -> {
+            int color = (int) a.getAnimatedValue();
+            paint.setColor(color);
+            invalidateSelf();
+        });
+        currentAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (animation == currentAnimator) {
+                    setColor(newColor);
+                    ColorDrawableCompat.this.currentAnimator = null;
+                }
+            }
+        });
+
+        return currentAnimator;
+    }
+
+    @Override
+    public boolean setVisible(boolean visible, boolean restart) {
+        if (super.setVisible(visible, restart)) {
+            if (!visible && currentAnimator != null) {
+                currentAnimator.cancel();
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //endregion

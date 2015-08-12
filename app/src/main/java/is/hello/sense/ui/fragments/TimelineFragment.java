@@ -1,8 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -32,7 +30,6 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
@@ -241,6 +238,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         super.onDestroyView();
 
         headerView.clearAnimation();
+        itemAnimator.endAnimations();
         itemAnimator.removeAllListeners();
 
         recyclerView.setAdapter(null);
@@ -436,21 +434,6 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Binding
 
-    private Animator createBackgroundCrossFade(int newColor) {
-        ValueAnimator animator = AnimatorTemplate.DEFAULT.createColorAnimator(backgroundFill.getColor(), newColor);
-        animator.addUpdateListener(a -> {
-            int color = (int) a.getAnimatedValue();
-            backgroundFill.setColor(color);
-        });
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                backgroundFill.setColor(newColor);
-            }
-        });
-        return animator;
-    }
-
     private void transitionIntoNoDataState(@NonNull Action1<TimelineNoDataHeaderView> configurer) {
         TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getActivity());
         configurer.call(newHeader);
@@ -459,7 +442,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
             itemAnimator.setDelayEnabled(false);
             itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, true);
             itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
-                final Animator crossFade = createBackgroundCrossFade(getResources().getColor(R.color.background_timeline));
+                final Animator crossFade = backgroundFill.colorAnimator(
+                        getResources().getColor(R.color.background_timeline));
 
                 @Override
                 public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
@@ -506,7 +490,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         if (hasEvents) {
             Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
                 int targetColor = getResources().getColor(R.color.timeline_background_fill);
-                Animator backgroundFade = createBackgroundCrossFade(targetColor);
+                Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
 
                 toolbar.setShareVisible(!homeActivity.isUndersideVisible());
