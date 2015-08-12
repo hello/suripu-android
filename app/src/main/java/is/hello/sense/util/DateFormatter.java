@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.style.RelativeSizeSpan;
 
@@ -132,11 +133,15 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public static @NonNull CharSequence assembleTimeAndPeriod(@NonNull CharSequence time, @NonNull CharSequence period) {
-        SpannableStringBuilder spannable = new SpannableStringBuilder(period);
-        spannable.setSpan(new RelativeSizeSpan(0.75f), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannable.insert(0, time);
-        return spannable;
+    public static @NonNull CharSequence assembleTimeAndPeriod(@NonNull CharSequence time, @Nullable CharSequence period) {
+        if (TextUtils.isEmpty(period)) {
+            return time;
+        } else {
+            SpannableStringBuilder spannable = new SpannableStringBuilder(period);
+            spannable.setSpan(new RelativeSizeSpan(0.75f), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.insert(0, time);
+            return spannable;
+        }
     }
 
     public @NonNull CharSequence formatForTimelineEvent(@Nullable DateTime date, boolean use24Time) {
@@ -157,7 +162,7 @@ import is.hello.sense.ui.widget.util.Styles;
             String hour, period;
             if (use24Time) {
                 hour = date.toString(context.getString(R.string.format_timeline_segment_time_24_hr));
-                period = context.getString(R.string.format_timeline_24_hr_period);
+                period = "";
             } else {
                 hour = date.toString(context.getString(R.string.format_timeline_segment_time_12_hr));
                 period = date.toString(context.getString(R.string.format_timeline_12_hr_period_padded));
