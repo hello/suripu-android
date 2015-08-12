@@ -22,6 +22,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
 public class UnitSettingsFragment extends InjectionFragment implements Handler.Callback {
@@ -34,6 +35,9 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
     private StaticItemAdapter.CheckItem use24TimeItem;
+    private StaticItemAdapter.CheckItem useCelsius;
+    private StaticItemAdapter.CheckItem useGrams;
+    private StaticItemAdapter.CheckItem useCentimeters;
 
     private ProgressBar loadingIndicator;
     private ListView listView;
@@ -58,9 +62,29 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
+        boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
+
         boolean use24Time = preferencesPresenter.getUse24Time();
         this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, item -> {
             updatePreference(PreferencesPresenter.USE_24_TIME, item);
+        });
+
+        boolean useCelsius = preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS,
+                                                             defaultIsMetric);
+        this.useCelsius = adapter.addCheckItem(R.string.setting_title_use_celsius, useCelsius, item -> {
+            updatePreference(PreferencesPresenter.USE_CELSIUS, item);
+        });
+
+        boolean useGrams = preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS,
+                                                           defaultIsMetric);
+        this.useGrams = adapter.addCheckItem(R.string.setting_title_use_grams, useGrams, item -> {
+            updatePreference(PreferencesPresenter.USE_GRAMS, item);
+        });
+
+        boolean useCentimeters = preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS,
+                                                                 defaultIsMetric);
+        this.useCentimeters = adapter.addCheckItem(R.string.setting_title_use_centimeters, useCentimeters, item -> {
+            updatePreference(PreferencesPresenter.USE_CELSIUS, item);
         });
 
         listView.setOnItemClickListener(adapter);
@@ -78,8 +102,23 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
                          ignored -> hideLoading(),
                          this::pullingPreferencesFailed);
 
+
         bindAndSubscribe(preferencesPresenter.observableUse24Time(),
                          use24TimeItem::setChecked,
+                         Functions.LOG_ERROR);
+
+        boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
+        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_CELSIUS,
+                                                                defaultIsMetric),
+                         useCelsius::setChecked,
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_GRAMS,
+                                                                defaultIsMetric),
+                         useGrams::setChecked,
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_CENTIMETERS,
+                                                                defaultIsMetric),
+                         useCentimeters::setChecked,
                          Functions.LOG_ERROR);
     }
 

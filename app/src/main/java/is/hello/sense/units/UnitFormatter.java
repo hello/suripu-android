@@ -31,9 +31,9 @@ public class UnitFormatter {
 
     public static boolean isDefaultLocaleMetric() {
         String country = Locale.getDefault().getCountry();
-        return ("US".equals(country) ||
-                "LR".equals(country) ||
-                "MM".equals(country));
+        return (!"US".equals(country) &&
+                !"LR".equals(country) &&
+                !"MM".equals(country));
     }
 
     @Inject public UnitFormatter(@NonNull PreferencesPresenter preferences) {

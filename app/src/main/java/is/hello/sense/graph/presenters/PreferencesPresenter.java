@@ -90,6 +90,7 @@ import rx.subscriptions.Subscriptions;
                       .putBoolean(USE_GRAMS, useMetric)
                       .putBoolean(USE_CENTIMETERS, useMetric)
                       .remove(UNIT_SYSTEM__LEGACY)
+                      .putInt(SCHEMA_VERSION, SCHEMA_VERSION_1_1)
                       .apply();
 
                 return true;

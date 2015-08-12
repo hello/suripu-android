@@ -61,6 +61,8 @@ public class PreferencesPresenterTests extends InjectionTestCase {
         assertThat(presenter.getBoolean(PreferencesPresenter.USE_CELSIUS, true), is(false));
         assertThat(presenter.getBoolean(PreferencesPresenter.USE_GRAMS, true), is(false));
         assertThat(presenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS, true), is(false));
+        assertThat(presenter.getInt(PreferencesPresenter.SCHEMA_VERSION, PreferencesPresenter.SCHEMA_VERSION_1_0),
+                   is(PreferencesPresenter.SCHEMA_VERSION_1_1));
     }
 
     @Test
