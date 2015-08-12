@@ -11,9 +11,7 @@ import android.support.annotation.VisibleForTesting;
 import android.text.format.DateFormat;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -42,6 +40,11 @@ import rx.subscriptions.Subscriptions;
     public static final String USE_CELSIUS = "use_celsius";
     public static final String USE_GRAMS = "use_grams";
     public static final String USE_CENTIMETERS = "use_centimeters";
+
+    public static final String PUSH_ALERT_CONDITIONS_ENABLED = "push_alert_conditions_enabled";
+    public static final String PUSH_SCORE_ENABLED = "push_score_enabled";
+
+    public static final String ENHANCED_AUDIO_ENABLED = "enhanced_audio_enabled";
 
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
     public static final String PAIRED_DEVICE_SSID = "paired_device_ssid";
@@ -120,10 +123,13 @@ import rx.subscriptions.Subscriptions;
         logEvent("Pulling preferences from backend");
 
         return accountPresenter.preferences().map(prefs -> {
-            edit().putBoolean(USE_CELSIUS, Account.Preference.TEMP_CELSIUS.getFrom(prefs))
-                  .putBoolean(USE_GRAMS, Account.Preference.WEIGHT_METRIC.getFrom(prefs))
-                  .putBoolean(USE_CENTIMETERS, Account.Preference.HEIGHT_METRIC.getFrom(prefs))
-                  .putBoolean(USE_24_TIME, Account.Preference.TIME_TWENTY_FOUR_HOUR.getFrom(prefs))
+            edit().putBoolean(PUSH_SCORE_ENABLED, prefs.pushScore)
+                  .putBoolean(PUSH_ALERT_CONDITIONS_ENABLED, prefs.pushAlertConditions)
+                  .putBoolean(ENHANCED_AUDIO_ENABLED, prefs.enhancedAudioEnabled)
+                  .putBoolean(USE_CELSIUS, prefs.useCelsius)
+                  .putBoolean(USE_GRAMS, prefs.useMetricWeight)
+                  .putBoolean(USE_CENTIMETERS, prefs.useMetricHeight)
+                  .putBoolean(USE_24_TIME, prefs.use24Time)
                   .apply();
 
             logEvent("Pulled preferences");
@@ -135,12 +141,15 @@ import rx.subscriptions.Subscriptions;
     public void pushAccountPreferences() {
         logEvent("Pushing account preferences");
 
-        Map<Account.Preference, Boolean> preferences = new HashMap<>();
+        Account.Preferences preferences = new Account.Preferences();
         boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        preferences.put(Account.Preference.TIME_TWENTY_FOUR_HOUR, getUse24Time());
-        preferences.put(Account.Preference.TEMP_CELSIUS, getBoolean(USE_CELSIUS, defaultMetric));
-        preferences.put(Account.Preference.WEIGHT_METRIC, getBoolean(USE_GRAMS, defaultMetric));
-        preferences.put(Account.Preference.HEIGHT_METRIC, getBoolean(USE_CENTIMETERS, defaultMetric));
+        preferences.pushScore = getBoolean(PUSH_SCORE_ENABLED, true);
+        preferences.pushAlertConditions = getBoolean(PUSH_ALERT_CONDITIONS_ENABLED, true);
+        preferences.enhancedAudioEnabled = getBoolean(ENHANCED_AUDIO_ENABLED, false);
+        preferences.use24Time = getUse24Time();
+        preferences.useCelsius = getBoolean(USE_CELSIUS, defaultMetric);
+        preferences.useMetricWeight = getBoolean(USE_GRAMS, defaultMetric);
+        preferences.useMetricHeight = getBoolean(USE_CENTIMETERS, defaultMetric);
         accountPresenter.updatePreferences(preferences)
                         .subscribe(ignored -> logEvent("Pushed account preferences"),
                                    Functions.LOG_ERROR);

@@ -1,7 +1,5 @@
 package is.hello.sense.api.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,11 +7,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import is.hello.sense.api.gson.Enums;
 
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
@@ -186,29 +179,40 @@ public class Account extends ApiResponse implements Cloneable {
                 '}';
     }
 
-    public enum Preference implements Enums.FromString {
-        PUSH_ALERT_CONDITIONS,
-        PUSH_SCORE,
-        TIME_TWENTY_FOUR_HOUR,
-        TEMP_CELSIUS,
-        WEIGHT_METRIC,
-        HEIGHT_METRIC,
-        ENHANCED_AUDIO,
-        UNKNOWN;
+    public static class Preferences {
+        @SerializedName("PUSH_ALERT_CONDITIONS")
+        public boolean pushAlertConditions = true;
 
-        public boolean getFrom(@NonNull Map<Preference, Boolean> preferences) {
-            Boolean value = preferences.get(this);
-            return (value != null && value);
-        }
+        @SerializedName("PUSH_SCORE")
+        public boolean pushScore = true;
 
-        public Map<Preference, Boolean> toUpdate(boolean newValue) {
-            Map<Preference, Boolean> update = new HashMap<>();
-            update.put(this, newValue);
-            return update;
-        }
+        @SerializedName("TIME_TWENTY_FOUR_HOUR")
+        public boolean use24Time = false;
 
-        public static Preference fromString(@NonNull String string) {
-            return Enums.fromString(string, Preference.values(), UNKNOWN);
+        @SerializedName("TEMP_CELSIUS")
+        public boolean useCelsius = false;
+
+        @SerializedName("WEIGHT_METRIC")
+        public boolean useMetricWeight = false;
+
+        @SerializedName("HEIGHT_METRIC")
+        public boolean useMetricHeight = false;
+
+        @SerializedName("ENHANCED_AUDIO")
+        public boolean enhancedAudioEnabled = false;
+
+
+        @Override
+        public String toString() {
+            return "Account.Preferences{" +
+                    "pushAlertConditions=" + pushAlertConditions +
+                    ", pushScore=" + pushScore +
+                    ", use24Time=" + use24Time +
+                    ", useCelsius=" + useCelsius +
+                    ", useMetricWeight=" + useMetricWeight +
+                    ", useMetricHeight=" + useMetricHeight +
+                    ", enhancedAudioEnabled=" + enhancedAudioEnabled +
+                    '}';
         }
     }
 }

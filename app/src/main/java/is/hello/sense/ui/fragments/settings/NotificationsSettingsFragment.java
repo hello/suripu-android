@@ -3,6 +3,9 @@ package is.hello.sense.ui.fragments.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,28 +14,32 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Account;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
+import rx.Observable;
 
-public class NotificationsSettingsFragment extends InjectionFragment {
+public class NotificationsSettingsFragment extends InjectionFragment implements Handler.Callback {
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
-    @Inject AccountPresenter accountPresenter;
+    private static final int DELAY_PUSH_PREFERENCES = 3000;
+    private static final int MSG_PUSH_PREFERENCES = 0x5;
 
-    private StaticItemAdapter.CheckItem scoreItem;
-    private StaticItemAdapter.CheckItem alertConditionsItem;
+    @Inject PreferencesPresenter preferences;
+
+    private final Handler handler = new Handler(Looper.getMainLooper(), this);
 
     private ProgressBar loadingIndicator;
     private ListView listView;
+
+    private StaticItemAdapter.CheckItem pushScoreItem;
+    private StaticItemAdapter.CheckItem pushAlertConditionsItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,13 +56,16 @@ public class NotificationsSettingsFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.list_view_static, container, false);
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
-
         this.listView = (ListView) view.findViewById(android.R.id.list);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
-        this.scoreItem = adapter.addCheckItem(R.string.notification_setting_sleep_score, false, this::updateScore);
-        this.alertConditionsItem = adapter.addCheckItem(R.string.notification_setting_alert_conditions, false, this::updateAlertConditions);
+        this.pushScoreItem = adapter.addCheckItem(R.string.notification_setting_sleep_score, false, item -> {
+            updatePreference(PreferencesPresenter.PUSH_SCORE_ENABLED, item);
+        });
+        this.pushAlertConditionsItem = adapter.addCheckItem(R.string.notification_setting_alert_conditions, false, item -> {
+            updatePreference(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, item);
+        });
 
         listView.setOnItemClickListener(adapter);
         listView.setAdapter(adapter);
@@ -68,20 +78,42 @@ public class NotificationsSettingsFragment extends InjectionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         showLoading();
-        bindAndSubscribe(accountPresenter.preferences(),
-                this::bindPreferences,
-                this::preferencesUnavailable);
+        bindAndSubscribe(preferences.pullAccountPreferences(),
+                         ignored -> hideLoading(),
+                         this::pullingPreferencesFailed);
+
+        Observable<Boolean> pushScore = preferences.observableBoolean(
+                PreferencesPresenter.PUSH_SCORE_ENABLED, true);
+        bindAndSubscribe(pushScore,
+                         pushScoreItem::setChecked,
+                         Functions.LOG_ERROR);
+
+        Observable<Boolean> pushAlertConditions = preferences.observableBoolean(
+                PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, true);
+        bindAndSubscribe(pushAlertConditions,
+                         pushAlertConditionsItem::setChecked,
+                         Functions.LOG_ERROR);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.scoreItem = null;
-        this.alertConditionsItem = null;
+        this.pushScoreItem = null;
+        this.pushAlertConditionsItem = null;
 
         this.loadingIndicator = null;
         this.listView = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
+            handler.removeMessages(MSG_PUSH_PREFERENCES);
+            preferences.pushAccountPreferences();
+        }
     }
 
     @Override
@@ -94,8 +126,6 @@ public class NotificationsSettingsFragment extends InjectionFragment {
     }
 
 
-    //region Binding
-
     private void showLoading() {
         loadingIndicator.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
@@ -106,24 +136,7 @@ public class NotificationsSettingsFragment extends InjectionFragment {
         listView.setVisibility(View.VISIBLE);
     }
 
-    private boolean getBooleanPreference(@NonNull Map<Account.Preference, Boolean> preferences,
-                                         @NonNull Account.Preference name,
-                                         boolean defaultValue) {
-        if (preferences.containsKey(name)) {
-            return preferences.get(name);
-        } else {
-            return defaultValue;
-        }
-    }
-
-    public void bindPreferences(@NonNull Map<Account.Preference, Boolean> preferences) {
-        hideLoading();
-
-        scoreItem.setChecked(getBooleanPreference(preferences, Account.Preference.PUSH_SCORE, true));
-        alertConditionsItem.setChecked(getBooleanPreference(preferences, Account.Preference.PUSH_ALERT_CONDITIONS, true));
-    }
-
-    public void preferencesUnavailable(@NonNull Throwable e) {
+    public void pullingPreferencesFailed(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
 
         ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
@@ -131,32 +144,23 @@ public class NotificationsSettingsFragment extends InjectionFragment {
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    //endregion
 
+    public void updatePreference(@NonNull String key, @NonNull StaticItemAdapter.CheckItem item) {
+        boolean update = !item.isChecked();
+        preferences.edit()
+                   .putBoolean(key, update)
+                   .apply();
 
-    //region Actions
-
-    public void updateScore(@NonNull StaticItemAdapter.CheckItem item) {
-        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_SCORE.toUpdate(item.isChecked());
-        showLoading();
-        bindAndSubscribe(accountPresenter.updatePreferences(update),
-                         prefs -> {
-                             scoreItem.setChecked(Account.Preference.PUSH_SCORE.getFrom(prefs));
-                             hideLoading();
-                         },
-                         this::preferencesUnavailable);
+        handler.removeMessages(MSG_PUSH_PREFERENCES);
+        handler.sendEmptyMessageDelayed(MSG_PUSH_PREFERENCES, DELAY_PUSH_PREFERENCES);
     }
 
-    public void updateAlertConditions(@NonNull StaticItemAdapter.CheckItem item) {
-        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_ALERT_CONDITIONS.toUpdate(!item.isChecked());
-        showLoading();
-        bindAndSubscribe(accountPresenter.updatePreferences(update),
-                         prefs -> {
-                             alertConditionsItem.setChecked(Account.Preference.PUSH_ALERT_CONDITIONS.getFrom(prefs));
-                             hideLoading();
-                         },
-                         this::preferencesUnavailable);
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg.what == MSG_PUSH_PREFERENCES) {
+            preferences.pushAccountPreferences();
+            return true;
+        }
+        return false;
     }
-
-    //endregion
 }

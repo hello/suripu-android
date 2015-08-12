@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -98,11 +97,11 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //region Preferences
 
-    public Observable<Map<Account.Preference, Boolean>> preferences() {
+    public Observable<Account.Preferences> preferences() {
         return apiService.accountPreferences();
     }
 
-    public Observable<Map<Account.Preference, Boolean>> updatePreferences(@NonNull Map<Account.Preference, Boolean> changes) {
+    public Observable<Account.Preferences> updatePreferences(@NonNull Account.Preferences changes) {
         return apiService.updateAccountPreferences(changes);
     }
 

@@ -19,7 +19,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
@@ -120,12 +119,12 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Map<Account.Preference, Boolean>> accountPreferences() {
+    public Observable<Account.Preferences> accountPreferences() {
         return unimplemented();
     }
 
     @Override
-    public Observable<Map<Account.Preference, Boolean>> updateAccountPreferences(@NonNull @Body Map<Account.Preference, Boolean> preference) {
+    public Observable<Account.Preferences> updateAccountPreferences(@NonNull @Body Account.Preferences preferences) {
         return unimplemented();
     }
 

@@ -7,22 +7,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
+import rx.Observable;
 
 public class OnboardingRegisterAudioFragment extends InjectionFragment {
     @Inject ApiService apiService;
+    @Inject PreferencesPresenter preferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,9 +61,17 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
     private void updateEnhancedAudioEnabled(boolean enabled) {
         LoadingDialogFragment.show(getFragmentManager());
 
-        Map<Account.Preference, Boolean> update = Account.Preference.ENHANCED_AUDIO.toUpdate(enabled);
-        bindAndSubscribe(apiService.updateAccountPreferences(update),
+        Observable<Account.Preferences> pushUpdate = apiService.accountPreferences().flatMap(preferences -> {
+            preferences.enhancedAudioEnabled = enabled;
+            return apiService.updateAccountPreferences(preferences);
+        });
+        bindAndSubscribe(pushUpdate,
                          ignored -> {
+                             preferences.edit()
+                                        .putBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED,
+                                                    enabled)
+                                        .apply();
+
                              LoadingDialogFragment.close(getFragmentManager());
                              ((OnboardingActivity) getActivity()).showSetupSense();
                          },

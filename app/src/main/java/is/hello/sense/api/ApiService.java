@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
@@ -101,10 +100,10 @@ public interface ApiService {
     Observable<Account> updateEmailAddress(@NonNull @Body Account account);
 
     @GET("/v2/account/preferences")
-    Observable<Map<Account.Preference, Boolean>> accountPreferences();
+    Observable<Account.Preferences> accountPreferences();
 
     @PUT("/v2/account/preferences")
-    Observable<Map<Account.Preference, Boolean>> updateAccountPreferences(@NonNull @Body Map<Account.Preference, Boolean> preference);
+    Observable<Account.Preferences> updateAccountPreferences(@NonNull @Body Account.Preferences preference);
 
     //endregion
 

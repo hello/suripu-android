@@ -14,14 +14,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -47,6 +46,7 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
 
@@ -61,6 +61,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private StaticItemAdapter.CheckItem enhancedAudioItem;
 
     private Account currentAccount;
+    private @Nullable Account.Preferences accountPreferences;
     private ListView listView;
     private StaticItemAdapter adapter;
 
@@ -239,8 +240,9 @@ public class AccountSettingsFragment extends InjectionFragment
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void bindAccountPreferences(@NonNull Map<Account.Preference, Boolean> preferences) {
-        enhancedAudioItem.setChecked(Account.Preference.ENHANCED_AUDIO.getFrom(preferences));
+    public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
+        this.accountPreferences = preferences;
+        enhancedAudioItem.setChecked(preferences.enhancedAudioEnabled);
     }
 
     //endregion
@@ -303,15 +305,25 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Preferences
 
     public void changeEnhancedAudio(@NonNull StaticItemAdapter.CheckItem item) {
-        boolean newSetting = !enhancedAudioItem.isChecked();
-        Map<Account.Preference, Boolean> update = Account.Preference.ENHANCED_AUDIO.toUpdate(newSetting);
-        enhancedAudioItem.setChecked(newSetting);
+        if (accountPreferences == null) {
+            return;
+        }
+
+        accountPreferences.enhancedAudioEnabled = !enhancedAudioItem.isChecked();
+        enhancedAudioItem.setChecked(accountPreferences.enhancedAudioEnabled);
 
         showLoadingIndicator();
-        bindAndSubscribe(accountPresenter.updatePreferences(update),
-                         ignored -> hideLoadingIndicator(),
+        bindAndSubscribe(accountPresenter.updatePreferences(accountPreferences),
+                         ignored -> {
+                             preferences.edit()
+                                        .putBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED,
+                                                    accountPreferences.enhancedAudioEnabled)
+                                        .apply();
+                             hideLoadingIndicator();
+                         },
                          e -> {
-                             enhancedAudioItem.setChecked(!newSetting);
+                             accountPreferences.enhancedAudioEnabled = !accountPreferences.enhancedAudioEnabled;
+                             enhancedAudioItem.setChecked(accountPreferences.enhancedAudioEnabled);
                              accountUnavailable(e);
                          });
     }
