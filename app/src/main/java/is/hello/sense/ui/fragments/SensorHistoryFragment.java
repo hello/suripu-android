@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -36,8 +36,8 @@ import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitPrinter;
-import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -51,6 +51,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
     @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
+    @Inject UnitFormatter unitFormatter;
     @Inject PreferencesPresenter preferences;
 
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
@@ -122,9 +123,21 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(conditionsPresenter.currentConditions, this::bindConditions, this::conditionUnavailable);
-        bindAndSubscribe(sensorHistoryPresenter.history, sensorDataSource::bindHistory, sensorDataSource::historyUnavailable);
-        bindAndSubscribe(preferences.observableUse24Time(), sensorDataSource::setUse24Time, Functions.LOG_ERROR);
+        bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
+                         ignored -> {
+                             conditionsPresenter.update();
+                             sensorDataSource.notifyDataChanged();
+                         },
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(conditionsPresenter.currentConditions,
+                         this::bindConditions,
+                         this::conditionUnavailable);
+        bindAndSubscribe(sensorHistoryPresenter.history,
+                         sensorDataSource::bindHistory,
+                         sensorDataSource::historyUnavailable);
+        bindAndSubscribe(preferences.observableUse24Time(),
+                         sensorDataSource::setUse24Time,
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -163,9 +176,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         } else {
             SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
-                UnitPrinter formatter = result.units.getUnitFormatterForSensor(sensor);
+                UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
 
-                CharSequence formattedValue = condition.getFormattedValue(formatter);
+                CharSequence formattedValue = condition.getFormattedValue(printer);
                 if (formattedValue != null) {
                     readingText.setText(formattedValue);
                 } else {
@@ -218,11 +231,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
 
     public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HeaderFooterProvider, GraphView.HighlightListener {
-        private UnitSystem unitSystem;
         private boolean use24Time = false;
 
-        public void bindHistory(@NonNull SensorHistoryPresenter.Result historyAndUnits) {
-            List<SensorGraphSample> history = historyAndUnits.data;
+        public void bindHistory(@NonNull ArrayList<SensorGraphSample> history) {
             if (history.isEmpty()) {
                 clear();
                 graphPlaceholder.setText(R.string.message_not_enough_data);
@@ -233,8 +244,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             Observable<Update> update = Update.forHistorySeries(history, false);
             bindAndSubscribe(update, this::update, this::historyUnavailable);
-
-            this.unitSystem = historyAndUnits.unitSystem;
 
             animatorFor(loadingIndicator)
                     .fadeOut(View.GONE)
@@ -257,28 +266,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public void setUse24Time(boolean use24Time) {
             this.use24Time = use24Time;
             notifyDataChanged();
-        }
-
-        private CharSequence formatSensorValue(float value) {
-            switch (sensor) {
-                case ApiService.SENSOR_NAME_TEMPERATURE:
-                    return unitSystem.formatTemperature(Math.round(value));
-
-                case ApiService.SENSOR_NAME_HUMIDITY:
-                    return unitSystem.formatHumidity(Math.round(value));
-
-                case ApiService.SENSOR_NAME_PARTICULATES:
-                    return unitSystem.formatParticulates(Math.round(value));
-
-                case ApiService.SENSOR_NAME_SOUND:
-                    return unitSystem.formatSound(Math.round(value));
-
-                case ApiService.SENSOR_NAME_LIGHT:
-                    return unitSystem.formatLight(Math.round(value));
-
-                default:
-                    return Long.toString(Math.round(value));
-            }
         }
 
         @Override
@@ -313,7 +300,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             if (value == ApiService.PLACEHOLDER_VALUE) {
                 return getString(R.string.missing_data_placeholder);
             } else {
-                return formatSensorValue(value).toString();
+                UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+                return printer.print((long) value).toString();
             }
         }
 
@@ -346,7 +334,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             if (instant.isValuePlaceholder()) {
                 readingText.setText(R.string.missing_data_placeholder);
             } else {
-                readingText.setText(formatSensorValue(instant.getValue()));
+                UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+                CharSequence reading = printer.print((long) instant.getValue());
+                readingText.setText(reading);
             }
 
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {

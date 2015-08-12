@@ -13,7 +13,6 @@ import android.text.format.DateFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,8 +24,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
-import is.hello.sense.units.UnitSystem;
-import is.hello.sense.units.systems.UsCustomaryUnitSystem;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
@@ -63,8 +61,6 @@ import rx.subscriptions.Subscriptions;
      */
     private final Set<OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
 
-    private Observable<UnitSystem> cachedUnitSystem;
-
     public @Inject PreferencesPresenter(@NonNull Context context,
                                         @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
                                         @NonNull AccountPresenter accountPresenter) {
@@ -88,8 +84,8 @@ import rx.subscriptions.Subscriptions;
             if (contains(UNIT_SYSTEM__LEGACY)) {
                 Logger.info(getClass().getSimpleName(), "Schema migration 1.0 -> 1.1");
 
-                String unitSystem = getString(UNIT_SYSTEM__LEGACY, UsCustomaryUnitSystem.NAME);
-                boolean useMetric = !UsCustomaryUnitSystem.NAME.equals(unitSystem);
+                String unitSystem = getString(UNIT_SYSTEM__LEGACY, UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY);
+                boolean useMetric = !UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY.equals(unitSystem);
                 edit().putBoolean(USE_CELSIUS, useMetric)
                       .putBoolean(USE_GRAMS, useMetric)
                       .putBoolean(USE_CENTIMETERS, useMetric)
@@ -172,14 +168,6 @@ import rx.subscriptions.Subscriptions;
         return sharedPreferences.getBoolean(key, defaultValue);
     }
 
-    public float getFloat(String key, float defaultValue) {
-        return sharedPreferences.getFloat(key, defaultValue);
-    }
-
-    public long getLong(String key, long defaultValue) {
-        return sharedPreferences.getLong(key, defaultValue);
-    }
-
     public int getInt(String key, int defaultValue) {
         return sharedPreferences.getInt(key, defaultValue);
     }
@@ -194,10 +182,10 @@ import rx.subscriptions.Subscriptions;
     //region Observable Values
 
     private <T> Observable<T> observableValue(@NonNull String key, @Nullable T defaultValue, Func2<String, T, T> producer) {
-        return Observable.create(s -> {
+        return Observable.create(subscriber -> {
             OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
                 if (changedKey.equals(key)) {
-                    s.onNext(producer.call(key, defaultValue));
+                    subscriber.onNext(producer.call(key, defaultValue));
                 }
             };
 
@@ -205,11 +193,32 @@ import rx.subscriptions.Subscriptions;
                 sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
                 strongListeners.remove(changeListener);
             });
-            s.add(subscription);
+            subscriber.add(subscription);
 
             sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
             strongListeners.add(changeListener);
-            s.onNext(producer.call(key, defaultValue));
+            subscriber.onNext(producer.call(key, defaultValue));
+        });
+    }
+
+    public Observable<String> observeChangesOn(@NonNull String... keys) {
+        return Observable.create(subscriber -> {
+            OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
+                for (String key : keys) {
+                    if (key.equals(changedKey)) {
+                        subscriber.onNext(changedKey);
+                    }
+                }
+            };
+
+            Subscription subscription = Subscriptions.create(() -> {
+                sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
+                strongListeners.remove(changeListener);
+            });
+            subscriber.add(subscription);
+
+            sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
+            strongListeners.add(changeListener);
         });
     }
 
@@ -225,14 +234,6 @@ import rx.subscriptions.Subscriptions;
         return observableValue(key, defaultValue, sharedPreferences::getInt);
     }
 
-    public Observable<Long> observableLong(@NonNull String key, long defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getLong);
-    }
-
-    public Observable<Float> observableFloat(@NonNull String key, float defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getFloat);
-    }
-
     //endregion
 
 
@@ -244,18 +245,6 @@ import rx.subscriptions.Subscriptions;
 
     public Observable<Boolean> observableUse24Time() {
         return observableBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
-    }
-
-    @Deprecated
-    public Observable<UnitSystem> observableUnitSystem() {
-        if (cachedUnitSystem == null) {
-            String defaultSystemName = UnitSystem.getLocaleUnitSystemName(Locale.getDefault());
-            @SuppressWarnings("deprecation")
-            Observable<String> systemName = observableString(UNIT_SYSTEM__LEGACY, defaultSystemName);
-            this.cachedUnitSystem = systemName.map(UnitSystem::createUnitSystemWithName);
-        }
-
-        return cachedUnitSystem;
     }
 
     //endregion

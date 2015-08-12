@@ -17,10 +17,6 @@ public class UnitOperations {
         return grams / 1000L;
     }
 
-    public static long inchesToCentimeters(long inches) {
-        return Math.round(inches / 0.39370);
-    }
-
     public static long centimetersToInches(long inches) {
         return Math.round(inches * 0.39370);
     }

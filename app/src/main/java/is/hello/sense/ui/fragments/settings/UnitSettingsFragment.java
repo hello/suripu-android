@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -22,19 +19,13 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.units.UnitSystem;
-import is.hello.sense.units.systems.MetricUnitSystem;
-import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 import is.hello.sense.util.Analytics;
-import rx.Observable;
 
 public class UnitSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     @Inject PreferencesPresenter preferencesPresenter;
 
-    private StaticItemAdapter.TextItem unitSystemItem;
     private StaticItemAdapter.CheckItem use24TimeItem;
 
     private ProgressBar loadingIndicator;
@@ -61,9 +52,6 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
-        String unitSystem = preferencesPresenter.getString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
-        this.unitSystemItem = adapter.addTextItem(getString(R.string.setting_title_units), mapUnitSystemName(unitSystem), this::updateUnitSystem);
-
         boolean use24Time = preferencesPresenter.getUse24Time();
         this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, this::updateUse24Time);
 
@@ -81,10 +69,6 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
                          ignored -> hideLoading(),
                          this::pullingPreferencesFailed);
 
-        Observable<String> unitSystemName = preferencesPresenter.observableString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
-        bindAndSubscribe(unitSystemName.map(this::mapUnitSystemName),
-                         unitSystemItem::setDetail,
-                         Functions.LOG_ERROR);
         bindAndSubscribe(preferencesPresenter.observableUse24Time(),
                 use24TimeItem::setChecked,
                 Functions.LOG_ERROR);
@@ -94,7 +78,6 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.unitSystemItem = null;
         this.use24TimeItem = null;
 
         this.loadingIndicator = null;
@@ -120,19 +103,6 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     }
 
 
-    public @NonNull String mapUnitSystemName(@NonNull String unitSystemName) {
-        switch (unitSystemName) {
-            case UsCustomaryUnitSystem.NAME: {
-                return getString(R.string.unit_system_us_customary);
-            }
-
-            default:
-            case MetricUnitSystem.NAME: {
-                return getString(R.string.unit_system_metric);
-            }
-        }
-    }
-
     private void showLoading() {
         loadingIndicator.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
@@ -143,33 +113,6 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         listView.setVisibility(View.VISIBLE);
     }
 
-
-    public void updateUnitSystem() {
-        SenseBottomSheet bottomSheet = new SenseBottomSheet(getActivity());
-        bottomSheet.setTitle(R.string.setting_title_units);
-
-        bottomSheet.addOption(new SenseBottomSheet.Option(0)
-                .setTitle(R.string.unit_system_us_customary));
-        bottomSheet.addOption(new SenseBottomSheet.Option(1)
-                .setTitle(R.string.unit_system_metric));
-
-        String[] unitSystemIds = {
-                UsCustomaryUnitSystem.NAME,
-                MetricUnitSystem.NAME,
-        };
-        bottomSheet.setOnOptionSelectedListener(option -> {
-            int which = option.getOptionId();
-
-            preferencesPresenter.edit()
-                    .putString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, unitSystemIds[which])
-                    .commit();
-            preferencesPresenter.pushAccountPreferences().subscribe();
-
-            return true;
-        });
-
-        bottomSheet.show();
-    }
 
     public void updateUse24Time() {
         boolean update = !use24TimeItem.isChecked();

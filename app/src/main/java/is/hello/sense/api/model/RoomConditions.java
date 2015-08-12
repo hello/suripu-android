@@ -28,22 +28,27 @@ public class RoomConditions extends ApiResponse {
 
 
     public SensorState getTemperature() {
+        temperature.setName(ApiService.SENSOR_NAME_TEMPERATURE);
         return temperature;
     }
 
     public SensorState getHumidity() {
+        temperature.setName(ApiService.SENSOR_NAME_HUMIDITY);
         return humidity;
     }
 
     public SensorState getParticulates() {
+        temperature.setName(ApiService.SENSOR_NAME_PARTICULATES);
         return particulates;
     }
 
     public SensorState getLight() {
+        temperature.setName(ApiService.SENSOR_NAME_LIGHT);
         return light;
     }
 
     public SensorState getSound() {
+        temperature.setName(ApiService.SENSOR_NAME_SOUND);
         return sound;
     }
 
@@ -61,25 +66,25 @@ public class RoomConditions extends ApiResponse {
         // - RoomConditionsFragment
         // - UnitSystem
         // - OnboardingRoomCheckFragment
-        return Lists.newArrayList(temperature, humidity, light, sound);
+        return Lists.newArrayList(getTemperature(), getHumidity(), getLight(), getSound());
     }
 
     public @Nullable SensorState getSensorStateWithName(@NonNull String name) {
         switch (name) {
             case ApiService.SENSOR_NAME_HUMIDITY:
-                return humidity;
+                return getHumidity();
 
             case ApiService.SENSOR_NAME_PARTICULATES:
-                return particulates;
+                return getParticulates();
 
             case ApiService.SENSOR_NAME_TEMPERATURE:
-                return temperature;
+                return getTemperature();
 
             case ApiService.SENSOR_NAME_LIGHT:
-                return light;
+                return getLight();
 
             case ApiService.SENSOR_NAME_SOUND:
-                return sound;
+                return getSound();
 
             default:
                 return null;
