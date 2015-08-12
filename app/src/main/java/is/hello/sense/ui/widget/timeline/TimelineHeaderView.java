@@ -221,7 +221,12 @@ public class TimelineHeaderView extends RelativeLayout {
             alphaAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    TimelineHeaderView.this.backgroundAnimator = null;
+                    if (backgroundAnimator == animation) {
+                        gradientBackground.setAlpha(targetAlpha);
+                        TimelineHeaderView.this.gradientBackgroundAlpha = targetAlpha;
+                        invalidate();
+                        TimelineHeaderView.this.backgroundAnimator = null;
+                    }
                 }
             });
             alphaAnimator.start();
