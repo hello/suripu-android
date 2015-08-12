@@ -92,8 +92,8 @@ public class ChangeEmailFragment extends InjectionFragment {
                 null, LoadingDialogFragment.DEFAULTS);
         bindAndSubscribe(accountPresenter.updateEmail(newEmail),
                          ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
                              finishWithResult(Activity.RESULT_OK, null);
+                             LoadingDialogFragment.close(getFragmentManager());
                          },
                          this::presentError);
     }
