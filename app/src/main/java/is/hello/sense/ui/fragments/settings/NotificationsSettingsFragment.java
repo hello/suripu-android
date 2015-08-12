@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -24,7 +23,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 
-public class NotificationsSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class NotificationsSettingsFragment extends InjectionFragment {
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     @Inject AccountPresenter accountPresenter;
@@ -52,13 +51,13 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
         this.scoreItem = adapter.addCheckItem(R.string.notification_setting_sleep_score, false, this::updateScore);
         this.alertConditionsItem = adapter.addCheckItem(R.string.notification_setting_alert_conditions, false, this::updateAlertConditions);
 
+        listView.setOnItemClickListener(adapter);
         listView.setAdapter(adapter);
 
         return view;
@@ -137,16 +136,8 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
     //region Actions
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) parent.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
-        }
-    }
-
-    public void updateScore() {
-        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_SCORE.toUpdate(scoreItem.isChecked());
+    public void updateScore(@NonNull StaticItemAdapter.CheckItem item) {
+        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_SCORE.toUpdate(item.isChecked());
         showLoading();
         bindAndSubscribe(accountPresenter.updatePreferences(update),
                          prefs -> {
@@ -156,8 +147,8 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
                          this::preferencesUnavailable);
     }
 
-    public void updateAlertConditions() {
-        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_ALERT_CONDITIONS.toUpdate(!alertConditionsItem.isChecked());
+    public void updateAlertConditions(@NonNull StaticItemAdapter.CheckItem item) {
+        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_ALERT_CONDITIONS.toUpdate(!item.isChecked());
         showLoading();
         bindAndSubscribe(accountPresenter.updatePreferences(update),
                          prefs -> {

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -96,12 +97,12 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     }
 
     private void populateDebugActionItems() {
-        debugActionItems.addTextItem("Piru-Pea", null, () -> {
+        debugActionItems.addTextItem("Piru-Pea", null, ignored -> {
             try {
                 startActivity(new Intent(this, Class.forName("is.hello.sense.debug.PiruPeaActivity")));
             } catch (ClassNotFoundException e) {
                 MessageDialogFragment dialog = MessageDialogFragment.newInstance("Piru-Pea Unavailable", "Bluetooth debugging is only available in internal builds.");
-                dialog.show(getFragmentManager(), MessageDialogFragment.TAG);
+                dialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
             }
         });
         debugActionItems.addTextItem("View Log", null, this::viewLog);
@@ -118,17 +119,17 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     }
 
 
-    public void showRoomCheck() {
+    public void showRoomCheck(@NonNull StaticItemAdapter.TextItem item) {
         Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
         startActivity(onboarding);
     }
 
-    public void viewLog() {
+    public void viewLog(@NonNull StaticItemAdapter.TextItem item) {
         startActivity(new Intent(this, SessionLogViewerActivity.class));
     }
 
-    public void clearLog() {
+    public void clearLog(@NonNull StaticItemAdapter.TextItem item) {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(SessionLogger.clearLog(),
                 ignored -> LoadingDialogFragment.close(getFragmentManager()),
@@ -138,7 +139,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                 });
     }
 
-    public void sendLog() {
+    public void sendLog(@NonNull StaticItemAdapter.TextItem item) {
         bindAndSubscribe(SessionLogger.flush(), ignored -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(SessionLogger.getLogFilePath(this))));
@@ -147,12 +148,12 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         }, Functions.LOG_ERROR);
     }
 
-    public void clearHandholdingSettings() {
+    public void clearHandholdingSettings(@NonNull StaticItemAdapter.TextItem item) {
         WelcomeDialogFragment.clearShownStates(this);
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 
-    public void clearHttpCache() {
+    public void clearHttpCache(@NonNull StaticItemAdapter.TextItem item) {
         try {
             httpCache.evictAll();
             Toast.makeText(getApplicationContext(), "Cache Cleared", Toast.LENGTH_SHORT).show();
@@ -161,7 +162,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         }
     }
 
-    public void crash() {
+    public void crash(@NonNull StaticItemAdapter.TextItem item) {
         SenseAlertDialog confirm = new SenseAlertDialog(this);
         confirm.setTitle("Are you sure?");
         confirm.setMessage("A report of this crash will be uploaded to Crashlytics.");
@@ -174,7 +175,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         confirm.show();
     }
 
-    public void logOut() {
+    public void logOut(@NonNull StaticItemAdapter.TextItem item) {
         sessionManager.logOut();
         finish();
     }
@@ -183,8 +184,9 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         StaticItemAdapter.TextItem item = (StaticItemAdapter.TextItem) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
+        if (item.getOnClick() != null) {
+            StaticItemAdapter adapter = (StaticItemAdapter) adapterView.getAdapter();
+            adapter.onItemClick(adapterView, view, position, id);
         } else {
             String value = item.getTitle() + ": " + item.getDetail();
             ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);

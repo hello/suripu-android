@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -25,8 +24,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 
-public class UnitSettingsFragment extends InjectionFragment
-        implements AdapterView.OnItemClickListener, Handler.Callback {
+public class UnitSettingsFragment extends InjectionFragment implements Handler.Callback {
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     private static final int DELAY_PUSH_PREFERENCES = 3000;
@@ -57,15 +55,15 @@ public class UnitSettingsFragment extends InjectionFragment
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
         boolean use24Time = preferencesPresenter.getUse24Time();
-        this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, () -> {
-            updatePreference(PreferencesPresenter.USE_24_TIME, use24TimeItem);
+        this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, item -> {
+            updatePreference(PreferencesPresenter.USE_24_TIME, item);
         });
 
+        listView.setOnItemClickListener(adapter);
         listView.setAdapter(adapter);
 
         return view;
@@ -111,15 +109,6 @@ public class UnitSettingsFragment extends InjectionFragment
 
         if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
             getActivity().finish();
-        }
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) parent.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
         }
     }
 

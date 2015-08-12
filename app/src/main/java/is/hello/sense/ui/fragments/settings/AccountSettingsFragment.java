@@ -62,6 +62,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private Account currentAccount;
     private ListView listView;
+    private StaticItemAdapter adapter;
 
 
     //region Lifecycle
@@ -92,7 +93,7 @@ public class AccountSettingsFragment extends InjectionFragment
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
+        this.adapter = new StaticItemAdapter(getActivity());
         adapter.setEllipsize(TextUtils.TruncateAt.END);
 
         adapter.addSectionTitle(R.string.title_info);
@@ -151,6 +152,7 @@ public class AccountSettingsFragment extends InjectionFragment
         this.enhancedAudioItem = null;
 
         this.listView = null;
+        this.adapter = null;
     }
 
     @Override
@@ -182,10 +184,7 @@ public class AccountSettingsFragment extends InjectionFragment
             return;
         }
 
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
-        }
+        adapter.onItemClick(adapterView, view, position, id);
     }
 
     public FragmentNavigationActivity getNavigationContainer() {
@@ -249,19 +248,19 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
 
-    public void changeName() {
+    public void changeName(@NonNull StaticItemAdapter.TextItem item) {
         ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
-    public void changeEmail() {
+    public void changeEmail(@NonNull StaticItemAdapter.TextItem item) {
         ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
         getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
-    public void changePassword() {
+    public void changePassword(@NonNull StaticItemAdapter.TextItem item) {
         getNavigationContainer().pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
     }
 
@@ -270,28 +269,28 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Demographics
 
-    public void changeBirthDate() {
+    public void changeBirthDate(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
-    public void changeGender() {
+    public void changeGender(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
-    public void changeHeight() {
+    public void changeHeight(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
-    public void changeWeight() {
+    public void changeWeight(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
@@ -303,7 +302,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Preferences
 
-    public void changeEnhancedAudio() {
+    public void changeEnhancedAudio(@NonNull StaticItemAdapter.CheckItem item) {
         boolean newSetting = !enhancedAudioItem.isChecked();
         Map<Account.Preference, Boolean> update = Account.Preference.ENHANCED_AUDIO.toUpdate(newSetting);
         enhancedAudioItem.setChecked(newSetting);
@@ -322,7 +321,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Actions
 
-    public void signOut() {
+    public void signOut(@NonNull StaticItemAdapter.TextItem item) {
         Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
 
         SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());

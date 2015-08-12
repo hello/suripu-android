@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,7 +86,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
         Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);
         bindAndSubscribe(onConnectionLost,
-                         intent -> disconnect(),
+                         intent -> disconnect(null),
                          Functions.LOG_ERROR);
     }
 
@@ -143,7 +144,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     //region Scanning
 
     public void scan() {
-        disconnect();
+        disconnect(null);
         scannedPeripheralsAdapter.clear();
 
         SenseAlertDialog includeHighPower = new SenseAlertDialog(this);
@@ -189,7 +190,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
                          this::presentError);
     }
 
-    public void disconnect() {
+    public void disconnect(@Nullable StaticItemAdapter.TextItem item) {
         if (selectedPeripheral != null) {
             selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
@@ -199,15 +200,15 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         listView.setAdapter(scannedPeripheralsAdapter);
     }
 
-    public void putIntoPairingMode() {
+    public void putIntoPairingMode(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.putIntoPairingMode());
     }
 
-    public void putIntoNormalMode() {
+    public void putIntoNormalMode(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.putIntoNormalMode());
     }
 
-    public void factoryReset() {
+    public void factoryReset(@Nullable StaticItemAdapter.TextItem item) {
         SenseAlertDialog alertDialog = new SenseAlertDialog(this);
         alertDialog.setTitle(R.string.dialog_title_factory_reset);
         alertDialog.setMessage("This is a device only factory reset, all paired accounts in API will persist. Use the ‘Devices’ screen to perform a full factory reset.");
@@ -217,48 +218,48 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         alertDialog.show();
     }
 
-    public void getWifiNetwork() {
+    public void getWifiNetwork(@Nullable StaticItemAdapter.TextItem item) {
         showLoadingIndicator();
         bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
                 network -> {
                     hideLoadingIndicator();
                     MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
-                    dialogFragment.show(getFragmentManager(), MessageDialogFragment.TAG);
+                    dialogFragment.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
                 },
                 this::presentError);
     }
 
-    public void setWifiNetwork() {
+    public void setWifiNetwork(@Nullable StaticItemAdapter.TextItem item) {
         Intent intent = new Intent(this, OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
         startActivity(intent);
     }
 
-    public void pairPillMode() {
+    public void pairPillMode(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.pairPill(apiSessionManager.getAccessToken()));
     }
 
-    public void linkAccount() {
+    public void linkAccount(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.linkAccount(apiSessionManager.getAccessToken()));
     }
 
-    public void pushData() {
+    public void pushData(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.pushData());
     }
 
-    public void busyLedAnimation() {
+    public void busyLedAnimation(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.BUSY));
     }
 
-    public void trippyLedAnimation() {
+    public void trippyLedAnimation(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.TRIPPY));
     }
 
-    public void stopAnimationWithFade() {
+    public void stopAnimationWithFade(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.FADE_OUT));
     }
 
-    public void stopAnimationWithoutFade() {
+    public void stopAnimationWithoutFade(@Nullable StaticItemAdapter.TextItem item) {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.STOP));
     }
 
@@ -279,10 +280,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
                 }
             }, this::presentError);
         } else {
-            StaticItemAdapter.Item selectedItem = peripheralActions.getItem(position);
-            if (selectedItem.getAction() != null) {
-                selectedItem.getAction().run();
-            }
+            peripheralActions.onItemClick(adapterView, view, position, id);
         }
     }
 
