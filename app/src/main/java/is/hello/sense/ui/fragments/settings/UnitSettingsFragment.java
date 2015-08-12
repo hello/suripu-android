@@ -84,7 +84,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
         boolean useCentimeters = preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS,
                                                                  defaultIsMetric);
         this.useCentimeters = adapter.addCheckItem(R.string.setting_title_use_centimeters, useCentimeters, item -> {
-            updatePreference(PreferencesPresenter.USE_CELSIUS, item);
+            updatePreference(PreferencesPresenter.USE_CENTIMETERS, item);
         });
 
         listView.setOnItemClickListener(adapter);
