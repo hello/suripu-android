@@ -226,7 +226,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
-            preferences.pushAccountPreferences().subscribe();
+            preferences.pushAccountPreferences();
 
             Analytics.trackRegistration(session.getAccountId(), createdAccount.getName(), DateTime.now());
 

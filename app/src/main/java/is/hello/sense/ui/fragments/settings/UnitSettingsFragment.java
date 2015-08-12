@@ -3,6 +3,10 @@ package is.hello.sense.ui.fragments.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +25,16 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 
-public class UnitSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class UnitSettingsFragment extends InjectionFragment
+        implements AdapterView.OnItemClickListener, Handler.Callback {
     private static final int REQUEST_CODE_ERROR = 0xE3;
+
+    private static final int DELAY_PUSH_PREFERENCES = 3000;
+    private static final int MSG_PUSH_PREFERENCES = 0x5;
 
     @Inject PreferencesPresenter preferencesPresenter;
 
+    private final Handler handler = new Handler(Looper.getMainLooper(), this);
     private StaticItemAdapter.CheckItem use24TimeItem;
 
     private ProgressBar loadingIndicator;
@@ -53,7 +62,9 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
         boolean use24Time = preferencesPresenter.getUse24Time();
-        this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, this::updateUse24Time);
+        this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, () -> {
+            updatePreference(PreferencesPresenter.USE_24_TIME, use24TimeItem);
+        });
 
         listView.setAdapter(adapter);
 
@@ -70,8 +81,8 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
                          this::pullingPreferencesFailed);
 
         bindAndSubscribe(preferencesPresenter.observableUse24Time(),
-                use24TimeItem::setChecked,
-                Functions.LOG_ERROR);
+                         use24TimeItem::setChecked,
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -82,6 +93,16 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
 
         this.loadingIndicator = null;
         this.listView = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
+            handler.removeMessages(MSG_PUSH_PREFERENCES);
+            preferencesPresenter.pushAccountPreferences();
+        }
     }
 
     @Override
@@ -114,12 +135,14 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     }
 
 
-    public void updateUse24Time() {
-        boolean update = !use24TimeItem.isChecked();
+    public void updatePreference(@NonNull String key, @NonNull StaticItemAdapter.CheckItem item) {
+        boolean update = !item.isChecked();
         preferencesPresenter.edit()
-                            .putBoolean(PreferencesPresenter.USE_24_TIME, update)
+                            .putBoolean(key, update)
                             .apply();
-        preferencesPresenter.pushAccountPreferences().subscribe();
+
+        handler.removeMessages(MSG_PUSH_PREFERENCES);
+        handler.sendEmptyMessageDelayed(MSG_PUSH_PREFERENCES, DELAY_PUSH_PREFERENCES);
     }
 
     public void pullingPreferencesFailed(Throwable e) {
@@ -128,5 +151,14 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg.what == MSG_PUSH_PREFERENCES) {
+            preferencesPresenter.pushAccountPreferences();
+            return true;
+        }
+        return false;
     }
 }

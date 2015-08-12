@@ -118,41 +118,31 @@ import rx.subscriptions.Subscriptions;
     public Observable<Void> pullAccountPreferences() {
         logEvent("Pulling preferences from backend");
 
-        return Observable.create(s -> {
-            accountPresenter.preferences()
-                            .subscribe(prefs -> {
-                                boolean use24Time = Account.Preference.TIME_TWENTY_FOUR_HOUR.getFrom(prefs);
-                                boolean useCelsius = Account.Preference.TEMP_CELSIUS.getFrom(prefs);
-                                boolean useGrams = Account.Preference.WEIGHT_METRIC.getFrom(prefs);
-                                boolean useCentimeters = Account.Preference.HEIGHT_METRIC.getFrom(prefs);
+        return accountPresenter.preferences().map(prefs -> {
+            edit().putBoolean(USE_CELSIUS, Account.Preference.TEMP_CELSIUS.getFrom(prefs))
+                  .putBoolean(USE_GRAMS, Account.Preference.WEIGHT_METRIC.getFrom(prefs))
+                  .putBoolean(USE_CENTIMETERS, Account.Preference.HEIGHT_METRIC.getFrom(prefs))
+                  .putBoolean(USE_24_TIME, Account.Preference.TIME_TWENTY_FOUR_HOUR.getFrom(prefs))
+                  .apply();
 
-                                edit().putBoolean(USE_CELSIUS, useCelsius)
-                                      .putBoolean(USE_GRAMS, useGrams)
-                                      .putBoolean(USE_CENTIMETERS, useCentimeters)
-                                      .putBoolean(USE_24_TIME, use24Time)
-                                      .apply();
+            logEvent("Pulled preferences");
 
-                                logEvent("Pulled preferences");
-
-                                s.onNext(null);
-                                s.onCompleted();
-                            }, e -> {
-                                logEvent("Could not pull preferences from backend. " + e);
-
-                                s.onError(e);
-                            });
+            return null;
         });
     }
 
-    public Observable<Map<Account.Preference, Boolean>> pushAccountPreferences() {
+    public void pushAccountPreferences() {
         logEvent("Pushing account preferences");
 
         Map<Account.Preference, Boolean> preferences = new HashMap<>();
+        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
         preferences.put(Account.Preference.TIME_TWENTY_FOUR_HOUR, getUse24Time());
-        preferences.put(Account.Preference.TEMP_CELSIUS, getBoolean(USE_CELSIUS, false));
-        preferences.put(Account.Preference.WEIGHT_METRIC, getBoolean(USE_GRAMS, false));
-        preferences.put(Account.Preference.HEIGHT_METRIC, getBoolean(USE_CENTIMETERS, false));
-        return accountPresenter.updatePreferences(preferences);
+        preferences.put(Account.Preference.TEMP_CELSIUS, getBoolean(USE_CELSIUS, defaultMetric));
+        preferences.put(Account.Preference.WEIGHT_METRIC, getBoolean(USE_GRAMS, defaultMetric));
+        preferences.put(Account.Preference.HEIGHT_METRIC, getBoolean(USE_CENTIMETERS, defaultMetric));
+        accountPresenter.updatePreferences(preferences)
+                        .subscribe(ignored -> logEvent("Pushed account preferences"),
+                                   Functions.LOG_ERROR);
     }
 
     //endregion

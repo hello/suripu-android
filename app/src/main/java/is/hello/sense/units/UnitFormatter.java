@@ -29,12 +29,16 @@ public class UnitFormatter {
     private final PreferencesPresenter preferences;
     private final boolean defaultMetric;
 
-    @Inject public UnitFormatter(@NonNull PreferencesPresenter preferences) {
-        this.preferences = preferences;
+    public static boolean isDefaultLocaleMetric() {
         String country = Locale.getDefault().getCountry();
-        this.defaultMetric = ("US".equals(country) ||
+        return ("US".equals(country) ||
                 "LR".equals(country) ||
                 "MM".equals(country));
+    }
+
+    @Inject public UnitFormatter(@NonNull PreferencesPresenter preferences) {
+        this.preferences = preferences;
+        this.defaultMetric = isDefaultLocaleMetric();
     }
 
     public Observable<String> unitPreferenceChanges() {

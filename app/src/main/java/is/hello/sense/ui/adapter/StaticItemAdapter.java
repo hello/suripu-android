@@ -270,7 +270,9 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     public class TextItem extends Item {
         private String detail;
 
-        public TextItem(@NonNull String title, @Nullable String detail, @Nullable Runnable action) {
+        public TextItem(@NonNull String title,
+                        @Nullable String detail,
+                        @Nullable Runnable action) {
             super(ItemType.TEXT_ITEM, title, action);
             this.detail = detail;
         }
