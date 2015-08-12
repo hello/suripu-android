@@ -1,22 +1,24 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentCallbacks2;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -29,7 +31,6 @@ import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Functions;
@@ -44,13 +45,16 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.ExtendedItemAnimator;
 import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
+import is.hello.sense.ui.widget.timeline.TimelineNoDataHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.ui.widget.util.Dialogs;
 import is.hello.sense.util.Analytics;
@@ -59,6 +63,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
+import rx.functions.Action1;
 
 public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
@@ -91,6 +96,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
     private TimelineFadeItemAnimator itemAnimator;
+    private ColorDrawableCompat backgroundFill;
 
     private boolean controlsSharedChrome = false;
 
@@ -177,11 +183,14 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         View[] headers = { toolbar, headerView };
 
-        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext(), headers.length);
-        itemAnimator.setEnabled(animationEnabled);
-        itemAnimator.addListener(headerView);
+        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
+        itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
         recyclerView.setItemAnimator(itemAnimator);
-        recyclerView.addItemDecoration(new BackgroundDecoration(getResources(), headers.length));
+        recyclerView.addItemDecoration(new BottomInsetDecoration(getResources(), headers.length));
+
+        int backgroundFillColor = getResources().getColor(R.color.background_timeline);
+        this.backgroundFill = new ColorDrawableCompat(backgroundFillColor);
+        recyclerView.setBackground(backgroundFill);
 
         this.adapter = new TimelineAdapter(getActivity(), dateFormatter, headers);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
@@ -199,8 +208,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         stateSafeExecutor.execute(headerView::startPulsing);
 
         bindAndSubscribe(timelinePresenter.timeline,
-                this::bindTimeline,
-                this::timelineUnavailable);
+                         this::bindTimeline,
+                         this::timelineUnavailable);
 
         bindAndSubscribe(preferences.observableUse24Time(),
                 adapter::setUse24Time,
@@ -229,6 +238,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         super.onDestroyView();
 
         headerView.clearAnimation();
+        itemAnimator.endAnimations();
         itemAnimator.removeAllListeners();
 
         recyclerView.setAdapter(null);
@@ -238,6 +248,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         this.layoutManager = null;
         this.adapter = null;
         this.itemAnimator = null;
+        this.backgroundFill = null;
 
         if (infoPopup != null) {
             infoPopup.dismiss();
@@ -303,8 +314,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                     }
 
                     Share.text(shareCopy)
-                            .withSubject(getString(R.string.app_name))
-                            .send(getActivity());
+                         .withSubject(getString(R.string.app_name))
+                         .send(getActivity());
                 },
                 e -> {
                     Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
@@ -315,11 +326,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
 
         bindAndSubscribe(timelinePresenter.latest(),
-                timeline -> {
-                    TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
-                    infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
-                },
-                Functions.LOG_ERROR);
+                         timeline -> {
+                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
+                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
+                         },
+                         Functions.LOG_ERROR);
     }
 
     //endregion
@@ -327,6 +338,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Hooks
 
+    @SuppressWarnings("ConstantConditions")
     public @NonNull LocalDate getDate() {
         return (LocalDate) getArguments().getSerializable(ARG_DATE);
     }
@@ -348,6 +360,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     }
 
     public void update() {
+        transitionOutOfNoDataState();
         timelinePresenter.update();
     }
 
@@ -403,11 +416,11 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
         @Override
-        public void onTimelineAnimationWillStart(@NonNull AnimatorContext.Transaction transaction) {
+        public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
         }
 
         @Override
-        public void onTimelineAnimationDidEnd(boolean finished) {
+        public void onItemAnimatorDidStop(boolean finished) {
             if (finished) {
                 showHandholdingIfAppropriate();
             }
@@ -421,35 +434,113 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
     //region Binding
 
-    public void bindTimeline(@NonNull Timeline timeline) {
-        boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
-        Runnable continuation = stateSafeExecutor.bind(() -> {
-            if (animationEnabled) {
-                itemAnimator.addListener(new HandholdingOneShotListener());
-            } else {
-                getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
-            }
+    private void transitionIntoNoDataState(@NonNull Action1<TimelineNoDataHeaderView> configurer) {
+        TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getActivity());
+        configurer.call(newHeader);
 
-            adapter.bindEvents(timeline.getEvents());
+        if (animationEnabled && ViewCompat.isLaidOut(recyclerView)) {
+            itemAnimator.setDelayEnabled(false);
+            itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, true);
+            itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
+                final Animator crossFade = backgroundFill.colorAnimator(
+                        getResources().getColor(R.color.background_timeline));
 
-            toolbar.setShareVisible(hasEvents && !homeActivity.isUndersideVisible());
-        });
+                @Override
+                public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
+                    transaction.takeOwnership(crossFade);
+                }
 
-        if (hasEvents) {
-            headerView.bindScore(timeline.getScore(), timeline.getScoreCondition(), continuation);
+                @Override
+                public void onItemAnimatorDidStop(boolean finished) {
+                    crossFade.cancel();
+
+                    itemAnimator.removeListener(this);
+                }
+            });
         } else {
-            headerView.bindScore(null, ScoreCondition.UNAVAILABLE, continuation);
+            backgroundFill.setColor(getResources().getColor(R.color.background_timeline));
         }
 
-        headerView.bindMessage(timeline.getMessage());
+        toolbar.setShareVisible(false);
+        headerView.stopPulsing();
+        adapter.replaceHeader(1, newHeader);
+    }
+
+    private void transitionOutOfNoDataState() {
+        if (adapter.getHeader(1) == headerView) {
+            return;
+        }
+
+        itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
+        itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
+
+        adapter.replaceHeader(1, headerView);
+        headerView.setBackgroundSolid(false, 0);
+        headerView.startPulsing();
+
+        // Run after change listener
+        recyclerView.post(() -> {
+            itemAnimator.setDelayEnabled(true);
+            itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, true);
+        });
+    }
+
+    public void bindTimeline(@NonNull Timeline timeline) {
+        boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
+        if (hasEvents) {
+            Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
+                int targetColor = getResources().getColor(R.color.timeline_background_fill);
+                Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
+                backgroundFade.start();
+
+                toolbar.setShareVisible(!homeActivity.isUndersideVisible());
+            });
+            Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
+                if (animationEnabled) {
+                    itemAnimator.addListener(new HandholdingOneShotListener());
+                } else {
+                    getAnimatorContext().runWhenIdle(stateSafeExecutor.bind(this::showHandholdingIfAppropriate));
+                }
+
+                adapter.bindEvents(timeline.getEvents());
+            });
+            headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
+        } else {
+            transitionIntoNoDataState(header -> {
+                // Indicates on-boarding just ended
+                if (homeActivity.getWillShowUnderside()) {
+                    header.setDiagramResource(R.drawable.timeline_state_first_night);
+                    header.setTitle(R.string.title_timeline_not_enough_data);
+                    header.setMessage(R.string.message_timeline_first_night);
+                } else {
+                    header.setDiagramResource(R.drawable.timeline_state_no_data);
+                    header.setTitle(R.string.title_timeline_not_enough_data);
+                    header.setMessage(timeline.getMessage());
+                }
+            });
+        }
 
         headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
     public void timelineUnavailable(Throwable e) {
-        toolbar.setShareVisible(false);
-        adapter.clear();
-        headerView.bindError(e);
+        Analytics.trackError(e, "Loading Timeline");
+        CharSequence message = getString(R.string.timeline_error_message);
+        if (adapter.hasEvents()) {
+            Toast toast = new Toast(homeActivity.getApplicationContext());
+            @SuppressLint("InflateParams")
+            TextView text = (TextView) homeActivity.getLayoutInflater().inflate(R.layout.toast_text, null);
+            text.setText(message);
+            toast.setView(text);
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            transitionIntoNoDataState(header -> {
+                header.setDiagramResource(R.drawable.timeline_state_error);
+                header.setTitle(R.string.dialog_error_title);
+                header.setMessage(message);
+            });
+        }
     }
 
     //endregion
@@ -537,10 +628,9 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         }
 
         actions.setOnOptionSelectedListener((option) -> {
-            preferences
-                    .edit()
-                    .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
-                    .apply();
+            preferences.edit()
+                       .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
+                       .apply();
 
             JSONObject properties = Analytics.createProperties(
                 Analytics.Timeline.PROP_TYPE, event.getType().toString()
@@ -670,31 +760,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         }
     }
 
-    static class BackgroundDecoration extends RecyclerView.ItemDecoration {
-        private final Drawable background;
+    static class BottomInsetDecoration extends RecyclerView.ItemDecoration {
         private final int bottomPadding;
         private final int headerCount;
 
-        public BackgroundDecoration(@NonNull Resources resources, int headerCount) {
-            this.background = ResourcesCompat.getDrawable(resources, R.color.timeline_background_fill, null);
+        public BottomInsetDecoration(@NonNull Resources resources, int headerCount) {
             this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
             this.headerCount = headerCount;
-        }
-
-        @Override
-        public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-            int left = 0,
-                top = 0,
-                right = canvas.getWidth(),
-                bottom = canvas.getHeight();
-
-            RecyclerView.ViewHolder headerView = parent.findViewHolderForAdapterPosition(0);
-            if (headerView != null) {
-                top = headerView.itemView.getBottom();
-            }
-
-            background.setBounds(left, top, right, bottom);
-            background.draw(canvas);
         }
 
         @Override

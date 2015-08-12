@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AnimationUtils;
 
 /**
  * A wrapper around {@see android.view.View.OnClickListener} that incorporates dispatch
@@ -18,9 +19,9 @@ public class SafeOnClickListener implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if ((System.currentTimeMillis() - lastInvocation) > ViewConfiguration.getDoubleTapTimeout()) {
+        if ((AnimationUtils.currentAnimationTimeMillis() - lastInvocation) > ViewConfiguration.getDoubleTapTimeout()) {
             target.onClick(view);
-            this.lastInvocation = System.currentTimeMillis();
+            this.lastInvocation = AnimationUtils.currentAnimationTimeMillis();
         }
     }
 }
