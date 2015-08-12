@@ -139,7 +139,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onSkipQuestion() {
-        insightsAdapter.clearCurrentQuestion();
+        questionsPresenter.skipQuestion();
     }
 
     @Override
