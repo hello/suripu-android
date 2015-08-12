@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -12,43 +13,53 @@ import is.hello.sense.functional.Lists;
 
 public class RoomConditions extends ApiResponse {
     @SerializedName("temperature")
-    private SensorState temperature;
+    @VisibleForTesting SensorState temperature;
 
     @SerializedName("humidity")
-    private SensorState humidity;
+    @VisibleForTesting SensorState humidity;
 
     @SerializedName("particulates")
-    private SensorState particulates;
+    @VisibleForTesting SensorState particulates;
 
     @SerializedName("light")
-    private SensorState light;
+    @VisibleForTesting SensorState light;
 
     @SerializedName("sound")
-    private SensorState sound;
+    @VisibleForTesting SensorState sound;
 
 
     public SensorState getTemperature() {
-        temperature.setName(ApiService.SENSOR_NAME_TEMPERATURE);
+        if (temperature != null) {
+            temperature.setName(ApiService.SENSOR_NAME_TEMPERATURE);
+        }
         return temperature;
     }
 
     public SensorState getHumidity() {
-        temperature.setName(ApiService.SENSOR_NAME_HUMIDITY);
+        if (humidity != null) {
+            humidity.setName(ApiService.SENSOR_NAME_HUMIDITY);
+        }
         return humidity;
     }
 
     public SensorState getParticulates() {
-        temperature.setName(ApiService.SENSOR_NAME_PARTICULATES);
+        if (particulates != null) {
+            particulates.setName(ApiService.SENSOR_NAME_PARTICULATES);
+        }
         return particulates;
     }
 
     public SensorState getLight() {
-        temperature.setName(ApiService.SENSOR_NAME_LIGHT);
+        if (light != null) {
+            light.setName(ApiService.SENSOR_NAME_LIGHT);
+        }
         return light;
     }
 
     public SensorState getSound() {
-        temperature.setName(ApiService.SENSOR_NAME_SOUND);
+        if (sound != null) {
+            sound.setName(ApiService.SENSOR_NAME_SOUND);
+        }
         return sound;
     }
 
