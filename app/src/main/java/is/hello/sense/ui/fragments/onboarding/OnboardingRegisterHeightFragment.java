@@ -18,7 +18,8 @@ import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterHeightFragment extends AccountEditingFragment implements ScaleView.OnValueChangedListener {
+public class OnboardingRegisterHeightFragment extends AccountEditingFragment
+        implements ScaleView.OnValueChangedListener {
     private ScaleView scale;
     private TextView scaleReading;
     private TextView secondaryReading;

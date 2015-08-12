@@ -54,7 +54,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         Account account = getContainer().getAccount();
         if (account.getWeight() != null) {
             int weightInGrams = Math.round(account.getWeight());
-            int pounds = UnitOperations.gramsToPounds(weightInGrams);
+            int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
             scale.setValue(pounds, true);
         }
 
@@ -83,7 +83,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
                 int weightInGrams = Math.round(account.getWeight());
-                int pounds = UnitOperations.gramsToPounds(weightInGrams);
+                int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
                 scale.animateToValue(pounds);
             }, 250);
             this.hasAnimated = true;
@@ -101,7 +101,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
     @Override
     public void onValueChanged(int pounds) {
         scaleReading.setText(getString(R.string.weight_pounds_fmt, pounds));
-        int kilograms = UnitOperations.poundsToKilograms(pounds);
+        int kilograms = (int) UnitOperations.poundsToKilograms(pounds);
         secondaryReading.setText(getString(R.string.weight_kg_fmt, kilograms));
     }
 
@@ -110,7 +110,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment imp
         try {
             if (!scale.isAnimating()) {
                 int pounds = scale.getValue();
-                int grams = UnitOperations.poundsToGrams(pounds);
+                int grams = (int) UnitOperations.poundsToGrams(pounds);
                 getContainer().getAccount().setWeight(grams);
             }
             getContainer().onAccountUpdated(this);

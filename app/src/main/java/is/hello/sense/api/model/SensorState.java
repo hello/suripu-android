@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import org.joda.time.DateTime;
 
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.units.UnitPrinter;
 
 public class SensorState extends ApiResponse {
     @SerializedName("value")
@@ -69,11 +69,11 @@ public class SensorState extends ApiResponse {
         return idealConditions;
     }
 
-    public @Nullable CharSequence getFormattedValue(@Nullable UnitSystem.Formatter formatter) {
+    public @Nullable CharSequence getFormattedValue(@Nullable UnitPrinter formatter) {
         if (getValue() == null) {
             return null;
         } else if (formatter != null) {
-            return formatter.format(getValue().longValue());
+            return formatter.print(getValue().longValue());
         } else {
             return Styles.assembleReadingAndUnit(getValue().longValue(), getUnit());
         }

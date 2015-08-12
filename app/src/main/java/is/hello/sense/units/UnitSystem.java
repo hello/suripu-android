@@ -155,7 +155,8 @@ public class UnitSystem implements Serializable {
 
     //region Vendors
 
-    public @Nullable Formatter getUnitFormatterForSensor(@NonNull String sensor) {
+    public @Nullable
+    UnitPrinter getUnitFormatterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
@@ -186,37 +187,23 @@ public class UnitSystem implements Serializable {
         // - OnboardingRoomCheckFragment
         return Arrays.asList(
             new Unit(this::formatTemperature, this::convertTemperature, getTemperatureUnit()),
-            new Unit(this::formatHumidity, IDENTITY_CONVERTER, getHumidityUnit()),
-            new Unit(this::formatLight, IDENTITY_CONVERTER, getLightUnit()),
-            new Unit(this::formatSound, IDENTITY_CONVERTER, getSoundUnit())
+            new Unit(this::formatHumidity, UnitConverter.IDENTITY, getHumidityUnit()),
+            new Unit(this::formatLight, UnitConverter.IDENTITY, getLightUnit()),
+            new Unit(this::formatSound, UnitConverter.IDENTITY, getSoundUnit())
         );
     }
 
     //endregion
 
-    public interface Formatter {
-        @NonNull CharSequence format(long value);
-    }
-
-    /**
-     * The identity converter. Returns a value unmodified.
-     */
-    public static final Converter IDENTITY_CONVERTER = v -> v;
-
-    /**
-     * A functor that converts a raw value into the user's unit system.
-     */
-    public interface Converter {
-        long convert(long value);
-    }
-
     public static class Unit {
-        private final @Nullable Formatter formatter;
-        private final @NonNull Converter converter;
+        private final @Nullable
+        UnitPrinter formatter;
+        private final @NonNull
+        UnitConverter converter;
         private final @NonNull String name;
 
-        public Unit(@Nullable Formatter formatter,
-                    @NonNull Converter converter,
+        public Unit(@Nullable UnitPrinter formatter,
+                    @NonNull UnitConverter converter,
                     @NonNull String name) {
             this.formatter = formatter;
             this.converter = converter;
@@ -225,7 +212,7 @@ public class UnitSystem implements Serializable {
 
         public CharSequence format(long value) {
             if (formatter != null) {
-                return formatter.format(value);
+                return formatter.print(value);
             } else {
                 return Long.toString(value);
             }
@@ -236,7 +223,7 @@ public class UnitSystem implements Serializable {
         }
 
         @Nullable
-        public Formatter getFormatter() {
+        public UnitPrinter getFormatter() {
             return formatter;
         }
 

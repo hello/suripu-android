@@ -40,6 +40,7 @@ import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.units.UnitSystem;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -198,7 +199,8 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
         final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
-        @Nullable UnitSystem.Formatter formatter;
+        @Nullable
+        UnitPrinter formatter;
         @Nullable SensorState sensorState;
         @Nullable String errorMessage;
 

@@ -23,7 +23,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -35,20 +34,22 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.units.UnitConverter;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
+public class AccountSettingsFragment extends InjectionFragment
+        implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject UnitFormatter unitFormatter;
 
     private ProgressBar loadingIndicator;
 
@@ -127,10 +128,17 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
-                                                                                    preferences.observableUnitSystem(),
-                                                                                    Pair::new);
-        bindAndSubscribe(forAccount, this::bindAccount, this::accountUnavailable);
+        bindAndSubscribe(accountPresenter.account, this::bindAccount, this::accountUnavailable);
+
+        Observable<Pair<Account, UnitConverter>> height = Observable.combineLatest(accountPresenter.account,
+                                                                                   unitFormatter.heightConverter(),
+                                                                                   Pair::new);
+        bindAndSubscribe(height, this::bindHeight, Functions.LOG_ERROR);
+
+        Observable<Pair<Account, UnitConverter>> weight = Observable.combineLatest(accountPresenter.account,
+                                                                                   unitFormatter.weightConverter(),
+                                                                                   Pair::new);
+        bindAndSubscribe(weight, this::bindWeight, Functions.LOG_ERROR);
 
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
@@ -218,21 +226,30 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     //region Binding Data
 
-    public void bindAccount(@NonNull Pair<Account, UnitSystem> forAccount) {
-        Account account = forAccount.first;
-        UnitSystem unitSystem = forAccount.second;
-
+    public void bindAccount(@NonNull Account account) {
         nameItem.setDetail(account.getName());
         emailItem.setDetail(account.getEmail());
 
         birthdayItem.setDetail(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
         genderItem.setDetail(getString(account.getGender().nameRes));
-        heightItem.setDetail(unitSystem.formatHeight(account.getHeight()).toString());
-        weightItem.setDetail(unitSystem.formatMass(account.getWeight()).toString());
 
         this.currentAccount = account;
 
         hideLoadingIndicator();
+    }
+
+    public void bindHeight(@NonNull Pair<Account, UnitConverter> forHeight) {
+        Account account = forHeight.first;
+        UnitConverter converter = forHeight.second;
+        long value = converter.convert(account.getHeight());
+        heightItem.setDetail(Long.toString(value));
+    }
+
+    public void bindWeight(@NonNull Pair<Account, UnitConverter> forWeight) {
+        Account account = forWeight.first;
+        UnitConverter converter = forWeight.second;
+        long value = converter.convert(account.getWeight());
+        weightItem.setDetail(Long.toString(value));
     }
 
     public void accountUnavailable(Throwable e) {

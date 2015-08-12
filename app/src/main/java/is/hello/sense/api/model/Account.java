@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import is.hello.sense.api.gson.Enums;
-import is.hello.sense.units.UnitOperations;
 
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
@@ -59,9 +58,8 @@ public class Account extends ApiResponse implements Cloneable {
 
     public static Account createDefault() {
         Account newAccount = new Account();
-        newAccount.setHeight(UnitOperations.inchesToCentimeters(64));
-        newAccount.setWeight(UnitOperations.poundsToGrams(150));
-        newAccount.setTimeZoneOffset(DateTimeZone.getDefault().getOffset(DateTimeUtils.currentTimeMillis()));
+        newAccount.setTimeZoneOffset(DateTimeZone.getDefault()
+                                                 .getOffset(DateTimeUtils.currentTimeMillis()));
         return newAccount;
     }
 
