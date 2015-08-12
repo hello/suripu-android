@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentCallbacks2;
@@ -18,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
@@ -541,7 +543,13 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         Analytics.trackError(e, "Loading Timeline");
         CharSequence message = getString(R.string.timeline_error_message);
         if (adapter.hasEvents()) {
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            Toast toast = new Toast(homeActivity.getApplicationContext());
+            @SuppressLint("InflateParams")
+            TextView text = (TextView) homeActivity.getLayoutInflater().inflate(R.layout.toast_text, null);
+            text.setText(message);
+            toast.setView(text);
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.show();
         } else {
             transitionIntoNoDataState(header -> {
                 header.setDiagramResource(R.drawable.timeline_state_error);
