@@ -5,6 +5,7 @@ import android.widget.FrameLayout;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import java.util.Collections;
 
@@ -200,6 +201,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
         assertEquals("Sense", holder.title.getText().toString());
         assertEquals("Pair New Sense", holder.actionButton.getText().toString());
 
+        // For SafeOnClickListener to function properly
+        ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
         assertEquals(Device.Type.SENSE, clickedType.get());
@@ -218,6 +221,8 @@ public class DevicesAdapterTests extends InjectionTestCase {
         assertEquals("Sleep Pill", holder.title.getText().toString());
         assertEquals("Pair New Pill", holder.actionButton.getText().toString());
 
+        // For SafeOnClickListener to function properly
+        ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
         assertEquals(Device.Type.PILL, clickedType.get());

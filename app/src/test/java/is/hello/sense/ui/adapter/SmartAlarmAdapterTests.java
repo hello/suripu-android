@@ -9,6 +9,7 @@ import org.joda.time.LocalTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
@@ -65,6 +66,8 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         assertEquals("Blah blah blah", holder.messageText.getText().toString());
         assertEquals("OK", holder.actionButton.getText().toString());
 
+        // For SafeOnClickListener to function properly
+        ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
         assertTrue(clickListenerCalled.get());
