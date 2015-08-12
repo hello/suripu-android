@@ -12,12 +12,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.AccountPreference;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -107,21 +107,21 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         listView.setVisibility(View.VISIBLE);
     }
 
-    private boolean getBooleanPreference(@NonNull HashMap<AccountPreference.Key, Object> preferences,
-                                         @NonNull AccountPreference.Key key,
+    private boolean getBooleanPreference(@NonNull Map<Account.Preference, Boolean> preferences,
+                                         @NonNull Account.Preference name,
                                          boolean defaultValue) {
-        if (preferences.containsKey(key)) {
-            return (boolean) preferences.get(key);
+        if (preferences.containsKey(name)) {
+            return preferences.get(name);
         } else {
             return defaultValue;
         }
     }
 
-    public void bindPreferences(@NonNull HashMap<AccountPreference.Key, Object> preferences) {
+    public void bindPreferences(@NonNull Map<Account.Preference, Boolean> preferences) {
         hideLoading();
 
-        scoreItem.setChecked(getBooleanPreference(preferences, AccountPreference.Key.PUSH_SCORE, true));
-        alertConditionsItem.setChecked(getBooleanPreference(preferences, AccountPreference.Key.PUSH_ALERT_CONDITIONS, true));
+        scoreItem.setChecked(getBooleanPreference(preferences, Account.Preference.PUSH_SCORE, true));
+        alertConditionsItem.setChecked(getBooleanPreference(preferences, Account.Preference.PUSH_ALERT_CONDITIONS, true));
     }
 
     public void preferencesUnavailable(@NonNull Throwable e) {
@@ -146,24 +146,22 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     public void updateScore() {
-        AccountPreference update = new AccountPreference(AccountPreference.Key.PUSH_SCORE);
-        update.setEnabled(!scoreItem.isChecked());
+        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_SCORE.toUpdate(scoreItem.isChecked());
         showLoading();
-        bindAndSubscribe(accountPresenter.updatePreference(update),
-                         pref -> {
-                             scoreItem.setChecked(pref.isEnabled());
+        bindAndSubscribe(accountPresenter.updatePreferences(update),
+                         prefs -> {
+                             scoreItem.setChecked(Account.Preference.PUSH_SCORE.getFrom(prefs));
                              hideLoading();
                          },
                          this::preferencesUnavailable);
     }
 
     public void updateAlertConditions() {
-        AccountPreference update = new AccountPreference(AccountPreference.Key.PUSH_ALERT_CONDITIONS);
-        update.setEnabled(!alertConditionsItem.isChecked());
+        Map<Account.Preference, Boolean> update = Account.Preference.PUSH_ALERT_CONDITIONS.toUpdate(!alertConditionsItem.isChecked());
         showLoading();
-        bindAndSubscribe(accountPresenter.updatePreference(update),
-                         pref -> {
-                             alertConditionsItem.setChecked(pref.isEnabled());
+        bindAndSubscribe(accountPresenter.updatePreferences(update),
+                         prefs -> {
+                             alertConditionsItem.setChecked(Account.Preference.PUSH_ALERT_CONDITIONS.getFrom(prefs));
                              hideLoading();
                          },
                          this::preferencesUnavailable);

@@ -61,7 +61,7 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
-        String unitSystem = preferencesPresenter.getString(PreferencesPresenter.UNIT_SYSTEM, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
+        String unitSystem = preferencesPresenter.getString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
         this.unitSystemItem = adapter.addTextItem(getString(R.string.setting_title_units), mapUnitSystemName(unitSystem), this::updateUnitSystem);
 
         boolean use24Time = preferencesPresenter.getUse24Time();
@@ -81,7 +81,7 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
                          ignored -> hideLoading(),
                          this::pullingPreferencesFailed);
 
-        Observable<String> unitSystemName = preferencesPresenter.observableString(PreferencesPresenter.UNIT_SYSTEM, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
+        Observable<String> unitSystemName = preferencesPresenter.observableString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
         bindAndSubscribe(unitSystemName.map(this::mapUnitSystemName),
                          unitSystemItem::setDetail,
                          Functions.LOG_ERROR);
@@ -161,7 +161,7 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
             int which = option.getOptionId();
 
             preferencesPresenter.edit()
-                    .putString(PreferencesPresenter.UNIT_SYSTEM, unitSystemIds[which])
+                    .putString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, unitSystemIds[which])
                     .commit();
             preferencesPresenter.pushAccountPreferences().subscribe();
 

@@ -15,13 +15,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -243,9 +242,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void bindAccountPreferences(@NonNull HashMap<AccountPreference.Key, Object> settings) {
-        boolean enhancedAudio = (boolean) settings.get(AccountPreference.Key.ENHANCED_AUDIO);
-        enhancedAudioItem.setChecked(enhancedAudio);
+    public void bindAccountPreferences(@NonNull Map<Account.Preference, Boolean> preferences) {
+        enhancedAudioItem.setChecked(Account.Preference.ENHANCED_AUDIO.getFrom(preferences));
     }
 
     //endregion
@@ -309,12 +307,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     public void changeEnhancedAudio() {
         boolean newSetting = !enhancedAudioItem.isChecked();
-        AccountPreference update = new AccountPreference(AccountPreference.Key.ENHANCED_AUDIO);
-        update.setEnabled(newSetting);
+        Map<Account.Preference, Boolean> update = Account.Preference.ENHANCED_AUDIO.toUpdate(newSetting);
         enhancedAudioItem.setChecked(newSetting);
 
         showLoadingIndicator();
-        bindAndSubscribe(accountPresenter.updatePreference(update),
+        bindAndSubscribe(accountPresenter.updatePreferences(update),
                          ignored -> hideLoadingIndicator(),
                          e -> {
                              enhancedAudioItem.setChecked(!newSetting);

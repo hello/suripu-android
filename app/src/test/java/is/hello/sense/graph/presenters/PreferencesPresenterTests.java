@@ -8,7 +8,12 @@ import org.junit.Test;
 import javax.inject.Inject;
 
 import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.units.systems.MetricUnitSystem;
+import is.hello.sense.units.systems.UsCustomaryUnitSystem;
 import is.hello.sense.util.Sync;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @SuppressLint("CommitPrefEdits")
 public class PreferencesPresenterTests extends InjectionTestCase {
@@ -17,10 +22,40 @@ public class PreferencesPresenterTests extends InjectionTestCase {
     @Inject PreferencesPresenter presenter;
 
     @Before
-    public void initialize() throws Exception {
+    public void setUp() throws Exception {
         presenter.edit()
-                 .remove(TEST_KEY)
+                 .clear()
                  .commit();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void migrationForMetric() {
+        presenter.edit()
+                 .putInt(PreferencesPresenter.SCHEMA_VERSION, PreferencesPresenter.SCHEMA_VERSION_1_0)
+                 .putString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, MetricUnitSystem.NAME)
+                 .commit();
+
+        assertThat(presenter.migrateIfNeeded(), is(true));
+        assertThat(presenter.contains(PreferencesPresenter.UNIT_SYSTEM__LEGACY), is(false));
+        assertThat(presenter.getBoolean(PreferencesPresenter.USE_CELSIUS, false), is(true));
+        assertThat(presenter.getBoolean(PreferencesPresenter.USE_GRAMS, false), is(true));
+        assertThat(presenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS, false), is(true));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void migrationForUsCustomary() {
+        presenter.edit()
+                 .putInt(PreferencesPresenter.SCHEMA_VERSION, PreferencesPresenter.SCHEMA_VERSION_1_0)
+                 .putString(PreferencesPresenter.UNIT_SYSTEM__LEGACY, UsCustomaryUnitSystem.NAME)
+                 .commit();
+
+        assertThat(presenter.migrateIfNeeded(), is(true));
+        assertThat(presenter.contains(PreferencesPresenter.UNIT_SYSTEM__LEGACY), is(false));
+        assertThat(presenter.getBoolean(PreferencesPresenter.USE_CELSIUS, true), is(false));
+        assertThat(presenter.getBoolean(PreferencesPresenter.USE_GRAMS, true), is(false));
+        assertThat(presenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS, true), is(false));
     }
 
     @Test

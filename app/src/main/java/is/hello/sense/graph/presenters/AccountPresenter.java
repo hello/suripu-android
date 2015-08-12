@@ -4,14 +4,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.PresenterSubject;
@@ -99,12 +98,12 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //region Preferences
 
-    public Observable<HashMap<AccountPreference.Key, Object>> preferences() {
+    public Observable<Map<Account.Preference, Boolean>> preferences() {
         return apiService.accountPreferences();
     }
 
-    public Observable<AccountPreference> updatePreference(@NonNull AccountPreference update) {
-        return apiService.updateAccountPreference(update);
+    public Observable<Map<Account.Preference, Boolean>> updatePreferences(@NonNull Map<Account.Preference, Boolean> changes) {
+        return apiService.updateAccountPreferences(changes);
     }
 
     //endregion

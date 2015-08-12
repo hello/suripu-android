@@ -1,5 +1,7 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,6 +10,10 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.units.UnitOperations;
 
 public class Account extends ApiResponse implements Cloneable {
@@ -178,5 +184,31 @@ public class Account extends ApiResponse implements Cloneable {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';
+    }
+
+    public enum Preference implements Enums.FromString {
+        PUSH_ALERT_CONDITIONS,
+        PUSH_SCORE,
+        TIME_TWENTY_FOUR_HOUR,
+        TEMP_CELSIUS,
+        WEIGHT_METRIC,
+        HEIGHT_METRIC,
+        ENHANCED_AUDIO,
+        UNKNOWN;
+
+        public boolean getFrom(@NonNull Map<Preference, Boolean> preferences) {
+            Boolean value = preferences.get(this);
+            return (value != null && value);
+        }
+
+        public Map<Preference, Boolean> toUpdate(boolean newValue) {
+            Map<Preference, Boolean> update = new HashMap<>();
+            update.put(this, newValue);
+            return update;
+        }
+
+        public static Preference fromString(@NonNull String string) {
+            return Enums.fromString(string, Preference.values(), UNKNOWN);
+        }
     }
 }

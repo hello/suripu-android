@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.AccountPreference;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -58,9 +60,8 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
     private void updateEnhancedAudioEnabled(boolean enabled) {
         LoadingDialogFragment.show(getFragmentManager());
 
-        AccountPreference preferenceUpdate = new AccountPreference(AccountPreference.Key.ENHANCED_AUDIO);
-        preferenceUpdate.setEnabled(enabled);
-        bindAndSubscribe(apiService.updateAccountPreference(preferenceUpdate),
+        Map<Account.Preference, Boolean> update = Account.Preference.ENHANCED_AUDIO.toUpdate(enabled);
+        bindAndSubscribe(apiService.updateAccountPreferences(update),
                          ignored -> {
                              LoadingDialogFragment.close(getFragmentManager());
                              ((OnboardingActivity) getActivity()).showSetupSense();
