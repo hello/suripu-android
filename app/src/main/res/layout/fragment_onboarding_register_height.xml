@@ -77,16 +77,6 @@
             android:textAppearance="@style/AppTheme.Text.ScaleReading"
             android:gravity="center" />
 
-        <TextView
-            android:id="@+id/fragment_onboarding_register_height_scale_reading_secondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/fragment_onboarding_register_height_scale"
-            android:layout_below="@id/fragment_onboarding_register_height_scale_reading"
-            android:textAppearance="@style/AppTheme.Text.Body.Dimmed"
-            android:gravity="center" />
-
     </RelativeLayout>
 
 </RelativeLayout>

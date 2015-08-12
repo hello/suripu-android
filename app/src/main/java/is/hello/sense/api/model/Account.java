@@ -58,6 +58,8 @@ public class Account extends ApiResponse implements Cloneable {
 
     public static Account createDefault() {
         Account newAccount = new Account();
+        newAccount.setHeight(177);
+        newAccount.setWeight(68039);
         newAccount.setTimeZoneOffset(DateTimeZone.getDefault()
                                                  .getOffset(DateTimeUtils.currentTimeMillis()));
         return newAccount;
