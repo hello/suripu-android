@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
 
     private static final float EVENT_SCALE_MIN = 0.9f;
     private static final float EVENT_SCALE_MAX = 1.0f;
+    private static final FrameLayout.LayoutParams HEADER_LAYOUT_PARAMS = new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+    );
 
 
     private final Context context;
@@ -152,6 +157,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     @VisibleForTesting
     int getHeaderCount() {
         return headers.length;
+    }
+
+    public View getHeader(int position) {
+        return headers[position];
+    }
+
+    public void replaceHeader(int position, @NonNull View newHeader) {
+        headers[position] = newHeader;
+        notifyItemRemoved(position);
+        notifyItemInserted(position);
     }
 
     public boolean hasEvents() {
@@ -357,8 +372,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
             View segmentView = inflater.inflate(R.layout.item_timeline_segment, parent, false);
             return new EventViewHolder(segmentView);
         } else {
-            View header = headers[viewType];
-            return new StaticViewHolder(header);
+            FrameLayout wrapper = new FrameLayout(context);
+            wrapper.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                               ViewGroup.LayoutParams.WRAP_CONTENT));
+            return new StaticViewHolder(wrapper);
         }
     }
 
@@ -372,14 +389,30 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         holder.unbind();
     }
 
-    static class StaticViewHolder extends TimelineBaseViewHolder {
-        StaticViewHolder(@NonNull View itemView) {
-            super(itemView);
+    class StaticViewHolder extends TimelineBaseViewHolder {
+        final FrameLayout wrapper;
+
+        StaticViewHolder(@NonNull FrameLayout wrapper) {
+            super(wrapper);
+
+            this.wrapper = wrapper;
         }
 
         @Override
         public void bind(int position) {
-            // Do nothing.
+            View view = headers[position];
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != wrapper) {
+                if (parent != null) {
+                    parent.removeView(view);
+                }
+                wrapper.addView(view, HEADER_LAYOUT_PARAMS);
+            }
+        }
+
+        @Override
+        public void unbind() {
+            wrapper.removeAllViews();
         }
     }
 

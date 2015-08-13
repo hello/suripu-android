@@ -52,6 +52,8 @@ public class TimelineToolbar extends RelativeLayout {
     public TimelineToolbar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        setBackgroundResource(R.color.background_timeline);
+
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_toolbar, this, true);
 

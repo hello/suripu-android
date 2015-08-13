@@ -2,57 +2,108 @@ package is.hello.sense.ui.widget.timeline;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.sense.ui.widget.ExtendedItemAnimator;
 
 /**
  * A simple staggered fade-in animation.
  * <p />
  * Each item faded-in has the delay <code>{@link #DELAY} * index</code>.
  */
-public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
+public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
     public static final long DELAY = 20;
 
-    private final AnimatorTemplate config = AnimatorTemplate.DEFAULT;
+    private final List<Transaction> pending = new ArrayList<>();
+    private final List<Transaction> running = new ArrayList<>();
 
-    private final List<RecyclerView.ViewHolder> pending = new ArrayList<>();
-    private final List<RecyclerView.ViewHolder> running = new ArrayList<>();
+    private boolean delayEnabled = true;
 
-    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext, int headerCount) {
-        super(animatorContext, headerCount);
+    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
+        super(animatorContext);
+
+        setEnabled(Action.ADD, true);
+    }
+
+    public void setDelayEnabled(boolean delayEnabled) {
+        this.delayEnabled = delayEnabled;
+    }
+
+    private long getDelayAmount() {
+        if (delayEnabled) {
+            return DELAY;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public void runPendingAnimations() {
-        sortByPosition(pending);
-        getAnimatorContext().transaction(config, AnimatorContext.OPTIONS_DEFAULT, t -> {
+        Collections.sort(pending);
+        getAnimatorContext().transaction(AnimatorTemplate.DEFAULT, AnimatorContext.OPTIONS_DEFAULT, t -> {
             dispatchAnimationWillStart(t);
 
-            long delay = DELAY;
-            for (RecyclerView.ViewHolder item : pending) {
-                dispatchAddStarting(item);
+            final long delayAmount = getDelayAmount();
+            long transactionDelay = 0;
+            for (Transaction transaction : pending) {
+                RecyclerView.ViewHolder target = transaction.target;
 
-                t.animatorFor(item.itemView)
-                 .withStartDelay(delay)
-                 .fadeIn();
+                switch (transaction.action) {
+                    case ADD: {
+                        dispatchAddStarting(target);
+                        t.animatorFor(target.itemView)
+                         .withStartDelay(transactionDelay)
+                         .fadeIn();
 
-                delay += DELAY;
+                        break;
+                    }
+                    case REMOVE: {
+                        dispatchRemoveStarting(target);
+                        t.animatorFor(target.itemView)
+                         .withStartDelay(transactionDelay)
+                         .fadeOut(View.VISIBLE);
+
+                        break;
+                    }
+                    default: {
+                        throw new IllegalArgumentException("Transaction type " +
+                                transaction.action + " currently unsupported.");
+                    }
+                }
+
+                transactionDelay += delayAmount;
             }
 
             running.addAll(pending);
             pending.clear();
         }, finished -> {
-            for (RecyclerView.ViewHolder item : running) {
+            for (Transaction transaction : running) {
+                RecyclerView.ViewHolder target = transaction.target;
                 if (!finished) {
-                    item.itemView.setAlpha(1f);
+                    switch (transaction.action) {
+                        case ADD: {
+                            target.itemView.setAlpha(1f);
+                            dispatchAddFinished(target);
+                            break;
+                        }
+                        case REMOVE: {
+                            target.itemView.setAlpha(0f);
+                            dispatchRemoveFinished(target);
+                            break;
+                        }
+                        default: {
+                            throw new IllegalArgumentException("Transaction type " +
+                                    transaction.action + " currently unsupported.");
+                        }
+                    }
                 }
-
-                dispatchAddFinished(item);
             }
 
             running.clear();
@@ -63,13 +114,25 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public boolean animateAdd(RecyclerView.ViewHolder holder) {
-        if (!isViewHolderAnimated(holder)) {
+        if (!isAnimatable(Action.ADD, holder)) {
             dispatchAddFinished(holder);
             return false;
         }
 
         holder.itemView.setAlpha(0f);
-        pending.add(holder);
+        pending.add(new Transaction(Action.ADD, holder));
+        return true;
+    }
+
+    @Override
+    public boolean animateRemove(RecyclerView.ViewHolder holder) {
+        if (!isAnimatable(Action.REMOVE, holder)) {
+            dispatchRemoveFinished(holder);
+            return false;
+        }
+
+        holder.itemView.setAlpha(1f);
+        pending.add(new Transaction(Action.REMOVE, holder));
         return true;
     }
 
@@ -80,8 +143,8 @@ public class TimelineFadeItemAnimator extends AbstractTimelineItemAnimator {
 
     @Override
     public void endAnimations() {
-        for (RecyclerView.ViewHolder item : running) {
-            Anime.cancelAll(item.itemView);
+        for (Transaction transaction : running) {
+            Anime.cancelAll(transaction.target.itemView);
         }
     }
 

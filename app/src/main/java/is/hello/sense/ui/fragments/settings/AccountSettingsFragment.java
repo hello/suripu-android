@@ -36,8 +36,6 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
-
 public class AccountSettingsFragment extends InjectionFragment
         implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
@@ -193,21 +191,13 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void showLoadingIndicator() {
-        animatorFor(listView)
-                .fadeOut(View.INVISIBLE)
-                .start();
-        animatorFor(loadingIndicator)
-                .fadeIn()
-                .start();
+        listView.setVisibility(View.INVISIBLE);
+        loadingIndicator.setVisibility(View.VISIBLE);
     }
 
     private void hideLoadingIndicator() {
-        animatorFor(loadingIndicator)
-                .fadeOut(View.INVISIBLE)
-                .start();
-        animatorFor(listView)
-                .fadeIn()
-                .start();
+        listView.setVisibility(View.VISIBLE);
+        loadingIndicator.setVisibility(View.GONE);
     }
 
     //endregion

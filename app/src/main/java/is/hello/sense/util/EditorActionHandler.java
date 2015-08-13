@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
@@ -27,7 +28,7 @@ public class EditorActionHandler implements TextView.OnEditorActionListener {
     @Override
     public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
         if (actionId == this.actionId || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-            long now = System.currentTimeMillis();
+            long now = AnimationUtils.currentAnimationTimeMillis();
             if ((now - actionLastCalled) < ACTION_RATE_LIMIT) {
                 return true;
             }
