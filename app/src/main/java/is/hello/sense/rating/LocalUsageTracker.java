@@ -12,14 +12,21 @@ import org.joda.time.Days;
 import org.joda.time.Interval;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-public class LocalUsageTracker {
+import is.hello.sense.util.Logger;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
+
+@Singleton public class LocalUsageTracker {
     public static final Days OLDEST_DAY = Days.days(31);
 
     private final Store store;
+    private final Scheduler asyncScheduler;
 
     @Inject public LocalUsageTracker(@NonNull Context context) {
         this.store = new Store(context);
+        this.asyncScheduler = Schedulers.io();
     }
 
     public DateTime today() {
@@ -27,11 +34,28 @@ public class LocalUsageTracker {
     }
 
     public void reset() {
+        Logger.debug(getClass().getSimpleName(), "resetting local usage tracker");
+
         SQLiteDatabase database = store.getWritableDatabase();
         database.delete(Store.TABLE_USAGE, null, null);
     }
 
+    public void resetAsync() {
+        Scheduler.Worker worker = asyncScheduler.createWorker();
+        worker.schedule(() -> {
+            try {
+                reset();
+            } catch (RuntimeException e) {
+                Logger.error(getClass().getSimpleName(), "Failure in resetAsync", e);
+            } finally {
+                worker.unsubscribe();
+            }
+        });
+    }
+
     public void increment(@NonNull Identifier identifier) {
+        Logger.debug(getClass().getSimpleName(), "incrementing count for " + identifier);
+
         SQLiteDatabase database = store.getWritableDatabase();
 
         long today = today().getMillis();
@@ -68,6 +92,19 @@ public class LocalUsageTracker {
         }
     }
 
+    public void incrementAsync(@NonNull Identifier identifier) {
+        Scheduler.Worker worker = asyncScheduler.createWorker();
+        worker.schedule(() -> {
+            try {
+                increment(identifier);
+            } catch (RuntimeException e) {
+                Logger.error(getClass().getSimpleName(), "Failure in incrementAsync", e);
+            } finally {
+                worker.unsubscribe();
+            }
+        });
+    }
+
     public int usageWithin(@NonNull Identifier identifier,
                            @NonNull Interval interval) {
         SQLiteDatabase database = store.getReadableDatabase();
@@ -95,11 +132,27 @@ public class LocalUsageTracker {
     }
 
     public void deleteOldUsageStats() {
+        Logger.debug(getClass().getSimpleName(), "Deleting old usage statistics");
+
         long limit = today().minus(OLDEST_DAY).getMillis();
         SQLiteDatabase database = store.getWritableDatabase();
-        database.delete(Store.TABLE_USAGE,
-                        "timestamp < ?",
-                        new String[] { Long.toString(limit) });
+        int purgeCount = database.delete(Store.TABLE_USAGE,
+                                         "timestamp < ?",
+                                         new String[]{Long.toString(limit)});
+        Logger.debug(getClass().getSimpleName(), "Purged " + purgeCount + " old usage statistics");
+    }
+
+    public void deleteOldUsageStatsAsync() {
+        Scheduler.Worker worker = asyncScheduler.createWorker();
+        worker.schedule(() -> {
+            try {
+                deleteOldUsageStats();
+            } catch (RuntimeException e) {
+                Logger.error(getClass().getSimpleName(), "Failure in deleteOldUsageStatsAsync", e);
+            } finally {
+                worker.unsubscribe();
+            }
+        });
     }
 
 

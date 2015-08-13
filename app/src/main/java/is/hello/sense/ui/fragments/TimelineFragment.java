@@ -37,6 +37,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -82,6 +83,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
     @Inject TimelinePresenter timelinePresenter;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject LocalUsageTracker localUsageTracker;
 
     private HomeActivity homeActivity;
 
@@ -505,6 +507,10 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
                 adapter.bindEvents(timeline.getEvents());
             });
             headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
+
+            if (animationEnabled) {
+                localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.TIMELINE_SHOWN_WITH_DATA);
+            }
         } else {
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended
