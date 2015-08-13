@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -12,38 +13,53 @@ import is.hello.sense.functional.Lists;
 
 public class RoomConditions extends ApiResponse {
     @SerializedName("temperature")
-    private SensorState temperature;
+    @VisibleForTesting SensorState temperature;
 
     @SerializedName("humidity")
-    private SensorState humidity;
+    @VisibleForTesting SensorState humidity;
 
     @SerializedName("particulates")
-    private SensorState particulates;
+    @VisibleForTesting SensorState particulates;
 
     @SerializedName("light")
-    private SensorState light;
+    @VisibleForTesting SensorState light;
 
     @SerializedName("sound")
-    private SensorState sound;
+    @VisibleForTesting SensorState sound;
 
 
     public SensorState getTemperature() {
+        if (temperature != null) {
+            temperature.setName(ApiService.SENSOR_NAME_TEMPERATURE);
+        }
         return temperature;
     }
 
     public SensorState getHumidity() {
+        if (humidity != null) {
+            humidity.setName(ApiService.SENSOR_NAME_HUMIDITY);
+        }
         return humidity;
     }
 
     public SensorState getParticulates() {
+        if (particulates != null) {
+            particulates.setName(ApiService.SENSOR_NAME_PARTICULATES);
+        }
         return particulates;
     }
 
     public SensorState getLight() {
+        if (light != null) {
+            light.setName(ApiService.SENSOR_NAME_LIGHT);
+        }
         return light;
     }
 
     public SensorState getSound() {
+        if (sound != null) {
+            sound.setName(ApiService.SENSOR_NAME_SOUND);
+        }
         return sound;
     }
 
@@ -61,25 +77,25 @@ public class RoomConditions extends ApiResponse {
         // - RoomConditionsFragment
         // - UnitSystem
         // - OnboardingRoomCheckFragment
-        return Lists.newArrayList(temperature, humidity, light, sound);
+        return Lists.newArrayList(getTemperature(), getHumidity(), getLight(), getSound());
     }
 
     public @Nullable SensorState getSensorStateWithName(@NonNull String name) {
         switch (name) {
             case ApiService.SENSOR_NAME_HUMIDITY:
-                return humidity;
+                return getHumidity();
 
             case ApiService.SENSOR_NAME_PARTICULATES:
-                return particulates;
+                return getParticulates();
 
             case ApiService.SENSOR_NAME_TEMPERATURE:
-                return temperature;
+                return getTemperature();
 
             case ApiService.SENSOR_NAME_LIGHT:
-                return light;
+                return getLight();
 
             case ApiService.SENSOR_NAME_SOUND:
-                return sound;
+                return getSound();
 
             default:
                 return null;

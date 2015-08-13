@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -36,17 +32,18 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import rx.Observable;
 
-public class AccountSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
+public class AccountSettingsFragment extends InjectionFragment
+        implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
+    @Inject UnitFormatter unitFormatter;
     @Inject PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
@@ -62,7 +59,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     private StaticItemAdapter.CheckItem enhancedAudioItem;
 
     private Account currentAccount;
+    private @Nullable Account.Preferences accountPreferences;
     private ListView listView;
+    private StaticItemAdapter adapter;
 
 
     //region Lifecycle
@@ -93,7 +92,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
+        this.adapter = new StaticItemAdapter(getActivity());
         adapter.setEllipsize(TextUtils.TruncateAt.END);
 
         adapter.addSectionTitle(R.string.title_info);
@@ -126,10 +125,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Pair<Account, UnitSystem>> forAccount = Observable.combineLatest(accountPresenter.account,
-                                                                                    preferences.observableUnitSystem(),
-                                                                                    Pair::new);
-        bindAndSubscribe(forAccount, this::bindAccount, this::accountUnavailable);
+        bindAndSubscribe(accountPresenter.account,
+                         this::bindAccount,
+                         this::accountUnavailable);
 
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
@@ -153,6 +151,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         this.enhancedAudioItem = null;
 
         this.listView = null;
+        this.adapter = null;
     }
 
     @Override
@@ -184,10 +183,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
             return;
         }
 
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) adapterView.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
-        }
+        adapter.onItemClick(adapterView, view, position, id);
     }
 
     public FragmentNavigationActivity getNavigationContainer() {
@@ -209,17 +205,18 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     //region Binding Data
 
-    public void bindAccount(@NonNull Pair<Account, UnitSystem> forAccount) {
-        Account account = forAccount.first;
-        UnitSystem unitSystem = forAccount.second;
-
+    public void bindAccount(@NonNull Account account) {
         nameItem.setDetail(account.getName());
         emailItem.setDetail(account.getEmail());
 
         birthdayItem.setDetail(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
         genderItem.setDetail(getString(account.getGender().nameRes));
-        heightItem.setDetail(unitSystem.formatHeight(account.getHeight()).toString());
-        weightItem.setDetail(unitSystem.formatMass(account.getWeight()).toString());
+
+        CharSequence weight = unitFormatter.formatWeight(account.getWeight());
+        weightItem.setDetail(weight.toString());
+
+        CharSequence height = unitFormatter.formatHeight(account.getHeight());
+        heightItem.setDetail(height.toString());
 
         this.currentAccount = account;
 
@@ -233,9 +230,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void bindAccountPreferences(@NonNull HashMap<AccountPreference.Key, Object> settings) {
-        boolean enhancedAudio = (boolean) settings.get(AccountPreference.Key.ENHANCED_AUDIO);
-        enhancedAudioItem.setChecked(enhancedAudio);
+    public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
+        this.accountPreferences = preferences;
+        enhancedAudioItem.setChecked(preferences.enhancedAudioEnabled);
     }
 
     //endregion
@@ -243,19 +240,19 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     //region Basic Info
 
-    public void changeName() {
+    public void changeName(@NonNull StaticItemAdapter.TextItem item) {
         ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
-    public void changeEmail() {
+    public void changeEmail(@NonNull StaticItemAdapter.TextItem item) {
         ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
         getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
-    public void changePassword() {
+    public void changePassword(@NonNull StaticItemAdapter.TextItem item) {
         getNavigationContainer().pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
     }
 
@@ -264,28 +261,28 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     //region Demographics
 
-    public void changeBirthDate() {
+    public void changeBirthDate(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
-    public void changeGender() {
+    public void changeGender(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
-    public void changeHeight() {
+    public void changeHeight(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
-    public void changeWeight() {
+    public void changeWeight(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         fragment.setWantsSkipButton(false);
         fragment.setTargetFragment(this, 0x00);
@@ -297,17 +294,26 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     //region Preferences
 
-    public void changeEnhancedAudio() {
-        boolean newSetting = !enhancedAudioItem.isChecked();
-        AccountPreference update = new AccountPreference(AccountPreference.Key.ENHANCED_AUDIO);
-        update.setEnabled(newSetting);
-        enhancedAudioItem.setChecked(newSetting);
+    public void changeEnhancedAudio(@NonNull StaticItemAdapter.CheckItem item) {
+        if (accountPreferences == null) {
+            return;
+        }
+
+        accountPreferences.enhancedAudioEnabled = !enhancedAudioItem.isChecked();
+        enhancedAudioItem.setChecked(accountPreferences.enhancedAudioEnabled);
 
         showLoadingIndicator();
-        bindAndSubscribe(accountPresenter.updatePreference(update),
-                         ignored -> hideLoadingIndicator(),
+        bindAndSubscribe(accountPresenter.updatePreferences(accountPreferences),
+                         ignored -> {
+                             preferences.edit()
+                                        .putBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED,
+                                                    accountPreferences.enhancedAudioEnabled)
+                                        .apply();
+                             hideLoadingIndicator();
+                         },
                          e -> {
-                             enhancedAudioItem.setChecked(!newSetting);
+                             accountPreferences.enhancedAudioEnabled = !accountPreferences.enhancedAudioEnabled;
+                             enhancedAudioItem.setChecked(accountPreferences.enhancedAudioEnabled);
                              accountUnavailable(e);
                          });
     }
@@ -317,7 +323,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Adapte
 
     //region Actions
 
-    public void signOut() {
+    public void signOut(@NonNull StaticItemAdapter.TextItem item) {
         Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
 
         SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());

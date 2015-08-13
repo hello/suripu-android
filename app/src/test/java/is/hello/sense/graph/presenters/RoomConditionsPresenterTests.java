@@ -18,7 +18,6 @@ public class RoomConditionsPresenterTests extends InjectionTestCase {
         Result conditions = Sync.wrapAfter(presenter::update, presenter.currentConditions).last();
         assertNotNull(conditions);
         assertNotNull(conditions.conditions);
-        assertNotNull(conditions.units);
         assertNotNull(conditions.roomSensorHistory);
     }
 }

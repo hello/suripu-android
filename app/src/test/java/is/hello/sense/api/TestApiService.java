@@ -18,11 +18,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.AccountPreference;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
@@ -101,7 +99,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Account> getAccount() {
-        return loadResponse("account", new TypeToken<Account>(){}.getType());
+        return loadResponse("account", new TypeToken<Account>() {
+        }.getType());
     }
 
     @Override
@@ -120,12 +119,12 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<AccountPreference> updateAccountPreference(@NonNull @Body AccountPreference preference) {
+    public Observable<Account.Preferences> accountPreferences() {
         return unimplemented();
     }
 
     @Override
-    public Observable<HashMap<AccountPreference.Key, Object>> accountPreferences() {
+    public Observable<Account.Preferences> updateAccountPreferences(@NonNull @Body Account.Preferences preferences) {
         return unimplemented();
     }
 

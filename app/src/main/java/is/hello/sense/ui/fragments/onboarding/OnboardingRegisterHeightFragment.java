@@ -8,23 +8,32 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditingFragment;
 import is.hello.sense.ui.widget.ScaleView;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterHeightFragment extends AccountEditingFragment implements ScaleView.OnValueChangedListener {
+public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
+    @Inject PreferencesPresenter preferences;
+
     private ScaleView scale;
     private TextView scaleReading;
-    private TextView secondaryReading;
 
     private boolean hasAnimated = false;
 
+    public OnboardingRegisterHeightFragment() {
+        SenseApplication.getInstance().inject(this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,9 +55,21 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
 
         this.scale = (ScaleView) view.findViewById(R.id.fragment_onboarding_register_height_scale);
         this.scaleReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_height_scale_reading);
-        this.secondaryReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_height_scale_reading_secondary);
 
-        scale.setOnValueChangedListener(this);
+        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
+        boolean useCentimeters = preferences.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultMetric);
+        if (useCentimeters) {
+            scale.setOnValueChangedListener(centimeters -> {
+                scaleReading.setText(getString(R.string.height_cm_fmt, centimeters));
+            });
+        } else {
+            scale.setOnValueChangedListener(centimeters -> {
+                long totalInches = UnitOperations.centimetersToInches(centimeters);
+                long feet = totalInches / 12;
+                long inches = totalInches % 12;
+                scaleReading.setText(getString(R.string.height_inches_fmt, feet, inches));
+            });
+        }
 
         Account account = getContainer().getAccount();
         if (account.getHeight() != null) {
@@ -88,16 +109,6 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment imp
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasAnimated", true);
-    }
-
-
-    @Override
-    public void onValueChanged(int centimeters) {
-        long totalInches = UnitOperations.centimetersToInches(centimeters);
-        long feet = totalInches / 12;
-        long inches = totalInches % 12;
-        scaleReading.setText(getString(R.string.height_inches_fmt, feet, inches));
-        secondaryReading.setText(getString(R.string.height_cm_fmt, centimeters));
     }
 
 

@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -13,17 +12,15 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.units.UnitSystem;
 import rx.Observable;
 
-public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresenter.Result> {
+public class SensorHistoryPresenter extends ValuePresenter<ArrayList<SensorGraphSample>> {
     @Inject ApiService apiService;
-    @Inject PreferencesPresenter preferences;
 
     private String sensorName;
     private Mode mode = Mode.DAY;
 
-    public final PresenterSubject<Result> history = this.subject;
+    public final PresenterSubject<ArrayList<SensorGraphSample>> history = this.subject;
 
     @Override
     public void onRestoreState(@NonNull Bundle savedState) {
@@ -54,14 +51,14 @@ public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresente
     }
 
     @Override
-    protected Observable<Result> provideUpdateObservable() {
+    protected Observable<ArrayList<SensorGraphSample>> provideUpdateObservable() {
         Observable<ArrayList<SensorGraphSample>> newHistory;
         if (getMode() == Mode.DAY) {
             newHistory = apiService.sensorHistoryForDay(getSensorName(), SensorGraphSample.timeForLatest());
         } else {
             newHistory = apiService.sensorHistoryForWeek(getSensorName(), SensorGraphSample.timeForLatest());
         }
-        return Observable.combineLatest(newHistory, preferences.observableUnitSystem(), Result::new);
+        return newHistory;
     }
 
 
@@ -83,16 +80,6 @@ public class SensorHistoryPresenter extends ValuePresenter<SensorHistoryPresente
         update();
     }
 
-
-    public static class Result implements Serializable {
-        public final ArrayList<SensorGraphSample> data;
-        public final UnitSystem unitSystem;
-
-        public Result(@NonNull ArrayList<SensorGraphSample> data, @NonNull UnitSystem unitSystem) {
-            this.data = data;
-            this.unitSystem = unitSystem;
-        }
-    }
 
     public enum Mode {
         WEEK,

@@ -4,34 +4,47 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.format.DateFormat;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.api.model.AccountPreference;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
-import is.hello.sense.units.UnitSystem;
-import is.hello.sense.units.systems.MetricUnitSystem;
-import is.hello.sense.units.systems.UsCustomaryUnitSystem;
+import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Func2;
 import rx.subscriptions.Subscriptions;
 
 @Singleton public class PreferencesPresenter extends Presenter {
-    public static final String UNIT_SYSTEM = "unit_system_name";
+    public static final String SCHEMA_VERSION = "_schema_version";
+    public static final int SCHEMA_VERSION_1_0 = 0;
+    public static final int SCHEMA_VERSION_1_1 = 1;
+
+    @Deprecated
+    public static final String UNIT_SYSTEM__LEGACY = "unit_system_name";
     public static final String USE_24_TIME = "use_24_time";
+    public static final String USE_CELSIUS = "use_celsius";
+    public static final String USE_GRAMS = "use_grams";
+    public static final String USE_CENTIMETERS = "use_centimeters";
+
+    public static final String PUSH_ALERT_CONDITIONS_ENABLED = "push_alert_conditions_enabled";
+    public static final String PUSH_SCORE_ENABLED = "push_score_enabled";
+
+    public static final String ENHANCED_AUDIO_ENABLED = "enhanced_audio_enabled";
 
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
     public static final String PAIRED_DEVICE_SSID = "paired_device_ssid";
@@ -49,9 +62,7 @@ import rx.subscriptions.Subscriptions;
      * SharedPreferences only keeps a weak reference to its OnSharedPreferenceChangeListener,
      * so we have to keep a strong reference to them somewhere if we want updates.
      */
-    private final Set<SharedPreferences.OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
-
-    private Observable<UnitSystem> cachedUnitSystem;
+    private final Set<OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
 
     public @Inject PreferencesPresenter(@NonNull Context context,
                                         @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
@@ -60,9 +71,39 @@ import rx.subscriptions.Subscriptions;
         this.sharedPreferences = sharedPreferences;
         this.accountPresenter = accountPresenter;
 
+        migrateIfNeeded();
+
         Observable<Intent> logOut = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOut.subscribe(ignored -> clear(), Functions.LOG_ERROR);
     }
+
+
+    //region Schema Migration
+
+    @SuppressWarnings("deprecation")
+    @VisibleForTesting boolean migrateIfNeeded() {
+        int schemaVersion = getInt(SCHEMA_VERSION, SCHEMA_VERSION_1_0);
+        if (schemaVersion < SCHEMA_VERSION_1_1) {
+            if (contains(UNIT_SYSTEM__LEGACY)) {
+                Logger.info(getClass().getSimpleName(), "Schema migration 1.0 -> 1.1");
+
+                String unitSystem = getString(UNIT_SYSTEM__LEGACY, UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY);
+                boolean useMetric = !UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY.equals(unitSystem);
+                edit().putBoolean(USE_CELSIUS, useMetric)
+                      .putBoolean(USE_GRAMS, useMetric)
+                      .putBoolean(USE_CENTIMETERS, useMetric)
+                      .remove(UNIT_SYSTEM__LEGACY)
+                      .putInt(SCHEMA_VERSION, SCHEMA_VERSION_1_1)
+                      .apply();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    //endregion
 
     
     //region Editing
@@ -81,47 +122,37 @@ import rx.subscriptions.Subscriptions;
     public Observable<Void> pullAccountPreferences() {
         logEvent("Pulling preferences from backend");
 
-        return Observable.create(s -> {
-            accountPresenter.preferences()
-                            .subscribe(prefs -> {
-                                Boolean use24Time = (Boolean) prefs.get(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
-                                Boolean useMetric = (Boolean) prefs.get(AccountPreference.Key.TEMP_CELSIUS);
+        return accountPresenter.preferences().map(prefs -> {
+            edit().putBoolean(PUSH_SCORE_ENABLED, prefs.pushScore)
+                  .putBoolean(PUSH_ALERT_CONDITIONS_ENABLED, prefs.pushAlertConditions)
+                  .putBoolean(ENHANCED_AUDIO_ENABLED, prefs.enhancedAudioEnabled)
+                  .putBoolean(USE_CELSIUS, prefs.useCelsius)
+                  .putBoolean(USE_GRAMS, prefs.useMetricWeight)
+                  .putBoolean(USE_CENTIMETERS, prefs.useMetricHeight)
+                  .putBoolean(USE_24_TIME, prefs.use24Time)
+                  .apply();
 
-                                String unitSystemName;
-                                if (useMetric != null && useMetric) {
-                                    unitSystemName = MetricUnitSystem.NAME;
-                                } else {
-                                    unitSystemName = UsCustomaryUnitSystem.NAME;
-                                }
+            logEvent("Pulled preferences");
 
-                                edit().putString(UNIT_SYSTEM, unitSystemName)
-                                      .putBoolean(USE_24_TIME, use24Time != null && use24Time)
-                                      .apply();
-
-                                logEvent("Pulled preferences");
-
-                                s.onNext(null);
-                                s.onCompleted();
-                            }, e -> {
-                                logEvent("Could not pull preferences from backend. " + e);
-
-                                s.onError(e);
-                            });
+            return null;
         });
     }
 
-    public Observable<Void> pushAccountPreferences() {
+    public void pushAccountPreferences() {
         logEvent("Pushing account preferences");
 
-        AccountPreference use24Time = new AccountPreference(AccountPreference.Key.TIME_TWENTY_FOUR_HOUR);
-        use24Time.setEnabled(getUse24Time());
-        AccountPreference useMetric = new AccountPreference(AccountPreference.Key.TEMP_CELSIUS);
-        String defaultSystemName = UnitSystem.getLocaleUnitSystemName(Locale.getDefault());
-        useMetric.setEnabled(MetricUnitSystem.NAME.equals(getString(UNIT_SYSTEM, defaultSystemName)));
-
-        return Observable.combineLatest(accountPresenter.updatePreference(use24Time),
-                                        accountPresenter.updatePreference(useMetric),
-                                        (l, r) -> null);
+        Account.Preferences preferences = new Account.Preferences();
+        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
+        preferences.pushScore = getBoolean(PUSH_SCORE_ENABLED, true);
+        preferences.pushAlertConditions = getBoolean(PUSH_ALERT_CONDITIONS_ENABLED, true);
+        preferences.enhancedAudioEnabled = getBoolean(ENHANCED_AUDIO_ENABLED, false);
+        preferences.use24Time = getUse24Time();
+        preferences.useCelsius = getBoolean(USE_CELSIUS, defaultMetric);
+        preferences.useMetricWeight = getBoolean(USE_GRAMS, defaultMetric);
+        preferences.useMetricHeight = getBoolean(USE_CENTIMETERS, defaultMetric);
+        accountPresenter.updatePreferences(preferences)
+                        .subscribe(ignored -> logEvent("Pushed account preferences"),
+                                   Functions.LOG_ERROR);
     }
 
     //endregion
@@ -135,14 +166,6 @@ import rx.subscriptions.Subscriptions;
 
     public boolean getBoolean(String key, boolean defaultValue) {
         return sharedPreferences.getBoolean(key, defaultValue);
-    }
-
-    public float getFloat(String key, float defaultValue) {
-        return sharedPreferences.getFloat(key, defaultValue);
-    }
-
-    public long getLong(String key, long defaultValue) {
-        return sharedPreferences.getLong(key, defaultValue);
     }
 
     public int getInt(String key, int defaultValue) {
@@ -159,10 +182,10 @@ import rx.subscriptions.Subscriptions;
     //region Observable Values
 
     private <T> Observable<T> observableValue(@NonNull String key, @Nullable T defaultValue, Func2<String, T, T> producer) {
-        return Observable.create(s -> {
-            SharedPreferences.OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
+        return Observable.create(subscriber -> {
+            OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
                 if (changedKey.equals(key)) {
-                    s.onNext(producer.call(key, defaultValue));
+                    subscriber.onNext(producer.call(key, defaultValue));
                 }
             };
 
@@ -170,11 +193,32 @@ import rx.subscriptions.Subscriptions;
                 sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
                 strongListeners.remove(changeListener);
             });
-            s.add(subscription);
+            subscriber.add(subscription);
 
             sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
             strongListeners.add(changeListener);
-            s.onNext(producer.call(key, defaultValue));
+            subscriber.onNext(producer.call(key, defaultValue));
+        });
+    }
+
+    public Observable<String> observeChangesOn(@NonNull String... keys) {
+        return Observable.create(subscriber -> {
+            OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
+                for (String key : keys) {
+                    if (key.equals(changedKey)) {
+                        subscriber.onNext(changedKey);
+                    }
+                }
+            };
+
+            Subscription subscription = Subscriptions.create(() -> {
+                sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
+                strongListeners.remove(changeListener);
+            });
+            subscriber.add(subscription);
+
+            sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
+            strongListeners.add(changeListener);
         });
     }
 
@@ -190,14 +234,6 @@ import rx.subscriptions.Subscriptions;
         return observableValue(key, defaultValue, sharedPreferences::getInt);
     }
 
-    public Observable<Long> observableLong(@NonNull String key, long defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getLong);
-    }
-
-    public Observable<Float> observableFloat(@NonNull String key, float defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getFloat);
-    }
-
     //endregion
 
 
@@ -209,16 +245,6 @@ import rx.subscriptions.Subscriptions;
 
     public Observable<Boolean> observableUse24Time() {
         return observableBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
-    }
-
-    public Observable<UnitSystem> observableUnitSystem() {
-        if (cachedUnitSystem == null) {
-            String defaultSystemName = UnitSystem.getLocaleUnitSystemName(Locale.getDefault());
-            Observable<String> systemName = observableString(UNIT_SYSTEM, defaultSystemName);
-            this.cachedUnitSystem = systemName.map(UnitSystem::createUnitSystemWithName);
-        }
-
-        return cachedUnitSystem;
     }
 
     //endregion

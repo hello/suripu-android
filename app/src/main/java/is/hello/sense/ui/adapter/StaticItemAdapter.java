@@ -9,13 +9,17 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import rx.functions.Action1;
 
-public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
+public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
+        implements ListView.OnItemClickListener {
     private final LayoutInflater layoutInflater;
     private final Resources resources;
     private @Nullable TextUtils.TruncateAt ellipsize = null;
@@ -31,6 +35,20 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         this.ellipsize = ellipsize;
         notifyDataSetChanged();
     }
+
+
+    //region Click Support
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Item item = (Item) parent.getItemAtPosition(position);
+        if (item != null && item.onClick != null) {
+            item.onClick.call(item);
+        }
+    }
+
+    //endregion
 
     //region Adding Items
 
@@ -56,14 +74,14 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         return addSectionTitle(getStringSafe(titleRes));
     }
 
-    public TextItem addTextItem(@NonNull String title, @Nullable String value, @Nullable Runnable action) {
-        TextItem item = new TextItem(title, value, action);
+    public TextItem addTextItem(@NonNull String title, @Nullable String value, @Nullable Action1<TextItem> onClick) {
+        TextItem item = new TextItem(title, value, onClick);
         add(item);
         return item;
     }
 
-    public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Runnable action) {
-        return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes), action);
+    public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Action1<TextItem> onClick) {
+        return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes), onClick);
     }
 
     public TextItem addTextItem(@NonNull String title, @Nullable String value) {
@@ -76,14 +94,14 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
         return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes));
     }
 
-    public CheckItem addCheckItem(@NonNull String title, boolean checked, @Nullable Runnable action) {
-        CheckItem item = new CheckItem(title, checked, action);
+    public CheckItem addCheckItem(@NonNull String title, boolean checked, @Nullable Action1<CheckItem> onClick) {
+        CheckItem item = new CheckItem(title, checked, onClick);
         add(item);
         return item;
     }
 
-    public CheckItem addCheckItem(@StringRes int titleRes, boolean checked, @Nullable Runnable action) {
-        return addCheckItem(getStringSafe(titleRes), checked, action);
+    public CheckItem addCheckItem(@StringRes int titleRes, boolean checked, @Nullable Action1<CheckItem> onClick) {
+        return addCheckItem(getStringSafe(titleRes), checked, onClick);
     }
 
     public Item addFooterItem(@NonNull String title) {
@@ -109,14 +127,14 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     @Override
     public int getItemViewType(int position) {
         Item item = getItem(position);
-        return item.getType().ordinal();
+        return item.type.ordinal();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         Item item = getItem(position);
-        ItemType type = item.getType();
+        ItemType type = item.type;
 
         switch (type) {
             case SECTION_TITLE: {
@@ -235,42 +253,43 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
 
 
     public static class Item {
-        private final ItemType type;
-        private final String title;
-        private Runnable action;
+        final @NonNull ItemType type;
+        final @NonNull String title;
+        @Nullable Action1 onClick;
 
-        protected Item(ItemType type, String title, Runnable action) {
+        protected Item(@NonNull ItemType type,
+                       @NonNull String title,
+                       @Nullable Action1<? extends Item> onClick) {
             this.type = type;
             this.title = title;
-            this.action = action;
+            this.onClick = onClick;
         }
 
-        public Item(@NonNull String title, @Nullable Runnable action) {
-            this(ItemType.SECTION_TITLE, title, action);
+        public Item(@NonNull String title, @Nullable Action1<? extends Item> onClick) {
+            this(ItemType.SECTION_TITLE, title, onClick);
         }
 
 
-        public ItemType getType() {
-            return type;
-        }
-
-        public String getTitle() {
+        public @NonNull String getTitle() {
             return title;
         }
 
-        public Runnable getAction() {
-            return action;
+        @SuppressWarnings("unchecked")
+        public @Nullable <T extends Item> Action1<T> getOnClick() {
+            return onClick;
         }
 
-        public void setAction(Runnable action) {
-            this.action = action;
+        public void setOnClick(@Nullable Action1<? extends Item> onClick) {
+            this.onClick = onClick;
         }
     }
 
     public class TextItem extends Item {
         private String detail;
 
-        public TextItem(@NonNull String title, @Nullable String detail, @Nullable Runnable action) {
+        public TextItem(@NonNull String title,
+                        @Nullable String detail,
+                        @Nullable Action1<TextItem> action) {
             super(ItemType.TEXT_ITEM, title, action);
             this.detail = detail;
         }
@@ -288,7 +307,9 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item> {
     public class CheckItem extends Item {
         private boolean checked;
 
-        public CheckItem(@NonNull String title, boolean checked, @Nullable Runnable action) {
+        public CheckItem(@NonNull String title,
+                         boolean checked,
+                         @Nullable Action1<CheckItem> action) {
             super(ItemType.CHECK_ITEM, title, action);
 
             this.checked = checked;
