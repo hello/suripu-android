@@ -60,7 +60,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
         boolean useCentimeters = preferences.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultMetric);
         if (useCentimeters) {
             scale.setOnValueChangedListener(centimeters -> {
-                scaleReading.setText(getString(R.string.weight_pounds_fmt, centimeters));
+                scaleReading.setText(getString(R.string.height_cm_fmt, centimeters));
             });
         } else {
             scale.setOnValueChangedListener(centimeters -> {
