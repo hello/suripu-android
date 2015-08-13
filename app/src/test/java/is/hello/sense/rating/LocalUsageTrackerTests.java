@@ -6,7 +6,9 @@ import org.joda.time.Interval;
 import org.junit.After;
 import org.junit.Test;
 
-import is.hello.sense.graph.SenseTestCase;
+import javax.inject.Inject;
+
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.rating.LocalUsageTracker.Identifier;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -15,8 +17,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-public class LocalUsageTrackerTests extends SenseTestCase {
-    private LocalUsageTracker localUsageTracker = new LocalUsageTracker();
+public class LocalUsageTrackerTests extends InjectionTestCase {
+    @Inject LocalUsageTracker localUsageTracker;
 
     @After
     public void tearDown() {
@@ -43,10 +45,10 @@ public class LocalUsageTrackerTests extends SenseTestCase {
     }
 
     @Test
-    public void collectClearsOldData() {
+    public void deleteOldUsageStats() {
         LocalUsageTracker timeTravelingTracker = spy(this.localUsageTracker);
-        Days distantPast = LocalUsageTracker.OLDEST_DAY.minus(10);
-        doReturn(DateTime.now().withTimeAtStartOfDay().minus(distantPast))
+        DateTime distantPast = DateTime.now().withTimeAtStartOfDay().minusDays(60);
+        doReturn(distantPast)
                 .when(timeTravelingTracker)
                 .today();
         timeTravelingTracker.increment(Identifier.APP_LAUNCHED);
@@ -55,7 +57,7 @@ public class LocalUsageTrackerTests extends SenseTestCase {
         assertThat(localUsageTracker.usageWithin(Identifier.APP_LAUNCHED, lotsOfDays),
                    is(equalTo(1)));
 
-        localUsageTracker.collect();
+        localUsageTracker.deleteOldUsageStats();
 
         assertThat(localUsageTracker.usageWithin(Identifier.APP_LAUNCHED, lotsOfDays),
                    is(equalTo(0)));

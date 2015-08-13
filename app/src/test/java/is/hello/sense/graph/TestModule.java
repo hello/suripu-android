@@ -40,6 +40,7 @@ import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.graph.presenters.TrendsPresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
+import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.DevicesAdapterTests;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
@@ -80,6 +81,8 @@ import is.hello.sense.util.markup.MarkupProcessor;
         TrendsPresenter.class,
 
         DevicesAdapterTests.class,
+
+        LocalUsageTrackerTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
