@@ -27,6 +27,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -40,7 +41,8 @@ import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -53,6 +55,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
 
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
+    @Inject UnitFormatter unitFormatter;
 
     private Adapter adapter;
 
@@ -104,7 +107,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(presenter.currentConditions, this::bindConditions, this::conditionsUnavailable);
+        bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
+                         ignored -> adapter.notifyDataSetChanged(),
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(presenter.currentConditions,
+                         this::bindConditions,
+                         this::conditionsUnavailable);
     }
 
     @Override
@@ -145,14 +153,13 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
     public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
         List<ArrayList<SensorGraphSample>> histories = result.roomSensorHistory.toList();
         List<SensorState> sensors = result.conditions.toList();
-        List<UnitSystem.Unit> units = result.units.toUnitList();
 
         adapter.setShowNoSenseMessage(false);
         for (int i = 0, count = adapter.getItemCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
 
             SensorState sensor = sensors.get(i);
-            sensorInfo.formatter = units.get(i).getFormatter();
+            sensorInfo.printer = unitFormatter.getUnitPrinterForSensor(sensorInfo.sensorName);
             sensorInfo.sensorState = sensor;
             sensorInfo.errorMessage = null;
 
@@ -174,7 +181,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
 
         for (int i = 0, count = adapter.getItemCount(); i < count; i++) {
             SensorEntry sensorInfo = adapter.getItem(i);
-            sensorInfo.formatter = null;
+            sensorInfo.printer = null;
             sensorInfo.sensorState = null;
             sensorInfo.errorMessage = getString(R.string.error_cannot_retrieve_condition, sensorInfo.sensorName);
         }
@@ -198,7 +205,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
         final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
         final @NonNull String sensorName;
 
-        @Nullable UnitSystem.Formatter formatter;
+        @Nullable UnitPrinter printer;
         @Nullable SensorState sensorState;
         @Nullable String errorMessage;
 
@@ -327,7 +334,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
                 if (sensorEntry.sensorState != null) {
                     int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);
 
-                    CharSequence readingText = sensorEntry.sensorState.getFormattedValue(sensorEntry.formatter);
+                    CharSequence readingText = sensorEntry.sensorState.getFormattedValue(sensorEntry.printer);
                     if (!TextUtils.isEmpty(readingText)) {
                         reading.setText(readingText);
                         reading.setTextColor(sensorColor);

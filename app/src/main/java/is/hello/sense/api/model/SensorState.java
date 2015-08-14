@@ -3,14 +3,18 @@ package is.hello.sense.api.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.units.UnitPrinter;
 
 public class SensorState extends ApiResponse {
+    @Expose(deserialize = false, serialize = false)
+    private String name;
+
     @SerializedName("value")
     private Double value;
 
@@ -45,6 +49,17 @@ public class SensorState extends ApiResponse {
         this.lastUpdated = lastUpdated;
     }
 
+    /**
+     * Called by {@link RoomConditions}.
+     */
+    void setName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public Double getValue() {
         return value;
     }
@@ -69,11 +84,11 @@ public class SensorState extends ApiResponse {
         return idealConditions;
     }
 
-    public @Nullable CharSequence getFormattedValue(@Nullable UnitSystem.Formatter formatter) {
+    public @Nullable CharSequence getFormattedValue(@Nullable UnitPrinter printer) {
         if (getValue() == null) {
             return null;
-        } else if (formatter != null) {
-            return formatter.format(getValue().longValue());
+        } else if (printer != null) {
+            return printer.print(getValue().longValue());
         } else {
             return Styles.assembleReadingAndUnit(getValue().longValue(), getUnit());
         }
@@ -82,7 +97,8 @@ public class SensorState extends ApiResponse {
     @Override
     public String toString() {
         return "SensorState{" +
-                "value=" + value +
+                "name='" + name + '\'' +
+                ", value=" + value +
                 ", message='" + message + '\'' +
                 ", condition=" + condition +
                 ", unit='" + unit + '\'' +

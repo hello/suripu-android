@@ -40,7 +40,7 @@ import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.bluetooth.sense.model.SenseConnectToWiFiUpdate;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
-import is.hello.sense.units.UnitSystem;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
@@ -126,7 +126,7 @@ public final class Styles {
 
     public static @NonNull CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
         SpannableString spannableSuffix = new SpannableString(' ' + suffix);
-        if (UnitSystem.TEMP_SUFFIX.equals(suffix)) {
+        if (UnitFormatter.UNIT_SUFFIX_TEMPERATURE.equals(suffix)) {
             spannableSuffix.setSpan(new RelativeSizeSpan(0.6f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.45f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         } else {

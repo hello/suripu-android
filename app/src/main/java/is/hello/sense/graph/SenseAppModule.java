@@ -49,6 +49,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
@@ -83,6 +85,8 @@ import is.hello.sense.zendesk.ZendeskModule;
         OnboardingActivity.class,
         OnboardingSignInFragment.class,
         OnboardingRegisterFragment.class,
+        OnboardingRegisterWeightFragment.class,
+        OnboardingRegisterHeightFragment.class,
         OnboardingBluetoothFragment.class,
         OnboardingRegisterAudioFragment.class,
         OnboardingUnsupportedDeviceFragment.class,

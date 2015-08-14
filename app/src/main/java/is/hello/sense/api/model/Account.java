@@ -8,8 +8,6 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-import is.hello.sense.units.UnitOperations;
-
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
     private String id;
@@ -53,9 +51,10 @@ public class Account extends ApiResponse implements Cloneable {
 
     public static Account createDefault() {
         Account newAccount = new Account();
-        newAccount.setHeight(UnitOperations.inchesToCentimeters(64));
-        newAccount.setWeight(UnitOperations.poundsToGrams(150));
-        newAccount.setTimeZoneOffset(DateTimeZone.getDefault().getOffset(DateTimeUtils.currentTimeMillis()));
+        newAccount.setHeight(177);
+        newAccount.setWeight(68039);
+        newAccount.setTimeZoneOffset(DateTimeZone.getDefault()
+                                                 .getOffset(DateTimeUtils.currentTimeMillis()));
         return newAccount;
     }
 
@@ -178,5 +177,42 @@ public class Account extends ApiResponse implements Cloneable {
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';
+    }
+
+    public static class Preferences {
+        @SerializedName("PUSH_ALERT_CONDITIONS")
+        public boolean pushAlertConditions = true;
+
+        @SerializedName("PUSH_SCORE")
+        public boolean pushScore = true;
+
+        @SerializedName("TIME_TWENTY_FOUR_HOUR")
+        public boolean use24Time = false;
+
+        @SerializedName("TEMP_CELSIUS")
+        public boolean useCelsius = false;
+
+        @SerializedName("WEIGHT_METRIC")
+        public boolean useMetricWeight = false;
+
+        @SerializedName("HEIGHT_METRIC")
+        public boolean useMetricHeight = false;
+
+        @SerializedName("ENHANCED_AUDIO")
+        public boolean enhancedAudioEnabled = false;
+
+
+        @Override
+        public String toString() {
+            return "Account.Preferences{" +
+                    "pushAlertConditions=" + pushAlertConditions +
+                    ", pushScore=" + pushScore +
+                    ", use24Time=" + use24Time +
+                    ", useCelsius=" + useCelsius +
+                    ", useMetricWeight=" + useMetricWeight +
+                    ", useMetricHeight=" + useMetricHeight +
+                    ", enhancedAudioEnabled=" + enhancedAudioEnabled +
+                    '}';
+        }
     }
 }

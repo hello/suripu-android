@@ -3,16 +3,16 @@ package is.hello.sense.ui.fragments.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -22,20 +22,22 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.units.UnitSystem;
-import is.hello.sense.units.systems.MetricUnitSystem;
-import is.hello.sense.units.systems.UsCustomaryUnitSystem;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
-import rx.Observable;
 
-public class UnitSettingsFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
+public class UnitSettingsFragment extends InjectionFragment implements Handler.Callback {
     private static final int REQUEST_CODE_ERROR = 0xE3;
+
+    private static final int DELAY_PUSH_PREFERENCES = 3000;
+    private static final int MSG_PUSH_PREFERENCES = 0x5;
 
     @Inject PreferencesPresenter preferencesPresenter;
 
-    private StaticItemAdapter.TextItem unitSystemItem;
+    private final Handler handler = new Handler(Looper.getMainLooper(), this);
     private StaticItemAdapter.CheckItem use24TimeItem;
+    private StaticItemAdapter.CheckItem useCelsius;
+    private StaticItemAdapter.CheckItem useGrams;
+    private StaticItemAdapter.CheckItem useCentimeters;
 
     private ProgressBar loadingIndicator;
     private ListView listView;
@@ -57,16 +59,35 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
 
         StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
 
-        String unitSystem = preferencesPresenter.getString(PreferencesPresenter.UNIT_SYSTEM, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
-        this.unitSystemItem = adapter.addTextItem(getString(R.string.setting_title_units), mapUnitSystemName(unitSystem), this::updateUnitSystem);
+        boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
 
         boolean use24Time = preferencesPresenter.getUse24Time();
-        this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, this::updateUse24Time);
+        this.use24TimeItem = adapter.addCheckItem(R.string.setting_title_use_24_time, use24Time, item -> {
+            updatePreference(PreferencesPresenter.USE_24_TIME, item);
+        });
 
+        boolean useCelsius = preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS,
+                                                             defaultIsMetric);
+        this.useCelsius = adapter.addCheckItem(R.string.setting_title_use_celsius, useCelsius, item -> {
+            updatePreference(PreferencesPresenter.USE_CELSIUS, item);
+        });
+
+        boolean useGrams = preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS,
+                                                           defaultIsMetric);
+        this.useGrams = adapter.addCheckItem(R.string.setting_title_use_grams, useGrams, item -> {
+            updatePreference(PreferencesPresenter.USE_GRAMS, item);
+        });
+
+        boolean useCentimeters = preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS,
+                                                                 defaultIsMetric);
+        this.useCentimeters = adapter.addCheckItem(R.string.setting_title_use_centimeters, useCentimeters, item -> {
+            updatePreference(PreferencesPresenter.USE_CENTIMETERS, item);
+        });
+
+        listView.setOnItemClickListener(adapter);
         listView.setAdapter(adapter);
 
         return view;
@@ -81,24 +102,44 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
                          ignored -> hideLoading(),
                          this::pullingPreferencesFailed);
 
-        Observable<String> unitSystemName = preferencesPresenter.observableString(PreferencesPresenter.UNIT_SYSTEM, UnitSystem.getLocaleUnitSystemName(Locale.getDefault()));
-        bindAndSubscribe(unitSystemName.map(this::mapUnitSystemName),
-                         unitSystemItem::setDetail,
-                         Functions.LOG_ERROR);
+
         bindAndSubscribe(preferencesPresenter.observableUse24Time(),
-                use24TimeItem::setChecked,
-                Functions.LOG_ERROR);
+                         use24TimeItem::setChecked,
+                         Functions.LOG_ERROR);
+
+        boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
+        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_CELSIUS,
+                                                                defaultIsMetric),
+                         useCelsius::setChecked,
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_GRAMS,
+                                                                defaultIsMetric),
+                         useGrams::setChecked,
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(preferencesPresenter.observableBoolean(PreferencesPresenter.USE_CENTIMETERS,
+                                                                defaultIsMetric),
+                         useCentimeters::setChecked,
+                         Functions.LOG_ERROR);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.unitSystemItem = null;
         this.use24TimeItem = null;
 
         this.loadingIndicator = null;
         this.listView = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
+            handler.removeMessages(MSG_PUSH_PREFERENCES);
+            preferencesPresenter.pushAccountPreferences();
+        }
     }
 
     @Override
@@ -111,28 +152,6 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     }
 
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        StaticItemAdapter.Item item = (StaticItemAdapter.Item) parent.getItemAtPosition(position);
-        if (item.getAction() != null) {
-            item.getAction().run();
-        }
-    }
-
-
-    public @NonNull String mapUnitSystemName(@NonNull String unitSystemName) {
-        switch (unitSystemName) {
-            case UsCustomaryUnitSystem.NAME: {
-                return getString(R.string.unit_system_us_customary);
-            }
-
-            default:
-            case MetricUnitSystem.NAME: {
-                return getString(R.string.unit_system_metric);
-            }
-        }
-    }
-
     private void showLoading() {
         loadingIndicator.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
@@ -144,39 +163,14 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
     }
 
 
-    public void updateUnitSystem() {
-        SenseBottomSheet bottomSheet = new SenseBottomSheet(getActivity());
-        bottomSheet.setTitle(R.string.setting_title_units);
-
-        bottomSheet.addOption(new SenseBottomSheet.Option(0)
-                .setTitle(R.string.unit_system_us_customary));
-        bottomSheet.addOption(new SenseBottomSheet.Option(1)
-                .setTitle(R.string.unit_system_metric));
-
-        String[] unitSystemIds = {
-                UsCustomaryUnitSystem.NAME,
-                MetricUnitSystem.NAME,
-        };
-        bottomSheet.setOnOptionSelectedListener(option -> {
-            int which = option.getOptionId();
-
-            preferencesPresenter.edit()
-                    .putString(PreferencesPresenter.UNIT_SYSTEM, unitSystemIds[which])
-                    .commit();
-            preferencesPresenter.pushAccountPreferences().subscribe();
-
-            return true;
-        });
-
-        bottomSheet.show();
-    }
-
-    public void updateUse24Time() {
-        boolean update = !use24TimeItem.isChecked();
+    public void updatePreference(@NonNull String key, @NonNull StaticItemAdapter.CheckItem item) {
+        boolean update = !item.isChecked();
         preferencesPresenter.edit()
-                            .putBoolean(PreferencesPresenter.USE_24_TIME, update)
+                            .putBoolean(key, update)
                             .apply();
-        preferencesPresenter.pushAccountPreferences().subscribe();
+
+        handler.removeMessages(MSG_PUSH_PREFERENCES);
+        handler.sendEmptyMessageDelayed(MSG_PUSH_PREFERENCES, DELAY_PUSH_PREFERENCES);
     }
 
     public void pullingPreferencesFailed(Throwable e) {
@@ -185,5 +179,14 @@ public class UnitSettingsFragment extends InjectionFragment implements AdapterVi
         ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg.what == MSG_PUSH_PREFERENCES) {
+            preferencesPresenter.pushAccountPreferences();
+            return true;
+        }
+        return false;
     }
 }

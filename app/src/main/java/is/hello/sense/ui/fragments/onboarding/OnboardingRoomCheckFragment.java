@@ -39,6 +39,8 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.units.UnitConverter;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
@@ -46,12 +48,12 @@ import rx.Scheduler;
 
 import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
-import static is.hello.sense.units.UnitSystem.Unit;
 
 public class OnboardingRoomCheckFragment extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
 
     @Inject RoomConditionsPresenter presenter;
+    @Inject UnitFormatter unitFormatter;
     @Inject Markdown markdown;
 
     private ImageView sense;
@@ -66,7 +68,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
 
     private final List<SensorState> sensors = new ArrayList<>();
-    private final List<Unit> sensorUnits = new ArrayList<>();
     // This order applies to:
     // - RoomSensorHistory
     // - RoomConditions
@@ -170,11 +171,14 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.animatingSensorView = sensorView;
         sensorView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
             SensorState sensor = sensors.get(position);
-            Unit unit = sensorUnits.get(position);
 
-            long value = sensor.getValue() != null ? sensor.getValue().longValue() : 0L;
-            int convertedValue = (int) unit.convert(value);
-            long duration = scoreTicker.animateToValue(convertedValue, unit.getName(), finishedTicker -> {
+            int convertedValue = 0;
+            if (sensor.getValue() != null) {
+                UnitConverter converter = unitFormatter.getUnitConverterForSensor(sensor.getName());
+                convertedValue = (int) converter.convert(sensor.getValue().longValue());
+            }
+            String unitSuffix = unitFormatter.getUnitSuffixForSensor(sensor.getName());
+            long duration = scoreTicker.animateToValue(convertedValue, unitSuffix, finishedTicker -> {
                 if (!finishedTicker) {
                     return;
                 }
@@ -361,9 +365,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
         sensors.clear();
         sensors.addAll(current.conditions.toList());
-
-        sensorUnits.clear();
-        sensorUnits.addAll(current.units.toUnitList());
 
         showConditionAt(0);
     }

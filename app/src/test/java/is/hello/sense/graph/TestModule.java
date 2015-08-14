@@ -42,6 +42,7 @@ import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.DevicesAdapterTests;
+import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
 
@@ -73,6 +74,7 @@ import is.hello.sense.util.markup.MarkupProcessor;
         SmartAlarmPresenterTests.class,
 
         DateFormatterTests.class,
+        UnitFormatterTests.class,
 
         ZoomedOutTimelinePresenterTests.class,
         ZoomedOutTimelinePresenter.class,

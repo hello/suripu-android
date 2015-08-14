@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_title_units">Units</string>
     <string name="setting_title_use_24_time">Use 24 hour time</string>
-
-    <string name="unit_system_us_customary">Imperial</string>
-    <string name="unit_system_metric">Metric</string>
+    <string name="setting_title_use_celsius">Use celsius temperatures</string>
+    <string name="setting_title_use_grams">Use metric weights</string>
+    <string name="setting_title_use_centimeters">Use metric heights</string>
 
     <!--
         Derived from AoSP https://github.com/android/platform_packages_apps_settings/blob/master/res/xml/timezones.xml

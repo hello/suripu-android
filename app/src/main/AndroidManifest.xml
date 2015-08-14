@@ -34,7 +34,7 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.action.SHOW_ALARMS" />
+                <action android:name="android.intent.onClick.SHOW_ALARMS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
@@ -69,7 +69,7 @@
             android:label="@string/action_alarm">
 
             <intent-filter>
-                <action android:name="android.intent.action.SET_ALARM" />
+                <action android:name="android.intent.onClick.SET_ALARM" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
