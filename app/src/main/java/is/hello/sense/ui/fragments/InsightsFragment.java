@@ -23,7 +23,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
-import is.hello.sense.ui.widget.CardItemDecoration;
+import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;

@@ -20,7 +20,6 @@ import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.DynamicApiEndpoint;
 import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.util.ListViews;
 
 public class EnvironmentActivity extends SenseActivity implements AdapterView.OnItemClickListener {
     private static final String OTHER_ITEM = "other";
@@ -41,7 +40,7 @@ public class EnvironmentActivity extends SenseActivity implements AdapterView.On
         TextView other = (TextView) getLayoutInflater().inflate(R.layout.item_simple_text, listView, false);
         other.setBackgroundResource(R.drawable.selectable_dark_bounded);
         other.setText(R.string.label_environment_other);
-        ListViews.addFooterView(listView, other, OTHER_ITEM, true);
+        listView.addFooterView(other, OTHER_ITEM, true);
 
         Adapter adapter = new Adapter(this,
             new NamedApiEndpoint("android_dev", "99999secret", "https://dev-api.hello.is", "Dev"),

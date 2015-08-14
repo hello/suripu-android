@@ -30,7 +30,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.widget.CardItemDecoration;
+import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;

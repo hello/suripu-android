@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget.timeline;
+package is.hello.sense.ui.recycler;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,14 +11,13 @@ import java.util.List;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
-import is.hello.sense.ui.widget.ExtendedItemAnimator;
 
 /**
  * A simple staggered fade-in animation.
  * <p />
  * Each item faded-in has the delay <code>{@link #DELAY} * index</code>.
  */
-public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
+public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
     public static final long DELAY = 20;
 
     private final List<Transaction> pending = new ArrayList<>();
@@ -26,7 +25,7 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
 
     private boolean delayEnabled = true;
 
-    public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
+    public StaggeredFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
         super(animatorContext);
 
         setEnabled(Action.ADD, true);

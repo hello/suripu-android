@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:drawablePadding="@dimen/gap_small"
+    android:drawableStart="@drawable/item_question_check"
     android:textColor="@color/text_color_selector_question_checkbox"
     android:background="@null"
     style="@style/AppTheme.Button.Borderless.Question"/>

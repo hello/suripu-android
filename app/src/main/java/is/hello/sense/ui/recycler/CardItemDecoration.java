@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.recycler;
 
 import android.content.res.Resources;
 import android.graphics.Rect;
