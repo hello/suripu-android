@@ -12,16 +12,19 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.Question.Choice;
+import is.hello.sense.functional.Lists;
 
 public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRecyclerAdapter.ViewHolder> {
     private final LayoutInflater inflater;
     private final OnSelectionChangedListener onSelectionChangedListener;
-    private final Set<Integer> selectedItems = new HashSet<>();
+    private final Set<Integer> selectedChoices = new HashSet<>();
+    private Question question;
     private @NonNull Question.Type type = Question.Type.CHOICE;
 
     public QuestionChoiceAdapter(@NonNull Context context,
@@ -36,13 +39,30 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
     //region Binding
 
     public void bindQuestion(@NonNull Question question) {
-        selectedItems.clear();
+        selectedChoices.clear();
+
+        this.question = question;
         this.type = question.getType();
+
         replaceAll(question.getChoices());
     }
 
-    protected void notifySelectedItemsChanged() {
-        onSelectionChangedListener.onSelectionChanged(selectedItems);
+    @Override
+    public void clear() {
+        selectedChoices.clear();
+        super.clear();
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public List<Choice> getSelectedChoices() {
+        return Lists.map(selectedChoices, this::getItem);
+    }
+
+    protected void notifySelectedChoicesChanged() {
+        onSelectionChangedListener.onSelectedChoicesChanged(type, selectedChoices);
     }
 
     //endregion
@@ -84,7 +104,7 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
         ChoiceViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.button = (Button) itemView;
+            this.button = (Button) itemView.findViewById(R.id.item_question_single_choice);
             button.setOnClickListener(this);
         }
 
@@ -96,8 +116,8 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
 
         @Override
         public void onClick(View ignored) {
-            selectedItems.add(getAdapterPosition());
-            notifySelectedItemsChanged();
+            selectedChoices.add(getAdapterPosition());
+            notifySelectedChoicesChanged();
         }
     }
 
@@ -107,24 +127,27 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
         CheckBoxViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.button = (ToggleButton) itemView;
+            this.button = (ToggleButton) itemView.findViewById(R.id.item_question_checkbox);
             button.setOnCheckedChangeListener(this);
         }
 
         @Override
         public void bind(int position) {
             Choice choice = getItem(position);
+            button.setChecked(selectedChoices.contains(position));
             button.setText(choice.getText());
+            button.setTextOn(choice.getText());
+            button.setTextOff(choice.getText());
         }
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-                selectedItems.add(getAdapterPosition());
+                selectedChoices.add(getAdapterPosition());
             } else {
-                selectedItems.remove(getAdapterPosition());
+                selectedChoices.remove(getAdapterPosition());
             }
-            notifySelectedItemsChanged();
+            notifySelectedChoicesChanged();
         }
     }
 
@@ -132,6 +155,7 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
 
 
     public interface OnSelectionChangedListener {
-        void onSelectionChanged(@NonNull Collection<Integer> selectedItems);
+        void onSelectedChoicesChanged(@NonNull Question.Type type,
+                                      @NonNull Collection<Integer> selectedItems);
     }
 }

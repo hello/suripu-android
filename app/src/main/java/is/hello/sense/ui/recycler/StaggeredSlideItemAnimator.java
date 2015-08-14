@@ -2,7 +2,6 @@ package is.hello.sense.ui.recycler;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,47 +9,27 @@ import java.util.List;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.go99.animators.AnimatorTemplate;
 
-/**
- * A simple staggered fade-in animation.
- * <p />
- * Each item faded-in has the delay <code>{@link #DELAY} * index</code>.
- */
-public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
-    public static final long DELAY = 20;
+public class StaggeredSlideItemAnimator extends ExtendedItemAnimator {
+    private static final long DELAY = 20;
 
     private final List<Transaction> pending = new ArrayList<>();
     private final List<Transaction> running = new ArrayList<>();
 
-    private boolean delayEnabled = true;
-
-    public StaggeredFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
+    public StaggeredSlideItemAnimator(@NonNull AnimatorContext animatorContext) {
         super(animatorContext);
 
         setEnabled(Action.ADD, true);
-    }
-
-    public void setDelayEnabled(boolean delayEnabled) {
-        this.delayEnabled = delayEnabled;
-    }
-
-    private long getDelayAmount() {
-        if (delayEnabled) {
-            return DELAY;
-        } else {
-            return 0;
-        }
+        setEnabled(Action.REMOVE, true);
     }
 
     @Override
     public void runPendingAnimations() {
         Collections.sort(pending);
-        getAnimatorContext().transaction(AnimatorTemplate.DEFAULT, AnimatorContext.OPTIONS_DEFAULT, t -> {
+        getAnimatorContext().transaction(null, 0, t -> {
             dispatchAnimationWillStart(t);
 
-            final long delayAmount = getDelayAmount();
-            long transactionDelay = 0;
+            long delay = 0;
             for (Transaction transaction : pending) {
                 RecyclerView.ViewHolder target = transaction.target;
 
@@ -58,26 +37,26 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
                     case ADD: {
                         dispatchAddStarting(target);
                         t.animatorFor(target.itemView)
-                         .withStartDelay(transactionDelay)
-                         .fadeIn();
+                         .withStartDelay(delay)
+                         .translationX(0f);
 
                         break;
                     }
                     case REMOVE: {
                         dispatchRemoveStarting(target);
                         t.animatorFor(target.itemView)
-                         .withStartDelay(transactionDelay)
-                         .fadeOut(View.VISIBLE);
+                         .withStartDelay(delay)
+                         .translationX(-target.itemView.getMeasuredWidth());
 
                         break;
                     }
                     default: {
                         throw new IllegalArgumentException("Transaction type " +
-                                transaction.action + " currently unsupported.");
+                                   transaction.action + " currently unsupported.");
                     }
                 }
 
-                transactionDelay += delayAmount;
+                delay += DELAY;
             }
 
             running.addAll(pending);
@@ -87,18 +66,18 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
                 RecyclerView.ViewHolder target = transaction.target;
                 switch (transaction.action) {
                     case ADD: {
-                        target.itemView.setAlpha(1f);
+                        target.itemView.setTranslationX(0f);
                         dispatchAddFinished(target);
                         break;
                     }
                     case REMOVE: {
-                        target.itemView.setAlpha(0f);
+                        target.itemView.setTranslationX(-target.itemView.getMeasuredWidth());
                         dispatchRemoveFinished(target);
                         break;
                     }
                     default: {
                         throw new IllegalArgumentException("Transaction type " +
-                                           transaction.action + " currently unsupported.");
+                                                                   transaction.action + " currently unsupported.");
                     }
                 }
             }
@@ -116,7 +95,7 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
             return false;
         }
 
-        holder.itemView.setAlpha(0f);
+        holder.itemView.setTranslationX(holder.itemView.getMeasuredWidth());
         pending.add(new Transaction(Action.ADD, holder));
         return true;
     }
@@ -128,7 +107,7 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
             return false;
         }
 
-        holder.itemView.setAlpha(1f);
+        holder.itemView.setTranslationX(0f);
         pending.add(new Transaction(Action.REMOVE, holder));
         return true;
     }
@@ -140,13 +119,15 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
 
     @Override
     public void endAnimations() {
-        for (Transaction transaction : running) {
-            Anime.cancelAll(transaction.target.itemView);
+        for (int i = running.size() - 1; i >= 0; i--) {
+            Anime.cancelAll(running.get(i).target.itemView);
         }
+        running.clear();
+        pending.clear();
     }
 
     @Override
     public boolean isRunning() {
-        return !running.isEmpty();
+        return (running.size() > 0);
     }
 }
