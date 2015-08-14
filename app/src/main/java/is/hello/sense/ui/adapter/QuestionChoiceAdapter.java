@@ -100,18 +100,27 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
 
     class ChoiceViewHolder extends ViewHolder {
         final Button button;
+        final View divider;
 
         ChoiceViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.button = (Button) itemView.findViewById(R.id.item_question_single_choice);
             button.setOnClickListener(this);
+
+            this.divider = itemView.findViewById(R.id.item_question_single_choice_divider);
         }
 
         @Override
         public void bind(int position) {
             Choice choice = getItem(position);
             button.setText(choice.getText());
+
+            if (position == getItemCount() - 1) {
+                divider.setVisibility(View.INVISIBLE);
+            } else {
+                divider.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
@@ -123,12 +132,15 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
 
     class CheckBoxViewHolder extends ViewHolder implements CompoundButton.OnCheckedChangeListener {
         final ToggleButton button;
+        final View divider;
 
         CheckBoxViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.button = (ToggleButton) itemView.findViewById(R.id.item_question_checkbox);
             button.setOnCheckedChangeListener(this);
+
+            this.divider = itemView.findViewById(R.id.item_question_checkbox_divider);
         }
 
         @Override
@@ -138,6 +150,12 @@ public class QuestionChoiceAdapter extends ArrayRecyclerAdapter<Choice, ArrayRec
             button.setText(choice.getText());
             button.setTextOn(choice.getText());
             button.setTextOff(choice.getText());
+
+            if (position == getItemCount() - 1) {
+                divider.setVisibility(View.INVISIBLE);
+            } else {
+                divider.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override

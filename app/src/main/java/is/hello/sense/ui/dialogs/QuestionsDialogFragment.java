@@ -2,6 +2,8 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -76,6 +78,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
 
         RecyclerView choicesRecycler = (RecyclerView) dialog.findViewById(R.id.fragment_questions_recycler);
         choicesRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        choicesRecycler.addItemDecoration(new CenteringDecoration(getResources()));
+        choicesRecycler.setHasFixedSize(true);
 
         this.choiceAnimator = new StaggeredSlideItemAnimator(getAnimatorContext());
         choicesRecycler.setItemAnimator(choiceAnimator);
@@ -288,5 +292,30 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
     @Override
     public AnimatorContext getAnimatorContext() {
         return animatorContext;
+    }
+
+
+    /**
+     * Centers the questions in the recycler view. Currently requires that choice items
+     * be of a fixed height to function correctly. Unfortunately, not all layout info
+     * needed to do the centering dynamically is available to the decoration.
+     */
+    static class CenteringDecoration extends RecyclerView.ItemDecoration {
+        private final int itemHeight;
+
+        CenteringDecoration(@NonNull Resources resources) {
+            this.itemHeight = resources.getDimensionPixelSize(R.dimen.item_question_height);
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View child, RecyclerView parent, RecyclerView.State state) {
+            if (parent.getChildLayoutPosition(child) == 0) {
+                int height = parent.getMeasuredHeight();
+                int contentHeight = state.getItemCount() * itemHeight;
+                if (contentHeight < height) {
+                    outRect.top += (height - contentHeight) / 2;
+                }
+            }
+        }
     }
 }
