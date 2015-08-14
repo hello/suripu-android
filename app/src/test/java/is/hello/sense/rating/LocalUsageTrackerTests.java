@@ -3,6 +3,7 @@ package is.hello.sense.rating;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
+import org.joda.time.Weeks;
 import org.junit.After;
 import org.junit.Test;
 
@@ -99,5 +100,59 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
         Interval last7Days = new Interval(Days.SEVEN, localUsageTracker.today());
         assertThat(localUsageTracker.usageWithin(Identifier.APP_LAUNCHED, last7Days),
                    is(equalTo(1)));
+    }
+
+    @Test
+    public void isUsageAcceptableForRatingPrompt() {
+        LocalUsageTracker tracker = spy(this.localUsageTracker);
+
+        DateTime today = localUsageTracker.today();
+        Interval lastWeek = new Interval(Weeks.ONE, today);
+        Interval lastMonth = new Interval(LocalUsageTracker.OLDEST_DAY, today);
+
+
+        // Everything is great
+        doReturn(5)
+                .when(tracker)
+                .usageWithin(Identifier.APP_LAUNCHED, lastWeek);
+        doReturn(0)
+                .when(tracker)
+                .usageWithin(Identifier.SYSTEM_ALERT_SHOWN, lastMonth);
+        doReturn(11)
+                .when(tracker)
+                .usageWithin(Identifier.TIMELINE_SHOWN_WITH_DATA, lastMonth);
+
+        assertThat(tracker.isUsageAcceptableForRatingPrompt(),
+                   is(equalTo(true)));
+
+
+        // Not enough launches
+        doReturn(3)
+                .when(tracker)
+                .usageWithin(Identifier.APP_LAUNCHED, lastWeek);
+        assertThat(tracker.isUsageAcceptableForRatingPrompt(),
+                   is(equalTo(false)));
+
+
+        // Not enough timelines shown
+        doReturn(0)
+                .when(tracker)
+                .usageWithin(Identifier.APP_LAUNCHED, lastMonth);
+        doReturn(9)
+                .when(tracker)
+                .usageWithin(Identifier.TIMELINE_SHOWN_WITH_DATA, lastMonth);
+        assertThat(tracker.isUsageAcceptableForRatingPrompt(),
+                   is(equalTo(false)));
+
+
+        // Too many system alerts
+        doReturn(0)
+                .when(tracker)
+                .usageWithin(Identifier.APP_LAUNCHED, lastMonth);
+        doReturn(3)
+                .when(tracker)
+                .usageWithin(Identifier.SYSTEM_ALERT_SHOWN, lastWeek);
+        assertThat(tracker.isUsageAcceptableForRatingPrompt(),
+                   is(equalTo(false)));
     }
 }

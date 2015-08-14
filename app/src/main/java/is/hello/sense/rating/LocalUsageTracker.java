@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
+import org.joda.time.Weeks;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -153,6 +154,30 @@ import rx.schedulers.Schedulers;
                 worker.unsubscribe();
             }
         });
+    }
+
+    /**
+     * Aggregates the user's usage patterns for the last month
+     * to determine if they should be shown a rating prompt.
+     * <p>
+     * This method is very expensive, and should not be called
+     * on the main thread.
+     *
+     * @return true if the user's usage patterns match the
+     *         profile for a rating prompt; false otherwise.
+     */
+    public boolean isUsageAcceptableForRatingPrompt() {
+        DateTime today = today();
+        Interval lastWeek = new Interval(Weeks.ONE, today);
+        int appLaunches = usageWithin(Identifier.APP_LAUNCHED, lastWeek);
+
+        Interval lastMonth = new Interval(OLDEST_DAY, today);
+        int systemAlertsShown = usageWithin(Identifier.SYSTEM_ALERT_SHOWN, lastMonth);
+        int timelinesShown = usageWithin(Identifier.TIMELINE_SHOWN_WITH_DATA, lastMonth);
+
+        return (appLaunches > 4 &&
+                systemAlertsShown == 0 &&
+                timelinesShown > 10);
     }
 
 

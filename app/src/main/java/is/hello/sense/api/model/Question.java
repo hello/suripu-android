@@ -106,6 +106,15 @@ public class Question extends ApiResponse {
         private Long questionId;
 
 
+        public static Choice create(long id,
+                                    @NonNull String text) {
+            Choice choice = new Choice();
+            choice.id = id;
+            choice.text = text;
+            return choice;
+        }
+
+
         public long getId() {
             return id;
         }

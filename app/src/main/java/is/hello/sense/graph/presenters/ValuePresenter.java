@@ -124,6 +124,10 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
      * latest value contained in the value presenter.
      */
     public Observable<T> latest() {
+        if (!subject.hasValue() && updateSubscription == null) {
+            update();
+        }
+
         return subject.take(1);
     }
 
