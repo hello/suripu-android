@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ToggleButton
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_question_checkbox"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_question_height"
-    android:orientation="vertical"
-    android:background="@drawable/selectable_dark_bounded">
-
-    <View
-        android:id="@+id/item_question_checkbox_divider"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_alignParentBottom="true"
-        style="@style/Divider.Horizontal.Accent" />
-
-    <ToggleButton
-        android:id="@+id/item_question_checkbox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/item_question_checkbox_divider"
-        android:drawablePadding="@dimen/gap_small"
-        android:drawableStart="@drawable/selector_question_checkbox"
-        android:textColor="@color/text_color_selector_question_checkbox"
-        style="@style/AppTheme.Button.Borderless.Question"/>
-
-</RelativeLayout>
+    android:layout_height="match_parent"
+    android:drawablePadding="@dimen/gap_small"
+    android:drawableStart="@drawable/selector_question_checkbox"
+    android:textColor="@color/text_color_selector_question_checkbox"
+    style="@style/AppTheme.Button.Borderless.Question"/>

@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<Button
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_question_single_choice"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_question_height"
-    android:orientation="vertical"
-    android:background="@drawable/selectable_dark_bounded">
-
-    <View
-        android:id="@+id/item_question_single_choice_divider"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_alignParentBottom="true"
-        style="@style/Divider.Horizontal.Accent" />
-
-    <Button
-        android:id="@+id/item_question_single_choice"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/item_question_single_choice_divider"
-        style="@style/AppTheme.Button.Borderless.Question.Choice" />
-
-</RelativeLayout>
+    android:layout_height="match_parent"
+    style="@style/AppTheme.Button.Borderless.Question.Choice" />

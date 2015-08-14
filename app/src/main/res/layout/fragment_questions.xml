@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_questions_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@color/background_questions">
 
     <TextView
         android:id="@+id/fragment_questions_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/gap_xlarge"
         android:layout_marginBottom="@dimen/gap_xlarge"
         android:layout_marginLeft="@dimen/gap_outer"
@@ -18,11 +19,25 @@
         android:textAppearance="@style/AppTheme.Text.Question"
         android:gravity="center"/>
 
-    <FrameLayout
-        android:id="@+id/fragment_questions_button_container"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:layout_alignParentBottom="true">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/fragment_questions_choices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:animateLayoutChanges="true"/>
+
+    </ScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="90dp">
 
         <Button
             android:id="@+id/fragment_questions_next"
@@ -39,18 +54,9 @@
             android:id="@+id/fragment_questions_skip"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/selectable_dark_bounded"
             style="@style/AppTheme.Button.Borderless.Question"
             android:text="@string/action_skip_question"/>
 
     </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_questions_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/fragment_questions_title"
-        android:layout_above="@id/fragment_questions_button_container"
-        android:scrollbars="vertical" />
-
-</RelativeLayout>
+</LinearLayout>
