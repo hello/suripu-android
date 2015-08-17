@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
@@ -66,7 +67,8 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 import rx.functions.Action1;
 
-public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
+public class TimelineFragment extends InjectionFragment
+        implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -443,6 +445,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         if (animationEnabled && ViewCompat.isLaidOut(recyclerView)) {
             itemAnimator.setDelayEnabled(false);
             itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, true);
+            itemAnimator.setTemplate(itemAnimator.getTemplate()
+                                                 .withDuration(Anime.DURATION_SLOW));
             itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
                 final Animator crossFade = backgroundFill.colorAnimator(
                         getResources().getColor(R.color.background_timeline));
@@ -475,6 +479,8 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
 
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
+        itemAnimator.setTemplate(itemAnimator.getTemplate()
+                                             .withDuration(Anime.DURATION_NORMAL));
 
         adapter.replaceHeader(1, headerView);
         headerView.setBackgroundSolid(false, 0);
@@ -543,7 +549,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         } else {
             transitionIntoNoDataState(header -> {
                 header.setDiagramResource(R.drawable.timeline_state_error);
-                header.setTitle(R.string.dialog_error_title);
+                header.setTitle(R.string.timeline_error_title);
                 header.setMessage(message);
             });
         }
