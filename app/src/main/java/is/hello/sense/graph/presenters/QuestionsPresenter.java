@@ -6,11 +6,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import org.joda.time.DateTime;
+import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,22 +18,23 @@ import javax.inject.Singleton;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.util.Logger;
+import is.hello.sense.graph.presenters.questions.ApiQuestionProvider;
+import is.hello.sense.graph.presenters.questions.QuestionProvider;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 @Singleton public class QuestionsPresenter extends Presenter {
-    private final ApiService apiService;
+    private static final String PROVIDER_STATE = "providerState";
+    private static final String PROVIDER_NAME = "providerName";
+
     private final ApiSessionManager apiSessionManager;
 
-    public final PresenterSubject<ArrayList<Question>> questions = PresenterSubject.create();
-    public final PresenterSubject<Question> currentQuestion = PresenterSubject.create();
+    public final PresenterSubject<Question> question = PresenterSubject.create();
 
-    private int offset;
+    private @NonNull QuestionProvider questionProvider;
+    private final HashSet<Question.Choice> selectedChoices = new HashSet<>();
 
 
     //region Lifecycle
@@ -41,43 +42,53 @@ import rx.schedulers.Schedulers;
     @Inject public QuestionsPresenter(@NonNull ApiService apiService,
                                       @NonNull ApiSessionManager apiSessionManager,
                                       @NonNull Context context) {
-        this.apiService = apiService;
         this.apiSessionManager = apiSessionManager;
+        this.questionProvider = new ApiQuestionProvider(apiService, Rx.mainThreadScheduler());
 
-        Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        IntentFilter loggedOut = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+        Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, loggedOut);
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
     }
 
     public void onUserLoggedOut(@NonNull Intent ignored) {
-        questions.onNext(new ArrayList<>());
-        currentQuestion.onNext(null);
+        question.onNext(null);
+    }
+
+    @Nullable
+    @Override
+    public Bundle onSaveState() {
+        Bundle savedState = questionProvider.saveState();
+        if (savedState != null) {
+            Bundle wrapper = new Bundle();
+            wrapper.putBundle(PROVIDER_STATE, wrapper);
+            wrapper.putString(PROVIDER_NAME, questionProvider.getName());
+            return wrapper;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void onRestoreState(@NonNull Bundle savedState) {
-        super.onRestoreState(savedState);
-
-        setOffset(savedState.getInt("offset"));
-    }
-
-    @Override
-    public @Nullable Bundle onSaveState() {
-        Bundle savedState = new Bundle();
-        savedState.putInt("offset", offset);
-        return savedState;
-    }
-
-    @Override
-    protected void onReloadForgottenData() {
-        update();
+        String providerName = savedState.getString(PROVIDER_NAME);
+        Bundle providerSavedState = savedState.getBundle(PROVIDER_STATE);
+        if (TextUtils.equals(providerName, questionProvider.getName()) &&
+                providerSavedState != null) {
+            questionProvider.restoreState(providerSavedState);
+            question.onNext(questionProvider.getCurrentQuestion());
+        } else if (!question.hasValue()) {
+            question.onNext(null);
+        }
     }
 
     @Override
     protected boolean onForgetDataForLowMemory() {
-        questions.forget();
-        currentQuestion.forget();
-
-        return true;
+        if (questionProvider.lowMemory()) {
+            question.forget();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //endregion
@@ -85,9 +96,10 @@ import rx.schedulers.Schedulers;
 
     //region Updating
 
-    protected Observable<ArrayList<Question>> currentQuestions() {
-        String timestamp = DateTime.now().toString("yyyy-MM-dd");
-        return apiService.questions(timestamp);
+    @VisibleForTesting
+    void setQuestionProvider(@NonNull QuestionProvider questionProvider) {
+        this.questionProvider = questionProvider;
+        update();
     }
 
     public final void update() {
@@ -96,67 +108,37 @@ import rx.schedulers.Schedulers;
             return;
         }
 
-        logEvent("loading today's questions");
-        currentQuestions()
-                .observeOn(Schedulers.computation())
-                .subscribe(questions -> {
-                    this.questions.onNext(questions);
-                    updateCurrentQuestion();
-                }, e -> {
-                    Logger.error(QuestionsPresenter.class.getSimpleName(), "Could not load questions.", e);
-
-                    this.questions.onError(e);
-                    this.currentQuestion.onError(e);
-                });
-    }
-
-    public void updateCurrentQuestion() {
-        questions.take(1)
-                 .observeOn(Schedulers.computation())
-                 .subscribe(questions -> {
-                     if (offset < questions.size())
-                         currentQuestion.onNext(questions.get(offset));
-                     else
-                         currentQuestion.onNext(null);
-                 }, currentQuestion::onError);
+        logEvent("Updating questions");
+        questionProvider.prepare()
+                        .subscribe(question);
     }
 
     //endregion
-
-
-    //region Navigating Questions
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-        updateCurrentQuestion();
-    }
-
-    public void nextQuestion() {
-        setOffset(getOffset() + 1);
-    }
-
-    //endregion
-
 
     //region Answering Questions
 
-    public Observable<VoidResponse> answerQuestion(@NonNull Question question, @NonNull List<Question.Choice> answers) {
-        return apiService.answerQuestion(question.getAccountId(), answers);
+    public void addChoice(@NonNull Question.Choice choice) {
+        selectedChoices.add(choice);
+    }
+
+    public void removeChoice(@NonNull Question.Choice choice) {
+        selectedChoices.remove(choice);
+    }
+
+    public boolean hasSelectedChoices() {
+        return !selectedChoices.isEmpty();
+    }
+
+    public void answerQuestion() {
+        questionProvider.answerCurrent(new ArrayList<>(selectedChoices));
+        selectedChoices.clear();
+        question.onNext(questionProvider.getCurrentQuestion());
     }
 
     public void skipQuestion() {
-        currentQuestion.take(1)
-                       .subscribe(question -> {
-                                   apiService.skipQuestion(question.getAccountId(), question.getId(), "")
-                                             .subscribe(ignored -> logEvent("skipped question"),
-                                                        Functions.LOG_ERROR);
-                               },
-                               Functions.LOG_ERROR);
-        nextQuestion();
+        selectedChoices.clear();
+        questionProvider.skipCurrent();
+        question.onNext(questionProvider.getCurrentQuestion());
     }
 
     //endregion

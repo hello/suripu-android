@@ -40,6 +40,7 @@ import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.graph.presenters.TrendsPresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
+import is.hello.sense.graph.presenters.questions.ApiQuestionProviderTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.DevicesAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
@@ -54,6 +55,7 @@ import is.hello.sense.util.markup.MarkupProcessor;
 
         QuestionsPresenterTests.class,
         QuestionsPresenter.class,
+        ApiQuestionProviderTests.class,
 
         RoomConditionsPresenterTests.class,
         RoomConditionsPresenter.class,

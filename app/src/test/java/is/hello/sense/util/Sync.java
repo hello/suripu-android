@@ -2,7 +2,8 @@ package is.hello.sense.util;
 
 import android.support.annotation.NonNull;
 
-import junit.framework.Assert;
+import org.hamcrest.Matcher;
+import org.junit.Assert;
 
 import java.util.Iterator;
 
@@ -109,13 +110,6 @@ public final class Sync<T> implements Iterable<T> {
         return observable.last();
     }
 
-    /**
-     * Blocks until the observable completes, ignoring the emitted value.
-     */
-    public void await() {
-        last();
-    }
-
     //endregion
 
 
@@ -140,36 +134,62 @@ public final class Sync<T> implements Iterable<T> {
     }
 
     /**
-     * Blocks until the observable completes, <code>assert</code>ing the last value is not null.
+     * Blocks until the observable completes, <code>assert</code>ing
+     * that the value matches the given matcher.
+     * @param matcher The matcher.
      */
+    public T assertThat(@NonNull Matcher<? super T> matcher) {
+        T last = last();
+        Assert.assertThat(last, matcher);
+        return last;
+    }
+
+    /**
+     * Blocks until the observable completes, <code>assert</code>ing the last value is not null.
+     *
+     * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
+     */
+    @Deprecated
     public void assertNotNull() {
         Assert.assertNotNull(last());
     }
 
     /**
      * Blocks until the observable completes, <code>assert</code>ing the last value is null.
+     *
+     * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
+    @Deprecated
     public void assertNull() {
         Assert.assertNull(last());
     }
 
     /**
      * Blocks until the observable completes, <code>assert</code>ing the last value equals a given value.
+     *
+     * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
+    @Deprecated
     public void assertEquals(T value) {
         Assert.assertEquals(value, last());
     }
 
     /**
      * Blocks until the observable completes <code>assert</code>ing the last value meets a given condition.
+     *
+     * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
+    @Deprecated
     public void assertTrue(@NonNull Func1<T, Boolean> predicate) {
         Assert.assertTrue(predicate.call(last()));
     }
 
     /**
      * Blocks until the observable completes <code>assert</code>ing the last value does not meet a given condition.
+     *
+     * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
+    @Deprecated
     public void assertFalse(@NonNull Func1<T, Boolean> predicate) {
         Assert.assertFalse(predicate.call(last()));
     }

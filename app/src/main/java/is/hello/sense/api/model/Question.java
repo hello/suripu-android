@@ -1,7 +1,6 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
@@ -102,9 +101,6 @@ public class Question extends ApiResponse {
         @SerializedName("text")
         private String text;
 
-        @SerializedName("question_id")
-        private Long questionId;
-
 
         public static Choice create(long id,
                                     @NonNull String text) {
@@ -123,17 +119,12 @@ public class Question extends ApiResponse {
             return text;
         }
 
-        public @Nullable Long getQuestionId() {
-            return questionId;
-        }
-
 
         @Override
         public String toString() {
             return "Choice{" +
                     "id=" + id +
                     ", text='" + text + '\'' +
-                    ", questionId=" + questionId +
                     '}';
         }
     }

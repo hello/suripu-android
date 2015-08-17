@@ -77,7 +77,7 @@ public class InsightsFragment extends UndersideTabFragment
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Pair<List<Insight>, Question>> data = Observable.combineLatest(insightsPresenter.insights,
-                questionsPresenter.currentQuestion, Pair::new);
+                questionsPresenter.question, Pair::new);
         bindAndSubscribe(data,
                          insightsAdapter::bindData,
                          insightsAdapter::dataUnavailable);

@@ -235,7 +235,7 @@
         <item name="android:padding">@dimen/gap_outer</item>
         <item name="android:textColor">@color/text_dim</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:background">@null</item>
+        <item name="android:background">@drawable/selectable_dark_bounded</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
