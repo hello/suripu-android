@@ -24,6 +24,7 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
     private final List<Transaction> pending = new ArrayList<>();
     private final List<Transaction> running = new ArrayList<>();
 
+    private AnimatorTemplate template = AnimatorTemplate.DEFAULT;
     private boolean delayEnabled = true;
 
     public TimelineFadeItemAnimator(@NonNull AnimatorContext animatorContext) {
@@ -34,6 +35,14 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
 
     public void setDelayEnabled(boolean delayEnabled) {
         this.delayEnabled = delayEnabled;
+    }
+
+    public void setTemplate(@NonNull AnimatorTemplate template) {
+        this.template = template;
+    }
+
+    public @NonNull AnimatorTemplate getTemplate() {
+        return template;
     }
 
     private long getDelayAmount() {
@@ -47,7 +56,7 @@ public class TimelineFadeItemAnimator extends ExtendedItemAnimator {
     @Override
     public void runPendingAnimations() {
         Collections.sort(pending);
-        getAnimatorContext().transaction(AnimatorTemplate.DEFAULT, AnimatorContext.OPTIONS_DEFAULT, t -> {
+        getAnimatorContext().transaction(template, AnimatorContext.OPTIONS_DEFAULT, t -> {
             dispatchAnimationWillStart(t);
 
             final long delayAmount = getDelayAmount();

@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
@@ -442,6 +443,8 @@ public class TimelineFragment extends InjectionFragment
         if (animationEnabled && ViewCompat.isLaidOut(recyclerView)) {
             itemAnimator.setDelayEnabled(false);
             itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, true);
+            itemAnimator.setTemplate(itemAnimator.getTemplate()
+                                                 .withDuration(Anime.DURATION_SLOW));
             itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
                 final Animator crossFade = backgroundFill.colorAnimator(
                         getResources().getColor(R.color.background_timeline));
@@ -474,6 +477,8 @@ public class TimelineFragment extends InjectionFragment
 
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
+        itemAnimator.setTemplate(itemAnimator.getTemplate()
+                                             .withDuration(Anime.DURATION_NORMAL));
 
         adapter.replaceHeader(1, headerView);
         headerView.setBackgroundSolid(false, 0);
