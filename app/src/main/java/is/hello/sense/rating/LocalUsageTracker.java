@@ -55,6 +55,24 @@ import rx.schedulers.Schedulers;
         });
     }
 
+    public void reset(@NonNull Identifier identifier) {
+        Logger.debug(getClass().getSimpleName(), "resetting count for " + identifier);
+
+        SQLiteDatabase database = store.getWritableDatabase();
+
+        String where = Store.COLUMN_ID + " = ?";
+        String[] whereArgs = {
+                Integer.toString(identifier.value),
+        };
+
+        ContentValues values = new ContentValues(1);
+        values.put(Store.COLUMN_COUNT, 0);
+        database.update(Store.TABLE_USAGE,
+                        values,
+                        where,
+                        whereArgs);
+    }
+
     public void increment(@NonNull Identifier identifier) {
         Logger.debug(getClass().getSimpleName(), "incrementing count for " + identifier);
 

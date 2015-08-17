@@ -37,7 +37,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class InsightsFragment extends UndersideTabFragment
-        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener, ReviewQuestionProvider.TriggerListener {
+        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject LocalUsageTracker localUsageTracker;
@@ -151,7 +151,8 @@ public class InsightsFragment extends UndersideTabFragment
 
     private void updateQuestionForReview() {
         if (!(questionsPresenter.getQuestionProvider() instanceof ReviewQuestionProvider)) {
-            questionsPresenter.setQuestionProvider(new ReviewQuestionProvider(getResources(), this));
+            questionsPresenter.setQuestionProvider(new ReviewQuestionProvider(getResources(),
+                                                                              new ReviewTriggers()));
         }
     }
 
@@ -195,39 +196,37 @@ public class InsightsFragment extends UndersideTabFragment
     //endregion
 
 
-    //region Reviews
+    private class ReviewTriggers implements ReviewQuestionProvider.Triggers {
+        @Override
+        public void onWriteReview() {
+            UserSupport.showProductPage(getActivity());
 
-    @Override
-    public void onWriteReview() {
-        UserSupport.showProductPage(getActivity());
-
-        preferences.edit()
-                   .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
-                   .apply();
-    }
-
-    @Override
-    public void onSendFeedback() {
-        UserSupport.showContactForm(getActivity());
-        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-    }
-
-    @Override
-    public void onShowHelp() {
-        UserSupport.showUserGuide(getActivity());
-        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-    }
-
-    @Override
-    public void onSuppressPrompt(boolean forever) {
-        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-
-        if (forever) {
             preferences.edit()
                        .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
                        .apply();
         }
-    }
 
-    //endregion
+        @Override
+        public void onSendFeedback() {
+            UserSupport.showContactForm(getActivity());
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        }
+
+        @Override
+        public void onShowHelp() {
+            UserSupport.showUserGuide(getActivity());
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        }
+
+        @Override
+        public void onSuppressPrompt(boolean forever) {
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+
+            if (forever) {
+                preferences.edit()
+                           .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
+                           .apply();
+            }
+        }
+    }
 }

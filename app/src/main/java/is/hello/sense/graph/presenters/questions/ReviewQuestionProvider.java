@@ -17,13 +17,13 @@ import is.hello.sense.api.model.Question.Choice;
 import rx.Observable;
 
 public class ReviewQuestionProvider implements QuestionProvider {
-    static final long QUESTION_ID_NONE = -1;
-    static final long QUESTION_ID_INITIAL = 0;
-    static final long QUESTION_ID_GOOD = 1;
-    static final long QUESTION_ID_BAD = 2;
+    @VisibleForTesting static final long QUESTION_ID_NONE = -1;
+    @VisibleForTesting static final long QUESTION_ID_INITIAL = 0;
+    @VisibleForTesting static final long QUESTION_ID_GOOD = 1;
+    @VisibleForTesting static final long QUESTION_ID_BAD = 2;
 
     private final Resources resources;
-    private final TriggerListener triggerListener;
+    private final Triggers triggers;
 
     private Question currentQuestion;
     @VisibleForTesting long currentQuestionId;
@@ -31,9 +31,9 @@ public class ReviewQuestionProvider implements QuestionProvider {
     //region Lifecycle
 
     public ReviewQuestionProvider(@NonNull Resources resources,
-                                  @NonNull TriggerListener triggerListener) {
+                                  @NonNull Triggers triggers) {
         this.resources = resources;
-        this.triggerListener = triggerListener;
+        this.triggers = triggers;
         setCurrentQuestionId(QUESTION_ID_INITIAL);
     }
 
@@ -148,35 +148,36 @@ public class ReviewQuestionProvider implements QuestionProvider {
             }
             case R.string.question_text_rating_prompt_initial_help: {
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggerListener.onShowHelp();
+                triggers.onShowHelp();
                 break;
             }
 
             // Second screen (good)
             case R.string.question_text_rating_prompt_good_yes: {
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggerListener.onWriteReview();
+                triggers.onWriteReview();
                 break;
             }
             case R.string.question_text_rating_prompt_good_no: {
                 setCurrentQuestionId(QUESTION_ID_NONE);
+                triggers.onSuppressPrompt(false);
                 break;
             }
             case R.string.question_text_rating_prompt_good_never: {
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggerListener.onSuppressPrompt(true);
+                triggers.onSuppressPrompt(true);
                 break;
             }
 
             // Second screen (bad)
             case R.string.question_text_rating_prompt_bad_yes: {
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggerListener.onSendFeedback();
+                triggers.onSendFeedback();
                 break;
             }
             case R.string.question_text_rating_prompt_bad_no: {
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggerListener.onSuppressPrompt(false);
+                triggers.onSuppressPrompt(false);
                 break;
             }
         }
@@ -185,16 +186,36 @@ public class ReviewQuestionProvider implements QuestionProvider {
     @Override
     public void skipCurrent() {
         setCurrentQuestionId(QUESTION_ID_NONE);
-        triggerListener.onSuppressPrompt(false);
+        triggers.onSuppressPrompt(false);
     }
 
     //endregion
 
 
-    public interface TriggerListener {
+    /**
+     * Integration point for interactions that occur outside
+     * of the questions presenter / fragment pair.
+     */
+    public interface Triggers {
+        /**
+         * Fired when the user agrees to write a review for the app.
+         */
         void onWriteReview();
+
+        /**
+         * Fired when the user wants to send us feedback for app problems.
+         */
         void onSendFeedback();
+
+        /**
+         * Fired when the user requires clarification on something.
+         */
         void onShowHelp();
+
+        /**
+         * Fired when the user exits the review funnel at various points.
+         * @param forever   Whether or not reviews should be suppressed forever.
+         */
         void onSuppressPrompt(boolean forever);
     }
 }

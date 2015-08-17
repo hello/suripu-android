@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
@@ -94,13 +95,15 @@ public class Question extends ApiResponse {
                 '}';
     }
 
-    public static class Choice {
+    public static class Choice implements Serializable {
         @SerializedName("id")
         private long id;
 
         @SerializedName("text")
         private String text;
 
+        @SerializedName("question_id")
+        private Long questionId;
 
         public static Choice create(long id,
                                     @NonNull String text) {
@@ -125,6 +128,7 @@ public class Question extends ApiResponse {
             return "Choice{" +
                     "id=" + id +
                     ", text='" + text + '\'' +
+                    ", questionId=" + questionId +
                     '}';
         }
     }

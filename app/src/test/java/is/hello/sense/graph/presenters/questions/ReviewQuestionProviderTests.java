@@ -13,7 +13,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.Question.Choice;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider.TriggerListener;
+import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider.Triggers;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -24,11 +24,11 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ReviewQuestionProviderTests extends SenseTestCase {
-    private final TrackingTriggerListener triggerListener;
+    private final TrackingTriggers triggerListener;
     private final ReviewQuestionProvider questionProvider;
 
     public ReviewQuestionProviderTests() {
-        this.triggerListener = new TrackingTriggerListener();
+        this.triggerListener = new TrackingTriggers();
         this.questionProvider = new ReviewQuestionProvider(getResources(), triggerListener);
         assertThat(questionProvider.getCurrentQuestion(), is(notNullValue()));
     }
@@ -98,7 +98,7 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
         Choice thirdChoice = question.getChoices().get(2);
         questionProvider.answerCurrent(Lists.newArrayList(thirdChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggerListener.Call.SHOW_HELP));
+        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SHOW_HELP));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
     }
 
@@ -118,7 +118,7 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
         Choice firstChoice = question.getChoices().get(0);
         questionProvider.answerCurrent(Lists.newArrayList(firstChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggerListener.Call.WRITE_REVIEW));
+        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.WRITE_REVIEW));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
 
         Choice secondChoice = question.getChoices().get(1);
@@ -130,7 +130,7 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
         Choice thirdChoice = question.getChoices().get(2);
         questionProvider.answerCurrent(Lists.newArrayList(thirdChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggerListener.Call.SUPPRESS_PROMPT));
+        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
     }
 
@@ -150,7 +150,7 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
         Choice firstChoice = question.getChoices().get(0);
         questionProvider.answerCurrent(Lists.newArrayList(firstChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggerListener.Call.SEND_FEEDBACK));
+        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SEND_FEEDBACK));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
 
         Choice secondChoice = question.getChoices().get(1);
@@ -166,10 +166,10 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
 
         questionProvider.skipCurrent();
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
-        assertThat(triggerListener.calls, hasItem(TrackingTriggerListener.Call.SUPPRESS_PROMPT));
+        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
     }
 
-    static class TrackingTriggerListener implements TriggerListener {
+    static class TrackingTriggers implements Triggers {
         final List<Call> calls = new ArrayList<>();
 
         @Override

@@ -86,7 +86,7 @@ public class FakeQuestionProvider implements QuestionProvider {
 
     @Override
     public Observable<Question> prepare() {
-        return Observable.create(subscriber -> {
+        return Observable.<Question>create(subscriber -> {
             Observable<ArrayList<Question>> update = questions();
             update.observeOn(Rx.mainThreadScheduler())
                   .subscribe(questions -> {
@@ -108,7 +108,7 @@ public class FakeQuestionProvider implements QuestionProvider {
 
                                  subscriber.onError(error);
                              });
-        });
+        }).subscribeOn(Schedulers.computation());
     }
 
     @Nullable

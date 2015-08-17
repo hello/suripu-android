@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.ui.activities.SupportActivity;
@@ -33,7 +34,10 @@ public class UserSupport {
     }
 
     public static void showProductPage(@NonNull Context from) {
-        String packageName = from.getPackageName();
+        String packageName = BuildConfig.APPLICATION_ID;
+        if (BuildConfig.DEBUG) {
+            packageName = packageName.replace(".debug", "");
+        }
         try {
             Uri marketUri = new Uri.Builder()
                     .scheme("market")
@@ -48,9 +52,9 @@ public class UserSupport {
             Uri webUri = new Uri.Builder()
                     .scheme("http")
                     .authority("play.google.com")
-                    .path("store")
-                    .path("apps")
-                    .path("details")
+                    .appendPath("store")
+                    .appendPath("apps")
+                    .appendPath("details")
                     .appendQueryParameter("id", packageName)
                     .build();
             openUri(from, webUri);

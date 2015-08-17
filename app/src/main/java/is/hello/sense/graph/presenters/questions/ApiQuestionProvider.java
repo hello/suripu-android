@@ -14,6 +14,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import rx.Observable;
 import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
 public class ApiQuestionProvider implements QuestionProvider {
     static final int CURRENT_NONE = -1;
@@ -85,7 +86,7 @@ public class ApiQuestionProvider implements QuestionProvider {
 
     @Override
     public Observable<Question> prepare() {
-        return Observable.create(subscriber -> {
+        return Observable.<Question>create(subscriber -> {
             Observable<ArrayList<Question>> update = latestQuestions();
             update.observeOn(updateScheduler)
                   .subscribe(questions -> {
@@ -107,7 +108,7 @@ public class ApiQuestionProvider implements QuestionProvider {
 
                                  subscriber.onError(error);
                              });
-        });
+        }).subscribeOn(Schedulers.computation());
     }
 
     @Nullable
