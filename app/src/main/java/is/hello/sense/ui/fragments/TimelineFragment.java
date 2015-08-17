@@ -65,7 +65,8 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 import rx.functions.Action1;
 
-public class TimelineFragment extends InjectionFragment implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
+public class TimelineFragment extends InjectionFragment
+        implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -537,7 +538,7 @@ public class TimelineFragment extends InjectionFragment implements TimelineAdapt
         } else {
             transitionIntoNoDataState(header -> {
                 header.setDiagramResource(R.drawable.timeline_state_error);
-                header.setTitle(R.string.dialog_error_title);
+                header.setTitle(R.string.timeline_error_title);
                 header.setMessage(message);
             });
         }
