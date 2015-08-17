@@ -14,6 +14,7 @@ import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 
 public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
@@ -28,6 +29,31 @@ public class UserSupport {
             alertDialog.setMessage(R.string.error_no_web_browser);
             alertDialog.setPositiveButton(android.R.string.ok, null);
             alertDialog.show();
+        }
+    }
+
+    public static void showProductPage(@NonNull Context from) {
+        String packageName = from.getPackageName();
+        try {
+            Uri marketUri = new Uri.Builder()
+                    .scheme("market")
+                    .appendEncodedPath("/")
+                    .appendPath("details")
+                    .appendQueryParameter("id", packageName)
+                    .build();
+            from.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
+        } catch (ActivityNotFoundException e) {
+            Logger.info(UserSupport.class.getSimpleName(), "Market unavailable", e);
+
+            Uri webUri = new Uri.Builder()
+                    .scheme("http")
+                    .authority("play.google.com")
+                    .path("store")
+                    .path("apps")
+                    .path("details")
+                    .appendQueryParameter("id", packageName)
+                    .build();
+            openUri(from, webUri);
         }
     }
 

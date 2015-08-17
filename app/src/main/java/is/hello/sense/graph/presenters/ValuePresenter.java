@@ -49,6 +49,7 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     protected boolean onForgetDataForLowMemory() {
         if (isDataDisposable()) {
             subject.forget();
+            this.updateSubscription = null;
             return true;
         } else {
             return false;

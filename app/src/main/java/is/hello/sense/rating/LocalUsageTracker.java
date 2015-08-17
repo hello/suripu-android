@@ -179,6 +179,12 @@ import rx.schedulers.Schedulers;
         Interval last60Days = new Interval(Days.days(60), today);
         int skipReviewPrompt = usageWithin(Identifier.SKIP_REVIEW_PROMPT, last60Days);
 
+        Logger.info(getClass().getSimpleName(),
+                    "App launches (7 days): " + appLaunches +
+                    "\nSystem alerts shown (1 month): " + systemAlertsShown +
+                    "\nTimelines shown (1 month): " + timelinesShown +
+                    "\nSkip review prompt (2 months): " + skipReviewPrompt);
+
         return (appLaunches > 4 &&
                 systemAlertsShown == 0 &&
                 timelinesShown > 10 &&

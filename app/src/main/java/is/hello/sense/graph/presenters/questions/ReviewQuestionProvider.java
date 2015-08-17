@@ -53,7 +53,15 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
     @Override
     public void restoreState(@NonNull Bundle savedState) {
-        this.currentQuestionId = savedState.getLong("currentQuestionId");
+        setCurrentQuestionId(savedState.getLong("currentQuestionId"));
+    }
+
+    @Override
+    public boolean lowMemory() {
+        this.currentQuestionId = QUESTION_ID_NONE;
+        this.currentQuestion = null;
+
+        return true;
     }
 
     public String getString(int id) throws Resources.NotFoundException {
@@ -64,11 +72,6 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
 
     //region Questions
-
-    @Override
-    public boolean lowMemory() {
-        return false;
-    }
 
     @Override
     public Observable<Question> prepare() {

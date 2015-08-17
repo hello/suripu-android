@@ -28,6 +28,7 @@ import rx.Observable;
     private static final String PROVIDER_STATE = "providerState";
     private static final String PROVIDER_NAME = "providerName";
 
+    private final ApiService apiService;
     private final ApiSessionManager apiSessionManager;
 
     public final PresenterSubject<Question> question = PresenterSubject.create();
@@ -38,11 +39,12 @@ import rx.Observable;
 
     //region Lifecycle
 
-    @Inject public QuestionsPresenter(@NonNull ApiService apiService,
-                                      @NonNull ApiSessionManager apiSessionManager,
-                                      @NonNull Context context) {
+    @Inject public QuestionsPresenter(@NonNull Context context,
+                                      @NonNull ApiService apiService,
+                                      @NonNull ApiSessionManager apiSessionManager) {
+        this.apiService = apiService;
         this.apiSessionManager = apiSessionManager;
-        this.questionProvider = new ApiQuestionProvider(apiService, Rx.mainThreadScheduler());
+        this.questionProvider = createApiQuestionProvider();
 
         IntentFilter loggedOut = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
         Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, loggedOut);
@@ -59,7 +61,7 @@ import rx.Observable;
         Bundle savedState = questionProvider.saveState();
         if (savedState != null) {
             Bundle wrapper = new Bundle();
-            wrapper.putBundle(PROVIDER_STATE, wrapper);
+            wrapper.putBundle(PROVIDER_STATE, savedState);
             wrapper.putString(PROVIDER_NAME, questionProvider.getName());
             return wrapper;
         } else {
@@ -95,9 +97,17 @@ import rx.Observable;
 
     //region Updating
 
+    public ApiQuestionProvider createApiQuestionProvider() {
+        return new ApiQuestionProvider(apiService, Rx.mainThreadScheduler());
+    }
+
     public void setQuestionProvider(@NonNull QuestionProvider questionProvider) {
         this.questionProvider = questionProvider;
         update();
+    }
+
+    public @NonNull QuestionProvider getQuestionProvider() {
+        return questionProvider;
     }
 
     public final void update() {

@@ -1,5 +1,7 @@
 package is.hello.sense.graph.presenters.questions;
 
+import android.os.Bundle;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -16,6 +18,7 @@ import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider.TriggerL
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -33,6 +36,36 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
     @After
     public void tearDown() throws Exception {
         triggerListener.calls.clear();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void saveState() {
+        questionProvider.setCurrentQuestionId(ReviewQuestionProvider.QUESTION_ID_GOOD);
+
+        Bundle savedState = questionProvider.saveState();
+        assertThat(savedState, is(notNullValue()));
+        assertThat(savedState.size(), is(not(0)));
+
+        questionProvider.setCurrentQuestionId(ReviewQuestionProvider.QUESTION_ID_NONE);
+
+        questionProvider.restoreState(savedState);
+        assertThat(questionProvider.currentQuestionId,
+                   is(equalTo(ReviewQuestionProvider.QUESTION_ID_GOOD)));
+        assertThat(questionProvider.getCurrentQuestion(),
+                   is(notNullValue()));
+    }
+
+    @Test
+    public void lowMemory() {
+        questionProvider.setCurrentQuestionId(ReviewQuestionProvider.QUESTION_ID_INITIAL);
+
+        assertThat(questionProvider.lowMemory(), is(true));
+
+        assertThat(questionProvider.currentQuestionId,
+                   is(equalTo(ReviewQuestionProvider.QUESTION_ID_NONE)));
+        assertThat(questionProvider.getCurrentQuestion(),
+                   is(nullValue()));
     }
 
     @SuppressWarnings("ConstantConditions")
