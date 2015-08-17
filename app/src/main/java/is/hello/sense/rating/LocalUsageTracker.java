@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
+import org.joda.time.Months;
 import org.joda.time.Weeks;
 
 import javax.inject.Inject;
@@ -20,7 +21,7 @@ import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 @Singleton public class LocalUsageTracker {
-    public static final Days OLDEST_DAY = Days.days(31);
+    public static final Days OLDEST_DAY = Days.days(60);
 
     private final Store store;
     private final Scheduler asyncScheduler;
@@ -171,20 +172,25 @@ import rx.schedulers.Schedulers;
         Interval lastWeek = new Interval(Weeks.ONE, today);
         int appLaunches = usageWithin(Identifier.APP_LAUNCHED, lastWeek);
 
-        Interval lastMonth = new Interval(OLDEST_DAY, today);
+        Interval lastMonth = new Interval(Months.ONE, today);
         int systemAlertsShown = usageWithin(Identifier.SYSTEM_ALERT_SHOWN, lastMonth);
         int timelinesShown = usageWithin(Identifier.TIMELINE_SHOWN_WITH_DATA, lastMonth);
 
+        Interval last60Days = new Interval(Days.days(60), today);
+        int skipReviewPrompt = usageWithin(Identifier.SKIP_REVIEW_PROMPT, last60Days);
+
         return (appLaunches > 4 &&
                 systemAlertsShown == 0 &&
-                timelinesShown > 10);
+                timelinesShown > 10 &&
+                skipReviewPrompt == 0);
     }
 
 
     public enum Identifier {
         SYSTEM_ALERT_SHOWN(0),
         APP_LAUNCHED(1),
-        TIMELINE_SHOWN_WITH_DATA(2);
+        TIMELINE_SHOWN_WITH_DATA(2),
+        SKIP_REVIEW_PROMPT(3);
 
         /**
          * The value used within the usage database.

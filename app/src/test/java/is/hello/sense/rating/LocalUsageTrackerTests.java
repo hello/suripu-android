@@ -3,6 +3,7 @@ package is.hello.sense.rating;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
+import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.junit.After;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     @Test
     public void deleteOldUsageStats() {
         LocalUsageTracker timeTravelingTracker = spy(this.localUsageTracker);
-        DateTime distantPast = DateTime.now().withTimeAtStartOfDay().minusDays(60);
+        DateTime distantPast = DateTime.now().withTimeAtStartOfDay().minusDays(90);
         doReturn(distantPast)
                 .when(timeTravelingTracker)
                 .today();
@@ -108,7 +109,8 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
 
         DateTime today = localUsageTracker.today();
         Interval lastWeek = new Interval(Weeks.ONE, today);
-        Interval lastMonth = new Interval(LocalUsageTracker.OLDEST_DAY, today);
+        Interval lastMonth = new Interval(Months.ONE, today);
+        Interval last60Days = new Interval(Days.days(60), today);
 
 
         // Everything is great
@@ -121,6 +123,9 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
         doReturn(11)
                 .when(tracker)
                 .usageWithin(Identifier.TIMELINE_SHOWN_WITH_DATA, lastMonth);
+        doReturn(0)
+                .when(tracker)
+                .usageWithin(Identifier.SKIP_REVIEW_PROMPT, last60Days);
 
         assertThat(tracker.isUsageAcceptableForRatingPrompt(),
                    is(equalTo(true)));
@@ -150,6 +155,17 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
                 .when(tracker)
                 .usageWithin(Identifier.APP_LAUNCHED, lastMonth);
         doReturn(3)
+                .when(tracker)
+                .usageWithin(Identifier.SYSTEM_ALERT_SHOWN, lastWeek);
+        assertThat(tracker.isUsageAcceptableForRatingPrompt(),
+                   is(equalTo(false)));
+
+
+        // Skipped prompt in the last 60 days
+        doReturn(1)
+                .when(tracker)
+                .usageWithin(Identifier.SKIP_REVIEW_PROMPT, last60Days);
+        doReturn(0)
                 .when(tracker)
                 .usageWithin(Identifier.SYSTEM_ALERT_SHOWN, lastWeek);
         assertThat(tracker.isUsageAcceptableForRatingPrompt(),
