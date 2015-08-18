@@ -35,6 +35,7 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
+import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
@@ -68,6 +69,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Inject ApiService apiService;
     @Inject DevicesPresenter devicesPresenter;
+    @Inject LocalUsageTracker localUsageTracker;
 
     private long lastUpdated = Long.MAX_VALUE;
 
@@ -444,6 +446,8 @@ public class HomeActivity extends ScopedInjectionActivity
                 getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
             return;
         }
+
+        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
 
         DeviceIssueDialogFragment deviceIssueDialogFragment = DeviceIssueDialogFragment.newInstance(issue);
         deviceIssueDialogFragment.showAllowingStateLoss(getFragmentManager(), DeviceIssueDialogFragment.TAG);

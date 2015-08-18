@@ -2,13 +2,12 @@ package is.hello.sense.ui.dialogs;
 
 import android.animation.LayoutTransition;
 import android.app.Dialog;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,28 +16,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
-import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static android.widget.LinearLayout.LayoutParams;
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class QuestionsDialogFragment extends InjectionDialogFragment implements CompoundButton.OnCheckedChangeListener {
+public class QuestionsDialogFragment extends InjectionDialogFragment
+        implements CompoundButton.OnCheckedChangeListener {
     public static final String TAG = QuestionsDialogFragment.class.getSimpleName();
 
     private static final long DELAY_INCREMENT = 20;
@@ -46,13 +42,13 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
     @Inject QuestionsPresenter questionsPresenter;
 
-    private ViewGroup superContainer;
+    private final AnimatorContext animatorContext = new AnimatorContext(TAG);
+
+    private ViewGroup rootContainer;
     private TextView titleText;
     private ViewGroup choicesContainer;
     private Button skipButton;
     private Button nextButton;
-
-    private final List<Question.Choice> selectedAnswers = new ArrayList<>();
 
     private boolean hasClearedAllViews = false;
 
@@ -75,12 +71,15 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
         dialog.setContentView(R.layout.fragment_questions);
 
-        this.superContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_container);
+        this.rootContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_container);
         this.titleText = (TextView) dialog.findViewById(R.id.fragment_questions_title);
         this.choicesContainer = (ViewGroup) dialog.findViewById(R.id.fragment_questions_choices);
 
         LayoutTransition transition = choicesContainer.getLayoutTransition();
         AnimatorTemplate.DEFAULT.apply(transition);
+        FastOutSlowInInterpolator entranceInterpolator = new FastOutSlowInInterpolator();
+        transition.setInterpolator(LayoutTransition.APPEARING, entranceInterpolator);
+        transition.setInterpolator(LayoutTransition.DISAPPEARING, entranceInterpolator);
         transition.disableTransitionType(LayoutTransition.DISAPPEARING);
         transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
 
@@ -94,33 +93,13 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_questions, container, false);
-
-        this.superContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_container);
-        this.titleText = (TextView) view.findViewById(R.id.fragment_questions_title);
-        this.choicesContainer = (ViewGroup) view.findViewById(R.id.fragment_questions_choices);
-
-        LayoutTransition transition = choicesContainer.getLayoutTransition();
-        AnimatorTemplate.DEFAULT.apply(transition);
-        transition.disableTransitionType(LayoutTransition.DISAPPEARING);
-        transition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
-
-        this.skipButton = (Button) view.findViewById(R.id.fragment_questions_skip);
-        Views.setSafeOnClickListener(skipButton, this::skipQuestion);
-
-        this.nextButton = (Button) view.findViewById(R.id.fragment_questions_next);
-        Views.setSafeOnClickListener(nextButton, this::nextQuestion);
-
-        return view;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
         if (!hasSubscriptions()) {
-            bindAndSubscribe(questionsPresenter.currentQuestion, this::bindQuestion, this::questionUnavailable);
+            bindAndSubscribe(questionsPresenter.question,
+                             this::bindQuestion,
+                             this::questionUnavailable);
         }
     }
 
@@ -140,9 +119,17 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
 
         if (animate) {
-            animatorFor(skipButton).fadeOut(View.INVISIBLE).start();
-            animatorFor(nextButton).fadeIn().start();
+            animatorContext.transaction(t -> {
+                t.animatorFor(skipButton)
+                 .fadeOut(View.INVISIBLE);
+
+                t.animatorFor(nextButton)
+                 .fadeIn();
+            }, finished -> {
+            });
         } else {
+            Anime.cancelAll(nextButton, skipButton);
+
             skipButton.setVisibility(View.INVISIBLE);
             nextButton.setVisibility(View.VISIBLE);
         }
@@ -154,65 +141,54 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         }
 
         if (animate) {
-            animatorFor(nextButton).fadeOut(View.INVISIBLE).start();
-            animatorFor(skipButton).fadeIn().start();
+            animatorContext.transaction(t -> {
+                t.animatorFor(nextButton)
+                 .fadeOut(View.INVISIBLE);
+
+                t.animatorFor(skipButton)
+                 .fadeIn();
+            }, finished -> {
+            });
         } else {
+            Anime.cancelAll(nextButton, skipButton);
+
             nextButton.setVisibility(View.INVISIBLE);
             skipButton.setVisibility(View.VISIBLE);
         }
     }
 
     public void updateCallToAction() {
-        if (selectedAnswers.isEmpty()) {
-            showSkipButton(true);
-        } else {
+        if (questionsPresenter.hasSelectedChoices()) {
             showNextButton(true);
-        }
-    }
-
-    public void flipChoiceDrawables(@NonNull CompoundButton choiceButton) {
-        boolean checked = choiceButton.isChecked();
-        for (Drawable drawable : choiceButton.getCompoundDrawables()) {
-            if (drawable instanceof TransitionDrawable) {
-                TransitionDrawable transitionDrawable = (TransitionDrawable) drawable;
-                if (checked) {
-                    transitionDrawable.startTransition(Anime.DURATION_FAST);
-                } else {
-                    transitionDrawable.reverseTransition(Anime.DURATION_FAST);
-                }
-            }
+        } else {
+            showSkipButton(true);
         }
     }
 
     public void animateOutAllViews(@NonNull Runnable onCompletion) {
         if (hasClearedAllViews) {
-            superContainer.removeAllViews();
+            rootContainer.removeAllViews();
             onCompletion.run();
         } else {
-            for (int index = 0, count = superContainer.getChildCount(); index < count; index++) {
-                View child = superContainer.getChildAt(index);
-                boolean isLast = (index == count - 1);
-
-                MultiAnimator animator = animatorFor(child);
-                animator.alpha(0f);
-                if (isLast) {
-                    animator.addOnAnimationCompleted(finished -> {
-                        if (finished) {
-                            this.hasClearedAllViews = true;
-
-                            superContainer.removeAllViews();
-                            onCompletion.run();
-                        }
-                    });
+            animatorContext.transaction(t -> {
+                for (int i = 0, count = rootContainer.getChildCount(); i < count; i++) {
+                    t.animatorFor(rootContainer.getChildAt(i))
+                     .fadeOut(View.INVISIBLE);
                 }
-                animator.start();
-            }
+            }, finished -> {
+                if (finished) {
+                    this.hasClearedAllViews = true;
+
+                    rootContainer.removeAllViews();
+                    onCompletion.run();
+                }
+            });
         }
     }
 
     public void showThankYou(@NonNull Runnable onCompletion) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View thankYou = inflater.inflate(R.layout.item_thank_you, superContainer, false);
+        View thankYou = inflater.inflate(R.layout.item_question_thank_you, rootContainer, false);
         ImageView thankYouImage = (ImageView) thankYou.findViewById(R.id.item_thank_you_image);
         thankYouImage.setScaleX(0f);
         thankYouImage.setScaleY(0f);
@@ -221,22 +197,21 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         TextView thankYouText = (TextView) thankYou.findViewById(R.id.item_thank_you_text);
         thankYouText.setAlpha(0f);
 
-        superContainer.addView(thankYou);
+        rootContainer.addView(thankYou);
 
-        animatorFor(thankYouText)
-                .fadeIn()
-                .start();
+        animatorContext.transaction(t -> {
+            t.animatorFor(thankYouText)
+             .fadeIn();
 
-        animatorFor(thankYouImage)
-                .scale(1f)
-                .fadeIn()
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        superContainer.postDelayed(() -> stateSafeExecutor.execute(onCompletion),
-                                THANK_YOU_DURATION_MS);
-                    }
-                })
-                .start();
+            t.animatorFor(thankYouImage)
+             .scale(1f)
+             .fadeIn();
+        }, finished -> {
+            if (finished) {
+                rootContainer.postDelayed(stateSafeExecutor.bind(onCompletion),
+                                           THANK_YOU_DURATION_MS);
+            }
+        });
     }
 
     public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {
@@ -246,26 +221,19 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         skipButton.setEnabled(false);
 
         if (animate) {
-            long delay = 0;
-            for (int index = 0, count = choicesContainer.getChildCount(); index < count; index++) {
-                View child = choicesContainer.getChildAt(index);
-                boolean isLast = (index == count - 1);
-
-                MultiAnimator animator = animatorFor(child);
-                animator.scale(0.5f);
-                animator.alpha(0f);
-                if (isLast) {
-                    animator.addOnAnimationCompleted(finished -> {
-                        if (finished && onCompletion != null) {
-                            onCompletion.run();
-                        }
-                    });
+            AnimatorTemplate template = AnimatorTemplate.DEFAULT
+                    .withInterpolator(new FastOutLinearInInterpolator());
+            animatorContext.transaction(template, AnimatorContext.OPTIONS_DEFAULT, t -> {
+                for (int i = 0, count = choicesContainer.getChildCount(); i < count; i++) {
+                    t.animatorFor(choicesContainer.getChildAt(i))
+                     .withStartDelay(DELAY_INCREMENT * i)
+                     .scale(0f);
                 }
-                animator.withStartDelay(delay);
-                animator.start();
-
-                delay += DELAY_INCREMENT;
-            }
+            }, finished -> {
+                if (finished && onCompletion != null) {
+                    onCompletion.run();
+                }
+            });
         } else {
             choicesContainer.removeAllViews();
 
@@ -331,10 +299,8 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
 
             Button choiceButton = (Button) inflater.inflate(R.layout.item_question_single_choice, choicesContainer, false);
             choiceButton.setText(choice.getText());
-            choiceButton.setTag(R.id.fragment_questions_tag_question, question);
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
             choiceButton.setOnClickListener(onClickListener);
-            choiceButton.setOnTouchListener(POP_LISTENER);
             choicesContainer.addView(choiceButton, choiceLayoutParams);
 
             if (i < choices.size() - 1) {
@@ -343,8 +309,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                 choicesContainer.addView(divider, dividerLayoutParams);
             }
         }
-
-        nextButton.setTag(R.id.fragment_questions_tag_question, null);
     }
 
     public void bindMultipleChoiceQuestion(@NonNull Question question) {
@@ -363,9 +327,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
             choiceButton.setTag(R.id.fragment_questions_tag_choice, choice);
             choiceButton.setOnCheckedChangeListener(this);
 
-            choiceButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.item_question_check, 0, 0, 0);
-            choiceButton.setOnTouchListener(POP_LISTENER);
-
             choicesContainer.addView(choiceButton, choiceLayoutParams);
 
             if (i < choices.size() - 1) {
@@ -374,8 +335,6 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
                 choicesContainer.addView(divider, dividerLayoutParams);
             }
         }
-
-        nextButton.setTag(R.id.fragment_questions_tag_question, question);
     }
 
     public void questionUnavailable(@NonNull Throwable e) {
@@ -391,17 +350,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
     public void nextQuestion(@NonNull View sender) {
         Analytics.trackEvent(Analytics.TopView.EVENT_ANSWER_QUESTION, null);
 
-        clearQuestions(true, () -> {
-            Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
-            List<Question.Choice> choices = new ArrayList<>(selectedAnswers);
-
-            selectedAnswers.clear();
-            questionsPresenter.nextQuestion();
-
-            bindAndSubscribe(questionsPresenter.answerQuestion(question, choices),
-                             unused -> Logger.info(getClass().getSimpleName(), "Answered question"),
-                             e -> Logger.error(getClass().getSimpleName(), "Could not answer question", e));
-        });
+        clearQuestions(true, questionsPresenter::answerQuestion);
     }
 
     public void skipQuestion(@NonNull View sender) {
@@ -409,56 +358,25 @@ public class QuestionsDialogFragment extends InjectionDialogFragment implements 
         questionsPresenter.skipQuestion();
     }
 
-
     public void singleChoiceSelected(@NonNull View sender) {
         Analytics.trackEvent(Analytics.TopView.EVENT_ANSWER_QUESTION, null);
 
-        clearQuestions(true, () -> {
-            Question question = (Question) sender.getTag(R.id.fragment_questions_tag_question);
-            Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
-
-            questionsPresenter.nextQuestion();
-
-            bindAndSubscribe(questionsPresenter.answerQuestion(question, Lists.newArrayList(choice)),
-                             unused -> Logger.info(getClass().getSimpleName(), "Answered question"),
-                             e -> Logger.error(getClass().getSimpleName(), "Could not answer question", e));
-        });
+        Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
+        questionsPresenter.addChoice(choice);
+        clearQuestions(true, questionsPresenter::answerQuestion);
     }
 
     @Override
     public void onCheckedChanged(CompoundButton choiceButton, boolean checked) {
         Question.Choice choice = (Question.Choice) choiceButton.getTag(R.id.fragment_questions_tag_choice);
         if (checked) {
-            selectedAnswers.add(choice);
+            questionsPresenter.addChoice(choice);
         } else {
-            selectedAnswers.remove(choice);
+            questionsPresenter.removeChoice(choice);
         }
 
-        flipChoiceDrawables(choiceButton);
         updateCallToAction();
     }
-
-    private final View.OnTouchListener POP_LISTENER = (View view, MotionEvent motionEvent) -> {
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN: {
-                animatorFor(view)
-                        .scale(0.8f)
-                        .start();
-                break;
-            }
-
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP: {
-                Anime.cancelAll(view);
-                animatorFor(view)
-                        .simplePop(1.10f)
-                        .start();
-                break;
-            }
-        }
-
-        return false;
-    };
 
     //endregion
 }

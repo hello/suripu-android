@@ -28,7 +28,6 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.widget.util.ListViews;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -72,11 +71,11 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         this.headerDetail = (TextView) header.findViewById(R.id.item_static_text_detail);
         headerDetail.setText(R.string.missing_data_placeholder);
 
-        ListViews.addHeaderView(listView, header, null, false);
+        listView.addHeaderView(header, null, false);
 
         View headerDivider = Styles.createHorizontalDivider(getActivity(), ViewGroup.LayoutParams.MATCH_PARENT);
         headerDivider.setLayoutParams(new AbsListView.LayoutParams(headerDivider.getLayoutParams()));
-        ListViews.addHeaderView(listView, headerDivider, null, false);
+        listView.addHeaderView(headerDivider, null, false);
 
         TimeZoneAdapter adapter = new TimeZoneAdapter(getActivity());
         listView.setAdapter(adapter);

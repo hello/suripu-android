@@ -101,8 +101,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
-        Device device = getItem(position);
-        holder.display(device);
+        holder.bind(position);
     }
 
     @Override
@@ -125,7 +124,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
 
         abstract boolean wantsChevron();
 
-        void display(@NonNull Device device) {
+        @Override
+        public void bind(int position) {
+            Device device = getItem(position);
             title.setText(device.getType().nameRes);
             title.setCompoundDrawablesRelativeWithIntrinsicBounds(device.getType().iconRes, 0, wantsChevron() ? R.drawable.disclosure_chevron : 0, 0);
         }
@@ -156,9 +157,10 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
         }
 
         @Override
-        void display(@NonNull Device device) {
-            super.display(device);
+        public void bind(int position) {
+            super.bind(position);
 
+            Device device = getItem(position);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
                 lastSeen.setTextColor(resources.getColor(R.color.destructive_accent));
@@ -240,9 +242,10 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
         }
 
         @Override
-        void display(@NonNull Device device) {
-            super.display(device);
+        public void bind(int position) {
+            super.bind(position);
 
+            Device device = getItem(position);
             switch (device.getType()) {
                 case SENSE: {
                     message.setText(R.string.info_no_sense_connected);

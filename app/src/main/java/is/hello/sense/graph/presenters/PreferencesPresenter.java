@@ -54,6 +54,9 @@ import rx.subscriptions.Subscriptions;
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
 
+    public static final String DISABLE_REVIEW_PROMPT = "disable_review_prompt";
+
+
     private final Context context;
     private final SharedPreferences sharedPreferences;
     private final AccountPresenter accountPresenter;

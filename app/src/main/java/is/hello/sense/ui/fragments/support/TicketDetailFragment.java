@@ -44,7 +44,7 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.widget.CardItemDecoration;
+import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -90,6 +90,7 @@ public class TicketDetailFragment extends InjectionFragment
         this.imageUploadHelper = new ImageUploadHelper(this);
 
         String ticketId = getArguments().getString(ARG_TICKET_ID);
+        //noinspection ConstantConditions
         presenter.setTicketId(ticketId);
         addPresenter(presenter);
 

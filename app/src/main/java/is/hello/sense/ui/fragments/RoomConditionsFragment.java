@@ -36,7 +36,7 @@ import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.widget.CardItemDecoration;
+import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
@@ -214,7 +214,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
         }
     }
 
-    class Adapter extends ArrayRecyclerAdapter<SensorEntry, Adapter.BaseViewHolder> {
+    class Adapter extends ArrayRecyclerAdapter<SensorEntry, ArrayRecyclerAdapter.ViewHolder> {
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_NO_SENSE = 1;
 
@@ -258,7 +258,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
         }
 
         @Override
-        public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case VIEW_ID_NO_SENSE: {
                     View view = inflater.inflate(R.layout.item_message_card, parent, false);
@@ -278,7 +278,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
                         DeviceListFragment.startStandaloneFrom(getActivity());
                     });
 
-                    return new BaseViewHolder(view);
+                    return new ArrayRecyclerAdapter.ViewHolder(view);
                 }
                 case VIEW_ID_SENSOR: {
                     View view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
@@ -291,22 +291,12 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
         }
 
         @Override
-        public void onBindViewHolder(BaseViewHolder holder, int position) {
+        public void onBindViewHolder(ArrayRecyclerAdapter.ViewHolder holder, int position) {
             holder.bind(position);
         }
 
 
-        class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
-            BaseViewHolder(@NonNull View itemView) {
-                super(itemView);
-            }
-
-            void bind(int position) {
-                // Do nothing
-            }
-        }
-
-        class SensorViewHolder extends BaseViewHolder {
+        class SensorViewHolder extends ArrayRecyclerAdapter.ViewHolder {
             final TextView reading;
             final TextView message;
             final LineGraphDrawable lineGraphDrawable;
@@ -329,7 +319,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
             }
 
             @Override
-            void bind(int position) {
+            public void bind(int position) {
                 SensorEntry sensorEntry = getItem(position);
                 if (sensorEntry.sensorState != null) {
                     int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);

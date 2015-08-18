@@ -28,6 +28,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -46,6 +48,8 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     @Inject ApiEndpoint apiEndpoint;
     @Inject Cache httpCache;
     @Inject BluetoothStack bluetoothStack;
+    @Inject PreferencesPresenter preferences;
+    @Inject LocalUsageTracker localUsageTracker;
 
     private StaticItemAdapter debugActionItems;
     private StaticItemAdapter buildInfoItems;
@@ -111,6 +115,8 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("Show Room Check", null, this::showRoomCheck);
         debugActionItems.addTextItem("Forget welcome dialogs", null, this::clearHandholdingSettings);
         debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
+        debugActionItems.addTextItem("Re-enable review prompt", null, this::reEnableReviewPrompt);
+        debugActionItems.addTextItem("Reset app usage stats", null, this::resetAppUsage);
         debugActionItems.addTextItem("Log Out", null, this::logOut);
 
         if (Crashlytics.getInstance().isInitialized()) {
@@ -132,11 +138,11 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     public void clearLog(@NonNull StaticItemAdapter.TextItem item) {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(SessionLogger.clearLog(),
-                ignored -> LoadingDialogFragment.close(getFragmentManager()),
-                e -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
-                });
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                         });
     }
 
     public void sendLog(@NonNull StaticItemAdapter.TextItem item) {
@@ -173,6 +179,19 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         confirm.setNegativeButton(android.R.string.cancel, null);
         confirm.setButtonDestructive(SenseAlertDialog.BUTTON_POSITIVE, true);
         confirm.show();
+    }
+
+    public void reEnableReviewPrompt(@NonNull StaticItemAdapter.TextItem item) {
+        preferences.edit()
+                   .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)
+                   .apply();
+        localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        Toast.makeText(getApplicationContext(), "Review prompt re-enabled", Toast.LENGTH_SHORT).show();
+    }
+
+    public void resetAppUsage(@NonNull StaticItemAdapter.TextItem item) {
+        localUsageTracker.resetAsync();
+        Toast.makeText(getApplicationContext(), "Usage Stats Reset", Toast.LENGTH_SHORT).show();
     }
 
     public void logOut(@NonNull StaticItemAdapter.TextItem item) {

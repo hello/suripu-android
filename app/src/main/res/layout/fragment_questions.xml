@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
-    android:background="@color/background_questions">
+    android:background="@color/background_light">
 
     <TextView
         android:id="@+id/fragment_questions_title"

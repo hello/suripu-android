@@ -51,10 +51,14 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         LocalTime selectedTime = (LocalTime) savedInstanceState.getSerializable("selectedTime");
-        rotaryTimePickerView.setTime(selectedTime);
+        if (selectedTime != null) {
+            rotaryTimePickerView.setTime(selectedTime);
+        }
 
-        savedInstanceState = savedInstanceState.getParcelable("savedState");
-        super.onRestoreInstanceState(savedInstanceState);
+        Bundle parentSavedState = savedInstanceState.getParcelable("savedState");
+        if (parentSavedState != null) {
+            super.onRestoreInstanceState(parentSavedState);
+        }
     }
 
     @Override

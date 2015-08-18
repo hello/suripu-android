@@ -2,37 +2,42 @@ package is.hello.sense.graph.presenters;
 
 import android.content.ComponentCallbacks2;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.util.MockPresenter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class PresenterTests extends SenseTestCase {
-    private MockPresenter presenter = new MockPresenter();
-
-    @Before
-    public void initialize() {
-        presenter.reset();
-    }
-
-
     @Test
-    public void forgetData() {
-        presenter.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
-        assertFalse(presenter.onForgetDataForLowMemoryCalled);
+    public void forgetsDataWhenAppropriate() {
+        Presenter presenter = mock(Presenter.class, CALLS_REAL_METHODS);
+        doReturn(true)
+                .when(presenter)
+                .onForgetDataForLowMemory();
 
         presenter.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
-        assertTrue(presenter.onForgetDataForLowMemoryCalled);
+        verify(presenter).onForgetDataForLowMemory();
 
         presenter.onContainerResumed();
-        assertTrue(presenter.onReloadForgottenDataCalled);
+        verify(presenter).onReloadForgottenData();
+    }
 
-        presenter.onReloadForgottenDataCalled = false;
+    @Test
+    public void ignoresUnnecessaryTrimCalls() {
+        Presenter presenter = mock(Presenter.class, CALLS_REAL_METHODS);
+        doReturn(false)
+                .when(presenter)
+                .onForgetDataForLowMemory();
+
+        presenter.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
+        verify(presenter, never()).onForgetDataForLowMemory();
+
         presenter.onContainerResumed();
-        assertFalse(presenter.onReloadForgottenDataCalled);
+        verify(presenter, never()).onReloadForgottenData();
     }
 }

@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -20,12 +21,14 @@ import is.hello.sense.util.Constants;
 public class LaunchActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;
+    @Inject LocalUsageTracker localUsageTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
             Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
         }
 

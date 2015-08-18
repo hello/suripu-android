@@ -58,7 +58,10 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
         setDoneButtonEnabled(savedInstanceState.getBoolean("doneEnabled"));
         setActivityIndicatorVisible(savedInstanceState.getBoolean("activityIndicatorVisible"));
 
-        super.onRestoreInstanceState(savedInstanceState.getParcelable("savedInstanceState"));
+        Bundle parentSavedState = savedInstanceState.getParcelable("savedInstanceState");
+        if (parentSavedState != null) {
+            super.onRestoreInstanceState(parentSavedState);
+        }
     }
 
     @Override

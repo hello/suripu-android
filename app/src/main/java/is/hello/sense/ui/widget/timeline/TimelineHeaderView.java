@@ -327,7 +327,7 @@ public class TimelineHeaderView extends RelativeLayout {
         scoreContainer.setTranslationY(0f);
         cardContainer.setVisibility(VISIBLE);
 
-        setBackgroundSolid(true, 0);
+        setBackgroundSolid(false, 0);
     }
 
     private void animateToScore(@Nullable Integer score,

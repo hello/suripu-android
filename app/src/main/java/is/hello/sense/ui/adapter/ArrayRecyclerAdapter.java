@@ -122,6 +122,10 @@ public abstract class ArrayRecyclerAdapter<T, VH extends ArrayRecyclerAdapter.Vi
             super(itemView);
         }
 
+        public void bind(int position) {
+            // Do nothing
+        }
+
         @Override
         public void onClick(View ignored) {
             dispatchItemClicked(getAdapterPosition());
