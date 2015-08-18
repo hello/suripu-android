@@ -43,6 +43,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.timeline.PerspectiveTransformer;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -129,10 +130,8 @@ public class HomeActivity extends ScopedInjectionActivity
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
         });
 
-        AnimatorContext animatorContext = getAnimatorContext();
-
-        // noinspection unchecked
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
+        viewPager.setPageTransformer(false, new PerspectiveTransformer());
         viewPager.addOnPageChangeListener(this);
 
         this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager());
@@ -148,7 +147,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setListener(this);
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
-        slidingLayersView.setAnimatorContext(animatorContext);
+        slidingLayersView.setAnimatorContext(getAnimatorContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
         }
