@@ -2,6 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * @see is.hello.sense.graph.presenters.Presenter
  */
 public class PresenterContainer {
-    private final List<Presenter> presenters = new ArrayList<>();
+    @VisibleForTesting final List<Presenter> presenters = new ArrayList<>();
 
     //region Lifecycle
 
@@ -66,7 +67,9 @@ public class PresenterContainer {
     public void onSaveState(Bundle outState) {
         for (Presenter presenter : presenters) {
             Bundle savedState = presenter.onSaveState();
-            outState.putParcelable(presenter.getSavedStateKey(), savedState);
+            if (savedState != null) {
+                outState.putParcelable(presenter.getSavedStateKey(), savedState);
+            }
         }
     }
 
@@ -78,21 +81,5 @@ public class PresenterContainer {
      */
     public void addPresenter(@NonNull Presenter presenter) {
         presenters.add(presenter);
-    }
-
-    /**
-     * Remove a child presenter from the container, ignoring if it was not a child.
-     */
-    public void removePresenter(@NonNull Presenter presenter) {
-        presenters.remove(presenter);
-    }
-
-    /**
-     * Returns all of the child presenters in the container.
-     * <p/>
-     * The returned list should be lazily created if possible.
-     */
-    public @NonNull List<Presenter> getPresenters() {
-        return presenters;
     }
 }
