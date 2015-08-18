@@ -23,7 +23,6 @@ public class TimelineEventBuilder {
         TimelineEvent.SleepState[] sleepStates = TimelineEvent.SleepState.values();
         builder.setSleepDepth(random.nextInt(100), sleepStates[random.nextInt(sleepStates.length)]);
 
-        TimelineEvent.Type[] types = TimelineEvent.Type.values();
         builder.setType(type);
 
         TimelineEvent.Action[] actions = TimelineEvent.Action.values();

@@ -71,7 +71,7 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
     }
 
     @Override
-    public boolean getPadding(Rect padding) {
+    public boolean getPadding(@NonNull Rect padding) {
         padding.bottom = selectionHeight;
         return true;
     }

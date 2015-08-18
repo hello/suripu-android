@@ -54,7 +54,9 @@ public class PresenterContainer {
             }
 
             Bundle savedState = inState.getParcelable(presenter.getSavedStateKey());
-            presenter.onRestoreState(savedState);
+            if (savedState != null) {
+                presenter.onRestoreState(savedState);
+            }
         }
     }
 
