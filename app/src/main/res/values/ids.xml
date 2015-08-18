@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="fragment_page_view_on_screen" type="id" />
-    <item name="fragment_page_view_off_screen" type="id" />
-
     <item name="fragment_questions_tag_question" type="id" />
     <item name="fragment_questions_tag_choice" type="id" />
 

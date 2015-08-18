@@ -100,8 +100,6 @@ public class TimelineFragment extends InjectionFragment
     private TimelineFadeItemAnimator itemAnimator;
     private ColorDrawableCompat backgroundFill;
 
-    private boolean controlsSharedChrome = false;
-
     private @Nullable TutorialOverlayView tutorialOverlay;
     private @Nullable WeakReference<Dialog> activeDialog;
 
@@ -207,15 +205,30 @@ public class TimelineFragment extends InjectionFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        stateSafeExecutor.execute(headerView::startPulsing);
+        // For the first fragment
+        bindIfNeeded();
+    }
 
-        bindAndSubscribe(timelinePresenter.timeline,
-                         this::bindTimeline,
-                         this::timelineUnavailable);
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
 
-        bindAndSubscribe(preferences.observableUse24Time(),
-                adapter::setUse24Time,
-                Functions.LOG_ERROR);
+        // For all subsequent fragments
+        bindIfNeeded();
+    }
+
+    private void bindIfNeeded() {
+        if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
+            stateSafeExecutor.execute(headerView::startPulsing);
+
+            bindAndSubscribe(timelinePresenter.timeline,
+                             this::bindTimeline,
+                             this::timelineUnavailable);
+
+            bindAndSubscribe(preferences.observableUse24Time(),
+                             adapter::setUse24Time,
+                             Functions.LOG_ERROR);
+        }
     }
 
     @Override
@@ -351,10 +364,6 @@ public class TimelineFragment extends InjectionFragment
 
     public @NonNull String getTitle() {
         return dateFormatter.formatAsTimelineDate(getDate());
-    }
-
-    public void setControlsSharedChrome(boolean controlsSharedChrome) {
-        this.controlsSharedChrome = controlsSharedChrome;
     }
 
     public void scrollToTop() {
@@ -756,7 +765,7 @@ public class TimelineFragment extends InjectionFragment
                 }
             }
 
-            if (controlsSharedChrome) {
+            if (getUserVisibleHint()) {
                 if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                     homeActivity.showAlarmShortcut();
                 } else {
