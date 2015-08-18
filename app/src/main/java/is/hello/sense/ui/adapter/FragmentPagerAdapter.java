@@ -78,6 +78,7 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
     public @Nullable Fragment getCurrentFragment() {
         return currentFragment;
     }
+
     //endregion
 
 
@@ -131,10 +132,11 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
             this.currentTransaction = fragmentManager.beginTransaction();
         }
 
-        String tag = makeFragmentTag(container.getId(), getItemId(position));
-        Fragment fragment = fragmentManager.findFragmentByTag(tag);
-        if (fragment != null) {
-            currentTransaction.remove(fragment);
+        Fragment fragment = (Fragment) object;
+        currentTransaction.remove(fragment);
+
+        if (currentFragment == fragment) {
+            this.currentFragment = null;
         }
     }
 
@@ -143,6 +145,7 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
         if (currentTransaction != null) {
             currentTransaction.commitAllowingStateLoss();
             this.currentTransaction = null;
+
             fragmentManager.executePendingTransactions();
         }
     }

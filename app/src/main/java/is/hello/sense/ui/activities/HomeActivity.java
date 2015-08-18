@@ -148,7 +148,6 @@ public class HomeActivity extends ScopedInjectionActivity
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setListener(this);
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
-        // slidingLayersView.setGestureInterceptingChild(viewPager);
         slidingLayersView.setAnimatorContext(animatorContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
@@ -329,7 +328,7 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             if (slidingLayersView.isOpen()) {
-                if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
+                if (!slidingLayersView.isInMotion()) {
                     UndersideFragment undersideFragment = getUndersideFragment();
                     if (undersideFragment == null || !undersideFragment.onBackPressed()) {
                         slidingLayersView.close();
@@ -338,10 +337,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
                 return;
             } else if (!isCurrentFragmentLastNight()) {
-                // TODO: verify this is ok
-                //if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
-                    jumpToLastNight(true);
-                //}
+                jumpToLastNight(true);
 
                 return;
             }

@@ -89,6 +89,7 @@ public class InjectionFragment extends SenseFragment implements ObservableContai
         super.onDestroyView();
 
         observableContainer.clearSubscriptions();
+        presenterContainer.onContainerDestroyed();
     }
 
 
