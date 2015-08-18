@@ -12,11 +12,9 @@ import org.joda.time.LocalDate;
 
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.util.Constants;
 
 public class TimelineFragmentAdapter extends FragmentPagerAdapter {
-    // Real epoch is `2015-02-14 21:28:00`
-    public static final LocalDate EPOCH = new LocalDate(2014, 1, 1);
-
     private int count;
     private LocalDate latestDate;
     private @Nullable Timeline cachedTimeline;
@@ -61,12 +59,12 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     public void setLatestDate(@NonNull LocalDate latestDate) {
         this.latestDate = latestDate;
-        this.count = Days.daysBetween(EPOCH, latestDate).getDays();
+        this.count = Days.daysBetween(Constants.TIMELINE_EPOCH, latestDate).getDays();
         notifyDataSetChanged();
     }
 
     public int getDatePosition(@NonNull LocalDate date) {
-        return Days.daysBetween(EPOCH, date).getDays();
+        return Days.daysBetween(Constants.TIMELINE_EPOCH, date).getDays();
     }
 
     public int getLastNight() {
@@ -85,7 +83,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public LocalDate getItemDate(int position) {
-        return EPOCH.plusDays(position);
+        return Constants.TIMELINE_EPOCH.plusDays(position);
     }
 
     @NonNull
