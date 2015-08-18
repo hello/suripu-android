@@ -133,7 +133,7 @@ public class TimelineSegmentDrawable extends Drawable {
     }
 
     @Override
-    public boolean getPadding(Rect padding) {
+    public boolean getPadding(@NonNull Rect padding) {
         padding.right += rightInset;
 
         return true;

@@ -68,7 +68,9 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
             bottomSheet.setWantsDividers(getArguments().getBoolean(ARG_WANTS_DIVIDERS, false));
 
             ArrayList<Option> options = getArguments().getParcelableArrayList(ARG_OPTIONS);
-            bottomSheet.addOptions(options);
+            if (options != null) {
+                bottomSheet.addOptions(options);
+            }
         }
 
         return bottomSheet;

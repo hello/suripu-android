@@ -47,6 +47,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null && getArguments().containsKey(ARG_ANALYTICS_EVENT)) {
+            //noinspection ConstantConditions
             Analytics.trackEvent(getArguments().getString(ARG_ANALYTICS_EVENT), null);
         }
 

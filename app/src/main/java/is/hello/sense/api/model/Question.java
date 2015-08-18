@@ -1,13 +1,13 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
@@ -95,7 +95,7 @@ public class Question extends ApiResponse {
                 '}';
     }
 
-    public static class Choice {
+    public static class Choice implements Serializable {
         @SerializedName("id")
         private long id;
 
@@ -105,6 +105,14 @@ public class Question extends ApiResponse {
         @SerializedName("question_id")
         private Long questionId;
 
+        public static Choice create(long id,
+                                    @NonNull String text) {
+            Choice choice = new Choice();
+            choice.id = id;
+            choice.text = text;
+            return choice;
+        }
+
 
         public long getId() {
             return id;
@@ -112,10 +120,6 @@ public class Question extends ApiResponse {
 
         public String getText() {
             return text;
-        }
-
-        public @Nullable Long getQuestionId() {
-            return questionId;
         }
 
 

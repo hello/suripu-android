@@ -38,6 +38,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -46,13 +47,13 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.widget.ExtendedItemAnimator;
+import is.hello.sense.ui.recycler.ExtendedItemAnimator;
+import is.hello.sense.ui.recycler.StaggeredFadeItemAnimator;
 import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
-import is.hello.sense.ui.widget.timeline.TimelineFadeItemAnimator;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
 import is.hello.sense.ui.widget.timeline.TimelineNoDataHeaderView;
@@ -84,6 +85,7 @@ public class TimelineFragment extends InjectionFragment
     @Inject TimelinePresenter timelinePresenter;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject LocalUsageTracker localUsageTracker;
 
     private HomeActivity homeActivity;
 
@@ -97,7 +99,7 @@ public class TimelineFragment extends InjectionFragment
     private TimelineToolbar toolbar;
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
-    private TimelineFadeItemAnimator itemAnimator;
+    private StaggeredFadeItemAnimator itemAnimator;
     private ColorDrawableCompat backgroundFill;
 
     private boolean controlsSharedChrome = false;
@@ -185,7 +187,7 @@ public class TimelineFragment extends InjectionFragment
 
         View[] headers = { toolbar, headerView };
 
-        this.itemAnimator = new TimelineFadeItemAnimator(getAnimatorContext());
+        this.itemAnimator = new StaggeredFadeItemAnimator(getAnimatorContext());
         itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BottomInsetDecoration(getResources(), headers.length));
@@ -416,7 +418,7 @@ public class TimelineFragment extends InjectionFragment
         }
     }
 
-    private class HandholdingOneShotListener implements TimelineFadeItemAnimator.Listener {
+    private class HandholdingOneShotListener implements StaggeredFadeItemAnimator.Listener {
         @Override
         public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
         }
@@ -511,6 +513,10 @@ public class TimelineFragment extends InjectionFragment
                 adapter.bindEvents(timeline.getEvents());
             });
             headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
+
+            if (animationEnabled) {
+                localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.TIMELINE_SHOWN_WITH_DATA);
+            }
         } else {
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended

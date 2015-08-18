@@ -27,6 +27,10 @@ public abstract class SenseTestCase {
         return getContext().getResources();
     }
 
+    public String getString(int id) throws Resources.NotFoundException {
+        return getResources().getString(id);
+    }
+
     public static class WorkaroundTestRunner extends RobolectricGradleTestRunner {
         public WorkaroundTestRunner(Class<?> klass) throws InitializationError {
             super(klass);

@@ -77,7 +77,8 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
     }
 
 
-    class ViewHolder extends ArrayRecyclerAdapter.ViewHolder implements SelectorView.OnSelectionChangedListener {
+    class ViewHolder extends ArrayRecyclerAdapter.ViewHolder
+            implements SelectorView.OnSelectionChangedListener {
         final ViewGroup itemView;
         final TextView title;
         final GraphView graphView;

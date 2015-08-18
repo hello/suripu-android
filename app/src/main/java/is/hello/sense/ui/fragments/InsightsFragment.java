@@ -18,22 +18,31 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.graph.presenters.questions.ApiQuestionProvider;
+import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
+import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
-import is.hello.sense.ui.widget.CardItemDecoration;
+import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class InsightsFragment extends UndersideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener {
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
-
+    @Inject LocalUsageTracker localUsageTracker;
+    @Inject DevicesPresenter devicesPresenter;
+    @Inject PreferencesPresenter preferences;
     @Inject QuestionsPresenter questionsPresenter;
 
     private InsightsAdapter insightsAdapter;
@@ -77,7 +86,7 @@ public class InsightsFragment extends UndersideTabFragment
         super.onViewCreated(view, savedInstanceState);
 
         Observable<Pair<List<Insight>, Question>> data = Observable.combineLatest(insightsPresenter.insights,
-                questionsPresenter.currentQuestion, Pair::new);
+                questionsPresenter.question, Pair::new);
         bindAndSubscribe(data,
                          insightsAdapter::bindData,
                          insightsAdapter::dataUnavailable);
@@ -104,7 +113,7 @@ public class InsightsFragment extends UndersideTabFragment
             insightsPresenter.update();
         }
 
-        questionsPresenter.update();
+        updateQuestion();
     }
 
 
@@ -124,13 +133,48 @@ public class InsightsFragment extends UndersideTabFragment
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
         insightsPresenter.update();
-        questionsPresenter.update();
+        updateQuestion();
     }
 
     //endregion
 
 
     //region Questions
+
+    private void updateQuestionFromApi() {
+        if (!(questionsPresenter.getQuestionProvider() instanceof ApiQuestionProvider)) {
+            questionsPresenter.setQuestionProvider(questionsPresenter.createApiQuestionProvider());
+        } else {
+            questionsPresenter.update();
+        }
+    }
+
+    private void updateQuestionForReview() {
+        if (!(questionsPresenter.getQuestionProvider() instanceof ReviewQuestionProvider)) {
+            questionsPresenter.setQuestionProvider(new ReviewQuestionProvider(getResources(),
+                                                                              new ReviewTriggers()));
+        }
+    }
+
+    public void updateQuestion() {
+        Observable<Boolean> stageOne = devicesPresenter.latestTopIssue().map(issue -> {
+            return (issue == DevicesPresenter.Issue.NONE &&
+                    localUsageTracker.isUsageAcceptableForRatingPrompt() &&
+                    !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false));
+        });
+        stageOne.subscribe(showReview -> {
+                              if (showReview) {
+                                  updateQuestionForReview();
+                              } else {
+                                  updateQuestionFromApi();
+                              }
+                           },
+                           e -> {
+                               Logger.warn(getClass().getSimpleName(),
+                                           "Could not determine device status", e);
+                               questionsPresenter.update();
+                           });
+    }
 
     @Override
     public void onDismissLoadingIndicator() {
@@ -150,4 +194,39 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
     //endregion
+
+
+    private class ReviewTriggers implements ReviewQuestionProvider.Triggers {
+        @Override
+        public void onWriteReview() {
+            UserSupport.showProductPage(getActivity());
+
+            preferences.edit()
+                       .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
+                       .apply();
+        }
+
+        @Override
+        public void onSendFeedback() {
+            UserSupport.showContactForm(getActivity());
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        }
+
+        @Override
+        public void onShowHelp() {
+            UserSupport.showUserGuide(getActivity());
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        }
+
+        @Override
+        public void onSuppressPrompt(boolean forever) {
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+
+            if (forever) {
+                preferences.edit()
+                           .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
+                           .apply();
+            }
+        }
+    }
 }
