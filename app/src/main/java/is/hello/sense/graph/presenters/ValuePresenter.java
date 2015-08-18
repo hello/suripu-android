@@ -5,7 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.graph.SafeObserverWrapper;
 import rx.Observable;
@@ -35,7 +37,7 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     /**
      * The current update operation. Will be canceled if an overlapping update is requested.
      */
-    private @Nullable Subscription updateSubscription;
+    private @Nullable WeakReference<Subscription> updateSubscription;
 
 
     //region Low Memory
@@ -49,6 +51,11 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     protected boolean onForgetDataForLowMemory() {
         if (isDataDisposable()) {
             subject.forget();
+            final Subscription existingSubscription = Functions.extract(this.updateSubscription);
+            if (existingSubscription != null) {
+                existingSubscription.unsubscribe();
+                this.updateSubscription = null;
+            }
             return true;
         } else {
             return false;
@@ -81,7 +88,7 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     @Nullable
     @Override
     public Bundle onSaveState() {
-        Bundle state = new Bundle();
+        final Bundle state = new Bundle();
         subject.saveState(SAVED_STATE_KEY, state);
         return state;
     }
@@ -105,17 +112,33 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     protected abstract Observable<T> provideUpdateObservable();
 
     /**
+     * Cancels any pending updates within the value presenter.
+     */
+    @Override
+    public void onContainerDestroyed() {
+        super.onContainerDestroyed();
+
+        final Subscription existingSubscription = Functions.extract(this.updateSubscription);
+        if (existingSubscription != null) {
+            existingSubscription.unsubscribe();
+            this.updateSubscription = null;
+        }
+    }
+
+    /**
      * Updates the subject of the presenter.
      */
     public final void update() {
-        if (updateSubscription != null) {
-            updateSubscription.unsubscribe();
+        final Subscription existingSubscription = Functions.extract(this.updateSubscription);
+        if (existingSubscription != null) {
+            existingSubscription.unsubscribe();
             this.updateSubscription = null;
         }
 
         if (canUpdate()) {
-            Observable<T> updateObservable = provideUpdateObservable();
-            this.updateSubscription = updateObservable.subscribe(new SafeObserverWrapper<>(subject));
+            final Observable<T> updateObservable = provideUpdateObservable();
+            final Subscription newSubscription = updateObservable.subscribe(new SafeObserverWrapper<>(subject));
+            this.updateSubscription = new WeakReference<>(newSubscription);
         }
     }
 
