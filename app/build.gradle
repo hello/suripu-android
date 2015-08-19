@@ -186,9 +186,9 @@ dependencies {
     compile 'net.danlew:android.joda:2.7.2'
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
 
-    compile 'com.android.support:support-v4:22.2.0'
-    compile 'com.android.support:support-v13:22.0.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.android.support:support-v13:23.0.0'
+    compile 'com.android.support:recyclerview-v7:23.0.0'
     compile 'com.google.android.gms:play-services-gcm:7.5.0'
     compile 'com.google.android.gms:play-services-location:7.5.0'
 
