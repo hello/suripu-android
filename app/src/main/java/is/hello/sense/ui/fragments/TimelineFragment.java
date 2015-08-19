@@ -234,6 +234,10 @@ public class TimelineFragment extends InjectionFragment
     public void onPause() {
         super.onPause();
 
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
+
         adapter.stopSoundPlayer();
     }
 
@@ -253,11 +257,6 @@ public class TimelineFragment extends InjectionFragment
         this.adapter = null;
         this.itemAnimator = null;
         this.backgroundFill = null;
-
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
-            this.infoOverlay = null;
-        }
 
         if (tutorialOverlay != null) {
             tutorialOverlay.dismiss(false);
@@ -285,6 +284,10 @@ public class TimelineFragment extends InjectionFragment
 
     @Override
     public void onTopViewWillSlideDown() {
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
+
         toolbar.setOverflowOpen(true);
         toolbar.setTitleDimmed(true);
         toolbar.setShareVisible(false);
@@ -299,6 +302,10 @@ public class TimelineFragment extends InjectionFragment
 
     public void share(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
+
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
 
         bindAndSubscribe(timelinePresenter.latest(),
                 timeline -> {
@@ -328,6 +335,10 @@ public class TimelineFragment extends InjectionFragment
 
     public void showBreakdown(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
+
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
 
         bindAndSubscribe(timelinePresenter.latest(),
                          timeline -> {
@@ -565,7 +576,7 @@ public class TimelineFragment extends InjectionFragment
         boolean animateShow = true;
         if (infoOverlay != null) {
             animateShow = false;
-            infoOverlay.dismiss(true);
+            infoOverlay.dismiss(false);
         }
 
         this.infoOverlay = new TimelineInfoOverlay(getActivity(), getAnimatorContext());
@@ -584,7 +595,7 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onEventItemClicked(int eventPosition, @NonNull TimelineEvent event) {
         if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
+            infoOverlay.dismiss(true);
         }
 
         if (event.hasActions()) {
@@ -744,7 +755,7 @@ public class TimelineFragment extends InjectionFragment
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             if (newState != RecyclerView.SCROLL_STATE_IDLE && infoOverlay != null) {
-                infoOverlay.dismiss(true);
+                infoOverlay.dismiss(false);
             }
         }
 

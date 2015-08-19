@@ -124,7 +124,8 @@
     <dimen name="timeline_segment_event_offset_max">7dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>
 
-    <dimen name="timeline_event_popup_overlap">8dp</dimen>
+    <dimen name="timeline_event_popup_left_inset">8dp</dimen>
+    <dimen name="timeline_event_popup_bottom_inset">5dp</dimen>
 
     <dimen name="timeline_detail_reading_height">2dp</dimen>
     <dimen name="timeline_detail_reading_height_large">4dp</dimen>

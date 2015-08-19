@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
 import android.os.Handler;
@@ -15,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.PopupWindow;
@@ -53,14 +53,15 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.popupWindow = new PopupWindow(activity);
         popupWindow.setBackgroundDrawable(null);
         popupWindow.setTouchable(false);
-        popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT);
+        popupWindow.setWindowLayoutMode(LayoutParams.MATCH_PARENT,
+                                        LayoutParams.MATCH_PARENT);
 
         this.contents = new FrameLayout(activity);
         popupWindow.setContentView(contents);
 
         this.tooltip = new TextView(activity);
         tooltip.setTextAppearance(activity, R.style.AppTheme_Text_Timeline);
+        tooltip.setTextColor(resources.getColor(R.color.white));
         tooltip.setBackgroundResource(R.drawable.background_timeline_info_popup);
 
         int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_medium),
@@ -74,6 +75,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
                                                      LayoutParams.WRAP_CONTENT,
                                                      Gravity.BOTTOM | Gravity.LEFT);
+        layoutParams.leftMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_left_inset);
         contents.addView(tooltip, layoutParams);
     }
 
@@ -97,6 +99,30 @@ public class TimelineInfoOverlay implements Handler.Callback {
         return rectSize;
     }
 
+    private Drawable createBackground(@NonNull Rect screenFrame,
+                                      int viewTop,
+                                      int viewBottom) {
+        final Path fillPath = new Path();
+        fillPath.addRect(screenFrame.left, screenFrame.top,
+                         screenFrame.right, viewTop,
+                         Path.Direction.CW);
+
+        int gutterSize = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
+        fillPath.addRect(screenFrame.right - gutterSize, viewTop,
+                         screenFrame.right, viewBottom,
+                         Path.Direction.CW);
+
+        fillPath.addRect(screenFrame.left, viewBottom,
+                         screenFrame.right, screenFrame.bottom,
+                         Path.Direction.CW);
+
+        ShapeDrawable background = new ShapeDrawable(new PathShape(fillPath,
+                                                                   screenFrame.width(),
+                                                                   screenFrame.height()));
+        background.getPaint().setColor(resources.getColor(R.color.background_light_overlay));
+        return background;
+    }
+
     public void show(@NonNull View fromView, boolean animate) {
         if (popupWindow.isShowing()) {
             return;
@@ -109,28 +135,10 @@ public class TimelineInfoOverlay implements Handler.Callback {
         final int viewTop = (screenFrame.top + viewOrigin[Views.ORIGIN_Y]);
         final int viewBottom = viewTop + fromView.getMeasuredHeight();
 
-        final Path fillPath = new Path();
-        fillPath.addRect(screenFrame.left, screenFrame.top,
-                         screenFrame.right, viewOrigin[Views.ORIGIN_Y],
-                         Path.Direction.CW);
+        contents.setBackground(createBackground(screenFrame, viewTop, viewBottom));
 
-        int gutterSize = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
-        fillPath.addRect(screenFrame.right - gutterSize, viewTop,
-                         screenFrame.right, viewBottom,
-                         Path.Direction.CW);
-
-        fillPath.addRect(screenFrame.left, viewBottom,
-                         screenFrame.right, screenFrame.bottom,
-                         Path.Direction.CW);
-
-        ShapeDrawable background = new ShapeDrawable(new PathShape(fillPath, screenFrame.width(), screenFrame.height()));
-        int color = resources.getColor(R.color.background_light_overlay);
-        background.getPaint().setColor(color);
-        contents.setBackground(background);
-
-        int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+        int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_bottom_inset);
         LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
-        layoutParams.leftMargin = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_vertical_inset);
         layoutParams.bottomMargin = (screenFrame.height() - viewTop) + tooltipBottomMargin;
         tooltip.requestLayout();
 
@@ -163,18 +171,10 @@ public class TimelineInfoOverlay implements Handler.Callback {
         }
     }
 
-    public void dismiss(boolean immediate) {
+    public void dismiss(boolean animate) {
         delayHandler.removeMessages(MSG_DISMISS);
 
-        if (immediate) {
-            Anime.cancelAll(contents, tooltip);
-            popupWindow.dismiss();
-            contents.setAlpha(0f);
-
-            if (onDismiss != null) {
-                onDismiss.call(this);
-            }
-        } else {
+        if (animate) {
             animatorContext.transaction(t -> {
                 int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
                 t.animatorFor(tooltip)
@@ -189,6 +189,14 @@ public class TimelineInfoOverlay implements Handler.Callback {
                     onDismiss.call(this);
                 }
             });
+        } else {
+            Anime.cancelAll(contents, tooltip);
+            popupWindow.dismiss();
+            contents.setAlpha(0f);
+
+            if (onDismiss != null) {
+                onDismiss.call(this);
+            }
         }
     }
 
@@ -196,7 +204,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.what == MSG_DISMISS) {
-            dismiss(false);
+            dismiss(true);
             return true;
         }
 
