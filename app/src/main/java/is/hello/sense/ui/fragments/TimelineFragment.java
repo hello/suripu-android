@@ -221,6 +221,8 @@ public class TimelineFragment extends InjectionFragment
 
     private void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
+            timelinePresenter.updateIfEmpty();
+
             stateSafeExecutor.execute(headerView::startPulsing);
 
             bindAndSubscribe(timelinePresenter.timeline,

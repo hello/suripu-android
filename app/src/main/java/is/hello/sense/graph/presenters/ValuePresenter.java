@@ -143,6 +143,16 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
     }
 
     /**
+     * Updates the subject of the presenter
+     * if it does not currently have a value.
+     */
+    public final void updateIfEmpty() {
+        if (!subject.hasValue()) {
+            update();
+        }
+    }
+
+    /**
      * Returns an terminating observable that will emit the
      * latest value contained in the value presenter.
      */
