@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -16,9 +17,9 @@ import is.hello.sense.util.Constants;
 
 public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     private int count;
-    private LocalDate latestDate;
-    private @Nullable Timeline cachedTimeline;
-    private boolean firstTimeline = true;
+    @VisibleForTesting LocalDate latestDate;
+    @VisibleForTesting @Nullable Timeline cachedTimeline;
+    @VisibleForTesting boolean firstTimeline = true;
 
 
     //region Lifecycle
