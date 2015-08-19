@@ -18,6 +18,19 @@ import rx.subscriptions.Subscriptions;
 
 public final class Views {
     /**
+     * For use with {@link View#getLocationOnScreen(int[])}
+     * and {@link View#getLocationInWindow(int[])}.
+     */
+    public static final int ORIGIN_X = 0;
+
+    /**
+     * For use with {@link View#getLocationOnScreen(int[])}
+     * and {@link View#getLocationInWindow(int[])}.
+     */
+    public static final int ORIGIN_Y = 1;
+
+
+    /**
      * Returns a given motion events X-coordinate, constrained to 0f or greater.
      */
     public static float getNormalizedX(@NonNull MotionEvent event) {
@@ -44,8 +57,8 @@ public final class Views {
         float x = event.getRawX();
         float y = event.getRawY();
 
-        return (x >= coordinates[0] && x <= coordinates[0] + width &&
-                y >= coordinates[1] && y <= coordinates[1] + height);
+        return (x >= coordinates[ORIGIN_X] && x <= coordinates[ORIGIN_X] + width &&
+                y >= coordinates[ORIGIN_Y] && y <= coordinates[ORIGIN_Y] + height);
     }
 
     /**
@@ -64,8 +77,8 @@ public final class Views {
         Rect windowFrame = new Rect();
         view.getWindowVisibleDisplayFrame(windowFrame);
 
-        outRect.left = coordinates[0] - windowFrame.left;
-        outRect.top = coordinates[1] - windowFrame.top;
+        outRect.left = coordinates[ORIGIN_X] - windowFrame.left;
+        outRect.top = coordinates[ORIGIN_Y] - windowFrame.top;
         outRect.right = outRect.left + view.getMeasuredWidth();
         outRect.bottom = outRect.top + view.getMeasuredHeight();
     }

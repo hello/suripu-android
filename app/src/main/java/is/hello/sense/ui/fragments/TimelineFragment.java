@@ -55,7 +55,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
-import is.hello.sense.ui.widget.timeline.TimelineInfoPopup;
+import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 import is.hello.sense.ui.widget.timeline.TimelineNoDataHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.ui.widget.util.Dialogs;
@@ -107,7 +107,7 @@ public class TimelineFragment extends InjectionFragment
     private @Nullable TutorialOverlayView tutorialOverlay;
     private @Nullable WeakReference<Dialog> activeDialog;
 
-    private TimelineInfoPopup infoPopup;
+    private TimelineInfoOverlay infoOverlay;
 
 
     //region Lifecycle
@@ -254,9 +254,9 @@ public class TimelineFragment extends InjectionFragment
         this.itemAnimator = null;
         this.backgroundFill = null;
 
-        if (infoPopup != null) {
-            infoPopup.dismiss();
-            this.infoPopup = null;
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+            this.infoOverlay = null;
         }
 
         if (tutorialOverlay != null) {
@@ -562,13 +562,20 @@ public class TimelineFragment extends InjectionFragment
 
     @Override
     public void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event) {
-        if (infoPopup != null) {
-            infoPopup.dismiss();
+        boolean animateShow = true;
+        if (infoOverlay != null) {
+            animateShow = false;
+            infoOverlay.dismiss(true);
         }
 
-        this.infoPopup = new TimelineInfoPopup(getActivity());
-        infoPopup.bindEvent(event);
-        infoPopup.show(view);
+        this.infoOverlay = new TimelineInfoOverlay(getActivity(), getAnimatorContext());
+        infoOverlay.setOnDismiss(sender -> {
+            if (sender == infoOverlay) {
+                this.infoOverlay = null;
+            }
+        });
+        infoOverlay.bindEvent(event);
+        infoOverlay.show(view, animateShow);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
         Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
@@ -576,8 +583,8 @@ public class TimelineFragment extends InjectionFragment
 
     @Override
     public void onEventItemClicked(int eventPosition, @NonNull TimelineEvent event) {
-        if (infoPopup != null) {
-            infoPopup.dismiss();
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
         }
 
         if (event.hasActions()) {
@@ -734,6 +741,13 @@ public class TimelineFragment extends InjectionFragment
 
 
     private class ScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState != RecyclerView.SCROLL_STATE_IDLE && infoOverlay != null) {
+                infoOverlay.dismiss(true);
+            }
+        }
+
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             if (!itemAnimator.isRunning()) {
