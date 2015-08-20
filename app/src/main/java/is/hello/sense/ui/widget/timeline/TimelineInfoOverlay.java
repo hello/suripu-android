@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -16,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.PopupWindow;
@@ -25,7 +28,6 @@ import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.TimelineEvent;
-import is.hello.sense.ui.widget.util.Views;
 import rx.functions.Action1;
 
 public class TimelineInfoOverlay implements Handler.Callback {
@@ -91,34 +93,26 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.onDismiss = onDismiss;
     }
 
-    private Rect copyScreenFrame() {
-        final Rect rectSize = new Rect();
-        activity.getWindowManager()
-                .getDefaultDisplay()
-                .getRectSize(rectSize);
-        return rectSize;
-    }
-
-    private Drawable createBackground(@NonNull Rect screenFrame,
+    private Drawable createBackground(@NonNull Point screenSize,
                                       int viewTop,
                                       int viewBottom) {
         final Path fillPath = new Path();
-        fillPath.addRect(screenFrame.left, screenFrame.top,
-                         screenFrame.right, viewTop,
+        fillPath.addRect(0, 0,
+                         screenSize.x, viewTop,
                          Path.Direction.CW);
 
         int gutterSize = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
-        fillPath.addRect(screenFrame.right - gutterSize, viewTop,
-                         screenFrame.right, viewBottom,
+        fillPath.addRect(screenSize.x - gutterSize, viewTop,
+                         screenSize.x, viewBottom,
                          Path.Direction.CW);
 
-        fillPath.addRect(screenFrame.left, viewBottom,
-                         screenFrame.right, screenFrame.bottom,
+        fillPath.addRect(0, viewBottom,
+                         screenSize.x, screenSize.y,
                          Path.Direction.CW);
 
         ShapeDrawable background = new ShapeDrawable(new PathShape(fillPath,
-                                                                   screenFrame.width(),
-                                                                   screenFrame.height()));
+                                                                   screenSize.x,
+                                                                   screenSize.y));
         background.getPaint().setColor(resources.getColor(R.color.background_light_overlay));
         return background;
     }
@@ -128,18 +122,28 @@ public class TimelineInfoOverlay implements Handler.Callback {
             return;
         }
 
-        final Rect screenFrame = copyScreenFrame();
+        final Rect viewFrame = new Rect();
+        fromView.getGlobalVisibleRect(viewFrame);
 
-        final int[] viewOrigin = {0, 0};
-        fromView.getLocationOnScreen(viewOrigin);
-        final int viewTop = (screenFrame.top + viewOrigin[Views.ORIGIN_Y]);
-        final int viewBottom = viewTop + fromView.getMeasuredHeight();
+        final Point screenSize = new Point();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final View contentRoot = activity.findViewById(Window.ID_ANDROID_CONTENT);
+            screenSize.x = contentRoot.getWidth();
+            screenSize.y = contentRoot.getHeight();
 
-        contents.setBackground(createBackground(screenFrame, viewTop, viewBottom));
+            viewFrame.top -= contentRoot.getTop();
+            viewFrame.bottom -= contentRoot.getTop();
+        } else {
+            activity.getWindowManager()
+                    .getDefaultDisplay()
+                    .getSize(screenSize);
+        }
+
+        contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
 
         int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_bottom_inset);
         LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
-        layoutParams.bottomMargin = (screenFrame.height() - viewTop) + tooltipBottomMargin;
+        layoutParams.bottomMargin = (screenSize.y - viewFrame.top) + tooltipBottomMargin;
         tooltip.requestLayout();
 
         popupWindow.showAtLocation(fromView, Gravity.TOP, 0, 0);
