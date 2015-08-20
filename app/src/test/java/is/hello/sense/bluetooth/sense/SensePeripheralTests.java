@@ -29,14 +29,21 @@ import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.AdvertisingDataBuilder;
 import is.hello.buruberi.util.Either;
 import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.Sync;
-import rx.functions.Func1;
+import rx.Observable;
 
 import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.MorpheusCommand;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class SensePeripheralTests extends SenseTestCase {
     private static final String TEST_DEVICE_ID = "CA154FFA";
@@ -62,46 +69,60 @@ public class SensePeripheralTests extends SenseTestCase {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void discovery() throws Exception {
-        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
-        builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
-        AdvertisingData advertisingData = builder.build();
+        final BluetoothStack stack = mock(BluetoothStack.class);
 
-        FakePeripheralBehavior device1 = new FakePeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
-        device1.setAdvertisingData(advertisingData);
-        stackBehavior.addPeripheralInRange(device1);
+        final AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+        builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
+                    SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+        final AdvertisingData advertisingData = builder.build();
 
-        FakePeripheralBehavior device2 = new FakePeripheralBehavior("Sense-Test2", "c2:18:4e:fb:b3:0a", -90);
-        device2.setAdvertisingData(advertisingData);
-        stackBehavior.addPeripheralInRange(device2);
+        final GattPeripheral device1 = mock(GattPeripheral.class);
+        doReturn(stack).when(device1).getStack();
+        doReturn("Sense-Test").when(device1).getName();
+        doReturn("ca:15:4f:fa:b7:0b").when(device1).getAddress();
+        doReturn(-50).when(device1).getScanTimeRssi();
+        doReturn(advertisingData).when(device1).getAdvertisingData();
 
-        PeripheralCriteria peripheralCriteria = new PeripheralCriteria();
+        final GattPeripheral device2 = mock(GattPeripheral.class);
+        doReturn(stack).when(device2).getStack();
+        doReturn("Sense-Test2").when(device2).getName();
+        doReturn("c2:18:4e:fb:b3:0a").when(device2).getAddress();
+        doReturn(-90).when(device2).getScanTimeRssi();
+        doReturn(advertisingData).when(device2).getAdvertisingData();
+
+        final List<GattPeripheral> peripheralsInRange = Lists.newArrayList(device1, device2);
+        doReturn(Observable.just(peripheralsInRange))
+                .when(stack)
+                .discoverPeripherals(any(PeripheralCriteria.class));
+
+        final PeripheralCriteria peripheralCriteria = new PeripheralCriteria();
         Sync.wrap(SensePeripheral.discover(stack, peripheralCriteria))
-            .assertTrue(new Func1<List<SensePeripheral>, Boolean>() {
-                @Override
-                public Boolean call(List<SensePeripheral> peripherals) {
-                    return peripherals.size() == 2;
-                }
-            });
+            .assertThat(hasSize(2));
     }
 
     @Test
     public void rediscovery() throws Exception {
-        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+        final BluetoothStack stack = mock(BluetoothStack.class);
+
+        final AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
         builder.add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         builder.add(AdvertisingData.TYPE_SERVICE_DATA, SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + TEST_DEVICE_ID);
-        AdvertisingData advertisingData = builder.build();
+        final AdvertisingData advertisingData = builder.build();
 
-        FakePeripheralBehavior device = new FakePeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
-        device.setAdvertisingData(advertisingData);
-        stackBehavior.addPeripheralInRange(device);
+        final GattPeripheral device = mock(GattPeripheral.class);
+        doReturn(stack).when(device).getStack();
+        doReturn("Sense-Test").when(device).getName();
+        doReturn("ca:15:4f:fa:b7:0b").when(device).getAddress();
+        doReturn(-50).when(device).getScanTimeRssi();
+        doReturn(advertisingData).when(device).getAdvertisingData();
 
-        Sync.wrap(SensePeripheral.rediscover(stack, TEST_DEVICE_ID, false))
-            .assertTrue(new Func1<SensePeripheral, Boolean>() {
-                @Override
-                public Boolean call(SensePeripheral peripheral) {
-                    return "Sense-Test".equals(peripheral.getName());
-                }
-            });
+        final List<GattPeripheral> peripheralsInRange = Lists.newArrayList(device);
+        doReturn(Observable.just(peripheralsInRange))
+                .when(stack)
+                .discoverPeripherals(any(PeripheralCriteria.class));
+
+        SensePeripheral peripheral = Sync.last(SensePeripheral.rediscover(stack, TEST_DEVICE_ID, false));
+        assertThat(peripheral.getName(), is(equalTo("Sense-Test")));
     }
 
     //endregion
@@ -111,50 +132,76 @@ public class SensePeripheralTests extends SenseTestCase {
 
     @Test
     public void testIsConnected() throws Exception {
-        peripheralBehavior.setServicesResponse(null);
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_CONNECTED);
-        assertFalse(peripheral.isConnected());
+        final BluetoothStack stack = mock(BluetoothStack.class);
+        final GattPeripheral device = mock(GattPeripheral.class);
+        doReturn(stack).when(device).getStack();
+        doReturn(GattPeripheral.STATUS_CONNECTED).when(device).getConnectionStatus();
 
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_CONNECTED);
-        SensePeripheral.Testing.setPeripheralService(peripheral, new FakePeripheralService(SenseIdentifiers.SERVICE,
-                PeripheralService.SERVICE_TYPE_PRIMARY));
-        assertTrue(peripheral.isConnected());
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        assertThat(peripheral.isConnected(), is(false));
 
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_DISCONNECTED);
-        assertFalse(peripheral.isConnected());
+        SensePeripheral.Testing.setPeripheralService(peripheral, mock(PeripheralService.class));
+        assertThat(peripheral.isConnected(), is(true));
 
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_CONNECTING);
-        assertFalse(peripheral.isConnected());
+        doReturn(GattPeripheral.STATUS_DISCONNECTED).when(device).getConnectionStatus();
+        assertThat(peripheral.isConnected(), is(false));
 
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_DISCONNECTING);
-        assertFalse(peripheral.isConnected());
+        doReturn(GattPeripheral.STATUS_CONNECTING).when(device).getConnectionStatus();
+        assertThat(peripheral.isConnected(), is(false));
+
+        doReturn(GattPeripheral.STATUS_DISCONNECTING).when(device).getConnectionStatus();
+        assertThat(peripheral.isConnected(), is(false));
     }
 
     @Test
     public void getBondStatus() throws Exception {
-        peripheralBehavior.setBondStatus(GattPeripheral.BOND_NONE);
-        assertEquals(GattPeripheral.BOND_NONE, peripheral.getBondStatus());
+        final BluetoothStack stack = mock(BluetoothStack.class);
+        final GattPeripheral device = mock(GattPeripheral.class);
+        doReturn(stack).when(device).getStack();
 
-        peripheralBehavior.setBondStatus(GattPeripheral.BOND_BONDING);
-        assertEquals(GattPeripheral.BOND_BONDING, peripheral.getBondStatus());
+        final SensePeripheral peripheral = new SensePeripheral(device);
 
-        peripheralBehavior.setBondStatus(GattPeripheral.BOND_BONDED);
-        assertEquals(GattPeripheral.BOND_BONDED, peripheral.getBondStatus());
+        doReturn(GattPeripheral.BOND_NONE).when(device).getBondStatus();
+        assertThat(GattPeripheral.BOND_NONE, is(equalTo(peripheral.getBondStatus())));
+
+        doReturn(GattPeripheral.BOND_BONDING).when(device).getBondStatus();
+        assertThat(GattPeripheral.BOND_BONDING, is(equalTo(peripheral.getBondStatus())));
+
+        doReturn(GattPeripheral.BOND_BONDED).when(device).getBondStatus();
+        assertThat(GattPeripheral.BOND_BONDED, is(equalTo(peripheral.getBondStatus())));
     }
 
     @Test
     public void getScannedRssi() throws Exception {
-        assertEquals(-50, peripheral.getScannedRssi());
+        final BluetoothStack stack = mock(BluetoothStack.class);
+        final GattPeripheral device = mock(GattPeripheral.class);
+        doReturn(stack).when(device).getStack();
+        doReturn(-50).when(device).getScanTimeRssi();
+
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        assertThat(-50, is(equalTo(peripheral.getScannedRssi())));
     }
 
     @Test
     public void getAddress() throws Exception {
-        assertEquals("ca:15:4f:fa:b7:0b", peripheral.getAddress());
+        final BluetoothStack stack = mock(BluetoothStack.class);
+        final GattPeripheral device = mock(GattPeripheral.class);
+        doReturn(stack).when(device).getStack();
+        doReturn("ca:15:4f:fa:b7:0b").when(device).getAddress();
+
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        assertThat("ca:15:4f:fa:b7:0b", is(equalTo(peripheral.getAddress())));
     }
 
     @Test
     public void getName() throws Exception {
-        assertEquals("Sense-Test", peripheral.getName());
+        final BluetoothStack stack = mock(BluetoothStack.class);
+        final GattPeripheral device = mock(GattPeripheral.class);
+        doReturn(stack).when(device).getStack();
+        doReturn("Sense-Test").when(device).getName();
+
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        assertThat("Sense-Test", is(equalTo(peripheral.getName())));
     }
 
     //endregion
