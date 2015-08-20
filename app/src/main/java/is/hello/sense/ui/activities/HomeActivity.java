@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -41,6 +42,7 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
@@ -61,7 +63,8 @@ public class HomeActivity extends ScopedInjectionActivity
         implements SlidingLayersView.Listener,
         ZoomedOutTimelineFragment.OnTimelineDateSelectedListener,
         AnimatorContext.Scene,
-        ViewPager.OnPageChangeListener {
+        ViewPager.OnPageChangeListener,
+        TimelineInfoFragment.AnchorProvider {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
@@ -410,6 +413,18 @@ public class HomeActivity extends ScopedInjectionActivity
 
 
     //region Shared Chrome
+
+
+    @Nullable
+    @Override
+    public View findAnimationAnchorView(@IdRes int viewId) {
+        Fragment currentFragment = viewPagerAdapter.getCurrentFragment();
+        if (currentFragment != null && currentFragment.getView() != null) {
+            return currentFragment.getView().findViewById(viewId);
+        }
+
+        return null;
+    }
 
     public void hideAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
