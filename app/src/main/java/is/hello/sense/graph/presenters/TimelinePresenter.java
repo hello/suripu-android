@@ -45,8 +45,6 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
         this.date = date;
         if (timeline != null) {
             this.timeline.onNext(timeline);
-        } else {
-            update();
         }
     }
 

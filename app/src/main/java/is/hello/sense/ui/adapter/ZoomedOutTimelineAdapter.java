@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.R;
@@ -18,15 +19,15 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
-    public static final int TOTAL_DAYS = 366;
-
     private final Context context;
     private final LayoutInflater inflater;
     private final Resources resources;
     private final ZoomedOutTimelinePresenter presenter;
+    private final int count;
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
@@ -35,6 +36,8 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
         this.presenter = presenter;
+
+        this.count = Days.daysBetween(Constants.TIMELINE_EPOCH, LocalDate.now()).getDays();
     }
 
 
@@ -42,7 +45,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     @Override
     public int getItemCount() {
-        return TOTAL_DAYS;
+        return count;
     }
 
     @Override

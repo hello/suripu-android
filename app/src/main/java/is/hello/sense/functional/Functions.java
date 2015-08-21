@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.ref.Reference;
 
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -28,6 +29,13 @@ public final class Functions {
     }
     public static int compareInts(int a, int b) {
         return (a < b) ? -1 : ((a > b) ? 1 : 0);
+    }
+    public static @Nullable <T> T extract(@Nullable Reference<T> reference) {
+        if (reference == null) {
+            return null;
+        } else {
+            return reference.get();
+        }
     }
     public static final Action1<Throwable> LOG_ERROR = e -> {
         Logger.error("UnexpectedErrors", "An error occurred.", e);
