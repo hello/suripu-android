@@ -8,8 +8,10 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
@@ -40,11 +42,11 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
-import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.widget.FragmentPageView;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.timeline.PerspectiveTransformer;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -58,11 +60,11 @@ import static is.hello.go99.Anime.isAnimating;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class HomeActivity extends ScopedInjectionActivity
-        implements FragmentPageView.OnTransitionObserver<TimelineFragment>,
-        SlidingLayersView.Listener,
+        implements SlidingLayersView.Listener,
         ZoomedOutTimelineFragment.OnTimelineDateSelectedListener,
-        AnimatorContext.Scene
-{
+        AnimatorContext.Scene,
+        ViewPager.OnPageChangeListener,
+        TimelineInfoFragment.AnchorProvider {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
@@ -78,7 +80,9 @@ public class HomeActivity extends ScopedInjectionActivity
     private FrameLayout undersideContainer;
     private SlidingLayersView slidingLayersView;
 
-    private FragmentPageView<TimelineFragment> viewPager;
+    private ViewPager viewPager;
+    private TimelineFragmentAdapter viewPagerAdapter;
+    private int lastPagerScrollState = ViewPager.SCROLL_STATE_IDLE;
     private ImageButton smartAlarmButton;
 
     private boolean isFirstActivityRun;
@@ -131,17 +135,14 @@ public class HomeActivity extends ScopedInjectionActivity
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
         });
 
-        AnimatorContext animatorContext = getAnimatorContext();
+        this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
+        viewPager.setPageTransformer(false, new PerspectiveTransformer());
+        viewPager.addOnPageChangeListener(this);
 
-        // noinspection unchecked
-        this.viewPager = (FragmentPageView<TimelineFragment>) findViewById(R.id.activity_home_view_pager);
-        viewPager.setAdapter(new TimelineFragmentAdapter());
-        viewPager.setFragmentManager(getFragmentManager());
-        viewPager.setOnTransitionObserver(this);
-        viewPager.setStateSafeExecutor(stateSafeExecutor);
-        viewPager.setAnimatorContext(animatorContext);
+        this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
 
-        if (viewPager.getCurrentFragment() == null) {
+        if (viewPager.getCurrentItem() == 0) {
             jumpToLastNight(false);
         }
 
@@ -151,8 +152,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setListener(this);
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
-        slidingLayersView.setGestureInterceptingChild(viewPager);
-        slidingLayersView.setAnimatorContext(animatorContext);
+        slidingLayersView.setAnimatorContext(getAnimatorContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
         }
@@ -234,14 +234,15 @@ public class HomeActivity extends ScopedInjectionActivity
         if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
             if (isCurrentFragmentLastNight()) {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
-                TimelineFragment fragment = viewPager.getCurrentFragment();
-                fragment.update();
+                TimelineFragment fragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+                if (fragment != null) {
+                    fragment.update();
+                }
 
                 this.lastUpdated = System.currentTimeMillis();
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-                TimelineFragment fragment = TimelineFragment.newInstance(DateFormatter.lastNight(), null, true);
-                viewPager.setCurrentFragment(fragment);
+                viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
             }
 
 
@@ -265,6 +266,8 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onDestroy() {
         super.onDestroy();
 
+        viewPager.removeOnPageChangeListener(this);
+
         if (isFinishing()) {
             presenterContainer.onContainerDestroyed();
         }
@@ -287,8 +290,8 @@ public class HomeActivity extends ScopedInjectionActivity
                     }
 
                     LocalDate date = Notification.getDate(notification);
-                    TimelineFragment fragment = TimelineFragment.newInstance(date, null, false);
-                    viewPager.setCurrentFragment(fragment);
+                    int position = viewPagerAdapter.getDatePosition(date);
+                    viewPager.setCurrentItem(position, false);
 
                     break;
                 }
@@ -329,7 +332,7 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onBackPressed() {
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             if (slidingLayersView.isOpen()) {
-                if (!slidingLayersView.isAnimating() && !slidingLayersView.hasActiveGesture()) {
+                if (!slidingLayersView.isInMotion()) {
                     UndersideFragment undersideFragment = getUndersideFragment();
                     if (undersideFragment == null || !undersideFragment.onBackPressed()) {
                         slidingLayersView.close();
@@ -338,9 +341,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
                 return;
             } else if (!isCurrentFragmentLastNight()) {
-                if (!viewPager.isAnimating() && !viewPager.hasActiveGesture()) {
-                    jumpToLastNight(true);
-                }
+                jumpToLastNight(true);
 
                 return;
             }
@@ -359,17 +360,12 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     public boolean isCurrentFragmentLastNight() {
-        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        TimelineFragment currentFragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
     public void jumpToLastNight(boolean animate) {
-        TimelineFragment lastNight = TimelineFragment.newInstance(DateFormatter.lastNight(), null, !animate);
-        if (animate) {
-            viewPager.animateToFragment(lastNight, FragmentPageView.Position.AFTER);
-        } else {
-            viewPager.setCurrentFragment(lastNight);
-        }
+        viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), animate);
     }
 
 
@@ -393,40 +389,42 @@ public class HomeActivity extends ScopedInjectionActivity
     //region Fragment Adapter
 
     @Override
-    public void onWillTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
-        TimelineFragment currentFragment = viewPager.getCurrentFragment();
-        if (currentFragment != null) {
-            currentFragment.setControlsSharedChrome(false);
-        }
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
+    @Override
+    public void onPageSelected(int position) {
         showAlarmShortcut();
     }
 
     @Override
-    public void onDidTransitionToFragment(@NonNull TimelineFragment fragment, boolean isInteractive) {
-        this.lastUpdated = System.currentTimeMillis();
-
-        fragment.setControlsSharedChrome(true);
-
-        if (isInteractive) {
-            Tutorial.SWIPE_TIMELINE.markShown(this);
-
-            JSONObject properties = Analytics.createProperties(
-                    Analytics.Timeline.PROP_DATE, fragment.getDate().toString()
-            );
-            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, properties);
+    public void onPageScrollStateChanged(int state) {
+        if (lastPagerScrollState == ViewPager.SCROLL_STATE_IDLE &&
+                state != ViewPager.SCROLL_STATE_IDLE) {
+            animatorContext.beginAnimation();
+        } else if (lastPagerScrollState != ViewPager.SCROLL_STATE_IDLE &&
+                state == ViewPager.SCROLL_STATE_IDLE) {
+            animatorContext.endAnimation();
         }
-    }
-
-    @Override
-    public void onDidSnapBackToFragment(@NonNull TimelineFragment fragment) {
-        fragment.setControlsSharedChrome(true);
+        this.lastPagerScrollState = state;
     }
 
     //endregion
 
 
     //region Shared Chrome
+
+
+    @Nullable
+    @Override
+    public View findAnimationAnchorView(@IdRes int viewId) {
+        Fragment currentFragment = viewPagerAdapter.getCurrentFragment();
+        if (currentFragment != null && currentFragment.getView() != null) {
+            return currentFragment.getView().findViewById(viewId);
+        }
+
+        return null;
+    }
 
     public void hideAlarmShortcut() {
         if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
@@ -490,7 +488,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     .commit();
         }
 
-        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        TimelineFragment currentFragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
         if (currentFragment != null) {
             currentFragment.onTopViewWillSlideDown();
         }
@@ -512,7 +510,7 @@ public class HomeActivity extends ScopedInjectionActivity
             });
         }
 
-        TimelineFragment currentFragment = viewPager.getCurrentFragment();
+        TimelineFragment currentFragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
         if (currentFragment != null) {
             currentFragment.onTopViewDidSlideUp();
         }
@@ -625,11 +623,15 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onTimelineSelected(@NonNull LocalDate date, @Nullable Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
-        TimelineFragment currentFragment = viewPager.getCurrentFragment();
-        if (!date.equals(currentFragment.getDate())) {
-            viewPager.setCurrentFragment(TimelineFragment.newInstance(date, timeline, false));
+        int datePosition = viewPagerAdapter.getDatePosition(date);
+        if (datePosition != viewPager.getCurrentItem()) {
+            viewPagerAdapter.setCachedTimeline(timeline);
+            viewPager.setCurrentItem(datePosition, false);
         } else {
-            currentFragment.scrollToTop();
+            TimelineFragment currentFragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+            if (currentFragment != null) {
+                currentFragment.scrollToTop();
+            }
         }
         getFragmentManager().popBackStack();
     }

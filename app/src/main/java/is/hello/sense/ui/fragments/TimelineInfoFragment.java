@@ -379,10 +379,14 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private @Nullable View findSourceView() {
         Activity activity = getActivity();
         if (activity != null) {
-            return activity.findViewById(sourceViewId);
-        } else {
-            return null;
+            if (activity instanceof AnchorProvider) {
+                return ((AnchorProvider) activity).findAnimationAnchorView(sourceViewId);
+            } else {
+                return activity.findViewById(sourceViewId);
+            }
         }
+
+        return null;
     }
 
     private void setUpRecycler() {
@@ -548,5 +552,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 this.readingText = (TextView) itemView.findViewById(R.id.item_timeline_info_reading);
             }
         }
+    }
+
+    public interface AnchorProvider {
+        @Nullable View findAnimationAnchorView(@IdRes int viewId);
     }
 }

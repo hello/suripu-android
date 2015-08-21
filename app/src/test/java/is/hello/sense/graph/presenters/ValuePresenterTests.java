@@ -12,6 +12,8 @@ import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -38,18 +40,29 @@ public class ValuePresenterTests extends SenseTestCase {
     }
 
     @Test
+    public void updateIfEmpty() throws Exception {
+        CounterPresenter presenter = new CounterPresenter();
+
+        Sync.wrapAfter(presenter::updateIfEmpty, presenter.value)
+            .assertThat(is(equalTo(1)));
+        Sync.wrapAfter(presenter::updateIfEmpty, presenter.value)
+            .assertThat(is(equalTo(1)));
+    }
+
+    @Test
     public void lowMemoryLogic() throws Exception {
         CounterPresenter presenter = new CounterPresenter();
 
         Sync.wrapAfter(presenter::update, presenter.value)
-            .assertEquals(1);
+            .assertThat(is(equalTo(1)));
 
         presenter.onTrimMemory(Presenter.BASE_TRIM_LEVEL);
         presenter.onContainerResumed();
 
         Thread.sleep(500, 0);
 
-        Sync.wrap(presenter.value).assertEquals(2);
+        Sync.wrap(presenter.value)
+            .assertThat(is(equalTo(2)));
     }
 
 

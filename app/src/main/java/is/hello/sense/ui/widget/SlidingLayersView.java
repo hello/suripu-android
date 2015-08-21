@@ -19,14 +19,13 @@ import android.widget.FrameLayout;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
-import is.hello.sense.ui.widget.util.GestureInterceptingView;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class SlidingLayersView extends FrameLayout implements GestureInterceptingView {
+public class SlidingLayersView extends FrameLayout {
     private int touchSlop;
     private int topViewOpenHeight;
     private float totalMovementHeight;
@@ -43,9 +42,7 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
     private boolean animating = false;
 
     private boolean isOpen = false;
-    private @Nullable
-    Listener listener;
-    private @Nullable GestureInterceptingView gestureInterceptingChild;
+    private @Nullable Listener listener;
     private @Nullable InteractiveAnimator interactiveAnimator;
     private @Nullable AnimatorContext animatorContext;
     private int shadowHeight;
@@ -186,10 +183,6 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         this.listener = listener;
     }
 
-    public void setGestureInterceptingChild(@Nullable GestureInterceptingView gestureInterceptingChild) {
-        this.gestureInterceptingChild = gestureInterceptingChild;
-    }
-
     public void setInteractiveAnimator(@Nullable InteractiveAnimator interactiveAnimator) {
         this.interactiveAnimator = interactiveAnimator;
     }
@@ -198,13 +191,8 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
         this.animatorContext = animatorContext;
     }
 
-    @Override
-    public boolean hasActiveGesture() {
-        return trackingTouchEvents;
-    }
-
-    public boolean isAnimating() {
-        return animating;
+    public boolean isInMotion() {
+        return (animating || trackingTouchEvents);
     }
 
     //endregion
@@ -466,10 +454,6 @@ public class SlidingLayersView extends FrameLayout implements GestureInterceptin
             }
 
             case MotionEvent.ACTION_MOVE: {
-                if (gestureInterceptingChild != null && gestureInterceptingChild.hasActiveGesture()) {
-                    return false;
-                }
-
                 float x = Views.getNormalizedX(event), y = Views.getNormalizedY(event);
                 float deltaX = x - lastEventX;
                 float deltaY = y - lastEventY;

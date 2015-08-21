@@ -16,6 +16,8 @@ import is.hello.sense.util.Sync;
 import is.hello.sense.util.markup.text.MarkupString;
 
 import static junit.framework.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 
 public class TimelinePresenterTests extends InjectionTestCase {
     @Inject TimelinePresenter presenter;
@@ -23,9 +25,10 @@ public class TimelinePresenterTests extends InjectionTestCase {
     @Test
     public void update() throws Exception {
         presenter.setDateWithTimeline(LocalDate.now(), null);
+        presenter.update();
 
         Sync.wrap(presenter.timeline)
-            .assertNotNull();
+            .assertThat(notNullValue());
     }
 
     @Test
@@ -37,19 +40,20 @@ public class TimelinePresenterTests extends InjectionTestCase {
         presenter.setDateWithTimeline(timeline.getDate(), timeline);
 
         Sync.wrap(presenter.timeline)
-            .assertNotNull();
+            .assertThat(notNullValue());
     }
 
     @Test
     public void amendEventTime() throws Exception {
         presenter.setDateWithTimeline(LocalDate.now(), null);
+        presenter.update();
 
         TimelineEvent timelineEvent = new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GOT_IN_BED)
                 .build();
 
         Sync.wrap(presenter.amendEventTime(timelineEvent, LocalTime.now()))
-            .assertNull();
+            .assertThat(nullValue());
 
         Timeline timeline = Sync.next(presenter.timeline);
         assertFalse(Lists.isEmpty(timeline.getEvents()));
@@ -58,25 +62,27 @@ public class TimelinePresenterTests extends InjectionTestCase {
     @Test
     public void verifyEvent() throws Exception {
         presenter.setDateWithTimeline(LocalDate.now(), null);
+        presenter.update();
 
         TimelineEvent timelineEvent = new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GENERIC_MOTION)
                 .build();
 
         Sync.wrap(presenter.verifyEvent(timelineEvent))
-            .assertNull();
+            .assertThat(nullValue());
     }
 
     @Test
     public void deleteEvent() throws Exception {
         presenter.setDateWithTimeline(LocalDate.now(), null);
+        presenter.update();
 
         TimelineEvent timelineEvent = new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GENERIC_MOTION)
                 .build();
 
         Sync.wrap(presenter.deleteEvent(timelineEvent))
-            .assertNull();
+            .assertThat(nullValue());
 
         Timeline timeline = Sync.next(presenter.timeline);
         assertFalse(Lists.isEmpty(timeline.getEvents()));
