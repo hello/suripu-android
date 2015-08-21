@@ -127,6 +127,10 @@ public abstract class HardwareFragment extends InjectionFragment {
     //region Recovery
 
     protected void showSupportOptions() {
+        if (isPairOnlySession()) {
+            return;
+        }
+
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SUPPORT_OPTIONS, null);
 
         SenseBottomSheet options = new SenseBottomSheet(getActivity());

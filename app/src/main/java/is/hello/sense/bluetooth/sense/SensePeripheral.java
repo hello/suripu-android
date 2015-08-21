@@ -47,7 +47,7 @@ import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.M
 import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.MorpheusCommand.CommandType;
 import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
-public final class SensePeripheral {
+public class SensePeripheral {
     //region Versions
 
     /**
@@ -79,7 +79,7 @@ public final class SensePeripheral {
 
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
-    private PeripheralService peripheralService;
+    @VisibleForTesting PeripheralService peripheralService;
 
     private final SensePacketHandler packetHandler;
 
@@ -787,10 +787,6 @@ public final class SensePeripheral {
 
     @VisibleForTesting
     public static class Testing {
-        @VisibleForTesting
-        public static GattPeripheral getPeripheral(@NonNull SensePeripheral peripheral) {
-            return peripheral.gattPeripheral;
-        }
 
         @VisibleForTesting
         public static void setPeripheralService(@NonNull SensePeripheral peripheral, PeripheralService service) {
