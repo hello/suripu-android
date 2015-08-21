@@ -169,6 +169,9 @@ public class TimelineFragment extends InjectionFragment
 
         toolbar.setTitleOnClickListener(ignored -> {
             Tutorial.ZOOM_OUT_TIMELINE.markShown(getActivity());
+            if (infoOverlay != null) {
+                infoOverlay.dismiss(false);
+            }
             homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
         });
         toolbar.setTitle(getTitle());
@@ -379,6 +382,12 @@ public class TimelineFragment extends InjectionFragment
 
     public @NonNull String getTitle() {
         return dateFormatter.formatAsTimelineDate(getDate());
+    }
+
+    public void onSwipeBetweenDatesStarted() {
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
     }
 
     public void scrollToTop() {

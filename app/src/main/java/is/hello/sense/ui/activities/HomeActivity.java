@@ -402,6 +402,11 @@ public class HomeActivity extends ScopedInjectionActivity
         if (lastPagerScrollState == ViewPager.SCROLL_STATE_IDLE &&
                 state != ViewPager.SCROLL_STATE_IDLE) {
             animatorContext.beginAnimation();
+
+            TimelineFragment currentFragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+            if (currentFragment != null) {
+                currentFragment.onSwipeBetweenDatesStarted();
+            }
         } else if (lastPagerScrollState != ViewPager.SCROLL_STATE_IDLE &&
                 state == ViewPager.SCROLL_STATE_IDLE) {
             animatorContext.endAnimation();
