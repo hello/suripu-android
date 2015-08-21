@@ -14,7 +14,14 @@ public class PerspectiveTransformer implements ViewPager.PageTransformer {
 
     @Override
     public void transformPage(View page, float position) {
-        final float fraction = Math.abs(position);
+        // ViewPager has a bug where it will give an out of range position
+        // when you jump over a long distance with #setCurrentItem.
+        final float fraction;
+        if (position < -1f || position > 1f) {
+            fraction = 0f;
+        } else {
+            fraction = Math.abs(position);
+        }
 
         final float scale = Anime.interpolateFloats(fraction, MAXIMUM_SCALE, MINIMUM_SCALE);
         page.setScaleX(scale);
