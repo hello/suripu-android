@@ -35,10 +35,10 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.SoundPlayer;
+import is.hello.sense.util.Player;
 import is.hello.sense.util.StateSafeExecutor;
 
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> implements SoundPlayer.OnEventListener {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> implements Player.OnEventListener {
     @VisibleForTesting static final int VIEW_TYPE_SEGMENT = -1;
     @VisibleForTesting static final int VIEW_TYPE_EVENT = -2;
 
@@ -69,7 +69,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     private @Nullable StateSafeExecutor onItemClickExecutor;
     private @Nullable OnItemClickListener onItemClickListener;
 
-    private @Nullable SoundPlayer soundPlayer;
+    private @Nullable
+    Player player;
     private int playingPosition = RecyclerView.NO_POSITION;
 
 
@@ -283,12 +284,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
         if (event.hasSound()) {
             Logger.debug(getClass().getSimpleName(), "playSegmentSound(" + position + ")");
 
-            if (soundPlayer == null) {
-                this.soundPlayer = new SoundPlayer(context, this, false);
+            if (player == null) {
+                this.player = new Player(context, this, null);
             }
 
             String url = event.getSoundUrl();
-            soundPlayer.play(Uri.parse(url));
+            player.setDataSource(Uri.parse(url), true);
 
             setPlayingPosition(position);
         } else {
@@ -297,56 +298,57 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     private boolean isSegmentPlaybackActive(int position) {
-        return (this.playingPosition == position && soundPlayer != null);
+        return (this.playingPosition == position && player != null);
     }
 
     public void stopSoundPlayer() {
-        if (soundPlayer != null) {
+        if (player != null) {
             Logger.debug(getClass().getSimpleName(), "stopSoundPlayer()");
 
-            soundPlayer.stopPlayback();
+            player.stopPlayback();
         }
     }
 
     public boolean isSoundPlayerDisposable() {
-        return (soundPlayer != null && !soundPlayer.isPlaying() && !soundPlayer.isLoading());
+        return (player != null && player.getState() < Player.STATE_LOADING);
     }
 
     public void destroySoundPlayer() {
-        if (soundPlayer != null) {
+        if (player != null) {
             Logger.debug(getClass().getSimpleName(), "destroySoundPlayer()");
 
-            soundPlayer.stopPlayback();
-            soundPlayer.recycle();
+            player.stopPlayback();
+            player.recycle();
 
-            this.soundPlayer = null;
+            this.player = null;
         }
     }
 
 
     @Override
-    public void onPlaybackStarted(@NonNull SoundPlayer player) {
+    public void onPlaybackReady(@NonNull Player player) {
+        Logger.debug(getClass().getSimpleName(), "onPlaybackReady(" + player + ")");
+    }
+
+    @Override
+    public void onPlaybackStarted(@NonNull Player player) {
         Logger.debug(getClass().getSimpleName(), "onPlaybackStarted(" + player + ")");
     }
 
     @Override
-    public void onPlaybackStopped(@NonNull SoundPlayer player, boolean finished) {
+    public void onPlaybackStopped(@NonNull Player player, boolean finished) {
         Logger.debug(getClass().getSimpleName(), "onPlaybackStopped(" + player + ", " + finished + ")");
         setPlayingPosition(RecyclerView.NO_POSITION);
     }
 
     @Override
-    public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
+    public void onPlaybackError(@NonNull Player player, @NonNull Throwable error) {
         Logger.debug(getClass().getSimpleName(), "onPlaybackError(" + player + ", " + error + ")");
 
         Toast.makeText(context.getApplicationContext(), R.string.error_timeline_sound_playback_failed, Toast.LENGTH_SHORT).show();
         setPlayingPosition(RecyclerView.NO_POSITION);
 
         Analytics.trackError(error, "Timeline event playback");
-    }
-
-    @Override
-    public void onPlaybackPulse(@NonNull SoundPlayer player, int position) {
     }
 
 

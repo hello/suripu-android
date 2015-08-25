@@ -7,13 +7,58 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Surface;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 
-public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
+public final class Player implements MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnErrorListener,
+        MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnSeekCompleteListener {
+    public static final int STATE_RECYCLED = -1;
+    public static final int STATE_EMPTY = 0;
+    public static final int STATE_LOADING = 1;
+    public static final int STATE_LOADED = 2;
+    public static final int STATE_PLAYING = 3;
+    public static final int STATE_PAUSED = 4;
+
+    @IntDef({
+        STATE_RECYCLED,
+        STATE_EMPTY,
+        STATE_LOADING,
+        STATE_LOADED,
+        STATE_PLAYING,
+        STATE_PAUSED,
+    })
+    @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
+    @interface State {}
+
+    public static String stateToString(@State int state) {
+        switch (state) {
+            case STATE_RECYCLED:
+                return "STATE_RECYCLED";
+            case STATE_EMPTY:
+                return "STATE_EMPTY";
+            case STATE_LOADING:
+                return "STATE_LOADING";
+            case STATE_LOADED:
+                return "STATE_LOADED";
+            case STATE_PLAYING:
+                return "STATE_PLAYING";
+            case STATE_PAUSED:
+                return "STATE_PAUSED";
+            default:
+                return Integer.toString(state);
+        }
+    }
+
     public static final int PLAYBACK_STREAM_TYPE = AudioManager.STREAM_MUSIC;
 
     private static final int CHANGING_TO_REMOTE_STREAM_ERROR = -38;
@@ -28,14 +73,16 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     private final Runnable timerPulse;
     private boolean timerRunning = false;
 
-    private boolean loading = false;
-    private boolean paused = false;
-    private boolean recycled = false;
+    private int targetVideoScalingMode = MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT;
+    private boolean startWhenPrepared = false;
+    private @State int state = STATE_EMPTY;
 
 
     //region Lifecycle
 
-    public SoundPlayer(@NonNull Context context, @NonNull OnEventListener onEventListener, boolean wantsPulse) {
+    public Player(@NonNull Context context,
+                  @NonNull OnEventListener onEventListener,
+                  @Nullable OnPulseListener onPulseListener) {
         this.context = context;
         this.onEventListener = onEventListener;
 
@@ -46,13 +93,13 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
 
-        if (wantsPulse) {
+        if (onPulseListener != null) {
             this.timerHandler = new Handler(Looper.getMainLooper());
             this.timerPulse = new Runnable() {
                 @Override
                 public void run() {
                     if (timerRunning) {
-                        onEventListener.onPlaybackPulse(SoundPlayer.this, mediaPlayer.getCurrentPosition());
+                        onPulseListener.onPlaybackPulse(Player.this, mediaPlayer.getCurrentPosition());
                         timerHandler.postDelayed(this, TIMER_PULSE);
                     }
                 }
@@ -66,12 +113,12 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     }
 
     public void recycle() {
-        if (!recycled) {
+        if (state != STATE_RECYCLED) {
             stop();
             mediaPlayer.reset();
             mediaPlayer.release();
 
-            this.recycled = true;
+            setState(STATE_RECYCLED);
         }
     }
 
@@ -79,10 +126,15 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     protected void finalize() throws Throwable {
         super.finalize();
 
-        if (!recycled) {
+        if (state != STATE_RECYCLED) {
             Logger.warn(getClass().getSimpleName(), "SoundPlayer was not recycled before finalization.");
         }
         recycle();
+    }
+
+    private void setState(@State int state) {
+        Logger.debug(getClass().getSimpleName(), "setState(" + stateToString(state) + ")");
+        this.state = state;
     }
 
     //endregion
@@ -111,19 +163,20 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        this.loading = false;
-
-        if (!paused) {
-            start();
+        setState(STATE_LOADED);
+        onEventListener.onPlaybackReady(this);
+        mediaPlayer.setVideoScalingMode(targetVideoScalingMode);
+        if (startWhenPrepared) {
+            startPlayback();
         }
-
-        onEventListener.onPlaybackStarted(this);
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (what != CHANGING_TO_REMOTE_STREAM_ERROR) {
-            reset();
+            unscheduleTimePulse();
+            setState(STATE_EMPTY);
+            this.startWhenPrepared = false;
             onEventListener.onPlaybackError(this, new PlaybackError(what, extra));
         }
 
@@ -132,10 +185,10 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        stop();
-        reset();
-
-        onEventListener.onPlaybackStopped(this, true);
+        if (!mp.isLooping()) {
+            stop();
+            onEventListener.onPlaybackStopped(this, true);
+        }
     }
 
     @Override
@@ -154,24 +207,23 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     private void start() {
         scheduleTimePulse();
         mediaPlayer.start();
+        setState(STATE_PLAYING);
     }
 
     private void stop() {
-        unscheduleTimePulse();
-        mediaPlayer.stop();
+        if (state == STATE_PLAYING) {
+            this.startWhenPrepared = false;
+            unscheduleTimePulse();
+            mediaPlayer.stop();
+            setState(STATE_LOADED);
+        }
     }
 
-    private void reset() {
-        unscheduleTimePulse();
-        this.loading = false;
-        this.paused = false;
-    }
 
-
-    public void play(@NonNull Uri source) {
+    public void setDataSource(@NonNull Uri source, boolean startWhenPrepared) {
         try {
             stop();
-            reset();
+            unscheduleTimePulse();
 
             // See <https://code.google.com/p/android/issues/detail?id=957>
             try {
@@ -181,30 +233,38 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
                 mediaPlayer.setDataSource(context, source);
             }
 
-            this.loading = true;
+            setState(STATE_LOADING);
+            this.startWhenPrepared = startWhenPrepared;
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
+            this.startWhenPrepared = false;
+            setState(STATE_EMPTY);
             onEventListener.onPlaybackError(this, e);
+        }
+    }
+
+    public void startPlayback() {
+        if (state == STATE_LOADED) {
+            start();
+            onEventListener.onPlaybackStarted(this);
+        } else if (state == STATE_LOADING) {
+            this.startWhenPrepared = true;
+        } else if (state == STATE_PAUSED) {
+            start();
+        }
+    }
+
+    public void pausePlayback() {
+        if (state != STATE_PAUSED) {
+            this.startWhenPrepared = false;
+            mediaPlayer.pause();
+            setState(STATE_PAUSED);
         }
     }
 
     public void stopPlayback() {
         stop();
-        reset();
-
         onEventListener.onPlaybackStopped(this, false);
-    }
-
-
-    public void togglePaused() {
-        if (paused) {
-            start();
-            this.paused = false;
-        } else {
-            unscheduleTimePulse();
-            mediaPlayer.pause();
-            this.paused = true;
-        }
     }
 
     //endregion
@@ -212,16 +272,8 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
 
     //region Properties
 
-    public boolean isLoading() {
-        return loading;
-    }
-
-    public boolean isPlaying() {
-        return mediaPlayer.isPlaying();
-    }
-
-    public boolean isPaused() {
-        return paused;
+    public @State int getState() {
+        return state;
     }
 
     public int getCurrentPosition() {
@@ -239,6 +291,10 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
         } catch (Throwable e) {
             return false;
         }
+    }
+
+    public void setLooping(boolean looping) {
+        mediaPlayer.setLooping(looping);
     }
 
     public void setAudioStreamType(int streamType) {
@@ -287,11 +343,40 @@ public final class SoundPlayer implements MediaPlayer.OnPreparedListener, MediaP
     //endregion
 
 
+    //region Video
+
+    public void setSurface(@Nullable Surface surface) {
+        mediaPlayer.setSurface(surface);
+    }
+
+    public void setVideoScalingMode(int mode) {
+        this.targetVideoScalingMode = mode;
+        if (state == STATE_LOADED) {
+            mediaPlayer.setVideoScalingMode(mode);
+        }
+    }
+
+    //endregion
+
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "startWhenPrepared=" + startWhenPrepared +
+                ", state=" + stateToString(state) +
+                '}';
+    }
+
+
     public interface OnEventListener {
-        void onPlaybackStarted(@NonNull SoundPlayer player);
-        void onPlaybackStopped(@NonNull SoundPlayer player, boolean finished);
-        void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error);
-        void onPlaybackPulse(@NonNull SoundPlayer player, int position);
+        void onPlaybackReady(@NonNull Player player);
+        void onPlaybackStarted(@NonNull Player player);
+        void onPlaybackStopped(@NonNull Player player, boolean finished);
+        void onPlaybackError(@NonNull Player player, @NonNull Throwable error);
+    }
+
+    public interface OnPulseListener {
+        void onPlaybackPulse(@NonNull Player player, int position);
     }
 
     public static class PlaybackError extends Exception implements Errors.Reporting {
