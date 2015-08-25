@@ -7,8 +7,10 @@ import android.graphics.SurfaceTexture;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Surface;
 import android.view.TextureView;
@@ -22,8 +24,10 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
     private final Player player;
 
     private int clearColor = Color.TRANSPARENT;
-    private SurfaceTexture surfaceTexture;
-    private Surface videoSurface;
+    private @Nullable Drawable placeholder;
+
+    private @Nullable SurfaceTexture surfaceTexture;
+    private @Nullable Surface videoSurface;
 
     //region Lifecycle
 
@@ -54,19 +58,35 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.drawColor(clearColor);
+        if (placeholder != null) {
+            placeholder.draw(canvas);
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+        super.onSizeChanged(w, h, oldW, oldH);
+
+        if (placeholder != null) {
+            placeholder.setBounds(0, 0, w, h);
+        }
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
         int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
 
-        final Drawable background = getBackground();
-        if (background != null) {
+        if (placeholder != null) {
             final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
             final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
             if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.AT_MOST) {
-                float scaleFactor = (float) background.getIntrinsicHeight() / (float) background.getIntrinsicWidth();
+                float scaleFactor = (float) placeholder.getIntrinsicHeight() / (float) placeholder.getIntrinsicWidth();
                 height = Math.round(width * scaleFactor);
             } else if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.EXACTLY) {
-                float scaleFactor = (float) background.getIntrinsicWidth() / (float) background.getIntrinsicHeight();
+                float scaleFactor = (float) placeholder.getIntrinsicWidth() / (float) placeholder.getIntrinsicHeight();
                 width = Math.round(height * scaleFactor);
             }
         }
@@ -187,6 +207,26 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
     public void setClearColor(int clearColor) {
         this.clearColor = clearColor;
         clearIfNeeded();
+    }
+
+    public void setPlaceholder(@DrawableRes int drawableRes) {
+        final Drawable drawable = ResourcesCompat.getDrawable(getResources(), drawableRes, null);
+        setPlaceholder(drawable);
+    }
+
+    public void setPlaceholder(@Nullable Drawable placeholder) {
+        if (this.placeholder != null) {
+            this.placeholder.setCallback(null);
+        }
+
+        this.placeholder = placeholder;
+
+        if (placeholder != null) {
+            placeholder.setCallback(this);
+            placeholder.setBounds(0, 0, getWidth(), getHeight());
+        }
+        setWillNotDraw(placeholder == null);
+        invalidate();
     }
 
     public void setDataSource(@NonNull Uri source) {
