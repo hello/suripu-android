@@ -12,6 +12,8 @@ import java.util.List;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
@@ -135,16 +137,32 @@ public class ApiQuestionProvider implements QuestionProvider {
     }
 
     @Override
-    public void skipCurrent() {
+    public Observable<Void> skipCurrent(boolean advanceImmediately) {
         if (current == CURRENT_NONE) {
-            return;
+            return Observable.just(null);
         }
 
         Question currentQuestion = questions.get(current);
-        apiService.skipQuestion(currentQuestion.getAccountId(), currentQuestion.getId(), "")
-                  .subscribe();
-
-        advance();
+        Observable<VoidResponse> skip = apiService.skipQuestion(currentQuestion.getAccountId(),
+                                                                currentQuestion.getId(),
+                                                                "");
+        if (advanceImmediately) {
+            advance();
+            return skip.map(Functions.TO_VOID);
+        } else {
+            return Observable.create(subscriber -> {
+                skip.observeOn(updateScheduler)
+                    .subscribe(ignored -> {
+                                   advance();
+                                   subscriber.onNext(null);
+                               },
+                               e -> {
+                                   advance();
+                                   subscriber.onError(e);
+                               },
+                               subscriber::onCompleted);
+            });
+        }
     }
 
     private void advance() {

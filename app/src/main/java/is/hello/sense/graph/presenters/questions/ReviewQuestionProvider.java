@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.Question.Choice;
@@ -184,9 +185,21 @@ public class ReviewQuestionProvider implements QuestionProvider {
     }
 
     @Override
-    public void skipCurrent() {
-        setCurrentQuestionId(QUESTION_ID_NONE);
-        triggers.onSuppressPrompt(false);
+    public Observable<Void> skipCurrent(boolean advanceImmediately) {
+        if (advanceImmediately) {
+            setCurrentQuestionId(QUESTION_ID_NONE);
+            triggers.onSuppressPrompt(false);
+
+            return Observable.just(null);
+        } else {
+            return Observable.<Void>create(subscriber -> {
+                setCurrentQuestionId(QUESTION_ID_NONE);
+                triggers.onSuppressPrompt(false);
+
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }).subscribeOn(Rx.mainThreadScheduler());
+        }
     }
 
     //endregion

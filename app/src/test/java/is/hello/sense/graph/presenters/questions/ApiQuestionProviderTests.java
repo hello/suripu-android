@@ -127,17 +127,33 @@ public class ApiQuestionProviderTests extends InjectionTestCase {
     }
 
     @Test
-    public void skipQuestion() throws Exception {
+    public void skipQuestionAdvanceImmediately() throws Exception {
         prepareForTest();
 
         Question firstToSkip = questionProvider.getCurrentQuestion();
-        questionProvider.skipCurrent();
+        questionProvider.skipCurrent(true).subscribe();
 
         Question secondToSkip = questionProvider.getCurrentQuestion();
         assertThat(secondToSkip, is(notNullValue()));
         assertThat(secondToSkip, is(not(equalTo(firstToSkip))));
 
-        questionProvider.skipCurrent();
+        questionProvider.skipCurrent(true).subscribe();
+
+        assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
+    }
+
+    @Test
+    public void skipQuestionAdvanceDeferred() throws Exception {
+        prepareForTest();
+
+        Question firstToSkip = questionProvider.getCurrentQuestion();
+        Sync.last(questionProvider.skipCurrent(false));
+
+        Question secondToSkip = questionProvider.getCurrentQuestion();
+        assertThat(secondToSkip, is(notNullValue()));
+        assertThat(secondToSkip, is(not(equalTo(firstToSkip))));
+
+        Sync.last(questionProvider.skipCurrent(false));
 
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
     }

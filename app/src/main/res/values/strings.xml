@@ -136,7 +136,7 @@ so you can sleep better.</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
     <string name="dialog_title_factory_reset">Factory Reset</string>
-    <string name="dialog_message_factory_reset">This will disconnect your account from this Sense, as well as any Sleep Pills you have paired. you will need to pair with another Sense to continue using the application. You should only perform a factory reset if instructed to do so by Support. This operation cannot be undone.</string>
+    <string name="dialog_message_factory_reset">This will disconnect your account from this Sense, as well as any Sleep Pills you have paired. You will need to pair with another Sense to continue using the application. You should only perform a factory reset if instructed to do so by Support. This operation cannot be undone.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="action_retry">Retry</string>

@@ -197,7 +197,7 @@ dependencies {
     compile 'me.grantland:autofittextview:0.2.1'
 
     compile 'is.hello.buruberi:core:0.1.0'
-    compile 'is.hello.go99:anime:0.1.0'
+    compile 'is.hello.go99:anime:0.1.1'
 
     // !! If you remove this, remove the above workaround.
     compile 'com.zendesk:sdk:1.3.2.1'

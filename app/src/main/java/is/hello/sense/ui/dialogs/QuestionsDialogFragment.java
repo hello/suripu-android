@@ -355,7 +355,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
 
     public void skipQuestion(@NonNull View sender) {
         Analytics.trackEvent(Analytics.TopView.EVENT_SKIP_QUESTION, null);
-        questionsPresenter.skipQuestion();
+        questionsPresenter.skipQuestion(true).subscribe();
     }
 
     public void singleChoiceSelected(@NonNull View sender) {

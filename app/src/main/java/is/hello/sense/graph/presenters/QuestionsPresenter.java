@@ -143,10 +143,18 @@ import rx.Observable;
         question.onNext(questionProvider.getCurrentQuestion());
     }
 
-    public void skipQuestion() {
+    public Observable<Void> skipQuestion(boolean advanceImmediately) {
         selectedChoices.clear();
-        questionProvider.skipCurrent();
-        question.onNext(questionProvider.getCurrentQuestion());
+        Observable<Void> skip = questionProvider.skipCurrent(advanceImmediately);
+        if (advanceImmediately) {
+            return skip.doOnSubscribe(() -> {
+                question.onNext(questionProvider.getCurrentQuestion());
+            });
+        } else {
+            return skip.doOnNext(ignored -> {
+                question.onNext(questionProvider.getCurrentQuestion());
+            });
+        }
     }
 
     //endregion
