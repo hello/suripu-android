@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
         return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_title_smart_alarm)
                 .setSubheadingText(R.string.onboarding_info_smart_alarm)
+                .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_smart_alarm)))
                 .setDiagramImage(R.drawable.onboarding_smart_alarm)
                 .setPrimaryButtonText(R.string.action_set_smart_alarm_now)
                 .setPrimaryOnClickListener(this::createNewAlarm)
