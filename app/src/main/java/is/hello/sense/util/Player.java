@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -345,8 +346,18 @@ public final class Player implements MediaPlayer.OnPreparedListener,
 
     //region Video
 
-    public void setSurface(@Nullable Surface surface) {
-        mediaPlayer.setSurface(surface);
+    public void setVideoSurfaceAsync(@Nullable Surface surface) {
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
+            if (getState() == STATE_RECYCLED) {
+                Logger.warn(getClass().getSimpleName(), "setVideoSurfaceAsync(...) called after recycle()");
+                return;
+            }
+
+            // This call is just long enough to be problematic
+            // if run on the main thread. The underlying native
+            // implementation has a mutex guard, so this is safe.
+            mediaPlayer.setSurface(surface);
+        });
     }
 
     public void setVideoScalingMode(int mode) {

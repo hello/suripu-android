@@ -138,7 +138,7 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
     private void releaseVideoSurface() {
         if (videoSurface != null) {
-            player.setSurface(null);
+            player.setVideoSurfaceAsync(null);
             videoSurface.release();
             this.videoSurface = null;
         }
@@ -152,7 +152,7 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         if (player.getState() >= Player.STATE_PLAYING) {
             if (videoSurface == null) {
                 this.videoSurface = new Surface(surfaceTexture);
-                player.setSurface(videoSurface);
+                player.setVideoSurfaceAsync(videoSurface);
             }
         }
     }
@@ -177,12 +177,14 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
     @Override
     public void onPlaybackReady(@NonNull Player player) {
-        animatorFor(loadingIndicator)
-                .setDuration(Anime.DURATION_FAST)
-                .fadeOut(GONE)
-                .start();
-
         if (isShown()) {
+            if (loadingIndicator.getVisibility() == VISIBLE) {
+                animatorFor(loadingIndicator)
+                        .setDuration(Anime.DURATION_FAST)
+                        .fadeOut(GONE)
+                        .start();
+            }
+
             player.startPlayback();
         }
     }
@@ -241,6 +243,19 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
     //region Attributes
 
+    public void setWantsLoadingIndicator(boolean wantsLoadingIndicator) {
+        Anime.cancelAll(loadingIndicator);
+
+        if (wantsLoadingIndicator) {
+            if (player.getState() >= Player.STATE_LOADED) {
+                loadingIndicator.setVisibility(GONE);
+            } else {
+                loadingIndicator.setVisibility(VISIBLE);
+            }
+        } else {
+            loadingIndicator.setVisibility(GONE);
+        }
+    }
 
     public void setRecycleOnDetach(boolean recycleOnDetach) {
         this.recycleOnDetach = recycleOnDetach;
