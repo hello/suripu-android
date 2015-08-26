@@ -128,9 +128,19 @@ public class FakeQuestionProvider implements QuestionProvider {
     }
 
     @Override
-    public void skipCurrent() {
+    public Observable<Void> skipCurrent(boolean advanceImmediately) {
         Logger.debug(LOG_TAG, "skipCurrent()");
-        advance();
+        if (advanceImmediately) {
+            advance();
+            return Observable.just(null);
+        } else {
+            return Observable.<Void>create(subscriber -> {
+                advance();
+
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }).observeOn(Rx.mainThreadScheduler());
+        }
     }
 
     private void advance() {

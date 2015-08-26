@@ -81,8 +81,9 @@ public interface QuestionProvider {
 
     /**
      * Called in response to the user skipping a question.
+     * @param advanceImmediately Whether or not the current question should be updated before returning.
      */
-    void skipCurrent();
+    Observable<Void> skipCurrent(boolean advanceImmediately);
 
     //endregion
 }

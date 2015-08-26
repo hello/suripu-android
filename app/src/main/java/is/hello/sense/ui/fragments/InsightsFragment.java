@@ -28,7 +28,9 @@ import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
@@ -188,7 +190,16 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onSkipQuestion() {
-        questionsPresenter.skipQuestion();
+        LoadingDialogFragment.show(getFragmentManager());
+        bindAndSubscribe(questionsPresenter.skipQuestion(false),
+                         ignored -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                         },
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
+                             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+                         });
     }
 
     @Override

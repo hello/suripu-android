@@ -126,7 +126,7 @@ public class QuestionsPresenterTests extends InjectionTestCase {
         Question firstQuestion = Sync.wrap(presenter.question)
                                      .assertThat(notNullValue());
 
-        presenter.skipQuestion();
+        presenter.skipQuestion(true).subscribe();
 
         Sync.wrap(presenter.question)
             .assertThat(allOf(notNullValue(), not(equalTo(firstQuestion))));
