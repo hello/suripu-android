@@ -194,7 +194,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         OnboardingSimpleStepFragment fragment = new OnboardingSimpleStepFragment.Builder(getActivity())
                 .setHeadingText(R.string.title_sense_pairing_mode_help)
                 .setSubheadingText(R.string.info_sense_pairing_mode_help)
-                .setDiagramVideo(Uri.parse("https://s3.amazonaws.com/hello-mobile/sense/pairing_mode.mp4"))
+                .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_pairing_mode)))
                 .setDiagramImage(R.drawable.onboarding_pairing_mode_help)
                 .setWantsBack(true)
                 .setAnalyticsEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP)

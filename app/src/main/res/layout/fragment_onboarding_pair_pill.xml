@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:keepScreenOn="true">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:fillViewport="true"
+            android:keepScreenOn="true">
 
     <LinearLayout
         android:orientation="vertical"
@@ -33,18 +34,23 @@
             android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
             android:text="@string/info_pair_pill"/>
 
-        <ImageView
-            android:id="@+id/fragment_onboarding_pair_pill_diagram"
+        <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer"
-            android:layout_marginTop="@dimen/gap_medium"
-            android:layout_marginBottom="@dimen/gap_medium"
-            android:scaleType="centerInside"
-            android:src="@drawable/onboarding_shake_pill"
-            android:contentDescription="@string/info_pair_pill"/>
+            android:layout_weight="1" />
+
+        <is.hello.sense.ui.widget.DiagramVideoView
+            android:id="@+id/fragment_onboarding_pair_pill_diagram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:sensePlaceholder="@drawable/onboarding_shake_pill"
+            app:senseDiagramVideo="@string/diagram_onboarding_pair_pill"
+            android:contentDescription="@string/info_pair_pill" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <ProgressBar
             android:id="@+id/fragment_onboarding_pair_pill_activity"

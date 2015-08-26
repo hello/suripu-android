@@ -104,6 +104,30 @@ public class WelcomeDialogParser {
         }
     }
 
+    private String getStringAttribute(@NonNull XmlResourceParser document,
+                                      @NonNull String attributeName,
+                                      boolean required) throws IOException {
+        final String value = document.getAttributeValue(null, attributeName);
+        if (value == null) {
+            if (required) {
+                throw new IOException("Missing `" + attributeName + "` attribute");
+            } else {
+                return null;
+            }
+        }
+
+        if (value.startsWith("@")) {
+            int resValue = document.getAttributeResourceValue(null, attributeName, MISSING_RES);
+            if (resValue == MISSING_RES) {
+                throw new IOException("Malformed `" + attributeName + "` attribute");
+            }
+
+            return resources.getString(resValue);
+        } else {
+            return value;
+        }
+    }
+
     private int getResourceAttribute(@NonNull XmlResourceParser document,
                                      @NonNull String attributeName,
                                      boolean required) throws IOException {
@@ -118,7 +142,7 @@ public class WelcomeDialogParser {
         final int diagramRes = getResourceAttribute(document, ATTR_ITEM_DIAGRAM_RES, false);
         final int titleRes = getResourceAttribute(document, ATTR_ITEM_TITLE_RES, false);
         final int messageRes = getResourceAttribute(document, ATTR_ITEM_MESSAGE_RES, true);
-        final String diagramVideo = document.getAttributeValue(null, ATTR_ITEM_DIAGRAM_VIDEO);
+        final String diagramVideo = getStringAttribute(document, ATTR_ITEM_DIAGRAM_VIDEO, false);
         final boolean scaleDiagram = document.getAttributeBooleanValue(null, ATTR_ITEM_SCALE_DIAGRAM, true);
         final int diagramFillColor = getColorAttribute(document, ATTR_ITEM_DIAGRAM_FILL_COLOR, false);
         return new WelcomeDialogFragment.Item(diagramRes,
