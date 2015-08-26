@@ -2,6 +2,8 @@
 <dialog>
     <item
         diagram="@drawable/welcome_dialog_alarm"
+        diagramVideo="https://s3.amazonaws.com/hello-mobile/sense/tutorial-alarm.mp4"
+        diagramFillColor="#f3f5f9"
         title="@string/welcome_dialog_alarm_title"
         message="@string/welcome_dialog_alarm"/>
 </dialog>

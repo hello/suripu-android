@@ -23,7 +23,7 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
         TextureView.SurfaceTextureListener {
     private final Player player;
 
-    private int clearColor = Color.TRANSPARENT;
+    private boolean recycleOnDetach = false;
     private @Nullable Drawable placeholder;
 
     private @Nullable SurfaceTexture surfaceTexture;
@@ -52,14 +52,24 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
         player.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (recycleOnDetach) {
+            destroy();
+        }
+    }
+
     public void destroy() {
+        Logger.debug(getClass().getSimpleName(), "destroy()");
+
         releaseVideoSurface();
         player.recycle();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(clearColor);
         if (placeholder != null) {
             placeholder.draw(canvas);
         }
@@ -70,7 +80,8 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
         super.onSizeChanged(w, h, oldW, oldH);
 
         if (placeholder != null) {
-            placeholder.setBounds(0, 0, w, h);
+            placeholder.setBounds(getPaddingLeft(), getPaddingTop(),
+                                  w - getPaddingRight(), h - getPaddingBottom());
         }
     }
 
@@ -83,11 +94,13 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
             final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
             final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
             if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.AT_MOST) {
-                float scaleFactor = (float) placeholder.getIntrinsicHeight() / (float) placeholder.getIntrinsicWidth();
-                height = Math.round(width * scaleFactor);
+                final float scaleFactor = (float) placeholder.getIntrinsicHeight() / (float) placeholder.getIntrinsicWidth();
+                final int effectiveWidth = width + getPaddingLeft() + getPaddingRight();
+                height = Math.round(effectiveWidth * scaleFactor);
             } else if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.EXACTLY) {
-                float scaleFactor = (float) placeholder.getIntrinsicWidth() / (float) placeholder.getIntrinsicHeight();
-                width = Math.round(height * scaleFactor);
+                final float scaleFactor = (float) placeholder.getIntrinsicWidth() / (float) placeholder.getIntrinsicHeight();
+                final int effectiveHeight = height + getPaddingTop() + getPaddingBottom();
+                width = Math.round(effectiveHeight * scaleFactor);
             }
         }
 
@@ -96,8 +109,12 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        final int insetLeft = l + getPaddingLeft();
+        final int insetTop = t + getPaddingTop();
+        final int insetRight = r + getPaddingRight();
+        final int insetBottom = b + getPaddingBottom();
         for (int i = 0, size = getChildCount(); i < size; i++) {
-            getChildAt(i).layout(l, t, r, b);
+            getChildAt(i).layout(insetLeft, insetTop, insetRight, insetBottom);
         }
     }
 
@@ -132,7 +149,7 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
             Surface clearSurface = new Surface(surfaceTexture);
             try {
                 Canvas canvas = clearSurface.lockCanvas(null);
-                canvas.drawColor(clearColor);
+                canvas.drawColor(Color.TRANSPARENT);
                 clearSurface.unlockCanvasAndPost(canvas);
             } finally {
                 clearSurface.release();
@@ -204,9 +221,11 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
     //endregion
 
 
-    public void setClearColor(int clearColor) {
-        this.clearColor = clearColor;
-        clearIfNeeded();
+    //region Attributes
+
+
+    public void setRecycleOnDetach(boolean recycleOnDetach) {
+        this.recycleOnDetach = recycleOnDetach;
     }
 
     public void setPlaceholder(@DrawableRes int drawableRes) {
@@ -223,7 +242,8 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
 
         if (placeholder != null) {
             placeholder.setCallback(this);
-            placeholder.setBounds(0, 0, getWidth(), getHeight());
+            placeholder.setBounds(getPaddingLeft(), getPaddingTop(),
+                                  getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
         }
         setWillNotDraw(placeholder == null);
         invalidate();
@@ -232,4 +252,6 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
     public void setDataSource(@NonNull Uri source) {
         player.setDataSource(source, false);
     }
+
+    //endregion
 }
