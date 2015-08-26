@@ -618,7 +618,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 .add(R.id.activity_home_container, navigatorFragment, ZoomedOutTimelineFragment.TAG)
                 .addToBackStack(ZoomedOutTimelineFragment.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     @Override
@@ -631,7 +631,7 @@ public class HomeActivity extends ScopedInjectionActivity
         } else {
             currentFragment.scrollToTop();
         }
-        getFragmentManager().popBackStack();
+        stateSafeExecutor.execute(getFragmentManager()::popBackStack);
     }
 
     //endregion
