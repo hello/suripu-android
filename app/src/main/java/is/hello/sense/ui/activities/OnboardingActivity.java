@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -382,6 +383,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
+        builder.setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)));
         builder.setDiagramImage(R.drawable.onboarding_clip_pill);
         builder.setCompact(true);
         builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);

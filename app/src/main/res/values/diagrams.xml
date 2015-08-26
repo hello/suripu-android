@@ -3,4 +3,5 @@
     <string name="diagram_welcome_dialog_alarm">https://s3.amazonaws.com/hello-mobile/sense/tutorial-alarm.mp4</string>
     <string name="diagram_onboarding_pairing_mode">https://s3.amazonaws.com/hello-mobile/sense/pairing_mode.mp4</string>
     <string name="diagram_onboarding_pair_pill">https://s3.amazonaws.com/hello-mobile/sense/pairing_your_sleep_pill.mp4</string>
+    <string name="diagram_onboarding_clip_pill">https://s3.amazonaws.com/hello-mobile/sense/attach_sleep_pill.mp4</string>
 </resources>
