@@ -14,6 +14,7 @@ import is.hello.sense.api.model.Question.Choice;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider.Triggers;
+import is.hello.sense.util.Sync;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -161,10 +162,19 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
     }
 
     @Test
-    public void skipQuestion() {
+    public void skipQuestionAdvanceImmediately() {
         questionProvider.setCurrentQuestionId(ReviewQuestionProvider.QUESTION_ID_INITIAL);
 
-        questionProvider.skipCurrent();
+        questionProvider.skipCurrent(true).subscribe();
+        assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
+        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
+    }
+
+    @Test
+    public void skipQuestionAdvanceDeferred() {
+        questionProvider.setCurrentQuestionId(ReviewQuestionProvider.QUESTION_ID_INITIAL);
+
+        Sync.last(questionProvider.skipCurrent(false));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
         assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
     }

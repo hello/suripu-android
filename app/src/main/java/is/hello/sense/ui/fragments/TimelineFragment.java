@@ -553,7 +553,7 @@ public class TimelineFragment extends InjectionFragment
                 // Indicates on-boarding just ended
                 if (homeActivity.getWillShowUnderside()) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
-                    header.setTitle(R.string.title_timeline_not_enough_data);
+                    header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
                 } else {
                     header.setDiagramResource(R.drawable.timeline_state_no_data);
