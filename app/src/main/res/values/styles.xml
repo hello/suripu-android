@@ -488,6 +488,10 @@
         <item name="android:maxHeight">20dp</item>
     </style>
 
+    <style name="AppTheme.ProgressBar.Small.Grey">
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_small_grey</item>
+    </style>
+
     <style name="AppTheme.ProgressBar.TimelineInfo" parent="android:style/Widget.Holo.ProgressBar.Horizontal">
         <item name="android:minHeight">@dimen/timeline_detail_reading_height</item>
         <item name="android:progressDrawable">@drawable/progress_timeline_detail</item>

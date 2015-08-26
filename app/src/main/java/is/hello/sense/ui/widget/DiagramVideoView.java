@@ -12,16 +12,23 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
+import is.hello.go99.Anime;
+import is.hello.sense.R;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
 
-public class DiagramVideoView extends ViewGroup implements Player.OnEventListener,
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
+public class DiagramVideoView extends FrameLayout implements Player.OnEventListener,
         TextureView.SurfaceTextureListener {
     private final Player player;
+    private final ProgressBar loadingIndicator;
 
     private boolean recycleOnDetach = false;
     private @Nullable Drawable placeholder;
@@ -45,11 +52,24 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
         final TextureView textureView = new TextureView(context);
         textureView.setOpaque(false);
         textureView.setSurfaceTextureListener(this);
-        addView(textureView);
+        addView(textureView, new LayoutParams(LayoutParams.MATCH_PARENT,
+                                              LayoutParams.MATCH_PARENT));
 
         this.player = new Player(context, this, null);
         player.setLooping(true);
         player.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
+
+        this.loadingIndicator = new ProgressBar(context);
+        final Drawable indeterminateDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.animated_progress_bar_small_grey, null);
+        loadingIndicator.setIndeterminateDrawable(indeterminateDrawable);
+        loadingIndicator.setIndeterminate(true);
+        final LayoutParams loadingIndicatorLayoutParams = new LayoutParams(indeterminateDrawable.getIntrinsicWidth(),
+                                                                           indeterminateDrawable.getIntrinsicHeight(),
+                                                                           Gravity.TOP | Gravity.END);
+        final int loadingIndicatorInset = getResources().getDimensionPixelSize(R.dimen.gap_xsmall);
+        loadingIndicatorLayoutParams.topMargin = loadingIndicatorInset;
+        loadingIndicatorLayoutParams.setMarginEnd(loadingIndicatorInset);
+        addView(loadingIndicator, loadingIndicatorLayoutParams);
     }
 
     @Override
@@ -86,11 +106,11 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-        int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
-
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         if (placeholder != null) {
+            int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+            int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
             final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
             final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
             if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.AT_MOST) {
@@ -102,19 +122,12 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
                 final int effectiveHeight = height + getPaddingTop() + getPaddingBottom();
                 width = Math.round(effectiveHeight * scaleFactor);
             }
-        }
 
-        setMeasuredDimension(width, height);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        final int insetLeft = l + getPaddingLeft();
-        final int insetTop = t + getPaddingTop();
-        final int insetRight = r + getPaddingRight();
-        final int insetBottom = b + getPaddingBottom();
-        for (int i = 0, size = getChildCount(); i < size; i++) {
-            getChildAt(i).layout(insetLeft, insetTop, insetRight, insetBottom);
+            final int adjustedWidthSpec = MeasureSpec.makeMeasureSpec(width, widthMode);
+            final int adjustedHeightSpec = MeasureSpec.makeMeasureSpec(height, heightMode);
+            super.onMeasure(adjustedWidthSpec, adjustedHeightSpec);
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
 
@@ -164,6 +177,11 @@ public class DiagramVideoView extends ViewGroup implements Player.OnEventListene
 
     @Override
     public void onPlaybackReady(@NonNull Player player) {
+        animatorFor(loadingIndicator)
+                .setDuration(Anime.DURATION_FAST)
+                .fadeOut(GONE)
+                .start();
+
         if (isShown()) {
             player.startPlayback();
         }
