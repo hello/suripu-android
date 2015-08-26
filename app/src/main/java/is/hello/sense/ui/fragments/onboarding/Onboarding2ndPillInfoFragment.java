@@ -31,13 +31,12 @@ public class Onboarding2ndPillInfoFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_onboarding_2nd_pill_info)
                 .setSubheadingText(R.string.info_onboarding_2nd_pill_info)
                 .setPrimaryOnClickListener(ignored -> getOnboardingActivity().showDone())
                 .setWantsSecondaryButton(false)
-                .hideToolbar()
-                .create();
+                .hideToolbar();
     }
 
 

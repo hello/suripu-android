@@ -46,4 +46,10 @@
         <attr name="senseWantsLeadingZeros" format="reference" />
         <attr name="android:gravity" />
     </declare-styleable>
+
+    <declare-styleable name="DiagramVideoView">
+        <attr name="senseDiagramVideo" format="string" />
+        <attr name="sensePlaceholder" format="reference" />
+        <attr name="senseWantsLoadingIndicator" format="boolean" />
+    </declare-styleable>
 </resources>

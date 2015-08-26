@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
@@ -11,6 +12,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
@@ -30,7 +32,6 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
     private final Player player;
     private final ProgressBar loadingIndicator;
 
-    private boolean recycleOnDetach = false;
     private @Nullable Drawable placeholder;
 
     private @Nullable SurfaceTexture surfaceTexture;
@@ -49,6 +50,9 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
     public DiagramVideoView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        setSaveEnabled(false);
+        setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
+
         final TextureView textureView = new TextureView(context);
         textureView.setOpaque(false);
         textureView.setSurfaceTextureListener(this);
@@ -66,18 +70,29 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         final LayoutParams loadingIndicatorLayoutParams = new LayoutParams(indeterminateDrawable.getIntrinsicWidth(),
                                                                            indeterminateDrawable.getIntrinsicHeight(),
                                                                            Gravity.TOP | Gravity.END);
-        final int loadingIndicatorInset = getResources().getDimensionPixelSize(R.dimen.gap_xsmall);
+        final int loadingIndicatorInset = getResources().getDimensionPixelSize(R.dimen.gap_small);
         loadingIndicatorLayoutParams.topMargin = loadingIndicatorInset;
         loadingIndicatorLayoutParams.setMarginEnd(loadingIndicatorInset);
         addView(loadingIndicator, loadingIndicatorLayoutParams);
-    }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
 
-        if (recycleOnDetach) {
-            destroy();
+        if (attrs != null) {
+            final TypedArray styles =
+                    context.obtainStyledAttributes(attrs, R.styleable.DiagramVideoView, defStyleAttr, 0);
+
+            final Drawable placeholder = styles.getDrawable(R.styleable.DiagramVideoView_sensePlaceholder);
+            setPlaceholder(placeholder);
+
+            final String video = styles.getString(R.styleable.DiagramVideoView_senseDiagramVideo);
+            if (!TextUtils.isEmpty(video)) {
+                setDataSource(Uri.parse(video));
+            }
+
+            final boolean wantsLoadingIndicator =
+                    styles.getBoolean(R.styleable.DiagramVideoView_senseWantsLoadingIndicator, true);
+            setWantsLoadingIndicator(wantsLoadingIndicator);
+
+            styles.recycle();
         }
     }
 
@@ -186,6 +201,9 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
             }
 
             player.startPlayback();
+        } else {
+            Anime.cancelAll(loadingIndicator);
+            loadingIndicator.setVisibility(GONE);
         }
     }
 
@@ -250,15 +268,12 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
             if (player.getState() >= Player.STATE_LOADED) {
                 loadingIndicator.setVisibility(GONE);
             } else {
+                loadingIndicator.setAlpha(1f);
                 loadingIndicator.setVisibility(VISIBLE);
             }
         } else {
             loadingIndicator.setVisibility(GONE);
         }
-    }
-
-    public void setRecycleOnDetach(boolean recycleOnDetach) {
-        this.recycleOnDetach = recycleOnDetach;
     }
 
     public void setPlaceholder(@DrawableRes int drawableRes) {

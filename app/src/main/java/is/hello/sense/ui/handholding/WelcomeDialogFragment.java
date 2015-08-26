@@ -29,6 +29,7 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -195,6 +196,13 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         return dialog;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        adapter.destroyDiagramVideoViews();
+    }
+
     //endregion
 
 
@@ -234,6 +242,15 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
     public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.BaseViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        private final List<DiagramVideoView> diagramVideoViews = new ArrayList<>(1);
+
+        public void destroyDiagramVideoViews() {
+            for (DiagramVideoView diagramVideoView : diagramVideoViews) {
+                diagramVideoView.destroy();
+            }
+            diagramVideoViews.clear();
+
+        }
 
         @Override
         public int getCount() {
@@ -370,9 +387,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
             @Override
             protected DiagramVideoView onProvideHeader(@NonNull LinearLayout parent) {
                 final DiagramVideoView diagramVideoView = new DiagramVideoView(parent.getContext());
-                diagramVideoView.setRecycleOnDetach(true);
                 diagramVideoView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                                             ViewGroup.LayoutParams.WRAP_CONTENT));
+                diagramVideoViews.add(diagramVideoView);
                 return diagramVideoView;
             }
 
@@ -402,6 +419,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
             @Override
             protected void unbind() {
+                diagramVideoViews.remove(header);
                 header.destroy();
             }
         }

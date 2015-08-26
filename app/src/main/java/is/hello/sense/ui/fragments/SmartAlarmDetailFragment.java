@@ -199,7 +199,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             LoadingDialogFragment.show(getFragmentManager(),
                     null, LoadingDialogFragment.DEFAULTS);
         } else {
-            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
+            WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_alarm);
         }
     }
 

@@ -256,7 +256,7 @@ public final class Player implements MediaPlayer.OnPreparedListener,
     }
 
     public void pausePlayback() {
-        if (state != STATE_PAUSED) {
+        if (state >= STATE_LOADING && state < STATE_PAUSED) {
             this.startWhenPrepared = false;
             mediaPlayer.pause();
             setState(STATE_PAUSED);

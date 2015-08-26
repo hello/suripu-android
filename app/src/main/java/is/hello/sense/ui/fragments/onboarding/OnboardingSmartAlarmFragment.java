@@ -29,7 +29,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_title_smart_alarm)
                 .setSubheadingText(R.string.onboarding_info_smart_alarm)
                 .setDiagramImage(R.drawable.onboarding_smart_alarm)
@@ -37,8 +37,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
                 .setPrimaryOnClickListener(this::createNewAlarm)
                 .setSecondaryButtonText(R.string.action_do_later)
                 .setSecondaryOnClickListener(ignored -> complete())
-                .hideToolbar()
-                .create();
+                .hideToolbar();
     }
 
     @Override
