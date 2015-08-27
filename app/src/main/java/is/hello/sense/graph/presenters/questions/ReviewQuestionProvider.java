@@ -199,6 +199,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
             // Second screen (bad)
             case R.string.question_text_rating_prompt_bad_yes: {
                 Analytics.trackEvent(Analytics.StoreReview.FEEDBACK_FROM_APP_REVIEW, null);
+                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.NO, false))
+                          .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSendFeedback();
                 break;
