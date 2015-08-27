@@ -164,7 +164,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
             }
             case R.string.question_text_rating_prompt_initial_help: {
                 Analytics.trackEvent(Analytics.StoreReview.HELP_FROM_APP_REVIEW, null);
-                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.HELP, false));
+                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.HELP, false))
+                          .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onShowHelp();
                 break;
@@ -173,20 +174,23 @@ public class ReviewQuestionProvider implements QuestionProvider {
             // Second screen (good)
             case R.string.question_text_rating_prompt_good_yes: {
                 Analytics.trackEvent(Analytics.StoreReview.RATE_APP, null);
-                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, true));
+                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, true))
+                          .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onWriteReview();
                 break;
             }
             case R.string.question_text_rating_prompt_good_no: {
-                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false));
+                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false))
+                          .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSuppressPrompt(false);
                 break;
             }
             case R.string.question_text_rating_prompt_good_never: {
                 Analytics.trackEvent(Analytics.StoreReview.DO_NOT_ASK_TO_RATE_APP_AGAIN, null);
-                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false));
+                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false))
+                          .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSuppressPrompt(true);
                 break;
@@ -200,7 +204,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 break;
             }
             case R.string.question_text_rating_prompt_bad_no: {
-                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.NO, false));
+                apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.NO, false))
+                          .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSuppressPrompt(false);
                 break;

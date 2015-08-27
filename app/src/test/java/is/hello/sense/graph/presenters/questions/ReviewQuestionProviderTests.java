@@ -8,11 +8,14 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.Question.Choice;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.SenseTestCase;
+import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider.Triggers;
 import is.hello.sense.util.Sync;
 
@@ -24,13 +27,17 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class ReviewQuestionProviderTests extends SenseTestCase {
+public class ReviewQuestionProviderTests extends InjectionTestCase {
+    @Inject ApiService apiService;
+
     private final TrackingTriggers triggerListener;
     private final ReviewQuestionProvider questionProvider;
 
     public ReviewQuestionProviderTests() {
         this.triggerListener = new TrackingTriggers();
-        this.questionProvider = new ReviewQuestionProvider(getResources(), triggerListener, apiService);
+        this.questionProvider = new ReviewQuestionProvider(getResources(),
+                                                           triggerListener,
+                                                           apiService);
         assertThat(questionProvider.getCurrentQuestion(), is(notNullValue()));
     }
 
