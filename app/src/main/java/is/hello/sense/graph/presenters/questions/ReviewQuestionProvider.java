@@ -13,8 +13,10 @@ import java.util.List;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.Question.Choice;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class ReviewQuestionProvider implements QuestionProvider {
@@ -25,6 +27,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
     private final Resources resources;
     private final Triggers triggers;
+    private final ApiService apiService;
 
     private Question currentQuestion;
     @VisibleForTesting long currentQuestionId;
@@ -32,9 +35,13 @@ public class ReviewQuestionProvider implements QuestionProvider {
     //region Lifecycle
 
     public ReviewQuestionProvider(@NonNull Resources resources,
-                                  @NonNull Triggers triggers) {
+                                  @NonNull Triggers triggers,
+                                  @NonNull ApiService apiService) {
         this.resources = resources;
         this.triggers = triggers;
+        this.apiService = apiService;
+
+        Analytics.trackEvent(Analytics.StoreReview.SHOWN, null);
         setCurrentQuestionId(QUESTION_ID_INITIAL);
     }
 
@@ -73,6 +80,11 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
 
     //region Questions
+
+    @Override
+    public void userEnteredFlow() {
+        Analytics.trackEvent(Analytics.StoreReview.START, null);
+    }
 
     @Override
     public Observable<Question> prepare() {
@@ -140,14 +152,17 @@ public class ReviewQuestionProvider implements QuestionProvider {
         switch (choiceId) {
             // First screen
             case R.string.question_text_rating_prompt_initial_yes: {
+                Analytics.trackEvent(Analytics.StoreReview.ENJOY_SENSE, null);
                 setCurrentQuestionId(QUESTION_ID_GOOD);
                 break;
             }
             case R.string.question_text_rating_prompt_initial_no: {
+                Analytics.trackEvent(Analytics.StoreReview.DO_NOT_ENJOY_SENSE, null);
                 setCurrentQuestionId(QUESTION_ID_BAD);
                 break;
             }
             case R.string.question_text_rating_prompt_initial_help: {
+                Analytics.trackEvent(Analytics.StoreReview.HELP_FROM_APP_REVIEW, null);
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onShowHelp();
                 break;
@@ -155,16 +170,19 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
             // Second screen (good)
             case R.string.question_text_rating_prompt_good_yes: {
+                Analytics.trackEvent(Analytics.StoreReview.RATE_APP, null);
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onWriteReview();
                 break;
             }
             case R.string.question_text_rating_prompt_good_no: {
+                Analytics.trackEvent(Analytics.StoreReview.APP_REVIEW_COMPLETED_WITH_NO_ACTION, null);
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSuppressPrompt(false);
                 break;
             }
             case R.string.question_text_rating_prompt_good_never: {
+                Analytics.trackEvent(Analytics.StoreReview.DO_NOT_ASK_TO_RATE_APP_AGAIN, null);
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSuppressPrompt(true);
                 break;
@@ -172,11 +190,13 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
             // Second screen (bad)
             case R.string.question_text_rating_prompt_bad_yes: {
+                Analytics.trackEvent(Analytics.StoreReview.FEEDBACK_FROM_APP_REVIEW, null);
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSendFeedback();
                 break;
             }
             case R.string.question_text_rating_prompt_bad_no: {
+                Analytics.trackEvent(Analytics.StoreReview.APP_REVIEW_SKIP, null);
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 triggers.onSuppressPrompt(false);
                 break;

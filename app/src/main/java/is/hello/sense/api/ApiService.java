@@ -18,6 +18,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
+import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -234,6 +235,14 @@ public interface ApiService {
 
     @GET("/v1/support/topics")
     Observable<ArrayList<SupportTopic>> supportTopics();
+
+    //endregion
+
+
+    //region Analytics
+
+    @POST("/v2/store/feedback")
+    Observable<Void> trackStoreReview(@NonNull @Body StoreReview review);
 
     //endregion
 }

@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.DevicesPresenter;
@@ -41,6 +42,7 @@ import rx.Observable;
 
 public class InsightsFragment extends UndersideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener {
+    @Inject ApiService apiService;
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject LocalUsageTracker localUsageTracker;
@@ -155,7 +157,8 @@ public class InsightsFragment extends UndersideTabFragment
     private void updateQuestionForReview() {
         if (!(questionsPresenter.getQuestionProvider() instanceof ReviewQuestionProvider)) {
             questionsPresenter.setQuestionProvider(new ReviewQuestionProvider(getResources(),
-                                                                              new ReviewTriggers()));
+                                                                              new ReviewTriggers(),
+                                                                              apiService));
         }
     }
 

@@ -80,6 +80,11 @@ public class ApiQuestionProvider implements QuestionProvider {
 
     //region Binding
 
+    @Override
+    public void userEnteredFlow() {
+        // Don't care
+    }
+
     @VisibleForTesting
     Observable<ArrayList<Question>> latestQuestions() {
         String timestamp = DateTime.now().toString("yyyy-MM-dd");

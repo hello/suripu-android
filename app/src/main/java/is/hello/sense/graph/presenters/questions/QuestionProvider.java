@@ -73,6 +73,11 @@ public interface QuestionProvider {
     @Nullable Question getCurrentQuestion();
 
     /**
+     * Called when the user has entered the question-answer flow.
+     */
+    void userEnteredFlow();
+
+    /**
      * Called in response to the user making a selection on a question's
      * choices and submitting them from the app's user interface.
      * @param choices   The user's choices.

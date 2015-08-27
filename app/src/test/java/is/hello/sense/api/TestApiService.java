@@ -33,6 +33,7 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
+import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -337,5 +338,10 @@ public final class TestApiService implements ApiService {
         });
 
         return observable.subscribeOn(Schedulers.computation());
+    }
+
+    @Override
+    public Observable<Void> trackStoreReview(@NonNull @Body StoreReview review) {
+        return safeJust(null);
     }
 }

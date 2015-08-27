@@ -30,7 +30,7 @@ public class ReviewQuestionProviderTests extends SenseTestCase {
 
     public ReviewQuestionProviderTests() {
         this.triggerListener = new TrackingTriggers();
-        this.questionProvider = new ReviewQuestionProvider(getResources(), triggerListener);
+        this.questionProvider = new ReviewQuestionProvider(getResources(), triggerListener, apiService);
         assertThat(questionProvider.getCurrentQuestion(), is(notNullValue()));
     }
 
