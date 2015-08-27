@@ -181,6 +181,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 break;
             }
             case R.string.question_text_rating_prompt_good_no: {
+                Analytics.trackEvent(Analytics.StoreReview.APP_REVIEW_COMPLETED_WITH_NO_ACTION, null);
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
@@ -206,6 +207,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 break;
             }
             case R.string.question_text_rating_prompt_bad_no: {
+                Analytics.trackEvent(Analytics.StoreReview.APP_REVIEW_COMPLETED_WITH_NO_ACTION, null);
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.NO, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
