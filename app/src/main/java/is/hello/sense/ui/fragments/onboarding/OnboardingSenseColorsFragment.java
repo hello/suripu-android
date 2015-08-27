@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -11,29 +12,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Either;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingSenseColorsFragment extends InjectionFragment implements ViewPager.OnPageChangeListener {
+public class OnboardingSenseColorsFragment extends InjectionFragment
+        implements ViewPager.OnPageChangeListener {
     @Inject RoomConditionsPresenter presenter;
 
     private ViewPager viewPager;
     private ViewGroup bottomContainer;
     private Button nextButton;
+    private ColorsAdapter adapter;
+    private FinalPageTransformer transformer;
 
-    private int finalItem;
+    private int finalItem, transitionItem;
     private float nextButtonMaxY, nextButtonMinY;
 
     private boolean hasCurrentConditions = false;
@@ -60,17 +71,27 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
         viewPager.addOnPageChangeListener(this);
 
-        ColorsAdapter adapter = new ColorsAdapter(
-            new SenseColor(R.string.title_sense_colors_1, R.string.info_sense_colors_1, R.drawable.onboarding_sense_colors_1),
-            new SenseColor(R.string.title_sense_colors_2, R.string.info_sense_colors_2, R.drawable.onboarding_sense_colors_2),
-            new SenseColor(R.string.title_sense_colors_3, R.string.info_sense_colors_3, R.drawable.onboarding_sense_colors_3),
-            new SenseColor(R.string.title_sense_colors_4, R.string.info_sense_colors_4, R.drawable.onboarding_sense_colors_4),
-            new SenseColor(R.string.title_sense_colors_5, R.string.info_sense_colors_5, R.drawable.onboarding_sense_colors_5)
-        );
+        final Uri finalVideo = Uri.parse(getString(R.string.diagram_onboarding_sense_colors));
+        final SenseColor[] senseColors = {
+                new SenseColor(R.string.title_sense_colors_1, R.string.info_sense_colors_1,
+                               R.drawable.onboarding_sense_colors_1, null),
+                new SenseColor(R.string.title_sense_colors_2, R.string.info_sense_colors_2,
+                               R.drawable.onboarding_sense_colors_2, null),
+                new SenseColor(R.string.title_sense_colors_3, R.string.info_sense_colors_3,
+                               R.drawable.onboarding_sense_colors_3, null),
+                new SenseColor(R.string.title_sense_colors_4, R.string.info_sense_colors_4,
+                               R.drawable.onboarding_sense_colors_4, null),
+                new SenseColor(R.string.title_sense_colors_5, R.string.info_sense_colors_5,
+                               R.drawable.onboarding_sense_colors_5, finalVideo),
+        };
+        this.adapter = new ColorsAdapter(senseColors);
         viewPager.setAdapter(adapter);
 
+        this.transformer = new FinalPageTransformer();
+        viewPager.setPageTransformer(false, transformer);
 
         this.finalItem = adapter.getCount() - 1;
+        this.transitionItem = finalItem - 1;
 
         PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_sense_colors_dots);
         pageDots.attach(viewPager);
@@ -107,7 +128,13 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
     public void onDestroyView() {
         super.onDestroyView();
 
+        adapter.destroyDiagramVideoViews();
         viewPager.clearOnPageChangeListeners();
+
+        this.adapter = null;
+        this.viewPager = null;
+        this.bottomContainer = null;
+        this.nextButton = null;
     }
 
     public void next(@NonNull View sender) {
@@ -121,9 +148,12 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (position == finalItem - 1) {
+        if (position == transitionItem) {
             float newY = Anime.interpolateFloats(positionOffset, nextButtonMaxY, nextButtonMinY);
             nextButton.setY(newY);
+            transformer.setEnabled(true);
+        } else {
+            transformer.setEnabled(false);
         }
     }
 
@@ -139,13 +169,48 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
     }
 
 
-    private class ColorsAdapter extends ViewPagerAdapter<ColorsAdapter.ViewHolder> {
+    static class FinalPageTransformer implements ViewPager.PageTransformer {
+        private static final float SCALE_MIN = 0.8f;
+        private static final float SCALE_MAX = 1.0f;
+        private boolean enabled = false;
+
+        @Override
+        public void transformPage(View page, float position) {
+            if (enabled && position < 0f) {
+                final float fraction = 1f + position;
+                page.setAlpha(fraction);
+
+                final float scale = Anime.interpolateFloats(fraction, SCALE_MIN, SCALE_MAX);
+                page.setScaleX(scale);
+                page.setScaleY(scale);
+            } else {
+                page.setAlpha(1f);
+                page.setScaleX(1f);
+                page.setScaleY(1f);
+            }
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+    }
+
+    class ColorsAdapter extends ViewPagerAdapter<ColorsAdapter.ViewHolder> {
         private final LayoutInflater inflater;
         private final SenseColor[] senseColors;
+        private final List<DiagramVideoView> diagramVideoViews = new ArrayList<>();
 
-        private ColorsAdapter(@NonNull SenseColor... senseColors) {
+        ColorsAdapter(@NonNull SenseColor[] senseColors) {
             this.inflater = LayoutInflater.from(getActivity());
             this.senseColors = senseColors;
+        }
+
+        public void destroyDiagramVideoViews() {
+            for (DiagramVideoView diagramVideoView : diagramVideoViews) {
+                diagramVideoView.destroy();
+            }
+            diagramVideoViews.clear();
+
         }
 
         @Override
@@ -159,8 +224,9 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
 
         @Override
         public ViewHolder createViewHolder(ViewGroup container, int position) {
-            View view = inflater.inflate(R.layout.item_onboarding_sense_color, container, false);
-            return new ViewHolder(view);
+            final SenseColor senseColor = getItem(position);
+            final LinearLayout view = (LinearLayout) inflater.inflate(R.layout.item_onboarding_sense_color, container, false);
+            return new ViewHolder(view, (senseColor.diagramVideo != null));
         }
 
         @Override
@@ -169,40 +235,79 @@ public class OnboardingSenseColorsFragment extends InjectionFragment implements 
             holder.bindSenseColor(color);
         }
 
+        @Override
+        public void unbindViewHolder(ViewHolder holder) {
+            holder.unbind();
+        }
 
         class ViewHolder extends ViewPagerAdapter.ViewHolder {
             private final TextView headingText;
             private final TextView subheadingText;
-            private final ImageView diagramImage;
+            private final Either<ImageView, DiagramVideoView> diagram;
 
-            private ViewHolder(@NonNull View itemView) {
+            ViewHolder(@NonNull LinearLayout itemView, boolean hasVideo) {
                 super(itemView);
 
                 this.headingText = (TextView) itemView.findViewById(R.id.item_onboarding_sense_color_heading);
                 this.subheadingText = (TextView) itemView.findViewById(R.id.item_onboarding_sense_color_subheading);
-                this.diagramImage = (ImageView) itemView.findViewById(R.id.item_onboarding_sense_color_diagram);
+
+                if (hasVideo) {
+                    final DiagramVideoView diagramVideoView = new DiagramVideoView(itemView.getContext());
+                    itemView.addView(diagramVideoView, new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                        LayoutParams.WRAP_CONTENT));
+
+                    diagramVideoViews.add(diagramVideoView);
+                    this.diagram = Either.right(diagramVideoView);
+                } else {
+                    final ImageView imageView = new ImageView(itemView.getContext());
+                    imageView.setAdjustViewBounds(true);
+                    itemView.addView(imageView, new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                 LayoutParams.WRAP_CONTENT));
+
+                    this.diagram = Either.left(imageView);
+                }
             }
 
-            private void bindSenseColor(@NonNull SenseColor senseColor) {
+            void bindSenseColor(@NonNull SenseColor senseColor) {
                 headingText.setText(senseColor.headingRes);
                 subheadingText.setText(senseColor.subheadingRes);
-                diagramImage.setImageResource(senseColor.diagramRes);
-                diagramImage.setContentDescription(subheadingText.getText().toString());
+                diagram.match(imageView -> {
+                    imageView.setImageResource(senseColor.diagramRes);
+                    imageView.setContentDescription(subheadingText.getText().toString());
+                }, diagramVideoView -> {
+                    diagramVideoView.setPlaceholder(senseColor.diagramRes);
+                    diagramVideoView.setContentDescription(subheadingText.getText().toString());
+                    if (senseColor.diagramVideo != null) {
+                        diagramVideoView.setDataSource(senseColor.diagramVideo);
+                    }
+                });
+            }
+
+            void unbind() {
+                if (!diagram.isLeft()) {
+                    final DiagramVideoView diagramVideoView = diagram.getRight();
+                    diagramVideoView.destroy();
+
+                    diagramVideoViews.remove(diagramVideoView);
+                }
             }
         }
     }
 
-    private static class SenseColor {
-        private final @StringRes int headingRes;
-        private final @StringRes int subheadingRes;
-        private final @DrawableRes int diagramRes;
+    static class SenseColor {
+        final @StringRes int headingRes;
+        final @StringRes int subheadingRes;
+        final @DrawableRes int diagramRes;
+        final @Nullable Uri diagramVideo;
 
-        private SenseColor(@StringRes int headingRes,
-                           @StringRes int subheadingRes,
-                           @DrawableRes int diagramRes) {
+        SenseColor(@StringRes int headingRes,
+                   @StringRes int subheadingRes,
+                   @DrawableRes int diagramRes,
+                   @Nullable Uri diagramVideo) {
             this.headingRes = headingRes;
             this.subheadingRes = subheadingRes;
             this.diagramRes = diagramRes;
+            this.diagramVideo = diagramVideo;
         }
     }
 }

@@ -5,4 +5,5 @@
     <string name="diagram_onboarding_pair_pill">https://s3.amazonaws.com/hello-mobile/sense/pairing_your_sleep_pill.mp4</string>
     <string name="diagram_onboarding_clip_pill">https://s3.amazonaws.com/hello-mobile/sense/attach_sleep_pill.mp4</string>
     <string name="diagram_onboarding_smart_alarm">https://s3.amazonaws.com/hello-mobile/sense/smart_alarm_onboarding.mp4</string>
+    <string name="diagram_onboarding_sense_colors">https://s3.amazonaws.com/hello-mobile/sense/bedroom_condition.mp4</string>
 </resources>
