@@ -110,6 +110,10 @@ import rx.Observable;
         return questionProvider;
     }
 
+    public void userEnteredFlow() {
+        questionProvider.userEnteredFlow();
+    }
+
     public final void update() {
         if (!apiSessionManager.hasSession()) {
             logEvent("skipping questions update, no api session.");
@@ -122,6 +126,7 @@ import rx.Observable;
     }
 
     //endregion
+
 
     //region Answering Questions
 
