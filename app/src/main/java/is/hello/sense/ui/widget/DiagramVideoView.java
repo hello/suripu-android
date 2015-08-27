@@ -14,23 +14,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
-import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
-
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class DiagramVideoView extends FrameLayout implements Player.OnEventListener,
         TextureView.SurfaceTextureListener {
     private final Player player;
-    private final ProgressBar loadingIndicator;
 
     private @Nullable Drawable placeholder;
 
@@ -63,18 +58,6 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         player.setLooping(true);
         player.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
 
-        this.loadingIndicator = new ProgressBar(context);
-        final Drawable indeterminateDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.animated_progress_bar_small_grey, null);
-        loadingIndicator.setIndeterminateDrawable(indeterminateDrawable);
-        loadingIndicator.setIndeterminate(true);
-        final LayoutParams loadingIndicatorLayoutParams = new LayoutParams(indeterminateDrawable.getIntrinsicWidth(),
-                                                                           indeterminateDrawable.getIntrinsicHeight(),
-                                                                           Gravity.TOP | Gravity.END);
-        final int loadingIndicatorInset = getResources().getDimensionPixelSize(R.dimen.gap_small);
-        loadingIndicatorLayoutParams.topMargin = loadingIndicatorInset;
-        loadingIndicatorLayoutParams.setMarginEnd(loadingIndicatorInset);
-        addView(loadingIndicator, loadingIndicatorLayoutParams);
-
 
         if (attrs != null) {
             final TypedArray styles =
@@ -87,10 +70,6 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
             if (!TextUtils.isEmpty(video)) {
                 setDataSource(Uri.parse(video));
             }
-
-            final boolean wantsLoadingIndicator =
-                    styles.getBoolean(R.styleable.DiagramVideoView_senseWantsLoadingIndicator, true);
-            setWantsLoadingIndicator(wantsLoadingIndicator);
 
             styles.recycle();
         }
@@ -195,17 +174,7 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
     @Override
     public void onPlaybackReady(@NonNull Player player) {
         if (isShown()) {
-            if (loadingIndicator.getVisibility() == VISIBLE) {
-                animatorFor(loadingIndicator)
-                        .setDuration(Anime.DURATION_FAST)
-                        .fadeOut(GONE)
-                        .start();
-            }
-
             player.startPlayback();
-        } else {
-            Anime.cancelAll(loadingIndicator);
-            loadingIndicator.setVisibility(GONE);
         }
     }
 
@@ -221,6 +190,7 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
     @Override
     public void onPlaybackError(@NonNull Player player, @NonNull Throwable error) {
+        Analytics.trackError(error, "Diagram Video Playback");
         ensureVideoSurface();
     }
 
@@ -262,21 +232,6 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
 
     //region Attributes
-
-    public void setWantsLoadingIndicator(boolean wantsLoadingIndicator) {
-        Anime.cancelAll(loadingIndicator);
-
-        if (wantsLoadingIndicator) {
-            if (player.getState() >= Player.STATE_LOADED) {
-                loadingIndicator.setVisibility(GONE);
-            } else {
-                loadingIndicator.setAlpha(1f);
-                loadingIndicator.setVisibility(VISIBLE);
-            }
-        } else {
-            loadingIndicator.setVisibility(GONE);
-        }
-    }
 
     public void setPlaceholder(@DrawableRes int drawableRes) {
         final Drawable drawable = ResourcesCompat.getDrawable(getResources(), drawableRes, null);
