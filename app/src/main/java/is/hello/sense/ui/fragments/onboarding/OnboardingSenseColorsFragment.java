@@ -131,11 +131,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
 
         adapter.destroyDiagramVideoViews();
         viewPager.clearOnPageChangeListeners();
-
-        this.adapter = null;
-        this.viewPager = null;
-        this.bottomContainer = null;
-        this.nextButton = null;
     }
 
     public void next(@NonNull View sender) {
