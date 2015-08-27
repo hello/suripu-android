@@ -551,7 +551,7 @@ public class TimelineFragment extends InjectionFragment
         } else {
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended
-                if (homeActivity.getWillShowUnderside()) {
+                if (homeActivity.getWillShowUnderside() && DateFormatter.isLastNight(getDate())) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
