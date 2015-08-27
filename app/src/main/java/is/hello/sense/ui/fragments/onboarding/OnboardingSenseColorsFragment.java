@@ -250,6 +250,10 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             ViewHolder newPrimaryItem = (ViewHolder) object;
+            if (primaryItem == newPrimaryItem) {
+                return;
+            }
+
             if (primaryItem != null) {
                 final Either<ImageView, DiagramVideoView> diagram = primaryItem.diagram;
                 if (!diagram.isLeft()) {
