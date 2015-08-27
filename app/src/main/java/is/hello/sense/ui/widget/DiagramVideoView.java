@@ -27,6 +27,7 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         TextureView.SurfaceTextureListener {
     private final Player player;
 
+    private boolean autoStart = true;
     private @Nullable Drawable placeholder;
 
     private @Nullable SurfaceTexture surfaceTexture;
@@ -70,6 +71,9 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
             if (!TextUtils.isEmpty(video)) {
                 setDataSource(Uri.parse(video));
             }
+
+            boolean autoStart = styles.getBoolean(R.styleable.DiagramVideoView_senseAutoStart, true);
+            setAutoStart(autoStart);
 
             styles.recycle();
         }
@@ -173,7 +177,7 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
     @Override
     public void onPlaybackReady(@NonNull Player player) {
-        if (isShown()) {
+        if (isShown() && autoStart) {
             player.startPlayback();
         }
     }
@@ -254,8 +258,26 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         invalidate();
     }
 
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
+    }
+
     public void setDataSource(@NonNull Uri source) {
         player.setDataSource(source, false);
+    }
+
+    public void startPlayback() {
+        setAutoStart(true);
+        player.startPlayback();
+    }
+
+    public void suspendPlayback() {
+        setAutoStart(false);
+        boolean rewind = (player.getState() == Player.STATE_PLAYING);
+        player.pausePlayback();
+        if (rewind) {
+            player.seekTo(0);
+        }
     }
 
     //endregion

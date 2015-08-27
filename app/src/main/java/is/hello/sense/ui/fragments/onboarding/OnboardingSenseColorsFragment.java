@@ -205,6 +205,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
         private final LayoutInflater inflater;
         private final SenseColor[] senseColors;
         private final List<DiagramVideoView> diagramVideoViews = new ArrayList<>();
+        private @Nullable ViewHolder primaryItem;
 
         ColorsAdapter(@NonNull SenseColor[] senseColors) {
             this.inflater = LayoutInflater.from(getActivity());
@@ -246,6 +247,28 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
             holder.unbind();
         }
 
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            ViewHolder newPrimaryItem = (ViewHolder) object;
+            if (primaryItem != null) {
+                final Either<ImageView, DiagramVideoView> diagram = primaryItem.diagram;
+                if (!diagram.isLeft()) {
+                    final DiagramVideoView diagramVideoView = diagram.getRight();
+                    diagramVideoView.suspendPlayback();
+                }
+            }
+
+            if (newPrimaryItem != null) {
+                final Either<ImageView, DiagramVideoView> diagram = newPrimaryItem.diagram;
+                if (!diagram.isLeft()) {
+                    final DiagramVideoView diagramVideoView = diagram.getRight();
+                    diagramVideoView.startPlayback();
+                }
+            }
+
+            this.primaryItem = newPrimaryItem;
+        }
+
         class ViewHolder extends ViewPagerAdapter.ViewHolder {
             private final TextView headingText;
             private final TextView subheadingText;
@@ -259,6 +282,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
 
                 if (hasVideo) {
                     final DiagramVideoView diagramVideoView = new DiagramVideoView(itemView.getContext());
+                    diagramVideoView.setAutoStart(false);
                     itemView.addView(diagramVideoView, new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                         LayoutParams.WRAP_CONTENT));
 

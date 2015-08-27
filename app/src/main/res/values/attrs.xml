@@ -50,5 +50,6 @@
     <declare-styleable name="DiagramVideoView">
         <attr name="senseDiagramVideo" format="string" />
         <attr name="sensePlaceholder" format="reference" />
+        <attr name="senseAutoStart" format="boolean" />
     </declare-styleable>
 </resources>
