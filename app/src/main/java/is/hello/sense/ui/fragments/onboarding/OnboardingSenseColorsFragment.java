@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -87,7 +88,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
         this.adapter = new ColorsAdapter(senseColors);
         viewPager.setAdapter(adapter);
 
-        this.transformer = new FinalPageTransformer();
+        this.transformer = new FinalPageTransformer(getResources());
         viewPager.setPageTransformer(false, transformer);
 
         this.finalItem = adapter.getCount() - 1;
@@ -172,7 +173,13 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
     static class FinalPageTransformer implements ViewPager.PageTransformer {
         private static final float SCALE_MIN = 0.8f;
         private static final float SCALE_MAX = 1.0f;
+        private final int translationXMin;
+
         private boolean enabled = false;
+
+        FinalPageTransformer(@NonNull Resources resources) {
+            this.translationXMin = -resources.getDimensionPixelSize(R.dimen.gap_large);
+        }
 
         @Override
         public void transformPage(View page, float position) {
@@ -183,10 +190,14 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
                 final float scale = Anime.interpolateFloats(fraction, SCALE_MIN, SCALE_MAX);
                 page.setScaleX(scale);
                 page.setScaleY(scale);
+
+                final float translationX = Anime.interpolateFloats(fraction, translationXMin, 0f);
+                page.setTranslationX(translationX);
             } else {
                 page.setAlpha(1f);
                 page.setScaleX(1f);
                 page.setScaleY(1f);
+                page.setTranslationX(0f);
             }
         }
 
