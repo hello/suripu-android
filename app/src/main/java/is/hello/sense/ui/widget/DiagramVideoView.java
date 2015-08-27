@@ -126,16 +126,18 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
             int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
             int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
 
-            final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-            final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-            if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.AT_MOST) {
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
                 final float scaleFactor = (float) placeholder.getIntrinsicHeight() / (float) placeholder.getIntrinsicWidth();
                 final int effectiveWidth = width + getPaddingLeft() + getPaddingRight();
                 height = Math.round(effectiveWidth * scaleFactor);
-            } else if (widthMode == MeasureSpec.AT_MOST && heightMode == MeasureSpec.EXACTLY) {
+                heightMode = MeasureSpec.EXACTLY;
+            } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
                 final float scaleFactor = (float) placeholder.getIntrinsicWidth() / (float) placeholder.getIntrinsicHeight();
                 final int effectiveHeight = height + getPaddingTop() + getPaddingBottom();
                 width = Math.round(effectiveHeight * scaleFactor);
+                widthMode = MeasureSpec.EXACTLY;
             }
 
             final int adjustedWidthSpec = MeasureSpec.makeMeasureSpec(width, widthMode);
