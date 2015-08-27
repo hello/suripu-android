@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="diagram_welcome_dialog_alarm">https://s3.amazonaws.com/hello-mobile/sense/tutorial-alarm.mp4</string>
-    <string name="diagram_onboarding_pairing_mode">https://s3.amazonaws.com/hello-mobile/sense/pairing_mode.mp4</string>
-    <string name="diagram_onboarding_pair_pill">https://s3.amazonaws.com/hello-mobile/sense/pairing_your_sleep_pill.mp4</string>
-    <string name="diagram_onboarding_clip_pill">https://s3.amazonaws.com/hello-mobile/sense/attach_sleep_pill.mp4</string>
-    <string name="diagram_onboarding_smart_alarm">https://s3.amazonaws.com/hello-mobile/sense/smart_alarm_onboarding.mp4</string>
-    <string name="diagram_onboarding_sense_colors">https://s3.amazonaws.com/hello-mobile/sense/bedroom_condition.mp4</string>
+    <string name="diagram_welcome_dialog_alarm">http://hellocdn.net/mobile/sense/alarm/smart_alarm_dialog.mp4</string>
+    <string name="diagram_onboarding_pairing_mode">http://hellocdn.net/mobile/sense/onboarding/pairing_mode.mp4</string>
+    <string name="diagram_onboarding_pair_pill">http://hellocdn.net/mobile/sense/onboarding/pairing_your_sleep_pill.mp4</string>
+    <string name="diagram_onboarding_clip_pill">http://hellocdn.net/mobile/sense/onboarding/attach_sleep_pill.mp4</string>
+    <string name="diagram_onboarding_smart_alarm">http://hellocdn.net/mobile/sense/onboarding/smart_alarm_onboarding.mp4</string>
+    <string name="diagram_onboarding_sense_colors">http://hellocdn.net/mobile/sense/onboarding/bedroom_condition.mp4</string>
 </resources>
