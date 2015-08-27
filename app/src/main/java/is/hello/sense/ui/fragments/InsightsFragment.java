@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Insight;
@@ -163,27 +162,23 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
     public void updateQuestion() {
-        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            Observable<Boolean> stageOne = devicesPresenter.latestTopIssue().map(issue -> {
-                return (issue == DevicesPresenter.Issue.NONE &&
-                        localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                        !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false));
-            });
-            stageOne.subscribe(showReview -> {
-                                   if (showReview) {
-                                       updateQuestionForReview();
-                                   } else {
-                                       updateQuestionFromApi();
-                                   }
-                               },
-                               e -> {
-                                   Logger.warn(getClass().getSimpleName(),
-                                               "Could not determine device status", e);
-                                   questionsPresenter.update();
-                               });
-        } else {
-            questionsPresenter.update();
-        }
+        Observable<Boolean> stageOne = devicesPresenter.latestTopIssue().map(issue -> {
+            return (issue == DevicesPresenter.Issue.NONE &&
+                    localUsageTracker.isUsageAcceptableForRatingPrompt() &&
+                    !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false));
+        });
+        stageOne.subscribe(showReview -> {
+                               if (showReview) {
+                                   updateQuestionForReview();
+                               } else {
+                                   updateQuestionFromApi();
+                               }
+                           },
+                           e -> {
+                               Logger.warn(getClass().getSimpleName(),
+                                           "Could not determine device status", e);
+                               questionsPresenter.update();
+                           });
     }
 
     @Override
