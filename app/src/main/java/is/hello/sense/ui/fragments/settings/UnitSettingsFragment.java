@@ -163,6 +163,9 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
                     : SwitchAdapter.POSITION_FALSE;
             spinner.setSelection(position);
 
+            // Otherwise, the item listener will fire on the next layout
+            // when the selection is actually updated, and we end up with
+            // a bunch of completely unnecessary requests.
             spinner.post(() -> {
                 spinner.setOnItemSelectedListener(createSpinnerSelectionListener(key));
             });
