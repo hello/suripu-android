@@ -157,6 +157,14 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         }
     }
 
+    /**
+     * Visually clears the surface texture from the texture view
+     * if there is no player texture currently bound to it.
+     * <p>
+     * When a texture view recreates its surface texture after an
+     * activity lifecycle change, the surface texture will be solid
+     * black. This method clears that black away.
+     */
     private void clearIfNeeded() {
         if (videoSurface == null && surfaceTexture != null) {
             Surface clearSurface = new Surface(surfaceTexture);
