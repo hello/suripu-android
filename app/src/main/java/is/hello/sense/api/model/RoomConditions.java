@@ -6,10 +6,10 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.functional.Lists;
 
 public class RoomConditions extends ApiResponse {
     @SerializedName("temperature")
@@ -66,18 +66,40 @@ public class RoomConditions extends ApiResponse {
     public boolean isEmpty() {
         return ((temperature == null || temperature.getValue() == null) &&
                 (humidity == null || humidity.getValue() == null) &&
+                (particulates == null || particulates.getValue() == null) &&
                 (light == null || light.getValue() == null) &&
                 (sound == null || sound.getValue() == null));
     }
 
     public List<SensorState> toList() {
-        // This order applies to:
-        // - RoomSensorHistory
-        // - RoomConditions
-        // - RoomConditionsFragment
-        // - UnitSystem
-        // - OnboardingRoomCheckFragment
-        return Lists.newArrayList(getTemperature(), getHumidity(), getLight(), getSound());
+        final List<SensorState> sensors = new ArrayList<>(5);
+
+        final SensorState temperature = getTemperature();
+        if (temperature != null) {
+            sensors.add(temperature);
+        }
+
+        final SensorState humidity = getHumidity();
+        if (humidity != null) {
+            sensors.add(humidity);
+        }
+
+        final SensorState particulates = getParticulates();
+        if (particulates != null) {
+            sensors.add(particulates);
+        }
+
+        final SensorState light = getLight();
+        if (light != null) {
+            sensors.add(light);
+        }
+
+        final SensorState sound = getSound();
+        if (sound != null) {
+            sensors.add(sound);
+        }
+
+        return sensors;
     }
 
     public @Nullable SensorState getSensorStateWithName(@NonNull String name) {

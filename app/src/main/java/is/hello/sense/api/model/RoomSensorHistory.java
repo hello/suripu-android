@@ -1,11 +1,12 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import is.hello.sense.functional.Lists;
+import is.hello.sense.api.ApiService;
 
 public class RoomSensorHistory extends ApiResponse {
     @SerializedName("humidity")
@@ -32,7 +33,6 @@ public class RoomSensorHistory extends ApiResponse {
         return light;
     }
 
-    @Deprecated
     public ArrayList<SensorGraphSample> getParticulates() {
         return particulates;
     }
@@ -45,14 +45,26 @@ public class RoomSensorHistory extends ApiResponse {
         return temperature;
     }
 
-    public List<ArrayList<SensorGraphSample>> toList() {
-        // This order applies to:
-        // - RoomSensorHistory
-        // - RoomConditions
-        // - RoomConditionsFragment
-        // - UnitSystem
-        // - OnboardingRoomCheckFragment
-        return Lists.newArrayList(temperature, humidity, light, sound);
+    public ArrayList<SensorGraphSample> getSamplesForSensor(@NonNull String name) {
+        switch (name) {
+            case ApiService.SENSOR_NAME_HUMIDITY:
+                return getHumidity();
+
+            case ApiService.SENSOR_NAME_PARTICULATES:
+                return getParticulates();
+
+            case ApiService.SENSOR_NAME_TEMPERATURE:
+                return getTemperature();
+
+            case ApiService.SENSOR_NAME_LIGHT:
+                return getLight();
+
+            case ApiService.SENSOR_NAME_SOUND:
+                return getSound();
+
+            default:
+                return null;
+        }
     }
 
     @Override
