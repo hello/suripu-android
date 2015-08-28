@@ -393,6 +393,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public void onSwipeBetweenDatesStarted() {
+        Tutorial.SWIPE_TIMELINE.markShown(homeActivity);
         dismissVisibleOverlaysAndDialogs();
     }
 
