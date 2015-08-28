@@ -29,7 +29,6 @@
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
         <item name="android:textColorLink">@color/text_link</item>
-        <item name="android:checkboxStyle">@style/Platform.CheckBox</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>

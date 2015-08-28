@@ -46,5 +46,4 @@
     <style name="Platform.EditText" parent="android:Widget.Material.Light.EditText">
         <item name="android:elevation">0dp</item>
     </style>
-    <style name="Platform.CheckBox" parent="android:Widget.Material.Light.CompoundButton.CheckBox" />
 </resources>

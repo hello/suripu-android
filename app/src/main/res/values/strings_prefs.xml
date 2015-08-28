@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="setting_title_use_24_time">Use 24 hour time</string>
-    <string name="setting_title_use_celsius">Use celsius temperatures</string>
-    <string name="setting_title_use_grams">Use metric weights</string>
-    <string name="setting_title_use_centimeters">Use metric heights</string>
+    <string name="setting_unit_temperature">Temperature Unit</string>
+    <string name="setting_unit_weight">Weight Unit</string>
+    <string name="setting_unit_height">Height Unit</string>
+    <string name="setting_option_temperature_us">Fahrenheit</string>
+    <string name="setting_option_temperature_metric">Celsius</string>
+    <string name="setting_option_weight_us">Pounds</string>
+    <string name="setting_option_weight_metric">Kilograms</string>
+    <string name="setting_option_height_us">Feet\' Inches\'\'</string>
+    <string name="setting_option_height_metric">Centimeters</string>
 
     <!--
         Derived from AoSP https://github.com/android/platform_packages_apps_settings/blob/master/res/xml/timezones.xml
