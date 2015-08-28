@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import is.hello.buruberi.util.Rx;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -136,8 +137,10 @@ public class HomeActivity extends ScopedInjectionActivity
         });
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
-        viewPager.setPageTransformer(false, new PerspectiveTransformer());
         viewPager.addOnPageChangeListener(this);
+        if (BuildConfig.DEBUG) {
+            viewPager.setPageTransformer(false, new PerspectiveTransformer());
+        }
 
         this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
