@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -79,7 +81,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         addPresenter(conditionsPresenter);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor));
+            final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor);
+            Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, properties);
         }
 
         updateTimer.setOnUpdate(() -> {
@@ -296,12 +299,17 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @NonNull
         @Override
         public String getSectionFooter(int section) {
-            float value = getSection(section).get(0).getValue();
+            final float value = getSection(section).get(0).getValue();
             if (value == ApiService.PLACEHOLDER_VALUE) {
                 return getString(R.string.missing_data_placeholder);
             } else {
-                UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
-                return printer.print((long) value).toString();
+                final UnitPrinter printer;
+                if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensor)) {
+                    printer = UnitPrinter.SIMPLE;
+                } else {
+                    printer = unitFormatter.getUnitPrinterForSensor(sensor);
+                }
+                return printer.print(value).toString();
             }
         }
 
@@ -330,12 +338,12 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         @Override
         public void onGraphValueHighlighted(int section, int position) {
-            SensorGraphSample instant = getSection(section).get(position);
+            final SensorGraphSample instant = getSection(section).get(position);
             if (instant.isValuePlaceholder()) {
                 readingText.setText(R.string.missing_data_placeholder);
             } else {
-                UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
-                CharSequence reading = printer.print((long) instant.getValue());
+                final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+                final CharSequence reading = printer.print(instant.getValue());
                 readingText.setText(reading);
             }
 

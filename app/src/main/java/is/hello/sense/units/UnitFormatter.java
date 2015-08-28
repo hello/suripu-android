@@ -16,7 +16,7 @@ public class UnitFormatter {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
     public static final String UNIT_SUFFIX_LIGHT = "lux";
     public static final String UNIT_SUFFIX_HUMIDITY = "%";
-    public static final String UNIT_SUFFIX_AIR_QUALITY = "";
+    public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
 
     // Used by PreferencesPresenter
@@ -49,8 +49,8 @@ public class UnitFormatter {
 
     //region Formatting
 
-    public @NonNull CharSequence formatTemperature(long value) {
-        long convertedValue = value;
+    public @NonNull CharSequence formatTemperature(double value) {
+        double convertedValue = value;
         if (!preferences.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultMetric)) {
             convertedValue = UnitOperations.celsiusToFahrenheit(convertedValue);
         }
@@ -83,19 +83,25 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull CharSequence formatLight(long value) {
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_LIGHT);
+    public @NonNull CharSequence formatLight(double value) {
+        if (value < 10.0) {
+            return Styles.assembleReadingAndUnit(String.format("%.1f", value),
+                                                 UNIT_SUFFIX_LIGHT,
+                                                 Styles.UNIT_STYLE_SUPERSCRIPT);
+        } else {
+            return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_LIGHT);
+        }
     }
 
-    public @NonNull CharSequence formatHumidity(long value) {
+    public @NonNull CharSequence formatHumidity(double value) {
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_HUMIDITY);
     }
 
-    public @NonNull CharSequence formatAirQuality(long value) {
-        return Long.toString(value);
+    public @NonNull CharSequence formatAirQuality(double value) {
+        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
     }
 
-    public @NonNull CharSequence formatNoise(long value) {
+    public @NonNull CharSequence formatNoise(double value) {
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
     }
 

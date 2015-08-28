@@ -84,6 +84,7 @@ public class RoomConditionsTests {
         List<String> names = map(sensors, SensorState::getName);
         List<String> expected = Lists.newArrayList(ApiService.SENSOR_NAME_TEMPERATURE,
                                                    ApiService.SENSOR_NAME_HUMIDITY,
+                                                   ApiService.SENSOR_NAME_PARTICULATES,
                                                    ApiService.SENSOR_NAME_LIGHT,
                                                    ApiService.SENSOR_NAME_SOUND);
         assertThat(names, is(equalTo(expected)));

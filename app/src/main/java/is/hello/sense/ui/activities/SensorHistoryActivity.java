@@ -25,7 +25,7 @@ public class SensorHistoryActivity extends SenseActivity {
                 break;
 
             case ApiService.SENSOR_NAME_PARTICULATES:
-                titleRes = R.string.condition_particulates;
+                titleRes = R.string.condition_airquality;
                 break;
 
             case ApiService.SENSOR_NAME_HUMIDITY:

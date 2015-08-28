@@ -17,7 +17,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -25,10 +27,10 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -46,17 +48,18 @@ import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Markdown;
-import rx.Observable;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
-public class RoomConditionsFragment extends UndersideTabFragment implements ArrayRecyclerAdapter.OnItemClickedListener<RoomConditionsFragment.SensorEntry> {
+public class RoomConditionsFragment extends UndersideTabFragment
+        implements ArrayRecyclerAdapter.OnItemClickedListener<SensorState> {
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
     @Inject RoomConditionsPresenter presenter;
     @Inject Markdown markdown;
     @Inject UnitFormatter unitFormatter;
 
+    private Map<String, SensorHistoryAdapter> graphAdapters = new HashMap<>(5);
     private Adapter adapter;
 
     //region Lifecycle
@@ -85,18 +88,7 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
         recyclerView.addItemDecoration(new CardItemDecoration(getResources(), true));
         recyclerView.setItemAnimator(null);
 
-        // This order applies to:
-        // - RoomSensorHistory
-        // - RoomConditions
-        // - RoomConditionsFragment
-        // - UnitSystem
-        // - OnboardingRoomCheckFragment
-        this.adapter = new Adapter(getActivity(), new SensorEntry[] {
-                new SensorEntry(ApiService.SENSOR_NAME_TEMPERATURE),
-                new SensorEntry(ApiService.SENSOR_NAME_HUMIDITY),
-                new SensorEntry(ApiService.SENSOR_NAME_LIGHT),
-                new SensorEntry(ApiService.SENSOR_NAME_SOUND),
-        });
+        this.adapter = new Adapter(getActivity());
         adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -150,71 +142,54 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
 
     //region Displaying Data
 
+    public SensorHistoryAdapter getSensorGraphAdapter(@NonNull String name) {
+        SensorHistoryAdapter adapter = graphAdapters.get(name);
+        if (adapter == null) {
+            adapter = new SensorHistoryAdapter();
+            graphAdapters.put(name, adapter);
+        }
+        return adapter;
+    }
+
     public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
-        List<ArrayList<SensorGraphSample>> histories = result.roomSensorHistory.toList();
-        List<SensorState> sensors = result.conditions.toList();
+        final RoomSensorHistory roomSensorHistory = result.roomSensorHistory;
+        final List<SensorState> sensors = result.conditions.toList();
 
-        adapter.setShowNoSenseMessage(false);
-        for (int i = 0, count = adapter.getItemCount(); i < count; i++) {
-            SensorEntry sensorInfo = adapter.getItem(i);
-
-            SensorState sensor = sensors.get(i);
-            sensorInfo.printer = unitFormatter.getUnitPrinterForSensor(sensorInfo.sensorName);
-            sensorInfo.sensorState = sensor;
-            sensorInfo.errorMessage = null;
-
-            ArrayList<SensorGraphSample> sensorDataRun = histories.get(i);
-            Observable<Update> update = Update.forHistorySeries(sensorDataRun, true);
-            bindAndSubscribe(update,
-                    sensorInfo.graphAdapter::update,
-                    e -> {
-                        Logger.error(getClass().getSimpleName(), "Could not update graph.", e);
-                        sensorInfo.graphAdapter.clear();
-                    });
+        for (SensorState sensor : sensors) {
+            final String sensorName = sensor.getName();
+            final ArrayList<SensorGraphSample> samplesForSensor = roomSensorHistory.getSamplesForSensor(sensorName);
+            final SensorHistoryAdapter sensorGraphAdapter = getSensorGraphAdapter(sensorName);
+            bindAndSubscribe(Update.forHistorySeries(samplesForSensor, true),
+                             sensorGraphAdapter::update,
+                             e -> {
+                                 Logger.error(getClass().getSimpleName(), "Could not update graph.", e);
+                                 sensorGraphAdapter.clear();
+                             });
         }
 
-        adapter.notifyDataSetChanged();
+        adapter.setShowNoSenseMessage(false);
+        adapter.replaceAll(sensors);
     }
 
     public void conditionsUnavailable(@NonNull Throwable e) {
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
-        for (int i = 0, count = adapter.getItemCount(); i < count; i++) {
-            SensorEntry sensorInfo = adapter.getItem(i);
-            sensorInfo.printer = null;
-            sensorInfo.sensorState = null;
-            sensorInfo.errorMessage = getString(R.string.error_cannot_retrieve_condition, sensorInfo.sensorName);
-        }
-
         adapter.setShowNoSenseMessage(ApiException.statusEquals(e, 404));
-        adapter.notifyDataSetChanged();
+        adapter.clear();
     }
 
     //endregion
 
 
     @Override
-    public void onItemClicked(int position, SensorEntry sensorEntry) {
+    public void onItemClicked(int position, SensorState sensorState) {
         Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
-        intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorEntry.sensorName);
+        intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName());
         startActivity(intent);
     }
 
 
-    static class SensorEntry {
-        final SensorHistoryAdapter graphAdapter = new SensorHistoryAdapter();
-        final @NonNull String sensorName;
-
-        @Nullable UnitPrinter printer;
-        @Nullable SensorState sensorState;
-        @Nullable String errorMessage;
-
-        SensorEntry(@NonNull String sensorName) {
-            this.sensorName = sensorName;
-        }
-    }
-
-    class Adapter extends ArrayRecyclerAdapter<SensorEntry, ArrayRecyclerAdapter.ViewHolder> {
+    class Adapter extends ArrayRecyclerAdapter<SensorState, ArrayRecyclerAdapter.ViewHolder> {
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_NO_SENSE = 1;
 
@@ -224,8 +199,8 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
 
         private boolean showNoSenseMessage = false;
 
-        Adapter(@NonNull Context context, @NonNull SensorEntry[] conditions) {
-            super(Lists.newArrayList(conditions));
+        Adapter(@NonNull Context context) {
+            super(new ArrayList<>(5));
 
             this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
@@ -320,34 +295,28 @@ public class RoomConditionsFragment extends UndersideTabFragment implements Arra
 
             @Override
             public void bind(int position) {
-                SensorEntry sensorEntry = getItem(position);
-                if (sensorEntry.sensorState != null) {
-                    int sensorColor = resources.getColor(sensorEntry.sensorState.getCondition().colorRes);
+                final SensorState sensorState = getItem(position);
+                final String sensorName = sensorState.getName();
+                final int sensorColor = resources.getColor(sensorState.getCondition().colorRes);
 
-                    CharSequence readingText = sensorEntry.sensorState.getFormattedValue(sensorEntry.printer);
-                    if (!TextUtils.isEmpty(readingText)) {
-                        reading.setText(readingText);
-                        reading.setTextColor(sensorColor);
-                    } else {
-                        reading.setText(R.string.missing_data_placeholder);
-                        reading.setTextColor(resources.getColor(R.color.sensor_unknown));
-                    }
-                    markdown.renderInto(message, sensorEntry.sensorState.getMessage());
-
-                    lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
-                    lineGraphDrawable.setAdapter(sensorEntry.graphAdapter);
+                final UnitPrinter printer;
+                if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensorName)) {
+                    printer = UnitPrinter.SIMPLE;
+                } else {
+                    printer = unitFormatter.getUnitPrinterForSensor(sensorName);
+                }
+                final CharSequence readingText = sensorState.getFormattedValue(printer);
+                if (!TextUtils.isEmpty(readingText)) {
+                    reading.setText(readingText);
+                    reading.setTextColor(sensorColor);
                 } else {
                     reading.setText(R.string.missing_data_placeholder);
                     reading.setTextColor(resources.getColor(R.color.sensor_unknown));
-                    if (TextUtils.isEmpty(sensorEntry.errorMessage)) {
-                        message.setText(null);
-                    } else {
-                        message.setText(sensorEntry.errorMessage);
-                    }
-
-                    lineGraphDrawable.setColorFilter(null);
-                    lineGraphDrawable.setAdapter(null);
                 }
+                markdown.renderInto(message, sensorState.getMessage());
+
+                lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
+                lineGraphDrawable.setAdapter(getSensorGraphAdapter(sensorName));
             }
         }
     }

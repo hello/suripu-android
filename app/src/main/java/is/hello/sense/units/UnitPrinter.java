@@ -3,7 +3,7 @@ package is.hello.sense.units;
 import android.support.annotation.NonNull;
 
 public interface UnitPrinter {
-    UnitPrinter SIMPLE = Long::toString;
+    UnitPrinter SIMPLE = v -> String.format("%.0f", v);
 
-    @NonNull CharSequence print(long value);
+    @NonNull CharSequence print(double value);
 }
