@@ -126,7 +126,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     @Test
     public void formatAirQuality() throws Exception {
         assertThat(unitFormatter.formatAirQuality(42).toString(),
-                   is(equalTo("42 mg/m³")));
+                   is(equalTo("42 µg/m³")));
     }
 
     @Test

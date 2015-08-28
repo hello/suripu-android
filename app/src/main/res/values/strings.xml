@@ -348,7 +348,7 @@ so you can sleep better.</string>
     <string name="welcome_dialog_sensor_humidity_title">Humidity</string>
     <string name="welcome_dialog_sensor_humidity">Humidity is a measure of the amount of moisture in the air. Here you’ll see detailed information on the humidity levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_airquality_title">Air Quality</string>
-    <string name="welcome_dialog_sensor_airquality">Sense measures air quality in mg/m³, which is a measure of the amount of particulates in the air by volume. Here you‘ll see detailed information on the air quality in your bedroom. The graphs will fill in as Sense collects more data.</string>
+    <string name="welcome_dialog_sensor_airquality">Sense measures air quality in µg/m³, which is a measure of the amount of particulates in the air by volume. Here you‘ll see detailed information on the air quality in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_light_title">Light</string>
     <string name="welcome_dialog_sensor_light">Sense measures light in lux (lx), which is the standard unit of illuminance. Here you’ll see detailed information on the light levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_sound_title">Noise</string>
