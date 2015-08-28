@@ -16,7 +16,7 @@ public class UnitFormatter {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
     public static final String UNIT_SUFFIX_LIGHT = "lux";
     public static final String UNIT_SUFFIX_HUMIDITY = "%";
-    public static final String UNIT_SUFFIX_AIR_QUALITY = "";
+    public static final String UNIT_SUFFIX_AIR_QUALITY = "mg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
 
     // Used by PreferencesPresenter
@@ -92,7 +92,7 @@ public class UnitFormatter {
     }
 
     public @NonNull CharSequence formatAirQuality(long value) {
-        return Long.toString(value);
+        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
     }
 
     public @NonNull CharSequence formatNoise(long value) {

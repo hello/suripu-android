@@ -114,7 +114,7 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
         WOKE_UP(R.string.timeline_info_label_wake_up_time),
         TEMPERATURE(R.string.condition_temperature),
         HUMIDITY(R.string.condition_humidity),
-        PARTICULATES(R.string.condition_particulates),
+        PARTICULATES(R.string.condition_airquality),
         SOUND(R.string.condition_sound),
         LIGHT(R.string.condition_light);
 

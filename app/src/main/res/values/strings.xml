@@ -36,7 +36,7 @@
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
-    <string name="condition_particulates">Air Quality</string>
+    <string name="condition_airquality">Air Quality</string>
 
     <string name="missing_data_placeholder">--</string>
 
@@ -124,7 +124,7 @@ so you can sleep better.</string>
     <string name="onboarding_done_message_2">Now, all you need to\ndo is sleep</string>
     <string name="checking_condition_temperature">Checking Temperature</string>
     <string name="checking_condition_humidity">Checking Humidity</string>
-    <string name="checking_condition_particulates">Checking Particulates</string>
+    <string name="checking_condition_airquality">Checking Air Quality</string>
     <string name="checking_condition_sound">Checking Noise</string>
     <string name="checking_condition_light">Checking Light</string>
     <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
@@ -347,8 +347,8 @@ so you can sleep better.</string>
     <string name="welcome_dialog_sensor_temperature">A proper temperature in your bedroom is key to a good night’s sleep. Here you’ll see detailed information on the temperature levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_humidity_title">Humidity</string>
     <string name="welcome_dialog_sensor_humidity">Humidity is a measure of the amount of moisture in the air. Here you’ll see detailed information on the humidity levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
-    <string name="welcome_dialog_sensor_particulates_title">Air Quality Index</string>
-    <string name="welcome_dialog_sensor_particulates">AQI stands for Air Quality Index, and is measured on a scale from 0–500. The lower the value, the better the air quality. Here you’ll see detailed information on the AQI in your bedroom. The graphs will fill in as Sense collects more data.</string>
+    <string name="welcome_dialog_sensor_airquality_title">Air Quality</string>
+    <string name="welcome_dialog_sensor_airquality">Sense measures air quality in mg/m³, which is a measure of the amount of particulates in the air by volume. Here you‘ll see detailed information on the air quality in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_light_title">Light</string>
     <string name="welcome_dialog_sensor_light">Sense measures light in lux (lx), which is the standard unit of illuminance. Here you’ll see detailed information on the light levels in your bedroom. The graphs will fill in as Sense collects more data.</string>
     <string name="welcome_dialog_sensor_sound_title">Noise</string>

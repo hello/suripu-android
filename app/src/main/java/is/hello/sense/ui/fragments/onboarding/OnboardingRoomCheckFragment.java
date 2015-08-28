@@ -362,7 +362,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 return R.string.checking_condition_humidity;
             }
             case ApiService.SENSOR_NAME_PARTICULATES: {
-                return R.string.checking_condition_particulates;
+                return R.string.checking_condition_airquality;
             }
             case ApiService.SENSOR_NAME_LIGHT: {
                 return R.string.checking_condition_light;
