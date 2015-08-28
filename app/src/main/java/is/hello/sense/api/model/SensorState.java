@@ -88,9 +88,9 @@ public class SensorState extends ApiResponse {
         if (getValue() == null) {
             return null;
         } else if (printer != null) {
-            return printer.print(getValue().longValue());
+            return printer.print(getValue());
         } else {
-            return Styles.assembleReadingAndUnit(getValue().longValue(), getUnit());
+            return Styles.assembleReadingAndUnit(getValue(), getUnit());
         }
     }
 

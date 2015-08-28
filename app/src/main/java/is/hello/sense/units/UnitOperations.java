@@ -21,7 +21,7 @@ public class UnitOperations {
         return Math.round(inches * 0.39370);
     }
 
-    public static long celsiusToFahrenheit(long temperature) {
+    public static double celsiusToFahrenheit(double temperature) {
         return Math.round((temperature * 1.8) + 32.0);
     }
 }

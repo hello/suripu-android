@@ -10,6 +10,6 @@ public class UnitConverterTests {
     @Test
     public void identity() {
         UnitConverter converter = UnitConverter.IDENTITY;
-        assertThat(converter.convert(42L), is(equalTo(42L)));
+        assertThat(converter.convert(42.0), is(equalTo(42.0)));
     }
 }

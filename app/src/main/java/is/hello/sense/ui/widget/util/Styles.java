@@ -164,8 +164,8 @@ public final class Styles {
         return builder;
     }
 
-    public static @NonNull CharSequence assembleReadingAndUnit(long value, @NonNull String suffix) {
-        return assembleReadingAndUnit(Long.toString(value), suffix, UNIT_STYLE_SUPERSCRIPT);
+    public static @NonNull CharSequence assembleReadingAndUnit(double value, @NonNull String suffix) {
+        return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
     public static @NonNull GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {

@@ -9,5 +9,5 @@ public interface UnitConverter {
      */
     UnitConverter IDENTITY = v -> v;
 
-    long convert(long value);
+    double convert(double value);
 }

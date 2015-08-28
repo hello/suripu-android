@@ -309,7 +309,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 } else {
                     printer = unitFormatter.getUnitPrinterForSensor(sensor);
                 }
-                return printer.print((long) value).toString();
+                return printer.print(value).toString();
             }
         }
 
@@ -343,7 +343,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 readingText.setText(R.string.missing_data_placeholder);
             } else {
                 final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
-                final CharSequence reading = printer.print((long) instant.getValue());
+                final CharSequence reading = printer.print(instant.getValue());
                 readingText.setText(reading);
             }
 

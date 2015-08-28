@@ -10,6 +10,6 @@ public class UnitPrinterTests {
     @Test
     public void simple() {
         UnitPrinter printer = UnitPrinter.SIMPLE;
-        assertThat(printer.print(42), is(equalTo("42")));
+        assertThat(printer.print(42.0), is(equalTo("42")));
     }
 }
