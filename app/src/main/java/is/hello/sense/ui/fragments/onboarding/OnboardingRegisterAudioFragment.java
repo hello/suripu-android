@@ -37,7 +37,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_title_enhanced_audio)
                 .setSubheadingText(R.string.onboarding_info_enhanced_audio)
                 .setDiagramImage(R.drawable.onboarding_enhanced_audio)
@@ -45,8 +45,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
                 .setPrimaryOnClickListener(this::optIn)
                 .setSecondaryOnClickListener(this::optOut)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ENHANCED_AUDIO))
-                .create();
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ENHANCED_AUDIO));
     }
 
 

@@ -40,15 +40,14 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_onboarding_register_location)
                 .setSubheadingText(R.string.onboarding_register_info_explanation)
                 .setDiagramImage(R.drawable.onboarding_map)
                 .setPrimaryButtonText(R.string.action_set_location)
                 .setPrimaryOnClickListener(ignored -> optIn())
                 .setSecondaryOnClickListener(ignored -> getContainer().onAccountUpdated(this))
-                .hideToolbar()
-                .create();
+                .hideToolbar();
     }
 
     @Override

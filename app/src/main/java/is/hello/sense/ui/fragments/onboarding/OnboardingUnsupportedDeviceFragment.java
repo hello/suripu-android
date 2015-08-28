@@ -33,19 +33,19 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        OnboardingSimpleStepViewBuilder builder = new OnboardingSimpleStepViewBuilder(this, inflater, container);
+        OnboardingSimpleStepView stepView = new OnboardingSimpleStepView(this, inflater);
 
         switch (supportLevel) {
             case UNSUPPORTED: {
-                builder.setHeadingText(R.string.onboarding_title_unsupported_device);
-                builder.setSubheadingText(R.string.onboarding_message_unsupported_device);
+                stepView.setHeadingText(R.string.onboarding_title_unsupported_device);
+                stepView.setSubheadingText(R.string.onboarding_message_unsupported_device);
                 break;
             }
 
             case UNTESTED: {
-                builder.setHeadingText(R.string.onboarding_title_untested_device);
-                builder.setSubheadingText(R.string.onboarding_message_untested_device);
-                builder.initializeSupportLinksForSubheading(getActivity());
+                stepView.setHeadingText(R.string.onboarding_title_untested_device);
+                stepView.setSubheadingText(R.string.onboarding_message_untested_device);
+                stepView.initializeSupportLinksForSubheading(getActivity());
                 break;
             }
 
@@ -55,13 +55,13 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
             }
         }
 
-        builder.setPrimaryButtonText(R.string.action_continue_anyway);
-        builder.setPrimaryOnClickListener(ignored -> continueAnyway());
-        builder.setToolbarWantsBackButton(true);
-        builder.setToolbarWantsHelpButton(false);
-        builder.setWantsSecondaryButton(false);
+        stepView.setPrimaryButtonText(R.string.action_continue_anyway);
+        stepView.setPrimaryOnClickListener(ignored -> continueAnyway());
+        stepView.setToolbarWantsBackButton(true);
+        stepView.setToolbarWantsHelpButton(false);
+        stepView.setWantsSecondaryButton(false);
 
-        return builder.create();
+        return stepView;
     }
 
     public void continueAnyway() {

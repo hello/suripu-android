@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -382,6 +383,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
+        builder.setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)));
         builder.setDiagramImage(R.drawable.onboarding_clip_pill);
         builder.setCompact(true);
         builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
@@ -456,15 +458,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
-                return (holder, onCompletion) -> {
-                    int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
+                return (view, onCompletion) -> {
+                    final int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
 
-                    animatorFor(holder.contents)
-                            .addOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
+                    animatorFor(view.contentsScrollView)
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)
                             .start();
 
-                    animatorFor(holder.primaryButton)
+                    animatorFor(view.primaryButton)
                             .slideYAndFade(0f, slideAmount, 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();

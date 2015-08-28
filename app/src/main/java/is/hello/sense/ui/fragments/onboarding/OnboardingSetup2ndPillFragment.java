@@ -25,7 +25,7 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_onboarding_setup_2nd_pill)
                 .setSubheadingText(R.string.info_onboarding_setup_2nd_pill)
                 .setDiagramImage(R.drawable.onboarding_partner_clip)
@@ -35,7 +35,6 @@ public class OnboardingSetup2ndPillFragment extends Fragment {
                 .setPrimaryButtonText(R.string.action_no_thanks)
                 .setPrimaryOnClickListener(ignored -> ((OnboardingActivity) getActivity()).showDone())
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ADD_2ND_PILL))
-                .create();
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ADD_2ND_PILL));
     }
 }

@@ -6,10 +6,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
 import android.support.v4.view.ViewPager;
@@ -19,11 +23,13 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +37,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
+import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -189,6 +196,13 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         return dialog;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        adapter.destroyDiagramVideoViews();
+    }
+
     //endregion
 
 
@@ -226,8 +240,17 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
     //region Items
 
-    public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.ViewHolder> {
+    public class ItemAdapter extends ViewPagerAdapter<ItemAdapter.BaseViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        private final List<DiagramVideoView> diagramVideoViews = new ArrayList<>(1);
+
+        public void destroyDiagramVideoViews() {
+            for (DiagramVideoView diagramVideoView : diagramVideoViews) {
+                diagramVideoView.destroy();
+            }
+            diagramVideoViews.clear();
+
+        }
 
         @Override
         public int getCount() {
@@ -235,30 +258,42 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         }
 
         @Override
-        public ViewHolder createViewHolder(ViewGroup container, int position) {
-            View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
-            return new ViewHolder(itemView);
+        public BaseViewHolder createViewHolder(ViewGroup container, int position) {
+            final Item item = items.get(position);
+            final View itemView = inflater.inflate(R.layout.item_dialog_welcome, container, false);
+            if (item.diagramVideo != null) {
+                return new VideoHeaderViewHolder(itemView);
+            } else {
+                return new ImageHeaderViewHolder(itemView);
+            }
         }
 
         @Override
-        public void bindViewHolder(ViewHolder holder, int position) {
-            Item item = items.get(position);
+        public void bindViewHolder(BaseViewHolder holder, int position) {
+            final Item item = items.get(position);
             holder.bindItem(item);
             holder.setLastItem(position == getCount() - 1);
         }
 
+        @Override
+        public void unbindViewHolder(BaseViewHolder holder) {
+            holder.unbind();
+        }
 
-        class ViewHolder extends ViewPagerAdapter.ViewHolder {
-            final ImageView diagramImage;
+        abstract class BaseViewHolder<THeader extends View> extends ViewPagerAdapter.ViewHolder {
+            final THeader header;
             final TextView titleText;
             final TextView messageText;
             final Button dismissButton;
             final View dismissButtonDivider;
 
-            private ViewHolder(@NonNull View itemView) {
+            private BaseViewHolder(@NonNull View itemView) {
                 super(itemView);
 
-                this.diagramImage = (ImageView) itemView.findViewById(R.id.fragment_dialog_welcome_item_diagram);
+                final LinearLayout contents = (LinearLayout) itemView.findViewById(R.id.item_dialog_welcome_contents);
+                this.header = onProvideHeader(contents);
+                contents.addView(header, 0);
+
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_title);
                 this.messageText = (TextView) itemView.findViewById(R.id.fragment_dialog_welcome_item_message);
 
@@ -273,6 +308,8 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                 dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius, normal, pressed));
             }
 
+            protected abstract THeader onProvideHeader(@NonNull LinearLayout parent);
+
             private void setLastItem(boolean lastItem) {
                 if (lastItem) {
                     dismissButtonDivider.setVisibility(View.VISIBLE);
@@ -283,19 +320,51 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                 }
             }
 
-            private void bindItem(@NonNull Item item) {
-                if (item.diagramRes != WelcomeDialogParser.MISSING_RES) {
-                    diagramImage.setImageResource(item.diagramRes);
+            protected void bindItem(@NonNull Item item) {
+                if (item.titleRes != WelcomeDialogParser.MISSING_RES) {
+                    titleText.setText(item.titleRes);
+                    titleText.setVisibility(View.VISIBLE);
                 } else {
-                    diagramImage.setImageDrawable(null);
+                    titleText.setText("");
+                    titleText.setVisibility(View.GONE);
+                }
+
+                String message = getString(item.messageRes);
+                messageText.setText(message);
+            }
+
+            protected void unbind() {
+            }
+        }
+
+        class ImageHeaderViewHolder extends BaseViewHolder<ImageView> {
+            ImageHeaderViewHolder(@NonNull View itemView) {
+                super(itemView);
+            }
+
+            @Override
+            protected ImageView onProvideHeader(@NonNull LinearLayout parent) {
+                final ImageView imageView = new ImageView(parent.getContext());
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                     ViewGroup.LayoutParams.WRAP_CONTENT));
+                return imageView;
+            }
+
+            protected void bindItem(@NonNull Item item) {
+                super.bindItem(item);
+
+                if (item.diagramRes != WelcomeDialogParser.MISSING_RES) {
+                    header.setImageResource(item.diagramRes);
+                } else {
+                    header.setImageDrawable(null);
                 }
 
                 if (item.scaleDiagram) {
-                    diagramImage.setAdjustViewBounds(true);
-                    diagramImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    header.setAdjustViewBounds(true);
+                    header.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 } else {
-                    diagramImage.setAdjustViewBounds(false);
-                    diagramImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    header.setAdjustViewBounds(false);
+                    header.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 }
 
                 if (item.titleRes != WelcomeDialogParser.MISSING_RES) {
@@ -306,9 +375,52 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                     titleText.setVisibility(View.GONE);
                 }
 
-                String message = getString(item.messageRes);
-                diagramImage.setContentDescription(message);
-                messageText.setText(message);
+                header.setContentDescription(getString(item.messageRes));
+            }
+        }
+
+        class VideoHeaderViewHolder extends BaseViewHolder<DiagramVideoView> {
+            VideoHeaderViewHolder(@NonNull View itemView) {
+                super(itemView);
+            }
+
+            @Override
+            protected DiagramVideoView onProvideHeader(@NonNull LinearLayout parent) {
+                final DiagramVideoView diagramVideoView = new DiagramVideoView(parent.getContext());
+                diagramVideoView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                diagramVideoViews.add(diagramVideoView);
+                return diagramVideoView;
+            }
+
+            @Override
+            protected void bindItem(@NonNull Item item) {
+                super.bindItem(item);
+
+                if (item.diagramRes != WelcomeDialogParser.MISSING_RES) {
+                    header.setPlaceholder(item.diagramRes);
+                } else {
+                    header.setPlaceholder(null);
+                }
+
+                Uri diagramUri = Uri.parse(item.diagramVideo);
+                header.setDataSource(diagramUri);
+
+                final int radius = getResources().getDimensionPixelSize(R.dimen.raised_item_corner_radius);
+                final float[] cornerRadii = {
+                        radius, radius, radius, radius,
+                        0f, 0f, 0f, 0f,
+                };
+                ShapeDrawable background = new ShapeDrawable(new RoundRectShape(cornerRadii, null, null));
+                background.getPaint().setColor(item.diagramFillColor);
+                header.setPadding(radius, 0, radius, 0);
+                header.setBackground(background);
+            }
+
+            @Override
+            protected void unbind() {
+                diagramVideoViews.remove(header);
+                header.destroy();
             }
         }
     }
@@ -319,15 +431,21 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;
         public final boolean scaleDiagram;
+        public final @Nullable String diagramVideo;
+        public final int diagramFillColor;
 
         public Item(@DrawableRes int diagramRes,
                     @StringRes int titleRes,
                     @StringRes int messageRes,
-                    boolean scaleDiagram) {
+                    boolean scaleDiagram,
+                    @Nullable String diagramVideo,
+                    int diagramFillColor) {
             this.diagramRes = diagramRes;
             this.titleRes = titleRes;
             this.messageRes = messageRes;
             this.scaleDiagram = scaleDiagram;
+            this.diagramVideo = diagramVideo;
+            this.diagramFillColor = diagramFillColor;
         }
 
         @Override
@@ -337,6 +455,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                     ", titleRes=" + titleRes +
                     ", messageRes=" + messageRes +
                     ", scaleDiagram=" + scaleDiagram +
+                    ", diagramVideo='" + diagramVideo + '\'' +
                     '}';
         }
     }

@@ -22,9 +22,9 @@ import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseListDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.SoundPlayer;
+import is.hello.sense.util.Player;
 
-public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseListDialog.Listener<Alarm.Sound>, SoundPlayer.OnEventListener {
+public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment implements SenseListDialog.Listener<Alarm.Sound>, Player.OnEventListener {
     public static final String ARG_SELECTED_SOUND = SmartAlarmSoundDialogFragment.class.getName() + ".ARG_SELECTED_SOUND";
 
     public static final String TAG = SmartAlarmSoundDialogFragment.class.getSimpleName();
@@ -35,7 +35,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     private SmartAlarmSoundAdapter adapter;
     private SenseListDialog<Alarm.Sound> dialog;
 
-    private SoundPlayer soundPlayer;
+    private Player player;
 
     private boolean showVolumePrompts = true;
 
@@ -57,7 +57,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
             this.showVolumePrompts = savedInstanceState.getBoolean("showVolumePrompts", true);
         }
 
-        this.soundPlayer = new SoundPlayer(getActivity(), this, false);
+        this.player = new Player(getActivity(), this, null);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onDestroy() {
         super.onDestroy();
 
-        soundPlayer.recycle();
+        player.recycle();
     }
 
     public void bindSounds(@NonNull ArrayList<Alarm.Sound> sounds) {
@@ -118,8 +118,8 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         });
         prompt.setPositiveButton(R.string.dialog_positive_alarm_sound_volume_low, (dialog, which) -> {
             this.showVolumePrompts = false;
-            int targetVolume = soundPlayer.getRecommendedStreamVolume();
-            soundPlayer.setStreamVolume(targetVolume, AudioManager.FLAG_SHOW_UI);
+            int targetVolume = player.getRecommendedStreamVolume();
+            player.setStreamVolume(targetVolume, AudioManager.FLAG_SHOW_UI);
             playSound(sound);
         });
         prompt.show();
@@ -133,8 +133,8 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         getArguments().putSerializable(ARG_SELECTED_SOUND, selectedSound);
         dialog.setDoneButtonEnabled(true);
 
-        if (showVolumePrompts && soundPlayer.isStreamVolumeAdjustable() &&
-                soundPlayer.getStreamVolume() < soundPlayer.getRecommendedStreamVolume()) {
+        if (showVolumePrompts && player.isStreamVolumeAdjustable() &&
+                player.getStreamVolume() < player.getRecommendedStreamVolume()) {
             promptToIncreaseVolume(sound);
         } else {
             playSound(sound);
@@ -152,31 +152,31 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     //region Playback
 
     public void playSound(@NonNull Alarm.Sound sound) {
-        soundPlayer.play(Uri.parse(sound.url));
+        player.setDataSource(Uri.parse(sound.url), true);
         adapter.setPlayingSoundId(sound.id, true);
     }
 
+    @Override
+    public void onPlaybackReady(@NonNull Player player) {
+
+    }
 
     @Override
-    public void onPlaybackStarted(@NonNull SoundPlayer player) {
+    public void onPlaybackStarted(@NonNull Player player) {
         adapter.setPlayingSoundId(adapter.getPlayingSoundId(), false);
     }
 
     @Override
-    public void onPlaybackStopped(@NonNull SoundPlayer player, boolean finished) {
+    public void onPlaybackStopped(@NonNull Player player, boolean finished) {
         adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
     }
 
     @Override
-    public void onPlaybackError(@NonNull SoundPlayer player, @NonNull Throwable error) {
+    public void onPlaybackError(@NonNull Player player, @NonNull Throwable error) {
         Analytics.trackError(error, "Alarm sound preview");
 
         Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_sound, Toast.LENGTH_SHORT).show();
         adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
-    }
-
-    @Override
-    public void onPlaybackPulse(@NonNull SoundPlayer player, int position) {
     }
 
     //endregion

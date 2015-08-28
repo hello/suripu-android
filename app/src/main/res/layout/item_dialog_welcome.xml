@@ -39,6 +39,7 @@
             - Rendering artifacts on ImageView on some older devices (the Galaxy S4 specifically).
          -->
         <LinearLayout
+            android:id="@+id/item_dialog_welcome_contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

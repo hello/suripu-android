@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -74,7 +75,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_pair_sense)
                 .setSubheadingText(R.string.info_pair_sense)
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
@@ -90,8 +91,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                     showSupportOptions();
                     return true;
                 })
-                .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR))
-                .create();
+                .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR));
     }
 
     @Override
@@ -191,7 +191,16 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
-        getOnboardingActivity().pushFragment(new OnboardingSensePairingModeHelpFragment(), null, true);
+        OnboardingSimpleStepFragment fragment = new OnboardingSimpleStepFragment.Builder(getActivity())
+                .setHeadingText(R.string.title_sense_pairing_mode_help)
+                .setSubheadingText(R.string.info_sense_pairing_mode_help)
+                .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_pairing_mode)))
+                .setDiagramImage(R.drawable.onboarding_pairing_mode_help)
+                .setWantsBack(true)
+                .setAnalyticsEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP)
+                .setHelpStep(UserSupport.OnboardingStep.PAIRING_MODE)
+                .toFragment();
+        getOnboardingActivity().pushFragment(fragment, null, true);
     }
 
     public void next() {

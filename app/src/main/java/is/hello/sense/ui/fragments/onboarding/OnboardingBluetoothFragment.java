@@ -39,15 +39,14 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepViewBuilder(this, inflater, container)
+        return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.action_turn_on_ble)
                 .setSubheadingText(R.string.info_turn_on_bluetooth)
                 .setPrimaryButtonText(R.string.action_turn_on_ble)
                 .setPrimaryOnClickListener(this::turnOn)
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH))
-                .create();
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH));
     }
 
     @Override
