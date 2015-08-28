@@ -142,6 +142,7 @@ public class ApiModule {
             return new ApiException(errorResponse, error);
         });
         builder.setRequestInterceptor(request -> {
+            request.addHeader(ApiService.HEADER_CLIENT_VERSION, BuildConfig.VERSION_NAME);
             if (sessionManager.hasSession()) {
                 request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());
             }

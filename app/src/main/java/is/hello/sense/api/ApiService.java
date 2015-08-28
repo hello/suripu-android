@@ -39,6 +39,8 @@ import retrofit.http.Query;
 import rx.Observable;
 
 public interface ApiService {
+    String HEADER_CLIENT_VERSION = "X-Client-Version";
+
     String DATE_FORMAT = "yyyy-MM-dd";
     String TIME_FORMAT = "HH:mm";
 
