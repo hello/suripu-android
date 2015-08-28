@@ -78,7 +78,10 @@ public class TrendGraph extends ApiResponse {
             }
 
             case TIME_PERIOD_OVER_TIME_2W: {
-                return dateTime.toString("MMM d");
+                if (dataPoints.size() < 5) {
+                    return dateTime.toString("MMM d");
+                }
+                // intentional fall-through
             }
 
             case TIME_PERIOD_OVER_TIME_1M: {
