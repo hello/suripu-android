@@ -218,8 +218,12 @@ public class TimelineFragment extends InjectionFragment
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        // For all subsequent fragments
-        bindIfNeeded();
+        if (isVisibleToUser) {
+            // For all subsequent fragments
+            bindIfNeeded();
+        } else {
+            dismissVisibleOverlaysAndDialogs();
+        }
     }
 
     private void bindIfNeeded() {
@@ -259,6 +263,21 @@ public class TimelineFragment extends InjectionFragment
         adapter.stopSoundPlayer();
     }
 
+    private void dismissVisibleOverlaysAndDialogs() {
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
+
+        if (tutorialOverlay != null) {
+            tutorialOverlay.dismiss(false);
+        }
+
+        final Dialog activeDialog = Functions.extract(this.activeDialog);
+        if (activeDialog != null) {
+            activeDialog.dismiss();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -276,16 +295,7 @@ public class TimelineFragment extends InjectionFragment
         this.itemAnimator = null;
         this.backgroundFill = null;
 
-        if (tutorialOverlay != null) {
-            tutorialOverlay.dismiss(false);
-        }
-
-        if (activeDialog != null) {
-            Dialog dialog = activeDialog.get();
-            if (dialog != null) {
-                dialog.dismiss();
-            }
-        }
+        dismissVisibleOverlaysAndDialogs();
     }
 
     @Override
@@ -302,9 +312,7 @@ public class TimelineFragment extends InjectionFragment
 
     @Override
     public void onTopViewWillSlideDown() {
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
-        }
+        dismissVisibleOverlaysAndDialogs();
 
         toolbar.setOverflowOpen(true);
         toolbar.setTitleDimmed(true);
@@ -385,9 +393,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public void onSwipeBetweenDatesStarted() {
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
-        }
+        dismissVisibleOverlaysAndDialogs();
     }
 
     public void scrollToTop() {
@@ -417,20 +423,22 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void showHandholdingIfAppropriate() {
-        if (WelcomeDialogFragment.isAnyVisible(getActivity())) {
+        if (homeActivity == null ||
+                homeActivity.isUndersideVisible() ||
+                WelcomeDialogFragment.isAnyVisible(homeActivity)) {
             return;
         }
 
-        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(getActivity());
+        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(homeActivity);
         if (firstTimeline && showZoomOutTutorial) {
-            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+            SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
             int numberTimelinesShown = preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
             if (numberTimelinesShown < 5) {
                 Logger.debug(getClass().getSimpleName(), "Incrementing timelines shown to " + (numberTimelinesShown + 1));
 
                 preferences.edit()
-                        .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, numberTimelinesShown + 1)
-                        .apply();
+                           .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, numberTimelinesShown + 1)
+                           .apply();
 
                 showZoomOutTutorial = false;
             }

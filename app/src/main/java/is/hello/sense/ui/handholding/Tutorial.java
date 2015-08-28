@@ -19,6 +19,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,12 +58,12 @@ public enum Tutorial {
     }
 
     public boolean shouldShow(@NonNull Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         return !preferences.getBoolean(getShownKey(), false);
     }
 
     public void markShown(@NonNull Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         preferences.edit()
                    .putBoolean(getShownKey(), true)
                    .apply();
@@ -102,36 +103,36 @@ public enum Tutorial {
     public static Animator createSlideAnimation(@NonNull View view,
                                                 @DimenRes int deltaRes,
                                                 boolean isVertical) {
-        Property<View, Float> property;
+        final Property<View, Float> property;
         if (isVertical) {
             property = Property.of(View.class, float.class, "translationY");
         } else {
             property = Property.of(View.class, float.class, "translationX");
         }
 
-        long duration = 750;
-        TimeInterpolator interpolator = new AccelerateDecelerateInterpolator();
+        final long duration = 750;
+        final TimeInterpolator interpolator = new AccelerateDecelerateInterpolator();
 
-        float delta = view.getResources().getDimension(deltaRes);
+        final float delta = view.getResources().getDimension(deltaRes);
         ObjectAnimator slide = ObjectAnimator.ofFloat(view, property, 0f, delta);
         slide.setInterpolator(interpolator);
         slide.setDuration(duration);
 
-        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
+        final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(view, "alpha", 1f, 0f);
         fadeOut.setInterpolator(interpolator);
         fadeOut.setDuration(duration);
 
-        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
+        final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f);
         fadeIn.setInterpolator(new LinearInterpolator());
         fadeIn.setDuration(Anime.DURATION_SLOW);
 
-        AnimatorSet slideAndFadeIn = new AnimatorSet();
+        final AnimatorSet slideAndFadeIn = new AnimatorSet();
         slideAndFadeIn.setStartDelay(150);
         slideAndFadeIn.play(slide)
                 .with(fadeOut)
                 .before(fadeIn);
 
-        AtomicBoolean canceled = new AtomicBoolean(false);
+        final AtomicBoolean canceled = new AtomicBoolean(false);
         slideAndFadeIn.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationCancel(Animator animation) {
@@ -182,8 +183,9 @@ public enum Tutorial {
     //endregion
 
 
-    public RelativeLayout.LayoutParams generateDescriptionLayoutParams() {
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+    public LayoutParams generateDescriptionLayoutParams() {
+        final LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                           LayoutParams.WRAP_CONTENT);
         switch (descriptionGravity) {
             case Gravity.TOP: {
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);

@@ -49,6 +49,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
     private static final String ARG_WELCOME_RES = WelcomeDialogFragment.class.getName() + ".ARG_WELCOME_RES";
 
+    private int welcomeRes;
     private List<Item> items;
     private ItemAdapter adapter;
     private ViewPager viewPager;
@@ -65,7 +66,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     public static void clearShownStates(@NonNull Context context) {
         Logger.info(TAG, "Clearing already shown dialog states");
 
-        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         preferences.edit()
                    .clear()
                    .apply();
@@ -76,13 +77,13 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
             return false;
         }
 
-        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         return !preferences.getBoolean(getPreferenceKey(context, welcomeRes), false);
     }
 
     public static void markShown(@NonNull Context context, @XmlRes int welcomeRes) {
-        String key = getPreferenceKey(context, welcomeRes);
-        SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final String key = getPreferenceKey(context, welcomeRes);
+        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         preferences.edit()
                    .putBoolean(key, true)
                    .apply();
@@ -93,10 +94,8 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     }
 
     public static void show(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(welcomeRes);
-        welcomeDialog.show(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
-
-        markShown(activity, welcomeRes);
+        final WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(welcomeRes);
+        welcomeDialog.showAllowingStateLoss(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
     }
 
     public static void showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
@@ -121,8 +120,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         super.onCreate(savedInstanceState);
 
         try {
-            int welcomeRes = getArguments().getInt(ARG_WELCOME_RES);
-            WelcomeDialogParser parser = new WelcomeDialogParser(getResources(), welcomeRes);
+            this.welcomeRes = getArguments().getInt(ARG_WELCOME_RES);
+
+            final WelcomeDialogParser parser = new WelcomeDialogParser(getResources(), welcomeRes);
             this.items = parser.parse();
         } catch (XmlPullParserException | IOException e) {
             this.items = Collections.emptyList();
@@ -163,37 +163,44 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
         int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
         Views.observeNextLayout(dialog.getWindow().getDecorView())
-                .subscribe(v -> {
-                    boolean isFloating = false;
+             .subscribe(v -> {
+                 boolean isFloating = false;
 
-                    int height = viewPager.getMeasuredHeight();
-                    if (height > maxHeight) {
-                        viewPager.getLayoutParams().height = maxHeight;
-                        viewPager.invalidate();
+                 int height = viewPager.getMeasuredHeight();
+                 if (height > maxHeight) {
+                     viewPager.getLayoutParams().height = maxHeight;
+                     viewPager.invalidate();
 
-                        isFloating = true;
-                    }
+                     isFloating = true;
+                 }
 
-                    int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
-                    if (width > maxWidth) {
-                        int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
-                        viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
-                        viewPager.setPageMargin(newPageMargin);
+                 int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
+                 if (width > maxWidth) {
+                     int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
+                     viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
+                     viewPager.setPageMargin(newPageMargin);
 
-                        isFloating = true;
-                    }
+                     isFloating = true;
+                 }
 
-                    if (!isFloating) {
-                        viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
-                    }
+                 if (!isFloating) {
+                     viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
+                 }
 
-                    viewPager.setAdapter(adapter);
-                    if (items.size() > 1) {
-                        pageDots.attach(viewPager);
-                    }
-                });
+                 viewPager.setAdapter(adapter);
+                 if (items.size() > 1) {
+                     pageDots.attach(viewPager);
+                 }
+             });
 
         return dialog;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        markShown(getActivity(), welcomeRes);
     }
 
     @Override
