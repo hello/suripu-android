@@ -88,6 +88,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
             });
         } else {
             skipButton.setVisibility(View.INVISIBLE);
+            nextButton.setText(R.string.action_done);
         }
 
         return view;
