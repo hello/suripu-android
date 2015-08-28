@@ -3,10 +3,12 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -58,7 +60,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     @Inject Markdown markdown;
 
     private ImageView sense;
-    private final List<SensorConditionView> sensorViews = new ArrayList<>();
+    private LinearLayout sensorViewContainer;
     private LinearLayout dynamicContent;
     private TextView status;
     private SensorTickerView scoreTicker;
@@ -96,15 +98,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
-        ViewGroup sensors = (ViewGroup) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
-        for (int i = 0, count = sensors.getChildCount(); i < count; i++) {
-            View sensorChild = sensors.getChildAt(i);
-            if (sensorChild instanceof SensorConditionView) {
-                SensorConditionView conditionView = (SensorConditionView) sensorChild;
-                conditionView.setAnimatorContext(animatorContext);
-                sensorViews.add(conditionView);
-            }
-        }
+        this.sensorViewContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
 
         this.dynamicContent = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_content);
         this.status = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_status);
@@ -155,14 +149,13 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         animateSenseToGray();
 
         final SensorState sensor = sensors.get(position);
-        final SensorConditionView sensorView = sensorViews.get(position);
+        final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
         final String sensorName = sensor.getName();
 
         status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_SectionHeading);
         status.setText(getStatusStringForSensor(sensorName));
         this.animatingSensorView = sensorView;
         sensorView.crossFadeToFill(R.drawable.room_check_sensor_border_loading, true, () -> {
-
             int convertedValue = 0;
             if (sensor.getValue() != null) {
                 UnitConverter converter = unitFormatter.getUnitConverterForSensor(sensorName);
@@ -229,10 +222,10 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         stateSafeExecutor.execute(() -> {
             final int conditionCount = sensors.size();
             if (conditionCount > 0) {
-                int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
-                int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
-                int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
-                Condition averageCondition = Condition.values()[conditionOrdinal];
+                final int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
+                final int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
+                final int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
+                final Condition averageCondition = Condition.values()[conditionOrdinal];
                 if (animate) {
                     animateSenseCondition(averageCondition, true);
                 } else {
@@ -240,14 +233,15 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                 }
 
                 for (int i = 0; i < conditionCount; i++) {
-                    SensorConditionView sensorView = sensorViews.get(i);
-                    SensorState condition = sensors.get(i);
+                    final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
+                    final SensorState condition = sensors.get(i);
                     sensorView.setTint(resources.getColor(condition.getCondition().colorRes));
                     sensorView.setFill(R.drawable.room_check_sensor_border_filled);
                 }
             } else {
-                int defaultTint = resources.getColor(R.color.light_accent);
-                for (SensorConditionView sensorView : sensorViews) {
+                final int defaultTint = resources.getColor(R.color.light_accent);
+                for (int i = 0; i < conditionCount; i++) {
+                    final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
                     sensorView.setTint(defaultTint);
                     sensorView.setFill(R.drawable.room_check_sensor_border_filled);
                 }
@@ -376,9 +370,48 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         }
     }
 
+    private @DrawableRes int getIconForSensor(@NonNull String sensorName) {
+        switch (sensorName) {
+            case ApiService.SENSOR_NAME_TEMPERATURE: {
+                return R.drawable.room_check_sensor_temperature;
+            }
+            case ApiService.SENSOR_NAME_HUMIDITY: {
+                return R.drawable.room_check_sensor_humidity;
+            }
+            case ApiService.SENSOR_NAME_PARTICULATES: {
+                return R.drawable.room_check_sensor_airquality;
+            }
+            case ApiService.SENSOR_NAME_LIGHT: {
+                return R.drawable.room_check_sensor_light;
+            }
+            case ApiService.SENSOR_NAME_SOUND: {
+                return R.drawable.room_check_sensor_sound;
+            }
+            default: {
+                return 0;
+            }
+        }
+    }
+
     public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
         sensors.clear();
         sensors.addAll(current.conditions.toList());
+
+        sensorViewContainer.removeAllViews();
+
+        final Context context = getActivity();
+        final Resources resources = getResources();
+        final LinearLayout.LayoutParams layoutParams
+                = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        for (SensorState sensor : sensors) {
+            final SensorConditionView conditionView = new SensorConditionView(context);
+            final int iconForSensor = getIconForSensor(sensor.getName());
+            final Drawable iconDrawable = ResourcesCompat.getDrawable(resources, iconForSensor, null);
+            conditionView.setIcon(iconDrawable);
+            conditionView.setAnimatorContext(animatorContext);
+            sensorViewContainer.addView(conditionView, layoutParams);
+        }
+
 
         showConditionAt(0);
     }
@@ -387,6 +420,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         Analytics.trackError(e, "Room check");
         Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
+        sensorViewContainer.removeAllViews();
         sensors.clear();
 
         jumpToEnd(true);
