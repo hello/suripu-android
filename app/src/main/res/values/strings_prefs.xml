@@ -7,7 +7,7 @@
     <string name="setting_option_temperature_us">Fahrenheit</string>
     <string name="setting_option_temperature_metric">Celsius</string>
     <string name="setting_option_weight_us">Pounds</string>
-    <string name="setting_option_weight_metric">Grams</string>
+    <string name="setting_option_weight_metric">Kilograms</string>
     <string name="setting_option_height_us">Feet\' Inches\'\'</string>
     <string name="setting_option_height_metric">Centimeters</string>
 
