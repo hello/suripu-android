@@ -303,11 +303,11 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
          * The provider must run the provided onComplete
          * Runnable after all animation is completed.
          *
-         * @param holder        The simple step holder whose contents must be animated.
+         * @param view          The simple step view whose contents must be animated.
          * @param onComplete    The completion handler provided by the static step fragment.
          *
          * @see OnboardingSimpleStepView
          */
-        void executeAnimation(@NonNull OnboardingSimpleStepView holder, @NonNull Runnable onComplete);
+        void executeAnimation(@NonNull OnboardingSimpleStepView view, @NonNull Runnable onComplete);
     }
 }

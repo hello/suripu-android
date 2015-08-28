@@ -13,11 +13,11 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import is.hello.sense.R;
@@ -29,13 +29,12 @@ import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
 public class OnboardingSimpleStepView extends RelativeLayout {
-    private final ViewGroup stepView;
-
     public final OnboardingToolbar toolbar;
 
     public final Button primaryButton;
     public final Button secondaryButton;
 
+    public final ScrollView contentsScrollView;
     public final LinearLayout contents;
     public final TextView headingText;
     public final TextView subheadingText;
@@ -49,16 +48,17 @@ public class OnboardingSimpleStepView extends RelativeLayout {
                                     @NonNull LayoutInflater inflater) {
         super(fragment.getActivity());
 
-        this.stepView = (ViewGroup) inflater.inflate(R.layout.fragment_onboarding_simple_step, this, true);
+        inflater.inflate(R.layout.view_onboarding_simple_step, this, true);
 
-        this.toolbar = OnboardingToolbar.of(fragment, stepView);
+        this.toolbar = OnboardingToolbar.of(fragment, this);
 
-        this.primaryButton = (Button) stepView.findViewById(R.id.fragment_onboarding_simple_step_primary);
-        this.secondaryButton = (Button) stepView.findViewById(R.id.fragment_onboarding_simple_step_secondary);
+        this.primaryButton = (Button) findViewById(R.id.view_onboarding_simple_step_primary);
+        this.secondaryButton = (Button) findViewById(R.id.view_onboarding_simple_step_secondary);
 
-        this.contents = (LinearLayout) stepView.findViewById(R.id.fragment_onboarding_simple_step_contents);
-        this.headingText = (TextView) stepView.findViewById(R.id.fragment_onboarding_simple_step_heading);
-        this.subheadingText = (TextView) stepView.findViewById(R.id.fragment_onboarding_simple_step_subheading);
+        this.contentsScrollView = (ScrollView) findViewById(R.id.view_onboarding_simple_step_contents_scroll);
+        this.contents = (LinearLayout) contentsScrollView.findViewById(R.id.view_onboarding_simple_step_contents);
+        this.headingText = (TextView) contents.findViewById(R.id.view_onboarding_simple_step_heading);
+        this.subheadingText = (TextView) contents.findViewById(R.id.view_onboarding_simple_step_subheading);
     }
 
     public OnboardingSimpleStepView configure(@NonNull Action1<OnboardingSimpleStepView> visitor) {
@@ -78,7 +78,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
     //region Toolbar
 
     public OnboardingSimpleStepView hideToolbar() {
-        int newTopPadding = stepView.getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        int newTopPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
         headingText.setPadding(headingText.getPaddingLeft(), newTopPadding, headingText.getRight(), headingText.getBottom());
         toolbar.hide();
         return this;
@@ -107,7 +107,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
     public OnboardingSimpleStepView setCompact(boolean compact) {
         toolbar.setCompact(compact);
 
-        Resources resources = stepView.getResources();
+        Resources resources = getResources();
         int newBottomMargin;
         if (compact) {
             newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_small);

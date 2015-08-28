@@ -105,7 +105,11 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
         bottomContainer.post(() -> {
             this.nextButtonMaxY = bottomContainer.getMeasuredHeight();
             this.nextButtonMinY = (bottomContainer.getMeasuredHeight() / 2) - (nextButton.getMeasuredHeight() / 2);
-            nextButton.setY(nextButtonMaxY);
+            if (viewPager.getCurrentItem() == finalItem) {
+                nextButton.setY(nextButtonMinY);
+            } else {
+                nextButton.setY(nextButtonMaxY);
+            }
         });
 
         return view;
@@ -131,6 +135,9 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
 
         adapter.destroyDiagramVideoViews();
         viewPager.clearOnPageChangeListeners();
+
+        this.transformer = null;
+        this.adapter = null;
     }
 
     public void next(@NonNull View sender) {

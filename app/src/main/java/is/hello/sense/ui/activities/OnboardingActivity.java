@@ -458,15 +458,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
-                return (holder, onCompletion) -> {
-                    int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
+                return (view, onCompletion) -> {
+                    final int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
 
-                    animatorFor(holder.contents)
-                            .addOnAnimationWillStart(() -> holder.contents.setBackgroundResource(R.color.background_onboarding))
+                    animatorFor(view.contentsScrollView)
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)
                             .start();
 
-                    animatorFor(holder.primaryButton)
+                    animatorFor(view.primaryButton)
                             .slideYAndFade(0f, slideAmount, 1f, 0f)
                             .addOnAnimationCompleted(finished -> onCompletion.run())
                             .start();
