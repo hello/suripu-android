@@ -359,7 +359,8 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     public boolean isUndersideVisible() {
-        return slidingLayersView.isOpen();
+        return (slidingLayersView.isOpen() ||
+                slidingLayersView.isInMotion());
     }
 
     public boolean isCurrentFragmentLastNight() {
