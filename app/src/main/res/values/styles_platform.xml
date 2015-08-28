@@ -3,6 +3,7 @@
     <style name="Platform" />
     <style name="Platform.Light" parent="android:Theme.Holo.Light">
         <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
+        <item name="android:listChoiceIndicatorMultiple">@drawable/holo_check_selector</item>
     </style>
     <style name="Platform.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid" />
     <style name="Platform.ListPopupWindow" parent="android:style/Widget.Holo.Light.ListPopupWindow" />
@@ -16,7 +17,4 @@
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner" />
     <style name="Platform.Button" parent="android:Widget.Holo.Light.Button" />
     <style name="Platform.EditText" parent="android:Widget.Holo.Light.EditText" />
-    <style name="Platform.CheckBox" parent="android:Widget.Holo.Light.CompoundButton.CheckBox">
-        <item name="android:button">@drawable/holo_check_selector</item>
-    </style>
 </resources>
