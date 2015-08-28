@@ -88,8 +88,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
             stateSafeExecutor.execute(() -> LoadingDialogFragment.close(getFragmentManager()));
             showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
-                    R.string.action_reconnect,
-                    SenseDetailsFragment.this::connectToPeripheral);
+                                     R.string.action_reconnect,
+                                     SenseDetailsFragment.this::connectToPeripheral);
             showRestrictedSenseActions();
         }
     };
@@ -174,7 +174,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         if (requestCode == REQUEST_CODE_WIFI) {
             if (hardwarePresenter.isConnected()) {
                 hideAlert();
-                checkConnectivityState();
+                checkConnectivityState(true);
             }
         } else if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwarePresenter.setWantsHighPowerPreScan(true);
@@ -239,8 +239,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         changeWiFi.setEnabled(true);
 
         if (network == null ||
-            TextUtils.isEmpty(network.ssid) ||
-            wifi_connection_state.IP_RETRIEVED != network.connectionState) {
+                TextUtils.isEmpty(network.ssid) ||
+                wifi_connection_state.IP_RETRIEVED != network.connectionState) {
             showTroubleshootingAlert(R.string.error_sense_no_connectivity,
                                      R.string.action_troubleshoot,
                                      () -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
@@ -284,12 +284,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     public void bindPeripheral(@NonNull SensePeripheral ignored) {
         if (hardwarePresenter.isConnected()) {
-            checkConnectivityState();
+            checkConnectivityState(false);
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
                                  if (status == Operation.CONNECTED) {
-                                     checkConnectivityState();
+                                     checkConnectivityState(false);
                                  }
                              },
                              this::presentError);
@@ -328,21 +328,22 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
 
-    public void checkConnectivityState() {
-        if (currentWifiNetwork != null) {
+    public void checkConnectivityState(boolean ignoreCachedNetwork) {
+        if (!ignoreCachedNetwork && currentWifiNetwork != null) {
             showConnectedSenseActions(currentWifiNetwork);
         } else {
+            showBlockingAlert(R.string.title_checking_connectivity);
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
-                    network -> {
-                        preferences.edit()
-                                .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                                .apply();
+                             network -> {
+                                 preferences.edit()
+                                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
+                                            .apply();
 
-                        this.currentWifiNetwork = network;
+                                 this.currentWifiNetwork = network;
 
-                        showConnectedSenseActions(network);
-                    },
-                    this::presentError);
+                                 showConnectedSenseActions(network);
+                             },
+                             this::presentError);
         }
     }
 
@@ -381,19 +382,19 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         this.blockConnection = true;
 
         LoadingDialogFragment.show(getFragmentManager(),
-                getString(R.string.dialog_loading_message),
-                LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                   getString(R.string.dialog_loading_message),
+                                   LoadingDialogFragment.OPAQUE_BACKGROUND);
         hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY)
-                .subscribe(ignored -> {
-                    bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                            ignored1 -> {
-                                LoadingDialogFragment.close(getFragmentManager());
-                                getFragmentManager().popBackStackImmediate();
-                            },
-                            this::presentError);
-                }, e -> {
-                    stateSafeExecutor.execute(() -> presentError(e));
-                });
+                         .subscribe(ignored -> {
+                             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                                              ignored1 -> {
+                                                  LoadingDialogFragment.close(getFragmentManager());
+                                                  getFragmentManager().popBackStackImmediate();
+                                              },
+                                              this::presentError);
+                         }, e -> {
+                             stateSafeExecutor.execute(() -> presentError(e));
+                         });
     }
 
     public void changeTimeZone() {
@@ -410,24 +411,24 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         useCurrentPrompt.setPositiveButton(R.string.action_set_this_time_zone, (dialog, which) -> {
             SenseTimeZone senseTimeZone = SenseTimeZone.fromDateTimeZone(DateTimeZone.getDefault());
             LoadingDialogFragment.show(getFragmentManager(),
-                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
             bindAndSubscribe(accountPresenter.updateTimeZone(senseTimeZone),
-                    ignored -> {
-                        Logger.info(getClass().getSimpleName(), "Updated time zone");
+                             ignored -> {
+                                 Logger.info(getClass().getSimpleName(), "Updated time zone");
 
-                        JSONObject properties = Analytics.createProperties(
-                            Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
-                        );
-                        Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
+                                 JSONObject properties = Analytics.createProperties(
+                                         Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
+                                                                                   );
+                                 Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
 
-                        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
-                    },
-                    this::presentError);
+                                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                             },
+                             this::presentError);
         });
         useCurrentPrompt.setNegativeButton(R.string.action_select_time_zone_from_list, (dialog, which) -> {
             DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
             ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment,
-                    getString(R.string.action_change_time_zone), true);
+                                                              getString(R.string.action_change_time_zone), true);
         });
         useCurrentPrompt.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
 
@@ -443,14 +444,14 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                         .setTitle(R.string.action_replace_this_sense)
                         .setTitleColor(getResources().getColor(R.color.light_accent))
                         .setDescription(R.string.description_replace_this_sense)
-        );
+                   );
         if (hardwarePresenter.isConnected()) {
             options.add(
-                new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
-                        .setTitle(R.string.action_factory_reset)
-                        .setTitleColor(getResources().getColor(R.color.destructive_accent))
-                        .setDescription(R.string.description_factory_reset)
-            );
+                    new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
+                            .setTitle(R.string.action_factory_reset)
+                            .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                            .setDescription(R.string.description_factory_reset)
+                       );
         }
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
         advancedOptions.setTargetFragment(this, REQUEST_CODE_ADVANCED);
@@ -479,7 +480,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     private void completeFactoryReset() {
         LoadingDialogFragment loadingDialogFragment = LoadingDialogFragment.newInstance(getString(R.string.dialog_loading_message),
-                LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
         // Whenever this class gets redone in true MVP style,
         // this can probably be removed by the presenter managing
         // the loading view state. Relevant issue [#97240482].
@@ -489,17 +490,17 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             this.blockConnection = true;
 
             bindAndSubscribe(hardwarePresenter.factoryReset(device),
-                    device -> {
-                        loadingDialogFragment.dismissSafely();
-                        Analytics.setSenseId("unpaired");
+                             device -> {
+                                 loadingDialogFragment.dismissSafely();
+                                 Analytics.setSenseId("unpaired");
 
-                        MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
-                                R.string.message_power_cycle_sense_factory_reset);
-                        powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+                                 MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                                                                                            R.string.message_power_cycle_sense_factory_reset);
+                                 powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
-                        finishWithResult(RESULT_REPLACED_DEVICE, null);
-                    },
-                    this::presentError);
+                                 finishWithResult(RESULT_REPLACED_DEVICE, null);
+                             },
+                             this::presentError);
         }, e -> {
             stateSafeExecutor.execute(() -> presentError(e));
         });
@@ -519,11 +520,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         dialog.setNegativeButton(android.R.string.cancel, null);
         dialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
-                    ignored -> {
-                        Analytics.setSenseId("unpaired");
-                        finishDeviceReplaced();
-                    },
-                    this::presentError);
+                             ignored -> {
+                                 Analytics.setSenseId("unpaired");
+                                 finishDeviceReplaced();
+                             },
+                             this::presentError);
         });
         dialog.show();
     }
