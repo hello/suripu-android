@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SensorGraphSample;
@@ -295,9 +296,15 @@ public class RoomConditionsFragment extends UndersideTabFragment
             @Override
             public void bind(int position) {
                 final SensorState sensorState = getItem(position);
+                final String sensorName = sensorState.getName();
                 final int sensorColor = resources.getColor(sensorState.getCondition().colorRes);
 
-                final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensorState.getName());
+                final UnitPrinter printer;
+                if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensorName)) {
+                    printer = UnitPrinter.SIMPLE;
+                } else {
+                    printer = unitFormatter.getUnitPrinterForSensor(sensorName);
+                }
                 final CharSequence readingText = sensorState.getFormattedValue(printer);
                 if (!TextUtils.isEmpty(readingText)) {
                     reading.setText(readingText);
@@ -309,7 +316,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
                 markdown.renderInto(message, sensorState.getMessage());
 
                 lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
-                lineGraphDrawable.setAdapter(getSensorGraphAdapter(sensorState.getName()));
+                lineGraphDrawable.setAdapter(getSensorGraphAdapter(sensorName));
             }
         }
     }
