@@ -292,9 +292,11 @@ public class SlidingLayersView extends FrameLayout {
 
     private boolean shouldSnapOpen(float velocity) {
         if (isOpen) {
-            return (topViewY > (getMeasuredHeight() - topViewOpenHeight * 2));
+            return (velocity > Constants.OPEN_VELOCITY_THRESHOLD ||
+                    topViewY > (getMeasuredHeight() - topViewOpenHeight * 2));
         } else {
-            return (topViewY > 0f && (topViewY > topViewOpenHeight || velocity > Constants.OPEN_VELOCITY_THRESHOLD));
+            return (topViewY > 0f && (topViewY > topViewOpenHeight ||
+                    velocity > Constants.OPEN_VELOCITY_THRESHOLD));
         }
     }
 
@@ -391,7 +393,7 @@ public class SlidingLayersView extends FrameLayout {
                     animateClosed(Anime.DURATION_NORMAL);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
-                    float velocity = Math.abs(velocityTracker.getYVelocity());
+                    float velocity = velocityTracker.getYVelocity();
                     long duration = Anime.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);

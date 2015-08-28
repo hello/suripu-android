@@ -60,6 +60,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
             this.hasClearedAllViews = savedInstanceState.getBoolean("hasClearedAllViews", false);
         } else {
             Analytics.trackEvent(Analytics.TopView.EVENT_QUESTION, null);
+            questionsPresenter.userEnteredFlow();
         }
 
         addPresenter(questionsPresenter);

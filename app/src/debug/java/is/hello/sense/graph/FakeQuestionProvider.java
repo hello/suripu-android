@@ -67,6 +67,11 @@ public class FakeQuestionProvider implements QuestionProvider {
 
     //region Binding
 
+    @Override
+    public void userEnteredFlow() {
+        // Don't care
+    }
+
     private Observable<ArrayList<Question>> questions() {
         return Observable.<ArrayList<Question>>create(subscriber -> {
             InputStream questionsStream = null;
