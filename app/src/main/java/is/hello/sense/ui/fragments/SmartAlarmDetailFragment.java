@@ -303,7 +303,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             LoadingDialogFragment.close(getFragmentManager());
 
             ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                    .withMessage(StringRef.from(R.string.error_no_smart_alarm_sound))
+                    .withMessage(StringRef.from(R.string.error_no_smart_alarm_tone))
                     .build();
             dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         } else if (smartAlarmPresenter.isAlarmTooSoon(alarm)) {

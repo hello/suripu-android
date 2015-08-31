@@ -71,7 +71,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
             adapter.setSelectedSoundId(selectedSound.id);
         }
 
-        dialog.setMessage(R.string.title_sound);
+        dialog.setMessage(R.string.title_alarm_tone);
         dialog.setListener(this);
         dialog.setAdapter(adapter);
         dialog.setDoneButtonEnabled(selectedSound != null);
@@ -175,7 +175,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onPlaybackError(@NonNull Player player, @NonNull Throwable error) {
         Analytics.trackError(error, "Alarm sound preview");
 
-        Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_sound, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_tone, Toast.LENGTH_SHORT).show();
         adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
     }
 

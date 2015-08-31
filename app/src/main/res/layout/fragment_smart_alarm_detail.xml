@@ -168,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/gap_small"
-                android:text="@string/title_sound"
+                android:text="@string/title_alarm_tone"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
 
             <Button

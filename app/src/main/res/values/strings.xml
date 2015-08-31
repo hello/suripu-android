@@ -157,7 +157,7 @@ so you can sleep better.</string>
     <string name="alarm_never">Alarm</string>
     <string name="smart_alarm_never">Smart Alarm</string>
     <string name="label_time_zone">Your Time Zone</string>
-    <string name="title_sound">Sound</string>
+    <string name="title_alarm_tone">Tone</string>
     <string name="no_sound_placeholder">None</string>
     <string name="label_delete_alarm">Delete Alarm</string>
     <string name="action_done">Done</string>
@@ -257,8 +257,8 @@ so you can sleep better.</string>
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
     <string name="action_change_name">Change Name</string>
-    <string name="error_failed_to_play_alarm_sound">Could not play preview.</string>
-    <string name="error_no_smart_alarm_sound">Please select a sound for this Smart Alarm.</string>
+    <string name="error_failed_to_play_alarm_tone">Could not play preview.</string>
+    <string name="error_no_smart_alarm_tone">Please select a tone for this alarm.</string>
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
@@ -440,7 +440,7 @@ so you can sleep better.</string>
     <string name="condition_short_hand_warning">not ideal</string>
     <string name="condition_short_hand_ideal">just right</string>
     <string name="dialog_title_alarm_sound_volume_low">Low Volume</string>
-    <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm sound preview. Would you like us to turn it up?</string>
+    <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm tone preview. Would you like us to turn it up?</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
     <string name="dialog_negative_alarm_sound_volume_low">No, thanks</string>
     <string name="error_timeline_sound_playback_failed">Could not play sound</string>
