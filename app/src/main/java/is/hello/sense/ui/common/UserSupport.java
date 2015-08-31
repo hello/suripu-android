@@ -111,7 +111,9 @@ public class UserSupport {
         SENSE_NO_WIFI("https://support.hello.is/hc/en-us/articles/205493285"),
         SENSE_ASCII_WEP("https://support.hello.is/hc/en-us/articles/205019779"),
         SLEEP_PILL_MISSING("https://support.hello.is/hc/en-us/articles/204797159"),
-        PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289");
+        PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        TIMELINE_NOT_ENOUGH_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/204994629"),
+        TIMELINE_NO_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/205706435");
 
         private final String url;
         DeviceIssue(@NonNull String url) {

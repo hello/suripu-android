@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Functions;
@@ -42,6 +43,7 @@ import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
@@ -564,10 +566,20 @@ public class TimelineFragment extends InjectionFragment
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
-                } else {
-                    header.setDiagramResource(R.drawable.timeline_state_no_data);
+                } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
+                    header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
                     header.setMessage(timeline.getMessage());
+                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> {
+                        UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NOT_ENOUGH_SLEEP_DATA);
+                    });
+                } else {
+                    header.setDiagramResource(R.drawable.timeline_state_no_data);
+                    header.setTitle(R.string.title_timeline_no_data);
+                    header.setMessage(timeline.getMessage());
+                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> {
+                        UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NO_SLEEP_DATA);
+                    });
                 }
             });
         }

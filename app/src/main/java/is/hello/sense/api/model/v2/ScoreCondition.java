@@ -9,6 +9,7 @@ import is.hello.sense.api.gson.Enums;
 
 public enum ScoreCondition implements Enums.FromString {
     UNAVAILABLE(R.color.sensor_unknown),
+    INCOMPLETE(R.color.sensor_unknown),
     ALERT(R.color.sensor_alert),
     WARNING(R.color.sensor_warning),
     IDEAL(R.color.sensor_ideal);
