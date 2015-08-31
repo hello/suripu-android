@@ -240,15 +240,20 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder
     }
 
     private void dispatchItemClick(@NonNull SegmentViewHolder holder) {
-        if (onItemClickExecutor != null && onItemClickListener != null) {
-            OnItemClickListener onItemClickListener = this.onItemClickListener;
+        // View dispatches OnClickListener#onClick(View) calls on
+        // the next looper cycle. It's possible for the adapter's
+        // containing recycler view to update and invalidate a
+        // view holder before the callback fires.
+        final int adapterPosition = holder.getAdapterPosition();
+        if (onItemClickExecutor != null && onItemClickListener != null &&
+                adapterPosition != RecyclerView.NO_POSITION) {
+            final OnItemClickListener onItemClickListener = this.onItemClickListener;
             onItemClickExecutor.execute(() -> {
-                int position = holder.getAdapterPosition();
-                TimelineEvent event = getEvent(position);
+                final TimelineEvent event = getEvent(adapterPosition);
                 if (event.hasInfo()) {
-                    onItemClickListener.onEventItemClicked(position, event);
+                    onItemClickListener.onEventItemClicked(adapterPosition, event);
                 } else {
-                    onItemClickListener.onSegmentItemClicked(position, holder.itemView, event);
+                    onItemClickListener.onSegmentItemClicked(adapterPosition, holder.itemView, event);
                 }
             });
         }

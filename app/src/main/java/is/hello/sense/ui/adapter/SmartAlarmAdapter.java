@@ -168,20 +168,34 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
         @Override
         public void onClick(View sender) {
-            int position = getAdapterPosition();
-            if (sender == enabled) {
-                interactionListener.onAlarmEnabledChanged(position, enabled.isChecked());
-            } else {
-                Alarm alarm = alarms.get(position);
-                interactionListener.onAlarmClicked(position, alarm);
+            // View dispatches OnClickListener#onClick(View) calls on
+            // the next looper cycle. It's possible for the adapter's
+            // containing recycler view to update and invalidate a
+            // view holder before the callback fires.
+            final int adapterPosition = getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                if (sender == enabled) {
+                    interactionListener.onAlarmEnabledChanged(adapterPosition, enabled.isChecked());
+                } else {
+                    final Alarm alarm = alarms.get(adapterPosition);
+                    interactionListener.onAlarmClicked(adapterPosition, alarm);
+                }
             }
         }
 
         @Override
         public boolean onLongClick(View ignored) {
-            int position = getAdapterPosition();
-            Alarm alarm = alarms.get(position);
-            return interactionListener.onAlarmLongClicked(position, alarm);
+            // View dispatches OnClickListener#onClick(View) calls on
+            // the next looper cycle. It's possible for the adapter's
+            // containing recycler view to update and invalidate a
+            // view holder before the callback fires.
+            final int adapterPosition = getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                final Alarm alarm = alarms.get(adapterPosition);
+                return interactionListener.onAlarmLongClicked(adapterPosition, alarm);
+            }
+
+            return false;
         }
     }
 

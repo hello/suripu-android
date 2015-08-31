@@ -237,8 +237,15 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         @Override
         public void onClick(View ignored) {
-            Insight insight = getInsightItem(getAdapterPosition());
-            interactionListener.onInsightClicked(insight);
+            // View dispatches OnClickListener#onClick(View) calls on
+            // the next looper cycle. It's possible for the adapter's
+            // containing recycler view to update and invalidate a
+            // view holder before the callback fires.
+            final int adapterPosition = getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                Insight insight = getInsightItem(adapterPosition);
+                interactionListener.onInsightClicked(insight);
+            }
         }
     }
 

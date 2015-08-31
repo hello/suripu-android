@@ -21,6 +21,8 @@ import static is.hello.sense.AssertExtensions.assertThrows;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
 
 public class ArrayRecyclerAdapterTests extends SenseTestCase {
     private final TestAdapter adapter = new TestAdapter();
@@ -208,6 +210,21 @@ public class ArrayRecyclerAdapterTests extends SenseTestCase {
         holder.onClick(holder.itemView);
 
         assertEquals(0, clickedPosition.get());
+    }
+
+    @Test
+    public void onClickIsStateChangeSafe() throws Exception {
+        adapter.add("test");
+
+        adapter.setOnItemClickedListener((position, item) -> {
+            fail("onItemClick called with NO_POSITION");
+        });
+
+        FrameLayout fakeParent = new FrameLayout(getContext());
+        ArrayRecyclerAdapter.ViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+              fakeParent, adapter.getItemViewType(0), 0);
+        doReturn(RecyclerView.NO_POSITION).when(holder).getAdapterPosition();
+        holder.onClick(holder.itemView);
     }
 
     //endregion

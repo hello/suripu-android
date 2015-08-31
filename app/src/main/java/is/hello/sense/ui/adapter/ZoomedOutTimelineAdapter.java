@@ -95,7 +95,12 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     }
 
     private void dispatchClick(@NonNull ViewHolder viewHolder) {
-        if (onItemClickedListener != null) {
+        // View dispatches OnClickListener#onClick(View) calls on
+        // the next looper cycle. It's possible for the adapter's
+        // containing recycler view to update and invalidate a
+        // view holder before the callback fires.
+        final int adapterPosition = viewHolder.getAdapterPosition();
+        if (onItemClickedListener != null && adapterPosition != RecyclerView.NO_POSITION) {
             onItemClickedListener.onItemClicked(viewHolder.itemView, viewHolder.getAdapterPosition());
         }
     }
