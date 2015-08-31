@@ -6,12 +6,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Lists;
@@ -26,6 +24,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -41,7 +40,7 @@ public class ApiQuestionProviderTests extends InjectionTestCase {
     @After
     public void tearDown() {
         questionProvider.questions.clear();
-        questionProvider.current = ApiQuestionProvider.CURRENT_NONE;
+        questionProvider.current = 0;
     }
 
     public void prepareForTest() {
@@ -56,25 +55,66 @@ public class ApiQuestionProviderTests extends InjectionTestCase {
         Bundle savedState = questionProvider.saveState();
         assertThat(savedState, is(notNullValue()));
 
-        ApiQuestionProvider second = new ApiQuestionProvider(apiService, Rx.mainThreadScheduler());
+        ApiQuestionProvider second = new ApiQuestionProvider(apiService, Schedulers.immediate());
         //noinspection ConstantConditions
         second.restoreState(savedState);
 
         assertThat(second.current, is(equalTo(questionProvider.current)));
         assertThat(second.questions, is(equalTo(questionProvider.questions)));
+        assertThat(second.getCurrentQuestion(), is(notNullValue()));
+    }
+
+    @Test
+    public void saveStateAtEnd() {
+        prepareForTest();
+        questionProvider.skipCurrent(true).subscribe();
+        questionProvider.skipCurrent(true).subscribe();
+
+        assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
+
+        Bundle savedState = questionProvider.saveState();
+        assertThat(savedState, is(notNullValue()));
+
+        ApiQuestionProvider second = new ApiQuestionProvider(apiService, Schedulers.immediate());
+        //noinspection ConstantConditions
+        second.restoreState(savedState);
+
+        assertThat(second.current, is(equalTo(questionProvider.current)));
+        assertThat(second.questions, is(equalTo(questionProvider.questions)));
+        assertThat(second.getCurrentQuestion(), is(nullValue()));
+    }
+
+    @Test
+    public void saveStateWithInterveningUpdate() {
+        prepareForTest();
+
+        Bundle savedState = questionProvider.saveState();
+        assertThat(savedState, is(notNullValue()));
+
+        ApiQuestionProvider second = new ApiQuestionProvider(apiService, Schedulers.immediate());
+        Sync.last(second.prepare());
+        questionProvider.skipCurrent(true).subscribe();
+
+        //noinspection ConstantConditions
+        second.restoreState(savedState);
+
+        assertThat(second.current, is(not(equalTo(questionProvider.current))));
+        assertThat(second.questions, is(not(equalTo(questionProvider.questions))));
     }
 
     @Test
     public void lowMemory() throws Exception {
         prepareForTest();
 
-        assertThat(questionProvider.questions, is(not(Collections.emptyList())));
-        assertThat(questionProvider.current, is(not(equalTo(ApiQuestionProvider.CURRENT_NONE))));
+        questionProvider.skipCurrent(true).subscribe();
+
+        assertThat(questionProvider.questions, is(not(empty())));
+        assertThat(questionProvider.current, is(not(equalTo(0))));
 
         assertThat(questionProvider.lowMemory(), is(true));
 
-        assertThat(questionProvider.questions, is(Collections.emptyList()));
-        assertThat(questionProvider.current, is(equalTo(ApiQuestionProvider.CURRENT_NONE)));
+        assertThat(questionProvider.questions, is(empty()));
+        assertThat(questionProvider.current, is(equalTo(0)));
     }
 
     @Test

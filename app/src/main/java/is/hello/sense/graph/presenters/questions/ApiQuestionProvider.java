@@ -14,17 +14,16 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.functional.Lists;
 import rx.Observable;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 public class ApiQuestionProvider implements QuestionProvider {
-    static final int CURRENT_NONE = -1;
-
     private final ApiService apiService;
     private final Scheduler updateScheduler;
     @VisibleForTesting final ArrayList<Question> questions = new ArrayList<>();
-    @VisibleForTesting int current = CURRENT_NONE;
+    @VisibleForTesting int current = 0;
 
 
     //region Lifecycle
@@ -57,12 +56,13 @@ public class ApiQuestionProvider implements QuestionProvider {
     @Override
     public void restoreState(@NonNull Bundle savedState) {
         if (this.questions.isEmpty()) {
+            this.current = savedState.getInt("current", 0);
+
             @SuppressWarnings("unchecked")
-            ArrayList<Question> questions =
+            final ArrayList<Question> questions =
                     (ArrayList<Question>) savedState.getSerializable("questions");
-            if (questions != null) {
+            if (!Lists.isEmpty(questions)) {
                 this.questions.addAll(questions);
-                this.current = savedState.getInt("current", CURRENT_NONE);
             }
         }
     }
@@ -70,7 +70,7 @@ public class ApiQuestionProvider implements QuestionProvider {
     @Override
     public boolean lowMemory() {
         this.questions.clear();
-        this.current = CURRENT_NONE;
+        this.current = 0;
 
         return true;
     }
@@ -100,18 +100,14 @@ public class ApiQuestionProvider implements QuestionProvider {
                                  this.questions.clear();
                                  this.questions.addAll(questions);
 
-                                 if (questions.isEmpty()) {
-                                     this.current = CURRENT_NONE;
-                                 } else {
-                                     this.current = 0;
-                                 }
+                                 this.current = 0;
 
                                  subscriber.onNext(getCurrentQuestion());
                                  subscriber.onCompleted();
                              },
                              error -> {
                                  this.questions.clear();
-                                 this.current = CURRENT_NONE;
+                                 this.current = 0;
 
                                  subscriber.onError(error);
                              });
@@ -121,7 +117,7 @@ public class ApiQuestionProvider implements QuestionProvider {
     @Nullable
     @Override
     public Question getCurrentQuestion() {
-        if (current == CURRENT_NONE) {
+        if (current >= questions.size()) {
             return null;
         } else {
             return questions.get(current);
@@ -130,7 +126,7 @@ public class ApiQuestionProvider implements QuestionProvider {
 
     @Override
     public void answerCurrent(@NonNull List<Question.Choice> choices) {
-        if (current == CURRENT_NONE) {
+        if (current >= questions.size()) {
             return;
         }
 
@@ -138,12 +134,12 @@ public class ApiQuestionProvider implements QuestionProvider {
         apiService.answerQuestion(currentQuestion.getAccountId(), choices)
                   .subscribe();
 
-        advance();
+        this.current++;
     }
 
     @Override
     public Observable<Void> skipCurrent(boolean advanceImmediately) {
-        if (current == CURRENT_NONE) {
+        if (current >= questions.size()) {
             return Observable.just(null);
         }
 
@@ -152,30 +148,22 @@ public class ApiQuestionProvider implements QuestionProvider {
                                                                 currentQuestion.getId(),
                                                                 "");
         if (advanceImmediately) {
-            advance();
+            this.current++;
             return skip.map(Functions.TO_VOID);
         } else {
             return Observable.create(subscriber -> {
                 skip.observeOn(updateScheduler)
                     .subscribe(ignored -> {
-                                   advance();
+                                   this.current++;
                                    subscriber.onNext(null);
                                },
                                e -> {
-                                   advance();
+                                   this.current++;
                                    subscriber.onError(e);
                                },
                                subscriber::onCompleted);
             });
         }
-    }
-
-    private void advance() {
-        int next = current + 1;
-        if (next >= questions.size()) {
-            next = CURRENT_NONE;
-        }
-        this.current = next;
     }
 
     //endregion
