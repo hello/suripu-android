@@ -201,11 +201,6 @@ public class HomeActivity extends ScopedInjectionActivity
                              Functions.LOG_ERROR);
         }
 
-        UndersideFragment underside = getUndersideFragment();
-        if (underside != null) {
-            underside.notifyTabSelected(false);
-        }
-
         checkInForUpdates();
     }
 
@@ -225,12 +220,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
         if (showUnderside) {
             slidingLayersView.openWithoutAnimation();
-            slidingLayersView.post(() -> {
-                UndersideFragment underside = getUndersideFragment();
-                if (underside != null) {
-                    underside.notifyTabSelected(false);
-                }
-            });
             this.showUnderside = false;
         }
 
@@ -529,7 +518,7 @@ public class HomeActivity extends ScopedInjectionActivity
         if (slidingLayersView.isOpen()) {
             UndersideFragment underside = getUndersideFragment();
             if (underside != null) {
-                underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE | UndersideFragment.OPTION_NOTIFY);
+                underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE);
             }
         } else {
             UndersideFragment.saveCurrentItem(this, item);
@@ -587,17 +576,6 @@ public class HomeActivity extends ScopedInjectionActivity
                     .withInterpolator(interpolator)
                     .scale(finalScale)
                     .alpha(finalAlpha)
-                    .addOnAnimationCompleted(finished -> {
-                        if (!finished || isFinishing() || isDestroyed())
-                            return;
-
-                        if (slidingLayersView.isOpen()) {
-                            UndersideFragment underside = getUndersideFragment();
-                            if (underside != null) {
-                                underside.notifyTabSelected(false);
-                            }
-                        }
-                    })
                     .start();
         }
 

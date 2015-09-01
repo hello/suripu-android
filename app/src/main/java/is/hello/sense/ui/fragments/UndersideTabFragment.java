@@ -11,21 +11,23 @@ public abstract class UndersideTabFragment extends InjectionFragment {
         return (Scope) getActivity();
     }
 
-    /**
-     * Notifies the fragment that it is on screen, and may perform an update.
-     */
-    public final void tabSelected() {
-        stateSafeExecutor.execute(() -> {
-            onUpdate();
-            onSwipeInteractionDidFinish();
-        });
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        boolean wasVisibleToUser = getUserVisibleHint();
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!wasVisibleToUser && isVisibleToUser) {
+            stateSafeExecutor.execute(() -> {
+                onUpdate();
+                onSwipeInteractionDidFinish();
+            });
+        }
     }
 
     /**
      * Hook provided for subclasses to perform animations, etc
      * when they're guaranteed to be fully on-screen.
      */
-    public abstract void onSwipeInteractionDidFinish();
+    protected abstract void onSwipeInteractionDidFinish();
 
     /**
      * Hook provided for subclasses to perform presenter

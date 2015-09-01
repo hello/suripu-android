@@ -38,7 +38,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     public static final int OPTION_NONE = 0;
     public static final int OPTION_ANIMATE = (1 << 1);
-    public static final int OPTION_NOTIFY = (1 << 2);
 
     private SharedPreferences preferences;
 
@@ -156,7 +155,7 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     public boolean onBackPressed() {
         if (pager.getCurrentItem() != DEFAULT_START_ITEM) {
-            setCurrentItem(DEFAULT_START_ITEM, OPTION_ANIMATE | OPTION_NOTIFY);
+            setCurrentItem(DEFAULT_START_ITEM, OPTION_ANIMATE);
             return true;
         } else {
             return false;
@@ -179,28 +178,9 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
         return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
-    public void notifyTabSelected(boolean withDelay) {
-        Runnable notify = () -> {
-            UndersideTabFragment fragment = getCurrentTabFragment();
-            if (fragment != null) {
-                fragment.tabSelected();
-            }
-        };
-
-        if (withDelay) {
-            pager.postDelayed(notify, 500);
-        } else {
-            pager.post(notify);
-        }
-    }
-
     public void setCurrentItem(int currentItem, int options) {
         boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
         pager.setCurrentItem(currentItem, animate);
-
-        if ((options & OPTION_NOTIFY) == OPTION_NOTIFY) {
-            notifyTabSelected(true);
-        }
     }
 
     public void saveCurrentItem(int currentItem) {
@@ -221,7 +201,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     public void onPageSelected(int position) {
         tabs.setSelectedIndex(position);
         saveCurrentItem(position);
-        notifyTabSelected(true);
     }
 
     @Override
@@ -231,6 +210,6 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        setCurrentItem(newSelectionIndex, OPTION_NOTIFY | OPTION_ANIMATE);
+        setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
     }
 }
