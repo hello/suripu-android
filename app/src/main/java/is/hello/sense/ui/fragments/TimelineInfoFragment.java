@@ -514,7 +514,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                         case SOUND:
                             return R.string.condition_short_hand_alert_sound;
                         case PARTICULATES:
-                            return R.string.condition_short_hand_alert_aqi;
+                            return R.string.condition_short_hand_alert_airquality;
                         case LIGHT:
                             return R.string.condition_short_hand_alert_light;
                         default:
@@ -526,7 +526,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                         case SOUND:
                             return R.string.condition_short_hand_warning_sound;
                         case PARTICULATES:
-                            return R.string.condition_short_hand_warning_aqi;
+                            return R.string.condition_short_hand_warning_airquality;
                         case LIGHT:
                             return R.string.condition_short_hand_warning_light;
                         default:

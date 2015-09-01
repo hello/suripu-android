@@ -431,11 +431,11 @@ so you can sleep better.</string>
     <string name="action_timeline_event_incorrect">Mark as incorrect</string>
 
     <string name="condition_short_hand_alert_sound">way too loud</string>
-    <string name="condition_short_hand_alert_aqi">poor</string>
+    <string name="condition_short_hand_alert_airquality">poor</string>
     <string name="condition_short_hand_alert_light">way too bright</string>
     <string name="condition_short_hand_alert">uncomfortable</string>
     <string name="condition_short_hand_warning_sound">a little loud</string>
-    <string name="condition_short_hand_warning_aqi">okay</string>
+    <string name="condition_short_hand_warning_airquality">not ideal</string>
     <string name="condition_short_hand_warning_light">a bit bright</string>
     <string name="condition_short_hand_warning">not ideal</string>
     <string name="condition_short_hand_ideal">just right</string>
