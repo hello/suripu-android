@@ -15,4 +15,5 @@
     <string name="error_server_connection_timeout">Sense could not communicate with the server. Please check your WiFi connection and try again.</string>
     <string name="error_wifi_ssl_failure">Sense could not establish a secure connection with SSL to the server.</string>
     <string name="error_wifi_hello_key_failure">Sense is not provisioned correctly. Please contact support for directions.</string>
+    <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
 </resources>
