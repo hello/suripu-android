@@ -14,7 +14,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -25,6 +28,8 @@ import is.hello.sense.util.Analytics;
 public class OnboardingRegisterLocationFragment extends InjectionFragment
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int RESOLUTION_REQUEST_CODE = 0x99;
+
+    @Inject PreferencesPresenter preferences;
 
     private GoogleApiClient googleApiClient;
 
@@ -46,9 +51,7 @@ public class OnboardingRegisterLocationFragment extends InjectionFragment
                 .setDiagramImage(R.drawable.onboarding_map)
                 .setPrimaryButtonText(R.string.action_set_location)
                 .setPrimaryOnClickListener(ignored -> optIn())
-                .setSecondaryOnClickListener(ignored -> {
-                    AccountEditor.getContainer(this).onAccountUpdated(this);
-                })
+                .setSecondaryOnClickListener(ignored -> optOut())
                 .hideToolbar();
     }
 
@@ -61,7 +64,18 @@ public class OnboardingRegisterLocationFragment extends InjectionFragment
         }
     }
 
+    public void optOut() {
+        preferences.edit()
+                   .putBoolean(PreferencesPresenter.LOCATION_ENABLED, false)
+                   .apply();
+        AccountEditor.getContainer(this).onAccountUpdated(this);
+    }
+
     public void optIn() {
+        preferences.edit()
+                   .putBoolean(PreferencesPresenter.LOCATION_ENABLED, true)
+                   .apply();
+
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             if (googleApiClient == null) {
