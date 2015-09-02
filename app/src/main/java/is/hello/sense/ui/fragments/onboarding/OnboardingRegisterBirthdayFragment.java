@@ -20,12 +20,13 @@ import org.joda.time.LocalDate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
+public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     private static final int NUM_FIELDS = 3;
     private static final String LEADING_ZERO = "0";
 
@@ -107,9 +108,9 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             }
         }
 
-        Account account = getContainer().getAccount();
+        final Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getBirthDate() != null) {
-            LocalDate birthDate = account.getBirthDate();
+            final LocalDate birthDate = account.getBirthDate();
             monthText.setHint(String.format("%02d", birthDate.getMonthOfYear()));
             dayText.setHint(String.format("%02d", birthDate.getDayOfMonth()));
             yearText.setHint(String.format("%04d", birthDate.getYear()));
@@ -287,7 +288,7 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
         sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "birthday"));
-        getContainer().onAccountUpdated(this);
+        AccountEditor.getContainer(this).onAccountUpdated(this);
     }
 
     public void next() {
@@ -303,8 +304,9 @@ public class OnboardingRegisterBirthdayFragment extends AccountEditingFragment {
             date = dateWithoutDay.withDayOfMonth(day);
         }
 
-        getContainer().getAccount().setBirthDate(date);
-        getContainer().onAccountUpdated(this);
+        final AccountEditor.Container container = AccountEditor.getContainer(this);
+        container.getAccount().setBirthDate(date);
+        container.onAccountUpdated(this);
     }
 
 

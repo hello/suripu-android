@@ -15,7 +15,8 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.ScaleView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
@@ -23,7 +24,7 @@ import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
+public class OnboardingRegisterHeightFragment extends SenseFragment {
     @Inject PreferencesPresenter preferences;
 
     private ScaleView scale;
@@ -71,7 +72,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
             });
         }
 
-        Account account = getContainer().getAccount();
+        Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getHeight() != null) {
             scale.setValue(account.getHeight(), true);
         }
@@ -80,10 +81,10 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
         Views.setSafeOnClickListener(nextButton, ignored -> next());
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
-        if (getWantsSkipButton()) {
+        if (AccountEditor.getWantsSkipButton(this)) {
             Views.setSafeOnClickListener(skipButton, ignored -> {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "height"));
-                getContainer().onAccountUpdated(this);
+                AccountEditor.getContainer(this).onAccountUpdated(this);
             });
         } else {
             skipButton.setVisibility(View.INVISIBLE);
@@ -97,7 +98,7 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
     public void onResume() {
         super.onResume();
 
-        Account account = getContainer().getAccount();
+        Account account = AccountEditor.getContainer(this).getAccount();
         if (!hasAnimated && account.getHeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> scale.animateToValue(account.getHeight()), 250);
@@ -115,10 +116,11 @@ public class OnboardingRegisterHeightFragment extends AccountEditingFragment {
 
     public void next() {
         try {
+            final AccountEditor.Container container = AccountEditor.getContainer(this);
             if (!scale.isAnimating()) {
-                getContainer().getAccount().setHeight(scale.getValue());
+                container.getAccount().setHeight(scale.getValue());
             }
-            getContainer().onAccountUpdated(this);
+            container.onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);
         }

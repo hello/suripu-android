@@ -16,15 +16,15 @@ import com.google.android.gms.location.LocationServices;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.StateSafeExecutor;
 
-public class OnboardingRegisterLocationFragment extends AccountEditingFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class OnboardingRegisterLocationFragment extends InjectionFragment
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int RESOLUTION_REQUEST_CODE = 0x99;
-    private final StateSafeExecutor coordinator = new StateSafeExecutor(this::isResumed);
 
     private GoogleApiClient googleApiClient;
 
@@ -46,7 +46,9 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
                 .setDiagramImage(R.drawable.onboarding_map)
                 .setPrimaryButtonText(R.string.action_set_location)
                 .setPrimaryOnClickListener(ignored -> optIn())
-                .setSecondaryOnClickListener(ignored -> getContainer().onAccountUpdated(this))
+                .setSecondaryOnClickListener(ignored -> {
+                    AccountEditor.getContainer(this).onAccountUpdated(this);
+                })
                 .hideToolbar();
     }
 
@@ -60,7 +62,7 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
     }
 
     public void optIn() {
-        coordinator.execute(() -> {
+        stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             if (googleApiClient == null) {
                 this.googleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -75,25 +77,26 @@ public class OnboardingRegisterLocationFragment extends AccountEditingFragment i
 
     @Override
     public void onConnected(Bundle bundle) {
-        coordinator.execute(() -> {
+        stateSafeExecutor.execute(() -> {
+            final AccountEditor.Container container = AccountEditor.getContainer(this);
             Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (lastLocation != null) {
-                getContainer().getAccount().setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
+                container.getAccount().setLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
             }
-            getContainer().onAccountUpdated(this);
+            container.onAccountUpdated(this);
         });
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-        coordinator.execute(() -> {
+        stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.close(getFragmentManager());
         });
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        coordinator.execute(() -> {
+        stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.close(getFragmentManager());
             try {
                 connectionResult.startResolutionForResult(getActivity(), RESOLUTION_REQUEST_CODE);
