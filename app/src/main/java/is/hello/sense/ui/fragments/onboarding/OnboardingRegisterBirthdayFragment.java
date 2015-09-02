@@ -55,15 +55,15 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
+        final View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
 
-        LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
-        int hintColor = getResources().getColor(R.color.text_dim_placeholder);
+        final LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
+        final int hintColor = getResources().getColor(R.color.text_dim_placeholder);
 
-        char[] dateFormat = DateFormatter.getDateFormatOrder(getActivity());
+        final char[] dateFormat = DateFormatter.getDateFormatOrder(getActivity());
         int index = 0;
         for (char field : dateFormat) {
-            TextView component = (TextView) inflater.inflate(R.layout.item_onboarding_birthday_field, fieldContainer, false);
+            final TextView component = (TextView) inflater.inflate(R.layout.item_onboarding_birthday_field, fieldContainer, false);
             component.setHintTextColor(hintColor);
 
             if (field == 'd') {
@@ -95,8 +95,8 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
             }
 
             if (index == NUM_FIELDS / 2) {
-                int margin = getResources().getDimensionPixelSize(R.dimen.gap_large);
-                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) component.getLayoutParams();
+                final int margin = getResources().getDimensionPixelSize(R.dimen.gap_large);
+                final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) component.getLayoutParams();
                 layoutParams.leftMargin = margin;
                 layoutParams.rightMargin = margin;
             }
@@ -117,15 +117,18 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         }
 
 
-        TableLayout keys = (TableLayout) view.findViewById(R.id.fragment_onboarding_register_birthday_keys);
+        final TableLayout keys = (TableLayout) view.findViewById(R.id.fragment_onboarding_register_birthday_keys);
 
-        Button skip = (Button) keys.findViewById(R.id.fragment_onboarding_register_birthday_skip);
+        final Button skip = (Button) keys.findViewById(R.id.fragment_onboarding_register_birthday_skip);
         Views.setSafeOnClickListener(skip, this::skip);
+        if (!AccountEditor.getWantsSkipButton(this)) {
+            skip.setText(android.R.string.cancel);
+        }
 
-        Button backspace = (Button) keys.findViewById(R.id.fragment_onboarding_register_birthday_delete);
+        final Button backspace = (Button) keys.findViewById(R.id.fragment_onboarding_register_birthday_delete);
         backspace.setOnClickListener(this::backspace);
 
-        View.OnClickListener appendNumber = this::appendNumber;
+        final View.OnClickListener appendNumber = this::appendNumber;
         for (int row = 0, rowCount = keys.getChildCount(); row < rowCount; row++) {
             TableRow rowLayout = (TableRow) keys.getChildAt(row);
             for (int column = 0, columnCount = rowLayout.getChildCount(); column < columnCount; column++) {
