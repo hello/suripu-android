@@ -499,7 +499,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 if (metric.getUnit() == TimelineMetric.Unit.CONDITION) {
                     holder.readingText.setText(getConditionText(metric.getName(), metric.getCondition()));
                 } else {
-                    holder.readingText.setText(null);
+                    holder.readingText.setText(R.string.missing_data_placeholder);
                 }
             }
 
