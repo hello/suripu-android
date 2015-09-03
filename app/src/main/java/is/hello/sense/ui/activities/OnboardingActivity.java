@@ -23,9 +23,10 @@ import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -59,7 +60,7 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditingFragment.Container {
+public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditor.Container {
     private static final String FRAGMENT_TAG = "OnboardingFragment";
 
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
@@ -290,7 +291,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     @Override
-    public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
+    public void onAccountUpdated(@NonNull SenseFragment updatedBy) {
         if (updatedBy instanceof OnboardingRegisterBirthdayFragment) {
             pushFragment(new OnboardingRegisterGenderFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterGenderFragment) {

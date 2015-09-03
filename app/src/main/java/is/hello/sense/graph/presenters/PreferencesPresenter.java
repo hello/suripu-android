@@ -44,6 +44,7 @@ import rx.subscriptions.Subscriptions;
     public static final String PUSH_ALERT_CONDITIONS_ENABLED = "push_alert_conditions_enabled";
     public static final String PUSH_SCORE_ENABLED = "push_score_enabled";
 
+    public static final String LOCATION_ENABLED = "location_enabled";
     public static final String ENHANCED_AUDIO_ENABLED = "enhanced_audio_enabled";
 
     public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";

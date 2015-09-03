@@ -22,9 +22,10 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
@@ -37,7 +38,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
 public class AccountSettingsFragment extends InjectionFragment
-        implements AdapterView.OnItemClickListener, AccountEditingFragment.Container {
+        implements AdapterView.OnItemClickListener, AccountEditor.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
@@ -263,28 +264,28 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void changeBirthDate(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
-        fragment.setWantsSkipButton(false);
+        AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeGender(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
-        fragment.setWantsSkipButton(false);
+        AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
     public void changeHeight(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
-        fragment.setWantsSkipButton(false);
+        AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
     public void changeWeight(@NonNull StaticItemAdapter.TextItem item) {
         OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
-        fragment.setWantsSkipButton(false);
+        AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_weight), true);
     }
@@ -354,7 +355,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onAccountUpdated(@NonNull AccountEditingFragment updatedBy) {
+    public void onAccountUpdated(@NonNull SenseFragment updatedBy) {
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),

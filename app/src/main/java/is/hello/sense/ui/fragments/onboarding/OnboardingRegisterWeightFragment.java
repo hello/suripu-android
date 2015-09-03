@@ -15,7 +15,8 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.ScaleView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
@@ -23,7 +24,7 @@ import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
+public class OnboardingRegisterWeightFragment extends SenseFragment {
     @Inject PreferencesPresenter preferences;
 
     private ScaleView scale;
@@ -70,7 +71,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
             });
         }
 
-        Account account = getContainer().getAccount();
+        Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getWeight() != null) {
             int weightInGrams = Math.round(account.getWeight());
             int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
@@ -81,10 +82,10 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
         Views.setSafeOnClickListener(nextButton, ignored -> next());
 
         Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
-        if (getWantsSkipButton()) {
+        if (AccountEditor.getWantsSkipButton(this)) {
             Views.setSafeOnClickListener(skipButton, ignored -> {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "weight"));
-                getContainer().onAccountUpdated(this);
+                AccountEditor.getContainer(this).onAccountUpdated(this);
             });
         } else {
             skipButton.setVisibility(View.INVISIBLE);
@@ -98,7 +99,7 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
     public void onResume() {
         super.onResume();
 
-        Account account = getContainer().getAccount();
+        Account account = AccountEditor.getContainer(this).getAccount();
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
@@ -120,12 +121,13 @@ public class OnboardingRegisterWeightFragment extends AccountEditingFragment {
 
     public void next() {
         try {
+            final AccountEditor.Container container = AccountEditor.getContainer(this);
             if (!scale.isAnimating()) {
                 int pounds = scale.getValue();
                 int grams = (int) UnitOperations.poundsToGrams(pounds);
-                getContainer().getAccount().setWeight(grams);
+                container.getAccount().setWeight(grams);
             }
-            getContainer().onAccountUpdated(this);
+            container.onAccountUpdated(this);
         } catch (NumberFormatException e) {
             Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);
         }

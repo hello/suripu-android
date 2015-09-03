@@ -11,12 +11,14 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingRegisterGenderFragment extends AccountEditingFragment implements SelectorView.OnSelectionChangedListener {
+public class OnboardingRegisterGenderFragment extends SenseFragment
+        implements SelectorView.OnSelectionChangedListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,12 +31,12 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_register_gender, container, false);
+        final View view = inflater.inflate(R.layout.fragment_onboarding_register_gender, container, false);
 
-        SelectorView genderSelector = (SelectorView) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
+        final SelectorView genderSelector = (SelectorView) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
         genderSelector.setOnSelectionChangedListener(this);
 
-        Account account = getContainer().getAccount();
+        final Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getGender() != null) {
             if (account.getGender() == Gender.OTHER) {
                 genderSelector.setSelectedIndex(SelectorView.EMPTY_SELECTION);
@@ -43,16 +45,18 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
             }
         }
 
-        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        Views.setSafeOnClickListener(nextButton, ignored -> getContainer().onAccountUpdated(this));
+        final Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        Views.setSafeOnClickListener(nextButton, ignored -> {
+            AccountEditor.getContainer(this).onAccountUpdated(this);
+        });
 
-        Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
-        if (getWantsSkipButton()) {
+        final Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
+        if (AccountEditor.getWantsSkipButton(this)) {
             Views.setSafeOnClickListener(skipButton, ignored -> {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "gender"));
 
                 account.setGender(Gender.OTHER);
-                getContainer().onAccountUpdated(this);
+                AccountEditor.getContainer(this).onAccountUpdated(this);
             });
         } else {
             skipButton.setVisibility(View.GONE);
@@ -65,6 +69,7 @@ public class OnboardingRegisterGenderFragment extends AccountEditingFragment imp
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        getContainer().getAccount().setGender(Gender.values()[newSelectionIndex]);
+        final AccountEditor.Container container = AccountEditor.getContainer(this);
+        container.getAccount().setGender(Gender.values()[newSelectionIndex]);
     }
 }

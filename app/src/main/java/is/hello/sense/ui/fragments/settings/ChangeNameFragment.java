@@ -11,13 +11,14 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.ui.common.AccountEditingFragment;
+import is.hello.sense.ui.common.AccountEditor;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class ChangeNameFragment extends AccountEditingFragment {
+public class ChangeNameFragment extends SenseFragment {
     private TextView nameText;
 
     @Nullable
@@ -27,7 +28,7 @@ public class ChangeNameFragment extends AccountEditingFragment {
 
         this.nameText = (TextView) view.findViewById(R.id.fragment_change_name_value);
         nameText.setOnEditorActionListener(new EditorActionHandler(() -> submit(nameText)));
-        nameText.setText(getContainer().getAccount().getName());
+        nameText.setText(AccountEditor.getContainer(this).getAccount().getName());
 
         Button submit = (Button) view.findViewById(R.id.fragment_change_name_submit);
         Views.setSafeOnClickListener(submit, this::submit);
@@ -50,7 +51,8 @@ public class ChangeNameFragment extends AccountEditingFragment {
             return;
         }
 
-        getContainer().getAccount().setName(name);
-        getContainer().onAccountUpdated(this);
+        final AccountEditor.Container container = AccountEditor.getContainer(this);
+        container.getAccount().setName(name);
+        container.onAccountUpdated(this);
     }
 }
