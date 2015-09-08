@@ -35,9 +35,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
+import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
-import is.hello.sense.bluetooth.sense.model.SenseConnectToWiFiUpdate;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
