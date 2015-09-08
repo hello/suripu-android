@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import org.mockito.Mockito;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.test.FakeBluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.test.FakeBluetoothStackBehavior;
 import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
@@ -47,6 +47,10 @@ import is.hello.sense.ui.adapter.DevicesAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
+import rx.Observable;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @Module(
     library = true,
@@ -127,12 +131,17 @@ public final class TestModule {
         return new TestApiSessionManager(context);
     }
 
-    @Singleton @Provides
-    FakeBluetoothStackBehavior provideBluetoothStackConfig() {
-        return new FakeBluetoothStackBehavior();
-    }
-
-    @Provides @Singleton BluetoothStack providesBluetoothStack(@NonNull FakeBluetoothStackBehavior stackConfig) {
-        return new FakeBluetoothStack(stackConfig);
+    @Provides BluetoothStack provideBluetoothStack() {
+        final BluetoothStack bluetoothStack = mock(BluetoothStack.class);
+        doReturn(true)
+                .when(bluetoothStack)
+                .isEnabled();
+        doReturn(Observable.just(true))
+                .when(bluetoothStack)
+                .enabled();
+        doReturn(true)
+                .when(bluetoothStack)
+                .errorRequiresReconnect(Mockito.any(Throwable.class));
+        return bluetoothStack;
     }
 }
