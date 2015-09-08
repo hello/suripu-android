@@ -40,7 +40,7 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     public void setUp() {
         FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
-        this.adapter = spy(new TimelineFragmentAdapter(fragmentManager));
+        this.adapter = spy(new TimelineFragmentAdapter(fragmentManager, Constants.TIMELINE_EPOCH));
     }
 
     @Test

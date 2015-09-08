@@ -19,7 +19,6 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
@@ -31,13 +30,15 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull Context context, @NonNull ZoomedOutTimelinePresenter presenter) {
+    public ZoomedOutTimelineAdapter(@NonNull Context context,
+                                    @NonNull ZoomedOutTimelinePresenter presenter,
+                                    @NonNull LocalDate oldestDate) {
         this.context = context;
         this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
         this.presenter = presenter;
 
-        this.count = Days.daysBetween(Constants.TIMELINE_EPOCH, LocalDate.now()).getDays();
+        this.count = Days.daysBetween(oldestDate, LocalDate.now()).getDays();
     }
 
 
