@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -67,7 +66,6 @@ import rx.subscriptions.Subscriptions;
 
     private final Context context;
     private final SharedPreferences sharedPreferences;
-    private final AccountPresenter accountPresenter;
 
     /**
      * SharedPreferences only keeps a weak reference to its OnSharedPreferenceChangeListener,
@@ -76,11 +74,9 @@ import rx.subscriptions.Subscriptions;
     private final Set<OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
 
     public @Inject PreferencesPresenter(@NonNull Context context,
-                                        @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
-                                        @NonNull AccountPresenter accountPresenter) {
+                                        @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
-        this.accountPresenter = accountPresenter;
 
         migrateIfNeeded();
 
@@ -138,42 +134,6 @@ import rx.subscriptions.Subscriptions;
 
         edit().clear()
               .apply();
-    }
-
-    public Observable<Void> pullAccountPreferences() {
-        logEvent("Pulling preferences from backend");
-
-        return accountPresenter.preferences().map(prefs -> {
-            edit().putBoolean(PUSH_SCORE_ENABLED, prefs.pushScore)
-                  .putBoolean(PUSH_ALERT_CONDITIONS_ENABLED, prefs.pushAlertConditions)
-                  .putBoolean(ENHANCED_AUDIO_ENABLED, prefs.enhancedAudioEnabled)
-                  .putBoolean(USE_CELSIUS, prefs.useCelsius)
-                  .putBoolean(USE_GRAMS, prefs.useMetricWeight)
-                  .putBoolean(USE_CENTIMETERS, prefs.useMetricHeight)
-                  .putBoolean(USE_24_TIME, prefs.use24Time)
-                  .apply();
-
-            logEvent("Pulled preferences");
-
-            return null;
-        });
-    }
-
-    public void pushAccountPreferences() {
-        logEvent("Pushing account preferences");
-
-        Account.Preferences preferences = new Account.Preferences();
-        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        preferences.pushScore = getBoolean(PUSH_SCORE_ENABLED, true);
-        preferences.pushAlertConditions = getBoolean(PUSH_ALERT_CONDITIONS_ENABLED, true);
-        preferences.enhancedAudioEnabled = getBoolean(ENHANCED_AUDIO_ENABLED, false);
-        preferences.use24Time = getUse24Time();
-        preferences.useCelsius = getBoolean(USE_CELSIUS, defaultMetric);
-        preferences.useMetricWeight = getBoolean(USE_GRAMS, defaultMetric);
-        preferences.useMetricHeight = getBoolean(USE_CENTIMETERS, defaultMetric);
-        accountPresenter.updatePreferences(preferences)
-                        .subscribe(ignored -> logEvent("Pushed account preferences"),
-                                   Functions.LOG_ERROR);
     }
 
     //endregion

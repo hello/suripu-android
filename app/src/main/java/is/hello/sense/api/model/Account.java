@@ -36,6 +36,9 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("password")
     private String password;
 
+    @SerializedName("created")
+    private LocalDate created;
+
     @SerializedName("last_modified")
     private DateTime lastModified;
 
@@ -131,6 +134,10 @@ public class Account extends ApiResponse implements Cloneable {
         this.password = password;
     }
 
+    public LocalDate getCreated() {
+        return created;
+    }
+
     public DateTime getLastModified() {
         return lastModified;
     }
@@ -172,6 +179,7 @@ public class Account extends ApiResponse implements Cloneable {
                 ", weight=" + weight +
                 ", birthDate=" + birthDate +
                 ", password='" + password + '\'' +
+                ", created=" + created +
                 ", lastModified=" + lastModified +
                 ", emailVerified=" + emailVerified +
                 ", latitude=" + latitude +
