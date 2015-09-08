@@ -8,7 +8,11 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
+
+import org.joda.time.LocalDate;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +27,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
@@ -51,6 +56,8 @@ import rx.subscriptions.Subscriptions;
     public static final String PAIRED_DEVICE_SSID = "paired_device_ssid";
     public static final String PAIRED_SENSE_ID = "paired_sense_id";
     public static final String PAIRED_PILL_ID = "paired_pill_id";
+
+    public static final String ACCOUNT_CREATION_DATE = "account_creation_date";
 
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
@@ -116,6 +123,16 @@ import rx.subscriptions.Subscriptions;
         return sharedPreferences.edit();
     }
 
+    public void putLocalDate(@NonNull String key, @Nullable LocalDate localDate) {
+        final SharedPreferences.Editor editor = edit();
+        if (localDate != null) {
+            editor.putString(key, localDate.toString(ISODateTimeFormat.date()));
+        } else {
+            editor.remove(key);
+        }
+        editor.apply();
+    }
+
     public void clear() {
         logEvent("Clearing user preferences.");
 
@@ -178,6 +195,15 @@ import rx.subscriptions.Subscriptions;
 
     public String getString(String key, String defaultValue) {
         return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public LocalDate getLocalDate(String key) {
+        final String timestamp = sharedPreferences.getString(key, null);
+        if (TextUtils.isEmpty(timestamp)) {
+            return null;
+        } else {
+            return LocalDate.parse(timestamp, ISODateTimeFormat.date());
+        }
     }
 
     //endregion
@@ -249,6 +275,15 @@ import rx.subscriptions.Subscriptions;
 
     public Observable<Boolean> observableUse24Time() {
         return observableBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
+    }
+
+    public LocalDate getAccountCreationDate() {
+        final LocalDate savedCreationDate = getLocalDate(ACCOUNT_CREATION_DATE);
+        if (savedCreationDate != null) {
+            return savedCreationDate;
+        } else {
+            return Constants.TIMELINE_EPOCH;
+        }
     }
 
     //endregion
