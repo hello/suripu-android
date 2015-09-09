@@ -60,7 +60,7 @@ public class OnboardingRegisterGenderFragment extends SenseFragment
             });
         } else {
             skipButton.setVisibility(View.GONE);
-            nextButton.setText(R.string.action_next);
+            nextButton.setText(R.string.action_done);
         }
 
         return view;
