@@ -37,6 +37,7 @@ public class Account extends ApiResponse implements Cloneable {
     private String password;
 
     @SerializedName("created")
+    @Expose(deserialize = true, serialize = false)
     private LocalDate created;
 
     @SerializedName("last_modified")
