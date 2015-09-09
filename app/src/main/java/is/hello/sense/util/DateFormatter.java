@@ -32,7 +32,12 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
 @Singleton public class DateFormatter {
-    public static final int NIGHT_BOUNDARY_HOUR = 4;
+    /**
+     * The hour of day when the last night date is considered to roll over.
+     * <p />
+     * <code>3:00 AM</code> chosen to support early first shift risers.
+     */
+    public static final int NIGHT_BOUNDARY_HOUR = 3;
 
     private final Context context;
 

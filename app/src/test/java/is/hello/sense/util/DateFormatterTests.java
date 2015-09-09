@@ -60,7 +60,7 @@ public class DateFormatterTests extends InjectionTestCase {
 
     @Test
     public void lastNightBoundary() {
-        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 3, 0);
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
         DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
 
         final LocalDate lastNightBeforeBoundary = DateFormatter.lastNight();
