@@ -101,7 +101,8 @@ import is.hello.sense.ui.widget.util.Styles;
 
     public @NonNull String formatAsTimelineDate(@Nullable LocalDate date) {
         if (date != null) {
-            if (isLastNight(date)) {
+            final LocalDate lastNight = lastNight();
+            if (date.equals(lastNight) || date.isAfter(lastNight)) {
                 return context.getString(R.string.format_date_last_night);
             } else if (isInLastWeek(date)) {
                 return date.toString(context.getString(R.string.format_date_weekday));

@@ -38,7 +38,11 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         this.inflater = LayoutInflater.from(context);
         this.presenter = presenter;
 
-        this.count = Days.daysBetween(oldestDate, LocalDate.now()).getDays();
+        LocalDate today = LocalDate.now();
+        if (today.equals(oldestDate)) {
+            today = today.plusDays(1);
+        }
+        this.count = Days.daysBetween(oldestDate, today).getDays();
     }
 
 

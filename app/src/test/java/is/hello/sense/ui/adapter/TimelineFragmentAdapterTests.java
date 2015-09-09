@@ -93,6 +93,14 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     }
 
     @Test
+    public void getCountForNewAccounts() {
+        final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
+        final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
+        final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager, LocalDate.now());
+        assertThat(adapter.getCount(), is(equalTo(1)));
+    }
+
+    @Test
     public void setLatestDate() {
         DataSetObserver observer = mock(DataSetObserver.class);
         doNothing()

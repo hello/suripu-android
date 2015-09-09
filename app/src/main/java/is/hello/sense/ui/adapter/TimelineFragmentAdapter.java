@@ -61,8 +61,12 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public void setLatestDate(@NonNull LocalDate latestDate) {
-        this.latestDate = latestDate;
-        this.count = Days.daysBetween(oldestDate, latestDate).getDays();
+        if (latestDate.equals(oldestDate)) {
+            this.latestDate = oldestDate.plusDays(1);
+        } else {
+            this.latestDate = latestDate;
+        }
+        this.count = Days.daysBetween(oldestDate, this.latestDate).getDays();
         notifyDataSetChanged();
     }
 
