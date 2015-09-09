@@ -8,6 +8,8 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import is.hello.sense.api.gson.Exclude;
+
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
     private String id;
@@ -37,7 +39,7 @@ public class Account extends ApiResponse implements Cloneable {
     private String password;
 
     @SerializedName("created")
-    @Expose(deserialize = true, serialize = false)
+    @Exclude
     private LocalDate created;
 
     @SerializedName("last_modified")

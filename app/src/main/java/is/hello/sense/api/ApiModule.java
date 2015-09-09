@@ -28,6 +28,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.ApiGsonConverter;
 import is.hello.sense.api.gson.Enums;
+import is.hello.sense.api.gson.ExcludeExclusionStrategy;
 import is.hello.sense.api.gson.GsonJodaTime;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
@@ -51,7 +52,7 @@ public class ApiModule {
 
     public static Gson createConfiguredGson(@NonNull MarkupProcessor markupProcessor) {
         GsonBuilder builder = new GsonBuilder();
-        builder.disableHtmlEscaping();
+        builder.addSerializationExclusionStrategy(new ExcludeExclusionStrategy());
 
         builder.registerTypeAdapter(new TypeToken<DateTime>(){}.getType(),
                 new GsonJodaTime.DateTimeSerialization(ISODateTimeFormat.dateTime().withZoneUTC(),
