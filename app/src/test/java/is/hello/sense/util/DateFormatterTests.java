@@ -4,10 +4,11 @@ import android.content.Context;
 import android.text.format.DateFormat;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Date;
@@ -17,27 +18,56 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.R;
 import is.hello.sense.graph.InjectionTestCase;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class DateFormatterTests extends InjectionTestCase {
-    private DateFormatter formatter;
-    private String placeholder;
+    private final DateFormatter formatter;
+    private final String placeholder;
 
-    @Before
-    public void initialize() throws Exception {
-        if (formatter == null) {
-            Context targetContext = getContext();
-            this.formatter = new DateFormatter(targetContext);
-            this.placeholder = targetContext.getString(R.string.format_date_placeholder);
-        }
+    public DateFormatterTests() {
+        this.formatter = new DateFormatter(getContext());
+        this.placeholder = getString(R.string.format_date_placeholder);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test
-    public void now() {
+    public void nowDateTime() {
         assertEquals(DateTimeZone.getDefault(), DateFormatter.nowDateTime().getZone());
+    }
+
+    @Test
+    public void lastNight() {
+        final DateTime fixedPoint = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(fixedPoint.getMillis());
+
+        final LocalDate lastNight = DateFormatter.lastNight();
+        assertThat(lastNight.getDayOfMonth(), is(equalTo(20)));
+    }
+
+    @Test
+    public void lastNightBoundary() {
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 3, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        final LocalDate lastNightBeforeBoundary = DateFormatter.lastNight();
+        assertThat(lastNightBeforeBoundary.getDayOfMonth(), is(equalTo(19)));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        final LocalDate lastNightAfterBoundary = DateFormatter.lastNight();
+        assertThat(lastNightAfterBoundary.getDayOfMonth(), is(equalTo(20)));
     }
 
     @Test

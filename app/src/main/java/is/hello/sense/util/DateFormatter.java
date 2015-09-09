@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -31,6 +32,8 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
 @Singleton public class DateFormatter {
+    public static final int NIGHT_BOUNDARY_HOUR = 4;
+
     private final Context context;
 
     @Inject public DateFormatter(@NonNull Context context) {
@@ -58,7 +61,8 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns a DateTime representing the current instant in time,
      * shifted into the user's local device time zone.
      */
-    public static @NonNull DateTime nowDateTime() {
+    @VisibleForTesting
+    static @NonNull DateTime nowDateTime() {
         return DateTime.now(DateTimeZone.getDefault());
     }
 
@@ -66,7 +70,8 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns a LocalDate representing the current instant,
      * shifted into the user's local device time zone.
      */
-    public static @NonNull LocalDate nowLocalDate() {
+    @VisibleForTesting
+    static @NonNull LocalDate nowLocalDate() {
         return LocalDate.now(DateTimeZone.getDefault());
     }
 
@@ -74,7 +79,12 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns the date considered to represent last night.
      */
     public static @NonNull LocalDate lastNight() {
-        return nowLocalDate().minusDays(1);
+        final DateTime now = nowDateTime();
+        if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
+            return now.minusDays(2).toLocalDate();
+        } else {
+            return now.minusDays(1).toLocalDate();
+        }
     }
 
     /**

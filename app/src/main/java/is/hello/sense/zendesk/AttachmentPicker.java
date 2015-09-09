@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
 import com.zendesk.sdk.attachment.UriToFileUtil;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 
+import org.joda.time.DateTime;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +27,6 @@ import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.util.DateFormatter;
 
 public class AttachmentPicker {
     public static final int REQUEST_CODE_TAKE_IMAGE = 0x01;
@@ -81,7 +82,7 @@ public class AttachmentPicker {
     }
 
     public void captureImage() {
-        String filename = "JPEG_" + DateFormatter.nowDateTime().toString();
+        String filename = "JPEG_" + DateTime.now().toString();
         File pictures = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         try {
             File imageLocation = File.createTempFile(filename, ".jpg", pictures);
