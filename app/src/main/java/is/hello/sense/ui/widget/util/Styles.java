@@ -44,6 +44,8 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 
 public final class Styles {
+    public static final float LETTER_SPACING_SECTION_HEADING_LARGE = 0.2f;
+
     public static final boolean UNDERLINE_LINKS = false;
 
     public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);

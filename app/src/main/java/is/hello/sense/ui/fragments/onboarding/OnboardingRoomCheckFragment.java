@@ -41,6 +41,8 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
+import is.hello.sense.ui.widget.util.Drawing;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
@@ -84,7 +86,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         this.animationCompleted = (savedInstanceState != null);
 
         this.resources = getResources();
-        this.graySense = ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_gray, null);
+        this.graySense = ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_grey, null);
         this.startColor = resources.getColor(Condition.ALERT.colorRes);
 
         addPresenter(presenter);
@@ -152,8 +154,9 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
         final String sensorName = sensor.getName();
 
-        status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_SectionHeading);
+        status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_SectionHeading_Large);
         status.setText(getStatusStringForSensor(sensorName));
+        Drawing.setLetterSpacing(status, Styles.LETTER_SPACING_SECTION_HEADING_LARGE);
         this.animatingSensorView = sensorView;
         sensorView.fadeInProgressIndicator(() -> {
             int convertedValue = 0;
@@ -177,6 +180,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                             status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_Body);
                             status.setText(null);
                             status.setTransformationMethod(null);
+                            Drawing.setLetterSpacing(status, 0f);
                             markdown.renderInto(status, sensor.getMessage());
 
                             animateSenseCondition(sensor.getCondition(), false);
@@ -310,15 +314,15 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     private Drawable getConditionDrawable(@NonNull Condition condition) {
         switch (condition) {
             case ALERT: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_red, null);
+                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_red, null);
             }
 
             case WARNING: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_yellow, null);
+                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_yellow, null);
             }
 
             case IDEAL: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.room_check_sense_green, null);
+                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_green, null);
             }
 
             default:

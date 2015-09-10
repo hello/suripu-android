@@ -3,10 +3,12 @@ package is.hello.sense.ui.widget.util;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
 import android.text.TextPaint;
 import android.text.style.TextAppearanceSpan;
+import android.widget.TextView;
 
 public class Drawing {
     /**
@@ -14,7 +16,9 @@ public class Drawing {
      * <p/>
      * Allocates.
      */
-    public static void updateTextPaintFromStyle(@NonNull TextPaint textPaint, @NonNull Context context, @StyleRes int styleRes) {
+    public static void updateTextPaintFromStyle(@NonNull TextPaint textPaint,
+                                                @NonNull Context context,
+                                                @StyleRes int styleRes) {
         TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, styleRes);
         textAppearance.updateDrawState(textPaint);
         textAppearance.updateMeasureState(textPaint);
@@ -42,4 +46,10 @@ public class Drawing {
         return Color.HSVToColor(alpha, hsv);
     }
 
+    public static void setLetterSpacing(@NonNull TextView textView,
+                                        float letterSpacing) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            textView.setLetterSpacing(letterSpacing);
+        }
+    }
 }
