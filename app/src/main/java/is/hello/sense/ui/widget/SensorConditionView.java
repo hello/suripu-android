@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -13,28 +12,25 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Drawables;
 
-public class SensorConditionView extends View {
-    public static final int ROTATE_START_DELAY_MS = 30;
-    public static final int ROTATE_DURATION_MS = 1000;
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-    private final ValueAnimator rotateAnimator;
+public class SensorConditionView extends FrameLayout {
+    private final ProgressBar progressBar;
     private final Resources resources;
 
-    private boolean rotating = false;
-    private float rotateDegrees = 0f;
-
     private int tintColor;
-    private @Nullable Drawable fill;
-    private @Nullable Drawable transitionFill;
     private @Nullable Drawable icon;
+    private @Nullable Drawable transitionIcon;
 
     private @Nullable AnimatorContext animatorContext;
     private @Nullable ValueAnimator crossFade;
@@ -53,49 +49,44 @@ public class SensorConditionView extends View {
     public SensorConditionView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        this.rotateAnimator = ValueAnimator.ofFloat(0f, 360f);
-        rotateAnimator.setRepeatMode(ValueAnimator.RESTART);
-        rotateAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        rotateAnimator.setInterpolator(new LinearInterpolator());
-        rotateAnimator.setStartDelay(ROTATE_START_DELAY_MS);
-        rotateAnimator.setDuration(ROTATE_DURATION_MS);
-        rotateAnimator.addUpdateListener(a -> {
-            this.rotateDegrees = (float) a.getAnimatedValue();
-            invalidate();
-        });
+        setWillNotDraw(false);
 
         this.resources = getResources();
 
-        if (attrs != null) {
-            TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.SensorConditionView, defStyleAttr, 0);
-            setIcon(attributes.getDrawable(R.styleable.SensorConditionView_senseSensorIcon));
-            attributes.recycle();
-        }
+        this.progressBar = new ProgressBar(context);
+        final Drawable indeterminate = ResourcesCompat.getDrawable(resources,
+                                                                   R.drawable.animated_room_check_progress_bar,
+                                                                   null);
+        progressBar.setIndeterminateDrawable(indeterminate);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(INVISIBLE);
+
+        final int width = resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_width);
+        final int height = resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_height);
+        addView(progressBar, new LayoutParams(width, height, Gravity.CENTER));
 
         setTint(resources.getColor(R.color.sensor_empty));
-        setFill(R.drawable.room_check_sensor_border_empty);
+    }
+
+    @Override
+    public void clearAnimation() {
+        super.clearAnimation();
+
+        if (crossFade != null) {
+            crossFade.cancel();
+        }
+
+        Anime.cancelAll(progressBar);
+        progressBar.setVisibility(INVISIBLE);
     }
 
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
 
-        if (rotating) {
-            if (visibility == VISIBLE) {
-                if (!rotateAnimator.isRunning()) {
-                    rotateAnimator.start();
-                }
-            } else {
-                rotateAnimator.cancel();
-            }
+        if (visibility != VISIBLE) {
+            clearAnimation();
         }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        rotateAnimator.cancel();
-
-        super.onDetachedFromWindow();
     }
 
     //endregion
@@ -107,71 +98,21 @@ public class SensorConditionView extends View {
     protected void onDraw(Canvas canvas) {
         int canvasWidth = canvas.getWidth(),
             canvasHeight = canvas.getHeight();
-        int canvasMidX = canvasWidth / 2,
-            canvasMidY = canvasHeight / 2;
-
-        if (rotateDegrees > 0f) {
-            canvas.save();
-            canvas.rotate(rotateDegrees, canvasMidX, canvasMidY);
-        }
-
-        if (fill != null) {
-            int fillMidX = fill.getIntrinsicWidth() / 2;
-            fill.setBounds(canvasMidX - fillMidX, 0, canvasMidX + fillMidX, canvasHeight);
-            fill.draw(canvas);
-        }
-
-        if (transitionFill != null) {
-            int transitionFillMidX = transitionFill.getIntrinsicWidth() / 2;
-            transitionFill.setBounds(canvasMidX - transitionFillMidX, 0, canvasMidX + transitionFillMidX, canvasHeight);
-            transitionFill.draw(canvas);
-        }
-
-        if (rotateDegrees > 0f) {
-            canvas.restore();
-        }
+        int canvasMidX = canvasWidth / 2;
 
         if (icon != null) {
             int iconMidX = icon.getIntrinsicWidth() / 2;
-            int iconMidY = icon.getIntrinsicHeight() / 2;
-
-            icon.setBounds(canvasMidX - iconMidX, canvasMidY - iconMidY,
-                           canvasMidX + iconMidX, canvasMidY + iconMidY);
+            icon.setBounds(canvasMidX - iconMidX, 0,
+                           canvasMidX + iconMidX, canvasHeight);
             icon.draw(canvas);
         }
-    }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int intrinsicWidth = 0,
-            intrinsicHeight = 0;
-
-        if (fill != null) {
-            intrinsicWidth = fill.getIntrinsicWidth();
-            intrinsicHeight = fill.getIntrinsicHeight();
+        if (transitionIcon != null) {
+            int iconMidX = transitionIcon.getIntrinsicWidth() / 2;
+            transitionIcon.setBounds(canvasMidX - iconMidX, 0,
+                                     canvasMidX + iconMidX, canvasHeight);
+            transitionIcon.draw(canvas);
         }
-
-        int specWidthMode = MeasureSpec.getMode(widthMeasureSpec),
-            specHeightMode = MeasureSpec.getMode(heightMeasureSpec);
-
-        int specWidth = MeasureSpec.getSize(widthMeasureSpec),
-            specHeight = MeasureSpec.getSize(heightMeasureSpec);
-
-        int measuredWidth,
-            measuredHeight;
-        if (specWidthMode == MeasureSpec.AT_MOST) {
-            measuredWidth = Math.min(intrinsicWidth, specWidth);
-        } else {
-            measuredWidth = specWidth;
-        }
-
-        if (specHeightMode == MeasureSpec.AT_MOST) {
-            measuredHeight = Math.min(intrinsicHeight, specHeight);
-        } else {
-            measuredHeight = specHeight;
-        }
-
-        setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
     //endregion
@@ -186,16 +127,15 @@ public class SensorConditionView extends View {
     public void setTint(int color) {
         this.tintColor = color;
 
+        final Drawable indeterminate = progressBar.getIndeterminateDrawable();
+        Drawables.setTintColor(indeterminate, color);
+
         if (icon != null) {
             Drawables.setTintColor(icon, color);
         }
 
-        if (fill != null) {
-            Drawables.setTintColor(fill, color);
-        }
-
-        if (transitionFill != null) {
-            Drawables.setTintColor(transitionFill, color);
+        if (transitionIcon != null) {
+            Drawables.setTintColor(transitionIcon, color);
         }
 
         invalidate();
@@ -209,76 +149,57 @@ public class SensorConditionView extends View {
 
         if (icon != null) {
             this.icon = icon.mutate();
-            this.icon.setCallback(this);
+            icon.setCallback(this);
             Drawables.setTintColor(icon, tintColor);
         }
 
         invalidate();
     }
 
-    public void setFill(@Nullable Drawable fill) {
-        if (this.fill != null) {
-            this.fill.setCallback(null);
-            this.fill = null;
-        }
-
-        if (fill != null) {
-            this.fill = fill.mutate();
-            setMinimumWidth(fill.getIntrinsicWidth());
-            fill.setCallback(this);
-            Drawables.setTintColor(fill, tintColor);
-        }
-
-        invalidate();
+    public void setIcon(@DrawableRes int fillRes) {
+        setIcon(ResourcesCompat.getDrawable(resources, fillRes, null));
     }
 
-    public void setFill(@DrawableRes int fillRes) {
-        setFill(ResourcesCompat.getDrawable(resources, fillRes, null));
-    }
-
-    public void crossFadeToFill(@NonNull Drawable newFill, boolean rotate, @Nullable Runnable onCompletion) {
-        this.transitionFill = newFill;
-        Drawables.setTintColor(newFill, tintColor);
-        newFill.setAlpha(0);
+    public void transitionToIcon(@NonNull Drawable newIcon, @Nullable Runnable onCompletion) {
+        this.transitionIcon = newIcon;
+        Drawables.setTintColor(newIcon, tintColor);
+        newIcon.setAlpha(0);
 
         this.crossFade = ValueAnimator.ofFloat(0f, 1f);
         crossFade.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         crossFade.setDuration(Anime.DURATION_SLOW);
 
-        Drawable oldFill = fill;
-        if (oldFill == null) {
+        Drawable oldIcon = icon;
+        if (oldIcon == null) {
             throw new IllegalStateException("Cannot transition from nothing");
         }
 
         crossFade.addUpdateListener(a -> {
             float fraction = a.getAnimatedFraction();
-            oldFill.setAlpha(Math.round(255f * (1f - fraction)));
-            newFill.setAlpha(Math.round(255f * fraction));
+            oldIcon.setAlpha(Math.round(255f * (1f - fraction)));
+            newIcon.setAlpha(Math.round(255f * fraction));
+            invalidate();
         });
 
         crossFade.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                if (rotate) {
-                    startRotating();
+                if (progressBar.getVisibility() == VISIBLE) {
+                    fadeOutProgressIndicator();
                 }
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                oldFill.setAlpha(0);
-                newFill.setAlpha(255);
+                oldIcon.setAlpha(0);
+                newIcon.setAlpha(255);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                setFill(newFill);
-                SensorConditionView.this.transitionFill = null;
+                setIcon(newIcon);
+                SensorConditionView.this.transitionIcon = null;
                 SensorConditionView.this.crossFade = null;
-
-                if (!rotate) {
-                    stopRotation();
-                }
 
                 if (onCompletion != null) {
                     onCompletion.run();
@@ -293,32 +214,25 @@ public class SensorConditionView extends View {
         crossFade.start();
     }
 
-    public void crossFadeToFill(@DrawableRes int fillRes, boolean rotate, @Nullable Runnable onCompletion) {
-        crossFadeToFill(ResourcesCompat.getDrawable(resources, fillRes, null), rotate, onCompletion);
+    public void transitionToIcon(@DrawableRes int iconRes, @Nullable Runnable onCompletion) {
+        transitionToIcon(ResourcesCompat.getDrawable(resources, iconRes, null), onCompletion);
     }
 
-    public void stopAnimating() {
-        stopRotation();
-
-        if (crossFade != null) {
-            crossFade.cancel();
-        }
+    public void fadeInProgressIndicator(@NonNull Runnable onCompletion) {
+        animatorFor(progressBar, animatorContext)
+                .fadeIn()
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        onCompletion.run();
+                    }
+                })
+                .start();
     }
 
-    //endregion
-
-
-    //region Animations
-
-    public void startRotating() {
-        rotateAnimator.start();
-        this.rotating = true;
-    }
-
-    public void stopRotation() {
-        this.rotateDegrees = 0f;
-        rotateAnimator.cancel();
-        this.rotating = false;
+    public void fadeOutProgressIndicator() {
+        animatorFor(progressBar, animatorContext)
+                .fadeOut(INVISIBLE)
+                .start();
     }
 
     //endregion

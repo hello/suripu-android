@@ -79,6 +79,8 @@
     <dimen name="item_room_sensor_condition_min_height">80dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
     <dimen name="item_room_sensor_condition_graph_inset">8dp</dimen>
+    <dimen name="item_room_sensor_condition_view_width">42dp</dimen>
+    <dimen name="item_room_sensor_condition_view_height">42dp</dimen>
 
     <dimen name="scale_view_size">90dp</dimen>
     <dimen name="scale_view_diamond">2dp</dimen>
