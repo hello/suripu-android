@@ -50,6 +50,22 @@ public class DateFormatterTests extends InjectionTestCase {
     }
 
     @Test
+    public void todayForTimeline() {
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        final LocalDate lastNightBeforeBoundary = DateFormatter.todayForTimeline();
+        assertThat(lastNightBeforeBoundary.getDayOfMonth(), is(equalTo(20)));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        final LocalDate lastNightAfterBoundary = DateFormatter.todayForTimeline();
+        assertThat(lastNightAfterBoundary.getDayOfMonth(), is(equalTo(21)));
+    }
+
+    @Test
     public void lastNight() {
         final DateTime fixedPoint = new DateTime(1969, 7, 21, 5, 0);
         DateTimeUtils.setCurrentMillisFixed(fixedPoint.getMillis());
@@ -78,6 +94,20 @@ public class DateFormatterTests extends InjectionTestCase {
     public void isLastNight() {
         assertThat(DateFormatter.isLastNight(DateFormatter.lastNight()), is(true));
         assertThat(DateFormatter.isLastNight(DateFormatter.lastNight().minusDays(5)), is(false));
+
+
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 19)), is(true));
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 20)), is(false));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 19)), is(false));
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 20)), is(true));
     }
 
     //endregion

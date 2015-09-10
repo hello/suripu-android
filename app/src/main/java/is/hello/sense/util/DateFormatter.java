@@ -81,6 +81,21 @@ import is.hello.sense.ui.widget.util.Styles;
     }
 
     /**
+     * Returns the date considered to represent today for the timeline.
+     * <p>
+     * Should not be used for anything thing that does not require
+     * the {@link #NIGHT_BOUNDARY_HOUR} constant to apply.
+     */
+    public static @NonNull LocalDate todayForTimeline() {
+        final DateTime now = nowDateTime();
+        if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
+            return now.minusDays(1).toLocalDate();
+        } else {
+            return now.toLocalDate();
+        }
+    }
+
+    /**
      * Returns the date considered to represent last night.
      */
     public static @NonNull LocalDate lastNight() {
@@ -96,8 +111,7 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns whether or not a given date is considered to be last night.
      */
     public static boolean isLastNight(@NonNull LocalDate instant) {
-        Interval interval = new Interval(Days.ONE, nowDateTime().withTimeAtStartOfDay());
-        return interval.contains(instant.toDateTimeAtStartOfDay());
+        return lastNight().isEqual(instant);
     }
 
     /**
