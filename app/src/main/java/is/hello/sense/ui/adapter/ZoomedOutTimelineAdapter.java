@@ -141,13 +141,18 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             itemView.setOnClickListener(this);
         }
 
+        private boolean isTimelineEmpty(@NonNull Timeline timeline) {
+            return (timeline.getScore() == null ||
+                    timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE ||
+                    timeline.getScoreCondition() == ScoreCondition.INCOMPLETE);
+        }
+
         private void bind(@NonNull LocalDate date, @Nullable Timeline timeline) {
             this.date = date;
             dayNumber.setText(date.toString("d"));
             dayName.setText(date.toString("EE"));
 
-            if (timeline == null || timeline.getScore() == null ||
-                    timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE) {
+            if (timeline == null || isTimelineEmpty(timeline)) {
                 int sleepScoreColor = resources.getColor(ScoreCondition.UNAVAILABLE.colorRes);
                 score.setText(R.string.missing_data_placeholder);
                 score.setTextColor(sleepScoreColor);
