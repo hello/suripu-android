@@ -213,7 +213,7 @@ public class InsightsFragment extends UndersideTabFragment
     private class ReviewTriggers implements ReviewQuestionProvider.Triggers {
         @Override
         public void onWriteReview() {
-            UserSupport.showProductPage(getActivity());
+            stateSafeExecutor.execute(() -> UserSupport.showProductPage(getActivity()));
 
             preferences.edit()
                        .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
