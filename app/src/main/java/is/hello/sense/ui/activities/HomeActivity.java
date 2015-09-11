@@ -33,7 +33,7 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
@@ -73,7 +73,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
     @Inject ApiService apiService;
-    @Inject DevicesPresenter devicesPresenter;
+    @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject LocalUsageTracker localUsageTracker;
 
@@ -100,7 +100,8 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        presenterContainer.addPresenter(devicesPresenter);
+        deviceIssuesPresenter.bindScope(this);
+        presenterContainer.addPresenter(deviceIssuesPresenter);
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
@@ -127,7 +128,7 @@ public class HomeActivity extends ScopedInjectionActivity
             stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
         }
 
-        devicesPresenter.update();
+        deviceIssuesPresenter.update();
 
 
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
@@ -199,7 +200,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          Functions.LOG_ERROR);
 
         if (isFirstActivityRun && !getWillShowUnderside()) {
-            bindAndSubscribe(devicesPresenter.latestTopIssue(),
+            bindAndSubscribe(deviceIssuesPresenter.latest(),
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
         }
@@ -457,8 +458,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Device Issues
 
-    public void bindDeviceIssue(@NonNull DevicesPresenter.Issue issue) {
-        if (issue == DevicesPresenter.Issue.NONE ||
+    public void bindDeviceIssue(@NonNull DeviceIssuesPresenter.Issue issue) {
+        if (issue == DeviceIssuesPresenter.Issue.NONE ||
                 getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
             return;
         }

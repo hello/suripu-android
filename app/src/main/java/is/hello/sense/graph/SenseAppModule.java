@@ -12,6 +12,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
@@ -104,6 +105,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         HardwareFragmentActivity.class,
         DeviceListFragment.class,
         DevicesPresenter.class,
+        DeviceIssuesPresenter.class,
         SenseDetailsFragment.class,
         PillDetailsFragment.class,
 

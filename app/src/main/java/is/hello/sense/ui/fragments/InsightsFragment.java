@@ -19,7 +19,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -45,7 +45,7 @@ public class InsightsFragment extends UndersideTabFragment
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject LocalUsageTracker localUsageTracker;
-    @Inject DevicesPresenter devicesPresenter;
+    @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject QuestionsPresenter questionsPresenter;
 
@@ -56,6 +56,8 @@ public class InsightsFragment extends UndersideTabFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        deviceIssuesPresenter.bindScope(getScope());
+        addPresenter(deviceIssuesPresenter);
         addPresenter(insightsPresenter);
         addPresenter(questionsPresenter);
 
@@ -162,8 +164,8 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
     public void updateQuestion() {
-        Observable<Boolean> stageOne = devicesPresenter.latestTopIssue().map(issue -> {
-            return (issue == DevicesPresenter.Issue.NONE &&
+        Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> {
+            return (issue == DeviceIssuesPresenter.Issue.NONE &&
                     localUsageTracker.isUsageAcceptableForRatingPrompt() &&
                     !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false));
         });
