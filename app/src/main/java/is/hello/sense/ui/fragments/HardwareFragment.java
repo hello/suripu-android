@@ -8,9 +8,9 @@ import android.support.annotation.StringRes;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
+import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;

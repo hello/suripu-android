@@ -28,13 +28,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
+import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
+import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.bluetooth.sense.errors.SenseSetWifiValidationError;
-import is.hello.sense.bluetooth.sense.model.SenseConnectToWiFiUpdate;
-import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -47,7 +47,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 
-import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
+import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
 public class OnboardingSignIntoWifiFragment extends HardwareFragment implements AdapterView.OnItemSelectedListener {
     private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
