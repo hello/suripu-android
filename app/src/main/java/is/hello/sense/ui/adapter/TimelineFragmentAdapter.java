@@ -13,7 +13,6 @@ import org.joda.time.LocalDate;
 
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.fragments.TimelineFragment;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 
 public class TimelineFragmentAdapter extends FragmentPagerAdapter {

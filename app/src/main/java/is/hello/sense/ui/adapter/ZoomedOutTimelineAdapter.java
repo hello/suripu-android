@@ -19,7 +19,6 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
