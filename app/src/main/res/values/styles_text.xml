@@ -22,7 +22,7 @@
         <item name="android:textSize">@dimen/text_size_heading_card</item>
     </style>
 
-    <style name="AppTheme.Text.Heading.Strong.Large">
+    <style name="AppTheme.Text.Heading.Large">
         <item name="android:textSize">@dimen/text_size_heading_large</item>
     </style>
 

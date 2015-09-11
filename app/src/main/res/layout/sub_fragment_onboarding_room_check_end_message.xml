@@ -16,7 +16,7 @@
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_medium"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Heading.Strong.Large"
+        android:textAppearance="@style/AppTheme.Text.Heading.Large"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/onboarding_room_check_title_success"/>
 

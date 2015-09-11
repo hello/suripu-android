@@ -18,9 +18,11 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import is.hello.sense.R;
+import is.hello.sense.util.NotLocalizable;
 import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")
+@NotLocalizable(NotLocalizable.BecauseOf.ALPHABET)
 public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdateListener {
     //region Constants
 
@@ -250,6 +252,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
     //endregion
 
 
+    @NotLocalizable(NotLocalizable.BecauseOf.ALPHABET)
     public static class RenderInfo {
         public final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
         public final int itemWidth;

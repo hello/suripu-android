@@ -78,6 +78,11 @@
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
+    <dimen name="onboarding_sense_inset_bottom">25dp</dimen>
+    
+    <dimen name="view_sensor_ticker_letter_spacing">3dp</dimen>
+    <dimen name="view_sensor_ticker_fade_height">10dp</dimen>
+
     <dimen name="item_room_sensor_condition_min_height">80dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
     <dimen name="item_room_sensor_condition_graph_inset">8dp</dimen>
