@@ -19,7 +19,6 @@ import java.util.UUID;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.util.DateFormatter;
 
 public class Alarm extends ApiResponse {
     public static final int FUTURE_CUT_OFF_MINUTES = 5;
@@ -94,9 +93,9 @@ public class Alarm extends ApiResponse {
     }
 
     public void setRingOnce() {
-        DateTime today = DateFormatter.nowDateTime();
+        final DateTime today = DateTime.now(DateTimeZone.getDefault());
         if (getTime().isBefore(today.toLocalTime())) {
-            DateTime tomorrow = today.plusDays(1);
+            final DateTime tomorrow = today.plusDays(1);
             this.year = tomorrow.getYear();
             this.month = tomorrow.getMonthOfYear();
             this.dayOfMonth = tomorrow.getDayOfMonth();

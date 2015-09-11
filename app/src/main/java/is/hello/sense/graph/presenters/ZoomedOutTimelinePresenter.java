@@ -44,7 +44,10 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     public void onRestoreState(@NonNull Bundle savedState) {
         super.onRestoreState(savedState);
 
-        setFirstDate((LocalDate) savedState.getSerializable(STATE_KEY_FIRST_DATE));
+        final LocalDate firstDate = (LocalDate) savedState.getSerializable(STATE_KEY_FIRST_DATE);
+        if (firstDate != null) {
+            setFirstDate(firstDate);
+        }
     }
 
     @Nullable

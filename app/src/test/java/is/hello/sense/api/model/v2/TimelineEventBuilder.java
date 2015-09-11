@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class TimelineEventBuilder {
@@ -41,7 +40,7 @@ public class TimelineEventBuilder {
 
     public TimelineEventBuilder() {
         event.validActions = new ArrayList<>();
-        setShiftedTimestamp(DateFormatter.nowDateTime());
+        setShiftedTimestamp(DateTime.now(DateTimeZone.getDefault()));
         setDuration(60, TimeUnit.SECONDS);
         setSleepDepth(60, TimelineEvent.SleepState.MEDIUM);
         setType(TimelineEvent.Type.IN_BED);

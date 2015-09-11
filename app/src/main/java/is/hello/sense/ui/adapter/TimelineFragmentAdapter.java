@@ -14,6 +14,7 @@ import org.joda.time.LocalDate;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.DateFormatter;
 
 public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     private int count;
@@ -26,7 +27,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager) {
         super(fragmentManager);
-        setLatestDate(LocalDate.now());
+        setLatestDate(DateFormatter.todayForTimeline());
     }
 
     @Override
@@ -51,8 +52,8 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
         this.cachedTimeline = cachedTimeline;
     }
 
-    public void ensureLatestDateIsToday() {
-        LocalDate today = LocalDate.now();
+    public void ensureLatestDateIsLastNight() {
+        LocalDate today = DateFormatter.todayForTimeline();
         if (latestDate.isBefore(today)) {
             setLatestDate(today);
         }
@@ -69,7 +70,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public int getLastNight() {
-        ensureLatestDateIsToday();
+        ensureLatestDateIsLastNight();
         return getCount() - 1;
     }
 

@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -31,6 +32,13 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
 @Singleton public class DateFormatter {
+    /**
+     * The hour of day when the last night date is considered to roll over.
+     * <p />
+     * <code>3:00 AM</code> chosen to support early first shift risers.
+     */
+    public static final int NIGHT_BOUNDARY_HOUR = 3;
+
     private final Context context;
 
     @Inject public DateFormatter(@NonNull Context context) {
@@ -58,7 +66,8 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns a DateTime representing the current instant in time,
      * shifted into the user's local device time zone.
      */
-    public static @NonNull DateTime nowDateTime() {
+    @VisibleForTesting
+    static @NonNull DateTime nowDateTime() {
         return DateTime.now(DateTimeZone.getDefault());
     }
 
@@ -66,23 +75,43 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns a LocalDate representing the current instant,
      * shifted into the user's local device time zone.
      */
-    public static @NonNull LocalDate nowLocalDate() {
+    @VisibleForTesting
+    static @NonNull LocalDate nowLocalDate() {
         return LocalDate.now(DateTimeZone.getDefault());
+    }
+
+    /**
+     * Returns the date considered to represent today for the timeline.
+     * <p>
+     * Should not be used for anything thing that does not require
+     * the {@link #NIGHT_BOUNDARY_HOUR} constant to apply.
+     */
+    public static @NonNull LocalDate todayForTimeline() {
+        final DateTime now = nowDateTime();
+        if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
+            return now.minusDays(1).toLocalDate();
+        } else {
+            return now.toLocalDate();
+        }
     }
 
     /**
      * Returns the date considered to represent last night.
      */
     public static @NonNull LocalDate lastNight() {
-        return nowLocalDate().minusDays(1);
+        final DateTime now = nowDateTime();
+        if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
+            return now.minusDays(2).toLocalDate();
+        } else {
+            return now.minusDays(1).toLocalDate();
+        }
     }
 
     /**
      * Returns whether or not a given date is considered to be last night.
      */
     public static boolean isLastNight(@NonNull LocalDate instant) {
-        Interval interval = new Interval(Days.ONE, nowDateTime().withTimeAtStartOfDay());
-        return interval.contains(instant.toDateTimeAtStartOfDay());
+        return lastNight().isEqual(instant);
     }
 
     /**

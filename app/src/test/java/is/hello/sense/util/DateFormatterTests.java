@@ -1,13 +1,13 @@
 package is.hello.sense.util;
 
-import android.content.Context;
 import android.text.format.DateFormat;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Date;
@@ -17,136 +17,248 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.R;
 import is.hello.sense.graph.InjectionTestCase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 public class DateFormatterTests extends InjectionTestCase {
-    private DateFormatter formatter;
-    private String placeholder;
+    private final DateFormatter formatter;
+    private final String placeholder;
 
-    @Before
-    public void initialize() throws Exception {
-        if (formatter == null) {
-            Context targetContext = getContext();
-            this.formatter = new DateFormatter(targetContext);
-            this.placeholder = targetContext.getString(R.string.format_date_placeholder);
-        }
+
+    //region Lifecycle
+
+    public DateFormatterTests() {
+        this.formatter = new DateFormatter(getContext());
+        this.placeholder = getString(R.string.format_date_placeholder);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        DateTimeUtils.setCurrentMillisSystem();
+    }
+
+    //endregion
+
+
+    //region Last Night
+
+    @Test
+    public void nowDateTime() {
+        assertThat(DateFormatter.nowDateTime().getZone(), is(equalTo(DateTimeZone.getDefault())));
     }
 
     @Test
-    public void now() {
-        assertEquals(DateTimeZone.getDefault(), DateFormatter.nowDateTime().getZone());
+    public void todayForTimeline() {
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        final LocalDate lastNightBeforeBoundary = DateFormatter.todayForTimeline();
+        assertThat(lastNightBeforeBoundary.getDayOfMonth(), is(equalTo(20)));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        final LocalDate lastNightAfterBoundary = DateFormatter.todayForTimeline();
+        assertThat(lastNightAfterBoundary.getDayOfMonth(), is(equalTo(21)));
+    }
+
+    @Test
+    public void lastNight() {
+        final DateTime fixedPoint = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(fixedPoint.getMillis());
+
+        final LocalDate lastNight = DateFormatter.lastNight();
+        assertThat(lastNight.getDayOfMonth(), is(equalTo(20)));
+    }
+
+    @Test
+    public void lastNightBoundary() {
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        final LocalDate lastNightBeforeBoundary = DateFormatter.lastNight();
+        assertThat(lastNightBeforeBoundary.getDayOfMonth(), is(equalTo(19)));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        final LocalDate lastNightAfterBoundary = DateFormatter.lastNight();
+        assertThat(lastNightAfterBoundary.getDayOfMonth(), is(equalTo(20)));
     }
 
     @Test
     public void isLastNight() {
-        assertTrue(DateFormatter.isLastNight(DateFormatter.lastNight()));
-        assertFalse(DateFormatter.isLastNight(DateFormatter.lastNight().minusDays(5)));
+        assertThat(DateFormatter.isLastNight(DateFormatter.lastNight()), is(true));
+        assertThat(DateFormatter.isLastNight(DateFormatter.lastNight().minusDays(5)), is(false));
+
+
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 19)), is(true));
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 20)), is(false));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 19)), is(false));
+        assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 20)), is(true));
     }
+
+    //endregion
+
+
+    //region Formatting
 
     @Test
     public void isInLastWeek() {
         LocalDate now = DateFormatter.nowLocalDate();
-        assertFalse(DateFormatter.isInLastWeek(now.plusDays(1)));
-        assertFalse(DateFormatter.isInLastWeek(now));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(1)));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(2)));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(3)));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(4)));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(5)));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(6)));
-        assertTrue(DateFormatter.isInLastWeek(now.minusDays(7)));
-        assertFalse(DateFormatter.isInLastWeek(now.minusDays(8)));
+        assertThat(DateFormatter.isInLastWeek(now.plusDays(1)), is(false));
+        assertThat(DateFormatter.isInLastWeek(now), is(false));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(1)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(2)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(3)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(4)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(5)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(6)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(7)), is(true));
+        assertThat(DateFormatter.isInLastWeek(now.minusDays(8)), is(false));
     }
 
     @Test
     public void formatAsTimelineDate() {
-        String lastNightString = getContext().getString(R.string.format_date_last_night);
-        assertEquals(lastNightString, formatter.formatAsTimelineDate(DateFormatter.lastNight()));
+        String lastNightString = getString(R.string.format_date_last_night);
+        assertThat(formatter.formatAsTimelineDate(DateFormatter.lastNight()),
+                   is(equalTo(lastNightString)));
 
         LocalDate nightBefore = DateFormatter.lastNight().minusDays(1);
-        assertEquals(nightBefore.toString("EEEE"), formatter.formatAsTimelineDate(nightBefore));
+        assertThat(formatter.formatAsTimelineDate(nightBefore),
+                   is(equalTo(nightBefore.toString("EEEE"))));
 
         LocalDate weekBefore = DateFormatter.lastNight().minusDays(8);
-        assertEquals(weekBefore.toString("MMMM d"), formatter.formatAsTimelineDate(weekBefore));
+        assertThat(formatter.formatAsTimelineDate(weekBefore),
+                   is(equalTo(weekBefore.toString("MMMM d"))));
 
-        assertEquals(placeholder, formatter.formatAsTimelineDate(null));
+        assertThat(formatter.formatAsTimelineDate(null),
+                   is(equalTo(placeholder)));
     }
 
     @Test
     public void formatAsBirthDate() {
-        GregorianCalendar calendar = new GregorianCalendar(2001, 8, 3); // Months are 0-indexed in the Java API
-        Date canonicalDate = new Date(calendar.getTimeInMillis());
-        Context context = getContext();
-        String canonicalString = DateFormat.getDateFormat(context).format(canonicalDate);
-        assertEquals(canonicalString, formatter.formatAsLocalizedDate(new LocalDate(2001, 9, 3)));
-        assertEquals(placeholder, formatter.formatAsLocalizedDate(null));
+        final GregorianCalendar calendar = new GregorianCalendar(2001, 8, 3); // Months are 0-indexed in the Java API
+        final Date canonicalDate = new Date(calendar.getTimeInMillis());
+        final String canonicalString = DateFormat.getDateFormat(getContext())
+                                                 .format(canonicalDate);
+
+        assertThat(formatter.formatAsLocalizedDate(new LocalDate(2001, 9, 3)),
+                   is(equalTo(canonicalString)));
+        assertThat(formatter.formatAsLocalizedDate(null),
+                   is(equalTo(placeholder)));
     }
 
     @Test
     public void formatForTimelineEvent() {
-        assertEquals("2:30 PM", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), false).toString());
-        assertEquals("14:30", formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), true).toString());
-        assertEquals(placeholder, formatter.formatForTimelineEvent(null, false));
-        assertEquals(placeholder, formatter.formatForTimelineEvent(null, true));
+        assertThat(formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), false).toString(),
+                   is(equalTo("2:30 PM")));
+        assertThat(formatter.formatForTimelineEvent(new DateTime(2001, 2, 3, 14, 30), true).toString(),
+                   is(equalTo("14:30")));
+        assertThat(formatter.formatForTimelineEvent(null, false),
+                   is(equalTo(placeholder)));
+        assertThat(formatter.formatForTimelineEvent(null, true),
+                   is(equalTo(placeholder)));
     }
 
     @SuppressWarnings("ConstantConditions")
     @Test
     public void formatForTimelineSegment() {
-        assertEquals("2 PM", formatter.formatForTimelineSegment(new LocalTime(14, 30), false).toString());
-        assertEquals("14:00", formatter.formatForTimelineSegment(new LocalTime(14, 30), true).toString());
-        assertNull(formatter.formatForTimelineSegment(null, false));
-        assertNull(formatter.formatForTimelineSegment(null, true));
+        assertThat(formatter.formatForTimelineSegment(new LocalTime(14, 30), false).toString(),
+                   is(equalTo("2 PM")));
+        assertThat(formatter.formatForTimelineSegment(new LocalTime(14, 30), true).toString(),
+                   is(equalTo("14:00")));
+        assertThat(formatter.formatForTimelineSegment(null, false),
+                   is(nullValue()));
+        assertThat(formatter.formatForTimelineSegment(null, true),
+                   is(nullValue()));
     }
 
     @Test
     public void formatForTimelineInfo() {
-        assertEquals("2:30 PM", formatter.formatForTimelineInfo(new DateTime(2001, 2, 3, 14, 30), false).toString());
-        assertEquals("14:30", formatter.formatForTimelineInfo(new DateTime(2001, 2, 3, 14, 30), true).toString());
-        assertEquals(placeholder, formatter.formatForTimelineInfo(null, false));
-        assertEquals(placeholder, formatter.formatForTimelineInfo(null, true));
+        assertThat(formatter.formatForTimelineInfo(new DateTime(2001, 2, 3, 14, 30), false).toString(),
+                   is(equalTo("2:30 PM")));
+        assertThat(formatter.formatForTimelineInfo(new DateTime(2001, 2, 3, 14, 30), true).toString(),
+                   is(equalTo("14:30")));
+        assertThat(formatter.formatForTimelineInfo(null, false),
+                   is(equalTo(placeholder)));
+        assertThat(formatter.formatForTimelineInfo(null, true),
+                   is(equalTo(placeholder)));
     }
 
     @Test
     public void formatAsTime() {
-        assertEquals("2:30 PM", formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), false));
-        assertEquals("14:30", formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), true));
-        assertEquals(placeholder, formatter.formatAsTime((DateTime) null, false));
-        assertEquals(placeholder, formatter.formatAsTime((DateTime) null, true));
+        assertThat(formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), false),
+                   is(equalTo("2:30 PM")));
+        assertThat(formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), true),
+                   is(equalTo("14:30")));
+        assertThat(formatter.formatAsTime((DateTime) null, false),
+                   is(equalTo(placeholder)));
+        assertThat(formatter.formatAsTime((DateTime) null, true),
+                   is(equalTo(placeholder)));
     }
 
     @Test
     public void formatAsDayAndTime() {
-        assertEquals("Saturday – 2:30 PM", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), false));
-        assertEquals("Saturday – 14:30", formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), true));
-        assertEquals(placeholder, formatter.formatAsDayAndTime(null, false));
-        assertEquals(placeholder, formatter.formatAsDayAndTime(null, true));
+        assertThat(formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), false),
+                   is(equalTo("Saturday – 2:30 PM")));
+        assertThat(formatter.formatAsDayAndTime(new DateTime(2001, 2, 3, 14, 30), true),
+                   is(equalTo("Saturday – 14:30")));
+        assertThat(formatter.formatAsDayAndTime(null, false),
+                   is(equalTo(placeholder)));
+        assertThat(formatter.formatAsDayAndTime(null, true),
+                   is(equalTo(placeholder)));
     }
 
     @Test
     public void formatAsRelativeTime() {
-        assertEquals("10 seconds ago", formatter.formatAsRelativeTime(DateTime.now().minusSeconds(10)));
-        assertEquals("10 minutes ago", formatter.formatAsRelativeTime(DateTime.now().minusMinutes(10)));
-        assertEquals("10 hours ago", formatter.formatAsRelativeTime(DateTime.now().minusHours(10)));
-        assertEquals("5 days ago", formatter.formatAsRelativeTime(DateTime.now().minusDays(5)));
-        assertEquals("1 week ago", formatter.formatAsRelativeTime(DateTime.now().minusDays(10)));
-        assertEquals("10 months ago", formatter.formatAsRelativeTime(DateTime.now().minusMonths(10)));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusSeconds(10)),
+                   is(equalTo("10 seconds ago")));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusMinutes(10)),
+                   is(equalTo("10 minutes ago")));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusHours(10)),
+                   is(equalTo("10 hours ago")));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusDays(5)),
+                   is(equalTo("5 days ago")));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusDays(10)),
+                   is(equalTo("1 week ago")));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusMonths(10)),
+                   is(equalTo("10 months ago")));
 
         DateTime twoYearsAgo = DateTime.now().minusYears(2);
-        assertEquals(formatter.formatAsLocalizedDate(twoYearsAgo.toLocalDate()), formatter.formatAsRelativeTime(twoYearsAgo));
+        assertThat(formatter.formatAsRelativeTime(twoYearsAgo),
+                   is(equalTo(formatter.formatAsLocalizedDate(twoYearsAgo.toLocalDate()))));
     }
 
     @Test
     public void formatDuration() {
-        assertEquals("0 min", formatter.formatDuration(30, TimeUnit.SECONDS).toString());
-        assertEquals("1 min", formatter.formatDuration(60, TimeUnit.SECONDS).toString());
-        assertEquals("5 min", formatter.formatDuration(5, TimeUnit.MINUTES).toString());
-        assertEquals("1 hr", formatter.formatDuration(60, TimeUnit.MINUTES).toString());
-        assertEquals("1.5 hr", formatter.formatDuration(90, TimeUnit.MINUTES).toString());
-        assertEquals("1.7 hr", formatter.formatDuration(100, TimeUnit.MINUTES).toString());
-        assertEquals("2 hr", formatter.formatDuration(120, TimeUnit.MINUTES).toString());
+        assertThat(formatter.formatDuration(30, TimeUnit.SECONDS).toString(),
+                   is(equalTo("0 min")));
+        assertThat(formatter.formatDuration(60, TimeUnit.SECONDS).toString(),
+                   is(equalTo("1 min")));
+        assertThat(formatter.formatDuration(5, TimeUnit.MINUTES).toString(),
+                   is(equalTo("5 min")));
+        assertThat(formatter.formatDuration(60, TimeUnit.MINUTES).toString(),
+                   is(equalTo("1 hr")));
+        assertThat(formatter.formatDuration(90, TimeUnit.MINUTES).toString(),
+                   is(equalTo("1.5 hr")));
+        assertThat(formatter.formatDuration(100, TimeUnit.MINUTES).toString(),
+                   is(equalTo("1.7 hr")));
+        assertThat(formatter.formatDuration(120, TimeUnit.MINUTES).toString(),
+                   is(equalTo("2 hr")));
     }
+
+    //endregion
 }

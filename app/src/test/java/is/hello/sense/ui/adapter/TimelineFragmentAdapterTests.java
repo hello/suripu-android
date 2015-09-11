@@ -83,12 +83,12 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
 
     @Test
     public void ensureLatestDateIsToday() {
-        adapter.ensureLatestDateIsToday();
+        adapter.ensureLatestDateIsLastNight();
         verify(adapter, never()).setLatestDate(any(LocalDate.class));
 
         LocalDate thePast = LocalDate.now().minusDays(5);
         adapter.setLatestDate(thePast);
-        adapter.ensureLatestDateIsToday();
+        adapter.ensureLatestDateIsLastNight();
         verify(adapter).setLatestDate(LocalDate.now());
     }
 
@@ -124,7 +124,7 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     @Test
     public void getLastNight() {
         assertThat(adapter.getLastNight(), is(equalTo(adapter.getCount() - 1)));
-        verify(adapter).ensureLatestDateIsToday();
+        verify(adapter).ensureLatestDateIsLastNight();
     }
 
     @Test
