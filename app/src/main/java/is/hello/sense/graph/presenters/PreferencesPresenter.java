@@ -8,7 +8,11 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
+
+import org.joda.time.LocalDate;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,11 +22,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
@@ -52,6 +56,8 @@ import rx.subscriptions.Subscriptions;
     public static final String PAIRED_SENSE_ID = "paired_sense_id";
     public static final String PAIRED_PILL_ID = "paired_pill_id";
 
+    public static final String ACCOUNT_CREATION_DATE = "account_creation_date";
+
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
 
@@ -60,7 +66,6 @@ import rx.subscriptions.Subscriptions;
 
     private final Context context;
     private final SharedPreferences sharedPreferences;
-    private final AccountPresenter accountPresenter;
 
     /**
      * SharedPreferences only keeps a weak reference to its OnSharedPreferenceChangeListener,
@@ -69,11 +74,9 @@ import rx.subscriptions.Subscriptions;
     private final Set<OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
 
     public @Inject PreferencesPresenter(@NonNull Context context,
-                                        @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences,
-                                        @NonNull AccountPresenter accountPresenter) {
+                                        @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
-        this.accountPresenter = accountPresenter;
 
         migrateIfNeeded();
 
@@ -116,47 +119,21 @@ import rx.subscriptions.Subscriptions;
         return sharedPreferences.edit();
     }
 
+    public void putLocalDate(@NonNull String key, @Nullable LocalDate localDate) {
+        final SharedPreferences.Editor editor = edit();
+        if (localDate != null) {
+            editor.putString(key, localDate.toString(ISODateTimeFormat.date()));
+        } else {
+            editor.remove(key);
+        }
+        editor.apply();
+    }
+
     public void clear() {
         logEvent("Clearing user preferences.");
 
         edit().clear()
               .apply();
-    }
-
-    public Observable<Void> pullAccountPreferences() {
-        logEvent("Pulling preferences from backend");
-
-        return accountPresenter.preferences().map(prefs -> {
-            edit().putBoolean(PUSH_SCORE_ENABLED, prefs.pushScore)
-                  .putBoolean(PUSH_ALERT_CONDITIONS_ENABLED, prefs.pushAlertConditions)
-                  .putBoolean(ENHANCED_AUDIO_ENABLED, prefs.enhancedAudioEnabled)
-                  .putBoolean(USE_CELSIUS, prefs.useCelsius)
-                  .putBoolean(USE_GRAMS, prefs.useMetricWeight)
-                  .putBoolean(USE_CENTIMETERS, prefs.useMetricHeight)
-                  .putBoolean(USE_24_TIME, prefs.use24Time)
-                  .apply();
-
-            logEvent("Pulled preferences");
-
-            return null;
-        });
-    }
-
-    public void pushAccountPreferences() {
-        logEvent("Pushing account preferences");
-
-        Account.Preferences preferences = new Account.Preferences();
-        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        preferences.pushScore = getBoolean(PUSH_SCORE_ENABLED, true);
-        preferences.pushAlertConditions = getBoolean(PUSH_ALERT_CONDITIONS_ENABLED, true);
-        preferences.enhancedAudioEnabled = getBoolean(ENHANCED_AUDIO_ENABLED, false);
-        preferences.use24Time = getUse24Time();
-        preferences.useCelsius = getBoolean(USE_CELSIUS, defaultMetric);
-        preferences.useMetricWeight = getBoolean(USE_GRAMS, defaultMetric);
-        preferences.useMetricHeight = getBoolean(USE_CENTIMETERS, defaultMetric);
-        accountPresenter.updatePreferences(preferences)
-                        .subscribe(ignored -> logEvent("Pushed account preferences"),
-                                   Functions.LOG_ERROR);
     }
 
     //endregion
@@ -178,6 +155,15 @@ import rx.subscriptions.Subscriptions;
 
     public String getString(String key, String defaultValue) {
         return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public LocalDate getLocalDate(String key) {
+        final String timestamp = sharedPreferences.getString(key, null);
+        if (TextUtils.isEmpty(timestamp)) {
+            return null;
+        } else {
+            return LocalDate.parse(timestamp, ISODateTimeFormat.date());
+        }
     }
 
     //endregion
@@ -249,6 +235,15 @@ import rx.subscriptions.Subscriptions;
 
     public Observable<Boolean> observableUse24Time() {
         return observableBoolean(USE_24_TIME, DateFormat.is24HourFormat(context));
+    }
+
+    public LocalDate getAccountCreationDate() {
+        final LocalDate savedCreationDate = getLocalDate(ACCOUNT_CREATION_DATE);
+        if (savedCreationDate != null) {
+            return savedCreationDate;
+        } else {
+            return Constants.TIMELINE_EPOCH;
+        }
     }
 
     //endregion

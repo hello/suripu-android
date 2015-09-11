@@ -12,7 +12,9 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.units.UnitFormatter;
 import rx.Observable;
 
 public class AccountPresenter extends ValuePresenter<Account> {
@@ -21,6 +23,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     @Inject ApiService apiService;
     @Inject ApiSessionManager sessionManager;
+    @Inject PreferencesPresenter preferences;
 
     public final PresenterSubject<Account> account = this.subject;
 
@@ -37,7 +40,12 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     @Override
     protected Observable<Account> provideUpdateObservable() {
-        return apiService.getAccount();
+        return apiService.getAccount()
+                         .doOnNext(account -> {
+                             logEvent("updated account creation date preference");
+                             preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
+                                                      account.getCreated());
+                         });
     }
 
 
@@ -103,6 +111,43 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     public Observable<Account.Preferences> updatePreferences(@NonNull Account.Preferences changes) {
         return apiService.updateAccountPreferences(changes);
+    }
+
+    public Observable<Void> pullAccountPreferences() {
+        preferences.logEvent("Pulling preferences from backend");
+
+        return preferences().map(prefs -> {
+            preferences.edit()
+                       .putBoolean(PreferencesPresenter.PUSH_SCORE_ENABLED, prefs.pushScore)
+                       .putBoolean(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, prefs.pushAlertConditions)
+                       .putBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED, prefs.enhancedAudioEnabled)
+                       .putBoolean(PreferencesPresenter.USE_CELSIUS, prefs.useCelsius)
+                       .putBoolean(PreferencesPresenter.USE_GRAMS, prefs.useMetricWeight)
+                       .putBoolean(PreferencesPresenter.USE_CENTIMETERS, prefs.useMetricHeight)
+                       .putBoolean(PreferencesPresenter.USE_24_TIME, prefs.use24Time)
+                       .apply();
+
+            logEvent("Pulled preferences");
+
+            return null;
+        });
+    }
+
+    public void pushAccountPreferences() {
+        logEvent("Pushing account preferences");
+
+        Account.Preferences update = new Account.Preferences();
+        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
+        update.pushScore = preferences.getBoolean(PreferencesPresenter.PUSH_SCORE_ENABLED, true);
+        update.pushAlertConditions = preferences.getBoolean(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, true);
+        update.enhancedAudioEnabled = preferences.getBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED, false);
+        update.use24Time = preferences.getUse24Time();
+        update.useCelsius = preferences.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultMetric);
+        update.useMetricWeight = preferences.getBoolean(PreferencesPresenter.USE_GRAMS, defaultMetric);
+        update.useMetricHeight = preferences.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultMetric);
+        updatePreferences(update)
+                .subscribe(ignored -> logEvent("Pushed account preferences"),
+                           Functions.LOG_ERROR);
     }
 
     //endregion

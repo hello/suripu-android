@@ -32,13 +32,19 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull Context context, @NonNull ZoomedOutTimelinePresenter presenter) {
+    public ZoomedOutTimelineAdapter(@NonNull Context context,
+                                    @NonNull ZoomedOutTimelinePresenter presenter,
+                                    @NonNull LocalDate oldestDate) {
         this.context = context;
         this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
         this.presenter = presenter;
 
-        this.count = Days.daysBetween(Constants.TIMELINE_EPOCH, DateFormatter.todayForTimeline()).getDays();
+        LocalDate today = DateFormatter.todayForTimeline();
+        if (today.equals(oldestDate)) {
+            today = today.plusDays(1);
+        }
+        this.count = Days.daysBetween(oldestDate, today).getDays();
     }
 
 
