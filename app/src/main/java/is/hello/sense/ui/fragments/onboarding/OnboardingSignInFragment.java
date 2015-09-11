@@ -27,6 +27,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -38,12 +39,14 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
+    @Inject AccountPresenter accountPresenter;
     @Inject PreferencesPresenter preferences;
 
     private EditText emailText;
@@ -141,12 +144,23 @@ public class OnboardingSignInFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
-            preferences.pullAccountPreferences().subscribe();
+            accountPresenter.update();
 
             String accountId = session.getAccountId();
             Analytics.trackSignIn(accountId);
 
-            getOnboardingActivity().showHomeActivity();
+            Observable<Void> initializeLocalState = Observable.combineLatest(accountPresenter.pullAccountPreferences(),
+                                                                             accountPresenter.latest(),
+                                                                             (l, r) -> null);
+            bindAndSubscribe(initializeLocalState,
+                             ignored -> {
+                                 getOnboardingActivity().showHomeActivity();
+                             },
+                             e -> {
+                                 Logger.warn(getClass().getSimpleName(),
+                                             "Could not update local account state", e);
+                                 getOnboardingActivity().showHomeActivity();
+                             });
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
 

@@ -34,6 +34,7 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -73,6 +74,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Inject ApiService apiService;
     @Inject DevicesPresenter devicesPresenter;
+    @Inject PreferencesPresenter preferences;
     @Inject LocalUsageTracker localUsageTracker;
 
     private long lastUpdated = Long.MAX_VALUE;
@@ -142,7 +144,8 @@ public class HomeActivity extends ScopedInjectionActivity
             viewPager.setPageTransformer(false, new PerspectiveTransformer());
         }
 
-        this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager());
+        this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager(),
+                                                            preferences.getAccountCreationDate());
         viewPager.setAdapter(viewPagerAdapter);
 
         if (viewPager.getCurrentItem() == 0) {

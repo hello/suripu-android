@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -57,6 +58,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
     @Inject ApiService apiService;
     @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager sessionManager;
+    @Inject AccountPresenter accountPresenter;
     @Inject PreferencesPresenter preferences;
 
     @Override
@@ -226,9 +228,14 @@ public class OnboardingRegisterFragment extends InjectionFragment {
         OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, emailText.getText().toString(), passwordText.getText().toString());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
-            preferences.pushAccountPreferences();
 
-            Analytics.trackRegistration(session.getAccountId(), createdAccount.getName(), DateTime.now());
+            preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
+                                     LocalDate.now());
+            accountPresenter.pushAccountPreferences();
+
+            Analytics.trackRegistration(session.getAccountId(),
+                                        createdAccount.getName(),
+                                        DateTime.now());
 
             getOnboardingActivity().showBirthday(createdAccount);
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);

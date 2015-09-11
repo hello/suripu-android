@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -31,6 +32,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     private static final int DELAY_PUSH_PREFERENCES = 3000;
     private static final int MSG_PUSH_PREFERENCES = 0x5;
 
+    @Inject AccountPresenter accountPresenter;
     @Inject PreferencesPresenter preferences;
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
@@ -78,7 +80,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         super.onViewCreated(view, savedInstanceState);
 
         showLoading();
-        bindAndSubscribe(preferences.pullAccountPreferences(),
+        bindAndSubscribe(accountPresenter.pullAccountPreferences(),
                          ignored -> hideLoading(),
                          this::pullingPreferencesFailed);
 
@@ -112,7 +114,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
         if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
             handler.removeMessages(MSG_PUSH_PREFERENCES);
-            preferences.pushAccountPreferences();
+            accountPresenter.pushAccountPreferences();
         }
     }
 
@@ -158,7 +160,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.what == MSG_PUSH_PREFERENCES) {
-            preferences.pushAccountPreferences();
+            accountPresenter.pushAccountPreferences();
             return true;
         }
         return false;

@@ -32,7 +32,12 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 
 @Singleton public class DateFormatter {
-    public static final int NIGHT_BOUNDARY_HOUR = 4;
+    /**
+     * The hour of day when the last night date is considered to roll over.
+     * <p />
+     * <code>3:00 AM</code> chosen to support early first shift risers.
+     */
+    public static final int NIGHT_BOUNDARY_HOUR = 3;
 
     private final Context context;
 
@@ -76,6 +81,21 @@ import is.hello.sense.ui.widget.util.Styles;
     }
 
     /**
+     * Returns the date considered to represent today for the timeline.
+     * <p>
+     * Should not be used for anything thing that does not require
+     * the {@link #NIGHT_BOUNDARY_HOUR} constant to apply.
+     */
+    public static @NonNull LocalDate todayForTimeline() {
+        final DateTime now = nowDateTime();
+        if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
+            return now.minusDays(1).toLocalDate();
+        } else {
+            return now.toLocalDate();
+        }
+    }
+
+    /**
      * Returns the date considered to represent last night.
      */
     public static @NonNull LocalDate lastNight() {
@@ -91,8 +111,7 @@ import is.hello.sense.ui.widget.util.Styles;
      * Returns whether or not a given date is considered to be last night.
      */
     public static boolean isLastNight(@NonNull LocalDate instant) {
-        Interval interval = new Interval(Days.ONE, nowDateTime().withTimeAtStartOfDay());
-        return interval.contains(instant.toDateTimeAtStartOfDay());
+        return lastNight().isEqual(instant);
     }
 
     /**
@@ -111,7 +130,8 @@ import is.hello.sense.ui.widget.util.Styles;
 
     public @NonNull String formatAsTimelineDate(@Nullable LocalDate date) {
         if (date != null) {
-            if (isLastNight(date)) {
+            final LocalDate lastNight = lastNight();
+            if (date.equals(lastNight) || date.isAfter(lastNight)) {
                 return context.getString(R.string.format_date_last_night);
             } else if (isInLastWeek(date)) {
                 return date.toString(context.getString(R.string.format_date_weekday));

@@ -40,7 +40,7 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     public void setUp() {
         FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
-        this.adapter = spy(new TimelineFragmentAdapter(fragmentManager));
+        this.adapter = spy(new TimelineFragmentAdapter(fragmentManager, Constants.TIMELINE_EPOCH));
     }
 
     @Test
@@ -83,13 +83,21 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
 
     @Test
     public void ensureLatestDateIsToday() {
-        adapter.ensureLatestDateIsToday();
+        adapter.ensureLatestDateIsLastNight();
         verify(adapter, never()).setLatestDate(any(LocalDate.class));
 
         LocalDate thePast = LocalDate.now().minusDays(5);
         adapter.setLatestDate(thePast);
-        adapter.ensureLatestDateIsToday();
+        adapter.ensureLatestDateIsLastNight();
         verify(adapter).setLatestDate(LocalDate.now());
+    }
+
+    @Test
+    public void getCountForNewAccounts() {
+        final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
+        final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
+        final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager, LocalDate.now());
+        assertThat(adapter.getCount(), is(equalTo(1)));
     }
 
     @Test
@@ -124,7 +132,7 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     @Test
     public void getLastNight() {
         assertThat(adapter.getLastNight(), is(equalTo(adapter.getCount() - 1)));
-        verify(adapter).ensureLatestDateIsToday();
+        verify(adapter).ensureLatestDateIsLastNight();
     }
 
     @Test

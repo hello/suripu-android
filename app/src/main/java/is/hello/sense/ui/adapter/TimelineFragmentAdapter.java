@@ -13,9 +13,10 @@ import org.joda.time.LocalDate;
 
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.fragments.TimelineFragment;
-import is.hello.sense.util.Constants;
+import is.hello.sense.util.DateFormatter;
 
 public class TimelineFragmentAdapter extends FragmentPagerAdapter {
+    private final LocalDate oldestDate;
     private int count;
     @VisibleForTesting LocalDate latestDate;
     @VisibleForTesting @Nullable Timeline cachedTimeline;
@@ -24,9 +25,11 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     //region Lifecycle
 
-    public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager) {
+    public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager,
+                                   @NonNull LocalDate oldestDate) {
         super(fragmentManager);
-        setLatestDate(LocalDate.now());
+        this.oldestDate = oldestDate;
+        setLatestDate(DateFormatter.todayForTimeline());
     }
 
     @Override
@@ -51,25 +54,29 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
         this.cachedTimeline = cachedTimeline;
     }
 
-    public void ensureLatestDateIsToday() {
-        LocalDate today = LocalDate.now();
+    public void ensureLatestDateIsLastNight() {
+        LocalDate today = DateFormatter.todayForTimeline();
         if (latestDate.isBefore(today)) {
             setLatestDate(today);
         }
     }
 
     public void setLatestDate(@NonNull LocalDate latestDate) {
-        this.latestDate = latestDate;
-        this.count = Days.daysBetween(Constants.TIMELINE_EPOCH, latestDate).getDays();
+        if (latestDate.equals(oldestDate)) {
+            this.latestDate = oldestDate.plusDays(1);
+        } else {
+            this.latestDate = latestDate;
+        }
+        this.count = Days.daysBetween(oldestDate, this.latestDate).getDays();
         notifyDataSetChanged();
     }
 
     public int getDatePosition(@NonNull LocalDate date) {
-        return Days.daysBetween(Constants.TIMELINE_EPOCH, date).getDays();
+        return Days.daysBetween(oldestDate, date).getDays();
     }
 
     public int getLastNight() {
-        ensureLatestDateIsToday();
+        ensureLatestDateIsLastNight();
         return getCount() - 1;
     }
 
@@ -84,7 +91,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public LocalDate getItemDate(int position) {
-        return Constants.TIMELINE_EPOCH.plusDays(position);
+        return oldestDate.plusDays(position);
     }
 
     @NonNull

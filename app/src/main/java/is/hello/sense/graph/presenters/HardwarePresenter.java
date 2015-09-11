@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
@@ -23,14 +24,14 @@ import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
+import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
+import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.bluetooth.sense.SensePeripheral;
-import is.hello.sense.bluetooth.sense.model.SenseConnectToWiFiUpdate;
-import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
-import is.hello.sense.bluetooth.sense.model.SenseNetworkStatus;
-import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PendingObservables;
 import rx.Observable;
@@ -53,7 +54,7 @@ import rx.functions.Action1;
 
     private final PendingObservables<String> pending = new PendingObservables<>();
 
-    private @Nullable SensePeripheral peripheral;
+    @VisibleForTesting @Nullable SensePeripheral peripheral;
 
     private int peripheralNotFoundCount = 0;
     private boolean wantsHighPowerPreScan;
@@ -332,7 +333,8 @@ import rx.functions.Action1;
                          .doOnError(this.respondToError);
     }
 
-    private void sortWifiNetworks(@NonNull List<SenseCommandProtos.wifi_endpoint> networks) {
+    @VisibleForTesting
+    void sortWifiNetworks(@NonNull List<SenseCommandProtos.wifi_endpoint> networks) {
         if (!networks.isEmpty()) {
             Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
         }
@@ -471,20 +473,6 @@ import rx.functions.Action1;
     public static class NoConnectedPeripheralException extends BluetoothError {
         public NoConnectedPeripheralException() {
             super("HardwarePresenter peripheral method called without paired peripheral.", new NullPointerException());
-        }
-    }
-
-    static final class Tests {
-        static void setPeripheral(@NonNull HardwarePresenter presenter, @Nullable SensePeripheral peripheral) {
-            presenter.peripheral = peripheral;
-        }
-
-        static @Nullable SensePeripheral getPeripheral(@NonNull HardwarePresenter presenter) {
-            return presenter.peripheral;
-        }
-
-        static void sortWifiNetworks(@NonNull HardwarePresenter presenter, @NonNull List<SenseCommandProtos.wifi_endpoint> endpoints) {
-            presenter.sortWifiNetworks(endpoints);
         }
     }
 }

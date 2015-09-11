@@ -2,132 +2,86 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
-import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
-import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
-import is.hello.buruberi.bluetooth.stacks.PeripheralService;
-import is.hello.buruberi.bluetooth.stacks.test.FakeGattPeripheral;
-import is.hello.buruberi.bluetooth.stacks.test.FakePeripheralBehavior;
-import is.hello.buruberi.bluetooth.stacks.test.FakePeripheralService;
-import is.hello.buruberi.util.Either;
+import is.hello.buruberi.bluetooth.errors.BluetoothGattError;
+import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.api.model.Device;
-import is.hello.sense.bluetooth.sense.SenseIdentifiers;
-import is.hello.sense.bluetooth.sense.SensePeripheral;
-import is.hello.sense.bluetooth.sense.model.SenseLedAnimation;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 import rx.Observable;
 
+import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 import static is.hello.sense.AssertExtensions.assertNoThrow;
 import static is.hello.sense.AssertExtensions.assertThrows;
-import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_endpoint;
-import static is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class HardwarePresenterTests extends InjectionTestCase {
-    private final FakePeripheralBehavior peripheralBehavior = new FakePeripheralBehavior("Sense-Test", "ca:15:4f:fa:b7:0b", -50);
-    private final FakeGattPeripheral testPeripheral;
-    private final SensePeripheral peripheral;
-
-    @Inject BluetoothStack stack;
     @Inject HardwarePresenter presenter;
-
-    public HardwarePresenterTests() {
-        this.testPeripheral = new FakeGattPeripheral(stack, peripheralBehavior);
-        this.peripheral = new SensePeripheral(testPeripheral);
-    }
-
-    @Before
-    public void initialize() throws Exception {
-        SensePeripheral.Testing.setPeripheralService(peripheral, null);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        HardwarePresenter.Tests.setPeripheral(presenter, null);
-        peripheralBehavior.reset();
-    }
 
     @Test
     public void errorsResetPeripheral() throws Exception {
-        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
-        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
+        SensePeripheral peripheral = mock(SensePeripheral.class);
+        doReturn(Observable.error(new BluetoothGattError(BluetoothGattError.GATT_STACK_ERROR,
+                                                         BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION)))
+                .when(peripheral)
+                .getWifiNetwork();
+        presenter.peripheral = peripheral;
 
-        OperationTimeoutError error = new OperationTimeoutError(OperationTimeoutError.Operation.SUBSCRIBE_NOTIFICATION);
-        peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
-        peripheralBehavior.setSubscriptionResponse(Either.right(error));
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_CONNECTED);
-        SensePeripheral.Testing.setPeripheralService(peripheral, new FakePeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY));
-
-        assertThrows(() -> {
-            Sync.last(presenter.currentWifiNetwork());
-        });
-        assertNull(HardwarePresenter.Tests.getPeripheral(presenter));
-
-
-        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
-        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
-
-        peripheralBehavior.setSubscriptionResponse(Either.right(new BluetoothError("Test")));
-
-        assertThrows(() -> {
-            Sync.last(presenter.currentWifiNetwork());
-        });
-        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
+        assertThrows(() -> Sync.last(presenter.currentWifiNetwork()));
+        assertThat(presenter.peripheral, is(nullValue()));
     }
 
     @Test
     public void clearsPeripheralOnBluetoothDisable() throws Exception {
-        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        presenter.peripheral = mock(SensePeripheral.class);
         presenter.onBluetoothEnabledChanged(true);
-        assertNotNull(HardwarePresenter.Tests.getPeripheral(presenter));
+        assertThat(presenter.peripheral, is(notNullValue()));
 
         presenter.onBluetoothEnabledChanged(false);
-        assertNull(HardwarePresenter.Tests.getPeripheral(presenter));
+        assertThat(presenter.peripheral, is(nullValue()));
     }
 
     @Test
     public void connectivityGetters() throws Exception {
-        FakePeripheralService service = new FakePeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
-        SensePeripheral.Testing.setPeripheralService(peripheral, service);
-        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
-        peripheralBehavior.setServicesResponse(Either.left(Collections.emptyMap()));
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_CONNECTED);
+        SensePeripheral peripheral = mock(SensePeripheral.class);
+        doReturn(true).when(peripheral).isConnected();
+        presenter.peripheral = peripheral;
 
-        assertTrue(presenter.hasPeripheral());
-        assertTrue(presenter.isConnected());
+        assertThat(presenter.hasPeripheral(), is(true));
+        assertThat(presenter.isConnected(), is(true));
 
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_DISCONNECTED);
+        doReturn(false).when(peripheral).isConnected();
 
-        assertFalse(presenter.isConnected());
+        assertThat(presenter.isConnected(), is(false));
 
-        HardwarePresenter.Tests.setPeripheral(presenter, null);
+        presenter.peripheral = null;
 
-        assertFalse(presenter.hasPeripheral());
-        assertFalse(presenter.isConnected());
-
-        SensePeripheral.Testing.setPeripheralService(peripheral, null);
+        assertThat(presenter.hasPeripheral(), is(false));
+        assertThat(presenter.isConnected(), is(false));
     }
 
     @Test
     public void noDeviceErrors() throws Exception {
-        HardwarePresenter.Tests.setPeripheral(presenter, null);
+        presenter.peripheral = null;
 
         assertThrowsNoDeviceError(presenter.connectToPeripheral());
         assertThrowsNoDeviceError(presenter.runLedAnimation(SenseLedAnimation.STOP));
@@ -143,52 +97,59 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     @Test
     public void wifiSignalStrengthSort() throws Exception {
-        // Not currently possible to test the actual wifi networks method
-        // due to the relative complexity of mocking multiple responses.
-        List<wifi_endpoint> endpoints = Lists.newArrayList(
-            wifi_endpoint.newBuilder().setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN).setSsid("Test 1").setRssi(-1000).build(),
-            wifi_endpoint.newBuilder().setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN).setSsid("Test 2").setRssi(-50).build(),
-            wifi_endpoint.newBuilder().setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN).setSsid("Test 3").setRssi(-4000).build()
-        );
-        HardwarePresenter.Tests.sortWifiNetworks(presenter, endpoints);
-        List<String> endpointNames = Lists.map(endpoints, wifi_endpoint::getSsid);
-        assertEquals(Lists.newArrayList("Test 2", "Test 1", "Test 3"), endpointNames);
+        List<wifi_endpoint> endpoints = new ArrayList<>();
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 1")
+                                   .setRssi(-1000).build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 2")
+                                   .setRssi(-50)
+                                   .build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 3")
+                                   .setRssi(-4000)
+                                   .build());
 
-        assertNoThrow(() -> HardwarePresenter.Tests.sortWifiNetworks(presenter, Lists.newArrayList()));
+        presenter.sortWifiNetworks(endpoints);
+        List<String> endpointNames = Lists.map(endpoints, wifi_endpoint::getSsid);
+        assertThat(endpointNames, hasItems("Test 2", "Test 1", "Test 3"));
+
+        assertNoThrow(() -> presenter.sortWifiNetworks(Lists.newArrayList()));
     }
 
     @Test
     public void clearPeripheral() throws Exception {
-        FakePeripheralService service = new FakePeripheralService(SenseIdentifiers.SERVICE, PeripheralService.SERVICE_TYPE_PRIMARY);
-        SensePeripheral.Testing.setPeripheralService(peripheral, service);
-        HardwarePresenter.Tests.setPeripheral(presenter, peripheral);
+        SensePeripheral peripheral = mock(SensePeripheral.class);
+        doReturn(true)
+                .when(peripheral)
+                .isConnected();
+        doReturn(Observable.just(peripheral))
+                .when(peripheral)
+                .disconnect();
 
-        peripheralBehavior.setConnectionStatus(GattPeripheral.STATUS_CONNECTED);
-        peripheralBehavior.setDisconnectResponse(Either.left(testPeripheral));
+        presenter.peripheral = peripheral;
 
-        assertTrue(presenter.hasPeripheral());
-        assertTrue(presenter.isConnected());
+        assertThat(presenter.hasPeripheral(), is(true));
+        assertThat(presenter.isConnected(), is(true));
 
         presenter.clearPeripheral();
 
-        assertFalse(presenter.hasPeripheral());
-        assertFalse(presenter.isConnected());
+        assertThat(presenter.hasPeripheral(), is(false));
+        assertThat(presenter.isConnected(), is(false));
 
-        assertTrue(peripheralBehavior.wasMethodCalled(FakePeripheralBehavior.Method.DISCONNECT));
-
-        SensePeripheral.Testing.setPeripheralService(peripheral, null);
+        verify(peripheral, atLeastOnce()).disconnect();
     }
 
 
     private static <T> void assertThrowsNoDeviceError(@NonNull Observable<T> observable) {
         try {
             Sync.last(observable);
-        } catch (HardwarePresenter.NoConnectedPeripheralException ignored) {
-            return;
+            fail("Expected " + HardwarePresenter.NoConnectedPeripheralException.class.getCanonicalName());
         } catch (Exception e) {
-            fail("Unexpected exception '" + e + "' thrown");
+            assertThat(e, is(instanceOf(HardwarePresenter.NoConnectedPeripheralException.class)));
         }
-
-        fail("Did not throw no device error");
     }
 }

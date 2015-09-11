@@ -38,7 +38,8 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
 import is.hello.sense.util.StateSafeExecutor;
 
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder> implements Player.OnEventListener {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineBaseViewHolder>
+        implements Player.OnEventListener {
     @VisibleForTesting static final int VIEW_TYPE_SEGMENT = -1;
     @VisibleForTesting static final int VIEW_TYPE_EVENT = -2;
 

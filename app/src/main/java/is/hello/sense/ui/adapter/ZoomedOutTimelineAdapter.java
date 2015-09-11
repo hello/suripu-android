@@ -19,7 +19,7 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
-import is.hello.sense.util.Constants;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
@@ -31,13 +31,19 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull Context context, @NonNull ZoomedOutTimelinePresenter presenter) {
+    public ZoomedOutTimelineAdapter(@NonNull Context context,
+                                    @NonNull ZoomedOutTimelinePresenter presenter,
+                                    @NonNull LocalDate oldestDate) {
         this.context = context;
         this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
         this.presenter = presenter;
 
-        this.count = Days.daysBetween(Constants.TIMELINE_EPOCH, LocalDate.now()).getDays();
+        LocalDate today = DateFormatter.todayForTimeline();
+        if (today.equals(oldestDate)) {
+            today = today.plusDays(1);
+        }
+        this.count = Days.daysBetween(oldestDate, today).getDays();
     }
 
 
@@ -141,13 +147,18 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             itemView.setOnClickListener(this);
         }
 
+        private boolean isTimelineEmpty(@NonNull Timeline timeline) {
+            return (timeline.getScore() == null ||
+                    timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE ||
+                    timeline.getScoreCondition() == ScoreCondition.INCOMPLETE);
+        }
+
         private void bind(@NonNull LocalDate date, @Nullable Timeline timeline) {
             this.date = date;
             dayNumber.setText(date.toString("d"));
             dayName.setText(date.toString("EE"));
 
-            if (timeline == null || timeline.getScore() == null ||
-                    timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE) {
+            if (timeline == null || isTimelineEmpty(timeline)) {
                 int sleepScoreColor = resources.getColor(ScoreCondition.UNAVAILABLE.colorRes);
                 score.setText(R.string.missing_data_placeholder);
                 score.setTextColor(sleepScoreColor);

@@ -2,8 +2,10 @@ package is.hello.sense.graph.presenters;
 
 import android.annotation.SuppressLint;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
+import org.robolectric.Robolectric;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +20,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @SuppressLint("CommitPrefEdits")
@@ -94,39 +97,51 @@ public class PreferencesPresenterTests extends InjectionTestCase {
     @Test
     public void observableString() throws Exception {
         Sync.wrap(presenter.observableString(TEST_KEY, "placeholder").take(1))
-            .assertEquals("placeholder");
+            .assertThat(is(equalTo("placeholder")));
 
         presenter.edit()
                  .putString(TEST_KEY, "actual value")
                  .commit();
 
         Sync.wrap(presenter.observableString(TEST_KEY, "placeholder").take(1))
-            .assertEquals("actual value");
+            .assertThat(is(equalTo("actual value")));
     }
 
     @Test
     public void observableBoolean() throws Exception {
         Sync.wrap(presenter.observableBoolean(TEST_KEY, true).take(1))
-            .assertEquals(true);
+            .assertThat(is(true));
 
         presenter.edit()
                  .putBoolean(TEST_KEY, false)
                  .commit();
 
         Sync.wrap(presenter.observableBoolean(TEST_KEY, true).take(1))
-            .assertEquals(false);
+            .assertThat(is(false));
     }
 
     @Test
     public void observableInteger() throws Exception {
         Sync.wrap(presenter.observableInteger(TEST_KEY, 10).take(1))
-            .assertEquals(10);
+            .assertThat(is(equalTo(10)));
 
         presenter.edit()
-                .putInt(TEST_KEY, 99)
-                .commit();
+                 .putInt(TEST_KEY, 99)
+                 .commit();
 
         Sync.wrap(presenter.observableInteger(TEST_KEY, 10).take(1))
-            .assertEquals(99);
+            .assertThat(is(equalTo(99)));
+    }
+
+    @Test
+    public void localDates() throws Exception {
+        final LocalDate testDate = new LocalDate(2015, 9, 8);
+
+        assertThat(presenter.getLocalDate(TEST_KEY), is(nullValue()));
+
+        presenter.putLocalDate(TEST_KEY, testDate);
+        Robolectric.flushBackgroundThreadScheduler();
+
+        assertThat(presenter.getLocalDate(TEST_KEY), is(equalTo(testDate)));
     }
 }

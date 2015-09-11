@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.ui.adapter.ZoomedOutTimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -34,6 +35,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
     @Inject ZoomedOutTimelinePresenter presenter;
     @Inject DateFormatter dateFormatter;
+    @Inject PreferencesPresenter preferences;
 
     private TextView monthText;
     private RecyclerView recyclerView;
@@ -86,7 +88,9 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
         this.layoutManager = new ZoomedOutTimelineLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        ZoomedOutTimelineAdapter adapter = new ZoomedOutTimelineAdapter(getActivity(), presenter);
+        ZoomedOutTimelineAdapter adapter = new ZoomedOutTimelineAdapter(getActivity(),
+                                                                        presenter,
+                                                                        preferences.getAccountCreationDate());
         adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 

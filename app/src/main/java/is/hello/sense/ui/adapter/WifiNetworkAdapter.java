@@ -9,8 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
-import is.hello.sense.bluetooth.sense.model.protobuf.SenseCommandProtos;
 
 public class WifiNetworkAdapter extends ArrayAdapter<SenseCommandProtos.wifi_endpoint> {
     private final LayoutInflater inflater;

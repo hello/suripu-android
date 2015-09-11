@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -37,6 +38,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     private static final int DELAY_PUSH_PREFERENCES = 3000;
     private static final int MSG_PUSH_PREFERENCES = 0x5;
 
+    @Inject AccountPresenter accountPresenter;
     @Inject PreferencesPresenter preferencesPresenter;
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
@@ -96,7 +98,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(preferencesPresenter.pullAccountPreferences(),
+        bindAndSubscribe(accountPresenter.pullAccountPreferences(),
                          Functions.NO_OP,
                          this::pullingPreferencesFailed);
 
@@ -136,7 +138,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
 
         if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
             handler.removeMessages(MSG_PUSH_PREFERENCES);
-            preferencesPresenter.pushAccountPreferences();
+            accountPresenter.pushAccountPreferences();
         }
     }
 
@@ -218,7 +220,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.what == MSG_PUSH_PREFERENCES) {
-            preferencesPresenter.pushAccountPreferences();
+            accountPresenter.pushAccountPreferences();
             return true;
         }
         return false;
