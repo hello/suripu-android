@@ -6,6 +6,10 @@
     <string name="accessibility_event_play">Play event sound</string>
     <string name="accessibility_event_stop">Stop event sound</string>
 
+    <string name="accessibility_sense_color_green">Condition: ideal</string>
+    <string name="accessibility_sense_color_yellow">Condition: acceptable</string>
+    <string name="accessibility_sense_color_red">Condition: poor</string>
+
     <string name="accessibility_event_name_generic_motion">Tossing and turning</string>
     <string name="accessibility_event_name_noise">Noise disturbance</string>
     <string name="accessibility_event_name_snoring">Snoring</string>

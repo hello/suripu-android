@@ -28,6 +28,54 @@
 
     </FrameLayout>
 
+    <ImageView
+        android:id="@+id/fragment_onboarding_sense_colors_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_onboarding_sense_colors_bottom"
+        android:scaleType="fitXY"
+        android:src="@drawable/onboarding_sense_background"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/fragment_onboarding_sense_colors_yellow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
+        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:src="@drawable/onboarding_sense_yellow"
+        android:contentDescription="@string/accessibility_sense_color_yellow" />
+
+    <ImageView
+        android:id="@+id/fragment_onboarding_sense_colors_red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
+        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:src="@drawable/onboarding_sense_red"
+        android:contentDescription="@string/accessibility_sense_color_red" />
+
+    <ImageView
+        android:id="@+id/fragment_onboarding_sense_colors_green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
+        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:src="@drawable/onboarding_sense_green"
+        android:contentDescription="@string/accessibility_sense_color_green" />
+
+    <is.hello.sense.ui.widget.DiagramVideoView
+        android:id="@+id/fragment_onboarding_sense_colors_final"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
+        app:sensePlaceholder="@drawable/diagram_onboarding_sense_colors"
+        app:senseDiagramVideo="@string/diagram_onboarding_sense_colors"
+        app:senseAutoStart="false" />
+
     <is.hello.sense.ui.widget.FixedViewPager
         android:id="@+id/fragment_onboarding_sense_colors_pager"
         android:layout_width="match_parent"
