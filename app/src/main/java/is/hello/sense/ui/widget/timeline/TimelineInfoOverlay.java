@@ -46,8 +46,8 @@ public class TimelineInfoOverlay implements Handler.Callback {
     private final FrameLayout contents;
     private final TextView tooltip;
 
-    private int barFillColor = Color.TRANSPARENT;
-    private float sleepDepthPercentage;
+    private int darkenOverlayColor = Color.TRANSPARENT;
+    private float overlaySleepDepthPercentage;
 
     private @Nullable Action1<TimelineInfoOverlay> onDismiss;
 
@@ -95,11 +95,11 @@ public class TimelineInfoOverlay implements Handler.Callback {
         tooltip.setText(reading);
 
         if (sleepState == TimelineEvent.SleepState.LIGHT) {
-            this.barFillColor = resources.getColor(sleepState.colorRes);
+            this.darkenOverlayColor = resources.getColor(sleepState.colorRes);
         } else {
-            this.barFillColor = Color.TRANSPARENT;
+            this.darkenOverlayColor = Color.TRANSPARENT;
         }
-        this.sleepDepthPercentage = Math.min(1f, event.getSleepDepth() / 100f);
+        this.overlaySleepDepthPercentage = Math.min(1f, event.getSleepDepth() / 100f);
     }
 
     public void setOnDismiss(@Nullable Action1<TimelineInfoOverlay> onDismiss) {
@@ -129,22 +129,24 @@ public class TimelineInfoOverlay implements Handler.Callback {
         background.getPaint()
                   .setColor(resources.getColor(R.color.background_light_overlay));
 
-        if (barFillColor == Color.TRANSPARENT) {
+        if (darkenOverlayColor == Color.TRANSPARENT) {
             return background;
         } else {
-            final Path fillPath = new Path();
-            fillPath.addRect(0f, viewTop,
-                             (screenSize.x - gutterSize) * sleepDepthPercentage,
-                             viewBottom,
-                             Path.Direction.CW);
+            final Path overlayPath = new Path();
 
-            final ShapeDrawable fill = new ShapeDrawable(new PathShape(fillPath,
-                                                                       screenSize.x,
-                                                                       screenSize.y));
-            fill.getPaint().setColor(barFillColor);
+            overlayPath.addRect(0f,
+                                viewTop,
+                                (screenSize.x - gutterSize) * overlaySleepDepthPercentage,
+                                viewBottom,
+                                Path.Direction.CW);
+
+            final ShapeDrawable overlay = new ShapeDrawable(new PathShape(overlayPath,
+                                                                          screenSize.x,
+                                                                          screenSize.y));
+            overlay.getPaint().setColor(darkenOverlayColor);
 
 
-            final Drawable[] layers = {background, fill};
+            final Drawable[] layers = {background, overlay};
             return new LayerDrawable(layers);
         }
     }
