@@ -19,9 +19,9 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.RecyclerAdapterTesting;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DevicesAdapterTests extends InjectionTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
@@ -68,9 +68,9 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense1, sense2, pill1, pill2));
 
-        assertEquals(2, adapter.getItemCount());
-        assertEquals(sense1, adapter.getItem(0));
-        assertEquals(pill1, adapter.getItem(1));
+        assertThat(adapter.getItemCount(), is(equalTo(2)));
+        assertThat(adapter.getItem(0), is(equalTo(sense1)));
+        assertThat(adapter.getItem(1), is(equalTo(pill1)));
     }
 
     @Test
@@ -88,13 +88,14 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                                                                                                 fakeParent, adapter.getItemViewType(0), 0);
 
-        assertEquals("Sense", holder.title.getText().toString());
-        assertEquals("2 hours ago", holder.lastSeen.getText().toString());
-        assertEquals(getResources().getColor(R.color.text_dark), holder.lastSeen.getCurrentTextColor());
-        assertEquals("Wi-Fi", holder.status1Label.getText().toString());
-        assertEquals("Connected", holder.status1.getText().toString());
-        assertEquals("Firmware", holder.status2Label.getText().toString());
-        assertEquals("ffffff", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.lastSeen.getCurrentTextColor(),
+                   is(equalTo(getResources().getColor(R.color.text_dark))));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Connected")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("ffffff")));
     }
 
     @Test
@@ -112,13 +113,14 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.DeviceViewHolder senseHolder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(0), 0);
 
-        assertEquals("Sense", senseHolder.title.getText().toString());
-        assertEquals("5 days ago", senseHolder.lastSeen.getText().toString());
-        assertEquals(getResources().getColor(R.color.destructive_accent), senseHolder.lastSeen.getCurrentTextColor());
-        assertEquals("Wi-Fi", senseHolder.status1Label.getText().toString());
-        assertEquals("--", senseHolder.status1.getText().toString());
-        assertEquals("Firmware", senseHolder.status2Label.getText().toString());
-        assertEquals("ffffff", senseHolder.status2.getText().toString());
+        assertThat(senseHolder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(senseHolder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(senseHolder.lastSeen.getCurrentTextColor(),
+                   is(equalTo(getResources().getColor(R.color.destructive_accent))));
+        assertThat(senseHolder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
+        assertThat(senseHolder.status1.getText().toString(), is(equalTo("--")));
+        assertThat(senseHolder.status2Label.getText().toString(), is(equalTo("Firmware")));
+        assertThat(senseHolder.status2.getText().toString(), is(equalTo("ffffff")));
     }
 
     @Test
@@ -136,12 +138,12 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("2 hours ago", holder.lastSeen.getText().toString());
-        assertEquals("Battery Level", holder.status1Label.getText().toString());
-        assertEquals("Good", holder.status1.getText().toString());
-        assertEquals("Color", holder.status2Label.getText().toString());
-        assertEquals("Blue", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Battery Level")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Good")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Color")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("Blue")));
     }
 
     @Test
@@ -159,12 +161,12 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("2 hours ago", holder.lastSeen.getText().toString());
-        assertEquals("Battery Level", holder.status1Label.getText().toString());
-        assertEquals("Low", holder.status1.getText().toString());
-        assertEquals("Color", holder.status2Label.getText().toString());
-        assertEquals("Blue", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Battery Level")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Low")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Color")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("Blue")));
     }
 
     @Test
@@ -182,12 +184,12 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("5 days ago", holder.lastSeen.getText().toString());
-        assertEquals("Battery Level", holder.status1Label.getText().toString());
-        assertEquals("Unknown", holder.status1.getText().toString());
-        assertEquals("Color", holder.status2Label.getText().toString());
-        assertEquals("Blue", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Battery Level")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Unknown")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Color")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("Blue")));
     }
 
     @Test
@@ -200,15 +202,15 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(0), 0);
 
-        assertEquals("Sense", holder.title.getText().toString());
-        assertEquals("Pair New Sense", holder.actionButton.getText().toString());
-        assertTrue(holder.actionButton.isEnabled());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair New Sense")));
+        assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertEquals(Device.Type.SENSE, clickedType.get());
+        assertThat(clickedType.get(), is(equalTo(Device.Type.SENSE)));
     }
 
     @Test
@@ -221,9 +223,9 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("Pair New Pill", holder.actionButton.getText().toString());
-        assertFalse(holder.actionButton.isEnabled());
+        assertThat("Sleep Pill", is(equalTo(holder.title.getText().toString())));
+        assertThat("Pair New Pill", is(equalTo(holder.actionButton.getText().toString())));
+        assertThat(holder.actionButton.isEnabled(), is(false));
     }
 
     @Test
@@ -244,15 +246,15 @@ public class DevicesAdapterTests extends InjectionTestCase {
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                  fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("Pair New Pill", holder.actionButton.getText().toString());
-        assertTrue(holder.actionButton.isEnabled());
+        assertThat("Sleep Pill", is(equalTo(holder.title.getText().toString())));
+        assertThat("Pair New Pill", is(equalTo(holder.actionButton.getText().toString())));
+        assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertEquals(Device.Type.PILL, clickedType.get());
+        assertThat(clickedType.get(), is(equalTo(Device.Type.PILL)));
     }
 
     //endregion
