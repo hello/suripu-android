@@ -88,6 +88,15 @@ public final class Views {
     }
 
     /**
+     * Calculates the center X coordinate for a given View instance.
+     * @param view  The view to find the center X coordinate for.
+     * @return  The center X coordinate of the view, or <code>0f</code> if the view is not yet laid out.
+     */
+    public static int getCenterX(@NonNull View view) {
+        return (view.getLeft() + view.getRight()) / 2;
+    }
+
+    /**
      * A one time signal that will notify observers of a given view's next global layout event.
      */
     public static <T extends View> Observable<T> observeNextLayout(@NonNull T view) {

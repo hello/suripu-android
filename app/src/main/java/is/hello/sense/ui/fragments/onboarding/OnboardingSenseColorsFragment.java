@@ -22,12 +22,12 @@ import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.PageDots;
+import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingSenseColorsFragment extends InjectionFragment
-        implements ViewPager.OnPageChangeListener {
+public class OnboardingSenseColorsFragment extends InjectionFragment {
     private static final float BACKGROUND_SENSE_SCALE = 0.7f;
 
     private static final int POSITION_INTRO = 0;
@@ -82,7 +82,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
         senseWave.setAlpha(0f);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
-        viewPager.addOnPageChangeListener(this);
+        viewPager.addOnPageChangeListener(new OnViewPagerChangeAdapter(viewPager, new PageChangeListener()));
 
         final SenseColor[] senseColors = {
                 new SenseColor(R.string.title_sense_colors_intro, R.string.info_sense_colors_intro),
@@ -170,72 +170,84 @@ public class OnboardingSenseColorsFragment extends InjectionFragment
     }
 
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (position == POSITION_INTRO) {
-            final int senseGreenCenter = (senseGreen.getLeft() + senseGreen.getRight()) / 2;
-            final int senseYellowCenter = (senseYellow.getLeft() + senseYellow.getRight()) / 2;
-            final int maxTranslation = senseGreenCenter - senseYellowCenter;
-            final float translation = Anime.interpolateFloats(positionOffset, 0f, maxTranslation);
-            senseYellow.setTranslationX(translation);
-            senseYellow.setScaleX(BACKGROUND_SENSE_SCALE);
-            senseYellow.setScaleY(BACKGROUND_SENSE_SCALE);
-            senseYellow.setAlpha(1f);
-            senseRed.setTranslationX(-translation);
-            senseRed.setScaleX(BACKGROUND_SENSE_SCALE);
-            senseRed.setScaleY(BACKGROUND_SENSE_SCALE);
-            senseRed.setAlpha(1f);
-        } else if (position == POSITION_GOOD) {
-            if (positionOffset == 0f) {
+    class PageChangeListener implements OnViewPagerChangeAdapter.Listener {
+
+        @Override
+        public void onPageChangeScrolled(int position, float offset) {
+            if (position == POSITION_INTRO) {
+                final int maxTranslation = Views.getCenterX(senseGreen) - Views.getCenterX(senseYellow);
+                final float translation = Anime.interpolateFloats(offset, 0f, maxTranslation);
+
+                senseYellow.setTranslationX(translation);
+                senseYellow.setScaleX(BACKGROUND_SENSE_SCALE);
+                senseYellow.setScaleY(BACKGROUND_SENSE_SCALE);
+                senseYellow.setAlpha(1f);
+
+                senseRed.setTranslationX(-translation);
+                senseRed.setScaleX(BACKGROUND_SENSE_SCALE);
+                senseRed.setScaleY(BACKGROUND_SENSE_SCALE);
+                senseRed.setAlpha(1f);
+            } else if (position == POSITION_GOOD) {
+                senseGreen.setAlpha(1f - offset);
+                senseYellow.setAlpha(offset);
+            } else if (position == POSITION_WARNING) {
+                senseYellow.setAlpha(1f - offset);
+                senseRed.setAlpha(offset);
+            } else if (position == POSITION_ALERT) {
+                senseBackground.setAlpha(1f - offset);
+                senseRed.setAlpha(1f - offset);
+
+                senseWave.setAlpha(offset);
+
+                final float newY = Anime.interpolateFloats(offset, nextButtonMaxY, nextButtonMinY);
+                nextButton.setY(newY);
+            }
+        }
+
+        @Override
+        public void onPageChangeCompleted(int position) {
+            if (position > POSITION_INTRO) {
+                final int translation = Views.getCenterX(senseGreen) - Views.getCenterX(senseYellow);
+                senseYellow.setTranslationX(translation);
+                senseYellow.setScaleX(1f);
+                senseYellow.setScaleY(1f);
+
+                senseRed.setTranslationX(-translation);
+                senseRed.setScaleX(1f);
+                senseRed.setScaleY(1f);
+            }
+
+            if (position == POSITION_GOOD) {
+                senseYellow.setAlpha(0f);
+                senseRed.setAlpha(0f);
+            } else if (position == POSITION_WARNING) {
+                senseGreen.setAlpha(0f);
+                senseYellow.setAlpha(1f);
+                senseRed.setAlpha(0f);
+            } else if (position == POSITION_ALERT) {
+                senseWave.suspendPlayback();
+
+                senseGreen.setAlpha(0f);
+                senseYellow.setAlpha(0f);
+                senseRed.setAlpha(1f);
+            } else if (position == POSITION_WAVE) {
+                senseBackground.setAlpha(0f);
+                senseGreen.setAlpha(0f);
+
                 senseYellow.setScaleX(1f);
                 senseYellow.setScaleY(1f);
                 senseYellow.setAlpha(0f);
+
                 senseRed.setScaleX(1f);
                 senseRed.setScaleY(1f);
                 senseRed.setAlpha(0f);
-            } else {
-                senseGreen.setAlpha(1f - positionOffset);
-                senseYellow.setAlpha(positionOffset);
+
+                senseWave.setAlpha(1f);
+                senseWave.startPlayback();
+
+                nextButton.setY(nextButtonMinY);
             }
-        } else if (position == POSITION_WARNING) {
-            senseYellow.setAlpha(1f - positionOffset);
-            senseRed.setAlpha(positionOffset);
-        } else if (position == POSITION_ALERT) {
-            senseBackground.setAlpha(1f - positionOffset);
-            senseRed.setAlpha(1f - positionOffset);
-
-            senseWave.setAlpha(positionOffset);
-
-            float newY = Anime.interpolateFloats(positionOffset, nextButtonMaxY, nextButtonMinY);
-            nextButton.setY(newY);
         }
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        if (position == POSITION_ALERT) {
-            senseWave.suspendPlayback();
-        } else if (position == POSITION_WAVE) {
-            senseBackground.setAlpha(0f);
-            senseGreen.setAlpha(0f);
-
-            senseYellow.setScaleX(1f);
-            senseYellow.setScaleY(1f);
-            senseYellow.setAlpha(0f);
-
-            senseRed.setScaleX(1f);
-            senseRed.setScaleY(1f);
-            senseRed.setAlpha(0f);
-
-            senseWave.setAlpha(1f);
-            senseWave.startPlayback();
-
-            bottomContainer.post(() -> nextButton.setY(nextButtonMinY));
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
     }
 
 
