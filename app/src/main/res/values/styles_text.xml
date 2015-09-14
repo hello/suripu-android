@@ -22,6 +22,10 @@
         <item name="android:textSize">@dimen/text_size_heading_card</item>
     </style>
 
+    <style name="AppTheme.Text.Heading.Large">
+        <item name="android:textSize">@dimen/text_size_heading_large</item>
+    </style>
+
     <style name="AppTheme.Text.Subheading">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
@@ -66,6 +70,10 @@
         <item name="android:textColor">@color/light_accent</item>
     </style>
 
+    <style name="AppTheme.Text.SectionHeading.Large">
+        <item name="android:textSize">@dimen/text_size_section_heading_large</item>
+    </style>
+
 
     <style name="AppTheme.Text.ScreenTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
@@ -80,6 +88,10 @@
     <style name="AppTheme.Text.Body">
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="AppTheme.Text.Body.Neutral">
+        <item name="android:textColor">@color/text_neutral</item>
     </style>
 
     <style name="AppTheme.Text.Body.Thin">

@@ -60,16 +60,17 @@ public class TutorialOverlayView extends RelativeLayout {
         this.activity = activity;
         this.tutorial = tutorial;
 
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        this.descriptionText = (TextView) inflater.inflate(R.layout.item_tutorial_description, this, false);
+        final LayoutInflater inflater = LayoutInflater.from(activity);
+        final View descriptionContainer = inflater.inflate(R.layout.item_tutorial_description, this, false);
+        this.descriptionText = (TextView) descriptionContainer.findViewById(R.id.item_tutorial_description_text);
         descriptionText.setText(tutorial.descriptionRes);
         Views.setSafeOnClickListener(descriptionText, ignored -> interactionCompleted());
 
-        Drawable dismissIcon = descriptionText.getCompoundDrawablesRelative()[2].mutate();
+        final Drawable dismissIcon = descriptionText.getCompoundDrawablesRelative()[2].mutate();
         dismissIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         descriptionText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, dismissIcon, null);
 
-        addView(descriptionText, tutorial.generateDescriptionLayoutParams());
+        addView(descriptionContainer, tutorial.generateDescriptionLayoutParams());
     }
 
     //endregion

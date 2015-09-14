@@ -28,15 +28,17 @@
     <dimen name="text_size_button">16sp</dimen>
     <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
+    <dimen name="text_size_section_heading_large">12sp</dimen>
     <dimen name="text_size_timeline_time">12sp</dimen>
     <dimen name="text_size_subheading">16sp</dimen>
     <dimen name="text_size_paragraph_heading">18sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
     <dimen name="text_size_heading_card">22sp</dimen>
+    <dimen name="text_size_heading_large">32sp</dimen>
     <dimen name="text_size_tiny_score">28sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
-    <dimen name="text_size_big_score">76sp</dimen>
+    <dimen name="text_size_big_score">68sp</dimen>
     <dimen name="text_size_smart_alarm_time">36sp</dimen>
     <dimen name="text_size_smart_alarm_time_period">16sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
@@ -76,9 +78,16 @@
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
+    <dimen name="onboarding_sense_inset_bottom">25dp</dimen>
+    
+    <dimen name="view_sensor_ticker_letter_spacing">3dp</dimen>
+    <dimen name="view_sensor_ticker_fade_height">10dp</dimen>
+
     <dimen name="item_room_sensor_condition_min_height">80dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
     <dimen name="item_room_sensor_condition_graph_inset">8dp</dimen>
+    <dimen name="item_room_sensor_condition_view_width">42dp</dimen>
+    <dimen name="item_room_sensor_condition_view_height">42dp</dimen>
 
     <dimen name="scale_view_size">90dp</dimen>
     <dimen name="scale_view_diamond">2dp</dimen>

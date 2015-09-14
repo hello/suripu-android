@@ -38,7 +38,7 @@
     <color name="text_dim_light">#b2ffffff</color>
     <color name="text_section_header">#878787</color>
     <color name="text_dim_placeholder">#e0e0e0</color>
-    <color name="text_neutral">#ACB4BF</color>
+    <color name="text_neutral">#999999</color>
     <color name="text_footer">#7e7e7e</color>
     <color name="text_link">#009CFF</color>
 
@@ -54,7 +54,7 @@
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 
     <color name="sensor_alert">#FF974C</color>
-    <color name="sensor_warning">#FFBF00</color>
+    <color name="sensor_warning">#FFAA00</color>
     <color name="sensor_ideal">#41D7AC</color>
     <color name="sensor_unknown">#565961</color>
     <color name="sensor_empty">#B5B5B5</color>

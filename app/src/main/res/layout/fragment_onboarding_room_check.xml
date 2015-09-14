@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:keepScreenOn="true">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_outer"
         android:layout_alignBottom="@+id/fragment_onboarding_room_check_sense"
         android:scaleType="fitXY"
-        android:src="@drawable/room_check_top_gradient"
+        android:src="@drawable/onboarding_sense_background"
         android:importantForAccessibility="no"
         tools:ignore="ContentDescription" />
 
@@ -24,7 +26,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:src="@drawable/room_check_sense_gray"
+        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:src="@drawable/onboarding_sense_grey"
         android:contentDescription="@string/app_name"/>
 
     <LinearLayout
@@ -32,9 +35,9 @@
         android:layout_below="@id/fragment_onboarding_room_check_sense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
         android:orientation="horizontal"
         android:gravity="center" />
 
@@ -46,13 +49,18 @@
         android:layout_marginBottom="@dimen/gap_outer"
         android:orientation="vertical">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <TextView
             android:id="@+id/fragment_onboarding_room_check_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="@dimen/gap_large"
             android:gravity="center_horizontal|top"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading"
+            android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"
             android:text="@string/dialog_loading_message"
             android:maxLines="2"/>
 
