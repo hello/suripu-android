@@ -3,10 +3,12 @@ package is.hello.sense.ui.widget.timeline;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
 import android.os.Build;
@@ -44,6 +46,9 @@ public class TimelineInfoOverlay implements Handler.Callback {
     private final FrameLayout contents;
     private final TextView tooltip;
 
+    private int barFillColor = Color.TRANSPARENT;
+    private float sleepDepthPercentage;
+
     private @Nullable Action1<TimelineInfoOverlay> onDismiss;
 
     public TimelineInfoOverlay(@NonNull Activity activity,
@@ -66,27 +71,35 @@ public class TimelineInfoOverlay implements Handler.Callback {
         tooltip.setTextColor(resources.getColor(R.color.white));
         tooltip.setBackgroundResource(R.drawable.background_timeline_info_popup);
 
-        int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_medium),
-            paddingVertical = resources.getDimensionPixelSize(R.dimen.gap_small);
+        final int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_medium),
+                  paddingVertical = resources.getDimensionPixelSize(R.dimen.gap_small);
         tooltip.setPadding(tooltip.getPaddingLeft() + paddingHorizontal,
                            tooltip.getPaddingTop() + paddingVertical,
                            tooltip.getPaddingRight() + paddingHorizontal,
                            tooltip.getPaddingBottom() + paddingVertical);
 
         @SuppressLint("RtlHardcoded")
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                                     LayoutParams.WRAP_CONTENT,
-                                                     Gravity.BOTTOM | Gravity.LEFT);
+        final LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+                                                           LayoutParams.WRAP_CONTENT,
+                                                           Gravity.BOTTOM | Gravity.LEFT);
         layoutParams.leftMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_left_inset);
         contents.addView(tooltip, layoutParams);
     }
 
     public void bindEvent(@NonNull TimelineEvent event) {
-        CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
-        CharSequence sleepDepth = activity.getText(event.getSleepState().stringRes);
+        final TimelineEvent.SleepState sleepState = event.getSleepState();
 
-        SpannableStringBuilder reading = new SpannableStringBuilder(prefix).append(sleepDepth);
+        final CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
+        final CharSequence sleepDepth = activity.getText(sleepState.stringRes);
+        final SpannableStringBuilder reading = new SpannableStringBuilder(prefix).append(sleepDepth);
         tooltip.setText(reading);
+
+        if (sleepState == TimelineEvent.SleepState.LIGHT) {
+            this.barFillColor = resources.getColor(sleepState.colorRes);
+        } else {
+            this.barFillColor = Color.TRANSPARENT;
+        }
+        this.sleepDepthPercentage = Math.min(1f, event.getSleepDepth() / 100f);
     }
 
     public void setOnDismiss(@Nullable Action1<TimelineInfoOverlay> onDismiss) {
@@ -96,25 +109,44 @@ public class TimelineInfoOverlay implements Handler.Callback {
     private Drawable createBackground(@NonNull Point screenSize,
                                       int viewTop,
                                       int viewBottom) {
-        final Path fillPath = new Path();
-        fillPath.addRect(0, 0,
-                         screenSize.x, viewTop,
-                         Path.Direction.CW);
+        final Path backgroundPath = new Path();
+        backgroundPath.addRect(0, 0,
+                               screenSize.x, viewTop,
+                               Path.Direction.CW);
 
         int gutterSize = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
-        fillPath.addRect(screenSize.x - gutterSize, viewTop,
-                         screenSize.x, viewBottom,
-                         Path.Direction.CW);
+        backgroundPath.addRect(screenSize.x - gutterSize, viewTop,
+                               screenSize.x, viewBottom,
+                               Path.Direction.CW);
 
-        fillPath.addRect(0, viewBottom,
-                         screenSize.x, screenSize.y,
-                         Path.Direction.CW);
+        backgroundPath.addRect(0, viewBottom,
+                               screenSize.x, screenSize.y,
+                               Path.Direction.CW);
 
-        ShapeDrawable background = new ShapeDrawable(new PathShape(fillPath,
-                                                                   screenSize.x,
-                                                                   screenSize.y));
-        background.getPaint().setColor(resources.getColor(R.color.background_light_overlay));
-        return background;
+        final ShapeDrawable background = new ShapeDrawable(new PathShape(backgroundPath,
+                                                                         screenSize.x,
+                                                                         screenSize.y));
+        background.getPaint()
+                  .setColor(resources.getColor(R.color.background_light_overlay));
+
+        if (barFillColor == Color.TRANSPARENT) {
+            return background;
+        } else {
+            final Path fillPath = new Path();
+            fillPath.addRect(0f, viewTop,
+                             (screenSize.x - gutterSize) * sleepDepthPercentage,
+                             viewBottom,
+                             Path.Direction.CW);
+
+            final ShapeDrawable fill = new ShapeDrawable(new PathShape(fillPath,
+                                                                       screenSize.x,
+                                                                       screenSize.y));
+            fill.getPaint().setColor(barFillColor);
+
+
+            final Drawable[] layers = {background, fill};
+            return new LayerDrawable(layers);
+        }
     }
 
     public void show(@NonNull View fromView, boolean animate) {
@@ -141,8 +173,8 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
 
-        int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_bottom_inset);
-        LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
+        final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_bottom_inset);
+        final LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
         layoutParams.bottomMargin = (screenSize.y - viewFrame.top) + tooltipBottomMargin;
         tooltip.requestLayout();
 
@@ -180,7 +212,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         if (animate) {
             animatorContext.transaction(t -> {
-                int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+                final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
                 t.animatorFor(tooltip)
                  .translationY(tooltipBottomMargin);
 
