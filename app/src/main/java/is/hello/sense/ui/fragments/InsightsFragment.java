@@ -224,13 +224,13 @@ public class InsightsFragment extends UndersideTabFragment
 
         @Override
         public void onSendFeedback() {
-            UserSupport.showContactForm(getActivity());
+            stateSafeExecutor.execute(() -> UserSupport.showContactForm(getActivity()));
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         }
 
         @Override
         public void onShowHelp() {
-            UserSupport.showUserGuide(getActivity());
+            stateSafeExecutor.execute(() -> UserSupport.showUserGuide(getActivity()));
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         }
 
