@@ -46,6 +46,9 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
 
+    private boolean suppressNextSwipeEvent = false;
+    private int lastState = ViewPager.SCROLL_STATE_IDLE;
+
     private final int[] ICONS_INACTIVE = {
             R.drawable.underside_icon_currently,
             R.drawable.underside_icon_trends,
@@ -205,11 +208,23 @@ public class UndersideFragment extends Fragment implements ViewPager.OnPageChang
 
     @Override
     public void onPageScrollStateChanged(int state) {
+        if (lastState != ViewPager.SCROLL_STATE_IDLE &&
+                state == ViewPager.SCROLL_STATE_IDLE) {
+            if (suppressNextSwipeEvent) {
+                this.suppressNextSwipeEvent = false;
+            } else {
+                Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
+            }
+        }
 
+        this.lastState = state;
     }
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_TAB_TAPPED, null);
+        this.suppressNextSwipeEvent = true;
+
         setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
     }
 }

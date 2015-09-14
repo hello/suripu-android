@@ -386,6 +386,8 @@ public class Analytics {
 
     public interface TopView {
         String EVENT_TOP_VIEW = "Top View";
+        String EVENT_TAB_TAPPED = "Top view tab tapped";
+        String EVENT_TAB_SWIPED = "Top view tab swiped";
 
         String EVENT_CURRENT_CONDITIONS = "Current Conditions";
         String EVENT_SENSOR_HISTORY = "Sensor History";
