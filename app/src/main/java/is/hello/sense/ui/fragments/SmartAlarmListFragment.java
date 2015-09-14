@@ -239,6 +239,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     @Override
     public void onAlarmClicked(int position, @NonNull Alarm alarm) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_ALARM, null);
         editAlarm(alarm, position);
     }
 
