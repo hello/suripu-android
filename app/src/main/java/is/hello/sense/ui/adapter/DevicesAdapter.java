@@ -250,6 +250,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
                 case SENSE: {
                     message.setText(R.string.info_no_sense_connected);
                     actionButton.setText(R.string.action_pair_new_sense);
+                    actionButton.setEnabled(true);
                     break;
                 }
 
@@ -258,6 +259,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
                 case PILL: {
                     message.setText(R.string.info_no_sleep_pill_connected);
                     actionButton.setText(R.string.action_pair_new_pill);
+                    boolean hasSense = (getItemCount() > 0 &&
+                            DevicesAdapter.this.getItemViewType(0) == TYPE_EXISTS);
+                    actionButton.setEnabled(hasSense);
                     break;
                 }
             }
