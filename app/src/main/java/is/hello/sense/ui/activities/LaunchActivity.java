@@ -94,10 +94,9 @@ public class LaunchActivity extends InjectionActivity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void unsupported() {
         final SenseAlertDialog dialog = new SenseAlertDialog(this);
-        dialog.setTitle(R.string.onboarding_title_unsupported_device);
-        dialog.setMessage("Your device does not have all of the APIs required by Sense. " +
-                          "Android 4.3 and a device with Bluetooth Low Energy are required.");
-        dialog.setPositiveButton("Exit", (ignored, which) -> finish());
+        dialog.setTitle(R.string.dialog_title_unsupported_os);
+        dialog.setMessage(R.string.dialog_message_unsupported_os);
+        dialog.setPositiveButton(R.string.action_exit, (ignored, which) -> finish());
         dialog.setOnCancelListener(ignored -> finish());
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
