@@ -196,7 +196,7 @@ dependencies {
 
     compile 'me.grantland:autofittextview:0.2.1'
 
-    compile 'is.hello.commonsense:ble:1.1.4-SNAPSHOT'
+    compile 'is.hello.commonsense:ble:1.1.5-SNAPSHOT'
     compile 'is.hello.go99:anime:0.1.3'
 
     // !! If you remove this, remove the above workaround.

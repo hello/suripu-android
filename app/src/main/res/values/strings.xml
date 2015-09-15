@@ -472,6 +472,10 @@ so you can sleep better.</string>
     <string name="message_timeline_first_night">In the morning, you‘ll see your first Sleep Timeline here. There are no modes to set - Sense will automatically know when you go to bed. All you need to do is sleep.</string>
     <string name="action_timeline_bad_data_support">Learn more</string>
 
+    <string name="dialog_title_unsupported_os">Unsupported Device</string>
+    <string name="dialog_message_unsupported_os">Your device does not have all of the APIs required by Sense. Android 4.3 and a device with Bluetooth Low Energy are required.</string>
+    <string name="action_exit">Exit</string>
+
     <string name="question_text_rating_prompt_initial">Are you enjoying Sense?</string>
     <string name="question_text_rating_prompt_initial_yes">Yes, I love it</string>
     <string name="question_text_rating_prompt_initial_no">Not really</string>
