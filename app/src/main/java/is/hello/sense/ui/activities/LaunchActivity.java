@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,10 +11,12 @@ import com.crashlytics.android.Crashlytics;
 import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
+import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
@@ -47,7 +50,12 @@ public class LaunchActivity extends InjectionActivity {
     protected void onStart() {
         super.onStart();
 
-        bounce();
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            unsupported();
+        } else {
+            bounce();
+        }
     }
 
 
@@ -81,5 +89,18 @@ public class LaunchActivity extends InjectionActivity {
         }
 
         finish();
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void unsupported() {
+        final SenseAlertDialog dialog = new SenseAlertDialog(this);
+        dialog.setTitle(R.string.onboarding_title_unsupported_device);
+        dialog.setMessage("Your device does not have all of the APIs required by Sense. " +
+                          "Android 4.3 and a device with Bluetooth Low Energy are required.");
+        dialog.setPositiveButton("Exit", (ignored, which) -> finish());
+        dialog.setOnCancelListener(ignored -> finish());
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 }
