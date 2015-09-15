@@ -1,6 +1,11 @@
 package is.hello.sense.graph.presenters.questions;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
 import org.junit.After;
 import org.junit.Test;
@@ -16,7 +21,6 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.Question.Choice;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider.Triggers;
 import is.hello.sense.util.Sync;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -30,20 +34,23 @@ import static org.junit.Assert.assertThat;
 public class ReviewQuestionProviderTests extends InjectionTestCase {
     @Inject ApiService apiService;
 
-    private final TrackingTriggers triggerListener;
+    private final TrackingReceiver trackingReceiver;
     private final ReviewQuestionProvider questionProvider;
 
     public ReviewQuestionProviderTests() {
-        this.triggerListener = new TrackingTriggers();
-        this.questionProvider = new ReviewQuestionProvider(getResources(),
-                                                           triggerListener,
+        this.trackingReceiver = new TrackingReceiver();
+        LocalBroadcastManager.getInstance(getContext())
+                             .registerReceiver(trackingReceiver,
+                                               new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
+
+        this.questionProvider = new ReviewQuestionProvider(getContext(),
                                                            apiService);
         assertThat(questionProvider.getCurrentQuestion(), is(notNullValue()));
     }
 
     @After
     public void tearDown() throws Exception {
-        triggerListener.calls.clear();
+        trackingReceiver.responses.clear();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -106,7 +113,7 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
         Choice thirdChoice = question.getChoices().get(2);
         questionProvider.answerCurrent(Lists.newArrayList(thirdChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SHOW_HELP));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_SHOW_HELP));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
     }
 
@@ -126,7 +133,7 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
         Choice firstChoice = question.getChoices().get(0);
         questionProvider.answerCurrent(Lists.newArrayList(firstChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.WRITE_REVIEW));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_WRITE_REVIEW));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
 
         Choice secondChoice = question.getChoices().get(1);
@@ -138,7 +145,7 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
         Choice thirdChoice = question.getChoices().get(2);
         questionProvider.answerCurrent(Lists.newArrayList(thirdChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_SUPPRESS_TEMPORARILY));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
     }
 
@@ -158,7 +165,7 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
         Choice firstChoice = question.getChoices().get(0);
         questionProvider.answerCurrent(Lists.newArrayList(firstChoice));
 
-        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SEND_FEEDBACK));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_SEND_FEEDBACK));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
 
         Choice secondChoice = question.getChoices().get(1);
@@ -174,7 +181,7 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
 
         questionProvider.skipCurrent(true).subscribe();
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
-        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_SUPPRESS_TEMPORARILY));
     }
 
     @Test
@@ -183,38 +190,17 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
 
         Sync.last(questionProvider.skipCurrent(false));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
-        assertThat(triggerListener.calls, hasItem(TrackingTriggers.Call.SUPPRESS_PROMPT));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_SUPPRESS_TEMPORARILY));
     }
 
-    static class TrackingTriggers implements Triggers {
-        final List<Call> calls = new ArrayList<>();
-
+    static class TrackingReceiver extends BroadcastReceiver {
+        final List<Integer> responses = new ArrayList<>();
+        
         @Override
-        public void onWriteReview() {
-            calls.add(Call.WRITE_REVIEW);
-        }
-
-        @Override
-        public void onSendFeedback() {
-            calls.add(Call.SEND_FEEDBACK);
-        }
-
-        @Override
-        public void onShowHelp() {
-            calls.add(Call.SHOW_HELP);
-        }
-
-        @Override
-        public void onSuppressPrompt(boolean forever) {
-            calls.add(Call.SUPPRESS_PROMPT);
-        }
-
-
-        enum Call {
-            WRITE_REVIEW,
-            SEND_FEEDBACK,
-            SHOW_HELP,
-            SUPPRESS_PROMPT,
+        public void onReceive(Context context, Intent intent) {
+            final int response = intent.getIntExtra(ReviewQuestionProvider.EXTRA_RESPONSE,
+                                                    ReviewQuestionProvider.RESPONSE_SUPPRESS_TEMPORARILY);
+            responses.add(response);
         }
     }
 }

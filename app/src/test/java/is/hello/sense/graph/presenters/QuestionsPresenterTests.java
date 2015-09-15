@@ -26,24 +26,21 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 public class QuestionsPresenterTests extends InjectionTestCase {
     @Inject ApiService apiService;
     @Inject ApiSessionManager apiSessionManager;
     @Inject QuestionsPresenter presenter;
 
-    private QuestionProvider questionProvider;
-
     @Before
     public void setUp() throws Exception {
-        this.questionProvider = spy(new ApiQuestionProvider(apiService, Schedulers.immediate()));
+        final QuestionProvider questionProvider = new ApiQuestionProvider(apiService,
+                                                                          Schedulers.immediate());
         apiSessionManager.setSession(new OAuthSession());
 
-        presenter.setQuestionProvider(questionProvider);
+        presenter.source = QuestionsPresenter.Source.API;
+        presenter.questionProvider = questionProvider;
+        presenter.update();
     }
 
     @After
@@ -77,23 +74,17 @@ public class QuestionsPresenterTests extends InjectionTestCase {
         Sync.wrap(presenter.question)
             .assertThat(notNullValue());
 
-        doReturn("The class formerly known as ApiQuestionProvider")
-                .when(questionProvider)
-                .getName();
-
         Bundle savedState = presenter.onSaveState();
         assertThat(savedState.size(), is(not(0)));
         assertThat(savedState, is(notNullValue()));
 
-        verify(questionProvider).getName();
-        reset(questionProvider);
-
+        presenter.setSource(QuestionsPresenter.Source.REVIEW);
         presenter.question.forget();
 
         presenter.onRestoreState(savedState);
 
         Sync.wrap(presenter.question)
-            .assertThat(nullValue());
+            .assertThat(notNullValue());
     }
 
     @Test
