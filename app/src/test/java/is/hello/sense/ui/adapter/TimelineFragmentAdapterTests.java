@@ -17,6 +17,7 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.PagerAdapterTesting;
 import is.hello.sense.util.markup.text.MarkupString;
 
@@ -38,8 +39,8 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
 
     @Before
     public void setUp() {
-        FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
-        FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
+        final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
+        final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
         this.adapter = spy(new TimelineFragmentAdapter(fragmentManager, Constants.TIMELINE_EPOCH));
     }
 
@@ -47,7 +48,7 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     public void saveState() {
         adapter.firstTimeline = false;
 
-        Parcelable savedState = adapter.saveState();
+        final Parcelable savedState = adapter.saveState();
         adapter.firstTimeline = true;
         adapter.restoreState(savedState, Bundle.class.getClassLoader());
 
@@ -57,8 +58,8 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     @SuppressWarnings("ConstantConditions")
     @Test
     public void cachedTimeline() {
-        LocalDate lastNight = LocalDate.now().minusDays(1);
-        Timeline timeline = new TimelineBuilder()
+        final LocalDate lastNight = DateFormatter.lastNight();
+        final Timeline timeline = new TimelineBuilder()
                 .setDate(lastNight)
                 .setScore(0, ScoreCondition.UNAVAILABLE)
                 .setMessage(new MarkupString("y so srs?!"))
@@ -67,14 +68,14 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         adapter.setCachedTimeline(timeline);
 
 
-        TimelineFragment fragment1 = (TimelineFragment) adapter.createFragment(adapter.getLastNight() - 1);
+        final TimelineFragment fragment1 = (TimelineFragment) adapter.createFragment(adapter.getLastNight() - 1);
         assertThat(fragment1.getDate(), is(not(equalTo(lastNight))));
         assertThat(fragment1.getCachedTimeline(), is(nullValue()));
 
         assertThat(adapter.cachedTimeline, is(notNullValue()));
 
 
-        TimelineFragment fragment2 = (TimelineFragment) adapter.createFragment(adapter.getLastNight());
+        final TimelineFragment fragment2 = (TimelineFragment) adapter.createFragment(adapter.getLastNight());
         assertThat(fragment2.getDate(), is(equalTo(lastNight)));
         assertThat(fragment2.getCachedTimeline().getDate(), is(equalTo(lastNight)));
 
@@ -86,7 +87,7 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         adapter.ensureLatestDateIsLastNight();
         verify(adapter, never()).setLatestDate(any(LocalDate.class));
 
-        LocalDate thePast = LocalDate.now().minusDays(5);
+        final LocalDate thePast = DateFormatter.lastNight().minusDays(5);
         adapter.setLatestDate(thePast);
         adapter.ensureLatestDateIsLastNight();
         verify(adapter).setLatestDate(LocalDate.now());
@@ -102,13 +103,13 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
 
     @Test
     public void setLatestDate() {
-        DataSetObserver observer = mock(DataSetObserver.class);
+        final DataSetObserver observer = mock(DataSetObserver.class);
         doNothing()
                 .when(observer)
                 .onChanged();
 
-        LocalDate today = LocalDate.now();
-        int initialCount = Days.daysBetween(Constants.TIMELINE_EPOCH, today).getDays();
+        final LocalDate today = DateFormatter.todayForTimeline();
+        final int initialCount = Days.daysBetween(Constants.TIMELINE_EPOCH, today).getDays();
         assertThat(adapter.latestDate, is(equalTo(today)));
         assertThat(adapter.getCount(), is(equalTo(initialCount)));
 
@@ -121,8 +122,8 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
 
     @Test
     public void getDatePosition() {
-        int last = adapter.getCount() - 1;
-        LocalDate lastNight = LocalDate.now().minusDays(1);
+        final int last = adapter.getCount() - 1;
+        final LocalDate lastNight = DateFormatter.lastNight();
         assertThat(adapter.getDatePosition(lastNight), is(equalTo(last)));
         assertThat(adapter.getDatePosition(lastNight.minusDays(1)), is(equalTo(last - 1)));
         assertThat(adapter.getDatePosition(lastNight.minusDays(5)), is(equalTo(last - 5)));
@@ -137,8 +138,8 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
 
     @Test
     public void getItemDate() {
-        int last = adapter.getCount() - 1;
-        LocalDate lastNight = LocalDate.now().minusDays(1);
+        final int last = adapter.getCount() - 1;
+        final LocalDate lastNight = DateFormatter.lastNight();
         assertThat(adapter.getItemDate(last), is(equalTo(lastNight)));
         assertThat(adapter.getItemDate(last - 1), is(equalTo(lastNight.minusDays(1))));
         assertThat(adapter.getItemDate(last - 5), is(equalTo(lastNight.minusDays(5))));
