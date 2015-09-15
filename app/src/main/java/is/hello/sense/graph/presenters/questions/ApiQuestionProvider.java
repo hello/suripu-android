@@ -34,12 +34,6 @@ public class ApiQuestionProvider implements QuestionProvider {
         this.updateScheduler = updateScheduler;
     }
 
-    @Override
-    public String getName() {
-        // Should remain the same across releases
-        return "ApiQuestionProvider";
-    }
-
     @Nullable
     @Override
     public Bundle saveState() {

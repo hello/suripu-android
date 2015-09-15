@@ -205,12 +205,22 @@ import rx.Scheduler;
             }
         };
 
+        /**
+         * Returns the name of the source, guaranteed to remain consistent across app versions.
+         * @return  The name of the source.
+         */
         abstract String getName();
+
         abstract QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
                                                          @NonNull Context context,
                                                          @NonNull Scheduler scheduler);
 
-        public static @Nullable Source fromName(@NonNull String name) {
+        /**
+         * Searches for a <code>Source</code> matching the given name.
+         * @param name  The name to match.
+         * @return  The source if found; null otherwise.
+         */
+        static @Nullable Source fromName(@NonNull String name) {
             for (Source source : values()) {
                 if (source.getName().equals(name)) {
                     return source;

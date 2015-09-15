@@ -24,9 +24,6 @@ import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class ReviewQuestionProvider implements QuestionProvider {
-    // Should not change between releases
-    public static final String NAME = "ReviewQuestionProvider";
-
     public static final String ACTION_COMPLETED = ReviewQuestionProvider.class.getName() + ".ACTION_COMPLETED";
     public static final String EXTRA_RESPONSE = ReviewQuestionProvider.class.getName() + ".EXTRA_RESPONSE";
     public static final int RESPONSE_WRITE_REVIEW = 0;
@@ -58,11 +55,6 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
         Analytics.trackEvent(Analytics.StoreReview.SHOWN, null);
         setCurrentQuestionId(QUESTION_ID_INITIAL);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
     }
 
     @Nullable

@@ -41,11 +41,6 @@ public class FakeQuestionProvider implements QuestionProvider {
         this.gson = ApiModule.createConfiguredGson(new MarkupProcessor());
     }
 
-    @Override
-    public String getName() {
-        return "FakeQuestionProvider";
-    }
-
     @Nullable
     @Override
     public Bundle saveState() {
