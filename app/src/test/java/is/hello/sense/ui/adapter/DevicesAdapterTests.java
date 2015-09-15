@@ -19,7 +19,9 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.RecyclerAdapterTesting;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class DevicesAdapterTests extends InjectionTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
@@ -40,25 +42,25 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void onlyOneDevicePerType() throws Exception {
-        Device sense1 = new Device.Builder(Device.Type.SENSE)
+        final Device sense1 = new Device.Builder(Device.Type.SENSE)
                 .setLastUpdated(DateTime.now())
                 .setColor(Device.Color.WHITE)
                 .setDeviceId("1234")
                 .build();
 
-        Device sense2 = new Device.Builder(Device.Type.SENSE)
+        final Device sense2 = new Device.Builder(Device.Type.SENSE)
                 .setLastUpdated(DateTime.now())
                 .setColor(Device.Color.WHITE)
                 .setDeviceId("3833")
                 .build();
 
-        Device pill1 = new Device.Builder(Device.Type.PILL)
+        final Device pill1 = new Device.Builder(Device.Type.PILL)
                 .setLastUpdated(DateTime.now())
                 .setColor(Device.Color.RED)
                 .setDeviceId("asdf")
                 .build();
 
-        Device pill2 = new Device.Builder(Device.Type.PILL)
+        final Device pill2 = new Device.Builder(Device.Type.PILL)
                 .setLastUpdated(DateTime.now())
                 .setColor(Device.Color.BLUE)
                 .setDeviceId("qwer")
@@ -66,14 +68,14 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense1, sense2, pill1, pill2));
 
-        assertEquals(2, adapter.getItemCount());
-        assertEquals(sense1, adapter.getItem(0));
-        assertEquals(pill1, adapter.getItem(1));
+        assertThat(adapter.getItemCount(), is(equalTo(2)));
+        assertThat(adapter.getItem(0), is(equalTo(sense1)));
+        assertThat(adapter.getItem(1), is(equalTo(pill1)));
     }
 
     @Test
     public void senseNormalDisplay() throws Exception {
-        Device sense = new Device.Builder(Device.Type.SENSE)
+        final Device sense = new Device.Builder(Device.Type.SENSE)
                 .setState(Device.State.NORMAL)
                 .setDeviceId("1234")
                 .setFirmwareVersion("ffffff")
@@ -83,21 +85,22 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense));
 
-        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, adapter.getItemViewType(0), 0);
+        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                                fakeParent, adapter.getItemViewType(0), 0);
 
-        assertEquals("Sense", holder.title.getText().toString());
-        assertEquals("2 hours ago", holder.lastSeen.getText().toString());
-        assertEquals(getResources().getColor(R.color.text_dark), holder.lastSeen.getCurrentTextColor());
-        assertEquals("Wi-Fi", holder.status1Label.getText().toString());
-        assertEquals("Connected", holder.status1.getText().toString());
-        assertEquals("Firmware", holder.status2Label.getText().toString());
-        assertEquals("ffffff", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.lastSeen.getCurrentTextColor(),
+                   is(equalTo(getResources().getColor(R.color.text_dark))));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Connected")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("ffffff")));
     }
 
     @Test
     public void senseMissingDisplay() throws Exception {
-        Device sense = new Device.Builder(Device.Type.SENSE)
+        final Device sense = new Device.Builder(Device.Type.SENSE)
                 .setState(Device.State.UNKNOWN)
                 .setDeviceId("1234")
                 .setFirmwareVersion("ffffff")
@@ -107,21 +110,22 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sense));
 
-        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.DeviceViewHolder senseHolder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(0), 0);
 
-        assertEquals("Sense", holder.title.getText().toString());
-        assertEquals("5 days ago", holder.lastSeen.getText().toString());
-        assertEquals(getResources().getColor(R.color.destructive_accent), holder.lastSeen.getCurrentTextColor());
-        assertEquals("Wi-Fi", holder.status1Label.getText().toString());
-        assertEquals("--", holder.status1.getText().toString());
-        assertEquals("Firmware", holder.status2Label.getText().toString());
-        assertEquals("ffffff", holder.status2.getText().toString());
+        assertThat(senseHolder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(senseHolder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(senseHolder.lastSeen.getCurrentTextColor(),
+                   is(equalTo(getResources().getColor(R.color.destructive_accent))));
+        assertThat(senseHolder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
+        assertThat(senseHolder.status1.getText().toString(), is(equalTo("--")));
+        assertThat(senseHolder.status2Label.getText().toString(), is(equalTo("Firmware")));
+        assertThat(senseHolder.status2.getText().toString(), is(equalTo("ffffff")));
     }
 
     @Test
     public void sleepPillNormalDisplay() throws Exception {
-        Device sleepPill = new Device.Builder(Device.Type.PILL)
+        final Device sleepPill = new Device.Builder(Device.Type.PILL)
                 .setState(Device.State.NORMAL)
                 .setDeviceId("1234")
                 .setFirmwareVersion("ffffff")
@@ -131,20 +135,20 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sleepPill));
 
-        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("2 hours ago", holder.lastSeen.getText().toString());
-        assertEquals("Battery Level", holder.status1Label.getText().toString());
-        assertEquals("Good", holder.status1.getText().toString());
-        assertEquals("Color", holder.status2Label.getText().toString());
-        assertEquals("Blue", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Battery Level")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Good")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Color")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("Blue")));
     }
 
     @Test
     public void sleepPillLowBatteryDisplay() throws Exception {
-        Device sleepPill = new Device.Builder(Device.Type.PILL)
+        final Device sleepPill = new Device.Builder(Device.Type.PILL)
                 .setState(Device.State.LOW_BATTERY)
                 .setDeviceId("1234")
                 .setFirmwareVersion("ffffff")
@@ -154,20 +158,20 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sleepPill));
 
-        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("2 hours ago", holder.lastSeen.getText().toString());
-        assertEquals("Battery Level", holder.status1Label.getText().toString());
-        assertEquals("Low", holder.status1.getText().toString());
-        assertEquals("Color", holder.status2Label.getText().toString());
-        assertEquals("Blue", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Battery Level")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Low")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Color")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("Blue")));
     }
 
     @Test
     public void sleepPillMissingDisplay() throws Exception {
-        Device sleepPill = new Device.Builder(Device.Type.PILL)
+        final Device sleepPill = new Device.Builder(Device.Type.PILL)
                 .setState(Device.State.UNKNOWN)
                 .setDeviceId("1234")
                 .setFirmwareVersion("ffffff")
@@ -177,55 +181,80 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
         adapter.bindDevices(Lists.newArrayList(sleepPill));
 
-        DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("5 days ago", holder.lastSeen.getText().toString());
-        assertEquals("Battery Level", holder.status1Label.getText().toString());
-        assertEquals("Unknown", holder.status1.getText().toString());
-        assertEquals("Color", holder.status2Label.getText().toString());
-        assertEquals("Blue", holder.status2.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Battery Level")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Unknown")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Color")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("Blue")));
     }
 
     @Test
     public void pairSenseDisplay() throws Exception {
         adapter.bindDevices(Collections.emptyList());
 
-        LambdaVar<Device.Type> clickedType = LambdaVar.empty();
+        final LambdaVar<Device.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
-        DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(0), 0);
 
-        assertEquals("Sense", holder.title.getText().toString());
-        assertEquals("Pair New Sense", holder.actionButton.getText().toString());
+        assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair New Sense")));
+        assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertEquals(Device.Type.SENSE, clickedType.get());
+        assertThat(clickedType.get(), is(equalTo(Device.Type.SENSE)));
     }
 
     @Test
-    public void pairPillDisplay() throws Exception {
+    public void pairPillDisplayNoSense() throws Exception {
         adapter.bindDevices(Collections.emptyList());
 
-        LambdaVar<Device.Type> clickedType = LambdaVar.empty();
+        final LambdaVar<Device.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
-        DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
-        assertEquals("Sleep Pill", holder.title.getText().toString());
-        assertEquals("Pair New Pill", holder.actionButton.getText().toString());
+        assertThat("Sleep Pill", is(equalTo(holder.title.getText().toString())));
+        assertThat("Pair New Pill", is(equalTo(holder.actionButton.getText().toString())));
+        assertThat(holder.actionButton.isEnabled(), is(false));
+    }
+
+    @Test
+    public void pairPillDisplayWithSense() throws Exception {
+        final Device sense = new Device.Builder(Device.Type.SENSE)
+                .setState(Device.State.UNKNOWN)
+                .setDeviceId("1234")
+                .setFirmwareVersion("ffffff")
+                .setLastUpdated(DateTime.now().minusDays(5))
+                .setColor(Device.Color.WHITE)
+                .build();
+
+        adapter.bindDevices(Lists.newArrayList(sense));
+
+        final LambdaVar<Device.Type> clickedType = LambdaVar.empty();
+        adapter.setOnPairNewDeviceListener(clickedType::set);
+
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                 fakeParent, adapter.getItemViewType(1), 1);
+
+        assertThat("Sleep Pill", is(equalTo(holder.title.getText().toString())));
+        assertThat("Pair New Pill", is(equalTo(holder.actionButton.getText().toString())));
+        assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertEquals(Device.Type.PILL, clickedType.get());
+        assertThat(clickedType.get(), is(equalTo(Device.Type.PILL)));
     }
 
     //endregion

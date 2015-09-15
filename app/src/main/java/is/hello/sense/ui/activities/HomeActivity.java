@@ -407,6 +407,8 @@ public class HomeActivity extends ScopedInjectionActivity
         } else if (lastPagerScrollState != ViewPager.SCROLL_STATE_IDLE &&
                 state == ViewPager.SCROLL_STATE_IDLE) {
             animatorContext.endAnimation();
+
+            Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, null);
         }
         this.lastPagerScrollState = state;
     }

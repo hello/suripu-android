@@ -75,9 +75,9 @@ public class DeviceListFragment extends InjectionFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings_device_list, container, false);
+        final View view = inflater.inflate(R.layout.fragment_settings_device_list, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new CardItemDecoration(getResources(), false));
@@ -153,7 +153,7 @@ public class DeviceListFragment extends InjectionFragment
     @Override
     public void onItemClicked(int position, Device device) {
         if (device.exists()) {
-            DeviceDetailsFragment fragment;
+            final DeviceDetailsFragment fragment;
             if (device.getType() == Device.Type.SENSE) {
                 fragment = SenseDetailsFragment.newInstance(device);
             } else if (device.getType() == Device.Type.PILL) {
@@ -162,7 +162,11 @@ public class DeviceListFragment extends InjectionFragment
                 return;
             }
             fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(fragment, getString(device.getType().nameRes), true);
+
+            final FragmentNavigation fragmentNavigation = (FragmentNavigation) getActivity();
+            fragmentNavigation.pushFragmentAllowingStateLoss(fragment,
+                                                             getString(device.getType().nameRes),
+                                                             true);
         }
     }
 
