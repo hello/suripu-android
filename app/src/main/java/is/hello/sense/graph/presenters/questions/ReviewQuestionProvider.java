@@ -1,10 +1,13 @@
 package is.hello.sense.graph.presenters.questions;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.content.LocalBroadcastManager;
 
 import org.joda.time.DateTime;
 
@@ -21,13 +24,22 @@ import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class ReviewQuestionProvider implements QuestionProvider {
+    public static final String ACTION_COMPLETED = ReviewQuestionProvider.class.getName() + ".ACTION_COMPLETED";
+    public static final String EXTRA_RESPONSE = ReviewQuestionProvider.class.getName() + ".EXTRA_RESPONSE";
+    public static final int RESPONSE_WRITE_REVIEW = 0;
+    public static final int RESPONSE_SEND_FEEDBACK = 1;
+    public static final int RESPONSE_SHOW_HELP = 2;
+    public static final int RESPONSE_SUPPRESS_TEMPORARILY = 3;
+    public static final int RESPONSE_SUPPRESS_PERMANENTLY = 4;
+
+
     @VisibleForTesting static final long QUESTION_ID_NONE = -1;
     @VisibleForTesting static final long QUESTION_ID_INITIAL = 0;
     @VisibleForTesting static final long QUESTION_ID_GOOD = 1;
     @VisibleForTesting static final long QUESTION_ID_BAD = 2;
 
     private final Resources resources;
-    private final Triggers triggers;
+    private final LocalBroadcastManager localBroadcastManager;
     private final ApiService apiService;
 
     private Question currentQuestion;
@@ -35,21 +47,14 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
     //region Lifecycle
 
-    public ReviewQuestionProvider(@NonNull Resources resources,
-                                  @NonNull Triggers triggers,
+    public ReviewQuestionProvider(@NonNull Context context,
                                   @NonNull ApiService apiService) {
-        this.resources = resources;
-        this.triggers = triggers;
+        this.resources = context.getResources();
+        this.localBroadcastManager = LocalBroadcastManager.getInstance(context);
         this.apiService = apiService;
 
         Analytics.trackEvent(Analytics.StoreReview.SHOWN, null);
         setCurrentQuestionId(QUESTION_ID_INITIAL);
-    }
-
-    @Override
-    public String getName() {
-        // Should not change between releases
-        return "ReviewQuestionProvider";
     }
 
     @Nullable
@@ -167,7 +172,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.HELP, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onShowHelp();
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_SHOW_HELP));
                 break;
             }
 
@@ -177,7 +183,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, true))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onWriteReview();
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_WRITE_REVIEW));
                 break;
             }
             case R.string.question_text_rating_prompt_good_no: {
@@ -185,7 +192,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onSuppressPrompt(false);
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_SUPPRESS_TEMPORARILY));
                 break;
             }
             case R.string.question_text_rating_prompt_good_never: {
@@ -193,7 +201,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onSuppressPrompt(true);
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_SUPPRESS_PERMANENTLY));
                 break;
             }
 
@@ -203,7 +212,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.NO, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onSendFeedback();
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_SEND_FEEDBACK));
                 break;
             }
             case R.string.question_text_rating_prompt_bad_no: {
@@ -211,7 +221,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.NO, false))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onSuppressPrompt(false);
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_SUPPRESS_TEMPORARILY));
                 break;
             }
         }
@@ -223,13 +234,15 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
         if (advanceImmediately) {
             setCurrentQuestionId(QUESTION_ID_NONE);
-            triggers.onSuppressPrompt(false);
+            localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                        .putExtra(EXTRA_RESPONSE, RESPONSE_SUPPRESS_TEMPORARILY));
 
             return Observable.just(null);
         } else {
             return Observable.<Void>create(subscriber -> {
                 setCurrentQuestionId(QUESTION_ID_NONE);
-                triggers.onSuppressPrompt(false);
+                localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
+                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_SUPPRESS_TEMPORARILY));
 
                 subscriber.onNext(null);
                 subscriber.onCompleted();
@@ -238,32 +251,4 @@ public class ReviewQuestionProvider implements QuestionProvider {
     }
 
     //endregion
-
-
-    /**
-     * Integration point for interactions that occur outside
-     * of the questions presenter / fragment pair.
-     */
-    public interface Triggers {
-        /**
-         * Fired when the user agrees to write a review for the app.
-         */
-        void onWriteReview();
-
-        /**
-         * Fired when the user wants to send us feedback for app problems.
-         */
-        void onSendFeedback();
-
-        /**
-         * Fired when the user requires clarification on something.
-         */
-        void onShowHelp();
-
-        /**
-         * Fired when the user exits the review funnel at various points.
-         * @param forever   Whether or not reviews should be suppressed forever.
-         */
-        void onSuppressPrompt(boolean forever);
-    }
 }

@@ -6,7 +6,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,18 +22,22 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.graph.presenters.questions.ApiQuestionProvider;
 import is.hello.sense.graph.presenters.questions.QuestionProvider;
+import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import rx.Observable;
+import rx.Scheduler;
 
 @Singleton public class QuestionsPresenter extends Presenter {
     private static final String PROVIDER_STATE = "providerState";
     private static final String PROVIDER_NAME = "providerName";
 
+    private final Context context;
     private final ApiService apiService;
     private final ApiSessionManager apiSessionManager;
 
     public final PresenterSubject<Question> question = PresenterSubject.create();
 
-    private @NonNull QuestionProvider questionProvider;
+    @VisibleForTesting Source source;
+    @VisibleForTesting QuestionProvider questionProvider;
     private final HashSet<Question.Choice> selectedChoices = new HashSet<>();
 
 
@@ -42,12 +46,14 @@ import rx.Observable;
     @Inject public QuestionsPresenter(@NonNull Context context,
                                       @NonNull ApiService apiService,
                                       @NonNull ApiSessionManager apiSessionManager) {
+        this.context = context;
         this.apiService = apiService;
         this.apiSessionManager = apiSessionManager;
-        this.questionProvider = createApiQuestionProvider();
 
-        IntentFilter loggedOut = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
-        Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, loggedOut);
+        setSource(Source.API);
+
+        final IntentFilter loggedOut = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+        final Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, loggedOut);
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
     }
 
@@ -58,11 +64,11 @@ import rx.Observable;
     @Nullable
     @Override
     public Bundle onSaveState() {
-        Bundle savedState = questionProvider.saveState();
+        final Bundle savedState = questionProvider.saveState();
         if (savedState != null) {
-            Bundle wrapper = new Bundle();
+            final Bundle wrapper = new Bundle();
             wrapper.putBundle(PROVIDER_STATE, savedState);
-            wrapper.putString(PROVIDER_NAME, questionProvider.getName());
+            wrapper.putString(PROVIDER_NAME, source.getName());
             return wrapper;
         } else {
             return null;
@@ -71,13 +77,23 @@ import rx.Observable;
 
     @Override
     public void onRestoreState(@NonNull Bundle savedState) {
-        String providerName = savedState.getString(PROVIDER_NAME);
-        Bundle providerSavedState = savedState.getBundle(PROVIDER_STATE);
-        if (TextUtils.equals(providerName, questionProvider.getName()) &&
-                providerSavedState != null) {
-            questionProvider.restoreState(providerSavedState);
-            question.onNext(questionProvider.getCurrentQuestion());
-        } else if (!question.hasValue()) {
+        final String providerName = savedState.getString(PROVIDER_NAME);
+        final Bundle providerSavedState = savedState.getBundle(PROVIDER_STATE);
+        if (providerName != null && providerSavedState != null) {
+            final Source source = Source.fromName(providerName);
+            if (source != null) {
+                if (this.source != source) {
+                    setSource(source);
+                }
+
+                questionProvider.restoreState(providerSavedState);
+                question.onNext(questionProvider.getCurrentQuestion());
+
+                return;
+            }
+        }
+
+        if (!question.hasValue()) {
             question.onNext(null);
         }
     }
@@ -97,17 +113,13 @@ import rx.Observable;
 
     //region Updating
 
-    public ApiQuestionProvider createApiQuestionProvider() {
-        return new ApiQuestionProvider(apiService, Rx.mainThreadScheduler());
-    }
-
-    public void setQuestionProvider(@NonNull QuestionProvider questionProvider) {
-        this.questionProvider = questionProvider;
-        update();
-    }
-
-    public @NonNull QuestionProvider getQuestionProvider() {
-        return questionProvider;
+    public void setSource(@NonNull Source source) {
+        if (source != this.source) {
+            this.source = source;
+            this.questionProvider = source.createQuestionProvider(apiService,
+                                                                  context,
+                                                                  Rx.mainThreadScheduler());
+        }
     }
 
     public void userEnteredFlow() {
@@ -163,4 +175,59 @@ import rx.Observable;
     }
 
     //endregion
+
+
+    public enum Source {
+        API {
+            @Override
+            String getName() {
+                return "ApiQuestionProvider";
+            }
+
+            @Override
+            QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
+                                                    @NonNull Context context,
+                                                    @NonNull Scheduler scheduler) {
+                return new ApiQuestionProvider(apiService, scheduler);
+            }
+        },
+        REVIEW {
+            @Override
+            String getName() {
+                return "ReviewQuestionProvider";
+            }
+
+            @Override
+            QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
+                                                    @NonNull Context context,
+                                                    @NonNull Scheduler scheduler) {
+                return new ReviewQuestionProvider(context, apiService);
+            }
+        };
+
+        /**
+         * Returns the name of the source, guaranteed to remain consistent across app versions.
+         * @return  The name of the source.
+         */
+        abstract String getName();
+
+        abstract QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
+                                                         @NonNull Context context,
+                                                         @NonNull Scheduler scheduler);
+
+        /**
+         * Searches for a <code>Source</code> matching the given name.
+         * @param name  The name to match.
+         * @return  The source if found; null otherwise.
+         */
+        static @Nullable Source fromName(@NonNull String name) {
+            for (Source source : values()) {
+                if (source.getName().equals(name)) {
+                    return source;
+                }
+            }
+
+            return null;
+        }
+    }
 }

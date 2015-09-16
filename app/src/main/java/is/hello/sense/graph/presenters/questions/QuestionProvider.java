@@ -22,13 +22,6 @@ public interface QuestionProvider {
     //region Lifecycle
 
     /**
-     * A stable identifier of the provider.
-     * <p>
-     * Used to prevent unwanted deserialization mismatches.
-     */
-    String getName();
-
-    /**
      * Save the state of the question provider into a bundle.
      * @return The state of the question provider; or null if it has none.
      */
