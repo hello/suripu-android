@@ -203,7 +203,6 @@ dependencies {
     compile 'com.zendesk:sdk:1.3.2.1'
 
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
-    betaCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
 
 
     // Necessary to be able to compile and run tests with
