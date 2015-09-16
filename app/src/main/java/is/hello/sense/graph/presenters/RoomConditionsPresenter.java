@@ -12,11 +12,13 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.units.UnitFormatter;
 import rx.Observable;
 
 @Singleton public class RoomConditionsPresenter extends ValuePresenter<RoomConditionsPresenter.Result> {
     public static final int HISTORY_HOURS = 2;
 
+    @Inject PreferencesPresenter preferences;
     @Inject ApiService apiService;
 
     public final PresenterSubject<Result> currentConditions = this.subject;
@@ -33,9 +35,20 @@ import rx.Observable;
 
     @Override
     protected Observable<Result> provideUpdateObservable() {
-        Observable<RoomConditions> roomConditions = apiService.currentRoomConditions(ApiService.UNIT_TEMPERATURE_CELSIUS);
-        Observable<RoomSensorHistory> roomHistory = apiService.roomSensorHistory(HISTORY_HOURS, SensorGraphSample.timeForLatest());
-        return Observable.combineLatest(roomConditions, roomHistory,
+        final boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
+        final boolean useCelsius = preferences.getBoolean(PreferencesPresenter.USE_CELSIUS,
+                                                          defaultMetric);
+        final String temperatureUnit = useCelsius
+                ? ApiService.UNIT_TEMPERATURE_CELSIUS
+                : ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
+
+        final Observable<RoomConditions> roomConditions =
+                apiService.currentRoomConditions(temperatureUnit);
+        final Observable<RoomSensorHistory> roomHistory =
+                apiService.roomSensorHistory(HISTORY_HOURS, SensorGraphSample.timeForLatest());
+
+        return Observable.combineLatest(roomConditions,
+                                        roomHistory,
                                         Result::new);
     }
 
