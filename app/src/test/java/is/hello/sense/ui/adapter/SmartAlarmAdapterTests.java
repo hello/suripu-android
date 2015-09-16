@@ -62,7 +62,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
 
         SmartAlarmAdapter.MessageViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_MESSAGE, 0);
-        assertEquals("Sense (A)", holder.titleText.getText().toString());
+        assertEquals("Sense", holder.titleText.getText().toString());
         assertEquals("Blah blah blah", holder.messageText.getText().toString());
         assertEquals("OK", holder.actionButton.getText().toString());
 
