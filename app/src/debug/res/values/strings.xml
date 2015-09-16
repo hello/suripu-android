@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Sense (A)</string>
-
     <string name="error_invalid_account_id">Your account could not be linked with Sense. Do the environments on your app and Sense match?</string>
 
     <string name="title_select_environment">Select Environment</string>
