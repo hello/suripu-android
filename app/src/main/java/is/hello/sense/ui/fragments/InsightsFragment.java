@@ -97,11 +97,16 @@ public class InsightsFragment extends UndersideTabFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Observable<Pair<List<Insight>, Question>> data =
+        final Observable<Pair<List<Insight>, Question>> pendingData =
                 Observable.combineLatest(insightsPresenter.insights,
                                          questionsPresenter.question,
                                          Pair::new);
-        bindAndSubscribe(data, insightsAdapter::bindData, insightsAdapter::dataUnavailable);
+        bindAndSubscribe(pendingData,
+                         data -> {
+                             insightsAdapter.bindData(data);
+                             insightsPresenter.updateLastViewed();
+                         },
+                         insightsAdapter::dataUnavailable);
     }
 
     @Override
@@ -172,7 +177,7 @@ public class InsightsFragment extends UndersideTabFragment
                                } else {
                                    questionsPresenter.setSource(QuestionsPresenter.Source.API);
                                }
-                              questionsPresenter.update();
+                               questionsPresenter.update();
                            },
                            e -> {
                                Logger.warn(getClass().getSimpleName(),
