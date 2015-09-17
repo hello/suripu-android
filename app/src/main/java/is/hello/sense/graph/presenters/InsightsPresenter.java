@@ -31,7 +31,8 @@ public class InsightsPresenter extends ScopedValuePresenter<ArrayList<Insight>> 
 
     @Override
     protected Observable<ArrayList<Insight>> provideUpdateObservable() {
-        return apiService.currentInsights();
+        return apiService.currentInsights()
+                         .doOnCompleted(this::updateLastViewed);
     }
 
 

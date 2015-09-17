@@ -101,12 +101,7 @@ public class InsightsFragment extends UndersideTabFragment
                 Observable.combineLatest(insightsPresenter.insights,
                                          questionsPresenter.question,
                                          Pair::new);
-        bindAndSubscribe(pendingData,
-                         data -> {
-                             insightsAdapter.bindData(data);
-                             insightsPresenter.updateLastViewed();
-                         },
-                         insightsAdapter::dataUnavailable);
+        bindAndSubscribe(pendingData, insightsAdapter::bindData, insightsAdapter::dataUnavailable);
     }
 
     @Override
