@@ -163,7 +163,7 @@ public class TimelineFragment extends InjectionFragment
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
+        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.isPostOnboarding());
 
         this.toolbar = new TimelineToolbar(getActivity());
         toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
@@ -447,7 +447,7 @@ public class TimelineFragment extends InjectionFragment
             }
         }
 
-        if (homeActivity.getWillShowUnderside()) {
+        if (homeActivity.isPostOnboarding()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else if (!homeActivity.isUndersideVisible()) {
             if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
@@ -562,7 +562,7 @@ public class TimelineFragment extends InjectionFragment
         } else {
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended
-                if (homeActivity.getWillShowUnderside() && DateFormatter.isLastNight(getDate())) {
+                if (homeActivity.isPostOnboarding() && DateFormatter.isLastNight(getDate())) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);

@@ -68,7 +68,14 @@ public class HomeActivity extends ScopedInjectionActivity
         ViewPager.OnPageChangeListener,
         TimelineInfoFragment.AnchorProvider {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
-    public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
+    /**
+     * Whether or not the <code>HomeActivity</code> was started in response
+     * to the user finishing on-boarding.
+     * <p>
+     * Literal value is <code>is.hello.sense.ui.activities.HomeActivity.EXTRA_SHOW_UNDERSIDE</code>
+     * and cannot be changed for backwards compatibility.
+     */
+    public static final String EXTRA_POST_ONBOARDING = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
@@ -109,7 +116,7 @@ public class HomeActivity extends ScopedInjectionActivity
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
-            this.showUnderside = getWillShowUnderside();
+            this.showUnderside = isPostOnboarding();
 
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
@@ -199,7 +206,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          },
                          Functions.LOG_ERROR);
 
-        if (isFirstActivityRun && !getWillShowUnderside()) {
+        if (isFirstActivityRun && !isPostOnboarding()) {
             bindAndSubscribe(deviceIssuesPresenter.latest(),
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
@@ -347,8 +354,8 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
 
-    public boolean getWillShowUnderside() {
-        return getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
+    public boolean isPostOnboarding() {
+        return getIntent().getBooleanExtra(EXTRA_POST_ONBOARDING, false);
     }
 
     public boolean isUndersideVisible() {
