@@ -100,6 +100,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
 
+
     //region Lifecycle
 
     @Override
@@ -116,7 +117,8 @@ public class HomeActivity extends ScopedInjectionActivity
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
-            this.showUnderside = isPostOnboarding();
+            final boolean postOnboarding = isPostOnboarding();
+            this.showUnderside = postOnboarding;
 
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
@@ -125,12 +127,16 @@ public class HomeActivity extends ScopedInjectionActivity
             if (getIntent().hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
                 dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), false);
             }
+
+            if (!postOnboarding) {
+                updateUnreadInsightsState();
+            }
         }
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
             JSONObject properties = Analytics.createProperties(
-                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
-            );
+                    Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+                                                              );
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
         }
@@ -185,8 +191,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
             JSONObject properties = Analytics.createProperties(
-                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
-            );
+                    Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+                                                              );
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
@@ -253,6 +259,8 @@ public class HomeActivity extends ScopedInjectionActivity
             if (navigatorFragment != null) {
                 getFragmentManager().popBackStack();
             }
+
+            updateUnreadInsightsState();
         }
 
         presenterContainer.onContainerResumed();
@@ -380,13 +388,30 @@ public class HomeActivity extends ScopedInjectionActivity
 
     public void checkInForUpdates() {
         bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
-                response -> {
-                    if (response.isNewVersion()) {
-                        AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
-                        dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
-                    }
-                },
-                e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
+                         response -> {
+                             if (response.isNewVersion()) {
+                                 AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
+                                 dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
+                             }
+                         },
+                         e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
+    }
+
+    public void updateUnreadInsightsState() {
+        Logger.debug(getClass().getSimpleName(), "Updating unread insights state");
+        apiService.unreadStats()
+                  .subscribe(stats -> {
+                                 final boolean hasUnreadInsightItems = (stats.hasUnreadInsights() &&
+                                         stats.hasUnansweredQuestions());
+                                 preferences.edit()
+                                            .putBoolean(PreferencesPresenter.HAS_UNREAD_INSIGHT_ITEMS,
+                                                        hasUnreadInsightItems)
+                                            .apply();
+
+                                 Logger.debug(getClass().getSimpleName(),
+                                              "Updated unread insights state " + hasUnreadInsightItems);
+                             },
+                             Functions.LOG_ERROR);
     }
 
 

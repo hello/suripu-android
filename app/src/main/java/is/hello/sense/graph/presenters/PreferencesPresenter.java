@@ -61,6 +61,7 @@ import rx.subscriptions.Subscriptions;
     public static final String LAST_ONBOARDING_CHECK_POINT = "last_onboarding_check_point";
     public static final String ONBOARDING_COMPLETED = "onboarding_completed";
 
+    public static final String HAS_UNREAD_INSIGHT_ITEMS = "has_unread_insight_items";
     public static final String DISABLE_REVIEW_PROMPT = "disable_review_prompt";
 
 

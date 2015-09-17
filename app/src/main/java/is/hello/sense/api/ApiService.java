@@ -7,6 +7,8 @@ import java.util.List;
 
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.AppStats;
+import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
@@ -237,6 +239,17 @@ public interface ApiService {
 
     @GET("/v1/support/topics")
     Observable<ArrayList<SupportTopic>> supportTopics();
+
+    //endregion
+
+
+    //region Stats
+
+    @PATCH("/v1/app/stats")
+    Observable<VoidResponse> updateStats(@NonNull @Body AppStats stats);
+
+    @GET("/v1/app/stats/unread")
+    Observable<AppUnreadStats> unreadStats();
 
     //endregion
 
