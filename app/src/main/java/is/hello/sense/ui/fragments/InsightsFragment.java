@@ -162,9 +162,9 @@ public class InsightsFragment extends UndersideTabFragment
 
     public void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> {
-            return true/*(issue == DeviceIssuesPresenter.Issue.NONE &&
+            return (issue == DeviceIssuesPresenter.Issue.NONE &&
                     localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                    !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false))*/;
+                    !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false));
         });
         stageOne.subscribe(showReview -> {
                                if (showReview) {
