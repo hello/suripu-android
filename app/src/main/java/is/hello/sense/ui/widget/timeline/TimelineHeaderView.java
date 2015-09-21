@@ -40,6 +40,9 @@ import is.hello.sense.util.SafeOnClickListener;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class TimelineHeaderView extends RelativeLayout {
+    private static final String SCORE_ANIMATOR_NAME = TimelineHeaderView.class.getSimpleName() + "#scoreAnimator";
+    private static final String PULSE_ANIMATOR_NAME = TimelineHeaderView.class.getSimpleName() + "#pulseAnimator";
+
     private final Paint paint = new Paint();
     private final int dividerHeight;
     private final int dividerColor;
@@ -284,7 +287,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
         scoreDrawable.setValue(0);
 
-        pulseAnimator.addListener(animatorContext);
+        animatorContext.bind(pulseAnimator, PULSE_ANIMATOR_NAME);
         pulseAnimator.start();
     }
 
@@ -393,7 +396,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
             scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
-            scoreAnimator.addListener(animatorContext);
+            animatorContext.bind(scoreAnimator, SCORE_ANIMATOR_NAME);
             animatorContext.startWhenIdle(scoreAnimator);
         }
     }
