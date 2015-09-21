@@ -13,6 +13,7 @@ import com.zendesk.sdk.model.Request;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.sdk.network.impl.ZendeskRequestProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,6 +33,12 @@ import rx.Observable;
 import rx.Subscription;
 
 public class TicketsPresenter extends Presenter {
+    /**
+     * Included on builds where {@link BuildConfig#IS_BETA} is <code>true</code>.
+     * <p>
+     * Literal value <code>android_beta</code> suggested by Marina.
+     */
+    private static final String TAG_BETA = "android_beta";
     private static final long CUSTOM_FIELD_ID_TOPIC = 24321669L;
 
     @Inject Context context;
@@ -56,6 +63,7 @@ public class TicketsPresenter extends Presenter {
     protected void onReloadForgottenData() {
         update();
     }
+
     //endregion
 
 
@@ -89,21 +97,27 @@ public class TicketsPresenter extends Presenter {
         logEvent("createTicket()");
 
         return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
-            CustomField topicId = new CustomField(CUSTOM_FIELD_ID_TOPIC, onTopic.topic);
+            final CustomField topicId = new CustomField(CUSTOM_FIELD_ID_TOPIC, onTopic.topic);
             ZendeskConfig.INSTANCE.setCustomFields(Lists.newArrayList(topicId));
 
-            ZendeskFeedbackConfiguration configuration = new ZendeskFeedbackConfiguration() {
+            final ZendeskFeedbackConfiguration configuration = new ZendeskFeedbackConfiguration() {
                 @Override
                 public List<String> getTags() {
-                    return Lists.newArrayList(ZendeskHelper.sanitizeTag(Build.MODEL),
-                            ZendeskHelper.sanitizeTag(Build.VERSION.RELEASE));
+                    final List<String> tags = new ArrayList<>();
+                    tags.add(ZendeskHelper.sanitizeTag(Build.MODEL));
+                    tags.add(ZendeskHelper.sanitizeTag(Build.VERSION.RELEASE));
+                    if (BuildConfig.IS_BETA) {
+                        tags.add(TAG_BETA);
+                    }
+                    return tags;
                 }
 
                 @Override
                 public String getAdditionalInfo() {
-                    OAuthSession session = sessionManager.getSession();
-                    String accountId = session != null ? session.getAccountId() : "";
-                    return String.format(Locale.US, "Id: %s\nSense Id: %s", accountId, Analytics.getSenseId());
+                    final OAuthSession session = sessionManager.getSession();
+                    final String accountId = session != null ? session.getAccountId() : "";
+                    return String.format(Locale.US, "Id: %s\nSense Id: %s",
+                                         accountId, Analytics.getSenseId());
                 }
 
                 @Override
@@ -112,7 +126,7 @@ public class TicketsPresenter extends Presenter {
                 }
             };
 
-            ZendeskFeedbackConnector connector = new ZendeskFeedbackConnector(context, configuration);
+            final ZendeskFeedbackConnector connector = new ZendeskFeedbackConnector(context, configuration);
             connector.sendFeedback(text, attachmentTokens, callback);
         });
     }
