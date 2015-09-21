@@ -495,7 +495,7 @@ public class TimelineFragment extends InjectionFragment
 
                 @Override
                 public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
-                    transaction.takeOwnership(crossFade);
+                    transaction.takeOwnership(crossFade, "TimelineFragment#backgroundFill#crossFade");
                 }
 
                 @Override
