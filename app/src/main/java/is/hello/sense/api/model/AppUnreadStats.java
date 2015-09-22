@@ -1,5 +1,7 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.google.gson.annotations.SerializedName;
 
 public class AppUnreadStats extends ApiResponse {
@@ -9,6 +11,12 @@ public class AppUnreadStats extends ApiResponse {
     @SerializedName("has_unanswered_questions")
     private boolean hasUnansweredQuestions;
 
+    @VisibleForTesting
+    public AppUnreadStats(boolean hasUnreadInsights,
+                          boolean hasUnansweredQuestions) {
+        this.hasUnreadInsights = hasUnreadInsights;
+        this.hasUnansweredQuestions = hasUnansweredQuestions;
+    }
 
     public boolean hasUnreadInsights() {
         return hasUnreadInsights;

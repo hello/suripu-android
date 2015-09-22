@@ -36,6 +36,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -82,6 +83,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Inject ApiService apiService;
     @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
+    @Inject UnreadStatePresenter unreadStatePresenter;
     @Inject LocalUsageTracker localUsageTracker;
 
     private long lastUpdated = Long.MAX_VALUE;
@@ -129,7 +131,7 @@ public class HomeActivity extends ScopedInjectionActivity
             }
 
             if (!postOnboarding) {
-                updateUnreadInsightsState();
+                unreadStatePresenter.update();
             }
         }
 
@@ -204,7 +206,9 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(),
+                                                                  loggedOutIntent);
         bindAndSubscribe(onLogOut,
                          ignored -> {
                              startActivity(new Intent(this, OnboardingActivity.class));
@@ -260,7 +264,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 getFragmentManager().popBackStack();
             }
 
-            updateUnreadInsightsState();
+            unreadStatePresenter.update();
         }
 
         presenterContainer.onContainerResumed();
@@ -395,23 +399,6 @@ public class HomeActivity extends ScopedInjectionActivity
                              }
                          },
                          e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
-    }
-
-    public void updateUnreadInsightsState() {
-        Logger.debug(getClass().getSimpleName(), "Updating unread insights state");
-        apiService.unreadStats()
-                  .subscribe(stats -> {
-                                 final boolean hasUnreadInsightItems = (stats.hasUnreadInsights() &&
-                                         stats.hasUnansweredQuestions());
-                                 preferences.edit()
-                                            .putBoolean(PreferencesPresenter.HAS_UNREAD_INSIGHT_ITEMS,
-                                                        hasUnreadInsightItems)
-                                            .apply();
-
-                                 Logger.debug(getClass().getSimpleName(),
-                                              "Updated unread insights state " + hasUnreadInsightItems);
-                             },
-                             Functions.LOG_ERROR);
     }
 
 

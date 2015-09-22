@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/underside_icon_insights_unread_icon"
+          android:drawable="@drawable/underside_icon_insights" />
+    <item android:id="@+id/underside_icon_insights_unread_indicator">
+        <bitmap android:gravity="top|right"
+                android:src="@drawable/unread_indicator" />
+    </item>
+</layer-list>

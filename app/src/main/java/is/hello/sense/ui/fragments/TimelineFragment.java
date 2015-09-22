@@ -39,6 +39,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
@@ -87,6 +88,7 @@ public class TimelineFragment extends InjectionFragment
     @Inject TimelinePresenter timelinePresenter;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject UnreadStatePresenter unreadStatePresenter;
     @Inject LocalUsageTracker localUsageTracker;
 
     private HomeActivity homeActivity;
@@ -240,6 +242,10 @@ public class TimelineFragment extends InjectionFragment
 
             bindAndSubscribe(preferences.observableUse24Time(),
                              adapter::setUse24Time,
+                             Functions.LOG_ERROR);
+
+            bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
+                             toolbar::setUnreadVisible,
                              Functions.LOG_ERROR);
         }
     }
