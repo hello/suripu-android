@@ -430,7 +430,7 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onPageScrollStateChanged(int state) {
         if (lastPagerScrollState == ViewPager.SCROLL_STATE_IDLE &&
                 state != ViewPager.SCROLL_STATE_IDLE) {
-            animatorContext.beginAnimation();
+            animatorContext.beginAnimation("Timeline swipe");
 
             TimelineFragment currentFragment = (TimelineFragment) viewPagerAdapter.getCurrentFragment();
             if (currentFragment != null) {
@@ -438,7 +438,7 @@ public class HomeActivity extends ScopedInjectionActivity
             }
         } else if (lastPagerScrollState != ViewPager.SCROLL_STATE_IDLE &&
                 state == ViewPager.SCROLL_STATE_IDLE) {
-            animatorContext.endAnimation();
+            animatorContext.endAnimation("Timeline swipe");
 
             Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_SWIPE, null);
         }

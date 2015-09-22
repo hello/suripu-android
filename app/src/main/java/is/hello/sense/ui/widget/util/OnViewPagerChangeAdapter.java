@@ -15,6 +15,12 @@ public final class OnViewPagerChangeAdapter implements ViewPager.OnPageChangeLis
     private final Listener listener;
 
     /**
+     * Whether or not the adapter is alive,
+     * and should be sending listener callbacks.
+     */
+    private boolean alive = true;
+
+    /**
      * The last known scroll [item] position of the view pager.
      */
     private int lastScrollPosition;
@@ -37,7 +43,7 @@ public final class OnViewPagerChangeAdapter implements ViewPager.OnPageChangeLis
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         // If the user swipes very quickly, it's possible that we'll
         // miss a completed event. This catches that edge case.
-        if (lastScrollState != SCROLL_STATE_IDLE && position != lastScrollPosition) {
+        if (lastScrollState != SCROLL_STATE_IDLE && position != lastScrollPosition && alive) {
             listener.onPageChangeCompleted(position);
         }
 
@@ -50,23 +56,35 @@ public final class OnViewPagerChangeAdapter implements ViewPager.OnPageChangeLis
 
     @Override
     public void onPageSelected(int position) {
-        if (lastScrollState == SCROLL_STATE_IDLE) {
+        if (lastScrollState == SCROLL_STATE_IDLE && alive) {
             if (ViewCompat.isLaidOut(viewPager)) {
                 listener.onPageChangeCompleted(position);
             } else {
                 viewPager.requestLayout();
-                viewPager.post(() -> listener.onPageChangeCompleted(position));
+                viewPager.post(() -> {
+                    if (alive) {
+                        listener.onPageChangeCompleted(position);
+                    }
+                });
             }
         }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        if (state == SCROLL_STATE_IDLE && lastScrollState != SCROLL_STATE_IDLE) {
+        if (state == SCROLL_STATE_IDLE && lastScrollState != SCROLL_STATE_IDLE && alive) {
             listener.onPageChangeCompleted(viewPager.getCurrentItem());
         }
 
         this.lastScrollState = state;
+    }
+
+
+    /**
+     * Prevents future listener callbacks from the adapter.
+     */
+    public void destroy() {
+        this.alive = false;
     }
 
 

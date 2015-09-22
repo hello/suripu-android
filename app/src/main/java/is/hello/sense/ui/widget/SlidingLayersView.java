@@ -26,6 +26,8 @@ import is.hello.sense.util.Constants;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SlidingLayersView extends FrameLayout {
+    private static final String ANIMATOR_NAME = SlidingLayersView.class.getSimpleName() + "#onTouchEvent";
+
     private int touchSlop;
     private int topViewOpenHeight;
     private float totalMovementHeight;
@@ -405,7 +407,7 @@ public class SlidingLayersView extends FrameLayout {
                 }
 
                 if (trackingTouchEvents && animatorContext != null) {
-                    animatorContext.endAnimation();
+                    animatorContext.endAnimation(ANIMATOR_NAME);
                 }
 
                 this.velocityTracker = null;
@@ -445,7 +447,7 @@ public class SlidingLayersView extends FrameLayout {
 
                 if (isOpen && lastEventY >= topViewY) {
                     if (animatorContext != null) {
-                        animatorContext.beginAnimation();
+                        animatorContext.beginAnimation(ANIMATOR_NAME);
                     }
 
                     this.trackingTouchEvents = true;
@@ -464,7 +466,7 @@ public class SlidingLayersView extends FrameLayout {
                     this.trackingTouchEvents = true;
 
                     if (animatorContext != null) {
-                        animatorContext.beginAnimation();
+                        animatorContext.beginAnimation(ANIMATOR_NAME);
                     }
 
                     if (listener != null) {

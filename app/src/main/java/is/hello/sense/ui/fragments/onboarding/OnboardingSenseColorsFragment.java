@@ -42,6 +42,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private DiagramVideoView senseWave;
 
     private ViewPager viewPager;
+    private OnViewPagerChangeAdapter pagerChangeAdapter;
     private ViewGroup bottomContainer;
     private Button nextButton;
     private ColorsAdapter adapter;
@@ -82,7 +83,9 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         senseWave.setAlpha(0f);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
-        viewPager.addOnPageChangeListener(new OnViewPagerChangeAdapter(viewPager, new PageChangeListener()));
+
+        this.pagerChangeAdapter = new OnViewPagerChangeAdapter(viewPager, new PageChangeListener());
+        viewPager.addOnPageChangeListener(pagerChangeAdapter);
 
         final SenseColor[] senseColors = {
                 new SenseColor(R.string.title_sense_colors_intro, R.string.info_sense_colors_intro),
@@ -150,6 +153,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         super.onDestroyView();
 
         senseWave.destroy();
+        pagerChangeAdapter.destroy();
         viewPager.clearOnPageChangeListeners();
 
         this.senseBackground = null;
@@ -158,10 +162,15 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         this.senseRed = null;
         this.senseWave = null;
 
+        this.pagerChangeAdapter = null;
         this.adapter = null;
     }
 
     public void next(@NonNull View sender) {
+        if (nextButton.getY() != nextButtonMinY) {
+            return;
+        }
+
         if (hasCurrentConditions) {
             ((OnboardingActivity) getActivity()).showRoomCheckIntro();
         } else {
@@ -171,7 +180,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
 
 
     class PageChangeListener implements OnViewPagerChangeAdapter.Listener {
-
         @Override
         public void onPageChangeScrolled(int position, float offset) {
             if (position == POSITION_INTRO) {

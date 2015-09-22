@@ -24,6 +24,8 @@ import rx.functions.Action1;
         NotLocalizable.BecauseOf.ALPHABET,
 })
 public class SensorTickerView extends LinearLayout {
+    private static final String ANIMATOR_NAME = SensorTickerView.class.getSimpleName();
+
     private static final int NUMBER_DIGITS = 3;
 
     private final DigitRotaryView[] digits = new DigitRotaryView[NUMBER_DIGITS];
@@ -144,7 +146,7 @@ public class SensorTickerView extends LinearLayout {
         }
 
         if (animatorContext != null) {
-            animatorContext.beginAnimation();
+            animatorContext.beginAnimation(ANIMATOR_NAME);
         }
         final int targetDigit = Integer.valueOf(valueString.substring(digitIndex, digitIndex + 1), 10);
 
@@ -154,7 +156,7 @@ public class SensorTickerView extends LinearLayout {
             incrementAdjacent(spin.adjacentDuration, digitIndex - 1);
         }, finished -> {
             if (animatorContext != null) {
-                animatorContext.endAnimation();
+                animatorContext.endAnimation(ANIMATOR_NAME);
             }
             onCompletion.call(finished);
         });

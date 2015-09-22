@@ -208,7 +208,7 @@ public class SensorConditionView extends FrameLayout {
         });
 
         if (animatorContext != null) {
-            crossFade.addListener(animatorContext);
+            animatorContext.bind(crossFade, getClass().getSimpleName() + "#crossFade");
         }
 
         crossFade.start();
