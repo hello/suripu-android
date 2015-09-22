@@ -6,11 +6,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 
-import com.crashlytics.android.Crashlytics;
-
 import javax.inject.Inject;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -33,11 +30,6 @@ public class LaunchActivity extends InjectionActivity {
         if (savedInstanceState == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
             Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
-        }
-
-        if (!BuildConfig.DEBUG) {
-            Crashlytics.start(this);
-            Crashlytics.setString("BuildValues_type", BuildConfig.BUILD_TYPE);
         }
 
         if (sessionManager.getSession() != null) {
