@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,16 +51,32 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     //region Bindings
 
-    public void bindData(@NonNull Pair<List<Insight>, Question> data) {
+    public void bindQuestion(@Nullable Question question) {
         interactionListener.onDismissLoadingIndicator();
 
-        this.insights = data.first;
-        this.currentQuestion = data.second;
+        this.currentQuestion = question;
 
         notifyDataSetChanged();
     }
 
-    public void dataUnavailable(Throwable e) {
+    public void questionUnavailable(Throwable e) {
+        Analytics.trackError(e, "Loading questions");
+        Logger.error(getClass().getSimpleName(), "Could not load questions", e);
+
+        this.currentQuestion = null;
+
+        notifyDataSetChanged();
+    }
+
+    public void bindInsights(@NonNull List<Insight> insights) {
+        interactionListener.onDismissLoadingIndicator();
+
+        this.insights = insights;
+
+        notifyDataSetChanged();
+    }
+
+    public void insightsUnavailable(Throwable e) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 

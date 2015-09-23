@@ -11,18 +11,14 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -97,11 +93,17 @@ public class InsightsFragment extends UndersideTabFragment
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Observable<Pair<List<Insight>, Question>> data =
-                Observable.combineLatest(insightsPresenter.insights,
-                                         questionsPresenter.question,
-                                         Pair::new);
-        bindAndSubscribe(data, insightsAdapter::bindData, insightsAdapter::dataUnavailable);
+        // Combining these into a single Observable results in error
+        // handling more or less breaking. Keep them separate until
+        // we actually merge the endpoints on the backend.
+
+        bindAndSubscribe(insightsPresenter.insights,
+                         insightsAdapter::bindInsights,
+                         insightsAdapter::insightsUnavailable);
+
+        bindAndSubscribe(questionsPresenter.question,
+                         insightsAdapter::bindQuestion,
+                         insightsAdapter::questionUnavailable);
     }
 
     @Override
