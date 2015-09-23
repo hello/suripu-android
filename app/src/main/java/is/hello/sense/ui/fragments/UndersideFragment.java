@@ -55,22 +55,6 @@ public class UndersideFragment extends InjectionFragment
     private boolean suppressNextSwipeEvent = false;
     private int lastState = ViewPager.SCROLL_STATE_IDLE;
 
-    private final int[] ICONS_INACTIVE = {
-            R.drawable.underside_icon_currently,
-            R.drawable.underside_icon_trends,
-            R.drawable.underside_icon_insights,
-            R.drawable.underside_icon_alarm,
-            R.drawable.underside_icon_settings,
-    };
-
-    private final int[] ICONS_ACTIVE = {
-            R.drawable.underside_icon_currently_active,
-            R.drawable.underside_icon_trends_active,
-            R.drawable.underside_icon_insights_active,
-            R.drawable.underside_icon_alarm_active,
-            R.drawable.underside_icon_settings_active,
-    };
-
 
     private static SharedPreferences getInternalPreferences(@NonNull Context context) {
         return context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
@@ -124,14 +108,28 @@ public class UndersideFragment extends InjectionFragment
         pager.addOnPageChangeListener(this);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
+        final int[] inactiveIcons = {
+                R.drawable.underside_icon_currently,
+                R.drawable.underside_icon_trends,
+                R.drawable.underside_icon_insights,
+                R.drawable.underside_icon_alarm,
+                R.drawable.underside_icon_settings,
+        };
+        final int[] activeIcons = {
+                R.drawable.underside_icon_currently_active,
+                R.drawable.underside_icon_trends_active,
+                R.drawable.underside_icon_insights_active,
+                R.drawable.underside_icon_alarm_active,
+                R.drawable.underside_icon_settings_active,
+        };
         for (int i = 0; i < tabs.getButtonCount(); i++) {
             final ToggleButton button = tabs.getButtonAt(i);
 
-            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), ICONS_INACTIVE[i]);
+            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), inactiveIcons[i]);
             button.setText(inactiveContent);
             button.setTextOff(inactiveContent);
 
-            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i), ICONS_ACTIVE[i]);
+            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i), activeIcons[i]);
             button.setTextOn(activeContent);
 
             button.setPadding(0, 0, 0, 0);
@@ -248,11 +246,10 @@ public class UndersideFragment extends InjectionFragment
         final @DrawableRes int iconRes = hasUnreadInsightItems
                 ? R.drawable.underside_icon_insights_unread
                 : R.drawable.underside_icon_insights;
-        this.ICONS_INACTIVE[ITEM_INSIGHTS] = iconRes;
 
         final ToggleButton button = tabs.getButtonAt(ITEM_INSIGHTS);
         final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_INSIGHTS),
-                                                               ICONS_INACTIVE[ITEM_INSIGHTS]);
+                                                               iconRes);
         button.setTextOff(inactiveContent);
         if (!button.isChecked()) {
             button.setText(inactiveContent);
