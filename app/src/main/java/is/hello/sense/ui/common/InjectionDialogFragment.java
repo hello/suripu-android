@@ -95,13 +95,17 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
 
     @Override
     @NonNull
-    public <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+    public <T> Subscription subscribe(@NonNull Observable<T> toSubscribe,
+                                      @NonNull Action1<? super T> onNext,
+                                      @NonNull Action1<Throwable> onError) {
         return observableContainer.subscribe(toSubscribe, onNext, onError);
     }
 
     @Override
     @NonNull
-    public <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+    public <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe,
+                                             @NonNull Action1<? super T> onNext,
+                                             @NonNull Action1<Throwable> onError) {
         return observableContainer.bindAndSubscribe(toSubscribe, onNext, onError);
     }
 }

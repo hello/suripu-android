@@ -63,7 +63,9 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     }
 
     @Override
-    public @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+    public @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe,
+                                               @NonNull Action1<? super T> onNext,
+                                               @NonNull Action1<Throwable> onError) {
         return track(toSubscribe.unsafeSubscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
@@ -94,7 +96,9 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     }
 
     @Override
-    public @NonNull <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe, Action1<? super T> onNext, Action1<Throwable> onError) {
+    public @NonNull <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe,
+                                                      @NonNull Action1<? super T> onNext,
+                                                      @NonNull Action1<Throwable> onError) {
         return subscribe(bind(toSubscribe), onNext, onError);
     }
 }

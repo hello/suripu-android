@@ -41,7 +41,6 @@ public final class PresenterSubject<T> extends Subject<T, T> {
 
     //region Observer
 
-
     @Override
     public boolean hasObservers() {
         return !subscriptionManager.subscribers.isEmpty();

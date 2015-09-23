@@ -33,14 +33,14 @@ public interface ObservableContainer {
      * subscription's destruction to the lifecycle of the container.
      */
     @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe,
-                                        Action1<? super T> onNext,
-                                        Action1<Throwable> onError);
+                                        @NonNull Action1<? super T> onNext,
+                                        @NonNull Action1<Throwable> onError);
 
     /**
      * Binds a given observable to the container's lifecycle, and then creates
-     * a subscription bound to the lifecylce of the container.
+     * a subscription bound to the lifecycle of the container.
      */
     @NonNull <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe,
-                                               Action1<? super T> onNext,
-                                               Action1<Throwable> onError);
+                                               @NonNull Action1<? super T> onNext,
+                                               @NonNull Action1<Throwable> onError);
 }
