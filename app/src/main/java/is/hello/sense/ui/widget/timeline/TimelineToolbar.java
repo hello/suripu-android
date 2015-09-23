@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,8 +30,7 @@ public class TimelineToolbar extends RelativeLayout {
     private final ImageButton share;
     private final TextView title;
 
-    private final TransitionDrawable overflowFadeDrawable;
-    private final LayerDrawable overflowClosedIcon;
+    private TransitionDrawable overflowFadeDrawable;
     private boolean overflowOpen;
 
     private @Nullable ValueAnimator titleColorAnimator;
@@ -65,16 +63,10 @@ public class TimelineToolbar extends RelativeLayout {
         this.title = (TextView) findViewById(R.id.view_timeline_toolbar_title);
 
         final Resources resources = getResources();
-        this.overflowClosedIcon = (LayerDrawable) ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_closed_unread, null);
-        final Drawable overflowOpenIcon = ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_open, null);
-        final Drawable[] overflowDrawables = { overflowClosedIcon, overflowOpenIcon, };
-        this.overflowFadeDrawable = new TransitionDrawable(overflowDrawables);
-        overflowFadeDrawable.setCrossFadeEnabled(true);
-        overflow.setImageDrawable(overflowFadeDrawable);
+        setOverflowDrawables(ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_closed, null),
+                             ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_open, null));
 
         share.setVisibility(INVISIBLE);
-
-        setUnreadVisible(false);
     }
 
     @Override
@@ -90,6 +82,16 @@ public class TimelineToolbar extends RelativeLayout {
 
 
     //region Attributes
+
+    private void setOverflowDrawables(@NonNull Drawable closed, @NonNull Drawable open) {
+        final Drawable[] drawables = { closed, open };
+        this.overflowFadeDrawable = new TransitionDrawable(drawables);
+        overflowFadeDrawable.setCrossFadeEnabled(true);
+        overflow.setImageDrawable(overflowFadeDrawable);
+        if (overflowOpen) {
+            overflowFadeDrawable.startTransition(0);
+        }
+    }
 
     @Override
     public void clearAnimation() {
@@ -127,11 +129,25 @@ public class TimelineToolbar extends RelativeLayout {
     }
 
     public void setUnreadVisible(boolean unreadVisible) {
-        final Drawable unreadLayer = overflowClosedIcon.findDrawableByLayerId(R.id.icon_menu_closed_unread_indicator);
-        if (unreadVisible) {
-            unreadLayer.setAlpha(255);
-        } else {
-            unreadLayer.setAlpha(0);
+        if (unreadVisible != this.unreadVisible) {
+            final Resources resources = getResources();
+            if (unreadVisible) {
+                setOverflowDrawables(ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_closed_unread,
+                                                                 null),
+                                     ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_open,
+                                                                 null));
+            } else {
+                setOverflowDrawables(ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_closed,
+                                                                 null),
+                                     ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_open,
+                                                                 null));
+            }
+
+            this.unreadVisible = unreadVisible;
         }
     }
 

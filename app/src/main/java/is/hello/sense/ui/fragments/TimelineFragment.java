@@ -167,9 +167,10 @@ public class TimelineFragment extends InjectionFragment
 
         this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.isPostOnboarding());
 
+        final boolean overflowOpen = getUserVisibleHint() && homeActivity.isUndersideVisible();
         this.toolbar = new TimelineToolbar(getActivity());
         toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
-        toolbar.setOverflowOpen(homeActivity.isUndersideVisible());
+        toolbar.setOverflowOpen(overflowOpen);
 
         toolbar.setTitleOnClickListener(ignored -> {
             Tutorial.ZOOM_OUT_TIMELINE.markShown(getActivity());
@@ -179,7 +180,7 @@ public class TimelineFragment extends InjectionFragment
             homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
         });
         toolbar.setTitle(getTitle());
-        toolbar.setTitleDimmed(homeActivity.isUndersideVisible());
+        toolbar.setTitleDimmed(overflowOpen);
 
         toolbar.setShareOnClickListener(this::share);
         toolbar.setShareVisible(false);
