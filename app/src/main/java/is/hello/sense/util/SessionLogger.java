@@ -18,7 +18,6 @@ import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
@@ -26,6 +25,7 @@ import rx.Observable;
 public final class SessionLogger {
     public static final String FILENAME = "Sense-Session-Log.txt";
 
+    private static final String LOG_TAG = SessionLogger.class.getSimpleName();
     private static final int ROLLOVER = 3;
 
     private static boolean initialized = false;
@@ -77,22 +77,22 @@ public final class SessionLogger {
             return Observable.error(new NullPointerException());
         }
 
-        return Observable.create((Observable.OnSubscribe<Void>) s -> {
+        return Observable.<Void>create(subscriber -> {
             try {
                 printWriter.flush();
 
-                s.onNext(null);
-                s.onCompleted();
+                subscriber.onNext(null);
+                subscriber.onCompleted();
             } catch (Exception e) {
-                s.onError(e);
+                subscriber.onError(e);
             }
         }).subscribeOn(new Rx.HandlerScheduler(handler));
     }
 
     public static Observable<Void> clearLog() {
-        return Observable.create((Observable.OnSubscribe<Void>) s -> {
+        return Observable.<Void>create(subscriber -> {
             if (logFile == null) {
-                s.onError(new FileNotFoundException());
+                subscriber.onError(new FileNotFoundException());
                 return;
             }
 
@@ -107,55 +107,68 @@ public final class SessionLogger {
                 println(Log.INFO, "Internal", "Log Cleared");
                 printWriter.flush();
 
-                s.onNext(null);
-                s.onCompleted();
+                subscriber.onNext(null);
+                subscriber.onCompleted();
             } catch (Exception e) {
                 Functions.safeClose(printWriter);
                 SessionLogger.printWriter = null;
                 SessionLogger.initialized = false;
 
-                s.onError(e);
+                subscriber.onError(e);
             }
         }).subscribeOn(new Rx.HandlerScheduler(handler));
     }
 
+    /**
+     * Resolve the location to place the session log file.
+     * <p>
+     * <em>This method is not safe to call from the main thread.</em>
+     *
+     * @param context   The context to resolve the location through.
+     * @return  The location of the session log file.
+     */
     public static @NonNull String getLogFilePath(@NonNull Context context) {
         return context.getExternalCacheDir() + File.separator + FILENAME;
     }
 
 
     public static void init(@NonNull Context context) {
-        if (!SessionLogger.initialized) {
-            File file = new File(getLogFilePath(context));
-            init(context, file);
-        }
-    }
+        if (!SessionLogger.initialized && SessionLogger.handler == null) {
+            final HandlerThread workerThread = new HandlerThread("SessionLogger#handlerThread");
+            workerThread.start();
+            SessionLogger.handler = new Handler(workerThread.getLooper());
+            handler.post(() -> {
+                try {
+                    final File file = new File(getLogFilePath(context));
+                    SessionLogger.printWriter = new PrintWriter(new FileOutputStream(file, true));
+                    SessionLogger.logFile = file;
+                    SessionLogger.initialized = true;
 
-    public static void init(@NonNull Context context, @NonNull File logFile) {
-        if (!SessionLogger.initialized) {
-            try {
-                //noinspection PointlessBooleanExpression
-                SessionLogger.printWriter = new PrintWriter(new FileOutputStream(logFile, !BuildConfig.CLEAR_LOG_ON_START));
-                SessionLogger.logFile = logFile;
-                HandlerThread workerThread = new HandlerThread("SessionLogger.handlerThread");
-                workerThread.start();
-                SessionLogger.handler = new Handler(workerThread.getLooper());
-                SessionLogger.initialized = true;
+                    println(Log.INFO, "Internal", "Session Began");
+                    Log.d(LOG_TAG, "Session logger ready");
 
-                println(Log.INFO, "Internal", "Session Began");
+                    final IntentFilter intentFilter = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+                    final Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, intentFilter);
+                    logOutSignal.subscribe(intent -> {
+                                               clearLog().subscribe(ignored -> {
+                                                                        Log.d(LOG_TAG, "Cleared session log for log out");
+                                                                    },
+                                                                    e -> {
+                                                                        Log.e(LOG_TAG, "Could not clear log.", e);
+                                                                    });
+                                           },
+                                           Functions.LOG_ERROR);
+                } catch (IOException e) {
+                    Logger.error(LOG_TAG, "Could not initialize session logger.", e);
 
-                Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-                logOutSignal.subscribe(intent ->
-                                clearLog().subscribe(ignored -> Log.i(SessionLogger.class.getSimpleName(), "Cleared session log for log out"),
-                                        e -> Log.e(SessionLogger.class.getSimpleName(), "Could not clear log.", e)),
-                        Functions.LOG_ERROR);
-            } catch (IOException e) {
-                Logger.error(SessionLogger.class.getSimpleName(), "Could not initialize session logger.", e);
+                    workerThread.quitSafely();
+                    SessionLogger.handler = null;
 
-                Functions.safeClose(printWriter);
-                SessionLogger.printWriter = null;
-                SessionLogger.initialized = false;
-            }
+                    Functions.safeClose(printWriter);
+                    SessionLogger.printWriter = null;
+                    SessionLogger.initialized = false;
+                }
+            });
         }
     }
 }
