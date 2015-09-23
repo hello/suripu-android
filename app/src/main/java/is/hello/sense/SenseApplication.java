@@ -52,7 +52,9 @@ public class SenseApplication extends Application {
 
         JodaTimeAndroid.init(this);
         Analytics.initialize(this);
-        SessionLogger.init(this);
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
+            SessionLogger.init(this);
+        }
 
         buildGraph();
 
