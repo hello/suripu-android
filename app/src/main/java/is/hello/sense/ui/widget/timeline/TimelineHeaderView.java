@@ -135,6 +135,13 @@ public class TimelineHeaderView extends RelativeLayout {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        clearAnimation();
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         int right = canvas.getWidth(),
             bottom = canvas.getHeight();
@@ -213,18 +220,18 @@ public class TimelineHeaderView extends RelativeLayout {
             this.gradientBackgroundAlpha = targetAlpha;
             invalidate();
         } else {
-            ValueAnimator alphaAnimator = ValueAnimator.ofInt(255 - targetAlpha, targetAlpha);
-            AnimatorTemplate.DEFAULT.apply(alphaAnimator);
-            alphaAnimator.addUpdateListener(a -> {
+            this.backgroundAnimator = ValueAnimator.ofInt(255 - targetAlpha, targetAlpha);
+            AnimatorTemplate.DEFAULT.apply(backgroundAnimator);
+            backgroundAnimator.addUpdateListener(a -> {
                 int alpha = (int) a.getAnimatedValue();
                 gradientBackground.setAlpha(alpha);
                 this.gradientBackgroundAlpha = alpha;
                 invalidate();
             });
-            alphaAnimator.addListener(new AnimatorListenerAdapter() {
+            backgroundAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (backgroundAnimator == animation) {
+                    if (TimelineHeaderView.this.backgroundAnimator == animation) {
                         gradientBackground.setAlpha(targetAlpha);
                         TimelineHeaderView.this.gradientBackgroundAlpha = targetAlpha;
                         invalidate();
@@ -232,7 +239,7 @@ public class TimelineHeaderView extends RelativeLayout {
                     }
                 }
             });
-            alphaAnimator.start();
+            backgroundAnimator.start();
         }
     }
 
@@ -412,7 +419,13 @@ public class TimelineHeaderView extends RelativeLayout {
                     }
 
                     fireAdapterAnimations.run();
-                    animateCardIntoView();
+
+                    if (finished) {
+                        animateCardIntoView();
+                    } else {
+                        cardContainer.setAlpha(1f);
+                        cardContainer.setVisibility(VISIBLE);
+                    }
                 })
                 .start();
 

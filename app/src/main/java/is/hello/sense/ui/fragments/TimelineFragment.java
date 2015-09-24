@@ -191,7 +191,6 @@ public class TimelineFragment extends InjectionFragment
         View[] headers = { toolbar, headerView };
 
         this.itemAnimator = new StaggeredFadeItemAnimator(getAnimatorContext());
-        itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BottomInsetDecoration(getResources(), headers.length));
 
@@ -223,8 +222,23 @@ public class TimelineFragment extends InjectionFragment
         if (isVisibleToUser) {
             // For all subsequent fragments
             bindIfNeeded();
+
+            if (itemAnimator != null) {
+                itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
+            }
         } else {
+            if (itemAnimator != null) {
+                itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
+                itemAnimator.endAnimations();
+            }
+
             dismissVisibleOverlaysAndDialogs();
+            if (headerView != null) {
+                headerView.clearAnimation();
+            }
+            if (toolbar != null) {
+                toolbar.clearAnimation();
+            }
         }
     }
 
@@ -538,14 +552,14 @@ public class TimelineFragment extends InjectionFragment
     public void bindTimeline(@NonNull Timeline timeline) {
         boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         if (hasEvents) {
-            Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
+            final Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
                 int targetColor = getResources().getColor(R.color.timeline_background_fill);
                 Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
 
                 toolbar.setShareVisible(!homeActivity.isUndersideVisible());
             });
-            Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
+            final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {
                     itemAnimator.addListener(new HandholdingOneShotListener());
                 } else {

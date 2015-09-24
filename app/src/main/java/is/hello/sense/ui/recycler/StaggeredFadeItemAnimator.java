@@ -149,6 +149,7 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
 
     @Override
     public void endAnimations() {
+        pending.clear();
         for (Transaction transaction : running) {
             Anime.cancelAll(transaction.target.itemView);
         }
