@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -16,7 +17,6 @@ import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -33,6 +33,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
+import is.hello.sense.ui.widget.graphing.adapters.GradientDrawableCompat;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.util.SafeOnClickListener;
@@ -88,7 +89,19 @@ public class TimelineHeaderView extends RelativeLayout {
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
         this.solidBackgroundColor = resources.getColor(R.color.background_timeline);
-        this.gradientBackground = ResourcesCompat.getDrawable(resources, R.drawable.background_timeline_header, null);
+        final int[] gradientColors = {
+                solidBackgroundColor,
+                solidBackgroundColor,
+                resources.getColor(R.color.timeline_header_gradient_end),
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            this.gradientBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                                                           gradientColors);
+        } else {
+            //noinspection deprecation
+            this.gradientBackground = new GradientDrawableCompat(GradientDrawable.Orientation.TOP_BOTTOM,
+                                                                 gradientColors);
+        }
         gradientBackground.setAlpha(0);
 
 
@@ -222,6 +235,7 @@ public class TimelineHeaderView extends RelativeLayout {
         } else {
             this.backgroundAnimator = ValueAnimator.ofInt(255 - targetAlpha, targetAlpha);
             AnimatorTemplate.DEFAULT.apply(backgroundAnimator);
+            backgroundAnimator.setDuration(500L);
             backgroundAnimator.addUpdateListener(a -> {
                 int alpha = (int) a.getAnimatedValue();
                 gradientBackground.setAlpha(alpha);
