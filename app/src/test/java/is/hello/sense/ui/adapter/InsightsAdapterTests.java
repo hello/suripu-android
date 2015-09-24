@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
-import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -49,7 +48,7 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Test
     public void loadingIndicatorHook() throws Exception {
-        adapter.bindData(Pair.create(null, null));
+        adapter.bindQuestion(null);
         assertTrue(listener.wasCallbackCalled(FakeInteractionListener.Callback.DISMISS_LOADING_INDICATOR));
     }
 
@@ -58,7 +57,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         Question question = Question.create(0, 0, "Do you like to travel through space and time?",
                 Question.Type.CHOICE, DateTime.now(), Question.AskTime.ANYTIME, null);
 
-        adapter.bindData(Pair.create(null, question));
+        adapter.bindQuestion(question);
 
         assertEquals(1, adapter.getItemCount());
 
@@ -80,7 +79,7 @@ public class InsightsAdapterTests extends SenseTestCase {
                 new MarkupString("You should have less of it"), DateTime.now().minusDays(5),
                 "LIGHT", "Too much light makes you sleep poorly");
 
-        adapter.bindData(Pair.create(Lists.newArrayList(insight), null));
+        adapter.bindInsights(Lists.newArrayList(insight));
 
         assertEquals(1, adapter.getItemCount());
 
