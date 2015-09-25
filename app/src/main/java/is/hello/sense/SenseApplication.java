@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.bugsnag.android.Bugsnag;
 import com.crashlytics.android.Crashlytics;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -49,6 +50,9 @@ public class SenseApplication extends Application {
         // And always do this second.
         Crashlytics.start(this);
         Crashlytics.setString("BuildValues_type", BuildConfig.BUILD_TYPE);
+
+        Bugsnag.init(this);
+
 
         JodaTimeAndroid.init(this);
         Analytics.initialize(this);

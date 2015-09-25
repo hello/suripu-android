@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.bugsnag.android.Bugsnag;
 import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONObject;
@@ -84,6 +85,7 @@ public class Logger {
             Logger.info(Analytics.LOG_TAG, event + ": " + properties);
         } else if (Crashlytics.getInstance().isInitialized()) {
             Crashlytics.log(Log.INFO, Analytics.LOG_TAG, event);
+            Bugsnag.leaveBreadcrumb(event + ": " + properties);
         }
     }
 

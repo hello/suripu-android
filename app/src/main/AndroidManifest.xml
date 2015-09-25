@@ -104,6 +104,10 @@
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="f464ccd280d3e5730dcdaa9b64d1d108694ee9a9"/>
 
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="85d0ec0c255e061ee72fb2992bda94d0"/>
+
     </application>
 
 </manifest>

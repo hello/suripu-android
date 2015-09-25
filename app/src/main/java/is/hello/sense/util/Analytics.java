@@ -11,6 +11,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.bugsnag.android.Bugsnag;
+import com.bugsnag.android.Severity;
 import com.crashlytics.android.Crashlytics;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
@@ -483,6 +485,8 @@ public class Analytics {
         if (Crashlytics.getInstance().isInitialized()) {
             Crashlytics.setUserIdentifier(userId);
         }
+
+        Bugsnag.setUserId(userId);
     }
 
     public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
@@ -646,8 +650,12 @@ public class Analytics {
     }
 
     public static void trackUnexpectedError(@Nullable Throwable e) {
-        if (e != null && Crashlytics.getInstance().isInitialized()) {
-            Crashlytics.logException(e);
+        if (e != null) {
+            if (Crashlytics.getInstance().isInitialized()) {
+                Crashlytics.logException(e);
+            }
+
+            Bugsnag.notify(e, Severity.WARNING);
         }
     }
 
