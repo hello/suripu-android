@@ -379,22 +379,31 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
 
-        this.blockConnection = true;
+        final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
+        confirmation.setTitle(R.string.dialog_title_put_into_pairing_mode);
+        confirmation.setMessage(Styles.resolveSupportLinks(getActivity(),
+                                                           getText(R.string.dialog_message_put_into_pairing_mode)));
+        confirmation.setNegativeButton(android.R.string.cancel, null);
+        confirmation.setPositiveButton(R.string.action_enter_pairing_mode, (dialog, which) -> {
+            this.blockConnection = true;
 
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   getString(R.string.dialog_loading_message),
-                                   LoadingDialogFragment.OPAQUE_BACKGROUND);
-        hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY)
-                         .subscribe(ignored -> {
-                             bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
-                                              ignored1 -> {
-                                                  LoadingDialogFragment.close(getFragmentManager());
-                                                  getFragmentManager().popBackStackImmediate();
-                                              },
-                                              this::presentError);
-                         }, e -> {
-                             stateSafeExecutor.execute(() -> presentError(e));
-                         });
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       getString(R.string.dialog_loading_message),
+                                       LoadingDialogFragment.OPAQUE_BACKGROUND);
+            hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY)
+                             .subscribe(ignored -> {
+                                 bindAndSubscribe(hardwarePresenter.putIntoPairingMode(),
+                                                  ignored1 -> {
+                                                      LoadingDialogFragment.close(getFragmentManager());
+                                                      getFragmentManager().popBackStackImmediate();
+                                                  },
+                                                  this::presentError);
+                             }, e -> {
+                                 stateSafeExecutor.execute(() -> presentError(e));
+                             });
+        });
+        confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+        confirmation.show();
     }
 
     public void changeTimeZone() {
