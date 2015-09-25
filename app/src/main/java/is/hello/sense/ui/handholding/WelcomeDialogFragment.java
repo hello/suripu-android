@@ -98,9 +98,12 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         welcomeDialog.showAllowingStateLoss(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
     }
 
-    public static void showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
+    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
         if (shouldShow(activity, welcomeRes)) {
             show(activity, welcomeRes);
+            return true;
+        } else {
+            return false;
         }
     }
 
