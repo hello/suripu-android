@@ -23,6 +23,7 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -32,6 +33,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
 
+    private DiagramVideoView diagram;
     private Button skipButton;
     private Button retryButton;
 
@@ -58,18 +60,20 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
 
+        this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
+
         this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
         Views.setSafeOnClickListener(skipButton, ignored -> skipPairingPill());
 
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> pairPill());
 
+
         OnboardingToolbar.of(this, view)
                 .setWantsBackButton(false)
                 .setOnHelpClickListener(this::help);
 
         if (BuildConfig.DEBUG) {
-            View diagram = view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
             diagram.setOnLongClickListener(ignored -> {
                 skipPairingPill();
                 return true;
@@ -160,6 +164,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
         showBlockingActivity(R.string.title_waiting_for_sense);
         showHardwareActivity(() -> {
+            diagram.startPlayback();
             hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwarePresenter.linkPill(),
                                  ignored -> completeHardwareActivity(() -> finishedPairing(true)),
@@ -171,6 +176,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void presentError(Throwable e) {
         this.isPairing = false;
 
+        diagram.suspendPlayback();
         hideAllActivityForFailure(() -> {
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
