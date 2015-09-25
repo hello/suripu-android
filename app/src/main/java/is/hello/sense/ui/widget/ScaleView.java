@@ -264,8 +264,10 @@ public class ScaleView extends FrameLayout {
             }
         };
         final int newPosition = (newValue - minValue - 1);
-        smoothScroller.setTargetPosition(newPosition);
-        layoutManager.startSmoothScroll(smoothScroller);
+        if (newPosition >= 0) {
+            smoothScroller.setTargetPosition(newPosition);
+            layoutManager.startSmoothScroll(smoothScroller);
+        }
     }
 
     public int getValue() {
