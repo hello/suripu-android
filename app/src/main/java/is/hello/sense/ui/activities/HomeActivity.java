@@ -36,6 +36,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -68,13 +69,21 @@ public class HomeActivity extends ScopedInjectionActivity
         ViewPager.OnPageChangeListener,
         TimelineInfoFragment.AnchorProvider {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
-    public static final String EXTRA_SHOW_UNDERSIDE = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
+    /**
+     * Whether or not the <code>HomeActivity</code> was started in response
+     * to the user finishing on-boarding.
+     * <p>
+     * Literal value is <code>is.hello.sense.ui.activities.HomeActivity.EXTRA_SHOW_UNDERSIDE</code>
+     * and cannot be changed for backwards compatibility.
+     */
+    public static final String EXTRA_POST_ONBOARDING = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
 
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
     @Inject ApiService apiService;
     @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
+    @Inject UnreadStatePresenter unreadStatePresenter;
     @Inject LocalUsageTracker localUsageTracker;
 
     private long lastUpdated = Long.MAX_VALUE;
@@ -93,6 +102,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
 
+
     //region Lifecycle
 
     @Override
@@ -109,7 +119,8 @@ public class HomeActivity extends ScopedInjectionActivity
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
-            this.showUnderside = getWillShowUnderside();
+            final boolean postOnboarding = isPostOnboarding();
+            this.showUnderside = postOnboarding;
 
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
@@ -118,12 +129,16 @@ public class HomeActivity extends ScopedInjectionActivity
             if (getIntent().hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
                 dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), false);
             }
+
+            if (!postOnboarding) {
+                unreadStatePresenter.update();
+            }
         }
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
             JSONObject properties = Analytics.createProperties(
-                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
-            );
+                    Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+                                                              );
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
         }
@@ -178,8 +193,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
             JSONObject properties = Analytics.createProperties(
-                Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
-            );
+                    Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
+                                                              );
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
@@ -191,7 +206,9 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(),
+                                                                  loggedOutIntent);
         bindAndSubscribe(onLogOut,
                          ignored -> {
                              startActivity(new Intent(this, OnboardingActivity.class));
@@ -199,7 +216,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          },
                          Functions.LOG_ERROR);
 
-        if (isFirstActivityRun && !getWillShowUnderside()) {
+        if (isFirstActivityRun && !isPostOnboarding()) {
             bindAndSubscribe(deviceIssuesPresenter.latest(),
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
@@ -246,6 +263,8 @@ public class HomeActivity extends ScopedInjectionActivity
             if (navigatorFragment != null) {
                 getFragmentManager().popBackStack();
             }
+
+            unreadStatePresenter.update();
         }
 
         presenterContainer.onContainerResumed();
@@ -347,8 +366,8 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
 
-    public boolean getWillShowUnderside() {
-        return getIntent().getBooleanExtra(EXTRA_SHOW_UNDERSIDE, false);
+    public boolean isPostOnboarding() {
+        return getIntent().getBooleanExtra(EXTRA_POST_ONBOARDING, false);
     }
 
     public boolean isUndersideVisible() {
@@ -373,13 +392,13 @@ public class HomeActivity extends ScopedInjectionActivity
 
     public void checkInForUpdates() {
         bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
-                response -> {
-                    if (response.isNewVersion()) {
-                        AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
-                        dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
-                    }
-                },
-                e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
+                         response -> {
+                             if (response.isNewVersion()) {
+                                 AppUpdateDialogFragment dialogFragment = AppUpdateDialogFragment.newInstance(response);
+                                 dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
+                             }
+                         },
+                         e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
     }
 
 

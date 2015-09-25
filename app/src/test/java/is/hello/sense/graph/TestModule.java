@@ -38,6 +38,7 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.graph.presenters.TrendsPresenterTests;
+import is.hello.sense.graph.presenters.UnreadStatePresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
 import is.hello.sense.graph.presenters.questions.ApiQuestionProviderTests;
@@ -93,6 +94,7 @@ import static org.mockito.Mockito.mock;
 
         LocalUsageTrackerTests.class,
         ReviewQuestionProviderTests.class,
+        UnreadStatePresenterTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

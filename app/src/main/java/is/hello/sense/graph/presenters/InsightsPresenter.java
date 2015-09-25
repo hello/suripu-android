@@ -11,6 +11,7 @@ import rx.Observable;
 
 public class InsightsPresenter extends ScopedValuePresenter<ArrayList<Insight>> {
     @Inject ApiService apiService;
+    @Inject UnreadStatePresenter unreadStatePresenter;
 
     public final PresenterSubject<ArrayList<Insight>> insights = this.subject;
 
@@ -26,6 +27,7 @@ public class InsightsPresenter extends ScopedValuePresenter<ArrayList<Insight>> 
 
     @Override
     protected Observable<ArrayList<Insight>> provideUpdateObservable() {
-        return apiService.currentInsights();
+        return apiService.currentInsights()
+                         .doOnCompleted(unreadStatePresenter::updateInsightsLastViewed);
     }
 }

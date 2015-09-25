@@ -446,7 +446,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         hardwarePresenter.clearPeripheral();
 
         Intent intent = new Intent(this, HomeActivity.class);
-        intent.putExtra(HomeActivity.EXTRA_SHOW_UNDERSIDE, true);
+        intent.putExtra(HomeActivity.EXTRA_POST_ONBOARDING, true);
         startActivity(intent);
         finish();
     }

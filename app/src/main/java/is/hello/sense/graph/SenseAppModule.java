@@ -24,6 +24,7 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
+import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -43,6 +44,7 @@ import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
+import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
@@ -80,6 +82,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         DebugActivity.class,
         PreferencesPresenter.class,
         NotificationRegistration.class,
+        UnreadStatePresenter.class,
 
         LaunchActivity.class,
         HomeActivity.class,
@@ -118,6 +121,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         QuestionsPresenter.class,
         QuestionsDialogFragment.class,
 
+        UndersideFragment.class,
         InsightsPresenter.class,
         InsightsFragment.class,
         InsightInfoDialogFragment.class,

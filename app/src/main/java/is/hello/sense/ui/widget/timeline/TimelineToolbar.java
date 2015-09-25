@@ -30,13 +30,14 @@ public class TimelineToolbar extends RelativeLayout {
     private final ImageButton share;
     private final TextView title;
 
-    private final TransitionDrawable overflowFadeDrawable;
+    private TransitionDrawable overflowFadeDrawable;
     private boolean overflowOpen;
 
     private @Nullable ValueAnimator titleColorAnimator;
     private boolean titleDimmed;
 
     private boolean shareVisible;
+    private boolean unreadVisible;
 
 
     //region Lifecycle
@@ -54,21 +55,16 @@ public class TimelineToolbar extends RelativeLayout {
 
         setBackgroundResource(R.color.background_timeline);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        final LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_toolbar, this, true);
 
         this.overflow = (ImageButton) findViewById(R.id.view_timeline_toolbar_overflow);
         this.share = (ImageButton) findViewById(R.id.view_timeline_toolbar_share);
         this.title = (TextView) findViewById(R.id.view_timeline_toolbar_title);
 
-        Resources resources = getResources();
-        Drawable[] overflowDrawables = {
-                ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_closed, null),
-                ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_open, null),
-        };
-        this.overflowFadeDrawable = new TransitionDrawable(overflowDrawables);
-        overflowFadeDrawable.setCrossFadeEnabled(true);
-        overflow.setImageDrawable(overflowFadeDrawable);
+        final Resources resources = getResources();
+        setOverflowDrawables(ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_closed, null),
+                             ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_open, null));
 
         share.setVisibility(INVISIBLE);
     }
@@ -86,6 +82,16 @@ public class TimelineToolbar extends RelativeLayout {
 
 
     //region Attributes
+
+    private void setOverflowDrawables(@NonNull Drawable closed, @NonNull Drawable open) {
+        final Drawable[] drawables = { closed, open };
+        this.overflowFadeDrawable = new TransitionDrawable(drawables);
+        overflowFadeDrawable.setCrossFadeEnabled(true);
+        overflow.setImageDrawable(overflowFadeDrawable);
+        if (overflowOpen) {
+            overflowFadeDrawable.startTransition(0);
+        }
+    }
 
     @Override
     public void clearAnimation() {
@@ -108,7 +114,7 @@ public class TimelineToolbar extends RelativeLayout {
 
         this.overflowOpen = overflowOpen;
 
-        int duration;
+        final int duration;
         if (!ViewCompat.isAttachedToWindow(this)) {
             duration = 0;
         } else {
@@ -119,6 +125,29 @@ public class TimelineToolbar extends RelativeLayout {
             overflowFadeDrawable.startTransition(duration);
         } else {
             overflowFadeDrawable.reverseTransition(duration);
+        }
+    }
+
+    public void setUnreadVisible(boolean unreadVisible) {
+        if (unreadVisible != this.unreadVisible) {
+            final Resources resources = getResources();
+            if (unreadVisible) {
+                setOverflowDrawables(ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_closed_unread,
+                                                                 null),
+                                     ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_open,
+                                                                 null));
+            } else {
+                setOverflowDrawables(ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_closed,
+                                                                 null),
+                                     ResourcesCompat.getDrawable(resources,
+                                                                 R.drawable.icon_menu_open,
+                                                                 null));
+            }
+
+            this.unreadVisible = unreadVisible;
         }
     }
 
@@ -186,8 +215,8 @@ public class TimelineToolbar extends RelativeLayout {
 
         this.titleDimmed = titleDimmed;
 
-        int startColor = title.getCurrentTextColor();
-        int endColor;
+        final int startColor = title.getCurrentTextColor();
+        final int endColor;
         if (titleDimmed) {
             endColor = getResources().getColor(R.color.text_dim);
         } else {

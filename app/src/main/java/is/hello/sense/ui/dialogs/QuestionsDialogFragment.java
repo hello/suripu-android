@@ -26,6 +26,7 @@ import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -41,6 +42,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
     private static final long THANK_YOU_DURATION_MS = 2 * 1000;
 
     @Inject QuestionsPresenter questionsPresenter;
+    @Inject UnreadStatePresenter unreadStatePresenter;
 
     private final AnimatorContext animatorContext = new AnimatorContext(TAG);
 
@@ -210,9 +212,11 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
         }, finished -> {
             if (finished) {
                 rootContainer.postDelayed(stateSafeExecutor.bind(onCompletion),
-                                           THANK_YOU_DURATION_MS);
+                                          THANK_YOU_DURATION_MS);
             }
         });
+
+        unreadStatePresenter.updateInsightsLastViewed();
     }
 
     public void clearQuestions(boolean animate, @Nullable Runnable onCompletion) {

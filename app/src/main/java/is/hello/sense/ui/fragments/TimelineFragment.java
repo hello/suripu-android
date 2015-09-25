@@ -39,6 +39,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
+import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
@@ -87,6 +88,7 @@ public class TimelineFragment extends InjectionFragment
     @Inject TimelinePresenter timelinePresenter;
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject UnreadStatePresenter unreadStatePresenter;
     @Inject LocalUsageTracker localUsageTracker;
 
     private HomeActivity homeActivity;
@@ -163,11 +165,12 @@ public class TimelineFragment extends InjectionFragment
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.getWillShowUnderside());
+        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.isPostOnboarding());
 
+        final boolean overflowOpen = getUserVisibleHint() && homeActivity.isUndersideVisible();
         this.toolbar = new TimelineToolbar(getActivity());
         toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
-        toolbar.setOverflowOpen(homeActivity.isUndersideVisible());
+        toolbar.setOverflowOpen(overflowOpen);
 
         toolbar.setTitleOnClickListener(ignored -> {
             Tutorial.ZOOM_OUT_TIMELINE.markShown(getActivity());
@@ -177,7 +180,7 @@ public class TimelineFragment extends InjectionFragment
             homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
         });
         toolbar.setTitle(getTitle());
-        toolbar.setTitleDimmed(homeActivity.isUndersideVisible());
+        toolbar.setTitleDimmed(overflowOpen);
 
         toolbar.setShareOnClickListener(this::share);
         toolbar.setShareVisible(false);
@@ -254,6 +257,10 @@ public class TimelineFragment extends InjectionFragment
 
             bindAndSubscribe(preferences.observableUse24Time(),
                              adapter::setUse24Time,
+                             Functions.LOG_ERROR);
+
+            bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
+                             toolbar::setUnreadVisible,
                              Functions.LOG_ERROR);
         }
     }
@@ -461,7 +468,7 @@ public class TimelineFragment extends InjectionFragment
             }
         }
 
-        if (homeActivity.getWillShowUnderside()) {
+        if (homeActivity.isPostOnboarding()) {
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else if (!homeActivity.isUndersideVisible()) {
             if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
@@ -576,7 +583,7 @@ public class TimelineFragment extends InjectionFragment
         } else {
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended
-                if (homeActivity.getWillShowUnderside() && DateFormatter.isLastNight(getDate())) {
+                if (homeActivity.isPostOnboarding() && DateFormatter.isLastNight(getDate())) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);

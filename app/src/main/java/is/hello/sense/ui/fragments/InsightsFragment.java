@@ -145,7 +145,7 @@ public class InsightsFragment extends UndersideTabFragment
         if (!Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
             Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
 
-            InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
+            final InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
             dialogFragment.showAllowingStateLoss(getFragmentManager(), InsightInfoDialogFragment.TAG);
         }
     }
@@ -204,7 +204,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onAnswerQuestion() {
-        QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
+        final QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.showAllowingStateLoss(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
         insightsAdapter.clearCurrentQuestion();
     }
