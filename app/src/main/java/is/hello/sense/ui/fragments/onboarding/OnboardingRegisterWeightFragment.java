@@ -73,7 +73,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
 
         Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getWeight() != null) {
-            int weightInGrams = Math.round(account.getWeight());
+            int weightInGrams = account.getWeight();
             int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
             scale.setValue(pounds, true);
         }
@@ -103,7 +103,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
-                int weightInGrams = Math.round(account.getWeight());
+                int weightInGrams = account.getWeight();
                 int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
                 scale.animateToValue(pounds);
             }, 250);

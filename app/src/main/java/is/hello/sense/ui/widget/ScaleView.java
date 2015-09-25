@@ -227,15 +227,16 @@ public class ScaleView extends FrameLayout {
         syncAdapter();
     }
 
-    public void setValue(int value, boolean notifyListener) {
-        recyclerView.scrollToPosition(value - minValue);
+    public void setValue(int newValue, boolean notifyListener) {
+        final int newPosition = (newValue - minValue - 1);
+        recyclerView.scrollToPosition(newPosition);
         if (notifyListener) {
             recyclerView.post(this::notifyValueChangedListener);
         }
     }
 
     public void animateToValue(int newValue) {
-        LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
+        final LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
             final float timePerPx = ANIMATION_MS_PER_PX / getResources().getDisplayMetrics().densityDpi;
 
             @Override
@@ -262,7 +263,7 @@ public class ScaleView extends FrameLayout {
                 ScaleView.this.animating = false;
             }
         };
-        int newPosition = Math.max(minValue, (newValue - minValue - 1));
+        final int newPosition = (newValue - minValue - 1);
         smoothScroller.setTargetPosition(newPosition);
         layoutManager.startSmoothScroll(smoothScroller);
     }

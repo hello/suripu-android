@@ -2,15 +2,15 @@ package is.hello.sense.units;
 
 public class UnitOperations {
     public static long poundsToGrams(long pounds) {
-        return Math.round(pounds / 0.0022046);
+        return Math.round(pounds / 0.00220462);
     }
 
-    public static long poundsToKilograms(long kilograms) {
-        return Math.round(kilograms / 2.20462);
+    public static long poundsToKilograms(long pounds) {
+        return poundsToGrams(pounds) / 1000L;
     }
 
     public static long gramsToPounds(long grams) {
-        return Math.round(grams * 0.0022046);
+        return Math.round(grams * 0.00220462);
     }
 
     public static long gramsToKilograms(long grams) {
