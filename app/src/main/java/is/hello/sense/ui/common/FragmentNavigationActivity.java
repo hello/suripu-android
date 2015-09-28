@@ -42,10 +42,10 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
             if (getIntent().hasExtra(EXTRA_FRAGMENT_CLASS)) {
                 try {
-                    String className = getIntent().getStringExtra(EXTRA_FRAGMENT_CLASS);
+                    final String className = getIntent().getStringExtra(EXTRA_FRAGMENT_CLASS);
                     //noinspection unchecked
-                    Class<? extends Fragment> fragmentClass = (Class<? extends Fragment>) Class.forName(className);
-                    Fragment fragment = fragmentClass.newInstance();
+                    final Class<? extends Fragment> fragmentClass = (Class<? extends Fragment>) Class.forName(className);
+                    final Fragment fragment = fragmentClass.newInstance();
                     fragment.setArguments(getIntent().getParcelableExtra(EXTRA_FRAGMENT_ARGUMENTS));
                     pushFragment(fragment, getDefaultTitle(), false);
                 } catch (Exception e) {
@@ -53,7 +53,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
                 }
             }
         } else {
-            String title = savedInstanceState.getString("title");
+            final String title = savedInstanceState.getString("title");
             //noinspection ConstantConditions
             getActionBar().setTitle(title);
         }
@@ -61,7 +61,8 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home && getFragmentManager().getBackStackEntryCount() > 0) {
+        if (item.getItemId() == android.R.id.home &&
+                getFragmentManager().getBackStackEntryCount() > 0) {
             getFragmentManager().popBackStack();
             return true;
         }
@@ -86,7 +87,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
     @Override
     public void onBackPressed() {
-        Fragment topFragment = getTopFragment();
+        final Fragment topFragment = getTopFragment();
         if (topFragment instanceof BackInterceptingFragment) {
             if (((BackInterceptingFragment) topFragment).onInterceptBack(super::onBackPressed)) {
                 return;
@@ -99,8 +100,8 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     protected FragmentTransaction createTransaction(@NonNull Fragment fragment,
                                                     @Nullable String title,
                                                     boolean wantsBackStackEntry) {
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        String tag = fragment.getClass().getSimpleName();
+        final FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        final String tag = fragment.getClass().getSimpleName();
         if (getTopFragment() == null) {
             transaction.add(R.id.activity_fragment_navigation_container, fragment, tag);
         } else {
@@ -120,7 +121,8 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     public void pushFragment(@NonNull Fragment fragment,
                              @Nullable String title,
                              boolean wantsBackStackEntry) {
-        FragmentTransaction transaction = createTransaction(fragment, title, wantsBackStackEntry);
+        final FragmentTransaction transaction = createTransaction(fragment, title,
+                                                                  wantsBackStackEntry);
         transaction.commit();
     }
 
@@ -128,15 +130,16 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment,
                                               @Nullable String title,
                                               boolean wantsBackStackEntry) {
-        FragmentTransaction transaction = createTransaction(fragment, title, wantsBackStackEntry);
+        final FragmentTransaction transaction = createTransaction(fragment, title,
+                                                                  wantsBackStackEntry);
         transaction.commitAllowingStateLoss();
     }
 
     public void overlayFragmentAllowingStateLoss(@NonNull Fragment fragment,
                                                  @Nullable String title,
                                                  boolean wantsBackStackEntry) {
-        String tag = fragment.getClass().getSimpleName();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        final String tag = fragment.getClass().getSimpleName();
+        final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.activity_fragment_navigation_container, fragment, tag);
         if (wantsBackStackEntry) {
