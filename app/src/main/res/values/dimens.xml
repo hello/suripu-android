@@ -43,7 +43,6 @@
     <dimen name="text_size_smart_alarm_time_period">16sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
-    <dimen name="text_size_rotary_picker_item">21sp</dimen>
 
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
@@ -103,8 +102,10 @@
     <dimen name="interaction_slide_negative">-70dp</dimen>
     <dimen name="interaction_slide_positive">70dp</dimen>
 
-    <dimen name="view_rotary_picker_width">90sp</dimen>
-    <dimen name="view_rotary_picker_height">45sp</dimen>
+    <dimen name="view_rotary_picker_width">95sp</dimen>
+    <dimen name="view_rotary_picker_item_height">55sp</dimen>
+    <dimen name="view_rotary_picker_text_unfocused">20sp</dimen>
+    <dimen name="view_rotary_picker_text_focused">32sp</dimen>
 
     <dimen name="bottom_sheet_option_vertical_margin">18dp</dimen>
     <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>

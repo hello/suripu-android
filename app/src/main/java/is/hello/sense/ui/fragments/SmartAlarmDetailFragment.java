@@ -248,10 +248,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectNewTime(@NonNull View sender) {
-        @TimePickerDialogFragment.Config int config = use24Time ? TimePickerDialogFragment.FLAG_USE_24_TIME : 0;
-        TimePickerDialogFragment dialogFragment = TimePickerDialogFragment.newInstance(alarm.getTime(), config);
-        dialogFragment.setTargetFragment(this, TIME_REQUEST_CODE);
-        dialogFragment.showAllowingStateLoss(getFragmentManager(), TimePickerDialogFragment.TAG);
+        final TimePickerDialogFragment picker = TimePickerDialogFragment.newInstance(alarm.getTime(),
+                                                                                     use24Time);
+        picker.setTargetFragment(this, TIME_REQUEST_CODE);
+        picker.showAllowingStateLoss(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
 
     public void dayButtonClicked(@NonNull View sender) {

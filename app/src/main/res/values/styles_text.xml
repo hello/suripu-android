@@ -138,9 +138,15 @@
     </style>
 
     <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">
-        <item name="android:textSize">@dimen/text_size_rotary_picker_item</item>
+        <item name="android:textSize">@dimen/view_rotary_picker_text_unfocused</item>
+        <item name="android:textColor">@color/text_rotary_picker_focused</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="AppTheme.Text.RotaryPickerItem.Focused" parent="AppTheme.Text.Body">
+        <item name="android:textSize">@dimen/view_rotary_picker_text_focused</item>
+        <item name="android:textColor">@color/text_rotary_picker_focused</item>
+    </style>
 
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:fontFamily">sans-serif</item>

@@ -25,6 +25,7 @@
     <color name="border">#e5e5e5</color>
     <color name="border_underside_tabs">#d0d0d0</color>
     <color name="shadow_end">#18000000</color>
+    <color name="view_time_picker_shadow_end">#10000000</color>
 
     <color name="timeline_header_border">#C5E7FF</color>
     <color name="timeline_header_gradient_end">#ffF0F3F7</color>
@@ -41,6 +42,10 @@
     <color name="text_neutral">#999999</color>
     <color name="text_footer">#7e7e7e</color>
     <color name="text_link">#009CFF</color>
+
+    <color name="text_rotary_picker_focused">@color/light_accent</color>
+    <color name="text_rotary_picker_unfocused">#999999</color>
+    <color name="text_rotary_picker_almost_gone">#E6E6E6</color>
 
     <color name="edit_text_bottom_line_normal">#919191</color>
     <color name="edit_text_bottom_line_disabled">#cacaca</color>

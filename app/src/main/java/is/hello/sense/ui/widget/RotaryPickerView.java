@@ -3,31 +3,34 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 
 public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
     public static final int NUM_VISIBLE_ITEMS = 5;
-    public static final @StyleRes int DEFAULT_ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_RotaryPickerItem;
+    public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_RotaryPickerItem;
+    public static final @StyleRes int ITEM_TEXT_APPEARANCE_FOCUSED = R.style.AppTheme_Text_RotaryPickerItem_Focused;
 
     //region Internal
 
-    private final ItemAdapter adapter = new ItemAdapter();
+    private final ItemAdapter adapter;
     private final LinearLayoutManager layoutManager;
 
     private final int itemWidth;
@@ -45,10 +48,10 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     private boolean wrapsAround = false;
     private int wrapAroundValue;
 
-    private @StyleRes int itemTextAppearance = DEFAULT_ITEM_TEXT_APPEARANCE;
     private @Nullable Drawable itemBackground;
     private boolean wantsLeadingZeros = true;
     private int itemGravity = Gravity.CENTER;
+    private boolean magnifyItemsNearCenter = true;
 
     private @Nullable String[] valueStrings;
     private @Nullable OnSelectionListener onSelectionListener;
@@ -69,28 +72,25 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     public RotaryPickerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        Resources resources = getResources();
+        final Resources resources = getResources();
 
         this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         this.itemWidth = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_width);
-        this.itemHeight = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_height);
+        this.itemHeight = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_item_height);
         this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_small);
+
+        this.adapter = new ItemAdapter(resources);
 
         setHasFixedSize(true);
         setLayoutManager(layoutManager);
         setAdapter(adapter);
         addItemDecoration(new Decoration());
         addOnScrollListener(new ScrollListener());
-
-        setBackgroundColor(Color.WHITE);
         setOverScrollMode(OVER_SCROLL_NEVER);
-        setVerticalFadingEdgeEnabled(true);
-        setFadingEdgeLength(itemHeight * 2);
 
         if (attrs != null) {
-            TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.RotaryPickerView, defStyle, 0);
+            final TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.RotaryPickerView, defStyle, 0);
 
-            this.itemTextAppearance = styles.getResourceId(R.styleable.RotaryPickerView_senseTextAppearance, DEFAULT_ITEM_TEXT_APPEARANCE);
             this.itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
             this.wantsLeadingZeros = styles.getBoolean(R.styleable.RotaryPickerView_senseWantsLeadingZeros, true);
             this.itemGravity = styles.getInt(R.styleable.RotaryPickerView_android_gravity, Gravity.CENTER);
@@ -101,7 +101,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState) state;
+        final SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         setMinValue(savedState.minValue);
         setMaxValue(savedState.maxValue);
@@ -110,7 +110,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        SavedState savedState = new SavedState(super.onSaveInstanceState());
+        final SavedState savedState = new SavedState(super.onSaveInstanceState());
         savedState.minValue = minValue;
         savedState.maxValue = maxValue;
         savedState.value = value;
@@ -213,6 +213,11 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         this.wrapAroundValue = wrapAroundValue;
     }
 
+    public void setMagnifyItemsNearCenter(boolean magnifyItemsNearCenter) {
+        this.magnifyItemsNearCenter = magnifyItemsNearCenter;
+        adapter.notifyDataSetChanged();
+    }
+
     public void setValue(int newValue, boolean animate) {
         int constrainedValue = constrainValue(newValue);
         int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
@@ -260,11 +265,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         return value;
     }
 
-    public void setItemTextAppearance(@StyleRes int itemTextAppearance) {
-        this.itemTextAppearance = itemTextAppearance;
-        adapter.notifyDataSetChanged();
-    }
-
     public void setItemBackground(@Nullable Drawable itemBackground) {
         this.itemBackground = itemBackground;
         adapter.notifyDataSetChanged();
@@ -309,8 +309,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     //region Data
 
     private boolean isCenterView(View itemView) {
-        int containerMidY = (getMeasuredHeight() / 2);
-        View centerView = findChildViewUnder(0, containerMidY);
+        final int containerMidY = (getMeasuredHeight() / 2);
+        final View centerView = findChildViewUnder(0, containerMidY);
         return (centerView == itemView);
     }
 
@@ -320,8 +320,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             return;
         }
 
-        int position = getChildAdapterPosition(itemView);
-        int value = adapter.getItem(position);
+        final int position = getChildAdapterPosition(itemView);
+        final int value = adapter.getItem(position);
         setValue(value, true);
     }
 
@@ -330,17 +330,17 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         private int lastWrapAroundPosition = NO_POSITION;
 
         private View findCenterView() {
-            int containerMidY = (getMeasuredHeight() / 2);
+            final int containerMidY = (getMeasuredHeight() / 2);
             return findChildViewUnder(0, containerMidY);
         }
 
         private int getValueForView(@NonNull View view) {
-            int adapterPosition = getChildAdapterPosition(view);
+            final int adapterPosition = getChildAdapterPosition(view);
             return adapter.getItem(adapterPosition);
         }
 
         private void updateValueFromView(@NonNull View view) {
-            int newValue = getValueForView(view);
+            final int newValue = getValueForView(view);
             RotaryPickerView.this.value = newValue;
             if (onSelectionListener != null) {
                 onSelectionListener.onSelectionChanged(newValue);
@@ -349,16 +349,26 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            final int parentCenterY = recyclerView.getMeasuredHeight() / 2;
+            for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
+                final View view = recyclerView.getChildAt(i);
+                final RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+                final ItemAdapter.ItemViewHolder eventViewHolder = (ItemAdapter.ItemViewHolder) viewHolder;
+                final int childCenter = (view.getTop() + view.getBottom()) / 2;
+                final float centerDistance = Math.abs((childCenter - parentCenterY) / (float) parentCenterY);
+                eventViewHolder.setDistanceToCenter(centerDistance);
+            }
+
             if (wrapAroundEventsEnabled && wrapsAround && onSelectionListener != null) {
                 View centerView = findCenterView();
-                int adapterPosition = getChildAdapterPosition(centerView);
+                final int adapterPosition = getChildAdapterPosition(centerView);
                 if (adapterPosition == lastWrapAroundPosition) {
                     return;
                 }
 
-                int position = adapterPosition % adapter.getBoundedItemCount();
+                final int position = adapterPosition % adapter.getBoundedItemCount();
                 if (position == wrapAroundValue) {
-                    RolloverDirection direction = dy > 0f
+                    final RolloverDirection direction = dy > 0f
                             ? RolloverDirection.FORWARD
                             : RolloverDirection.BACKWARD;
                     onSelectionListener.onSelectionRolledOver(RotaryPickerView.this, direction);
@@ -376,10 +386,10 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                     onSelectionListener.onSelectionWillChange();
                 }
             } else if (previousState != SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
-                View centerView = findCenterView();
-                int containerMidY = getMeasuredHeight() / 2;
-                int centerViewMidY = (centerView.getTop() + centerView.getBottom()) / 2;
-                int distanceToNotch = centerViewMidY - containerMidY;
+                final View centerView = findCenterView();
+                final int containerMidY = getMeasuredHeight() / 2;
+                final int centerViewMidY = (centerView.getTop() + centerView.getBottom()) / 2;
+                final int distanceToNotch = centerViewMidY - containerMidY;
                 if (distanceToNotch == 0) {
                     RotaryPickerView.this.wrapAroundEventsEnabled = true;
                     updateValueFromView(centerView);
@@ -387,7 +397,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                     smoothScrollBy(0, distanceToNotch);
                 }
             } else if (previousState == SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
-                View centerView = findCenterView();
+                final View centerView = findCenterView();
                 updateValueFromView(centerView);
                 RotaryPickerView.this.wrapAroundEventsEnabled = true;
             }
@@ -399,7 +409,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     class Decoration extends RecyclerView.ItemDecoration {
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
-            int position = parent.getChildAdapterPosition(view);
+            final int position = parent.getChildAdapterPosition(view);
             if (position == 0) {
                 outRect.top += (parent.getMeasuredHeight() / 2) - (itemHeight / 2);
             }
@@ -410,6 +420,18 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
+        final @ColorInt int focusedColor, unfocusedColor, almostGoneColor;
+        final float focusedTextSize, unfocusedTextSize;
+
+        ItemAdapter(@NonNull Resources resources) {
+            this.focusedColor = resources.getColor(R.color.text_rotary_picker_focused);
+            this.unfocusedColor = resources.getColor(R.color.text_rotary_picker_unfocused);
+            this.almostGoneColor = resources.getColor(R.color.text_rotary_picker_almost_gone);
+
+            this.focusedTextSize = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_text_focused);
+            this.unfocusedTextSize = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_text_unfocused);
+        }
+
         public int getBoundedItemCount() {
             return (maxValue - minValue) + 1;
         }
@@ -430,8 +452,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         public int getItemPosition(int value) {
             int position = value - minValue;
             if (wrapsAround) {
-                int centerPosition = getItemCount() / 2;
-                int centerStartPosition = centerPosition - (centerPosition % getBoundedItemCount());
+                final int centerPosition = getItemCount() / 2;
+                final int centerStartPosition = centerPosition - (centerPosition % getBoundedItemCount());
                 position += centerStartPosition;
             }
             return position;
@@ -449,13 +471,14 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         @Override
         public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            Context context = getContext();
-            TextView itemView = new TextView(context);
-            itemView.setTextAppearance(context, itemTextAppearance);
+            final Context context = getContext();
+            final TextView itemView = new TextView(context);
+            itemView.setTextAppearance(context, ITEM_TEXT_APPEARANCE);
             itemView.setBackground(itemBackground);
             itemView.setGravity(itemGravity);
-            itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, itemHeight));
+            itemView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, itemHeight));
             itemView.setPadding(itemHorizontalPadding, 0, itemHorizontalPadding, 0);
+            itemView.setIncludeFontPadding(false);
             itemView.setOnClickListener(RotaryPickerView.this);
             return new ItemViewHolder(itemView);
         }
@@ -476,6 +499,27 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
             void bind(@NonNull String value) {
                 text.setText(value);
+                setDistanceToCenter(0.5f);
+            }
+
+            void setDistanceToCenter(float distanceToCenter) {
+                final int color;
+                final float textSize;
+                if (distanceToCenter <= 0.5f) {
+                    final float fraction = distanceToCenter * 2.0f;
+                    color = Anime.interpolateColors(fraction, focusedColor, unfocusedColor);
+                    if (magnifyItemsNearCenter) {
+                        textSize = Anime.interpolateFloats(fraction, focusedTextSize, unfocusedTextSize);
+                    } else {
+                        textSize = unfocusedTextSize;
+                    }
+                } else {
+                    final float fraction = (distanceToCenter - 0.5f) / 0.5f;
+                    color = Anime.interpolateColors(fraction, unfocusedColor, almostGoneColor);
+                    textSize = unfocusedTextSize;
+                }
+                text.setTextColor(color);
+                text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             }
         }
     }
