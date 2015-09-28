@@ -209,9 +209,9 @@ so you can sleep better.</string>
     <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
     <string name="onboarding_register_info_explanation">This information is used to provide you with more personalized sleep insights.</string>
     <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
-    <string name="dialog_title_smart_alarm_new_cancel">Cancel</string>
+    <string name="dialog_title_smart_alarm_new_cancel">Discard Alarm</string>
     <string name="dialog_message_smart_alarm_new_cancel">Are you sure you want to discard this alarm?</string>
-    <string name="dialog_title_smart_alarm_edit_cancel">Cancel</string>
+    <string name="dialog_title_smart_alarm_edit_cancel">Discard Changes</string>
     <string name="dialog_message_smart_alarm_edit_cancel">Are you sure you want to discard your changes to this alarm?</string>
     <string name="action_discard">Discard</string>
     <string name="action_keep_editing">Keep Editing</string>

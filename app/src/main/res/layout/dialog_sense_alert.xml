@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:senseCornerRadius="@dimen/raised_item_corner_radius">
+    app:senseCornerRadius="@dimen/card_large_corner_radius">
 
     <TextView
         android:id="@+id/dialog_sense_alert_title"
@@ -15,7 +15,7 @@
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_medium"
         android:drawablePadding="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Heading.Strong"
+        android:textAppearance="@style/AppTheme.Text.Heading.Alert"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:visibility="gone" />
 
@@ -31,7 +31,7 @@
         android:layout_marginBottom="@dimen/gap_medium"
         android:scrollbars="vertical"
         android:overScrollMode="ifContentScrolls"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textAppearance="@style/AppTheme.Text.Body.New"
         android:textColorLink="@color/text_link"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"
         android:visibility="gone"/>
@@ -39,6 +39,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
         android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
         android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
         android:layout_marginBottom="@dimen/gap_medium"

@@ -26,6 +26,12 @@
         <item name="android:textSize">@dimen/text_size_heading_large</item>
     </style>
 
+    <style name="AppTheme.Text.Heading.Alert">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_heading_alert</item>
+        <item name="android:textColor">@color/text_heading_major</item>
+    </style>
+
     <style name="AppTheme.Text.Subheading">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
@@ -90,8 +96,9 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Neutral">
-        <item name="android:textColor">@color/text_neutral</item>
+    <style name="AppTheme.Text.Body.New">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_body_new</item>
     </style>
 
     <style name="AppTheme.Text.Body.Thin">
@@ -109,7 +116,7 @@
     </style>
 
     <style name="AppTheme.Text.Body.MidSized.Neutral">
-        <item name="android:textColor">@color/text_neutral</item>
+        <item name="android:textColor">@color/text_body_new</item>
     </style>
 
     <style name="AppTheme.Text.Body.Small">

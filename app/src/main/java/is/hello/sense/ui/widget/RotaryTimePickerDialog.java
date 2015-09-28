@@ -9,7 +9,8 @@ import android.widget.Button;
 
 import org.joda.time.LocalTime;
 
-public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTimePickerView.OnSelectionListener {
+public class RotaryTimePickerDialog extends SenseAlertDialog
+        implements RotaryTimePickerView.OnSelectionListener {
     private final RotaryTimePickerView rotaryTimePickerView;
     private final OnTimeSetListener onTimeSetListener;
 
@@ -27,14 +28,14 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
         rotaryTimePickerView.setUse24Time(is24HourView);
         rotaryTimePickerView.setTime(hourOfDay, minute);
         rotaryTimePickerView.setOnSelectionListener(this);
-        setView(rotaryTimePickerView);
+        setView(rotaryTimePickerView, false);
 
         this.onTimeSetListener = onTimeSetListener;
 
         setNegativeButton(android.R.string.cancel, null);
         setButtonDeemphasized(BUTTON_NEGATIVE, true);
 
-        Button positiveButton = getButton(BUTTON_POSITIVE);
+        final Button positiveButton = getButton(BUTTON_POSITIVE);
         positiveButton.setVisibility(View.VISIBLE);
         positiveButton.setText(android.R.string.ok);
         positiveButton.setOnClickListener(ignored -> {
@@ -50,12 +51,12 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
 
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        LocalTime selectedTime = (LocalTime) savedInstanceState.getSerializable("selectedTime");
+        final LocalTime selectedTime = (LocalTime) savedInstanceState.getSerializable("selectedTime");
         if (selectedTime != null) {
             rotaryTimePickerView.setTime(selectedTime);
         }
 
-        Bundle parentSavedState = savedInstanceState.getParcelable("savedState");
+        final Bundle parentSavedState = savedInstanceState.getParcelable("savedState");
         if (parentSavedState != null) {
             super.onRestoreInstanceState(parentSavedState);
         }
@@ -63,7 +64,7 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
 
     @Override
     public Bundle onSaveInstanceState() {
-        Bundle savedState = new Bundle();
+        final Bundle savedState = new Bundle();
         savedState.putSerializable("selectedTime", rotaryTimePickerView.getTime());
         savedState.putParcelable("savedState", super.onSaveInstanceState());
         return savedState;
@@ -74,7 +75,8 @@ public class RotaryTimePickerDialog extends SenseAlertDialog implements RotaryTi
     }
 
     private void onTimeSet() {
-        onTimeSetListener.onTimeSet(rotaryTimePickerView.getHours(), rotaryTimePickerView.getMinutes());
+        onTimeSetListener.onTimeSet(rotaryTimePickerView.getHours(),
+                                    rotaryTimePickerView.getMinutes());
         dismiss();
     }
 

@@ -33,15 +33,16 @@
     <color name="timeline_segment_stripe">#40009cff</color>
 
     <color name="text_dark">#4D4D4D</color>
-    <color name="text_medium">#878787</color>
+    <color name="text_medium">#999999</color>
     <color name="text_light">#b2b2b2</color>
     <color name="text_dim">#77000000</color>
     <color name="text_dim_light">#b2ffffff</color>
     <color name="text_section_header">#878787</color>
     <color name="text_dim_placeholder">#e0e0e0</color>
-    <color name="text_neutral">#999999</color>
     <color name="text_footer">#7e7e7e</color>
     <color name="text_link">#009CFF</color>
+    <color name="text_body_new">#808080</color>
+    <color name="text_heading_major">#4D4D4D</color>
 
     <color name="text_rotary_picker_focused">@color/light_accent</color>
     <color name="text_rotary_picker_unfocused">#999999</color>

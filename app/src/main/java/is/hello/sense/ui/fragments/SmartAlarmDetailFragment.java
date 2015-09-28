@@ -270,7 +270,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectSound(@NonNull View sender) {
-        SmartAlarmSoundDialogFragment dialogFragment = SmartAlarmSoundDialogFragment.newInstance(alarm.getSound());
+        final SmartAlarmSoundDialogFragment dialogFragment =
+                SmartAlarmSoundDialogFragment.newInstance(alarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
         dialogFragment.showAllowingStateLoss(getFragmentManager(), SmartAlarmSoundDialogFragment.TAG);
     }
@@ -281,7 +282,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
 
     public void deleteAlarm(@NonNull View sender) {
-        SenseAlertDialog confirmDelete = new SenseAlertDialog(getActivity());
+        final SenseAlertDialog confirmDelete = new SenseAlertDialog(getActivity());
         confirmDelete.setMessage(R.string.dialog_message_confirm_delete_alarm);
         confirmDelete.setPositiveButton(R.string.action_delete, (dialog, which) -> {
             LoadingDialogFragment.show(getFragmentManager(),

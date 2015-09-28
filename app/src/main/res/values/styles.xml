@@ -141,7 +141,7 @@
 
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@drawable/raised_item_normal</item>
+        <item name="android:windowBackground">@drawable/background_card_large</item>
     </style>
 
     <style name="AppTheme.Dialog.List">
