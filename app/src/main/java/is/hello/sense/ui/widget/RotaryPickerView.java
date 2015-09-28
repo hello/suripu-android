@@ -349,18 +349,24 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            View centerView = null;
             final int parentCenterY = recyclerView.getMeasuredHeight() / 2;
             for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
                 final View view = recyclerView.getChildAt(i);
+                final float top = view.getTop() + view.getTranslationY();
+                final float bottom = view.getBottom() + view.getTranslationY();
+                if (parentCenterY >= top && parentCenterY <= bottom) {
+                    centerView = view;
+                }
+
                 final RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
                 final ItemAdapter.ItemViewHolder eventViewHolder = (ItemAdapter.ItemViewHolder) viewHolder;
-                final int childCenter = (view.getTop() + view.getBottom()) / 2;
+                final float childCenter = (top + bottom) / 2f;
                 final float centerDistance = Math.abs((childCenter - parentCenterY) / (float) parentCenterY);
                 eventViewHolder.setDistanceToCenter(centerDistance);
             }
 
             if (wrapAroundEventsEnabled && wrapsAround && onSelectionListener != null) {
-                View centerView = findCenterView();
                 final int adapterPosition = getChildAdapterPosition(centerView);
                 if (adapterPosition == lastWrapAroundPosition) {
                     return;
@@ -499,7 +505,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
             void bind(@NonNull String value) {
                 text.setText(value);
-                setDistanceToCenter(0.5f);
             }
 
             void setDistanceToCenter(float distanceToCenter) {
@@ -519,7 +524,18 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                     textSize = unfocusedTextSize;
                 }
                 text.setTextColor(color);
-                text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+
+                // Workaround time! TextView#setTextSize(float) unconditionally requests a
+                // layout pass whenever its called with a new value. The first time the
+                // RotaryPickerView is called, this method will be called from within the
+                // RecyclerView's internal layout pass. As such, calling #setTextSize(float)
+                // will trigger a warning and a second layout. This makes it explicit that
+                // we understand another layout is going to happen, and we don't want the warning.
+                if (text.isInLayout()) {
+                    RotaryPickerView.this.post(() -> text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize));
+                } else {
+                    text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+                }
             }
         }
     }
