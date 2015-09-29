@@ -93,6 +93,21 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        diagram.destroy();
+
+        this.activityIndicator = null;
+        this.activityStatus = null;
+
+        this.diagram = null;
+
+        this.skipButton = null;
+        this.retryButton = null;
+    }
+
     private void beginPairing() {
         this.isPairing = true;
 
