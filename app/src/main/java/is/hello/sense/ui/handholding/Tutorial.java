@@ -35,7 +35,11 @@ public enum Tutorial {
     ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
                       Gravity.BOTTOM,
                       R.id.view_timeline_toolbar_title,
-                      Interaction.TAP);
+                      Interaction.TAP),
+    SCRUB_SENSOR_HISTORY(R.string.tutorial_scrub_sensor_history,
+                         Gravity.TOP,
+                         R.id.fragment_sensor_history_graph,
+                         Interaction.SWIPE_LEFT);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;

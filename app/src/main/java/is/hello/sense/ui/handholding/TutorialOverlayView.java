@@ -1,6 +1,7 @@
 package is.hello.sense.ui.handholding;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -12,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,7 +63,8 @@ public class TutorialOverlayView extends RelativeLayout {
         this.tutorial = tutorial;
 
         final LayoutInflater inflater = LayoutInflater.from(activity);
-        final View descriptionContainer = inflater.inflate(R.layout.item_tutorial_description, this, false);
+        final ViewGroup descriptionContainer = (ViewGroup) inflater.inflate(R.layout.item_tutorial_description,
+                                                                            this, false);
         this.descriptionText = (TextView) descriptionContainer.findViewById(R.id.item_tutorial_description_text);
         descriptionText.setText(tutorial.descriptionRes);
         Views.setSafeOnClickListener(descriptionText, ignored -> interactionCompleted());
@@ -69,6 +72,18 @@ public class TutorialOverlayView extends RelativeLayout {
         final Drawable dismissIcon = descriptionText.getCompoundDrawablesRelative()[2].mutate();
         dismissIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         descriptionText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, dismissIcon, null);
+
+        final View shadow = new View(activity);
+        final int shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_size);
+        final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                               shadowHeight);
+        if (tutorial.descriptionGravity == Gravity.TOP) {
+            shadow.setBackgroundResource(R.drawable.shadow_bottom);
+            descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), layoutParams);
+        } else {
+            shadow.setBackgroundResource(R.drawable.shadow_top);
+            descriptionContainer.addView(shadow, 0, layoutParams);
+        }
 
         addView(descriptionContainer, tutorial.generateDescriptionLayoutParams());
     }
@@ -193,17 +208,23 @@ public class TutorialOverlayView extends RelativeLayout {
 
         this.interactionView = new InteractionView(getContext());
 
-        int interactionMidX = interactionView.getMinimumWidth() / 2;
-        int interactionMidY = interactionView.getMinimumHeight() / 2;
+        final int interactionMidX = interactionView.getMinimumWidth() / 2;
+        final int interactionMidY = interactionView.getMinimumHeight() / 2;
 
-        Rect anchorFrame = new Rect();
+        final Rect anchorFrame = new Rect();
         Views.getFrameInWindow(anchorView, anchorFrame);
 
-        LayoutParams layoutParams = new LayoutParams(interactionView.getMinimumWidth(), interactionView.getMinimumHeight());
+        final LayoutParams layoutParams = new LayoutParams(interactionView.getMinimumWidth(),
+                                                           interactionView.getMinimumHeight());
         layoutParams.addRule(ALIGN_PARENT_TOP);
         layoutParams.addRule(ALIGN_PARENT_LEFT);
         layoutParams.leftMargin = anchorFrame.centerX() - interactionMidX;
         layoutParams.topMargin = anchorFrame.centerY() - interactionMidY;
+
+        final ActionBar actionBar = activity.getActionBar();
+        if (actionBar != null) {
+            layoutParams.topMargin -= actionBar.getHeight();
+        }
 
         postDelayed(() -> {
             interactionView.setAlpha(0f);

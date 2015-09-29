@@ -33,6 +33,8 @@ import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UpdateTimer;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.BlockableScrollView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
@@ -69,6 +71,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     private TextView graphPlaceholder;
     private GraphView graphView;
     private final SensorDataSource sensorDataSource = new SensorDataSource();
+
+    private TutorialOverlayView tutorialOverlayView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,7 +160,14 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onResume() {
         super.onResume();
 
-        ((SensorHistoryActivity) getActivity()).showWelcomeDialog(false);
+        final SensorHistoryActivity activity = (SensorHistoryActivity) getActivity();
+        final boolean welcomeDialogShown = activity.showWelcomeDialog(false);
+        if (!welcomeDialogShown && tutorialOverlayView == null &&
+                Tutorial.SCRUB_SENSOR_HISTORY.shouldShow(getActivity())) {
+            this.tutorialOverlayView = new TutorialOverlayView(activity, Tutorial.SCRUB_SENSOR_HISTORY);
+            tutorialOverlayView.show(R.id.activity_sensor_history_root);
+        }
+
         updateTimer.schedule();
     }
 
@@ -334,6 +345,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
             scrollView.setScrollingEnabled(false);
             this.savedScrollY = scrollView.getScrollY();
+
+            Tutorial.SCRUB_SENSOR_HISTORY.markShown(getActivity());
         }
 
         @Override

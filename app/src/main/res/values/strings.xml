@@ -137,6 +137,8 @@ so you can sleep better.</string>
     <string name="action_factory_reset">Factory Reset</string>
     <string name="dialog_title_factory_reset">Factory Reset</string>
     <string name="dialog_message_factory_reset">This will disconnect your account from this Sense, as well as any Sleep Pills you have paired. You will need to pair with another Sense to continue using the application. You should only perform a factory reset if instructed to do so by Support. This operation cannot be undone.</string>
+    <string name="dialog_title_put_into_pairing_mode">Put Into Pairing Mode</string>
+    <string name="dialog_message_put_into_pairing_mode">Are you sure you want to put Sense into Pairing Mode? You should use this option only if you have another mobile device you wish to pair with Sense. If you‘re having trouble, visit <a href="#user-guide">https://support.hello.is/</a> for support.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="action_retry">Retry</string>
@@ -407,6 +409,7 @@ so you can sleep better.</string>
 
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
     <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
+    <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
