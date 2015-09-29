@@ -87,8 +87,6 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal" />
-
         <LinearLayout
             android:id="@+id/fragment_smart_alarm_detail_enabled_container"
             android:layout_width="match_parent"
@@ -104,6 +102,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/gap_small"
+                android:drawableStart="@drawable/icon_alarm_disabled"
+                android:drawablePadding="@dimen/gap_outer"
                 android:text="@string/title_enabled"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
 
@@ -129,7 +129,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/title_smart_alarm"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                android:textAppearance="@style/AppTheme.Text.Body"
+                android:drawableStart="@drawable/icon_alarm_smart"
+                android:drawablePadding="@dimen/gap_outer" />
 
             <ImageButton
                 android:id="@+id/fragment_smart_alarm_detail_smart_help"
@@ -169,13 +171,17 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/gap_small"
                 android:text="@string/title_alarm_tone"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                android:textAppearance="@style/AppTheme.Text.Body"
+                android:drawableStart="@drawable/icon_alarm_tone"
+                android:drawablePadding="@dimen/gap_outer"/>
 
-            <Button
+            <TextView
                 android:id="@+id/fragment_smart_alarm_detail_sound"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/AppTheme.Button.Raised"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/light_accent"
+                style="@style/AppTheme.Text.Body.Medium"
                 android:text="@string/no_sound_placeholder"/>
 
         </LinearLayout>
@@ -198,15 +204,10 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="@dimen/gap_small"
                 android:text="@string/label_delete_alarm"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                android:textAppearance="@style/AppTheme.Text.Body"
+                android:drawableStart="@drawable/icon_alarm_delete"
+                android:drawablePadding="@dimen/gap_outer"/>
 
-            <Button
-                android:id="@+id/fragment_smart_alarm_detail_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/AppTheme.Button.Raised"
-                android:textColor="@color/destructive_accent"
-                android:text="@string/action_delete"/>
 
         </LinearLayout>
 

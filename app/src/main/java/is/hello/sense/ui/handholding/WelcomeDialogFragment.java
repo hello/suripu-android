@@ -139,7 +139,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         dialog.setCancelable(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int tintedStatusBar = getResources().getColor(R.color.status_bar_dimmed);
+            int tintedStatusBar = getResources().getColor(R.color.status_bar_grey_dimmed);
             dialog.getWindow().setStatusBarColor(tintedStatusBar);
         }
 

@@ -5,6 +5,11 @@
         <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/holo_check_selector</item>
     </style>
+    <style name="Platform.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTitleSize">0dp</item>
+    </style>
     <style name="Platform.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid" />
     <style name="Platform.ListPopupWindow" parent="android:style/Widget.Holo.Light.ListPopupWindow" />
     <style name="Platform.ListDropDown" parent="android:Widget.Holo.Light.ListView.DropDown" />

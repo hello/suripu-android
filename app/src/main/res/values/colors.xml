@@ -7,11 +7,11 @@
     <color name="light_accent">#009CFF</color>
     <color name="light_accent_dimmed">#6ec2fe</color>
     <color name="light_accent_extra_dimmed">#ebf9ff</color>
-    <color name="light_accent_darkened">#0c67c0</color>
+    <color name="light_accent_darkened">#007DCD</color>
     <color name="destructive_accent">#ff0000</color>
-    <color name="status_bar">#b5b5b5</color>
+    <color name="status_bar_grey">#b5b5b5</color>
     <!-- For dialogs that don't use dimming -->
-    <color name="status_bar_dimmed">#383838</color>
+    <color name="status_bar_grey_dimmed">#383838</color>
 
     <color name="background">#F2F2F2</color>
     <color name="background_light">@color/white</color>

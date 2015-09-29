@@ -11,8 +11,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -37,6 +37,7 @@ import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -70,7 +71,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private boolean use24Time = false;
 
     private TextView time;
-    private Button soundButton;
+    private TextView soundName;
 
 
     @Override
@@ -135,27 +136,24 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         View smartToggleContainer = view.findViewById(R.id.fragment_smart_alarm_detail_smart_container);
         smartToggleContainer.setOnClickListener(ignored -> smartToggle.toggle());
 
-        View smartHelp = view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
+        ImageButton smartHelp = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
+        Drawables.setTintColor(smartHelp.getDrawable(), getResources().getColor(R.color.light_accent));
         Views.setSafeOnClickListener(smartHelp, this::showSmartAlarmIntro);
 
 
-        this.soundButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
+        this.soundName = (TextView) view.findViewById(R.id.fragment_smart_alarm_detail_sound);
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
-            soundButton.setText(alarm.getSound().name);
+            soundName.setText(alarm.getSound().name);
         } else {
-            soundButton.setText(R.string.no_sound_placeholder);
+            soundName.setText(R.string.no_sound_placeholder);
         }
-        Views.setSafeOnClickListener(soundButton, this::selectSound);
 
         View soundButtonContainer = view.findViewById(R.id.fragment_smart_alarm_detail_sound_container);
-        soundButtonContainer.setOnClickListener(ignored -> soundButton.performClick());
+        Views.setSafeOnClickListener(soundButtonContainer, this::selectSound);
 
-
-        Button deleteButton = (Button) view.findViewById(R.id.fragment_smart_alarm_detail_delete);
-        Views.setSafeOnClickListener(deleteButton, this::deleteAlarm);
 
         View deleteButtonContainer = view.findViewById(R.id.fragment_smart_alarm_detail_delete_container);
-        deleteButtonContainer.setOnClickListener(ignored -> deleteButton.performClick());
+        Views.setSafeOnClickListener(deleteButtonContainer, this::deleteAlarm);
 
 
         if (this.index == SmartAlarmDetailActivity.INDEX_NEW) {
@@ -181,7 +179,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                              if (alarm.getSound() == null && !sounds.isEmpty()) {
                                  Alarm.Sound sound = sounds.get(0);
                                  alarm.setSound(sound);
-                                 soundButton.setText(sound.name);
+                                 soundName.setText(sound.name);
 
                                  if (getDetailActivity().skipUI()) {
                                      saveAlarm();
@@ -217,7 +215,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Alarm.Sound selectedSound = (Alarm.Sound) data.getSerializableExtra(SmartAlarmSoundDialogFragment.ARG_SELECTED_SOUND);
             alarm.setSound(selectedSound);
-            soundButton.setText(selectedSound.name);
+            soundName.setText(selectedSound.name);
 
             markDirty();
         }
