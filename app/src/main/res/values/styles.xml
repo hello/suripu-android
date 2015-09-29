@@ -275,12 +275,10 @@
 
     <style name="AppTheme.Button.SmartAlarmDay">
         <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Button.SmartAlarmDay</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:textAppearance">@style/AppTheme.Text</item>
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_large</item>
+        <item name="android:paddingTop">@dimen/gap_outer</item>
+        <item name="android:paddingBottom">@dimen/gap_outer</item>
     </style>
 
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">

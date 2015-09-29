@@ -15,6 +15,10 @@
     <string name="format_time_12_hr">h:mm a</string>
     <string name="format_time_24_hr">HH:mm</string>
 
+    <string name="format_alarm_time_24_hr">HH:mm</string>
+    <string name="format_alarm_time_12_hr">h:mm</string>
+    <string name="format_alarm_time_12_hr_period_padded">" a"</string>
+
     <string name="format_day_and_time_12_hr">EEEE – h:mm a</string>
     <string name="format_day_and_time_24_hr">EEEE – HH:mm</string>
 

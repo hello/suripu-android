@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.TypefaceSpan;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -217,12 +218,26 @@ import is.hello.sense.ui.widget.util.Styles;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable LocalTime time, boolean use24Time) {
+    @NotLocalizable(NotLocalizable.BecauseOf.API_LIMITATION)
+    public @NonNull CharSequence formatAsAlarmTime(@Nullable LocalTime time, boolean use24Time) {
         if (time != null) {
-            if (use24Time)
-                return time.toString(context.getString(R.string.format_time_24_hr));
-            else
-                return time.toString(context.getString(R.string.format_time_12_hr));
+            if (use24Time) {
+                return time.toString(context.getString(R.string.format_alarm_time_24_hr));
+            } else {
+                final String period = time.toString(context.getString(R.string.format_alarm_time_12_hr_period_padded));
+                final SpannableStringBuilder rendered = new SpannableStringBuilder(period);
+                rendered.setSpan(new RelativeSizeSpan(0.4f),
+                                 0, rendered.length(),
+                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                rendered.setSpan(new TypefaceSpan("sans-serif-light"),
+                                 0, rendered.length(),
+                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                final String timeString = time.toString(context.getString(R.string.format_alarm_time_12_hr));
+                rendered.insert(0, timeString);
+
+                return rendered;
+            }
         }
         return context.getString(R.string.format_date_placeholder);
     }

@@ -4,6 +4,7 @@
     <dimen name="gap_outer">24dp</dimen>
     <dimen name="gap_outer_dialog_buttons">14dp</dimen>
     <dimen name="gap_outer_footer">40dp</dimen>
+    <dimen name="gap_action_bar_start">63dp</dimen>
     <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_xsmall">6dp</dimen>
     <dimen name="gap_small">10dp</dimen>
@@ -41,7 +42,7 @@
     <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">68sp</dimen>
     <dimen name="text_size_smart_alarm_time">36sp</dimen>
-    <dimen name="text_size_smart_alarm_time_period">16sp</dimen>
+    <dimen name="text_size_smart_alarm_time_big">72sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
 

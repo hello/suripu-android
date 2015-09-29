@@ -11,21 +11,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/fragment_smart_alarm_detail_time"
+        <FrameLayout
+            android:id="@+id/fragment_smart_alarm_detail_time_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="@dimen/gap_large"
-            android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time.Big"
-            android:background="?android:attr/selectableItemBackground"/>
+            android:background="@color/light_accent"
+            android:paddingStart="@dimen/gap_action_bar_start"
+            android:paddingEnd="@dimen/gap_outer"
+            android:paddingBottom="@dimen/gap_outer">
+
+            <TextView
+                android:id="@+id/fragment_smart_alarm_detail_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_xsmall"
+                android:layout_marginBottom="@dimen/gap_medium"
+                android:background="@drawable/background_alarm_time"
+                style="@style/AppTheme.Text.SmartAlarm.Time.Big" />
+
+        </FrameLayout>
 
         <LinearLayout
-            android:id="@+id/fragment_smart_alarm_detail_repeat"
+            android:id="@+id/fragment_smart_alarm_detail_repeat_days"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/gap_small"
-            android:paddingEnd="@dimen/gap_small"
+            android:paddingStart="@dimen/gap_medium"
+            android:paddingEnd="@dimen/gap_medium"
             android:orientation="horizontal">
 
             <ToggleButton
@@ -88,7 +99,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/fragment_smart_alarm_detail_enabled_container"
+            android:id="@+id/fragment_smart_alarm_detail_enabled"
             android:layout_width="match_parent"
             android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
@@ -104,11 +115,12 @@
                 android:layout_marginEnd="@dimen/gap_small"
                 android:drawableStart="@drawable/icon_alarm_disabled"
                 android:drawablePadding="@dimen/gap_outer"
+                android:gravity="start|center_vertical"
                 android:text="@string/title_enabled"
                 android:textAppearance="@style/AppTheme.Text.Body"/>
 
             <include
-                android:id="@+id/fragment_smart_alarm_detail_enabled"
+                android:id="@+id/fragment_smart_alarm_detail_enabled_toggle"
                 layout="@layout/widget_switch" />
 
         </LinearLayout>
@@ -116,7 +128,7 @@
         <View style="@style/Divider.Horizontal" />
 
         <LinearLayout
-            android:id="@+id/fragment_smart_alarm_detail_smart_container"
+            android:id="@+id/fragment_smart_alarm_detail_smart"
             android:layout_width="match_parent"
             android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
@@ -130,6 +142,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_smart_alarm"
                 android:textAppearance="@style/AppTheme.Text.Body"
+                android:gravity="start|center_vertical"
                 android:drawableStart="@drawable/icon_alarm_smart"
                 android:drawablePadding="@dimen/gap_outer" />
 
@@ -148,7 +161,7 @@
                 android:layout_weight="1"/>
 
             <include
-                android:id="@+id/fragment_smart_alarm_detail_smart"
+                android:id="@+id/fragment_smart_alarm_detail_smart_switch"
                 layout="@layout/widget_switch" />
 
         </LinearLayout>
@@ -156,7 +169,7 @@
         <View style="@style/Divider.Horizontal" />
 
         <LinearLayout
-            android:id="@+id/fragment_smart_alarm_detail_sound_container"
+            android:id="@+id/fragment_smart_alarm_detail_tone"
             android:layout_width="match_parent"
             android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
@@ -172,11 +185,12 @@
                 android:layout_marginEnd="@dimen/gap_small"
                 android:text="@string/title_alarm_tone"
                 android:textAppearance="@style/AppTheme.Text.Body"
+                android:gravity="start|center_vertical"
                 android:drawableStart="@drawable/icon_alarm_tone"
                 android:drawablePadding="@dimen/gap_outer"/>
 
             <TextView
-                android:id="@+id/fragment_smart_alarm_detail_sound"
+                android:id="@+id/fragment_smart_alarm_detail_tone_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
@@ -186,10 +200,11 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal" />
+        <View android:id="@+id/fragment_smart_alarm_detail_delete_divider"
+              style="@style/Divider.Horizontal" />
 
         <LinearLayout
-            android:id="@+id/fragment_smart_alarm_detail_delete_container"
+            android:id="@+id/fragment_smart_alarm_detail_delete"
             android:layout_width="match_parent"
             android:layout_height="@dimen/smart_alarm_details_row_height"
             android:gravity="center_vertical"
@@ -205,6 +220,7 @@
                 android:layout_marginEnd="@dimen/gap_small"
                 android:text="@string/label_delete_alarm"
                 android:textAppearance="@style/AppTheme.Text.Body"
+                android:gravity="start|center_vertical"
                 android:drawableStart="@drawable/icon_alarm_delete"
                 android:drawablePadding="@dimen/gap_outer"/>
 
