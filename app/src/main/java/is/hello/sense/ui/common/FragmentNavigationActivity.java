@@ -1,5 +1,6 @@
 package is.hello.sense.ui.common;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -74,8 +75,10 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //noinspection ConstantConditions
-        outState.putString("title", getActionBar().getTitle().toString());
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null && actionBar.getTitle() != null) {
+            outState.putString("title", actionBar.getTitle().toString());
+        }
     }
 
     @Override
