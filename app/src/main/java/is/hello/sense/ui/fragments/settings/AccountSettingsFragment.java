@@ -213,10 +213,10 @@ public class AccountSettingsFragment extends InjectionFragment
         birthdayItem.setDetail(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
         genderItem.setDetail(getString(account.getGender().nameRes));
 
-        CharSequence weight = unitFormatter.formatWeight(account.getWeight());
+        final CharSequence weight = unitFormatter.formatWeight(account.getWeight());
         weightItem.setDetail(weight.toString());
 
-        CharSequence height = unitFormatter.formatHeight(account.getHeight());
+        final CharSequence height = unitFormatter.formatHeight(account.getHeight());
         heightItem.setDetail(height.toString());
 
         this.currentAccount = account;
@@ -226,7 +226,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void accountUnavailable(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
@@ -242,19 +242,20 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Basic Info
 
     public void changeName(@NonNull StaticItemAdapter.TextItem item) {
-        ChangeNameFragment fragment = new ChangeNameFragment();
+        final ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
     public void changeEmail(@NonNull StaticItemAdapter.TextItem item) {
-        ChangeEmailFragment fragment = new ChangeEmailFragment();
+        final ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
         getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
     public void changePassword(@NonNull StaticItemAdapter.TextItem item) {
-        getNavigationContainer().pushFragmentAllowingStateLoss(ChangePasswordFragment.newInstance(currentAccount.getEmail()), getString(R.string.title_change_password), true);
+        final ChangePasswordFragment fragment = ChangePasswordFragment.newInstance(currentAccount.getEmail());
+        getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_password), true);
     }
 
     //endregion
@@ -263,28 +264,28 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Demographics
 
     public void changeBirthDate(@NonNull StaticItemAdapter.TextItem item) {
-        OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
+        final OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
     public void changeGender(@NonNull StaticItemAdapter.TextItem item) {
-        OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
+        final OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
     public void changeHeight(@NonNull StaticItemAdapter.TextItem item) {
-        OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
+        final OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
     public void changeWeight(@NonNull StaticItemAdapter.TextItem item) {
-        OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
+        final OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_weight), true);
@@ -327,7 +328,7 @@ public class AccountSettingsFragment extends InjectionFragment
     public void signOut(@NonNull StaticItemAdapter.TextItem item) {
         Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
 
-        SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());
+        final SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());
         signOutDialog.setTitle(R.string.dialog_title_log_out);
         signOutDialog.setMessage(R.string.dialog_message_log_out);
         signOutDialog.setNegativeButton(android.R.string.cancel, null);
@@ -359,14 +360,14 @@ public class AccountSettingsFragment extends InjectionFragment
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
-                    ignored -> {
-                        LoadingDialogFragment.close(getFragmentManager());
-                        updatedBy.getFragmentManager().popBackStackImmediate();
-                    },
-                    e -> {
-                        LoadingDialogFragment.close(getFragmentManager());
-                        ErrorDialogFragment.presentError(getFragmentManager(), e);
-                    });
+                             ignored -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 updatedBy.getFragmentManager().popBackStackImmediate();
+                             },
+                             e -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             });
         });
     }
 

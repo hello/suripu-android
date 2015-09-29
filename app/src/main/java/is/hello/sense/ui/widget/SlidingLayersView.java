@@ -84,7 +84,7 @@ public class SlidingLayersView extends FrameLayout {
 
         this.shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_size);
         View topShadowView = new View(getContext());
-        topShadowView.setBackgroundResource(R.drawable.gradient_top_layer_shadow);
+        topShadowView.setBackgroundResource(R.drawable.shadow_top);
         topViewContainer.addView(topShadowView, new LayoutParams(LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP));
     }
 
