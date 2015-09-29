@@ -10,8 +10,6 @@
     <color name="light_accent_darkened">#007DCD</color>
     <color name="destructive_accent">#ff0000</color>
     <color name="status_bar_grey">#b5b5b5</color>
-    <!-- For dialogs that don't use dimming -->
-    <color name="status_bar_grey_dimmed">#383838</color>
 
     <color name="background">#F2F2F2</color>
     <color name="background_light">@color/white</color>
