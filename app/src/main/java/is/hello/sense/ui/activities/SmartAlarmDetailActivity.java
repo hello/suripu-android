@@ -9,11 +9,9 @@ import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +22,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
+import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmDetailActivity extends SenseActivity {
     //region Constants
@@ -173,7 +171,7 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         if (!Lists.isEmpty(calendarDays)) {
             Set<Integer> days = alarm.getDaysOfWeek();
             for (Integer calendarDay : calendarDays) {
-                days.add(calendarDayToDateTimeDay(calendarDay));
+                days.add(DateFormatter.calendarDayToJodaTimeDay(calendarDay));
             }
         }
 
@@ -181,43 +179,6 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         this.skipUI = (intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false) &&
                        intent.hasExtra(AlarmClock.EXTRA_HOUR) &&
                        intent.hasExtra(AlarmClock.EXTRA_MINUTES));
-    }
-
-    private int calendarDayToDateTimeDay(int calendarDay) {
-        switch (calendarDay) {
-            case Calendar.SUNDAY: {
-                return DateTimeConstants.SUNDAY;
-            }
-
-            case Calendar.MONDAY: {
-                return DateTimeConstants.MONDAY;
-            }
-
-            case Calendar.TUESDAY: {
-                return DateTimeConstants.TUESDAY;
-            }
-
-            case Calendar.WEDNESDAY: {
-                return DateTimeConstants.WEDNESDAY;
-            }
-
-            case Calendar.THURSDAY: {
-                return DateTimeConstants.THURSDAY;
-            }
-
-            case Calendar.FRIDAY: {
-                return DateTimeConstants.FRIDAY;
-            }
-
-            case Calendar.SATURDAY: {
-                return DateTimeConstants.SATURDAY;
-            }
-
-            default: {
-                Logger.warn(getClass().getSimpleName(), "Unknown calendar day " + calendarDay);
-                return DateTimeConstants.MONDAY;
-            }
-        }
     }
 
     //endregion

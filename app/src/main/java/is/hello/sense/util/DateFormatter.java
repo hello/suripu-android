@@ -1,6 +1,7 @@
 package is.hello.sense.util;
 
 import android.content.Context;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -12,6 +13,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.TypefaceSpan;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.Hours;
@@ -24,6 +26,13 @@ import org.joda.time.Seconds;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -330,4 +339,105 @@ import is.hello.sense.ui.widget.util.Styles;
     }
 
     //endregion
+
+
+    //region Calendar Support
+
+    public static @JodaWeekDay int calendarDayToJodaTimeDay(int calendarDay) {
+        switch (calendarDay) {
+            case Calendar.SUNDAY: {
+                return DateTimeConstants.SUNDAY;
+            }
+            case Calendar.MONDAY: {
+                return DateTimeConstants.MONDAY;
+            }
+            case Calendar.TUESDAY: {
+                return DateTimeConstants.TUESDAY;
+            }
+            case Calendar.WEDNESDAY: {
+                return DateTimeConstants.WEDNESDAY;
+            }
+            case Calendar.THURSDAY: {
+                return DateTimeConstants.THURSDAY;
+            }
+            case Calendar.FRIDAY: {
+                return DateTimeConstants.FRIDAY;
+            }
+            case Calendar.SATURDAY: {
+                return DateTimeConstants.SATURDAY;
+            }
+            default: {
+                Logger.warn(DateFormatter.class.getSimpleName(),
+                            "Unknown calendar day '" + calendarDay + "', defaulting to MONDAY.");
+                return DateTimeConstants.MONDAY;
+            }
+        }
+    }
+
+    public static int jodaTimeDayToCalendarDay(@JodaWeekDay int dateTimeDay) {
+        switch (dateTimeDay) {
+            case DateTimeConstants.SUNDAY: {
+                return Calendar.SUNDAY;
+            }
+            case DateTimeConstants.MONDAY: {
+                return Calendar.MONDAY;
+            }
+            case DateTimeConstants.TUESDAY: {
+                return Calendar.TUESDAY;
+            }
+            case DateTimeConstants.WEDNESDAY: {
+                return Calendar.WEDNESDAY;
+            }
+            case DateTimeConstants.THURSDAY: {
+                return Calendar.THURSDAY;
+            }
+            case DateTimeConstants.FRIDAY: {
+                return Calendar.FRIDAY;
+            }
+            case DateTimeConstants.SATURDAY: {
+                return Calendar.SATURDAY;
+            }
+            default: {
+                Logger.warn(DateFormatter.class.getSimpleName(),
+                            "Unknown calendar day '" + dateTimeDay + "', defaulting to MONDAY.");
+                return Calendar.MONDAY;
+            }
+        }
+    }
+
+    public static @JodaWeekDay int nextJodaTimeDay(@JodaWeekDay final int jodaTimeDay) {
+        final @JodaWeekDay int nextDay = jodaTimeDay + 1;
+        if (nextDay > DateTimeConstants.SUNDAY) {
+            return DateTimeConstants.MONDAY;
+        } else {
+            return nextDay;
+        }
+    }
+
+    public static List<Integer> getDaysOfWeek(@JodaWeekDay final int startDay) {
+        final List<Integer> days = new ArrayList<>(7);
+        @JodaWeekDay int day = startDay;
+        do {
+            days.add(day);
+            day = nextJodaTimeDay(day);
+        } while (day != startDay);
+        return days;
+    }
+
+    //endregion
+
+
+    @IntDef({
+            DateTimeConstants.SUNDAY,
+            DateTimeConstants.MONDAY,
+            DateTimeConstants.TUESDAY,
+            DateTimeConstants.WEDNESDAY,
+            DateTimeConstants.THURSDAY,
+            DateTimeConstants.FRIDAY,
+            DateTimeConstants.SATURDAY,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.PARAMETER, ElementType.METHOD,
+            ElementType.FIELD, ElementType.LOCAL_VARIABLE})
+    public @interface JodaWeekDay {}
 }

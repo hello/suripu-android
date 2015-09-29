@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalTime;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,6 +31,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.AlarmRepeatDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -41,24 +42,13 @@ import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.SafeOnClickListener;
 import rx.Observable;
 
 
 public class SmartAlarmDetailFragment extends InjectionFragment {
-
     private static final int TIME_REQUEST_CODE = 0x747;
-    private static final int[] DAY_TAGS = {
-            DateTimeConstants.SUNDAY,
-            DateTimeConstants.MONDAY,
-            DateTimeConstants.TUESDAY,
-            DateTimeConstants.WEDNESDAY,
-            DateTimeConstants.THURSDAY,
-            DateTimeConstants.FRIDAY,
-            DateTimeConstants.SATURDAY,
-    };
-
     private static final int SOUND_REQUEST_CODE = 0x50;
+    private static final int REPEAT_REQUEST_CODE = 0x59;
 
     @Inject DateFormatter dateFormatter;
     @Inject PreferencesPresenter preferences;
@@ -72,6 +62,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     private TextView time;
     private TextView toneName;
+    private TextView repeatDays;
 
 
     @Override
@@ -106,17 +97,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         final View timeContainer = view.findViewById(R.id.fragment_smart_alarm_detail_time_container);
         Views.setSafeOnClickListener(timeContainer, this::selectNewTime);
 
-
-        final ViewGroup repeatDays = (ViewGroup) view.findViewById(R.id.fragment_smart_alarm_detail_repeat_days);
-        final View.OnClickListener dayClickListener = new SafeOnClickListener(this::dayButtonClicked);
-        for (int i = 0, count = repeatDays.getChildCount(); i < count; i++) {
-            final int day = DAY_TAGS[i];
-            final ToggleButton dayButton = (ToggleButton) repeatDays.getChildAt(i);
-            dayButton.setOnClickListener(dayClickListener);
-            dayButton.setChecked(alarm.getDaysOfWeek().contains(day));
-            dayButton.setTag(day);
-        }
-
         final CompoundButton enabledToggle = (CompoundButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled_toggle);
         enabledToggle.setChecked(alarm.isEnabled());
         enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> {
@@ -144,16 +124,22 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         Views.setSafeOnClickListener(smartHelp, this::showSmartAlarmIntro);
 
 
-        this.toneName = (TextView) view.findViewById(R.id.fragment_smart_alarm_detail_tone_name);
+        final View soundRow = view.findViewById(R.id.fragment_smart_alarm_detail_tone);
+        Views.setSafeOnClickListener(soundRow, this::selectSound);
+
+        this.toneName = (TextView) soundRow.findViewById(R.id.fragment_smart_alarm_detail_tone_name);
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
             toneName.setText(alarm.getSound().name);
         } else {
             toneName.setText(R.string.no_sound_placeholder);
         }
 
-        final View soundRow = view.findViewById(R.id.fragment_smart_alarm_detail_tone);
-        Views.setSafeOnClickListener(soundRow, this::selectSound);
 
+        final View repeatRow = view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
+        Views.setSafeOnClickListener(repeatRow, this::selectRepeatDays);
+
+        this.repeatDays = (TextView) repeatRow.findViewById(R.id.fragment_smart_alarm_detail_repeat_days);
+        repeatDays.setText(alarm.getRepeatSummary(getActivity()));
 
         final View deleteRow = view.findViewById(R.id.fragment_smart_alarm_detail_delete);
         Views.setSafeOnClickListener(deleteRow, this::deleteAlarm);
@@ -199,7 +185,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         if (getDetailActivity().skipUI()) {
             LoadingDialogFragment.show(getFragmentManager(),
-                    null, LoadingDialogFragment.DEFAULTS);
+                                       null, LoadingDialogFragment.DEFAULTS);
         } else {
             WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
         }
@@ -220,6 +206,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             final Alarm.Sound selectedSound = (Alarm.Sound) data.getSerializableExtra(SmartAlarmSoundDialogFragment.ARG_SELECTED_SOUND);
             alarm.setSound(selectedSound);
             toneName.setText(selectedSound.name);
+
+            markDirty();
+        } else if (requestCode == REPEAT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            final List<Integer> selectedDays = data.getIntegerArrayListExtra(AlarmRepeatDialogFragment.RESULT_DAYS);
+            alarm.getDaysOfWeek().clear();
+            alarm.getDaysOfWeek().addAll(selectedDays);
+            repeatDays.setText(alarm.getRepeatSummary(getActivity()));
 
             markDirty();
         }
@@ -256,27 +249,20 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         picker.showAllowingStateLoss(getFragmentManager(), TimePickerDialogFragment.TAG);
     }
 
-    public void dayButtonClicked(@NonNull View sender) {
-        final ToggleButton dayButton = (ToggleButton) sender;
-        final int day = (Integer) dayButton.getTag();
-
-        if (dayButton.isChecked()) {
-            alarm.getDaysOfWeek().add(day);
-        } else {
-            alarm.getDaysOfWeek().remove(day);
-        }
-
-        alarm.setRepeated(!alarm.getDaysOfWeek().isEmpty());
-
-        markDirty();
-    }
-
     public void selectSound(@NonNull View sender) {
         final SmartAlarmSoundDialogFragment dialogFragment =
                 SmartAlarmSoundDialogFragment.newInstance(alarm.getSound());
         dialogFragment.setTargetFragment(this, SOUND_REQUEST_CODE);
         dialogFragment.showAllowingStateLoss(getFragmentManager(),
                                              SmartAlarmSoundDialogFragment.TAG);
+    }
+
+    public void selectRepeatDays(@NonNull View sender) {
+        final AlarmRepeatDialogFragment dialogFragment =
+                AlarmRepeatDialogFragment.newInstance(alarm.getDaysOfWeek());
+        dialogFragment.setTargetFragment(this, REPEAT_REQUEST_CODE);
+        dialogFragment.showAllowingStateLoss(getFragmentManager(),
+                                             AlarmRepeatDialogFragment.TAG);
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {
