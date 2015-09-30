@@ -102,10 +102,6 @@ so you can sleep better.</string>
     <string name="title_register_gender">Are you male or female?</string>
     <string name="title_register_weight">How much do you weigh?</string>
     <string name="title_register_height">How tall are you?</string>
-    <string name="height_inches_fmt">%1$d‘ %2$d‘‘</string>
-    <string name="height_cm_fmt">%1$d cm</string>
-    <string name="weight_pounds_fmt">%1$d lbs</string>
-    <string name="weight_kg_fmt">%1$d kg</string>
     <string name="title_intro_sleep_pill">Clip Sleep Pill to your Pillow</string>
     <string name="info_intro_sleep_pill">Clip Sleep Pill to your pillowcase by pulling the edge of the pillowcase taut.  For best results, place your Sleep Pill on the side of your pillowcase closest to the edge of the bed.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
@@ -194,8 +190,6 @@ so you can sleep better.</string>
     <string name="dialog_message_troubleshoot_sense">We could not connect to your Sense. Please make sure your Sense is plugged in, nearby, and in Pairing Mode.</string>
     <string name="dialog_title_high_power_rescan">Sense Not Found</string>
     <string name="dialog_message_high_power_rescan">We could not connect to your Sense. A high-power scan can sometimes resolve Sense discovery issues, but will take a bit longer, and may temporarily disrupt other Bluetooth services. Would you like to try a high-power scan?</string>
-    <string name="info_onboarding_partner_info">To connect a second Sleep Pill, Sense needs to be put into Pairing Mode.\n\nPlace your hand on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
-    <string name="title_onboarding_partner_info">Add a second Sleep Pill</string>
     <string name="sec_type_wpa2">WPA2</string>
     <string name="sec_type_wpa">WPA</string>
     <string name="sec_type_wep">WEP</string>
@@ -226,7 +220,6 @@ so you can sleep better.</string>
     <string name="action_answer">Answer</string>
     <string name="video_playback_generic_error">Could not play video.</string>
     <string name="title_turning_on">Turning On</string>
-    <string name="error_bluetooth_power_change">We could not turn your Bluetooth on or off.</string>
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
     <string name="debug_title_confirm_sense_pair">Pair With Sense</string>
     <string name="debug_message_confirm_sense_pair_fmt">Are you sure you want to pair with ‘%1$s’?</string>
@@ -260,7 +253,6 @@ so you can sleep better.</string>
     <string name="action_today">Today</string>
     <string name="title_setting_time_zone">Finishing up</string>
     <string name="title_pushing_data">Finishing up</string>
-    <string name="error_bluetooth_peripheral_busy">Sense is busy, please retry again in a few moments.</string>
     <string name="action_change_email">Change Email</string>
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
@@ -369,7 +361,6 @@ so you can sleep better.</string>
     <string name="alert_title_skip_pair_pill">Are you sure?</string>
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
     <string name="action_support">Support</string>
-    <string name="error_cannot_retrieve_condition">Cannot retrieve current %1$s reading.</string>
     <string name="onboarding_title_unsupported_device">Unsupported Device</string>
     <string name="onboarding_message_unsupported_device">Your device is known to have issues setting up Sense for the first time. If you have a different phone or tablet available, it is recommended that you use it to perform the next steps.</string>
     <string name="onboarding_title_untested_device">Your device may not be supported</string>
@@ -408,7 +399,6 @@ so you can sleep better.</string>
     <string name="device_color_blue">Blue</string>
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
-    <string name="action_feedback">Feedback</string>
     <string name="title_thank_you">Thank You</string>
     <string name="title_have_sense_ready">Have Sense ready?</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
@@ -422,7 +412,6 @@ so you can sleep better.</string>
     <string name="title_alarm">Alarm</string>
     <string name="action_change_time_zone">Change Time Zone</string>
     <string name="action_refresh">Refresh</string>
-    <string name="action_email_support">Email Support</string>
     <string name="action_user_guide">User Guide</string>
     <string name="title_advanced">Advanced</string>
     <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
@@ -458,7 +447,6 @@ so you can sleep better.</string>
     <string name="message_timeline_no_actions_title">No Actions Available</string>
     <string name="message_timeline_no_actions_body">The event you selected does not have any actions available.</string>
     <string name="action_send">Send</string>
-    <string name="action_attach">Attach</string>
     <string name="hint_contact_us_text">Describe the issue you are having</string>
     <string name="title_contact_us">Contact us</string>
     <string name="action_take_photo">Take photo</string>

@@ -27,7 +27,6 @@
     <dimen name="text_size_graph_header">11sp</dimen>
     <dimen name="text_size_graph_footer">14sp</dimen>
     <dimen name="text_size_button">16sp</dimen>
-    <dimen name="text_size_large_button">20sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
     <dimen name="text_size_section_heading_large">12sp</dimen>
     <dimen name="text_size_timeline_time">12sp</dimen>
@@ -112,8 +111,6 @@
     <dimen name="bottom_sheet_option_vertical_margin">18dp</dimen>
     <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>
 
-    <dimen name="item_question_height">70dp</dimen>
-
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>
@@ -132,15 +129,11 @@
     <dimen name="timeline_segment_min_height">16dp</dimen>
     <dimen name="timeline_segment_height_per_hour">96dp</dimen>
     <dimen name="timeline_segment_item_end_inset">40dp</dimen>
-    <dimen name="timeline_segment_event_vertical_inset">4dp</dimen>
     <dimen name="timeline_segment_event_offset_max">7dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>
 
     <dimen name="timeline_event_popup_left_inset">8dp</dimen>
     <dimen name="timeline_event_popup_bottom_inset">5dp</dimen>
-
-    <dimen name="timeline_detail_reading_height">2dp</dimen>
-    <dimen name="timeline_detail_reading_height_large">4dp</dimen>
 
     <dimen name="timeline_event_start_inset">0dp</dimen>
     <dimen name="timeline_event_end_inset">8dp</dimen>
@@ -154,7 +147,6 @@
     <dimen name="button_min_size_small">32dp</dimen>
     <dimen name="button_rounded_min_height">50dp</dimen>
     <dimen name="button_corner_radius">3dp</dimen>
-    <dimen name="button_rounded_border_width">1dp</dimen>
     <dimen name="button_bottom_alert">72dp</dimen>
     <dimen name="button_circular_area">54dp</dimen>
 

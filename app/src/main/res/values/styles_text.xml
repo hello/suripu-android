@@ -165,11 +165,6 @@
         <item name="android:textSize">@dimen/text_size_button</item>
     </style>
 
-    <style name="AppTheme.Text.Button.SmartAlarmDay">
-        <item name="android:textSize">12sp</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
     <!-- Non-generic -->
 
     <style name="AppTheme.Text.Score" />

@@ -2,6 +2,11 @@
 <resources>
     <!-- string resources related to localization and value formatting -->
 
+    <string name="height_inches_fmt">%1$d‘ %2$d‘‘</string>
+    <string name="height_cm_fmt">%1$d cm</string>
+    <string name="weight_pounds_fmt">%1$d lbs</string>
+    <string name="weight_kg_fmt">%1$d kg</string>
+
     <string name="format_markup_list_deliminator">"• "</string>
 
     <string name="format_date_placeholder">--</string>

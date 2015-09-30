@@ -160,10 +160,6 @@
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:padding">0dp</item>
     </style>
-    
-    <style name="AppTheme.Dialog.FullScreen.NoFadeIn">
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.FadeOut</item>
-    </style>
 
     <style name="WindowAnimations" parent="android:style/Animation" />
 
@@ -180,15 +176,6 @@
     <style name="WindowAnimations.BottomSlide">
         <item name="android:windowEnterAnimation">@anim/anime_bottom_slide_up</item>
         <item name="android:windowExitAnimation">@anim/anime_bottom_slide_down</item>
-    </style>
-
-    <style name="WindowAnimations.BottomSlide.FadeOutOnly">
-        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
-    </style>
-
-    <style name="WindowAnimations.PopSlideAndFade">
-        <item name="android:windowEnterAnimation">@anim/fade_and_pop_in</item>
-        <item name="android:windowExitAnimation">@anim/fade_and_slide_out</item>
     </style>
 
     <!-- Buttons -->
@@ -227,10 +214,6 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
-    <style name="AppTheme.Button.Borderless.Toggle">
-        <item name="android:background">@drawable/button_selector_borderless_toggle</item>
-    </style>
-
     <style name="AppTheme.Button.Borderless.White">
         <item name="android:background">@drawable/selectable_light</item>
         <item name="android:textStyle">normal</item>
@@ -239,12 +222,6 @@
 
     <style name="AppTheme.Button.Borderless.Onboarding">
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.White.Thin">
-        <item name="android:textSize">@dimen/text_size_large_button</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">
@@ -267,19 +244,6 @@
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body.Medium</item>
         <item name="android:padding">@dimen/gap_medium</item>
-    </style>
-
-    <style name="AppTheme.Button.ModeSelector.Timeline">
-        <item name="android:background">@drawable/selectable_light</item>
-        <item name="android:textColor">@color/text_color_selector_white</item>
-    </style>
-
-    <style name="AppTheme.Button.SmartAlarmDay">
-        <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Button.SmartAlarmDay</item>
-        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:paddingTop">@dimen/gap_outer</item>
-        <item name="android:paddingBottom">@dimen/gap_outer</item>
     </style>
 
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
@@ -317,12 +281,6 @@
         <item name="android:paddingTop">@dimen/gap_small</item>
         <item name="android:paddingBottom">@dimen/gap_small</item>
         <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog.SolidBlue">
-        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/selector_button_dialog_blue</item>
-        <item name="android:textColor">@color/text_color_selector_white</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.Positive">
@@ -368,10 +326,6 @@
         <item name="android:layout_marginBottom">@dimen/gap_small</item>
     </style>
 
-    <style name="Divider.Horizontal.Accent">
-        <item name="android:background">@color/light_accent</item>
-    </style>
-
     <style name="Divider.Vertical">
         <item name="android:layout_width">@dimen/divider_size</item>
         <item name="android:layout_height">match_parent</item>
@@ -395,16 +349,6 @@
 
     <style name="AppTheme.Text.EditText.Onboarding">
         <item name="android:textSize">@dimen/text_size_subheading</item>
-    </style>
-
-    <style name="AppTheme.Text.EditText.Onboarding.Metric">
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-
-        <item name="android:gravity">center</item>
-        <item name="android:minWidth">@dimen/button_min_size</item>
-        <item name="android:inputType">number</item>
-        <item name="android:selectAllOnFocus">true</item>
     </style>
 
     <!-- Specific Tinting -->
@@ -469,15 +413,6 @@
         <item name="android:maxWidth">20dp</item>
         <item name="android:minHeight">20dp</item>
         <item name="android:maxHeight">20dp</item>
-    </style>
-
-    <style name="AppTheme.ProgressBar.TimelineInfo" parent="android:style/Widget.Holo.ProgressBar.Horizontal">
-        <item name="android:minHeight">@dimen/timeline_detail_reading_height</item>
-        <item name="android:progressDrawable">@drawable/progress_timeline_detail</item>
-    </style>
-
-    <style name="AppTheme.ProgressBar.TimelineInfo.Large">
-        <item name="android:minHeight">@dimen/timeline_detail_reading_height_large</item>
     </style>
 
 </resources>

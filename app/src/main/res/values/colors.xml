@@ -53,7 +53,6 @@
     <color name="white_button_pressed">#d5d5d5</color>
     <color name="white_button_disabled">#88ffffff</color>
 
-    <color name="background_button_white">#50ffffff</color>
     <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 
