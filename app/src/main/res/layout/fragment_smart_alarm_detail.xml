@@ -42,6 +42,7 @@
             android:background="@drawable/selectable_dark_bounded">
 
             <TextView
+                android:id="@+id/fragment_smart_alarm_detail_enabled_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

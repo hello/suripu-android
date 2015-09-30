@@ -61,6 +61,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private boolean use24Time = false;
 
     private TextView time;
+    private TextView enabled;
     private TextView toneName;
     private TextView repeatDays;
 
@@ -97,11 +98,24 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         final View timeContainer = view.findViewById(R.id.fragment_smart_alarm_detail_time_container);
         Views.setSafeOnClickListener(timeContainer, this::selectNewTime);
 
+
+        this.enabled = (TextView) view.findViewById(R.id.fragment_smart_alarm_detail_enabled_text);
+        if (alarm.isEnabled()) {
+            enabled.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.icon_alarm_enabled, 0, 0, 0);
+        } else {
+            enabled.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.icon_alarm_disabled, 0, 0, 0);
+        }
+
         final CompoundButton enabledToggle = (CompoundButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled_toggle);
         enabledToggle.setChecked(alarm.isEnabled());
         enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> {
             Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
             alarm.setEnabled(isEnabled);
+            if (isEnabled) {
+                enabled.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.icon_alarm_enabled, 0, 0, 0);
+            } else {
+                enabled.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.icon_alarm_disabled, 0, 0, 0);
+            }
             markDirty();
         });
 
