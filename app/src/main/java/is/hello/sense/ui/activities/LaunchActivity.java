@@ -9,10 +9,12 @@ import android.provider.AlarmClock;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -22,6 +24,14 @@ public class LaunchActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;
     @Inject LocalUsageTracker localUsageTracker;
+
+    /**
+     * Included to force {@link ApiService} to be initialized before
+     * {@link TimelineFragment}, giving its asynchronously initialized
+     * file system cache more time to complete set up.
+     */
+    @SuppressWarnings("unused")
+    @Inject ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
