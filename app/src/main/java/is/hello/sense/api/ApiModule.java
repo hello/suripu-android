@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.ApiGsonConverter;
@@ -34,6 +35,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.markup.MarkupDeserializer;
@@ -42,6 +44,8 @@ import is.hello.sense.util.markup.text.MarkupString;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 @Module(
     library = true
@@ -51,7 +55,7 @@ public class ApiModule {
     private final Context applicationContext;
 
     public static Gson createConfiguredGson(@NonNull MarkupProcessor markupProcessor) {
-        GsonBuilder builder = new GsonBuilder();
+        final GsonBuilder builder = new GsonBuilder();
         builder.addSerializationExclusionStrategy(new ExcludeExclusionStrategy());
 
         builder.registerTypeAdapter(new TypeToken<DateTime>(){}.getType(),
@@ -101,14 +105,26 @@ public class ApiModule {
         return createConfiguredGson(markupProcessor);
     }
 
-    @Singleton @Provides Cache provideCache(@NonNull @ApiAppContext Context context) {
-        File cacheDirectory = new File(context.getExternalCacheDir(), Constants.HTTP_CACHE_NAME);
-        return new Cache(cacheDirectory, Constants.HTTP_CACHE_SIZE);
+    @Provides Observable<Cache> provideCache(@NonNull @ApiAppContext Context context) {
+        final Observable.OnSubscribe<Cache> onSubscribe = subscriber -> {
+            // Context#getExternalCacheDir() causes synchronous file system access.
+            final File cacheDirectory = new File(context.getExternalCacheDir(),
+                                                 Constants.HTTP_CACHE_NAME);
+            final Cache cache = new Cache(cacheDirectory, Constants.HTTP_CACHE_SIZE);
+
+            subscriber.onNext(cache);
+            subscriber.onCompleted();
+
+            Logger.debug(getClass().getSimpleName(), "Cache ready.");
+        };
+        return Observable.create(onSubscribe)
+                         .subscribeOn(Schedulers.io())
+                         .observeOn(Rx.mainThreadScheduler());
     }
 
-    @Singleton @Provides OkHttpClient provideHttpClient(@NonNull Cache cache) {
-        OkHttpClient client = new OkHttpClient();
-        client.setCache(cache);
+    @Singleton @Provides OkHttpClient provideHttpClient(@NonNull Observable<Cache> cache) {
+        final OkHttpClient client = new OkHttpClient();
+        cache.subscribe(client::setCache, Functions.LOG_ERROR);
         client.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         client.setReadTimeout(Constants.HTTP_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         return client;
@@ -118,7 +134,7 @@ public class ApiModule {
                                                         @NonNull OkHttpClient httpClient,
                                                         @NonNull ApiEndpoint endpoint,
                                                         @NonNull ApiSessionManager sessionManager) {
-        RestAdapter.Builder builder = new RestAdapter.Builder();
+        final RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
         builder.setConverter(new ApiGsonConverter(gson));
         builder.setEndpoint(endpoint);
