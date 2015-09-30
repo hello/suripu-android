@@ -3,15 +3,15 @@ package is.hello.sense.ui.fragments.settings;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -32,13 +32,13 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public class AccountSettingsFragment extends InjectionFragment
-        implements AdapterView.OnItemClickListener, AccountEditor.Container {
+public class AccountSettingsFragment extends InjectionFragment implements AccountEditor.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
@@ -49,20 +49,20 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private ProgressBar loadingIndicator;
 
-    private StaticItemAdapter.TextItem nameItem;
-    private StaticItemAdapter.TextItem emailItem;
+    private SettingsRecyclerAdapter.DetailItem nameItem;
+    private SettingsRecyclerAdapter.DetailItem emailItem;
 
-    private StaticItemAdapter.TextItem birthdayItem;
-    private StaticItemAdapter.TextItem genderItem;
-    private StaticItemAdapter.TextItem heightItem;
-    private StaticItemAdapter.TextItem weightItem;
+    private SettingsRecyclerAdapter.DetailItem birthdayItem;
+    private SettingsRecyclerAdapter.DetailItem genderItem;
+    private SettingsRecyclerAdapter.DetailItem heightItem;
+    private SettingsRecyclerAdapter.DetailItem weightItem;
 
-    private StaticItemAdapter.CheckItem enhancedAudioItem;
+    private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
     private Account currentAccount;
     private @Nullable Account.Preferences accountPreferences;
-    private ListView listView;
-    private StaticItemAdapter adapter;
+    private RecyclerView recyclerView;
+    private SettingsRecyclerAdapter adapter;
 
 
     //region Lifecycle
@@ -86,38 +86,86 @@ public class AccountSettingsFragment extends InjectionFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_view_static, container, false);
+        final View view = inflater.inflate(R.layout.static_recycler, container, false);
 
-        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.static_recycler_view_loading);
 
-        this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.static_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setItemAnimator(null);
 
-        this.adapter = new StaticItemAdapter(getActivity());
-        adapter.setEllipsize(TextUtils.TruncateAt.END);
+        this.adapter = new SettingsRecyclerAdapter(getActivity());
 
-        adapter.addSectionTitle(R.string.title_info);
-        this.nameItem = adapter.addTextItem(R.string.label_name, R.string.missing_data_placeholder, this::changeName);
-        this.emailItem = adapter.addTextItem(R.string.label_email, R.string.missing_data_placeholder, this::changeEmail);
-        adapter.addTextItem(R.string.title_change_password, R.string.detail_change_password, this::changePassword);
+        final int extraPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        final InsetItemDecoration decoration = new InsetItemDecoration();
+        recyclerView.addItemDecoration(decoration);
 
-        adapter.addSectionTitle(R.string.title_demographics);
-        this.birthdayItem = adapter.addTextItem(R.string.label_dob, R.string.missing_data_placeholder, this::changeBirthDate);
-        this.genderItem = adapter.addTextItem(R.string.label_gender, R.string.missing_data_placeholder, this::changeGender);
-        this.heightItem = adapter.addTextItem(R.string.label_height, R.string.missing_data_placeholder, this::changeHeight);
-        this.weightItem = adapter.addTextItem(R.string.label_weight, R.string.missing_data_placeholder, this::changeWeight);
+        decoration.addItemInset(adapter.getItemCount(), new Rect(0, extraPadding, 0, 0));
+        this.nameItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_user_guide,
+                                                               getString(R.string.missing_data_placeholder),
+                                                               null,
+                                                               this::changeName);
+        adapter.add(nameItem);
+        this.emailItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_email,
+                                                                getString(R.string.missing_data_placeholder),
+                                                                null,
+                                                                this::changeEmail);
+        adapter.add(emailItem);
 
-        adapter.addSectionTitle(R.string.label_options);
-        this.enhancedAudioItem = adapter.addCheckItem(R.string.label_enhanced_audio, false, this::changeEnhancedAudio);
-        adapter.addFooterItem(R.string.info_enhanced_audio);
+        decoration.addItemInset(adapter.getItemCount(), new Rect(0, 0, 0, extraPadding));
+        final SettingsRecyclerAdapter.DetailItem passwordItem =
+                new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_lock,
+                                                       getString(R.string.title_change_password),
+                                                       null,
+                                                       this::changePassword);
+        adapter.add(passwordItem);
 
-        adapter.addSectionDivider();
-        adapter.addTextItem(R.string.action_log_out, 0, this::signOut);
 
-        listView.setAdapter(adapter);
+        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_calendar,
+                                                                   getString(R.string.label_dob),
+                                                                   getString(R.string.missing_data_placeholder),
+                                                                   this::changeBirthDate);
+        adapter.add(birthdayItem);
+        this.genderItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_gender,
+                                                                 getString(R.string.label_gender),
+                                                                 getString(R.string.missing_data_placeholder),
+                                                                 this::changeGender);
+        adapter.add(genderItem);
+
+        this.heightItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_height,
+                                                                 getString(R.string.label_height),
+                                                                 getString(R.string.missing_data_placeholder),
+                                                                 this::changeHeight);
+        adapter.add(heightItem);
+
+        this.weightItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_weight,
+                                                                 getString(R.string.label_weight),
+                                                                 getString(R.string.missing_data_placeholder),
+                                                                 this::changeWeight);
+        adapter.add(weightItem);
+
+        decoration.addItemInset(adapter.getItemCount(), new Rect(0, extraPadding, 0, 0));
+        this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
+                                                                        false,
+                                                                        this::changeEnhancedAudio);
+        adapter.add(enhancedAudioItem);
+
+        decoration.addItemInset(adapter.getItemCount(), new Rect(0, 0, 0, extraPadding));
+        adapter.add(new SettingsRecyclerAdapter.TextItem(getString(R.string.info_enhanced_audio), null));
+
+        decoration.addItemInset(adapter.getItemCount(), new Rect(0, 0, 0, extraPadding));
+        final SettingsRecyclerAdapter.DetailItem signOutItem =
+                new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_signout,
+                                                       getString(R.string.action_log_out),
+                                                       null,
+                                                       this::signOut);
+        adapter.add(signOutItem);
+
+        recyclerView.setAdapter(adapter);
 
         loadingIndicator.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
 
         return view;
     }
@@ -151,7 +199,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
         this.enhancedAudioItem = null;
 
-        this.listView = null;
+        this.recyclerView = null;
         this.adapter = null;
     }
 
@@ -178,26 +226,17 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Glue
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (currentAccount == null) {
-            return;
-        }
-
-        adapter.onItemClick(adapterView, view, position, id);
-    }
-
     public FragmentNavigationActivity getNavigationContainer() {
         return (FragmentNavigationActivity) getActivity();
     }
 
     private void showLoadingIndicator() {
-        listView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
         loadingIndicator.setVisibility(View.VISIBLE);
     }
 
     private void hideLoadingIndicator() {
-        listView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
         loadingIndicator.setVisibility(View.GONE);
     }
 
@@ -207,19 +246,20 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        nameItem.setDetail(account.getName());
-        emailItem.setDetail(account.getEmail());
+        nameItem.text = account.getName();
+        emailItem.text = account.getEmail();
 
-        birthdayItem.setDetail(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
-        genderItem.setDetail(getString(account.getGender().nameRes));
+        birthdayItem.detail = dateFormatter.formatAsLocalizedDate(account.getBirthDate());
+        genderItem.detail = getString(account.getGender().nameRes);
 
         final CharSequence weight = unitFormatter.formatWeight(account.getWeight());
-        weightItem.setDetail(weight.toString());
+        weightItem.detail = weight.toString();
 
         final CharSequence height = unitFormatter.formatHeight(account.getHeight());
-        heightItem.setDetail(height.toString());
+        heightItem.detail = height.toString();
 
         this.currentAccount = account;
+        adapter.notifyDataSetChanged();
 
         hideLoadingIndicator();
     }
@@ -233,7 +273,8 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
         this.accountPreferences = preferences;
-        enhancedAudioItem.setChecked(preferences.enhancedAudioEnabled);
+        enhancedAudioItem.active = preferences.enhancedAudioEnabled;
+        enhancedAudioItem.notifyChanged();
     }
 
     //endregion
@@ -241,19 +282,19 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
 
-    public void changeName(@NonNull StaticItemAdapter.TextItem item) {
+    public void changeName() {
         final ChangeNameFragment fragment = new ChangeNameFragment();
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.action_change_name), true);
     }
 
-    public void changeEmail(@NonNull StaticItemAdapter.TextItem item) {
+    public void changeEmail() {
         final ChangeEmailFragment fragment = new ChangeEmailFragment();
         fragment.setTargetFragment(this, REQUEST_CODE_PASSWORD);
         getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_email), true);
     }
 
-    public void changePassword(@NonNull StaticItemAdapter.TextItem item) {
+    public void changePassword() {
         final ChangePasswordFragment fragment = ChangePasswordFragment.newInstance(currentAccount.getEmail());
         getNavigationContainer().pushFragmentAllowingStateLoss(fragment, getString(R.string.title_change_password), true);
     }
@@ -263,28 +304,28 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Demographics
 
-    public void changeBirthDate(@NonNull StaticItemAdapter.TextItem item) {
+    public void changeBirthDate() {
         final OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
     }
 
-    public void changeGender(@NonNull StaticItemAdapter.TextItem item) {
+    public void changeGender() {
         final OnboardingRegisterGenderFragment fragment = new OnboardingRegisterGenderFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_gender), true);
     }
 
-    public void changeHeight(@NonNull StaticItemAdapter.TextItem item) {
+    public void changeHeight() {
         final OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
-    public void changeWeight(@NonNull StaticItemAdapter.TextItem item) {
+    public void changeWeight() {
         final OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
@@ -296,13 +337,14 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Preferences
 
-    public void changeEnhancedAudio(@NonNull StaticItemAdapter.CheckItem item) {
+    public void changeEnhancedAudio() {
         if (accountPreferences == null) {
             return;
         }
 
-        accountPreferences.enhancedAudioEnabled = !enhancedAudioItem.isChecked();
-        enhancedAudioItem.setChecked(accountPreferences.enhancedAudioEnabled);
+        accountPreferences.enhancedAudioEnabled = !enhancedAudioItem.active;
+        enhancedAudioItem.active = accountPreferences.enhancedAudioEnabled;
+        enhancedAudioItem.notifyChanged();
 
         showLoadingIndicator();
         bindAndSubscribe(accountPresenter.updatePreferences(accountPreferences),
@@ -315,7 +357,8 @@ public class AccountSettingsFragment extends InjectionFragment
                          },
                          e -> {
                              accountPreferences.enhancedAudioEnabled = !accountPreferences.enhancedAudioEnabled;
-                             enhancedAudioItem.setChecked(accountPreferences.enhancedAudioEnabled);
+                             enhancedAudioItem.active = accountPreferences.enhancedAudioEnabled;
+                             enhancedAudioItem.notifyChanged();
                              accountUnavailable(e);
                          });
     }
@@ -325,7 +368,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Actions
 
-    public void signOut(@NonNull StaticItemAdapter.TextItem item) {
+    public void signOut() {
         Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
 
         final SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());
@@ -335,7 +378,7 @@ public class AccountSettingsFragment extends InjectionFragment
         signOutDialog.setPositiveButton(R.string.action_log_out, (dialog, which) -> {
             Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
             // Let the dialog finish dismissing before we block the main thread.
-            listView.post(() -> {
+            recyclerView.post(() -> {
                 getActivity().finish();
                 accountPresenter.logOut();
             });

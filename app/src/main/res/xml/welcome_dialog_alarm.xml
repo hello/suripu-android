@@ -4,6 +4,6 @@
         diagram="@drawable/welcome_dialog_alarm"
         diagramVideo="@string/diagram_welcome_dialog_alarm"
         diagramFillColor="#f3f5f9"
-        title="@string/welcome_dialog_alarm_title"
+        text="@string/welcome_dialog_alarm_title"
         message="@string/welcome_dialog_alarm"/>
 </dialog>

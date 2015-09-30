@@ -2,6 +2,6 @@
 <dialog>
     <item
         diagram="@drawable/welcome_dialog_temperature"
-        title="@string/welcome_dialog_sensor_temperature_title"
+        text="@string/welcome_dialog_sensor_temperature_title"
         message="@string/welcome_dialog_sensor_temperature"/>
 </dialog>
