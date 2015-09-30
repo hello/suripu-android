@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="fontPath" format="string"/>
+    <!-- Workaround preventing Zendesk from bringing in AppCompat -->
+    <attr name="showAsAction" format="string" />
+    <!-- end workaround -->
 
     <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />

@@ -141,7 +141,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     public void pullingPreferencesFailed(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
 
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }

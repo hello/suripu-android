@@ -90,6 +90,6 @@ public class TicketSelectTopicFragment extends InjectionFragment implements Adap
         loadingIndicator.setVisibility(View.GONE);
         adapter.clear();
 
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        ErrorDialogFragment.presentError(getActivity(), e);
     }
 }

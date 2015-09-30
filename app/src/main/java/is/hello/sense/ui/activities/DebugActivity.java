@@ -137,7 +137,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                          ignored -> LoadingDialogFragment.close(getFragmentManager()),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             ErrorDialogFragment.presentError(this, e);
                          });
     }
 

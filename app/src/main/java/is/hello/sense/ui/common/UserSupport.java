@@ -2,16 +2,18 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
+
+import org.json.JSONObject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
-import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -21,11 +23,22 @@ public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
 
-    public static void openUri(@NonNull Context from, @NonNull Uri uri) {
+    public static Intent createViewUriIntent(@NonNull Resources resources, @NonNull Uri uri) {
+        final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setShowTitle(true);
+        builder.setToolbarColor(resources.getColor(R.color.light_accent));
+
+        final Intent intent = builder.build().intent;
+        intent.setData(uri);
+        return intent;
+    }
+
+    public static void openUri(@NonNull Activity from, @NonNull Uri uri) {
         try {
-            from.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            final Intent intent = createViewUriIntent(from.getResources(), uri);
+            from.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
             alertDialog.setMessage(R.string.error_no_web_browser);
             alertDialog.setPositiveButton(android.R.string.ok, null);
@@ -33,13 +46,13 @@ public class UserSupport {
         }
     }
 
-    public static void showProductPage(@NonNull Context from) {
+    public static void showProductPage(@NonNull Activity from) {
         String packageName = BuildConfig.APPLICATION_ID;
         if (BuildConfig.DEBUG) {
             packageName = packageName.replace(".debug", "");
         }
         try {
-            Uri marketUri = new Uri.Builder()
+            final Uri marketUri = new Uri.Builder()
                     .scheme("market")
                     .appendEncodedPath("/")
                     .appendPath("details")
@@ -49,7 +62,7 @@ public class UserSupport {
         } catch (ActivityNotFoundException e) {
             Logger.info(UserSupport.class.getSimpleName(), "Market unavailable", e);
 
-            Uri webUri = new Uri.Builder()
+            final Uri webUri = new Uri.Builder()
                     .scheme("http")
                     .authority("play.google.com")
                     .appendPath("store")
@@ -61,17 +74,17 @@ public class UserSupport {
         }
     }
 
-    public static void showUserGuide(@NonNull Context from) {
+    public static void showUserGuide(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
 
-        Uri supportUrl = Uri.parse("https://support.hello.is");
-        from.startActivity(SupportActivity.getIntent(from, supportUrl));
+        final Uri supportUrl = Uri.parse("https://support.hello.is");
+        openUri(from, supportUrl);
     }
 
     public static void showContactForm(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
 
-        Intent intent = new Intent(from, FragmentNavigationActivity.class);
+        final Intent intent = new Intent(from, FragmentNavigationActivity.class);
         intent.putExtras(FragmentNavigationActivity.getArguments(
                 from.getString(R.string.title_select_a_topic),
                 TicketSelectTopicFragment.class,
@@ -79,28 +92,38 @@ public class UserSupport {
         from.startActivity(intent);
     }
 
-    public static void showForOnboardingStep(@NonNull Context from, @NonNull OnboardingStep onboardingStep) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP, onboardingStep.toProperty()));
-        from.startActivity(SupportActivity.getIntent(from, onboardingStep.getUri()));
+    public static void showForOnboardingStep(@NonNull Activity from, @NonNull OnboardingStep onboardingStep) {
+        final JSONObject properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
+                                                                 onboardingStep.toProperty());
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, properties);
+
+        openUri(from, onboardingStep.getUri());
     }
 
-    public static void showForDeviceIssue(@NonNull Context from, @NonNull DeviceIssue issue) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, issue.toProperty()));
-        from.startActivity(SupportActivity.getIntent(from, issue.getUri()));
+    public static void showForDeviceIssue(@NonNull Activity from, @NonNull DeviceIssue issue) {
+        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+                                                                 issue.toProperty());
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+
+        openUri(from, issue.getUri());
     }
 
-    public static void showReplaceBattery(@NonNull Context from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, "enhanced-audio"));
+    public static void showReplaceBattery(@NonNull Activity from) {
+        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+                                                                 "replace-battery");
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
 
-        Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/204496999");
-        from.startActivity(SupportActivity.getIntent(from, issueUri));
+        final Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/204496999");
+        openUri(from, issueUri);
     }
 
-    public static void showSupportedDevices(@NonNull Context from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE, "enhanced-audio"));
+    public static void showSupportedDevices(@NonNull Activity from) {
+        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+                                                                 "supported-devices");
+        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
 
-        Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/205152535");
-        from.startActivity(SupportActivity.getIntent(from, issueUri));
+        final Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/205152535");
+        openUri(from, issueUri);
     }
 
 
