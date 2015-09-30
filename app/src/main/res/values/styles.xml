@@ -17,7 +17,7 @@
         <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode</item>
         <item name="android:actionOverflowButtonStyle">@style/ActionOverflow</item>
         <item name="android:actionMenuTextAppearance">@style/AppTheme.Text.ActionMenu</item>
-        <item name="android:actionMenuTextColor">@color/light_accent</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
         <item name="android:actionButtonStyle">@style/AppTheme.ActionButton</item>
         <item name="android:actionBarSize">@dimen/action_bar_height</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
