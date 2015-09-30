@@ -212,7 +212,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     }
 
     public void pullingPreferencesFailed(Throwable e) {
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }

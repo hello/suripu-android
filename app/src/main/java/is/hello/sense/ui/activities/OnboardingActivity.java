@@ -106,7 +106,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                             showBirthday(account);
                         }, e -> {
                             LoadingDialogFragment.close(getFragmentManager());
-                            ErrorDialogFragment.presentError(getFragmentManager(), e);
+                            ErrorDialogFragment.presentError(this, e);
                         });
                     } else {
                         showBirthday(account);
@@ -309,7 +309,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
                 showEnhancedAudio();
             }, e -> {
                 LoadingDialogFragment.close(getFragmentManager());
-                ErrorDialogFragment.presentError(getFragmentManager(), e);
+                ErrorDialogFragment.presentError(this, e);
             });
         }
     }

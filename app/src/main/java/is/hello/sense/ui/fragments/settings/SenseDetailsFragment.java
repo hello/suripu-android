@@ -314,7 +314,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
             Analytics.trackError(e, "Sense Details");
         } else {
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
                     .withOperation("Sense Details")
                     .withSupportLink();
 

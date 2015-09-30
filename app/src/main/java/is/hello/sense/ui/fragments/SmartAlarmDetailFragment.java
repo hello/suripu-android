@@ -350,7 +350,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void presentError(Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         } else if (ApiException.statusEquals(e, 400)) {

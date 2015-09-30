@@ -103,7 +103,7 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
     public void presentError(Throwable e) {
         activityIndicator.setVisibility(View.GONE);
         adapter.clear();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        ErrorDialogFragment.presentError(getActivity(), e);
     }
 
 
