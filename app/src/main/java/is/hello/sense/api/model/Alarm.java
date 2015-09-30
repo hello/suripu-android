@@ -146,6 +146,16 @@ public class Alarm extends ApiResponse {
         return daysOfWeek;
     }
 
+    public List<Integer> getSortedDaysOfWeek() {
+        return Lists.sorted(daysOfWeek, (leftDay, rightDay) -> {
+            // Joda-Time considers Sunday to be day 7, which is generally
+            // not how it works in English speaking countries.
+            int leftCorrected = (leftDay == DateTimeConstants.SUNDAY) ? 0 : leftDay;
+            int rightCorrected = (rightDay == DateTimeConstants.SUNDAY) ? 0 : rightDay;
+            return Functions.compareInts(leftCorrected, rightCorrected);
+        });
+    }
+
     public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
         switch (dayOfWeek) {
             case DateTimeConstants.MONDAY:
@@ -183,19 +193,29 @@ public class Alarm extends ApiResponse {
             }
         }
 
-        List<Integer> orderedDays = Lists.sorted(daysOfWeek, (leftDay, rightDay) -> {
-            // Joda-Time considers Sunday to be day 7, which is generally
-            // not how it works in English speaking countries.
-            int leftCorrected = (leftDay == DateTimeConstants.SUNDAY) ? 0 : leftDay;
-            int rightCorrected = (rightDay == DateTimeConstants.SUNDAY) ? 0 : rightDay;
-            return Functions.compareInts(leftCorrected, rightCorrected);
-        });
-        List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
-        String daysString = TextUtils.join(context.getString(R.string.alarm_day_separator), days);
+        final List<Integer> orderedDays = getSortedDaysOfWeek();
+        final List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
+        final String daysString = TextUtils.join(context.getString(R.string.alarm_day_separator), days);
         if (isSmart()) {
             return context.getString(R.string.smart_alarm_days_repeat_prefix) + daysString;
         } else {
             return context.getString(R.string.alarm_days_repeat_prefix) + daysString;
+        }
+    }
+
+    public @NonNull String getRepeatSummary(@NonNull Context context) {
+        final int daysCount = daysOfWeek.size();
+        if (daysCount == 0) {
+            return context.getString(R.string.alarm_repeat_never);
+        } else if (daysCount <= 2) {
+            final List<Integer> orderedDays = getSortedDaysOfWeek();
+            final List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
+            return TextUtils.join(context.getString(R.string.alarm_day_separator), days);
+        } else if (daysCount < 7) {
+            return context.getResources().getQuantityString(R.plurals.alarm_repeat_days_count,
+                                                            daysCount, daysCount);
+        } else {
+            return context.getString(R.string.alarm_repeat_weekly);
         }
     }
 

@@ -28,7 +28,7 @@
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Body.Neutral"
+        android:textAppearance="@style/AppTheme.Text.Body.New"
         android:text="@string/onboarding_room_check_info_success"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 

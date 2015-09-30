@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.text.format.DateFormat;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -10,6 +11,7 @@ import org.joda.time.LocalTime;
 import org.junit.After;
 import org.junit.Test;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.graph.InjectionTestCase;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -204,9 +207,9 @@ public class DateFormatterTests extends InjectionTestCase {
                    is(equalTo("2:30 PM")));
         assertThat(formatter.formatAsTime(new DateTime(2001, 2, 3, 14, 30), true),
                    is(equalTo("14:30")));
-        assertThat(formatter.formatAsTime((DateTime) null, false),
+        assertThat(formatter.formatAsTime(null, false),
                    is(equalTo(placeholder)));
-        assertThat(formatter.formatAsTime((DateTime) null, true),
+        assertThat(formatter.formatAsTime(null, true),
                    is(equalTo(placeholder)));
     }
 
@@ -258,6 +261,79 @@ public class DateFormatterTests extends InjectionTestCase {
                    is(equalTo("1.7 hr")));
         assertThat(formatter.formatDuration(120, TimeUnit.MINUTES).toString(),
                    is(equalTo("2 hr")));
+    }
+
+    //endregion
+
+
+    //region Calendar Support
+
+    @Test
+    public void calendarDayToJodaTimeDay() {
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.MONDAY),
+                   is(equalTo(DateTimeConstants.MONDAY)));
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.TUESDAY),
+                   is(equalTo(DateTimeConstants.TUESDAY)));
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.WEDNESDAY),
+                   is(equalTo(DateTimeConstants.WEDNESDAY)));
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.THURSDAY),
+                   is(equalTo(DateTimeConstants.THURSDAY)));
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.FRIDAY),
+                   is(equalTo(DateTimeConstants.FRIDAY)));
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.SATURDAY),
+                   is(equalTo(DateTimeConstants.SATURDAY)));
+        assertThat(DateFormatter.calendarDayToJodaTimeDay(Calendar.SUNDAY),
+                   is(equalTo(DateTimeConstants.SUNDAY)));
+    }
+
+    @Test
+    public void jodaTimeDayToCalendarDay() {
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.MONDAY),
+                   is(equalTo(Calendar.MONDAY)));
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.TUESDAY),
+                   is(equalTo(Calendar.TUESDAY)));
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.WEDNESDAY),
+                   is(equalTo(Calendar.WEDNESDAY)));
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.THURSDAY),
+                   is(equalTo(Calendar.THURSDAY)));
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.FRIDAY),
+                   is(equalTo(Calendar.FRIDAY)));
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.SATURDAY),
+                   is(equalTo(Calendar.SATURDAY)));
+        assertThat(DateFormatter.jodaTimeDayToCalendarDay(DateTimeConstants.SUNDAY),
+                   is(equalTo(Calendar.SUNDAY)));
+    }
+
+    @Test
+    public void nextJodaTimeDay() {
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.MONDAY),
+                   is(equalTo(DateTimeConstants.TUESDAY)));
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.TUESDAY),
+                   is(equalTo(DateTimeConstants.WEDNESDAY)));
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.WEDNESDAY),
+                   is(equalTo(DateTimeConstants.THURSDAY)));
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.THURSDAY),
+                   is(equalTo(DateTimeConstants.FRIDAY)));
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.FRIDAY),
+                   is(equalTo(DateTimeConstants.SATURDAY)));
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.SATURDAY),
+                   is(equalTo(DateTimeConstants.SUNDAY)));
+        assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.SUNDAY),
+                   is(equalTo(DateTimeConstants.MONDAY)));
+    }
+    @Test
+    public void getDaysOfWeek() {
+        assertThat(DateFormatter.getDaysOfWeek(DateTimeConstants.MONDAY),
+                   hasItems(DateTimeConstants.MONDAY, DateTimeConstants.TUESDAY,
+                            DateTimeConstants.WEDNESDAY, DateTimeConstants.THURSDAY,
+                            DateTimeConstants.FRIDAY, DateTimeConstants.SATURDAY,
+                            DateTimeConstants.SUNDAY));
+
+        assertThat(DateFormatter.getDaysOfWeek(DateTimeConstants.SUNDAY),
+                   hasItems(DateTimeConstants.SUNDAY, DateTimeConstants.MONDAY,
+                            DateTimeConstants.TUESDAY, DateTimeConstants.WEDNESDAY,
+                            DateTimeConstants.THURSDAY, DateTimeConstants.FRIDAY,
+                            DateTimeConstants.SATURDAY));
     }
 
     //endregion

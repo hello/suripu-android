@@ -176,7 +176,7 @@ public class HomeActivity extends ScopedInjectionActivity
         slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
         slidingLayersView.setAnimatorContext(getAnimatorContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar));
+            slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar_grey));
         }
 
 

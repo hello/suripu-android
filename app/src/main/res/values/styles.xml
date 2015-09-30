@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Themes -->
 
@@ -17,8 +17,9 @@
         <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode</item>
         <item name="android:actionOverflowButtonStyle">@style/ActionOverflow</item>
         <item name="android:actionMenuTextAppearance">@style/AppTheme.Text.ActionMenu</item>
-        <item name="android:actionMenuTextColor">@color/light_accent</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
         <item name="android:actionButtonStyle">@style/AppTheme.ActionButton</item>
+        <item name="android:actionBarSize">@dimen/action_bar_height</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
 
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
@@ -35,13 +36,6 @@
         <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>
 
-    <style name="AppTheme.Launch">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowTitleSize">0dp</item>
-        <item name="android:background">@color/background</item>
-    </style>
-
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@color/background_onboarding</item>
     </style>
@@ -50,6 +44,7 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
     </style>
 
     <!-- Action Bar -->
@@ -57,48 +52,38 @@
     <style name="AppTheme.ActionBar" parent="Platform.ActionBar" />
 
     <style name="AppTheme.ActionBar.Solid">
-        <item name="android:background">@drawable/app_theme_ab_solid</item>
-        <item name="android:backgroundStacked">@drawable/app_theme_ab_stacked_solid</item>
-        <item name="android:backgroundSplit">@drawable/app_theme_ab_bottom_solid</item>
+        <item name="android:background">@color/light_accent</item>
+        <item name="android:backgroundStacked">@color/light_accent</item>
+        <item name="android:backgroundSplit">@color/light_accent</item>
         <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
         <item name="android:icon">@android:color/transparent</item>
         <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
         <item name="android:subtitleTextStyle">@style/AppTheme.Text.ActionSubtitle</item>
-        <item name="android:height">@dimen/action_bar_height</item>
-    </style>
-
-    <style name="AppTheme.ActionBar.Clear" parent="AppTheme.ActionBar.Solid">
-        <item name="android:background">@drawable/app_theme_ab_clear</item>
-    </style>
-
-    <style name="AppTheme.ActionBar.Transparent" parent="AppTheme.ActionBar.Solid">
-        <item name="android:background">@color/transparent</item>
-        <item name="android:displayOptions">none</item>
     </style>
 
     <style name="AppTheme.Text.ActionTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
-        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="AppTheme.Text.ActionSubtitle">
         <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
-        <item name="android:textColor">@color/text_medium</item>
+        <item name="android:textColor">@color/text_dim_light</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:paddingTop">2dp</item>
     </style>
 
     <style name="AppTheme.Text.ActionMenu">
         <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/light_accent</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="AppTheme.ActionButton" parent="android:Widget.Holo.Light.ActionButton">
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/light_accent</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:paddingLeft">@dimen/gap_outer</item>
         <item name="android:paddingRight">@dimen/gap_outer</item>
@@ -141,7 +126,7 @@
 
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@drawable/raised_item_normal</item>
+        <item name="android:windowBackground">@drawable/background_card_large</item>
     </style>
 
     <style name="AppTheme.Dialog.List">
@@ -154,6 +139,7 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
@@ -174,10 +160,6 @@
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:padding">0dp</item>
     </style>
-    
-    <style name="AppTheme.Dialog.FullScreen.NoFadeIn">
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.FadeOut</item>
-    </style>
 
     <style name="WindowAnimations" parent="android:style/Animation" />
 
@@ -194,15 +176,6 @@
     <style name="WindowAnimations.BottomSlide">
         <item name="android:windowEnterAnimation">@anim/anime_bottom_slide_up</item>
         <item name="android:windowExitAnimation">@anim/anime_bottom_slide_down</item>
-    </style>
-
-    <style name="WindowAnimations.BottomSlide.FadeOutOnly">
-        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
-    </style>
-
-    <style name="WindowAnimations.PopSlideAndFade">
-        <item name="android:windowEnterAnimation">@anim/fade_and_pop_in</item>
-        <item name="android:windowExitAnimation">@anim/fade_and_slide_out</item>
     </style>
 
     <!-- Buttons -->
@@ -241,10 +214,6 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
-    <style name="AppTheme.Button.Borderless.Toggle">
-        <item name="android:background">@drawable/button_selector_borderless_toggle</item>
-    </style>
-
     <style name="AppTheme.Button.Borderless.White">
         <item name="android:background">@drawable/selectable_light</item>
         <item name="android:textStyle">normal</item>
@@ -253,12 +222,6 @@
 
     <style name="AppTheme.Button.Borderless.Onboarding">
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.White.Thin">
-        <item name="android:textSize">@dimen/text_size_large_button</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">
@@ -281,21 +244,6 @@
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body.Medium</item>
         <item name="android:padding">@dimen/gap_medium</item>
-    </style>
-
-    <style name="AppTheme.Button.ModeSelector.Timeline">
-        <item name="android:background">@drawable/selectable_light</item>
-        <item name="android:textColor">@color/text_color_selector_white</item>
-    </style>
-
-    <style name="AppTheme.Button.SmartAlarmDay">
-        <item name="android:background">@drawable/smart_alarm_day_toggle_selector</item>
-        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:textAppearance">@style/AppTheme.Text</item>
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_large</item>
     </style>
 
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
@@ -333,12 +281,6 @@
         <item name="android:paddingTop">@dimen/gap_small</item>
         <item name="android:paddingBottom">@dimen/gap_small</item>
         <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog.SolidBlue">
-        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/selector_button_dialog_blue</item>
-        <item name="android:textColor">@color/text_color_selector_white</item>
     </style>
 
     <style name="AppTheme.Button.Dialog.Positive">
@@ -384,10 +326,6 @@
         <item name="android:layout_marginBottom">@dimen/gap_small</item>
     </style>
 
-    <style name="Divider.Horizontal.Accent">
-        <item name="android:background">@color/light_accent</item>
-    </style>
-
     <style name="Divider.Vertical">
         <item name="android:layout_width">@dimen/divider_size</item>
         <item name="android:layout_height">match_parent</item>
@@ -411,16 +349,6 @@
 
     <style name="AppTheme.Text.EditText.Onboarding">
         <item name="android:textSize">@dimen/text_size_subheading</item>
-    </style>
-
-    <style name="AppTheme.Text.EditText.Onboarding.Metric">
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-
-        <item name="android:gravity">center</item>
-        <item name="android:minWidth">@dimen/button_min_size</item>
-        <item name="android:inputType">number</item>
-        <item name="android:selectAllOnFocus">true</item>
     </style>
 
     <!-- Specific Tinting -->
@@ -485,15 +413,6 @@
         <item name="android:maxWidth">20dp</item>
         <item name="android:minHeight">20dp</item>
         <item name="android:maxHeight">20dp</item>
-    </style>
-
-    <style name="AppTheme.ProgressBar.TimelineInfo" parent="android:style/Widget.Holo.ProgressBar.Horizontal">
-        <item name="android:minHeight">@dimen/timeline_detail_reading_height</item>
-        <item name="android:progressDrawable">@drawable/progress_timeline_detail</item>
-    </style>
-
-    <style name="AppTheme.ProgressBar.TimelineInfo.Large">
-        <item name="android:minHeight">@dimen/timeline_detail_reading_height_large</item>
     </style>
 
 </resources>

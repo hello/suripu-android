@@ -21,6 +21,7 @@ import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.BaseViewHolder> {
     @VisibleForTesting static final int VIEW_ID_ALARM = 0;
@@ -28,12 +29,16 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
     private final LayoutInflater inflater;
     private final InteractionListener interactionListener;
+    private final DateFormatter dateFormatter;
 
     private final List<Alarm> alarms = new ArrayList<>();
     private Message currentMessage;
     private boolean use24Time = false;
 
-    public SmartAlarmAdapter(@NonNull Context context, @NonNull InteractionListener interactionListener) {
+    public SmartAlarmAdapter(@NonNull Context context,
+                             @NonNull InteractionListener interactionListener,
+                             @NonNull DateFormatter dateFormatter) {
+        this.dateFormatter = dateFormatter;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
     }
@@ -133,7 +138,6 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             implements View.OnClickListener, View.OnLongClickListener {
         final CompoundButton enabled;
         final TextView time;
-        final TextView timePeriod;
         final TextView repeat;
 
         AlarmViewHolder(@NonNull View view) {
@@ -141,7 +145,6 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
             this.enabled = (CompoundButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
-            this.timePeriod = (TextView) view.findViewById(R.id.item_smart_alarm_time_period);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
 
             view.setOnClickListener(this);
@@ -150,19 +153,11 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
         @Override
         void bind(int position) {
-            Alarm alarm = alarms.get(position);
-
+            final Alarm alarm = alarms.get(position);
             enabled.setTag(position);
             enabled.setChecked(alarm.isEnabled());
             enabled.setOnClickListener(this);
-            if (use24Time) {
-                timePeriod.setVisibility(View.GONE);
-                time.setText(alarm.getTime().toString("HH:mm"));
-            } else {
-                timePeriod.setVisibility(View.VISIBLE);
-                time.setText(alarm.getTime().toString("h:mm"));
-                timePeriod.setText(alarm.getTime().toString("a"));
-            }
+            time.setText(dateFormatter.formatAsAlarmTime(alarm.getTime(), use24Time));
             repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
         }
 
@@ -239,8 +234,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     }
 
     public static class Message {
-        public @StringRes
-        final int titleRes;
+        public @StringRes final int titleRes;
         public final StringRef message;
 
         public @DrawableRes int titleIconRes = 0;

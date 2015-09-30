@@ -2,6 +2,7 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -74,7 +75,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
         dialog.setMessage(R.string.title_alarm_tone);
         dialog.setListener(this);
         dialog.setAdapter(adapter);
-        dialog.setDoneButtonEnabled(selectedSound != null);
+        dialog.setPositiveButtonEnabled(selectedSound != null);
         dialog.setActivityIndicatorVisible(true);
 
         bindAndSubscribe(presenter.availableAlarmSounds(), this::bindSounds, this::presentError);
@@ -122,6 +123,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
             player.setStreamVolume(targetVolume, AudioManager.FLAG_SHOW_UI);
             playSound(sound);
         });
+        prompt.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
         prompt.show();
     }
 
@@ -131,7 +133,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
         adapter.setSelectedSoundId(sound.id);
         getArguments().putSerializable(ARG_SELECTED_SOUND, selectedSound);
-        dialog.setDoneButtonEnabled(true);
+        dialog.setPositiveButtonEnabled(true);
 
         if (showVolumePrompts && player.isStreamVolumeAdjustable() &&
                 player.getStreamVolume() < player.getRecommendedStreamVolume()) {

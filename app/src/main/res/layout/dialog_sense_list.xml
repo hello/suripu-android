@@ -18,7 +18,7 @@
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Heading.Strong"
+        android:textAppearance="@style/AppTheme.Text.Heading.Alert"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:visibility="gone" />
 
@@ -29,31 +29,32 @@
         style="@style/Divider.Horizontal" />
 
     <Button
-        android:id="@+id/dialog_sense_list_done"
+        android:id="@+id/dialog_sense_list_positive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/gap_outer_dialog_buttons"
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="@string/action_done"
+        android:text="@android:string/ok"
         style="@style/AppTheme.Button.Dialog.Alert"/>
 
     <Button
-        android:id="@+id/dialog_sense_list_cancel"
+        android:id="@+id/dialog_sense_list_negative"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/gap_outer_dialog_buttons"
         android:layout_marginEnd="@dimen/gap_small"
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@id/dialog_sense_list_done"
+        android:layout_toStartOf="@id/dialog_sense_list_positive"
         android:text="@android:string/cancel"
+        android:textColor="@color/text_medium"
         style="@style/AppTheme.Button.Dialog.Alert"/>
 
     <View
         android:id="@+id/dialog_sense_list_button_divider"
-        android:layout_above="@id/dialog_sense_list_done"
+        android:layout_above="@id/dialog_sense_list_positive"
         style="@style/Divider.Horizontal" />
 
     <ListView

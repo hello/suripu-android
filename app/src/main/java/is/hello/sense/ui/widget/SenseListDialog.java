@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +22,8 @@ import is.hello.sense.ui.widget.util.Views;
 public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClickListener {
     private Listener<T> listener;
 
-    private Button doneButton;
-    private Button cancelButton;
+    private Button positiveButton;
+    private Button negativeButton;
     private TextView messageText;
     private View messageDivider;
     private ListView listView;
@@ -39,11 +40,11 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
         this.listView = (ListView) findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        this.doneButton = (Button) findViewById(R.id.dialog_sense_list_done);
-        Views.setSafeOnClickListener(doneButton, this::onDone);
+        this.positiveButton = (Button) findViewById(R.id.dialog_sense_list_positive);
+        Views.setSafeOnClickListener(positiveButton, this::onDone);
 
-        this.cancelButton = (Button) findViewById(R.id.dialog_sense_list_cancel);
-        Views.setSafeOnClickListener(cancelButton, ignored -> cancel());
+        this.negativeButton = (Button) findViewById(R.id.dialog_sense_list_negative);
+        Views.setSafeOnClickListener(negativeButton, ignored -> cancel());
 
         this.messageText = (TextView) findViewById(R.id.dialog_sense_list_message);
         this.messageDivider = findViewById(R.id.dialog_sense_list_message_divider);
@@ -55,7 +56,7 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
 
     @Override
     public void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        setDoneButtonEnabled(savedInstanceState.getBoolean("doneEnabled"));
+        setPositiveButtonEnabled(savedInstanceState.getBoolean("positiveButtonEnabled"));
         setActivityIndicatorVisible(savedInstanceState.getBoolean("activityIndicatorVisible"));
 
         Bundle parentSavedState = savedInstanceState.getParcelable("savedInstanceState");
@@ -68,7 +69,7 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
     public Bundle onSaveInstanceState() {
         Bundle savedState = new Bundle();
         savedState.putParcelable("savedInstanceState", super.onSaveInstanceState());
-        savedState.putBoolean("doneEnabled", doneButton.isEnabled());
+        savedState.putBoolean("positiveButtonEnabled", positiveButton.isEnabled());
         savedState.putBoolean("activityIndicatorVisible", activityIndicator.getVisibility() == View.VISIBLE);
         return savedState;
     }
@@ -104,8 +105,8 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
         listView.setAdapter(adapter);
     }
 
-    public void setDoneButtonEnabled(boolean enabled) {
-        doneButton.setEnabled(enabled);
+    public void setPositiveButtonEnabled(boolean enabled) {
+        positiveButton.setEnabled(enabled);
     }
 
     @Override
@@ -113,9 +114,9 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
         super.setCancelable(flag);
 
         if (flag) {
-            cancelButton.setVisibility(View.VISIBLE);
+            negativeButton.setVisibility(View.VISIBLE);
         } else {
-            cancelButton.setVisibility(View.GONE);
+            negativeButton.setVisibility(View.GONE);
         }
     }
 
@@ -126,6 +127,24 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
             activityIndicator.setVisibility(View.GONE);
         }
     }
+
+    /**
+     * @see android.content.DialogInterface#BUTTON_POSITIVE
+     * @see android.content.DialogInterface#BUTTON_NEGATIVE
+     */
+    public Button getButton(int which) {
+        switch (which) {
+            case DialogInterface.BUTTON_POSITIVE:
+                return positiveButton;
+
+            case DialogInterface.BUTTON_NEGATIVE:
+                return negativeButton;
+
+            default:
+                return null;
+        }
+    }
+
 
 
     public void onDone(@NonNull View sender) {

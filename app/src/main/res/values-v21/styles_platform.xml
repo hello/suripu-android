@@ -5,7 +5,7 @@
         <item name="android:colorPrimary">@color/light_accent</item>
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:statusBarColor">@color/light_accent_darkened</item>
         <item name="android:progressBarStyle">@android:style/Widget.Holo.ProgressBar</item>
 
         <item name="android:dialogTheme">@style/Platform.Dialog</item>
@@ -22,7 +22,6 @@
         <item name="android:colorPrimary">@color/light_accent</item>
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
     </style>
     <style name="Platform.Dialog.NoElevation">
         <item name="android:elevation">0dp</item>
@@ -33,7 +32,6 @@
         <item name="android:colorPrimary">@color/light_accent</item>
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>
-        <item name="android:statusBarColor">@color/status_bar</item>
     </style>
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner">
         <item name="android:elevation">0dp</item>

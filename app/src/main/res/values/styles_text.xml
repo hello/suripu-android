@@ -26,6 +26,12 @@
         <item name="android:textSize">@dimen/text_size_heading_large</item>
     </style>
 
+    <style name="AppTheme.Text.Heading.Alert">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_heading_alert</item>
+        <item name="android:textColor">@color/text_heading_major</item>
+    </style>
+
     <style name="AppTheme.Text.Subheading">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_subheading</item>
@@ -90,8 +96,9 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Neutral">
-        <item name="android:textColor">@color/text_neutral</item>
+    <style name="AppTheme.Text.Body.New">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_body_new</item>
     </style>
 
     <style name="AppTheme.Text.Body.Thin">
@@ -109,7 +116,7 @@
     </style>
 
     <style name="AppTheme.Text.Body.MidSized.Neutral">
-        <item name="android:textColor">@color/text_neutral</item>
+        <item name="android:textColor">@color/text_body_new</item>
     </style>
 
     <style name="AppTheme.Text.Body.Small">
@@ -138,9 +145,15 @@
     </style>
 
     <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">
-        <item name="android:textSize">@dimen/text_size_rotary_picker_item</item>
+        <item name="android:textSize">@dimen/view_rotary_picker_text_unfocused</item>
+        <item name="android:textColor">@color/text_rotary_picker_focused</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="AppTheme.Text.RotaryPickerItem.Focused" parent="AppTheme.Text.Body">
+        <item name="android:textSize">@dimen/view_rotary_picker_text_focused</item>
+        <item name="android:textColor">@color/text_rotary_picker_focused</item>
+    </style>
 
     <style name="AppTheme.Text.FieldLabel">
         <item name="android:fontFamily">sans-serif</item>
@@ -151,7 +164,6 @@
     <style name="AppTheme.Text.Button">
         <item name="android:textSize">@dimen/text_size_button</item>
     </style>
-
 
     <!-- Non-generic -->
 
@@ -188,12 +200,6 @@
         <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
     </style>
 
-    <style name="AppTheme.Text.SmartAlarm.Time.Period">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/text_size_smart_alarm_time_period</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
     <style name="AppTheme.Text.SmartAlarm.Repeat">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
@@ -202,8 +208,8 @@
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Big">
-        <item name="android:textColor">@color/light_accent</item>
-        <item name="android:textSize">@dimen/text_size_big_score</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_smart_alarm_time_big</item>
     </style>
 
     <style name="AppTheme.Text.ScaleReading">

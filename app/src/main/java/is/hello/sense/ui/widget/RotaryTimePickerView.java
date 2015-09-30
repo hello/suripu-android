@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StyleRes;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -30,7 +33,6 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
     //region Pickers
 
     private final RotaryPickerView hourPicker;
-    private final TextView hourMinuteDivider;
     private final RotaryPickerView minutePicker;
     private final RotaryPickerView periodPicker;
 
@@ -58,13 +60,15 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
     public RotaryTimePickerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        final Resources resources = getResources();
+
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
+        setBackground(new BackgroundDrawable(resources));
 
-        getOverlay().add(new OverlayDrawable());
-
-        LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1);
-        int hourMinutePadding = getResources().getDimensionPixelSize(R.dimen.gap_large);
+        final LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+                                                                 LayoutParams.WRAP_CONTENT);
+        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.gap_large);
 
         this.hourPicker = new RotaryPickerView(context);
         hourPicker.setOnSelectionListener(this);
@@ -72,21 +76,25 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         hourPicker.setMaxValue(12);
         hourPicker.setWrapsAround(true);
         hourPicker.setWantsLeadingZeros(false);
-        hourPicker.setItemGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        hourPicker.setItemGravity(Gravity.CENTER);
         hourPicker.setItemHorizontalPadding(hourMinutePadding);
         addView(hourPicker, pickerLayoutParams);
 
-        this.hourMinuteDivider = new TextView(context);
-        hourMinuteDivider.setTextAppearance(context, RotaryPickerView.DEFAULT_ITEM_TEXT_APPEARANCE);
+        final TextView hourMinuteDivider = new TextView(context);
+        hourMinuteDivider.setTextAppearance(context, RotaryPickerView.ITEM_TEXT_APPEARANCE_FOCUSED);
         hourMinuteDivider.setText(":");
-        addView(hourMinuteDivider, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        hourMinuteDivider.setIncludeFontPadding(false);
+        final int hourMinuteDividerYFix = Math.round(resources.getDisplayMetrics().scaledDensity * 4f);
+        hourMinuteDivider.setPadding(0, 0, 0, hourMinuteDividerYFix);
+        addView(hourMinuteDivider, new LayoutParams(LayoutParams.WRAP_CONTENT,
+                                                    LayoutParams.WRAP_CONTENT));
 
         this.minutePicker = new RotaryPickerView(context);
         minutePicker.setOnSelectionListener(this);
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
         minutePicker.setWrapsAround(true);
-        minutePicker.setItemGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        minutePicker.setItemGravity(Gravity.CENTER);
         minutePicker.setItemHorizontalPadding(hourMinutePadding);
         addView(minutePicker, pickerLayoutParams);
 
@@ -95,16 +103,15 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         periodPicker.setMinValue(PERIOD_AM);
         periodPicker.setMaxValue(PERIOD_PM);
         periodPicker.setValueStrings(DateFormatSymbols.getInstance().getAmPmStrings());
-        periodPicker.setItemGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        periodPicker.setItemGravity(Gravity.CENTER);
+        periodPicker.setMagnifyItemsNearCenter(false);
         addView(periodPicker, pickerLayoutParams);
 
         if (attrs != null) {
-            TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.RotaryPickerView, defStyleAttr, 0);
+            final TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.RotaryPickerView,
+                                                                     defStyleAttr, 0);
 
-            int itemTextAppearance = styles.getResourceId(R.styleable.RotaryPickerView_senseTextAppearance, RotaryPickerView.DEFAULT_ITEM_TEXT_APPEARANCE);
-            setItemTextAppearance(itemTextAppearance);
-
-            Drawable itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
+            final Drawable itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
             setItemBackground(itemBackground);
 
             styles.recycle();
@@ -126,14 +133,14 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         if (use24Time) {
             periodPicker.setVisibility(GONE);
 
-            int hour = getHours();
+            final int hour = getHours();
             hourPicker.setMinValue(0);
             hourPicker.setMaxValue(23);
             hourPicker.setValue(hour, false);
         } else {
             periodPicker.setVisibility(VISIBLE);
 
-            int hour = hourPicker.getValue();
+            final int hour = hourPicker.getValue();
             if (hour > 12) {
                 periodPicker.setValue(PERIOD_PM, false);
                 hourPicker.setValue(hour - 12, false);
@@ -171,8 +178,8 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
     }
 
     public void setTime(@NonNull LocalTime time) {
-        int hour = time.getHourOfDay();
-        int minute = time.getMinuteOfHour();
+        final int hour = time.getHourOfDay();
+        final int minute = time.getMinuteOfHour();
         setTime(hour, minute);
     }
 
@@ -200,13 +207,6 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         return minutePicker.getValue();
     }
 
-    public void setItemTextAppearance(@StyleRes int itemTextAppearance) {
-        hourPicker.setItemTextAppearance(itemTextAppearance);
-        minutePicker.setItemTextAppearance(itemTextAppearance);
-        periodPicker.setItemTextAppearance(itemTextAppearance);
-        hourMinuteDivider.setTextAppearance(getContext(), itemTextAppearance);
-    }
-
     public void setItemBackground(@Nullable Drawable itemBackground) {
         hourPicker.setItemBackground(itemBackground);
         minutePicker.setItemBackground(itemBackground);
@@ -225,7 +225,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
     @Override
     public void onSelectionRolledOver(@NonNull RotaryPickerView picker, @NonNull RotaryPickerView.RolloverDirection direction) {
         if (!use24Time && picker == hourPicker) {
-            int newValue = periodPicker.getValue() == PERIOD_AM
+            final int newValue = periodPicker.getValue() == PERIOD_AM
                     ? PERIOD_PM
                     : PERIOD_AM;
             periodPicker.setValue(newValue, true);
@@ -258,49 +258,78 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
     //endregion
 
 
-    private class OverlayDrawable extends Drawable {
-        private final Paint fillPaint = new Paint();
+    private static class BackgroundDrawable extends Drawable {
+        private final Paint paint = new Paint();
+        private final Rect focusBackgroundRect = new Rect();
         private final int itemHeightHalf;
+        private final int shadowHeight;
 
-        private OverlayDrawable() {
-            Resources resources = getResources();
+        private final GradientDrawable backgroundDrawable;
+        private final GradientDrawable shadowDrawable;
 
-            int color = resources.getColor(R.color.light_accent);
-            fillPaint.setColor(color);
-            fillPaint.setAlpha(32);
+        BackgroundDrawable(@NonNull Resources resources) {
+            this.itemHeightHalf = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_item_height) / 2;
+            this.shadowHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
 
-            this.itemHeightHalf = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_height) / 2;
+            final @ColorInt int[] backgroundColors = {
+                    resources.getColor(R.color.background),
+                    resources.getColor(R.color.background_light),
+            };
+            this.backgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                                                           backgroundColors);
+
+            final @ColorInt int[] shadowColors = {
+                    Color.TRANSPARENT,
+                    resources.getColor(R.color.view_time_picker_shadow_end),
+            };
+            this.shadowDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                                                       shadowColors);
+
+            paint.setColor(resources.getColor(R.color.background_light));
         }
 
         @Override
         public void draw(Canvas canvas) {
-            int width = canvas.getWidth(),
-                midY = canvas.getHeight() / 2;
+            backgroundDrawable.draw(canvas);
+            canvas.drawRect(focusBackgroundRect, paint);
 
-            int top = midY - itemHeightHalf;
-            int bottom = midY + itemHeightHalf;
+            shadowDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
+            shadowDrawable.setBounds(focusBackgroundRect.left, focusBackgroundRect.top - shadowHeight,
+                                     focusBackgroundRect.right, focusBackgroundRect.top);
+            shadowDrawable.draw(canvas);
 
-            canvas.drawRect(0, top, width, bottom, fillPaint);
-            canvas.drawRect(0, top, width, top + 1, fillPaint);
-            canvas.drawRect(0, bottom - 1, width, bottom, fillPaint);
+            shadowDrawable.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
+            shadowDrawable.setBounds(focusBackgroundRect.left, focusBackgroundRect.bottom,
+                                     focusBackgroundRect.right, focusBackgroundRect.bottom + shadowHeight);
+            shadowDrawable.draw(canvas);
         }
 
         @Override
         public void setAlpha(int alpha) {
-            fillPaint.setAlpha(alpha);
+            paint.setAlpha(alpha);
+            backgroundDrawable.setAlpha(alpha);
         }
 
         @Override
         public void setColorFilter(ColorFilter cf) {
-            fillPaint.setColorFilter(cf);
+            paint.setColorFilter(cf);
+            backgroundDrawable.setColorFilter(cf);
+        }
+
+        @Override
+        protected void onBoundsChange(Rect bounds) {
+            backgroundDrawable.setBounds(bounds);
+            focusBackgroundRect.set(bounds.left, bounds.centerY() - itemHeightHalf,
+                                    bounds.right, bounds.centerY() + itemHeightHalf);
         }
 
         @Override
         public int getOpacity() {
-            return PixelFormat.TRANSLUCENT;
+            return paint.getAlpha() == 255
+                    ? PixelFormat.OPAQUE
+                    : PixelFormat.TRANSLUCENT;
         }
     }
-
 
     public interface OnSelectionListener {
         void onSelectionWillChange();
