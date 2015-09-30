@@ -213,7 +213,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
                 }
             }
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error);
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error, getResources());
 
             if (ApiException.statusEquals(error, 409)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, newAccount.getEmail()));
@@ -241,7 +241,7 @@ public class OnboardingRegisterFragment extends InjectionFragment {
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
-            ErrorDialogFragment.presentError(getFragmentManager(), error);
+            ErrorDialogFragment.presentError(getActivity(), error);
         });
     }
 }

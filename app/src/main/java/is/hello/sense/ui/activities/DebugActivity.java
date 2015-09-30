@@ -141,7 +141,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                          ignored -> LoadingDialogFragment.close(getFragmentManager()),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             ErrorDialogFragment.presentError(this, e);
                          });
     }
 
@@ -164,7 +164,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
             httpCache.evictAll();
             Toast.makeText(getApplicationContext(), "Cache Cleared", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
+            ErrorDialogFragment.presentError(this, e);
         }
     }
 

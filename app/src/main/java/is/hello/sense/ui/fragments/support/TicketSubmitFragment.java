@@ -189,7 +189,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
                     attachmentPicker.showOptions();
                 }, e -> {
                     LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    ErrorDialogFragment.presentError(getActivity(), e);
                 });
     }
 
@@ -238,7 +238,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
                     ((FragmentNavigation) getActivity()).popFragment(this, false);
                 }, e -> {
                     LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentError(getFragmentManager(), e);
+                    ErrorDialogFragment.presentError(getActivity(), e);
                 });
     }
 

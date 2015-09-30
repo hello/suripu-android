@@ -172,7 +172,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
     public void presentError(Throwable e) {
         hideLoadingIndicator();
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e)
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources())
                 .withSupportLink()
                 .build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

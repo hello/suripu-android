@@ -263,7 +263,7 @@ public class TicketDetailFragment extends InjectionFragment
         LoadingDialogFragment.close(getFragmentManager());
         loadingIndicator.setVisibility(View.GONE);
 
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        ErrorDialogFragment.presentError(getActivity(), e);
 
         updateButtons();
     }

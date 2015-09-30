@@ -158,6 +158,6 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
     public void presentError(Throwable e) {
         endActivity(false);
         LoadingDialogFragment.close(getFragmentManager());
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        ErrorDialogFragment.presentError(getActivity(), e);
     }
 }

@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,11 +33,9 @@ import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -374,13 +373,13 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
                     .withOperation(operation);
 
             if (e instanceof SenseSetWifiValidationError &&
                     ((SenseSetWifiValidationError) e).reason == SenseSetWifiValidationError.Reason.MALFORMED_BYTES) {
-                Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
-                intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri()));
+                final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
+                final Intent intent = UserSupport.createViewUriIntent(getResources(), uri);
                 errorDialogBuilder.withAction(intent, R.string.action_support);
             } else {
                 errorDialogBuilder.withSupportLink();

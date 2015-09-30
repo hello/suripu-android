@@ -2,8 +2,9 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,8 +16,6 @@ import is.hello.buruberi.bluetooth.errors.BluetoothError;
 import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
-import is.hello.sense.ui.activities.SupportActivity;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -41,9 +40,9 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     //region Lifecycle
 
-    public static void presentError(@NonNull FragmentManager fm, @Nullable Throwable e) {
-        ErrorDialogFragment fragment = new Builder(e).build();
-        fragment.showAllowingStateLoss(fm, TAG);
+    public static void presentError(@NonNull Activity activity, @Nullable Throwable e) {
+        final ErrorDialogFragment fragment = new Builder(e, activity.getResources()).build();
+        fragment.showAllowingStateLoss(activity.getFragmentManager(), TAG);
     }
 
     @Override
@@ -148,13 +147,13 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         public Builder() {
         }
 
-        public Builder(@Nullable Throwable e) {
+        public Builder(@Nullable Throwable e, @NonNull Resources resources) {
             withMessage(Errors.getDisplayMessage(e));
             withErrorType(Errors.getType(e));
             withContextInfo(Errors.getContextInfo(e));
 
             if (BluetoothError.isFatal(e)) {
-                withUnstableBluetoothHelp();
+                withUnstableBluetoothHelp(resources);
             }
         }
 
@@ -200,9 +199,9 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return this;
         }
 
-        public Builder withUnstableBluetoothHelp() {
-            Intent intent = new Intent(SenseApplication.getInstance(), SupportActivity.class);
-            intent.putExtras(SupportActivity.getArguments(UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri()));
+        public Builder withUnstableBluetoothHelp(@NonNull Resources resources) {
+            final Uri uri = UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri();
+            final Intent intent = UserSupport.createViewUriIntent(resources, uri);
             withAction(intent, R.string.action_more_info);
             withAddendum(R.string.error_addendum_unstable_stack);
             return this;

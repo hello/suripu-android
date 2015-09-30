@@ -218,7 +218,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
     public void presentError(Throwable e) {
         finishLoading(true);
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
 

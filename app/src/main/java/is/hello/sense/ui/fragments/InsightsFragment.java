@@ -197,7 +197,7 @@ public class InsightsFragment extends UndersideTabFragment
                          },
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
+                             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
                              errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
                          });
     }
