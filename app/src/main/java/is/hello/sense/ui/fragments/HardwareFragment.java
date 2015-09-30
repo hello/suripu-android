@@ -214,7 +214,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     private void presentFactoryResetError(Throwable e) {
         hideBlockingActivity(false, () -> {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e)
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources())
                     .withOperation("Recovery Factory Reset")
                     .withSupportLink()
                     .build();

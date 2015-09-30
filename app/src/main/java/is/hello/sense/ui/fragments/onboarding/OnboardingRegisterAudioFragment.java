@@ -76,7 +76,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
                          },
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             ErrorDialogFragment.presentError(getActivity(), e);
                          });
     }
 }

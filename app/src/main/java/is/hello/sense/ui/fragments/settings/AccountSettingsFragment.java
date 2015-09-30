@@ -266,7 +266,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
     public void accountUnavailable(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e).build();
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
@@ -409,7 +409,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
                              },
                              e -> {
                                  LoadingDialogFragment.close(getFragmentManager());
-                                 ErrorDialogFragment.presentError(getFragmentManager(), e);
+                                 ErrorDialogFragment.presentError(getActivity(), e);
                              });
         });
     }

@@ -164,7 +164,7 @@ public class OnboardingSignInFragment extends InjectionFragment {
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error);
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(error, getResources());
             if (ApiException.statusEquals(error, 401)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_invalid_credentials));
             }

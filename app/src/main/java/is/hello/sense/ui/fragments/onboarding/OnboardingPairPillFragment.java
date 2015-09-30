@@ -199,7 +199,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             skipButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.VISIBLE);
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
             errorDialogBuilder.withOperation("Pair Pill");
             if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
@@ -210,7 +210,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_pill_already_paired));
                 errorDialogBuilder.withSupportLink();
             } else {
-                errorDialogBuilder.withUnstableBluetoothHelp();
+                errorDialogBuilder.withUnstableBluetoothHelp(getResources());
             }
 
             ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();

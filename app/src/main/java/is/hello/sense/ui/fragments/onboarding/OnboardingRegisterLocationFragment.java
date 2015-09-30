@@ -115,7 +115,7 @@ public class OnboardingRegisterLocationFragment extends InjectionFragment
             try {
                 connectionResult.startResolutionForResult(getActivity(), RESOLUTION_REQUEST_CODE);
             } catch (IntentSender.SendIntentException e) {
-                ErrorDialogFragment.presentError(getFragmentManager(), e);
+                ErrorDialogFragment.presentError(getActivity(), e);
             }
         });
     }
