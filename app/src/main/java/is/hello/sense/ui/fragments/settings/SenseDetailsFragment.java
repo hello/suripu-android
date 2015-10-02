@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
+import is.hello.buruberi.util.StringRef;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
@@ -87,9 +88,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             }
 
             stateSafeExecutor.execute(() -> LoadingDialogFragment.close(getFragmentManager()));
-            showTroubleshootingAlert(R.string.error_peripheral_connection_lost,
-                                     R.string.action_reconnect,
-                                     SenseDetailsFragment.this::connectToPeripheral);
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(R.string.error_peripheral_connection_lost))
+                    .setPrimaryButtonTitle(R.string.action_reconnect)
+                    .setPrimaryButtonOnClick(SenseDetailsFragment.this::connectToPeripheral);
+            showTroubleshootingAlert(alert);
             showRestrictedSenseActions();
         }
     };
@@ -123,12 +126,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.pairingMode = addDeviceAction(R.string.action_enter_pairing_mode, true, this::putIntoPairingMode);
+        this.pairingMode = addDeviceAction(R.drawable.icon_settings_user_guide, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
         pairingMode.setEnabled(false);
-        this.changeWiFi = addDeviceAction(R.string.action_select_wifi_network, true, this::changeWifiNetwork);
+        this.changeWiFi = addDeviceAction(R.drawable.icon_settings_wifi, R.string.action_select_wifi_network, this::changeWifiNetwork);
         changeWiFi.setEnabled(false);
-        addDeviceAction(R.string.action_change_time_zone, true, this::changeTimeZone);
-        addDeviceAction(R.string.title_advanced, false, this::showAdvancedOptions);
+        addDeviceAction(R.drawable.icon_settings_timezone, R.string.action_change_time_zone, this::changeTimeZone);
+        addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
         IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
@@ -241,12 +244,21 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         if (network == null ||
                 TextUtils.isEmpty(network.ssid) ||
                 wifi_connection_state.IP_RETRIEVED != network.connectionState) {
-            showTroubleshootingAlert(R.string.error_sense_no_connectivity,
-                                     R.string.action_troubleshoot,
-                                     () -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(R.string.error_sense_no_connectivity))
+                    .setPrimaryButtonTitle(R.string.action_troubleshoot)
+                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI))
+                    .setSecondaryButtonTitle(R.string.action_retry)
+                    .setSecondaryButtonOnClick(this::connectToPeripheral);
+            showTroubleshootingAlert(alert);
         } else if (device.isMissing()) {
-            String missingMessage = getString(R.string.error_sense_missing_fmt, device.getLastUpdatedDescription(getActivity()));
-            showTroubleshootingAlert(missingMessage, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.SENSE_MISSING));
+            final String missingMessage = getString(R.string.error_sense_missing_fmt,
+                                                    device.getLastUpdatedDescription(getActivity()));
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(missingMessage))
+                    .setPrimaryButtonTitle(R.string.action_troubleshoot)
+                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SENSE_MISSING));
+            showTroubleshootingAlert(alert);
         } else {
             hideAlert();
         }
@@ -259,14 +271,20 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     public void onBluetoothStateChanged(boolean isEnabled) {
         if (!isEnabled) {
-            showTroubleshootingAlert(R.string.error_no_bluetooth_connectivity, R.string.action_turn_on_ble, this::enableBluetooth);
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(R.string.error_no_bluetooth_connectivity))
+                    .setPrimaryButtonTitle(R.string.action_turn_on_ble)
+                    .setPrimaryButtonOnClick(this::enableBluetooth);
+            showTroubleshootingAlert(alert);
             showRestrictedSenseActions();
         }
     }
 
     public void connectToPeripheral() {
         showBlockingAlert(R.string.info_connecting_to_sense);
-        bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device), this::bindPeripheral, this::presentError);
+        bindAndSubscribe(this.hardwarePresenter.discoverPeripheralForDevice(device),
+                         this::bindPeripheral,
+                         this::presentError);
     }
 
     public void enableBluetooth() {
@@ -277,7 +295,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                              connectToPeripheral();
                          },
                          e -> {
-                             showTroubleshootingAlert(R.string.error_no_bluetooth_connectivity, R.string.action_turn_on_ble, this::enableBluetooth);
+                             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                                     .setMessage(StringRef.from(R.string.error_no_bluetooth_connectivity))
+                                     .setPrimaryButtonTitle(R.string.action_turn_on_ble)
+                                     .setPrimaryButtonOnClick(this::enableBluetooth);
+                             showTroubleshootingAlert(alert);
                              presentError(e);
                          });
     }
@@ -304,7 +326,13 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         if (e instanceof PeripheralNotFoundError) {
             hardwarePresenter.trackPeripheralNotFound();
 
-            showTroubleshootingAlert(R.string.error_sense_not_found, R.string.action_troubleshoot, () -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE));
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(R.string.error_sense_not_found))
+                    .setPrimaryButtonTitle(R.string.action_troubleshoot)
+                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE))
+                    .setSecondaryButtonTitle(R.string.action_retry)
+                    .setSecondaryButtonOnClick(this::connectToPeripheral);
+            showTroubleshootingAlert(alert);
 
             if (hardwarePresenter.shouldPromptForHighPowerScan()) {
                 PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();

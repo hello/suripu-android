@@ -181,25 +181,6 @@ public final class Styles {
         return new ColorDrawableCompat(resources.getColor(R.color.graph_fill_solid));
     }
 
-    public static @NonNull TextView createItemView(@NonNull Context context,
-                                                   @StringRes int titleRes,
-                                                   @StyleRes int textAppearanceRes,
-                                                   @NonNull View.OnClickListener onClick) {
-        TextView itemView = new TextView(context);
-        itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        itemView.setTextAppearance(context, textAppearanceRes);
-        itemView.setText(titleRes);
-
-        Resources resources = context.getResources();
-        int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding, itemTextHorizontalPadding, itemTextVerticalPadding);
-
-        Views.setSafeOnClickListener(itemView, onClick);
-
-        return itemView;
-    }
-
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
         refreshLayout.setColorSchemeResources(R.color.sensor_alert, R.color.sensor_warning, R.color.sensor_ideal);
     }
