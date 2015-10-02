@@ -525,7 +525,11 @@ public class Analytics {
 
         if (provider != null) {
             provider.identify(accountId);
-            provider.getPeople().identify(accountId);
+
+            final MixpanelAPI.People people = provider.getPeople();
+            people.identify(accountId);
+            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
         }
 
         trackUserIdentifier(accountId);
