@@ -111,11 +111,15 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Medium.Accent">
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    </style>
+
     <style name="AppTheme.Text.Body.MidSized">
         <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
     </style>
 
-    <style name="AppTheme.Text.Body.MidSized.Neutral">
+    <style name="AppTheme.Text.Body.MidSized.New">
         <item name="android:textColor">@color/text_body_new</item>
     </style>
 
@@ -138,10 +142,6 @@
 
     <style name="AppTheme.Text.Body.Dimmed">
         <item name="android:textColor">@color/grey</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Footer" parent="AppTheme.Text.Body.Small">
-        <item name="android:textColor">@color/text_footer</item>
     </style>
 
     <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">

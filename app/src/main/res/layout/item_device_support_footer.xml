@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_device_support_footer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/gap_outer_footer"
-    android:paddingRight="@dimen/gap_outer_footer"
-    android:paddingBottom="@dimen/gap_medium"
+    android:padding="@dimen/gap_outer"
     android:gravity="center"
-    android:textAppearance="@style/AppTheme.Text.Body.Footer"
+    android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
     android:text="@string/devices_support_footer"
     android:lineSpacingMultiplier="@dimen/line_multiple_body"/>

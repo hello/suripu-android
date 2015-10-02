@@ -2,8 +2,10 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 
 public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.BaseViewHolder>
@@ -126,9 +129,18 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
 
         @Override
         public void bind(int position) {
-            Device device = getItem(position);
+            final Device device = getItem(position);
             title.setText(device.getType().nameRes);
-            title.setCompoundDrawablesRelativeWithIntrinsicBounds(device.getType().iconRes, 0, wantsChevron() ? R.drawable.disclosure_chevron : 0, 0);
+
+            if (wantsChevron()) {
+                final Drawable chevron = ResourcesCompat.getDrawable(resources,
+                                                                     R.drawable.disclosure_chevron,
+                                                                     null).mutate();
+                Drawables.setTintColor(chevron, resources.getColor(R.color.light_accent));
+                title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
+            } else {
+                title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+            }
         }
     }
 
@@ -176,17 +188,13 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
                     if (TextUtils.isEmpty(networkName)) {
                         if (device.isMissing()) {
                             status1.setText(R.string.missing_data_placeholder);
-                            status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                         } else {
                             status1.setText(R.string.device_network_unknown);
-                            status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
                         }
-                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
                     } else {
                         status1.setText(networkName);
-                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold);
-                        status1.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.wifi_network, 0, 0, 0);
                     }
+                    status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Medium);
 
                     status2Label.setText(R.string.label_firmware_version);
                     status2.setText(device.getFirmwareVersion());
@@ -205,9 +213,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
                     }
                     status1.setText(state.nameRes);
                     if (state == Device.State.UNKNOWN) {
-                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold_Italic);
-                    } else {
                         status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold);
+                    } else {
+                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Medium);
                     }
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 

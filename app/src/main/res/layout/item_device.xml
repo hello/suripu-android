@@ -6,34 +6,27 @@
     android:layout_height="wrap_content"
     android:shrinkColumns="0"
     android:stretchColumns="1"
-    style="@style/AppTheme.Card.Clickable">
+    android:background="@drawable/selectable_dark_bounded">
 
     <TextView
         android:id="@+id/item_device_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_medium"
-        android:drawableStart="@drawable/sense_icon"
+        android:layout_margin="@dimen/gap_outer"
         android:drawableEnd="@drawable/disclosure_chevron"
         android:drawablePadding="@dimen/gap_small"
         android:gravity="start|center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Actionable"
+        android:textAppearance="@style/AppTheme.Text.Body.Medium.Accent"
         android:text="@string/app_name"
         android:singleLine="true"/>
-
-    <View
-        android:id="@+id/item_device_divider"
-        android:layout_below="@id/item_device_name"
-        style="@style/Divider.Horizontal"/>
 
     <TextView
         android:id="@+id/item_device_last_seen_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/item_device_divider"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_below="@id/item_device_name"
+        android:layout_marginStart="@dimen/gap_outer"
         android:layout_marginEnd="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/label_last_seen"/>
@@ -44,9 +37,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_last_seen_label"
         android:layout_toEndOf="@id/item_device_last_seen_label"
-        android:layout_marginEnd="@dimen/gap_medium"
+        android:layout_marginEnd="@dimen/gap_outer"
         android:gravity="end|center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:textAppearance="@style/AppTheme.Text.Body.Medium"
         android:text="@string/missing_data_placeholder"
         android:singleLine="true"/>
 
@@ -56,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_last_seen_label"
         android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/gap_outer"
         android:layout_marginEnd="@dimen/gap_medium"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/label_wifi"/>
@@ -67,11 +60,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status_label"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:layout_marginEnd="@dimen/gap_outer"
+        android:textAppearance="@style/AppTheme.Text.Body.Medium"
         android:gravity="end|center_vertical"
-        android:drawableStart="@drawable/wifi_network"
-        android:drawablePadding="@dimen/gap_xsmall"
         android:text="@string/device_unknown"
         android:singleLine="true"/>
 
@@ -81,9 +72,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_status_label"
         android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/gap_outer"
         android:layout_marginEnd="@dimen/gap_small"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_outer"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/label_firmware_version"/>
 
@@ -93,8 +84,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status2_label"
         android:layout_toEndOf="@id/item_device_status2_label"
-        android:layout_marginEnd="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"
+        android:layout_marginEnd="@dimen/gap_outer"
+        android:textAppearance="@style/AppTheme.Text.Body.Medium"
         android:gravity="end|center_vertical"
         android:text="@string/missing_data_placeholder"
         android:singleLine="true"/>

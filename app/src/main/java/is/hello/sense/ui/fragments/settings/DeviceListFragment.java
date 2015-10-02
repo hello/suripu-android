@@ -30,7 +30,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -80,7 +80,7 @@ public class DeviceListFragment extends InjectionFragment
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
 
         this.adapter = new DevicesAdapter(getActivity(), preferences);
