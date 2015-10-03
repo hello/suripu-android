@@ -60,10 +60,11 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        View otherNetworkView = inflater.inflate(R.layout.item_wifi_network, listView, false);
-        otherNetworkView.findViewById(R.id.item_wifi_network_locked).setVisibility(View.GONE);
-        otherNetworkView.findViewById(R.id.item_wifi_network_scanned).setVisibility(View.GONE);
-        ((TextView) otherNetworkView.findViewById(R.id.item_wifi_network_name)).setText(R.string.wifi_other_network);
+        final View otherNetworkView = inflater.inflate(R.layout.item_wifi_network, listView, false);
+        final WifiNetworkAdapter.ViewHolder holder = new WifiNetworkAdapter.ViewHolder(otherNetworkView);
+        holder.locked.setVisibility(View.GONE);
+        holder.strength.setVisibility(View.INVISIBLE);
+        holder.name.setText(R.string.wifi_other_network);
         listView.addFooterView(otherNetworkView, null, true);
 
         listView.setAdapter(networkAdapter);

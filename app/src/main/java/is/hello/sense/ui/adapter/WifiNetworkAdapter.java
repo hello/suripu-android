@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +10,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
+import is.hello.sense.api.model.WiFiSignalStrength;
 
-public class WifiNetworkAdapter extends ArrayAdapter<SenseCommandProtos.wifi_endpoint> {
+public class WifiNetworkAdapter extends ArrayAdapter<wifi_endpoint> {
+    private final Resources resources;
     private final LayoutInflater inflater;
 
-    public WifiNetworkAdapter(Context context) {
+    public WifiNetworkAdapter(@NonNull Context context) {
         super(context, R.layout.item_wifi_network);
 
+        this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -30,10 +34,16 @@ public class WifiNetworkAdapter extends ArrayAdapter<SenseCommandProtos.wifi_end
             view.setTag(new ViewHolder(view));
         }
 
-        SenseCommandProtos.wifi_endpoint item = getItem(position);
-        ViewHolder holder = (ViewHolder) view.getTag();
+        final wifi_endpoint item = getItem(position);
+        final ViewHolder holder = (ViewHolder) view.getTag();
+
+        final WiFiSignalStrength signalStrength = WiFiSignalStrength.fromRssi(item.getRssi());
+        holder.strength.setImageResource(signalStrength.icon);
+        holder.strength.setContentDescription(resources.getString(signalStrength.accessibilityString));
+
         holder.name.setText(item.getSsid());
-        if (item.getSecurityType() == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
+
+        if (item.getSecurityType() == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             holder.locked.setVisibility(View.GONE);
         } else {
             holder.locked.setVisibility(View.VISIBLE);
@@ -43,11 +53,13 @@ public class WifiNetworkAdapter extends ArrayAdapter<SenseCommandProtos.wifi_end
     }
 
 
-    private static class ViewHolder {
-        final TextView name;
-        final ImageView locked;
+    public static class ViewHolder {
+        public final ImageView strength;
+        public final TextView name;
+        public final ImageView locked;
 
-        ViewHolder(@NonNull View view) {
+        public ViewHolder(@NonNull View view) {
+            this.strength = (ImageView) view.findViewById(R.id.item_wifi_network_strength);
             this.name = (TextView) view.findViewById(R.id.item_wifi_network_name);
             this.locked = (ImageView) view.findViewById(R.id.item_wifi_network_locked);
         }

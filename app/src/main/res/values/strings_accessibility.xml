@@ -25,4 +25,9 @@
     <string name="accessibility_event_name_fell_asleep">Sleeping</string>
     <string name="accessibility_event_name_alarm_rang">Alarm</string>
     <string name="accessibility_event_name_unknown">Other</string>
+
+    <string name="accessibility_wifi_signal_strength_none">WiFi signal strength: None</string>
+    <string name="accessibility_wifi_signal_strength_bad">WiFi signal strength: Poor</string>
+    <string name="accessibility_wifi_signal_strength_fair">WiFi signal strength: Fair</string>
+    <string name="accessibility_wifi_signal_strength_good">WiFi signal strength: Good</string>
 </resources>
