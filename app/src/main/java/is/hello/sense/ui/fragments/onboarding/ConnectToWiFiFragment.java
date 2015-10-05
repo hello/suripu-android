@@ -160,8 +160,6 @@ public class ConnectToWiFiFragment extends HardwareFragment
         if (getActivity().getActionBar() != null) {
             toolbar.hide();
             setHasOptionsMenu(true);
-
-            title.setTextAppearance(getActivity(), R.style.AppTheme_Text_Heading_Alert);
         } else {
             toolbar.setWantsBackButton(true)
                    .setOnHelpClickListener(ignored -> {

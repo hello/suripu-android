@@ -23,6 +23,6 @@
         android:layout_height="wrap_content"
         android:text="@string/title_thank_you"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:textAppearance="@style/AppTheme.Text.Heading"/>
+        android:textAppearance="?attr/senseTextAppearanceHeading" />
 
 </LinearLayout>

@@ -34,10 +34,16 @@
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
+
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@color/background_onboarding</item>
+
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Subheading</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

@@ -16,7 +16,7 @@
         android:drawableTop="@drawable/onboarding_done_check"
         android:drawablePadding="@dimen/gap_large"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:textAppearance="?attr/senseTextAppearanceSubheading"
         android:text="@string/onboarding_done_message_1"
         android:lineSpacingMultiplier="@dimen/line_multiple_subheading"/>
 

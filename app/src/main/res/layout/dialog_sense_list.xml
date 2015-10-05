@@ -18,7 +18,7 @@
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Heading.Alert"
+        android:textAppearance="@style/AppTheme.Text.Heading.New"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:visibility="gone" />
 
