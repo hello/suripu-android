@@ -71,19 +71,19 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
         this.peripheralActions = new StaticItemAdapter(this);
 
-        peripheralActions.addTextItem("Disconnect", null, this::disconnect);
-        peripheralActions.addTextItem("Pairing Mode", null, this::putIntoPairingMode);
-        peripheralActions.addTextItem("Normal Mode", null, this::putIntoNormalMode);
-        peripheralActions.addTextItem("Device Factory Reset", null, this::factoryReset);
-        peripheralActions.addTextItem("Get WiFi Network", null, this::getWifiNetwork);
-        peripheralActions.addTextItem("Set WiFi Network", null, this::setWifiNetwork);
-        peripheralActions.addTextItem("Pair Pill Mode", null, this::pairPillMode);
-        peripheralActions.addTextItem("Link Account", null, this::linkAccount);
-        peripheralActions.addTextItem("Push Data", null, this::pushData);
-        peripheralActions.addTextItem("Busy LEDs", null, this::busyLedAnimation);
-        peripheralActions.addTextItem("Trippy LEDs", null, this::trippyLedAnimation);
-        peripheralActions.addTextItem("Fade Out LEDs", null, this::stopAnimationWithFade);
-        peripheralActions.addTextItem("Turn Off LEDs", null, this::stopAnimationWithoutFade);
+        peripheralActions.addTextItem("Disconnect", this::disconnect);
+        peripheralActions.addTextItem("Pairing Mode", this::putIntoPairingMode);
+        peripheralActions.addTextItem("Normal Mode", this::putIntoNormalMode);
+        peripheralActions.addTextItem("Device Factory Reset", this::factoryReset);
+        peripheralActions.addTextItem("Get WiFi Network", this::getWifiNetwork);
+        peripheralActions.addTextItem("Set WiFi Network", this::setWifiNetwork);
+        peripheralActions.addTextItem("Pair Pill Mode", this::pairPillMode);
+        peripheralActions.addTextItem("Link Account", this::linkAccount);
+        peripheralActions.addTextItem("Push Data", this::pushData);
+        peripheralActions.addTextItem("Busy LEDs", this::busyLedAnimation);
+        peripheralActions.addTextItem("Trippy LEDs", this::trippyLedAnimation);
+        peripheralActions.addTextItem("Fade Out LEDs", this::stopAnimationWithFade);
+        peripheralActions.addTextItem("Turn Off LEDs", this::stopAnimationWithoutFade);
 
         IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
         Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);

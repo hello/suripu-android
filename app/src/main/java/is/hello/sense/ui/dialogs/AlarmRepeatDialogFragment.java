@@ -88,7 +88,7 @@ public class AlarmRepeatDialogFragment extends SenseDialogFragment
         private final Set<Integer> selectedDays = new HashSet<>();
 
         public DayAdapter(@NonNull Context context, @NonNull List<Integer> days) {
-            super(context, R.layout.item_static_check, days);
+            super(context, R.layout.item_settings_toggle, days);
 
             this.inflater = LayoutInflater.from(context);
         }
@@ -116,7 +116,7 @@ public class AlarmRepeatDialogFragment extends SenseDialogFragment
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null) {
-                view = inflater.inflate(R.layout.item_static_check, parent, false);
+                view = inflater.inflate(R.layout.item_settings_toggle, parent, false);
                 view.setTag(new ViewHolder(view));
             }
 
@@ -134,8 +134,8 @@ public class AlarmRepeatDialogFragment extends SenseDialogFragment
             final TextView title;
 
             ViewHolder(@NonNull View view) {
-                this.checkBox = (CheckBox) view.findViewById(R.id.item_static_check_box);
-                this.title = (TextView) view.findViewById(R.id.item_static_check_title);
+                this.checkBox = (CheckBox) view.findViewById(R.id.item_settings_toggle_check_box);
+                this.title = (TextView) view.findViewById(R.id.item_settings_toggle_check_title);
             }
         }
     }

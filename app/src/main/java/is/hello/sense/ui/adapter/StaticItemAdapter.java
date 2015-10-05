@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,18 +21,12 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
         implements ListView.OnItemClickListener {
     private final LayoutInflater layoutInflater;
     private final Resources resources;
-    private @Nullable TextUtils.TruncateAt ellipsize = null;
 
     public StaticItemAdapter(Context context) {
-        super(context, R.layout.item_static_text);
+        super(context, R.layout.item_settings_detail);
 
         this.layoutInflater = LayoutInflater.from(context);
         this.resources = context.getResources();
-    }
-
-    public void setEllipsize(@Nullable TextUtils.TruncateAt ellipsize) {
-        this.ellipsize = ellipsize;
-        notifyDataSetChanged();
     }
 
 
@@ -60,38 +53,16 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
         }
     }
 
-    public Item addSectionTitle(@NonNull String title) {
-        Item item = new Item(title, null);
+    public TextItem addTextItem(@NonNull String title, @Nullable Action1<TextItem> onClick) {
+        TextItem item = new TextItem(title, onClick);
         add(item);
         return item;
     }
 
-    public Item addSectionDivider() {
-        return addSectionTitle("");
-    }
-
-    public Item addSectionTitle(@StringRes int titleRes) {
-        return addSectionTitle(getStringSafe(titleRes));
-    }
-
-    public TextItem addTextItem(@NonNull String title, @Nullable String value, @Nullable Action1<TextItem> onClick) {
-        TextItem item = new TextItem(title, value, onClick);
+    public TextItem addTextItem(@NonNull String title) {
+        TextItem item = new TextItem(title, null);
         add(item);
         return item;
-    }
-
-    public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes, @Nullable Action1<TextItem> onClick) {
-        return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes), onClick);
-    }
-
-    public TextItem addTextItem(@NonNull String title, @Nullable String value) {
-        TextItem item = new TextItem(title, value, null);
-        add(item);
-        return item;
-    }
-
-    public TextItem addTextItem(@StringRes int titleRes, @StringRes int valueRes) {
-        return addTextItem(getStringSafe(titleRes), getStringSafe(valueRes));
     }
 
     public CheckItem addCheckItem(@NonNull String title, boolean checked, @Nullable Action1<CheckItem> onClick) {
@@ -102,16 +73,6 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
 
     public CheckItem addCheckItem(@StringRes int titleRes, boolean checked, @Nullable Action1<CheckItem> onClick) {
         return addCheckItem(getStringSafe(titleRes), checked, onClick);
-    }
-
-    public Item addFooterItem(@NonNull String title) {
-        Item item = new Item(ItemType.SECTION_FOOTER, title, null);
-        add(item);
-        return item;
-    }
-
-    public Item addFooterItem(@StringRes int titleRes) {
-        return addFooterItem(getStringSafe(titleRes));
     }
 
     //endregion
@@ -137,49 +98,23 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
         ItemType type = item.type;
 
         switch (type) {
-            case SECTION_TITLE: {
-                if (view == null) {
-                    view = layoutInflater.inflate(R.layout.item_section_title, parent, false);
-                    view.setTag(new SectionItemViewHolder(view));
-                }
-
-                SectionItemViewHolder holder = (SectionItemViewHolder) view.getTag();
-                String itemTitle = item.getTitle();
-                if (TextUtils.isEmpty(itemTitle)) {
-                    holder.title.setText(null);
-                    holder.title.setVisibility(View.GONE);
-                } else {
-                    holder.title.setText(itemTitle);
-                    holder.title.setVisibility(View.VISIBLE);
-                }
-                if (position == 0) {
-                    holder.divider.setVisibility(View.GONE);
-                } else {
-                    holder.divider.setVisibility(View.VISIBLE);
-                }
-
-                break;
-            }
-
             case TEXT_ITEM: {
                 if (view == null) {
-                    view = layoutInflater.inflate(R.layout.item_static_text, parent, false);
+                    view = layoutInflater.inflate(R.layout.item_settings_detail, parent, false);
                     view.setTag(new TextItemViewHolder(view));
                 }
 
                 TextItem textItem = (TextItem) item;
                 TextItemViewHolder holder = (TextItemViewHolder) view.getTag();
                 holder.title.setText(textItem.getTitle());
-                holder.detail.setText(textItem.getDetail());
-                holder.detail.setEllipsize(ellipsize);
-                holder.detail.setSingleLine(ellipsize != null);
+                holder.detail.setText(null);
 
                 break;
             }
 
             case CHECK_ITEM: {
                 if (view == null) {
-                    view = layoutInflater.inflate(R.layout.item_static_check, parent, false);
+                    view = layoutInflater.inflate(R.layout.item_settings_toggle, parent, false);
                     view.setTag(new CheckItemViewHolder(view));
                 }
 
@@ -187,18 +122,6 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
                 CheckItemViewHolder holder = (CheckItemViewHolder) view.getTag();
                 holder.title.setText(checkItem.getTitle());
                 holder.check.setChecked(checkItem.isChecked());
-
-                break;
-            }
-
-            case SECTION_FOOTER: {
-                if (view == null) {
-                    view = layoutInflater.inflate(R.layout.item_section_footer, parent, false);
-                    view.setTag(new SectionFooterViewHolder(view));
-                }
-
-                SectionFooterViewHolder holder = (SectionFooterViewHolder) view.getTag();
-                holder.text.setText(item.getTitle());
 
                 break;
             }
@@ -211,23 +134,13 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
         return view;
     }
 
-    static class SectionItemViewHolder {
-        final View divider;
-        final TextView title;
-
-        SectionItemViewHolder(@NonNull View view) {
-            this.divider = view.findViewById(R.id.item_section_title_divider);
-            this.title = (TextView) view.findViewById(R.id.item_section_title_text);
-        }
-    }
-
     static class TextItemViewHolder {
         final TextView title;
         final TextView detail;
 
         TextItemViewHolder(@NonNull View view) {
-            this.title = (TextView) view.findViewById(R.id.item_static_text_title);
-            this.detail = (TextView) view.findViewById(R.id.item_static_text_detail);
+            this.title = (TextView) view.findViewById(R.id.item_settings_detail_title);
+            this.detail = (TextView) view.findViewById(R.id.item_settings_detail_detail);
         }
     }
 
@@ -236,16 +149,8 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
         final CheckBox check;
 
         CheckItemViewHolder(@NonNull View view) {
-            this.title = (TextView) view.findViewById(R.id.item_static_check_title);
-            this.check = (CheckBox) view.findViewById(R.id.item_static_check_box);
-        }
-    }
-
-    static class SectionFooterViewHolder {
-        final TextView text;
-
-        SectionFooterViewHolder(@NonNull View view) {
-            this.text = (TextView) view.findViewById(R.id.item_section_footer);
+            this.title = (TextView) view.findViewById(R.id.item_settings_toggle_check_title);
+            this.check = (CheckBox) view.findViewById(R.id.item_settings_toggle_check_box);
         }
     }
 
@@ -265,10 +170,6 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
             this.onClick = onClick;
         }
 
-        public Item(@NonNull String title, @Nullable Action1<? extends Item> onClick) {
-            this(ItemType.SECTION_TITLE, title, onClick);
-        }
-
 
         public @NonNull String getTitle() {
             return title;
@@ -285,22 +186,9 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
     }
 
     public class TextItem extends Item {
-        private String detail;
-
         public TextItem(@NonNull String title,
-                        @Nullable String detail,
                         @Nullable Action1<TextItem> action) {
             super(ItemType.TEXT_ITEM, title, action);
-            this.detail = detail;
-        }
-
-        public String getDetail() {
-            return detail;
-        }
-
-        public void setDetail(String detail) {
-            this.detail = detail;
-            notifyDataSetChanged();
         }
     }
 
@@ -327,9 +215,7 @@ public class StaticItemAdapter extends ArrayAdapter<StaticItemAdapter.Item>
 
 
     public enum ItemType {
-        SECTION_TITLE,
         TEXT_ITEM,
         CHECK_ITEM,
-        SECTION_FOOTER,
     }
 }

@@ -1,9 +1,11 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +20,22 @@ import is.hello.sense.R;
 
 public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.TextItem,
         SettingsRecyclerAdapter.ViewHolder> {
+    private final Resources resources;
     private final LayoutInflater inflater;
+
+    private boolean wantsDividers = true;
 
     public SettingsRecyclerAdapter(@NonNull Context context) {
         super(new ArrayList<>());
 
+        this.resources = context.getResources();
         this.inflater = LayoutInflater.from(context);
     }
 
+    public void setWantsDividers(boolean wantsDividers) {
+        this.wantsDividers = wantsDividers;
+        notifyDataSetChanged();
+    }
 
     //region Binding
 
@@ -55,15 +65,15 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case DetailItem.ID: {
-                final View view = inflater.inflate(R.layout.item_static_text, parent, false);
+                final View view = inflater.inflate(R.layout.item_settings_detail, parent, false);
                 return new DetailViewHolder(view);
             }
             case ToggleItem.ID: {
-                final View view = inflater.inflate(R.layout.item_static_check, parent, false);
+                final View view = inflater.inflate(R.layout.item_settings_toggle, parent, false);
                 return new ToggleViewHolder(view);
             }
             case TextItem.ID: {
-                final View view = inflater.inflate(R.layout.item_section_footer, parent, false);
+                final View view = inflater.inflate(R.layout.item_settings_text, parent, false);
                 return new TextViewHolder(view);
             }
             default: {
@@ -118,7 +128,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         TextViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.text = (TextView) itemView.findViewById(R.id.item_section_footer);
+            this.text = (TextView) itemView.findViewById(R.id.item_text);
         }
 
         @Override
@@ -136,25 +146,26 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         DetailViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.icon = (ImageView) itemView.findViewById(R.id.item_static_text_icon);
-            this.title = (TextView) itemView.findViewById(R.id.item_static_text_title);
-            this.detail = (TextView) itemView.findViewById(R.id.item_static_text_detail);
-            this.divider = itemView.findViewById(R.id.item_static_text_divider);
+            this.icon = (ImageView) itemView.findViewById(R.id.item_settings_detail_icon);
+            this.title = (TextView) itemView.findViewById(R.id.item_settings_detail_title);
+            this.detail = (TextView) itemView.findViewById(R.id.item_settings_detail_detail);
+            this.divider = itemView.findViewById(R.id.item_settings_detail_divider);
         }
 
         @Override
         void bind(DetailItem item) {
             if (item.icon != 0) {
                 icon.setImageResource(item.icon);
+                icon.setContentDescription(resources.getString(item.iconContentDescription));
                 icon.setVisibility(View.VISIBLE);
             } else {
                 icon.setImageDrawable(null);
                 icon.setVisibility(View.GONE);
             }
             title.setText(item.text);
-            detail.setText(item.detail);
+            detail.setText(item.value);
 
-            if (item.position == getItemCount() - 1) {
+            if (!wantsDividers || item.position == getItemCount() - 1) {
                 divider.setVisibility(View.GONE);
             } else {
                 divider.setVisibility(View.VISIBLE);
@@ -169,14 +180,14 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         ToggleViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            this.title = (TextView) itemView.findViewById(R.id.item_static_check_title);
-            this.toggle = (CompoundButton) itemView.findViewById(R.id.item_static_check_box);
+            this.title = (TextView) itemView.findViewById(R.id.item_settings_toggle_check_title);
+            this.toggle = (CompoundButton) itemView.findViewById(R.id.item_settings_toggle_check_box);
         }
 
         @Override
         void bind(ToggleItem item) {
             title.setText(item.text);
-            toggle.setChecked(item.active);
+            toggle.setChecked(item.value);
         }
     }
 
@@ -185,10 +196,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
     //region Items
 
-    public static class TextItem {
+    public static class TextItem<T> {
         static final int ID = 0;
 
-        public String text;
+        String text;
+        T value;
         final @Nullable Runnable onClick;
 
         @Nullable SettingsRecyclerAdapter adapter;
@@ -205,40 +217,48 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             this.adapter = adapter;
         }
 
-        public void notifyChanged() {
+        public void setText(String text) {
+            this.text = text;
+
             if (position != RecyclerView.NO_POSITION && adapter != null) {
                 adapter.notifyItemChanged(position);
             }
         }
-    }
 
-    public static class DetailItem extends TextItem {
-        static final int ID = 1;
+        public void setValue(T value) {
+            this.value = value;
 
-        public final @DrawableRes int icon;
-        public String detail;
+            if (position != RecyclerView.NO_POSITION && adapter != null) {
+                adapter.notifyItemChanged(position);
+            }
+        }
 
-        public DetailItem(@DrawableRes int icon,
-                          @NonNull String title,
-                          @Nullable String detail,
-                          @Nullable Runnable onClick) {
-            super(title, onClick);
-
-            this.icon = icon;
-            this.detail = detail;
+        public T getValue() {
+            return value;
         }
     }
 
-    public static class ToggleItem extends TextItem {
+    public static class DetailItem extends TextItem<String> {
+        static final int ID = 1;
+
+        @DrawableRes int icon;
+        @StringRes int iconContentDescription;
+
+        public DetailItem(@NonNull String title, @Nullable Runnable onClick) {
+            super(title, onClick);
+        }
+
+        public void setIcon(@DrawableRes int icon, @StringRes int iconContentDescription) {
+            this.icon = icon;
+            this.iconContentDescription = iconContentDescription;
+        }
+    }
+
+    public static class ToggleItem extends TextItem<Boolean> {
         static final int ID = 2;
 
-        public boolean active;
-
-        public ToggleItem(@NonNull String title,
-                          boolean active,
-                          @Nullable Runnable onClick) {
+        public ToggleItem(@NonNull String title, @Nullable Runnable onClick) {
             super(title, onClick);
-            this.active = active;
         }
     }
 

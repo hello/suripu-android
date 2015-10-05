@@ -13,6 +13,14 @@ public class InsetItemDecoration extends RecyclerView.ItemDecoration {
         insets.put(position, inset);
     }
 
+    public void addTopInset(int position, int inset) {
+        addItemInset(position, new Rect(0, inset, 0, 0));
+    }
+
+    public void addBottomInset(int position, int inset) {
+        addItemInset(position, new Rect(0, 0, 0, inset));
+    }
+
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         final int position = parent.getChildAdapterPosition(view);

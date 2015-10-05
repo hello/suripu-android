@@ -7,18 +7,18 @@
     android:orientation="horizontal">
 
     <CheckBox
-        android:id="@+id/item_static_check_box"
+        android:id="@+id/item_settings_toggle_check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_outer"
-        android:layout_marginEnd="@dimen/gap_outer"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="@dimen/gap_medium"
         android:layout_marginBottom="@dimen/gap_medium"
         android:clickable="false"
         android:focusable="false"/>
 
     <TextView
-        android:id="@+id/item_static_check_title"
+        android:id="@+id/item_settings_toggle_check_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

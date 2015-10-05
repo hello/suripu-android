@@ -62,12 +62,12 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        View header = inflater.inflate(R.layout.item_static_text, listView, false);
+        View header = inflater.inflate(R.layout.item_settings_detail, listView, false);
 
-        TextView headerTitle = (TextView) header.findViewById(R.id.item_static_text_title);
+        TextView headerTitle = (TextView) header.findViewById(R.id.item_settings_detail_title);
         headerTitle.setText(R.string.label_time_zone);
 
-        this.headerDetail = (TextView) header.findViewById(R.id.item_static_text_detail);
+        this.headerDetail = (TextView) header.findViewById(R.id.item_settings_detail_detail);
         headerDetail.setText(R.string.missing_data_placeholder);
 
         listView.addHeaderView(header, null, false);

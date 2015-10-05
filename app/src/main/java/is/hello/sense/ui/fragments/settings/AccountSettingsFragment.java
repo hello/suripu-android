@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.settings;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -97,69 +98,61 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         this.adapter = new SettingsRecyclerAdapter(getActivity());
 
-        final int extraPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        final Resources resources = getResources();
+        final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
         final InsetItemDecoration decoration = new InsetItemDecoration();
         recyclerView.addItemDecoration(decoration);
 
-        decoration.addItemInset(adapter.getItemCount(), new Rect(0, extraPadding, 0, 0));
-        this.nameItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_user_guide,
-                                                               getString(R.string.missing_data_placeholder),
-                                                               null,
+        decoration.addTopInset(adapter.getItemCount(), verticalPadding);
+        this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                                this::changeName);
+        nameItem.setIcon(R.drawable.icon_settings_user_guide, R.string.label_name);
         adapter.add(nameItem);
-        this.emailItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_email,
-                                                                getString(R.string.missing_data_placeholder),
-                                                                null,
+        this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                                 this::changeEmail);
+        emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
         adapter.add(emailItem);
 
-        decoration.addItemInset(adapter.getItemCount(), new Rect(0, 0, 0, extraPadding));
+        decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         final SettingsRecyclerAdapter.DetailItem passwordItem =
-                new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_lock,
-                                                       getString(R.string.title_change_password),
-                                                       null,
+                new SettingsRecyclerAdapter.DetailItem(getString(R.string.title_change_password),
                                                        this::changePassword);
+        passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
 
 
-        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_calendar,
-                                                                   getString(R.string.label_dob),
-                                                                   getString(R.string.missing_data_placeholder),
+        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob),
                                                                    this::changeBirthDate);
+        birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
         adapter.add(birthdayItem);
-        this.genderItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_gender,
-                                                                 getString(R.string.label_gender),
-                                                                 getString(R.string.missing_data_placeholder),
+        this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
                                                                  this::changeGender);
+        genderItem.setIcon(R.drawable.icon_settings_gender, R.string.label_gender);
         adapter.add(genderItem);
 
-        this.heightItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_height,
-                                                                 getString(R.string.label_height),
-                                                                 getString(R.string.missing_data_placeholder),
+        this.heightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_height),
                                                                  this::changeHeight);
+        heightItem.setIcon(R.drawable.icon_settings_height, R.string.label_height);
         adapter.add(heightItem);
 
-        this.weightItem = new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_weight,
-                                                                 getString(R.string.label_weight),
-                                                                 getString(R.string.missing_data_placeholder),
+        this.weightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_weight),
                                                                  this::changeWeight);
+        weightItem.setIcon(R.drawable.icon_settings_weight, R.string.label_weight);
         adapter.add(weightItem);
 
-        decoration.addItemInset(adapter.getItemCount(), new Rect(0, extraPadding, 0, 0));
+        decoration.addTopInset(adapter.getItemCount(), sectionPadding);
         this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
-                                                                        false,
                                                                         this::changeEnhancedAudio);
         adapter.add(enhancedAudioItem);
 
-        decoration.addItemInset(adapter.getItemCount(), new Rect(0, 0, 0, extraPadding));
         adapter.add(new SettingsRecyclerAdapter.TextItem(getString(R.string.info_enhanced_audio), null));
 
-        decoration.addItemInset(adapter.getItemCount(), new Rect(0, 0, 0, extraPadding));
+        decoration.addItemInset(adapter.getItemCount(), new Rect(0, sectionPadding, 0, verticalPadding));
         final SettingsRecyclerAdapter.DetailItem signOutItem =
-                new SettingsRecyclerAdapter.DetailItem(R.drawable.icon_settings_signout,
-                                                       getString(R.string.action_log_out),
-                                                       null,
+                new SettingsRecyclerAdapter.DetailItem(getString(R.string.action_log_out),
                                                        this::signOut);
+        signOutItem.setIcon(R.drawable.icon_settings_signout, R.string.action_log_out);
         adapter.add(signOutItem);
 
         recyclerView.setAdapter(adapter);
@@ -246,20 +239,19 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        nameItem.text = account.getName();
-        emailItem.text = account.getEmail();
+        nameItem.setText(account.getName());
+        emailItem.setText(account.getEmail());
 
-        birthdayItem.detail = dateFormatter.formatAsLocalizedDate(account.getBirthDate());
-        genderItem.detail = getString(account.getGender().nameRes);
+        birthdayItem.setValue(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
+        genderItem.setValue(getString(account.getGender().nameRes));
 
         final CharSequence weight = unitFormatter.formatWeight(account.getWeight());
-        weightItem.detail = weight.toString();
+        weightItem.setValue(weight.toString());
 
         final CharSequence height = unitFormatter.formatHeight(account.getHeight());
-        heightItem.detail = height.toString();
+        heightItem.setValue(height.toString());
 
         this.currentAccount = account;
-        adapter.notifyDataSetChanged();
 
         hideLoadingIndicator();
     }
@@ -273,8 +265,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
     public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
         this.accountPreferences = preferences;
-        enhancedAudioItem.active = preferences.enhancedAudioEnabled;
-        enhancedAudioItem.notifyChanged();
+        enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
     }
 
     //endregion
@@ -342,9 +333,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
             return;
         }
 
-        accountPreferences.enhancedAudioEnabled = !enhancedAudioItem.active;
-        enhancedAudioItem.active = accountPreferences.enhancedAudioEnabled;
-        enhancedAudioItem.notifyChanged();
+        accountPreferences.enhancedAudioEnabled = !enhancedAudioItem.getValue();
+        enhancedAudioItem.setValue(accountPreferences.enhancedAudioEnabled);
 
         showLoadingIndicator();
         bindAndSubscribe(accountPresenter.updatePreferences(accountPreferences),
@@ -357,8 +347,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
                          },
                          e -> {
                              accountPreferences.enhancedAudioEnabled = !accountPreferences.enhancedAudioEnabled;
-                             enhancedAudioItem.active = accountPreferences.enhancedAudioEnabled;
-                             enhancedAudioItem.notifyChanged();
+                             enhancedAudioItem.setValue(accountPreferences.enhancedAudioEnabled);
                              accountUnavailable(e);
                          });
     }
