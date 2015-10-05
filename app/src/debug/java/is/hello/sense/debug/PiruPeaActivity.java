@@ -7,17 +7,18 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -31,7 +32,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -42,7 +44,7 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class PiruPeaActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
+public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
     @Inject BluetoothStack stack;
     @Inject ApiSessionManager apiSessionManager;
     @Inject HardwarePresenter hardwarePresenter;
@@ -50,45 +52,50 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     private SensePeripheral selectedPeripheral;
 
     private PeripheralAdapter scannedPeripheralsAdapter;
-    private StaticItemAdapter peripheralActions;
-    private ListView listView;
+    private SettingsRecyclerAdapter peripheralActions;
+    private RecyclerView recyclerView;
     private ProgressBar loadingIndicator;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_view_static);
+        setContentView(R.layout.static_recycler);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        this.loadingIndicator = (ProgressBar) findViewById(R.id.list_view_static_loading);
+        this.loadingIndicator = (ProgressBar) findViewById(R.id.static_recycler_view_loading);
 
-        this.listView = (ListView) findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
+        this.recyclerView = (RecyclerView) findViewById(R.id.static_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(null);
 
         this.scannedPeripheralsAdapter = new PeripheralAdapter(this);
-        listView.setAdapter(scannedPeripheralsAdapter);
+        scannedPeripheralsAdapter.setOnItemClickedListener(this);
+        recyclerView.setAdapter(scannedPeripheralsAdapter);
 
-        this.peripheralActions = new StaticItemAdapter(this);
+        this.peripheralActions = new SettingsRecyclerAdapter(this);
+        peripheralActions.setWantsDividers(false);
 
-        peripheralActions.addTextItem("Disconnect", this::disconnect);
-        peripheralActions.addTextItem("Pairing Mode", this::putIntoPairingMode);
-        peripheralActions.addTextItem("Normal Mode", this::putIntoNormalMode);
-        peripheralActions.addTextItem("Device Factory Reset", this::factoryReset);
-        peripheralActions.addTextItem("Get WiFi Network", this::getWifiNetwork);
-        peripheralActions.addTextItem("Set WiFi Network", this::setWifiNetwork);
-        peripheralActions.addTextItem("Pair Pill Mode", this::pairPillMode);
-        peripheralActions.addTextItem("Link Account", this::linkAccount);
-        peripheralActions.addTextItem("Push Data", this::pushData);
-        peripheralActions.addTextItem("Busy LEDs", this::busyLedAnimation);
-        peripheralActions.addTextItem("Trippy LEDs", this::trippyLedAnimation);
-        peripheralActions.addTextItem("Fade Out LEDs", this::stopAnimationWithFade);
-        peripheralActions.addTextItem("Turn Off LEDs", this::stopAnimationWithoutFade);
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Disconnect", this::disconnect));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Pairing Mode", this::putIntoPairingMode));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Normal Mode", this::putIntoNormalMode));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Device Factory Reset", this::factoryReset));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Get WiFi Network", this::getWifiNetwork));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Set WiFi Network", this::setWifiNetwork));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Pair Pill Mode", this::pairPillMode));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Link Account", this::linkAccount));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Push Data", this::pushData));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Busy LEDs", this::busyLedAnimation));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Trippy LEDs", this::trippyLedAnimation));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Fade Out LEDs", this::stopAnimationWithFade));
+        peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Turn Off LEDs", this::stopAnimationWithoutFade));
 
         IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
         Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);
         bindAndSubscribe(onConnectionLost,
-                         intent -> disconnect(null),
+                         intent -> disconnect(),
                          Functions.LOG_ERROR);
     }
 
@@ -123,7 +130,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     //region Activity
 
     private void showLoadingIndicator() {
-        animatorFor(listView)
+        animatorFor(recyclerView)
                 .fadeOut(View.INVISIBLE)
                 .start();
         animatorFor(loadingIndicator)
@@ -135,7 +142,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         animatorFor(loadingIndicator)
                 .fadeOut(View.INVISIBLE)
                 .start();
-        animatorFor(listView)
+        animatorFor(recyclerView)
                 .fadeIn()
                 .start();
     }
@@ -146,7 +153,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     //region Scanning
 
     public void scan() {
-        disconnect(null);
+        disconnect();
         scannedPeripheralsAdapter.clear();
 
         SenseAlertDialog includeHighPower = new SenseAlertDialog(this);
@@ -192,25 +199,25 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
                          this::presentError);
     }
 
-    public void disconnect(@Nullable StaticItemAdapter.TextItem item) {
+    public void disconnect() {
         if (selectedPeripheral != null) {
             selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
             this.selectedPeripheral = null;
         }
 
-        listView.setAdapter(scannedPeripheralsAdapter);
+        recyclerView.swapAdapter(scannedPeripheralsAdapter, true);
     }
 
-    public void putIntoPairingMode(@Nullable StaticItemAdapter.TextItem item) {
+    public void putIntoPairingMode() {
         runSimpleCommand(selectedPeripheral.putIntoPairingMode());
     }
 
-    public void putIntoNormalMode(@Nullable StaticItemAdapter.TextItem item) {
+    public void putIntoNormalMode() {
         runSimpleCommand(selectedPeripheral.putIntoNormalMode());
     }
 
-    public void factoryReset(@Nullable StaticItemAdapter.TextItem item) {
+    public void factoryReset() {
         SenseAlertDialog alertDialog = new SenseAlertDialog(this);
         alertDialog.setTitle(R.string.dialog_title_factory_reset);
         alertDialog.setMessage("This is a device only factory reset, all paired accounts in API will persist. Use the ‘Devices’ screen to perform a full factory reset.");
@@ -220,18 +227,18 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         alertDialog.show();
     }
 
-    public void getWifiNetwork(@Nullable StaticItemAdapter.TextItem item) {
+    public void getWifiNetwork() {
         showLoadingIndicator();
         bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
-                network -> {
-                    hideLoadingIndicator();
-                    MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
-                    dialogFragment.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
-                },
-                this::presentError);
+                         network -> {
+                             hideLoadingIndicator();
+                             MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
+                             dialogFragment.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+                         },
+                         this::presentError);
     }
 
-    public void setWifiNetwork(@Nullable StaticItemAdapter.TextItem item) {
+    public void setWifiNetwork() {
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(this);
         builder.setDefaultTitle(R.string.title_edit_wifi);
@@ -242,31 +249,31 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         startActivity(builder.toIntent());
     }
 
-    public void pairPillMode(@Nullable StaticItemAdapter.TextItem item) {
+    public void pairPillMode() {
         runSimpleCommand(selectedPeripheral.pairPill(apiSessionManager.getAccessToken()));
     }
 
-    public void linkAccount(@Nullable StaticItemAdapter.TextItem item) {
+    public void linkAccount() {
         runSimpleCommand(selectedPeripheral.linkAccount(apiSessionManager.getAccessToken()));
     }
 
-    public void pushData(@Nullable StaticItemAdapter.TextItem item) {
+    public void pushData() {
         runSimpleCommand(selectedPeripheral.pushData());
     }
 
-    public void busyLedAnimation(@Nullable StaticItemAdapter.TextItem item) {
+    public void busyLedAnimation() {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.BUSY));
     }
 
-    public void trippyLedAnimation(@Nullable StaticItemAdapter.TextItem item) {
+    public void trippyLedAnimation() {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.TRIPPY));
     }
 
-    public void stopAnimationWithFade(@Nullable StaticItemAdapter.TextItem item) {
+    public void stopAnimationWithFade() {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.FADE_OUT));
     }
 
-    public void stopAnimationWithoutFade(@Nullable StaticItemAdapter.TextItem item) {
+    public void stopAnimationWithoutFade() {
         runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.STOP));
     }
 
@@ -274,37 +281,57 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
 
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public void onItemClicked(int position, SensePeripheral item) {
         if (selectedPeripheral == null) {
-            this.selectedPeripheral = scannedPeripheralsAdapter.getItem(position);
+            this.selectedPeripheral = item;
 
             showLoadingIndicator();
             hardwarePresenter.setPeripheral(selectedPeripheral);
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == Operation.CONNECTED) {
-                    hideLoadingIndicator();
-                    listView.setAdapter(peripheralActions);
-                }
-            }, this::presentError);
-        } else {
-            peripheralActions.onItemClick(adapterView, view, position, id);
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
+                             status -> {
+                                 if (status == Operation.CONNECTED) {
+                                     hideLoadingIndicator();
+                                     recyclerView.swapAdapter(peripheralActions, true);
+                                 }
+                             },
+                             this::presentError);
         }
     }
 
 
-    private class PeripheralAdapter extends ArrayAdapter<SensePeripheral> {
-        private PeripheralAdapter(@NonNull Context context) {
-            super(context, R.layout.item_simple_text);
+    static class PeripheralAdapter extends ArrayRecyclerAdapter<SensePeripheral,
+            PeripheralAdapter.ViewHolder> {
+        private final LayoutInflater inflater;
+
+        PeripheralAdapter(@NonNull Context context) {
+            super(new ArrayList<>());
+
+            this.inflater = LayoutInflater.from(context);
+        }
+
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            final View view = inflater.inflate(R.layout.item_simple_text, parent, false);
+            return new ViewHolder(view);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView text = (TextView) super.getView(position, convertView, parent);
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            final SensePeripheral peripheral = getItem(position);
+            holder.text.setText(peripheral.getName() + " - " + peripheral.getAddress());
+        }
 
-            SensePeripheral peripheral = getItem(position);
-            text.setText(peripheral.getName() + " - " + peripheral.getAddress());
 
-            return text;
+        class ViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+            final TextView text;
+
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                this.text = (TextView) itemView.findViewById(R.id.item_simple_text);
+                itemView.setOnClickListener(this);
+            }
         }
     }
 }

@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/gap_outer"
-        android:layout_marginEnd="@dimen/gap_outer"
         android:layout_centerVertical="true"
         android:src="@drawable/icon_settings_advanced"
         android:importantForAccessibility="no" />
@@ -20,6 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/item_settings_detail_icon"
+        android:layout_marginStart="@dimen/gap_outer"
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
         android:gravity="start"
