@@ -107,7 +107,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
         this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                                this::changeName);
-        nameItem.setIcon(R.drawable.icon_settings_user_guide, R.string.label_name);
+        nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
         this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                                 this::changeEmail);

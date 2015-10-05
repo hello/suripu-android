@@ -126,7 +126,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.pairingMode = addDeviceAction(R.drawable.icon_settings_user_guide, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
+        this.pairingMode = addDeviceAction(R.drawable.icon_settings_pairing_mode, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
         pairingMode.setEnabled(false);
         this.changeWiFi = addDeviceAction(R.drawable.icon_settings_wifi, R.string.action_select_wifi_network, this::changeWifiNetwork);
         changeWiFi.setEnabled(false);

@@ -55,7 +55,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
-        addDeviceAction(R.drawable.icon_settings_calendar, R.string.action_replace_battery, this::replaceBattery);
+        addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
 
         if (device.getState() == Device.State.LOW_BATTERY) {

@@ -259,6 +259,8 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
         public ToggleItem(@NonNull String title, @Nullable Runnable onClick) {
             super(title, onClick);
+
+            setValue(false);
         }
     }
 
