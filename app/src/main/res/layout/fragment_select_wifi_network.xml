@@ -57,7 +57,7 @@
             android:layout_below="@id/fragment_select_wifi_progress"
             android:layout_marginTop="@dimen/gap_outer"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+            android:textAppearance="@style/AppTheme.Text.Body"
             android:text="@string/label_finding_wifi_networks"/>
 
     </RelativeLayout>

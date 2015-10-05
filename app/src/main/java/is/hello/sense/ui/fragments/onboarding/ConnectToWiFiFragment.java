@@ -108,16 +108,16 @@ public class ConnectToWiFiFragment extends HardwareFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_connect_to_wifi, container, false);
 
-        this.networkName = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_network);
-        this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
+        this.networkName = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_network);
+        this.networkPassword = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_password);
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
-        final Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
+        final Button continueButton = (Button) view.findViewById(R.id.fragment_connect_to_wifi_continue);
         Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
 
-        final TextView title = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_title);
-        final TextView networkInfo = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_info);
-        final ViewGroup otherContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_other_container);
+        final TextView title = (TextView) view.findViewById(R.id.fragment_connect_to_wifi_title);
+        final TextView networkInfo = (TextView) view.findViewById(R.id.fragment_connect_to_wifi_info);
+        final ViewGroup otherContainer = (ViewGroup) view.findViewById(R.id.fragment_connect_to_wifi_other_container);
 
         if (network != null) {
             networkName.setText(network.getSsid());
@@ -143,7 +143,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
                 title.setText(R.string.title_sign_into_wifi_selection);
             }
         } else {
-            this.networkSecurity = (Spinner) otherContainer.findViewById(R.id.fragment_onboarding_sign_into_wifi_security);
+            this.networkSecurity = (Spinner) otherContainer.findViewById(R.id.fragment_connect_to_wifi_security);
             networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
             networkSecurity.setSelection(sec_type.SL_SCAN_SEC_TYPE_WPA2_VALUE);
             networkSecurity.setOnItemSelectedListener(this);
@@ -160,6 +160,8 @@ public class ConnectToWiFiFragment extends HardwareFragment
         if (getActivity().getActionBar() != null) {
             toolbar.hide();
             setHasOptionsMenu(true);
+
+            title.setTextAppearance(getActivity(), R.style.AppTheme_Text_Heading_Alert);
         } else {
             toolbar.setWantsBackButton(true)
                    .setOnHelpClickListener(ignored -> {

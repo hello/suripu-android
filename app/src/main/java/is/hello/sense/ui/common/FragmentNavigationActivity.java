@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -25,6 +26,11 @@ public class FragmentNavigationActivity extends SenseActivity
     public static final String EXTRA_FRAGMENT_CLASS = FragmentNavigationActivity.class.getName() + ".EXTRA_FRAGMENT_CLASS";
     public static final String EXTRA_FRAGMENT_ARGUMENTS = FragmentNavigationActivity.class.getName() + ".EXTRA_FRAGMENT_ARGUMENTS";
     public static final String EXTRA_WINDOW_COLOR = FragmentNavigationActivity.class.getName() + ".EXTRA_WINDOW_COLOR";
+    /**
+     * @see is.hello.sense.ui.common.FragmentNavigationActivity.Builder#setOrientation(int) for more info.
+     */
+    @Deprecated
+    public static final String EXTRA_ORIENTATION = FragmentNavigationActivity.class.getName() + ".EXTRA_ORIENTATION";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,15 @@ public class FragmentNavigationActivity extends SenseActivity
         if (intent.hasExtra(EXTRA_WINDOW_COLOR)) {
             final int windowColor = intent.getIntExtra(EXTRA_WINDOW_COLOR, Color.TRANSPARENT);
             getWindow().setBackgroundDrawable(new ColorDrawable(windowColor));
+        }
+
+        // This should be removed when all on-boarding components
+        // are migrated to the model-view-presenter pattern.
+        if (intent.hasExtra(EXTRA_ORIENTATION)) {
+            final int orientation = intent.getIntExtra(EXTRA_ORIENTATION,
+                                                       ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            //noinspection ResourceType
+            setRequestedOrientation(orientation);
         }
     }
 
@@ -236,6 +251,21 @@ public class FragmentNavigationActivity extends SenseActivity
 
         public Builder setWindowBackgroundColor(@ColorInt int backgroundColor) {
             intent.putExtra(EXTRA_WINDOW_COLOR, backgroundColor);
+            return this;
+        }
+
+        /**
+         * Specifies the orientation to request on the navigation fragment.
+         *
+         * @deprecated There is no replacement. This method is provided as
+         *             a transitional API for on-boarding components starting
+         *             the process of being de-coupled and refactored into MVP.
+         * @param orientation   The {@link Activity} orientation to request.
+         * @return The builder.
+         */
+        @Deprecated
+        public Builder setOrientation(int orientation) {
+            intent.putExtra(EXTRA_ORIENTATION, orientation);
             return this;
         }
 

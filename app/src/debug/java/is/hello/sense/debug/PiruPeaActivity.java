@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -237,6 +238,7 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
         builder.setFragmentClass(SelectWiFiNetworkFragment.class);
         builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
         builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());
     }
 

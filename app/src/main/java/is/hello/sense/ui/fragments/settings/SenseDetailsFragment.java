@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -398,6 +399,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         builder.setFragmentClass(SelectWiFiNetworkFragment.class);
         builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
         builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
     }
 
