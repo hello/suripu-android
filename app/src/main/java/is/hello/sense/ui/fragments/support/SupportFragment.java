@@ -9,7 +9,6 @@ import android.widget.ListView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 
@@ -26,12 +25,12 @@ public class SupportFragment extends SenseFragment {
             UserSupport.showUserGuide(getActivity());
         });
         adapter.addTextItem(R.string.title_contact_us, 0, ignored -> {
-            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(new TicketSelectTopicFragment(),
-                                                                               getString(R.string.title_select_a_topic), true);
+            getFragmentNavigation().pushFragmentAllowingStateLoss(new TicketSelectTopicFragment(),
+                                                                  getString(R.string.title_select_a_topic), true);
         });
         adapter.addTextItem(R.string.title_my_tickets, 0, ignored -> {
-            ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(new TicketListFragment(),
-                                                                               getString(R.string.title_my_tickets), true);
+            getFragmentNavigation().pushFragmentAllowingStateLoss(new TicketListFragment(),
+                                                                  getString(R.string.title_my_tickets), true);
         });
         listView.setOnItemClickListener(adapter);
         listView.setAdapter(adapter);

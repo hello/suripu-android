@@ -1,34 +1,30 @@
 package is.hello.sense.ui.common;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.MenuItem;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.util.Logger;
 
-public class FragmentNavigationActivity extends SenseActivity implements FragmentNavigation, FragmentManager.OnBackStackChangedListener {
+public class FragmentNavigationActivity extends SenseActivity
+        implements FragmentNavigation, FragmentManager.OnBackStackChangedListener {
     public static final String EXTRA_DEFAULT_TITLE = FragmentNavigationActivity.class.getName() + ".EXTRA_DEFAULT_TITLE";
     public static final String EXTRA_FRAGMENT_CLASS = FragmentNavigationActivity.class.getName() + ".EXTRA_FRAGMENT_CLASS";
     public static final String EXTRA_FRAGMENT_ARGUMENTS = FragmentNavigationActivity.class.getName() + ".EXTRA_FRAGMENT_ARGUMENTS";
-
-    private boolean wantsTitleUpdates = true;
-
-    public static Bundle getArguments(@NonNull String defaultTitle,
-                                      @NonNull Class<? extends Fragment> fragmentClass,
-                                      @Nullable Bundle fragmentArguments) {
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_DEFAULT_TITLE, defaultTitle);
-        arguments.putString(EXTRA_FRAGMENT_CLASS, fragmentClass.getName());
-        arguments.putParcelable(EXTRA_FRAGMENT_ARGUMENTS, fragmentArguments);
-        return arguments;
-    }
+    public static final String EXTRA_WINDOW_COLOR = FragmentNavigationActivity.class.getName() + ".EXTRA_WINDOW_COLOR";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +33,18 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
         getFragmentManager().addOnBackStackChangedListener(this);
 
+        final Intent intent = getIntent();
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             getActionBar().setTitle(getDefaultTitle());
 
-            if (getIntent().hasExtra(EXTRA_FRAGMENT_CLASS)) {
+            if (intent.hasExtra(EXTRA_FRAGMENT_CLASS)) {
                 try {
-                    final String className = getIntent().getStringExtra(EXTRA_FRAGMENT_CLASS);
+                    final String className = intent.getStringExtra(EXTRA_FRAGMENT_CLASS);
                     //noinspection unchecked
                     final Class<? extends Fragment> fragmentClass = (Class<? extends Fragment>) Class.forName(className);
                     final Fragment fragment = fragmentClass.newInstance();
-                    fragment.setArguments(getIntent().getParcelableExtra(EXTRA_FRAGMENT_ARGUMENTS));
+                    fragment.setArguments(intent.getParcelableExtra(EXTRA_FRAGMENT_ARGUMENTS));
                     pushFragment(fragment, getDefaultTitle(), false);
                 } catch (Exception e) {
                     Logger.warn(getClass().getSimpleName(), "Could not create fragment", e);
@@ -57,6 +54,11 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
             final String title = savedInstanceState.getString("title");
             //noinspection ConstantConditions
             getActionBar().setTitle(title);
+        }
+
+        if (intent.hasExtra(EXTRA_WINDOW_COLOR)) {
+            final int windowColor = intent.getIntExtra(EXTRA_WINDOW_COLOR, Color.TRANSPARENT);
+            getWindow().setBackgroundDrawable(new ColorDrawable(windowColor));
         }
     }
 
@@ -154,7 +156,7 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
 
     @Override
     public void popFragment(@NonNull Fragment fragment, boolean immediate) {
-        String tag = fragment.getClass().getSimpleName();
+        final String tag = fragment.getClass().getSimpleName();
         if (immediate) {
             getFragmentManager().popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
@@ -163,16 +165,28 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
     }
 
     @Override
+    public void flowFinished(@NonNull Fragment fragment,
+                             int responseCode,
+                             @Nullable Intent result) {
+        Logger.debug(getClass().getSimpleName(),
+                     "flowFinished(" + fragment + ", " + responseCode + ", " + result + ")");
+
+        setResult(responseCode, result);
+        finish();
+    }
+
+    @Override
     public void onBackStackChanged() {
-        if (getWantsTitleUpdates()) {
-            int entryCount = getFragmentManager().getBackStackEntryCount();
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            final FragmentManager fragmentManager = getFragmentManager();
+            final int entryCount = fragmentManager.getBackStackEntryCount();
             if (entryCount > 0) {
-                FragmentManager.BackStackEntry entry = getFragmentManager().getBackStackEntryAt(entryCount - 1);
-                //noinspection ConstantConditions
-                getActionBar().setTitle(entry.getBreadCrumbTitle());
+                final FragmentManager.BackStackEntry entry =
+                        fragmentManager.getBackStackEntryAt(entryCount - 1);
+                actionBar.setTitle(entry.getBreadCrumbTitle());
             } else {
-                //noinspection ConstantConditions
-                getActionBar().setTitle(getDefaultTitle());
+                actionBar.setTitle(getDefaultTitle());
             }
         }
     }
@@ -186,11 +200,47 @@ public class FragmentNavigationActivity extends SenseActivity implements Fragmen
         return getIntent().getStringExtra(EXTRA_DEFAULT_TITLE);
     }
 
-    public boolean getWantsTitleUpdates() {
-        return wantsTitleUpdates;
-    }
 
-    public void setWantsTitleUpdates(boolean wantsTitleUpdates) {
-        this.wantsTitleUpdates = wantsTitleUpdates;
+    public static class Builder {
+        private final Activity from;
+        private final Intent intent;
+
+        public Builder(@NonNull Activity from) {
+            this(from, FragmentNavigationActivity.class);
+        }
+
+        public Builder(@NonNull Activity from,
+                       @NonNull Class<? extends FragmentNavigationActivity> clazz) {
+            this.from = from;
+            this.intent = new Intent(from, clazz);
+        }
+
+        public Builder setDefaultTitle(@Nullable String title) {
+            intent.putExtra(EXTRA_DEFAULT_TITLE, title);
+            return this;
+        }
+
+        public Builder setDefaultTitle(@StringRes int titleRes) {
+            return setDefaultTitle(from.getString(titleRes));
+        }
+
+        public Builder setFragmentClass(@NonNull Class<? extends Fragment> clazz) {
+            intent.putExtra(EXTRA_FRAGMENT_CLASS, clazz.getName());
+            return this;
+        }
+
+        public Builder setArguments(@Nullable Bundle arguments) {
+            intent.putExtra(EXTRA_FRAGMENT_ARGUMENTS, arguments);
+            return this;
+        }
+
+        public Builder setWindowBackgroundColor(@ColorInt int backgroundColor) {
+            intent.putExtra(EXTRA_WINDOW_COLOR, backgroundColor);
+            return this;
+        }
+
+        public Intent toIntent() {
+            return intent;
+        }
     }
 }

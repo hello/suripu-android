@@ -13,6 +13,9 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,6 +35,7 @@ import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
@@ -48,38 +52,40 @@ import is.hello.sense.util.Logger;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-public class OnboardingSignIntoWifiFragment extends HardwareFragment implements AdapterView.OnItemSelectedListener {
-    private static final String ARG_SCAN_RESULT = OnboardingSignIntoWifiFragment.class.getName() + ".ARG_SCAN_RESULT";
+public class ConnectToWiFiFragment extends HardwareFragment
+        implements AdapterView.OnItemSelectedListener {
+    public static final String ARG_USE_IN_APP_EVENTS = ConnectToWiFiFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
+    public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
+    public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
 
+    private boolean useInAppEvents;
+    private boolean sendAccessToken;
+
     private EditText networkName;
     private EditText networkPassword;
     private Spinner networkSecurity;
 
-    private @Nullable SenseCommandProtos.wifi_endpoint network;
+    private @Nullable wifi_endpoint network;
 
     private boolean hasConnectedToNetwork = false;
     private boolean hasSentAccessToken = false;
 
-    public static OnboardingSignIntoWifiFragment newInstance(@Nullable SenseCommandProtos.wifi_endpoint network) {
-        OnboardingSignIntoWifiFragment fragment = new OnboardingSignIntoWifiFragment();
 
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_SCAN_RESULT, network);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
+    //region Lifecycle
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.network = (SenseCommandProtos.wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
+        this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
+        this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
+
+        this.network = (wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
@@ -88,7 +94,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
         JSONObject properties = Analytics.createProperties(
             Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
         );
-        if (isWifiOnlySession()) {
+        if (useInAppEvents) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP, properties);
         } else {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, properties);
@@ -100,26 +106,26 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_sign_into_wifi, container, false);
+        final View view = inflater.inflate(R.layout.fragment_connect_to_wifi, container, false);
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_network);
         this.networkPassword = (EditText) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_password);
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
-        Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
+        final Button continueButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_continue);
         Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
 
-        TextView title = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_title);
-        TextView networkInfo = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_info);
-        ViewGroup otherContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_other_container);
+        final TextView title = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_title);
+        final TextView networkInfo = (TextView) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_info);
+        final ViewGroup otherContainer = (ViewGroup) view.findViewById(R.id.fragment_onboarding_sign_into_wifi_other_container);
 
         if (network != null) {
             networkName.setText(network.getSsid());
             updatePasswordField();
 
-            SpannableStringBuilder networkInfoBuilder = new SpannableStringBuilder();
+            final SpannableStringBuilder networkInfoBuilder = new SpannableStringBuilder();
             networkInfoBuilder.append(getString(R.string.label_wifi_network_name));
-            int start = networkInfoBuilder.length();
+            final int start = networkInfoBuilder.length();
             networkInfoBuilder.append(network.getSsid());
             networkInfoBuilder.setSpan(
                     new ForegroundColorSpan(getResources().getColor(R.color.text_dark)),
@@ -150,15 +156,20 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
             title.setText(R.string.title_sign_into_wifi_other);
         }
 
-        OnboardingToolbar.of(this, view)
-                .setWantsBackButton(true)
-                .setOnHelpClickListener(ignored -> {
-                    UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI);
-                })
-                .setOnHelpLongClickListener(ignored -> {
-                    showSupportOptions();
-                    return true;
-                });
+        final OnboardingToolbar toolbar = OnboardingToolbar.of(this, view);
+        if (getActivity().getActionBar() != null) {
+            toolbar.hide();
+            setHasOptionsMenu(true);
+        } else {
+            toolbar.setWantsBackButton(true)
+                   .setOnHelpClickListener(ignored -> {
+                       UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI);
+                   })
+                   .setOnHelpLongClickListener(ignored -> {
+                       showSupportOptions();
+                       return true;
+                   });
+        }
 
         return view;
     }
@@ -189,6 +200,27 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.help, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help: {
+                UserSupport.showForOnboardingStep(getActivity(),
+                                                  UserSupport.OnboardingStep.SIGN_INTO_WIFI);
+                return true;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+    }
+
+    //endregion
+
 
     //region Password Field
 
@@ -201,7 +233,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     }
 
     private void updatePasswordField() {
-        sec_type securityType = getSecurityType();
+        final sec_type securityType = getSecurityType();
         if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP) {
             networkPassword.setVisibility(View.VISIBLE);
             networkPassword.requestFocus();
@@ -217,7 +249,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
     private boolean validatePasswordAsWepKey(@NonNull String password) {
         for (int i = 0, length = password.length(); i < length; i++) {
-            char c = Character.toLowerCase(password.charAt(i));
+            final char c = Character.toLowerCase(password.charAt(i));
             if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
                 return false;
             }
@@ -240,10 +272,10 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
 
     private void sendWifiCredentials() {
-        String networkName = this.networkName.getText().toString();
-        String password = this.networkPassword.getText().toString();
+        final String networkName = this.networkName.getText().toString();
+        final String password = this.networkPassword.getText().toString();
 
-        sec_type securityType = getSecurityType();
+        final sec_type securityType = getSecurityType();
         if (TextUtils.isEmpty(networkName) ||
                 (TextUtils.isEmpty(password) &&
                         securityType != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
@@ -283,11 +315,11 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 return;
             }
 
-            JSONObject properties = Analytics.createProperties(
+            final JSONObject properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
             );
-            String updateEvent;
-            if (isWifiOnlySession()) {
+            final String updateEvent;
+            if (useInAppEvents) {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
                 updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
             } else {
@@ -295,7 +327,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
             }
 
-            AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
+            final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
                 JSONObject updateProperties = Analytics.createProperties(
                     Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
@@ -316,14 +348,16 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                     showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                 }
             }, e -> {
-                String operation = lastState.get() == null ? "Setting WiFi" : lastState.get().toString();
+                final String operation = lastState.get() == null
+                        ? "Setting WiFi"
+                        : lastState.get().toString();
                 presentError(e, operation);
             });
         }, e -> presentError(e, "Turning on LEDs"));
     }
 
     private void sendAccessToken() {
-        if (hasSentAccessToken || isWifiOnlySession()) {
+        if (hasSentAccessToken || !sendAccessToken) {
             setDeviceTimeZone();
         } else {
             showBlockingActivity(R.string.title_linking_account);
@@ -340,10 +374,10 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     private void setDeviceTimeZone() {
         showBlockingActivity(R.string.title_setting_time_zone);
 
-        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        final SenseTimeZone timeZone = SenseTimeZone.fromDefault();
         bindAndSubscribe(apiService.updateTimeZone(timeZone),
                          ignored -> {
-                             Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+                             Logger.info(ConnectToWiFiFragment.class.getSimpleName(), "Time zone updated.");
 
                              pushDeviceData();
                          },
@@ -362,18 +396,18 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
     }
 
     private void finished() {
-        if (isWifiOnlySession() || isPairOnlySession()) {
-            completeHardwareActivity(() -> getOnboardingActivity().finish());
-        } else {
-            hideAllActivityForSuccess(() -> getOnboardingActivity().showPairPill(true),
-                                      e -> presentError(e, "Turning off LEDs"));
-        }
+        hideAllActivityForSuccess(() -> {
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+        }, e -> {
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+            presentError(e, "Turning off LEDs");
+        });
     }
 
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
+            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
                     .withOperation(operation);
 
             if (e instanceof SenseSetWifiValidationError &&
@@ -385,7 +419,7 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
                 errorDialogBuilder.withSupportLink();
             }
 
-            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
@@ -416,14 +450,14 @@ public class OnboardingSignIntoWifiFragment extends HardwareFragment implements 
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            TextView text = (TextView) super.getView(position, convertView, parent);
+            final TextView text = (TextView) super.getView(position, convertView, parent);
             text.setText(getTitle(position));
             return text;
         }
 
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
-            TextView text = (TextView) super.getDropDownView(position, convertView, parent);
+            final TextView text = (TextView) super.getDropDownView(position, convertView, parent);
             text.setText(getTitle(position));
             return text;
         }

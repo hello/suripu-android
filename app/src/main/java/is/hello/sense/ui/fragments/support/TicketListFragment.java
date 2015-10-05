@@ -22,7 +22,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.zendesk.TicketsPresenter;
@@ -87,10 +86,12 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Request ticket = (Request) parent.getItemAtPosition(position);
+        final Request ticket = (Request) parent.getItemAtPosition(position);
 
-        TicketDetailFragment ticketDetailFragment = TicketDetailFragment.newInstance(ticket.getId(), ticket.getSubject());
-        ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(ticketDetailFragment, ticket.getSubject(), true);
+        final TicketDetailFragment ticketDetailFragment = TicketDetailFragment.newInstance(ticket.getId(),
+                                                                                           ticket.getSubject());
+        getFragmentNavigation().pushFragmentAllowingStateLoss(ticketDetailFragment,
+                                                              ticket.getSubject(), true);
     }
 
 

@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -72,16 +71,18 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
 
     private void showDeviceList(@NonNull View ignored) {
-        Bundle intentArguments = HardwareFragmentActivity.getArguments(getString(R.string.label_devices), DeviceListFragment.class, null);
-        Intent intent = new Intent(getActivity(), HardwareFragmentActivity.class);
-        intent.putExtras(intentArguments);
-        startActivity(intent);
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
+        builder.setDefaultTitle(R.string.label_devices);
+        builder.setFragmentClass(DeviceListFragment.class);
+        startActivity(builder.toIntent());
     }
 
     private void showFragment(@NonNull Class<? extends Fragment> fragmentClass, @StringRes int titleRes) {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(getString(titleRes), fragmentClass, null);
-        Intent intent = new Intent(getActivity(), FragmentNavigationActivity.class);
-        intent.putExtras(intentArguments);
-        startActivity(intent);
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
+        builder.setDefaultTitle(titleRes);
+        builder.setFragmentClass(fragmentClass);
+        startActivity(builder.toIntent());
     }
 }

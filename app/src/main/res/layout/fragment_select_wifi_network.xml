@@ -9,6 +9,7 @@
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
     <TextView
+        android:id="@+id/fragment_select_wifi_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
@@ -20,7 +21,7 @@
         android:text="@string/title_choose_wifi_network"/>
 
     <TextView
-        android:id="@+id/fragment_onboarding_wifi_networks_info"
+        android:id="@+id/fragment_select_wifi_subheading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/gap_outer"
@@ -40,34 +41,34 @@
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_vertical_borders"
+            android:divider="@null"
             android:visibility="gone"/>
 
         <ProgressBar
-            android:id="@+id/fragment_onboarding_wifi_networks_scanning"
+            android:id="@+id/fragment_select_wifi_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
 
         <TextView
-            android:id="@+id/fragment_onboarding_wifi_networks_scanning_label"
+            android:id="@+id/fragment_select_wifi_progress_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/fragment_onboarding_wifi_networks_scanning"
-            android:layout_marginBottom="@dimen/gap_medium"
+            android:layout_below="@id/fragment_select_wifi_progress"
+            android:layout_marginTop="@dimen/gap_outer"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
             android:text="@string/label_finding_wifi_networks"/>
 
     </RelativeLayout>
 
     <Button
-        android:id="@+id/fragment_onboarding_wifi_networks_rescan"
+        android:id="@+id/fragment_select_wifi_rescan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/gap_outer"
         android:text="@string/action_rescan"
-        style="@style/AppTheme.Button.Borderless.Onboarding"
+        style="@style/AppTheme.Button.Rounded"
         android:visibility="invisible"/>
 
 </LinearLayout>

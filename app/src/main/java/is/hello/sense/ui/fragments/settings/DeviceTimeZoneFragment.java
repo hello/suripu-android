@@ -24,7 +24,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -138,8 +137,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
 
-                             FragmentNavigation navigation = (FragmentNavigation) getActivity();
-                             navigation.popFragment(this, true);
+                             getFragmentNavigation().popFragment(this, true);
                          },
                          this::presentError);
     }

@@ -14,7 +14,6 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.util.Rx;
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
@@ -30,6 +29,7 @@ import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingDoneFragment;
@@ -47,11 +47,10 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -64,7 +63,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     private static final String FRAGMENT_TAG = "OnboardingFragment";
 
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
-    public static final String EXTRA_WIFI_CHANGE_ONLY = OnboardingActivity.class.getName() + ".EXTRA_WIFI_CHANGE_ONLY";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
     @Inject ApiService apiService;
@@ -85,11 +83,6 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         }
 
         if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
-            if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
-                showSelectWifiNetwork(false);
-                return;
-            }
-
             int lastCheckpoint = getLastCheckPoint();
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
@@ -182,6 +175,15 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
     }
 
+    @Override
+    public void flowFinished(@NonNull Fragment fragment,
+                             int responseCode,
+                             @Nullable Intent result) {
+        if (fragment instanceof ConnectToWiFiFragment) {
+            showPairPill(true);
+        }
+    }
+
     @Nullable
     @Override
     public Fragment getTopFragment() {
@@ -202,9 +204,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     public void back() {
         boolean hasStartCheckPoint = getIntent().hasExtra(EXTRA_START_CHECKPOINT);
-        boolean wifiChangeOnly = getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false);
         boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
-        boolean wantsDialog = (!hasStartCheckPoint && !wifiChangeOnly && !pairOnly);
+        boolean wantsDialog = (!hasStartCheckPoint && !pairOnly);
         if (wantsDialog && getFragmentManager().getBackStackEntryCount() == 0) {
             SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
@@ -340,19 +341,10 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showSelectWifiNetwork(boolean wantsBackStackEntry) {
-        pushFragment(new OnboardingWifiNetworkFragment(), null, wantsBackStackEntry);
-    }
-
-    public void showSignIntoWifiNetwork(@Nullable SenseCommandProtos.wifi_endpoint network) {
-        pushFragment(OnboardingSignIntoWifiFragment.newInstance(network), null, true);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, wantsBackStackEntry);
     }
 
     public void showPairPill(boolean showIntroduction) {
-        if (getIntent().getBooleanExtra(EXTRA_WIFI_CHANGE_ONLY, false)) {
-            finish();
-            return;
-        }
-
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
         if (showIntroduction) {

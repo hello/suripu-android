@@ -40,8 +40,6 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -49,6 +47,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Styles;
@@ -247,9 +246,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setMessage(StringRef.from(R.string.error_sense_no_connectivity))
                     .setPrimaryButtonTitle(R.string.action_troubleshoot)
-                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI))
-                    .setSecondaryButtonTitle(R.string.action_retry)
-                    .setSecondaryButtonOnClick(this::connectToPeripheral);
+                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
             showTroubleshootingAlert(alert);
         } else if (device.isMissing()) {
             final String missingMessage = getString(R.string.error_sense_missing_fmt,
@@ -395,9 +392,13 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
         Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_WIFI, null);
 
-        Intent intent = new Intent(getActivity(), OnboardingActivity.class);
-        intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
-        startActivityForResult(intent, REQUEST_CODE_WIFI);
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(getActivity());
+        builder.setDefaultTitle(R.string.title_edit_wifi);
+        builder.setFragmentClass(SelectWiFiNetworkFragment.class);
+        builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
+        builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
     }
 
     public void putIntoPairingMode() {
@@ -463,9 +464,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
                              this::presentError);
         });
         useCurrentPrompt.setNegativeButton(R.string.action_select_time_zone_from_list, (dialog, which) -> {
-            DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
-            ((FragmentNavigation) getActivity()).pushFragment(timeZoneFragment,
-                                                              getString(R.string.action_change_time_zone), true);
+            final DeviceTimeZoneFragment timeZoneFragment = new DeviceTimeZoneFragment();
+            getFragmentNavigation().pushFragment(timeZoneFragment,
+                                                 getString(R.string.action_change_time_zone), true);
         });
         useCurrentPrompt.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
 

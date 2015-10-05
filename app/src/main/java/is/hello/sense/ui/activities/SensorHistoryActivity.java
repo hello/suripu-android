@@ -49,13 +49,13 @@ public class SensorHistoryActivity extends SenseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sensor_history, menu);
+        getMenuInflater().inflate(R.menu.help, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.sensor_history_help) {
+        if (item.getItemId() == R.id.action_help) {
             showWelcomeDialog(true);
             return true;
         }

@@ -33,7 +33,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.SupportTopic;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -235,7 +234,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
         bindAndSubscribe(openTicket,
                 ignored -> {
                     LoadingDialogFragment.close(getFragmentManager());
-                    ((FragmentNavigation) getActivity()).popFragment(this, false);
+                    getFragmentNavigation().popFragment(this, false);
                 }, e -> {
                     LoadingDialogFragment.close(getFragmentManager());
                     ErrorDialogFragment.presentError(getActivity(), e);

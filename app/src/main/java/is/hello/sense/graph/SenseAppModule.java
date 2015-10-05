@@ -46,6 +46,7 @@ import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
+import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
@@ -58,9 +59,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSignIntoWifiFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingWifiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
@@ -98,8 +98,8 @@ import is.hello.sense.zendesk.ZendeskModule;
         OnboardingUnsupportedDeviceFragment.class,
         OnboardingPairSenseFragment.class,
         HardwarePresenter.class,
-        OnboardingWifiNetworkFragment.class,
-        OnboardingSignIntoWifiFragment.class,
+        SelectWiFiNetworkFragment.class,
+        ConnectToWiFiFragment.class,
         OnboardingPairPillFragment.class,
         Onboarding2ndPillInfoFragment.class,
         OnboardingSenseColorsFragment.class,

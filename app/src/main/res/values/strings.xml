@@ -485,6 +485,7 @@ so you can sleep better.</string>
     <string name="question_text_rating_prompt_bad_yes">Sure</string>
     <string name="question_text_rating_prompt_bad_no">No, thanks</string>
     <string name="title_alarm_repeat">Repeat</string>
+    <string name="title_edit_wifi">Edit WiFi</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

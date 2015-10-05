@@ -18,7 +18,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.ui.adapter.SupportTopicAdapter;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
@@ -74,8 +73,8 @@ public class TicketSelectTopicFragment extends InjectionFragment implements Adap
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         SupportTopic topic = (SupportTopic) parent.getItemAtPosition(position);
         TicketSubmitFragment ticketSubmitFragment = TicketSubmitFragment.newInstance(topic);
-        ((FragmentNavigation) getActivity()).pushFragmentAllowingStateLoss(ticketSubmitFragment,
-                topic.displayName, true);
+        getFragmentNavigation().pushFragmentAllowingStateLoss(ticketSubmitFragment,
+                                                              topic.displayName, true);
     }
 
 

@@ -30,11 +30,12 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
@@ -230,9 +231,13 @@ public class PiruPeaActivity extends InjectionActivity implements AdapterView.On
     }
 
     public void setWifiNetwork(@Nullable StaticItemAdapter.TextItem item) {
-        Intent intent = new Intent(this, OnboardingActivity.class);
-        intent.putExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, true);
-        startActivity(intent);
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(this);
+        builder.setDefaultTitle(R.string.title_edit_wifi);
+        builder.setFragmentClass(SelectWiFiNetworkFragment.class);
+        builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
+        builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        startActivity(builder.toIntent());
     }
 
     public void pairPillMode(@Nullable StaticItemAdapter.TextItem item) {
