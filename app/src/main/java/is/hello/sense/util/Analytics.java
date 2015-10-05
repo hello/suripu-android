@@ -514,18 +514,27 @@ public class Analytics {
             provider.registerSuperProperties(createProperties(
                     Global.GLOBAL_PROP_NAME, name,
                     Global.GLOBAL_PROP_PLATFORM, PLATFORM
-            ));
+                                                             ));
         }
 
         trackUserIdentifier(accountId);
     }
 
-    public static void trackSignIn(@NonNull String accountId) {
+    public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
             provider.identify(accountId);
-            provider.getPeople().identify(accountId);
+
+            final MixpanelAPI.People people = provider.getPeople();
+            people.identify(accountId);
+            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+
+            if (name != null) {
+                people.set("$name", name);
+            }
+
         }
 
         trackUserIdentifier(accountId);

@@ -23,6 +23,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.DynamicApiEndpoint;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
@@ -122,7 +123,6 @@ public class OnboardingSignInFragment extends InjectionFragment {
         return (OnboardingActivity) getActivity();
     }
 
-
     public void signIn() {
         String email = this.emailText.getText().toString().trim();
         this.emailText.setText(email);
@@ -146,19 +146,19 @@ public class OnboardingSignInFragment extends InjectionFragment {
             apiSessionManager.setSession(session);
             accountPresenter.update();
 
-            String accountId = session.getAccountId();
-            Analytics.trackSignIn(accountId);
-
-            Observable<Void> initializeLocalState = Observable.combineLatest(accountPresenter.pullAccountPreferences(),
+            Observable<Account> initializeLocalState = Observable.combineLatest(accountPresenter.pullAccountPreferences(),
                                                                              accountPresenter.latest(),
-                                                                             (l, r) -> null);
+                                                                             (ignored, account) -> account);
+
             bindAndSubscribe(initializeLocalState,
-                             ignored -> {
+                             account -> {
+                                 Analytics.trackSignIn(account.getId(), account.getName());
                                  getOnboardingActivity().showHomeActivity();
                              },
                              e -> {
                                  Logger.warn(getClass().getSimpleName(),
                                              "Could not update local account state", e);
+                                 Analytics.trackSignIn(session.getAccountId(), null);
                                  getOnboardingActivity().showHomeActivity();
                              });
         }, error -> {
