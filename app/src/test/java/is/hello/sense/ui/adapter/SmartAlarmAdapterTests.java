@@ -11,11 +11,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import javax.inject.Inject;
+
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.SenseTestCase;
+import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.RecyclerAdapterTesting;
 
@@ -23,7 +26,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class SmartAlarmAdapterTests extends SenseTestCase {
+public class SmartAlarmAdapterTests extends InjectionTestCase {
+    @Inject DateFormatter dateFormatter;
+
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private final FakeAlarmEnabledChangedListener alarmEnabledChangedListener = new FakeAlarmEnabledChangedListener();
     private SmartAlarmAdapter adapter;
@@ -33,7 +38,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
 
     @Before
     public void setUp() {
-        this.adapter = new SmartAlarmAdapter(getContext(), alarmEnabledChangedListener);
+        this.adapter = new SmartAlarmAdapter(getContext(), alarmEnabledChangedListener, dateFormatter);
     }
 
     @After
@@ -48,10 +53,10 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
 
     @Test
     public void messageRendering() throws Exception {
-        SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(R.string.app_name, StringRef.from("Blah blah blah"));
+        final SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(R.string.app_name, StringRef.from("Blah blah blah"));
         message.actionRes = android.R.string.ok;
 
-        LambdaVar<Boolean> clickListenerCalled = LambdaVar.of(false);
+        final LambdaVar<Boolean> clickListenerCalled = LambdaVar.of(false);
         message.onClickListener = view -> {
            clickListenerCalled.set(true);
         };
@@ -60,7 +65,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
 
         assertEquals(1, adapter.getItemCount());
 
-        SmartAlarmAdapter.MessageViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final SmartAlarmAdapter.MessageViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_MESSAGE, 0);
         assertEquals("Sense", holder.titleText.getText().toString());
         assertEquals("Blah blah blah", holder.messageText.getText().toString());
@@ -75,7 +80,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
 
     @Test
     public void smartAlarmRendering() throws Exception {
-        Alarm alarm1 = new Alarm();
+        final Alarm alarm1 = new Alarm();
         alarm1.setEnabled(true);
         alarm1.setRepeated(true);
         alarm1.getDaysOfWeek().add(DateTimeConstants.SATURDAY);
@@ -83,7 +88,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         alarm1.setSmart(true);
         alarm1.setTime(new LocalTime(8, 30));
 
-        Alarm alarm2 = new Alarm();
+        final Alarm alarm2 = new Alarm();
         alarm2.setEnabled(false);
         alarm2.setRepeated(false);
         alarm2.setRingOnce();
@@ -93,24 +98,22 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         adapter.bindAlarms(Lists.newArrayList(alarm1, alarm2));
 
 
-        SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
+        final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
         assertTrue(holder1.enabled.isChecked());
         assertEquals("Smart Alarm  ―  Sun, Sat", holder1.repeat.getText().toString());
-        assertEquals("8:30", holder1.time.getText().toString());
-        assertEquals("AM", holder1.timePeriod.getText().toString());
+        assertEquals("8:30 AM", holder1.time.getText().toString());
 
-        SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
+        final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
         assertFalse(holder2.enabled.isChecked());
         assertEquals("Smart Alarm", holder2.repeat.getText().toString());
-        assertEquals("5:45", holder2.time.getText().toString());
-        assertEquals("AM", holder2.timePeriod.getText().toString());
+        assertEquals("5:45 AM", holder2.time.getText().toString());
     }
 
     @Test
     public void alarmRendering() throws Exception {
-        Alarm alarm1 = new Alarm();
+        final Alarm alarm1 = new Alarm();
         alarm1.setEnabled(true);
         alarm1.setRepeated(true);
         alarm1.getDaysOfWeek().add(DateTimeConstants.SATURDAY);
@@ -118,7 +121,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         alarm1.setSmart(false);
         alarm1.setTime(new LocalTime(8, 30));
 
-        Alarm alarm2 = new Alarm();
+        final Alarm alarm2 = new Alarm();
         alarm2.setEnabled(false);
         alarm2.setRepeated(false);
         alarm2.setRingOnce();
@@ -128,24 +131,22 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         adapter.bindAlarms(Lists.newArrayList(alarm1, alarm2));
 
 
-        SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
+        final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
         assertTrue(holder1.enabled.isChecked());
         assertEquals("Alarm  ―  Sun, Sat", holder1.repeat.getText().toString());
-        assertEquals("8:30", holder1.time.getText().toString());
-        assertEquals("AM", holder1.timePeriod.getText().toString());
+        assertEquals("8:30 AM", holder1.time.getText().toString());
 
-        SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
+        final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
         assertFalse(holder2.enabled.isChecked());
         assertEquals("Alarm", holder2.repeat.getText().toString());
-        assertEquals("5:45", holder2.time.getText().toString());
-        assertEquals("AM", holder2.timePeriod.getText().toString());
+        assertEquals("5:45 AM", holder2.time.getText().toString());
     }
 
     @Test
     public void enabledListener() throws Exception {
-        Alarm alarm = new Alarm();
+        final Alarm alarm = new Alarm();
         alarm.setEnabled(true);
         alarm.setRepeated(true);
         alarm.getDaysOfWeek().add(DateTimeConstants.SATURDAY);
@@ -156,7 +157,7 @@ public class SmartAlarmAdapterTests extends SenseTestCase {
         adapter.bindAlarms(Lists.newArrayList(alarm));
 
 
-        SmartAlarmAdapter.AlarmViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final SmartAlarmAdapter.AlarmViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
 
         holder.enabled.performClick();

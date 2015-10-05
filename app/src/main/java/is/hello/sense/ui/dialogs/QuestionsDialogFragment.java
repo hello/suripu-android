@@ -344,7 +344,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
 
     public void questionUnavailable(@NonNull Throwable e) {
         choicesContainer.removeAllViews();
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        ErrorDialogFragment.presentError(getActivity(), e);
     }
 
     //endregion

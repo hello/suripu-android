@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="fontPath" format="string"/>
+    <!-- Workaround preventing Zendesk from bringing in AppCompat -->
+    <attr name="showAsAction" format="string" />
+    <!-- end workaround -->
 
     <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />
@@ -37,7 +39,6 @@
     </declare-styleable>
 
     <declare-styleable name="RotaryPickerView">
-        <attr name="senseTextAppearance" format="reference" />
         <attr name="senseItemBackground" format="reference" />
         <attr name="senseWantsLeadingZeros" format="reference" />
         <attr name="android:gravity" />

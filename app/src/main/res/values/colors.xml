@@ -7,11 +7,9 @@
     <color name="light_accent">#009CFF</color>
     <color name="light_accent_dimmed">#6ec2fe</color>
     <color name="light_accent_extra_dimmed">#ebf9ff</color>
-    <color name="light_accent_darkened">#0c67c0</color>
+    <color name="light_accent_darkened">#007DCD</color>
     <color name="destructive_accent">#ff0000</color>
-    <color name="status_bar">#b5b5b5</color>
-    <!-- For dialogs that don't use dimming -->
-    <color name="status_bar_dimmed">#383838</color>
+    <color name="status_bar_grey">#b5b5b5</color>
 
     <color name="background">#F2F2F2</color>
     <color name="background_light">@color/white</color>
@@ -25,6 +23,7 @@
     <color name="border">#e5e5e5</color>
     <color name="border_underside_tabs">#d0d0d0</color>
     <color name="shadow_end">#18000000</color>
+    <color name="view_time_picker_shadow_end">#10000000</color>
 
     <color name="timeline_header_border">#C5E7FF</color>
     <color name="timeline_header_gradient_end">#ffF0F3F7</color>
@@ -32,15 +31,20 @@
     <color name="timeline_segment_stripe">#40009cff</color>
 
     <color name="text_dark">#4D4D4D</color>
-    <color name="text_medium">#878787</color>
+    <color name="text_medium">#999999</color>
     <color name="text_light">#b2b2b2</color>
     <color name="text_dim">#77000000</color>
     <color name="text_dim_light">#b2ffffff</color>
     <color name="text_section_header">#878787</color>
     <color name="text_dim_placeholder">#e0e0e0</color>
-    <color name="text_neutral">#999999</color>
     <color name="text_footer">#7e7e7e</color>
     <color name="text_link">#009CFF</color>
+    <color name="text_body_new">#808080</color>
+    <color name="text_heading_major">#4D4D4D</color>
+
+    <color name="text_rotary_picker_focused">@color/light_accent</color>
+    <color name="text_rotary_picker_unfocused">#999999</color>
+    <color name="text_rotary_picker_almost_gone">#E6E6E6</color>
 
     <color name="edit_text_bottom_line_normal">#919191</color>
     <color name="edit_text_bottom_line_disabled">#cacaca</color>
@@ -49,7 +53,6 @@
     <color name="white_button_pressed">#d5d5d5</color>
     <color name="white_button_disabled">#88ffffff</color>
 
-    <color name="background_button_white">#50ffffff</color>
     <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 

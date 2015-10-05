@@ -1,6 +1,9 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -8,20 +11,29 @@ import android.view.MotionEvent;
 import is.hello.sense.util.Logger;
 
 /**
- * Works around the open issue https://code.google.com/p/android/issues/detail?id=18990.
+ * Works around the open following open issues:
+ * <ol>
+ *     <li>https://code.google.com/p/android/issues/detail?id=18990</li>
+ *     <li>https://code.google.com/p/android/issues/detail?id=66620</li>
+ * </ol>
  */
 public class FixedViewPager extends ViewPager {
-    public FixedViewPager(Context context) {
+    public FixedViewPager(@NonNull Context context) {
         super(context);
     }
 
-    public FixedViewPager(Context context, AttributeSet attrs) {
+    public FixedViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        final PagerAdapter adapter = getAdapter();
+        if (adapter == null || adapter.getCount() == 0) {
+            return false;
+        }
+
         try {
             return super.onInterceptTouchEvent(ev);
         } catch (IllegalArgumentException e) {
@@ -31,9 +43,14 @@ public class FixedViewPager extends ViewPager {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(MotionEvent event) {
+        final PagerAdapter adapter = getAdapter();
+        if (adapter == null || adapter.getCount() == 0) {
+            return false;
+        }
+
         try {
-            return super.onTouchEvent(ev);
+            return super.onTouchEvent(event);
         } catch (IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
             return false;

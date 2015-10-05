@@ -177,7 +177,7 @@ public abstract class Share {
                           }
                       }, e -> {
                           Logger.error(Share.class.getSimpleName(), "Could not share bitmap image", e);
-                          ErrorDialogFragment.presentError(from.getFragmentManager(), e);
+                          ErrorDialogFragment.presentError(from, e);
                           if (loadingDialogFragment != null) {
                               loadingDialogFragment.dismissSafely();
                           }

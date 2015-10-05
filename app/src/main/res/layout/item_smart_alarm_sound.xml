@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_medium">
+    android:paddingTop="@dimen/gap_medium"
+    android:paddingBottom="@dimen/gap_medium"
+    android:paddingLeft="@dimen/gap_outer"
+    android:paddingRight="@dimen/gap_outer">
 
     <ImageView
         android:id="@+id/item_smart_alarm_sound_checked"
@@ -28,7 +32,7 @@
         android:id="@+id/item_smart_alarm_sound_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/gap_large"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/item_smart_alarm_sound_checked"
         android:textAppearance="@style/AppTheme.Text.Body"

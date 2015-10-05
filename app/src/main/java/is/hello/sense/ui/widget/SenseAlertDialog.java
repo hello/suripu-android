@@ -57,11 +57,10 @@ public class SenseAlertDialog extends Dialog {
 
         Views.observeNextLayout(container)
              .subscribe(view -> {
-                 DisplayMetrics metrics = new DisplayMetrics();
-                 getWindow().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                 final DisplayMetrics metrics = view.getResources().getDisplayMetrics();
 
-                 int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
-                 int maxHeight = metrics.heightPixels - (padding * 2);
+                 final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+                 final int maxHeight = metrics.heightPixels - (padding * 2);
 
                  if (view.getMeasuredHeight() > maxHeight) {
                      view.getLayoutParams().height = maxHeight;
@@ -248,7 +247,7 @@ public class SenseAlertDialog extends Dialog {
         button.setEnabled(enabled);
     }
 
-    public void setView(@Nullable View view) {
+    public void setView(@Nullable View view, boolean wantsDividers) {
         if (this.view == view) {
             return;
         }
@@ -260,9 +259,9 @@ public class SenseAlertDialog extends Dialog {
         this.view = view;
 
         if (view != null) {
-            int end = container.getChildCount() - 1;
+            final int end = container.getChildCount() - 1;
 
-            if (bottomViewDivider == null) {
+            if (bottomViewDivider == null && wantsDividers) {
                 this.bottomViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bottomViewDivider.getLayoutParams());
                 layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
@@ -272,7 +271,7 @@ public class SenseAlertDialog extends Dialog {
 
             container.addView(view, end);
 
-            if (topViewDivider == null) {
+            if (topViewDivider == null && wantsDividers) {
                 this.topViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
                 container.addView(topViewDivider, end);
             }
@@ -293,7 +292,7 @@ public class SenseAlertDialog extends Dialog {
 
     public void setView(@LayoutRes int viewRes) {
         View view = getLayoutInflater().inflate(viewRes, container, false);
-        setView(view);
+        setView(view, true);
     }
 
 

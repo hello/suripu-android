@@ -38,6 +38,7 @@ import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -46,6 +47,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
     @Inject PreferencesPresenter preferences;
+    @Inject DateFormatter dateFormatter;
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
@@ -80,12 +82,12 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
-        Resources resources = getResources();
-        CardItemDecoration decoration = new CardItemDecoration(resources, true);
+        final Resources resources = getResources();
+        final CardItemDecoration decoration = new CardItemDecoration(resources, true);
         decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
 
-        this.adapter = new SmartAlarmAdapter(getActivity(), this);
+        this.adapter = new SmartAlarmAdapter(getActivity(), this, dateFormatter);
         recyclerView.setAdapter(adapter);
 
         this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
@@ -100,7 +102,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Observable<Boolean> use24Time = preferences.observableUse24Time();
+        final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
     }
@@ -121,7 +123,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
+            final int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
 
             startLoading();
             bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(position),
@@ -132,7 +134,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     @Override
     public void onSwipeInteractionDidFinish() {
-
     }
 
     @Override
@@ -165,7 +166,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         adapter.bindAlarms(alarms);
         if (alarms.isEmpty()) {
-            SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(R.string.title_smart_alarms,
+            final SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(R.string.title_smart_alarms,
                     StringRef.from(R.string.message_smart_alarm_placeholder));
             message.actionRes = R.string.action_new_alarm;
             message.onClickListener = this::newAlarm;
@@ -180,7 +181,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
     public void alarmsUnavailable(Throwable e) {
         Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
 
-        SmartAlarmAdapter.Message message;
+        final SmartAlarmAdapter.Message message;
         if (ApiException.isNetworkError(e)) {
             message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
                     StringRef.from(R.string.error_network_unavailable));
@@ -218,21 +219,20 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
     public void presentError(Throwable e) {
         finishLoading(true);
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e);
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
-
         } else if (ApiException.statusEquals(e, 400)) {
             errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
         }
-        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
 
     private void editAlarm(@NonNull Alarm alarm, int index) {
-        Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
-        Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+        final Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
+        final Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
         intent.putExtras(arguments);
         startActivity(intent);
     }
@@ -245,7 +245,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     @Override
     public boolean onAlarmLongClicked(int position, @NonNull Alarm alarm) {
-        DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(position);
+        final DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(position);
         deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
         deleteDialog.showAllowingStateLoss(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
         return true;
@@ -253,7 +253,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     @Override
     public void onAlarmEnabledChanged(int position, boolean enabled) {
-        Alarm smartAlarm = currentAlarms.get(position);
+        final Alarm smartAlarm = currentAlarms.get(position);
         smartAlarm.setEnabled(enabled);
         if (enabled && smartAlarm.getDaysOfWeek().isEmpty()) {
             smartAlarm.setRingOnce();
@@ -263,14 +263,14 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),
-                ignored -> activityIndicator.setVisibility(View.GONE),
-                e -> {
-                    // Revert on error
-                    smartAlarm.setEnabled(!enabled);
-                    adapter.notifyDataSetChanged();
+                         ignored -> activityIndicator.setVisibility(View.GONE),
+                         e -> {
+                             // Revert on error
+                             smartAlarm.setEnabled(!enabled);
+                             adapter.notifyDataSetChanged();
 
-                    presentError(e);
-                });
+                             presentError(e);
+                         });
     }
 
     public void newAlarm(@NonNull View sender) {
@@ -289,9 +289,9 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         public static final String TAG = DeleteAlarmDialogFragment.class.getSimpleName();
 
         public static DeleteAlarmDialogFragment newInstance(int index) {
-            DeleteAlarmDialogFragment fragment = new DeleteAlarmDialogFragment();
+            final DeleteAlarmDialogFragment fragment = new DeleteAlarmDialogFragment();
 
-            Bundle arguments = new Bundle();
+            final Bundle arguments = new Bundle();
             arguments.putInt(ARG_INDEX, index);
             fragment.setArguments(arguments);
 
@@ -300,15 +300,17 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+            final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
             dialog.setTitle(R.string.label_delete_alarm);
             dialog.setMessage(R.string.dialog_message_confirm_delete_alarm);
             dialog.setPositiveButton(R.string.action_delete, (sender, which) -> {
                 if (getTargetFragment() != null) {
-                    Intent response = new Intent();
+                    final Intent response = new Intent();
                     response.putExtras(getArguments());
-                    getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, response);
+                    getTargetFragment().onActivityResult(getTargetRequestCode(),
+                                                         Activity.RESULT_OK,
+                                                         response);
                 }
             });
             dialog.setNegativeButton(android.R.string.cancel, null);

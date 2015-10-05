@@ -181,7 +181,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
                     .withOperation("Scan for networks")
                     .withSupportLink();
 
@@ -198,7 +198,7 @@ public class OnboardingWifiNetworkFragment extends HardwareFragment implements A
         rescanButton.setVisibility(View.VISIBLE);
         rescanButton.setEnabled(true);
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e)
+        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
                 .withOperation("Scan for networks")
                 .withSupportLink();
 

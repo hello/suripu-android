@@ -117,7 +117,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
                     },
                     e -> {
                         LoadingDialogFragment.close(getFragmentManager());
-                        ErrorDialogFragment.presentError(getFragmentManager(), e);
+                        ErrorDialogFragment.presentError(getActivity(), e);
                     });
         });
         dialog.show();

@@ -67,7 +67,7 @@ public class SensorHistoryActivity extends SenseActivity {
         return getIntent().getStringExtra(EXTRA_SENSOR);
     }
 
-    public void showWelcomeDialog(boolean overrideCheck) {
+    public boolean showWelcomeDialog(boolean overrideCheck) {
         int welcomeDialogRes;
         switch (getSensor()) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
@@ -98,8 +98,9 @@ public class SensorHistoryActivity extends SenseActivity {
 
         if (overrideCheck) {
             WelcomeDialogFragment.show(this, welcomeDialogRes);
+            return true;
         } else {
-            WelcomeDialogFragment.showIfNeeded(this, welcomeDialogRes);
+            return WelcomeDialogFragment.showIfNeeded(this, welcomeDialogRes);
         }
     }
 }

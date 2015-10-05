@@ -23,5 +23,6 @@ public @interface NotLocalizable {
         ALPHABET,
         RTL,
         METRICS,
+        API_LIMITATION,
     }
 }

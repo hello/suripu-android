@@ -16,10 +16,8 @@ import android.widget.Toast;
 
 import com.bugsnag.android.Bugsnag;
 import com.crashlytics.android.Crashlytics;
-import com.squareup.okhttp.Cache;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -47,7 +45,6 @@ import is.hello.sense.util.SessionLogger;
 public class DebugActivity extends InjectionActivity implements AdapterView.OnItemClickListener {
     @Inject ApiSessionManager sessionManager;
     @Inject ApiEndpoint apiEndpoint;
-    @Inject Cache httpCache;
     @Inject BluetoothStack bluetoothStack;
     @Inject PreferencesPresenter preferences;
     @Inject LocalUsageTracker localUsageTracker;
@@ -115,7 +112,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         debugActionItems.addTextItem("Share Log", null, this::sendLog);
         debugActionItems.addTextItem("Show Room Check", null, this::showRoomCheck);
         debugActionItems.addTextItem("Forget welcome dialogs", null, this::clearHandholdingSettings);
-        debugActionItems.addTextItem("Clear Http Cache", null, this::clearHttpCache);
         debugActionItems.addTextItem("Re-enable review prompt", null, this::reEnableReviewPrompt);
         debugActionItems.addTextItem("Reset app usage stats", null, this::resetAppUsage);
         debugActionItems.addTextItem("Log Out", null, this::logOut);
@@ -142,7 +138,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
                          ignored -> LoadingDialogFragment.close(getFragmentManager()),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getFragmentManager(), e);
+                             ErrorDialogFragment.presentError(this, e);
                          });
     }
 
@@ -158,15 +154,6 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
     public void clearHandholdingSettings(@NonNull StaticItemAdapter.TextItem item) {
         WelcomeDialogFragment.clearShownStates(this);
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
-    }
-
-    public void clearHttpCache(@NonNull StaticItemAdapter.TextItem item) {
-        try {
-            httpCache.evictAll();
-            Toast.makeText(getApplicationContext(), "Cache Cleared", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            ErrorDialogFragment.presentError(getFragmentManager(), e);
-        }
     }
 
     public void crash(@NonNull StaticItemAdapter.TextItem item) {

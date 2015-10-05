@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Workaround preventing Zendesk from bringing in AppCompat -->
+    <style name="Theme.AppCompat" parent="Platform" />
+    <style name="Theme.AppCompat.Light" parent="Platform.Light" />
+    <style name="Theme.AppCompat.Light.DarkActionBar" parent="Platform.Light" />
+</resources>

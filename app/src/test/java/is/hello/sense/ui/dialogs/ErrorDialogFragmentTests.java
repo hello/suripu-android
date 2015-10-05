@@ -2,6 +2,7 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Button;
@@ -38,8 +39,8 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
         return new TestErrorDialogFragment.Builder();
     }
 
-    private static ErrorDialogFragment.Builder newBuilder(@Nullable Throwable e) {
-        return new TestErrorDialogFragment.Builder(e);
+    private static ErrorDialogFragment.Builder newBuilder(@Nullable Throwable e, @NonNull Resources resources) {
+        return new TestErrorDialogFragment.Builder(e, resources);
     }
 
     private SenseAlertDialog show(@NonNull ErrorDialogFragment fragment) {
@@ -75,7 +76,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void simpleError() throws Exception {
         IllegalStateException e = new IllegalStateException(MESSAGE);
-        ErrorDialogFragment dialogFragment = newBuilder(e).build();
+        ErrorDialogFragment dialogFragment = newBuilder(e, getResources()).build();
         SenseAlertDialog dialog = show(dialogFragment);
         assertEquals(MESSAGE, dialog.getMessage().toString());
         assertArrayEquals(new String[]{MESSAGE, "java.lang.IllegalStateException", null, null},
@@ -85,7 +86,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void errorWithReporting() throws Exception {
         ReportingException e = new ReportingException(MESSAGE);
-        ErrorDialogFragment dialogFragment = newBuilder(e)
+        ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
                 .withOperation("Testing")
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
@@ -101,7 +102,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
 
     @Test
     public void nullError() throws Exception {
-        ErrorDialogFragment dialogFragment = newBuilder(null).build();
+        ErrorDialogFragment dialogFragment = newBuilder(null, getResources()).build();
         SenseAlertDialog dialog = show(dialogFragment);
         assertEquals("An unknown error has occurred.", dialog.getMessage().toString());
         assertArrayEquals(new String[]{"An unknown error has occurred.", null, null, null},
@@ -112,7 +113,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     public void fatalBluetoothError() throws Exception {
         BluetoothGattError e = new BluetoothGattError(BluetoothGattError.GATT_STACK_ERROR,
                 BluetoothGattError.Operation.CONNECT);
-        ErrorDialogFragment dialogFragment = newBuilder(e)
+        ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
                 .withOperation("Testing")
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
@@ -135,7 +136,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void addendum() throws Exception {
         IllegalStateException e = new IllegalStateException(MESSAGE);
-        ErrorDialogFragment dialogFragment = newBuilder(e)
+        ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
                 .withAddendum(R.string.error_addendum_unstable_stack)
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
@@ -149,7 +150,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void supportLink() throws Exception {
         IllegalStateException e = new IllegalStateException(MESSAGE);
-        ErrorDialogFragment dialogFragment = newBuilder(e)
+        ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
                 .withSupportLink()
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
@@ -193,8 +194,8 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
             public Builder() {
             }
 
-            public Builder(@Nullable Throwable e) {
-                super(e);
+            public Builder(@Nullable Throwable e, @NonNull Resources resources) {
+                super(e, resources);
             }
 
             @Override

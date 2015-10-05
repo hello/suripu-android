@@ -146,7 +146,7 @@ public class DeviceListFragment extends InjectionFragment
 
         adapter.devicesUnavailable(e);
 
-        ErrorDialogFragment.presentError(getFragmentManager(), e);
+        ErrorDialogFragment.presentError(getActivity(), e);
     }
 
 

@@ -1,6 +1,7 @@
 package is.hello.sense.util;
 
 import android.content.Context;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -9,8 +10,10 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.TypefaceSpan;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.Hours;
@@ -23,6 +26,13 @@ import org.joda.time.Seconds;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -217,12 +227,26 @@ import is.hello.sense.ui.widget.util.Styles;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable LocalTime time, boolean use24Time) {
+    @NotLocalizable(NotLocalizable.BecauseOf.API_LIMITATION)
+    public @NonNull CharSequence formatAsAlarmTime(@Nullable LocalTime time, boolean use24Time) {
         if (time != null) {
-            if (use24Time)
-                return time.toString(context.getString(R.string.format_time_24_hr));
-            else
-                return time.toString(context.getString(R.string.format_time_12_hr));
+            if (use24Time) {
+                return time.toString(context.getString(R.string.format_alarm_time_24_hr));
+            } else {
+                final String period = time.toString(context.getString(R.string.format_alarm_time_12_hr_period_padded));
+                final SpannableStringBuilder rendered = new SpannableStringBuilder(period);
+                rendered.setSpan(new RelativeSizeSpan(0.4f),
+                                 0, rendered.length(),
+                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                rendered.setSpan(new TypefaceSpan("sans-serif-light"),
+                                 0, rendered.length(),
+                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                final String timeString = time.toString(context.getString(R.string.format_alarm_time_12_hr));
+                rendered.insert(0, timeString);
+
+                return rendered;
+            }
         }
         return context.getString(R.string.format_date_placeholder);
     }
@@ -315,4 +339,105 @@ import is.hello.sense.ui.widget.util.Styles;
     }
 
     //endregion
+
+
+    //region Calendar Support
+
+    public static @JodaWeekDay int calendarDayToJodaTimeDay(int calendarDay) {
+        switch (calendarDay) {
+            case Calendar.SUNDAY: {
+                return DateTimeConstants.SUNDAY;
+            }
+            case Calendar.MONDAY: {
+                return DateTimeConstants.MONDAY;
+            }
+            case Calendar.TUESDAY: {
+                return DateTimeConstants.TUESDAY;
+            }
+            case Calendar.WEDNESDAY: {
+                return DateTimeConstants.WEDNESDAY;
+            }
+            case Calendar.THURSDAY: {
+                return DateTimeConstants.THURSDAY;
+            }
+            case Calendar.FRIDAY: {
+                return DateTimeConstants.FRIDAY;
+            }
+            case Calendar.SATURDAY: {
+                return DateTimeConstants.SATURDAY;
+            }
+            default: {
+                Logger.warn(DateFormatter.class.getSimpleName(),
+                            "Unknown calendar day '" + calendarDay + "', defaulting to MONDAY.");
+                return DateTimeConstants.MONDAY;
+            }
+        }
+    }
+
+    public static int jodaTimeDayToCalendarDay(@JodaWeekDay int dateTimeDay) {
+        switch (dateTimeDay) {
+            case DateTimeConstants.SUNDAY: {
+                return Calendar.SUNDAY;
+            }
+            case DateTimeConstants.MONDAY: {
+                return Calendar.MONDAY;
+            }
+            case DateTimeConstants.TUESDAY: {
+                return Calendar.TUESDAY;
+            }
+            case DateTimeConstants.WEDNESDAY: {
+                return Calendar.WEDNESDAY;
+            }
+            case DateTimeConstants.THURSDAY: {
+                return Calendar.THURSDAY;
+            }
+            case DateTimeConstants.FRIDAY: {
+                return Calendar.FRIDAY;
+            }
+            case DateTimeConstants.SATURDAY: {
+                return Calendar.SATURDAY;
+            }
+            default: {
+                Logger.warn(DateFormatter.class.getSimpleName(),
+                            "Unknown calendar day '" + dateTimeDay + "', defaulting to MONDAY.");
+                return Calendar.MONDAY;
+            }
+        }
+    }
+
+    public static @JodaWeekDay int nextJodaTimeDay(@JodaWeekDay final int jodaTimeDay) {
+        final @JodaWeekDay int nextDay = jodaTimeDay + 1;
+        if (nextDay > DateTimeConstants.SUNDAY) {
+            return DateTimeConstants.MONDAY;
+        } else {
+            return nextDay;
+        }
+    }
+
+    public static List<Integer> getDaysOfWeek(@JodaWeekDay final int startDay) {
+        final List<Integer> days = new ArrayList<>(7);
+        @JodaWeekDay int day = startDay;
+        do {
+            days.add(day);
+            day = nextJodaTimeDay(day);
+        } while (day != startDay);
+        return days;
+    }
+
+    //endregion
+
+
+    @IntDef({
+            DateTimeConstants.SUNDAY,
+            DateTimeConstants.MONDAY,
+            DateTimeConstants.TUESDAY,
+            DateTimeConstants.WEDNESDAY,
+            DateTimeConstants.THURSDAY,
+            DateTimeConstants.FRIDAY,
+            DateTimeConstants.SATURDAY,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.PARAMETER, ElementType.METHOD,
+            ElementType.FIELD, ElementType.LOCAL_VARIABLE})
+    public @interface JodaWeekDay {}
 }
