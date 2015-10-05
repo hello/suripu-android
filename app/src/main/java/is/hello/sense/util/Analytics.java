@@ -24,6 +24,7 @@ import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 public class Analytics {
@@ -520,19 +521,20 @@ public class Analytics {
         trackUserIdentifier(accountId);
     }
 
-    public static void trackSignIn(@NonNull String accountId) {
+    public static void trackSignIn(@NonNull Account account) {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
-            provider.identify(accountId);
+            provider.identify(account.getId());
 
             final MixpanelAPI.People people = provider.getPeople();
-            people.identify(accountId);
-            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            people.identify(account.getId());
+            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, account.getId());
             people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+            people.set("$name", account.getName());
         }
 
-        trackUserIdentifier(accountId);
+        trackUserIdentifier(account.getId());
     }
 
     public static void setSenseId(@Nullable String senseId) {

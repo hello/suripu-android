@@ -23,6 +23,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.DynamicApiEndpoint;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
@@ -41,6 +42,7 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.functions.Func2;
 
 public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiEndpoint apiEndpoint;
@@ -122,7 +124,6 @@ public class OnboardingSignInFragment extends InjectionFragment {
         return (OnboardingActivity) getActivity();
     }
 
-
     public void signIn() {
         String email = this.emailText.getText().toString().trim();
         this.emailText.setText(email);
@@ -146,12 +147,16 @@ public class OnboardingSignInFragment extends InjectionFragment {
             apiSessionManager.setSession(session);
             accountPresenter.update();
 
-            String accountId = session.getAccountId();
-            Analytics.trackSignIn(accountId);
-
             Observable<Void> initializeLocalState = Observable.combineLatest(accountPresenter.pullAccountPreferences(),
                                                                              accountPresenter.latest(),
-                                                                             (l, r) -> null);
+                                                                             new Func2<Void, Account, Void>() {
+                                                                                 @Override
+                                                                                 public Void call(Void aVoid, Account account) {
+                                                                                     Analytics.trackSignIn(account);
+                                                                                     return null;
+                                                                                 }
+                                                                             });
+
             bindAndSubscribe(initializeLocalState,
                              ignored -> {
                                  getOnboardingActivity().showHomeActivity();
