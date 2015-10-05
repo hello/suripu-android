@@ -220,4 +220,5 @@ dependencies {
 
     //noinspection GradleDynamicVersion
     compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'com.bugsnag:bugsnag-android:3.2.6'
 }

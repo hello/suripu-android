@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bugsnag.android.Bugsnag;
 import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
@@ -160,6 +161,7 @@ public class DebugActivity extends InjectionActivity implements AdapterView.OnIt
         confirm.setTitle("Are you sure?");
         confirm.setMessage("A report of this crash will be uploaded to Crashlytics.");
         confirm.setPositiveButton("Crash", (dialog, which) -> {
+            Bugsnag.leaveBreadcrumb("Simulating crash");
             Crashlytics.log("Simulating crash");
             throw new RuntimeException("Simulated crash");
         });
