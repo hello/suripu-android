@@ -42,7 +42,6 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.functions.Func2;
 
 public class OnboardingSignInFragment extends InjectionFragment {
     @Inject ApiEndpoint apiEndpoint;
@@ -147,23 +146,19 @@ public class OnboardingSignInFragment extends InjectionFragment {
             apiSessionManager.setSession(session);
             accountPresenter.update();
 
-            Observable<Void> initializeLocalState = Observable.combineLatest(accountPresenter.pullAccountPreferences(),
+            Observable<Account> initializeLocalState = Observable.combineLatest(accountPresenter.pullAccountPreferences(),
                                                                              accountPresenter.latest(),
-                                                                             new Func2<Void, Account, Void>() {
-                                                                                 @Override
-                                                                                 public Void call(Void aVoid, Account account) {
-                                                                                     Analytics.trackSignIn(account);
-                                                                                     return null;
-                                                                                 }
-                                                                             });
+                                                                             (ignored, account) -> account);
 
             bindAndSubscribe(initializeLocalState,
-                             ignored -> {
+                             account -> {
+                                 Analytics.trackSignIn(account.getId(), account.getName());
                                  getOnboardingActivity().showHomeActivity();
                              },
                              e -> {
                                  Logger.warn(getClass().getSimpleName(),
                                              "Could not update local account state", e);
+                                 Analytics.trackSignIn(session.getAccountId(), null);
                                  getOnboardingActivity().showHomeActivity();
                              });
         }, error -> {

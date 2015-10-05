@@ -24,7 +24,6 @@ import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 public class Analytics {
@@ -515,26 +514,30 @@ public class Analytics {
             provider.registerSuperProperties(createProperties(
                     Global.GLOBAL_PROP_NAME, name,
                     Global.GLOBAL_PROP_PLATFORM, PLATFORM
-            ));
+                                                             ));
         }
 
         trackUserIdentifier(accountId);
     }
 
-    public static void trackSignIn(@NonNull Account account) {
+    public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         if (provider != null) {
-            provider.identify(account.getId());
+            provider.identify(accountId);
 
             final MixpanelAPI.People people = provider.getPeople();
-            people.identify(account.getId());
-            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, account.getId());
+            people.identify(accountId);
+            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
             people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-            people.set("$name", account.getName());
+
+            if (name != null) {
+                people.set("$name", name);
+            }
+
         }
 
-        trackUserIdentifier(account.getId());
+        trackUserIdentifier(accountId);
     }
 
     public static void setSenseId(@Nullable String senseId) {
