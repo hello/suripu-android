@@ -48,10 +48,13 @@ public class SenseApplication extends Application {
         SenseApplication.instance = this;
 
         // And always do this second.
-        Crashlytics.start(this);
-        Crashlytics.setString("BuildValues_type", BuildConfig.BUILD_TYPE);
+        final boolean isRunningInRobolectric = "robolectric".equals(Build.FINGERPRINT);
+        if (!isRunningInRobolectric) {
+            Crashlytics.start(this);
+            Crashlytics.setString("BuildValues_type", BuildConfig.BUILD_TYPE);
 
-        Bugsnag.init(this);
+            Bugsnag.init(this);
+        }
 
 
         JodaTimeAndroid.init(this);
@@ -62,7 +65,7 @@ public class SenseApplication extends Application {
 
         buildGraph();
 
-        if (!"robolectric".equals(Build.FINGERPRINT)) {
+        if (!isRunningInRobolectric) {
             localUsageTracker.deleteOldUsageStatsAsync();
         }
 
