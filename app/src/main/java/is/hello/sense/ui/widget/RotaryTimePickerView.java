@@ -152,6 +152,8 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
             hourPicker.setMaxValue(12);
         }
 
+        hourPicker.setWantsLeadingZeros(use24Time);
+
         this.use24Time = use24Time;
     }
 
