@@ -161,7 +161,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         SenseTimeZone timeZone = SenseTimeZone.fromDefault();
         bindAndSubscribe(apiService.updateTimeZone(timeZone),
                 ignored -> {
-                    Logger.info(OnboardingSignIntoWifiFragment.class.getSimpleName(), "Time zone updated.");
+                    Logger.info(ConnectToWiFiFragment.class.getSimpleName(), "Time zone updated.");
 
                     pushDeviceData();
                 },

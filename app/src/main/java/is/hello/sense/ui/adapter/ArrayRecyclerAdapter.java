@@ -8,7 +8,7 @@ import android.view.View;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class ArrayRecyclerAdapter<T, VH extends ArrayRecyclerAdapter.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private final List<T> storage;
     private @Nullable OnItemClickedListener<T> onItemClickedListener;
 

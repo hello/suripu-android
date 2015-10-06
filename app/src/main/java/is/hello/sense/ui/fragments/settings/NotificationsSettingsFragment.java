@@ -8,10 +8,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import javax.inject.Inject;
@@ -20,9 +21,10 @@ import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.ui.adapter.StaticItemAdapter;
+import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
@@ -38,10 +40,10 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
 
     private ProgressBar loadingIndicator;
-    private ListView listView;
+    private RecyclerView recyclerView;
 
-    private StaticItemAdapter.CheckItem pushScoreItem;
-    private StaticItemAdapter.CheckItem pushAlertConditionsItem;
+    private SettingsRecyclerAdapter.ToggleItem pushScoreItem;
+    private SettingsRecyclerAdapter.ToggleItem pushAlertConditionsItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,22 +57,38 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_view_static, container, false);
+        final View view = inflater.inflate(R.layout.static_recycler, container, false);
 
-        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
-        this.listView = (ListView) view.findViewById(android.R.id.list);
+        this.loadingIndicator = (ProgressBar) view.findViewById(R.id.static_recycler_view_loading);
 
-        StaticItemAdapter adapter = new StaticItemAdapter(getActivity());
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.static_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setItemAnimator(null);
 
-        this.pushScoreItem = adapter.addCheckItem(R.string.notification_setting_sleep_score, false, item -> {
-            updatePreference(PreferencesPresenter.PUSH_SCORE_ENABLED, item);
-        });
-        this.pushAlertConditionsItem = adapter.addCheckItem(R.string.notification_setting_alert_conditions, false, item -> {
-            updatePreference(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, item);
-        });
+        final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        final InsetItemDecoration decoration = new InsetItemDecoration();
+        recyclerView.addItemDecoration(decoration);
 
-        listView.setOnItemClickListener(adapter);
-        listView.setAdapter(adapter);
+        final SettingsRecyclerAdapter adapter = new SettingsRecyclerAdapter(getActivity());
+        adapter.setWantsDividers(false);
+
+
+        decoration.addTopInset(adapter.getItemCount(), verticalPadding);
+        this.pushScoreItem =
+                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_sleep_score), () -> {
+                    updatePreference(PreferencesPresenter.PUSH_SCORE_ENABLED, pushScoreItem);
+                });
+        adapter.add(pushScoreItem);
+
+        decoration.addBottomInset(adapter.getItemCount(), verticalPadding);
+        this.pushAlertConditionsItem =
+                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_alert_conditions), () -> {
+                    updatePreference(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, pushAlertConditionsItem);
+                });
+        adapter.add(pushAlertConditionsItem);
+
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
@@ -84,16 +102,16 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
                          ignored -> hideLoading(),
                          this::pullingPreferencesFailed);
 
-        Observable<Boolean> pushScore = preferences.observableBoolean(
-                PreferencesPresenter.PUSH_SCORE_ENABLED, true);
+        final Observable<Boolean> pushScore =
+                preferences.observableBoolean(PreferencesPresenter.PUSH_SCORE_ENABLED, true);
         bindAndSubscribe(pushScore,
-                         pushScoreItem::setChecked,
+                         pushScoreItem::setValue,
                          Functions.LOG_ERROR);
 
-        Observable<Boolean> pushAlertConditions = preferences.observableBoolean(
-                PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, true);
+        final Observable<Boolean> pushAlertConditions =
+                preferences.observableBoolean(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, true);
         bindAndSubscribe(pushAlertConditions,
-                         pushAlertConditionsItem::setChecked,
+                         pushAlertConditionsItem::setValue,
                          Functions.LOG_ERROR);
     }
 
@@ -105,7 +123,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         this.pushAlertConditionsItem = null;
 
         this.loadingIndicator = null;
-        this.listView = null;
+        this.recyclerView = null;
     }
 
     @Override
@@ -130,25 +148,25 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
     private void showLoading() {
         loadingIndicator.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
     }
 
     private void hideLoading() {
         loadingIndicator.setVisibility(View.GONE);
-        listView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     public void pullingPreferencesFailed(Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
 
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
 
-    public void updatePreference(@NonNull String key, @NonNull StaticItemAdapter.CheckItem item) {
-        boolean update = !item.isChecked();
+    public void updatePreference(@NonNull String key, @NonNull SettingsRecyclerAdapter.ToggleItem item) {
+        final boolean update = !item.getValue();
         preferences.edit()
                    .putBoolean(key, update)
                    .apply();

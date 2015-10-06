@@ -59,4 +59,23 @@ public class SenseFragment extends Fragment {
         }
     }
 
+    /**
+     * Resolve the navigation container of the fragment.
+     * <p>
+     * This method first checks if the target fragment
+     * conforms to {@link FragmentNavigation}, then checks
+     * if the activity conforms to {@link FragmentNavigation}.
+     * If neither does, this method returns <code>null</code>.
+     *
+     * @return The navigation container of the fragment if it has one; null otherwise.
+     */
+    public FragmentNavigation getFragmentNavigation() {
+        if (getTargetFragment() instanceof FragmentNavigation) {
+            return (FragmentNavigation) getTargetFragment();
+        } else if (getActivity() instanceof FragmentNavigation) {
+            return (FragmentNavigation) getActivity();
+        } else {
+            return null;
+        }
+    }
 }

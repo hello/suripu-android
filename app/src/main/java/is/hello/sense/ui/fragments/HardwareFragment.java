@@ -37,10 +37,6 @@ public abstract class HardwareFragment extends InjectionFragment {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
     }
 
-    protected boolean isWifiOnlySession() {
-        return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_WIFI_CHANGE_ONLY, false);
-    }
-
 
     //region Activity
 
@@ -48,7 +44,8 @@ public abstract class HardwareFragment extends InjectionFragment {
         if (loadingDialogFragment == null) {
             stateSafeExecutor.execute(() -> {
                 this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                        getString(titleRes), LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                                                        getString(titleRes),
+                                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
             });
         } else {
             loadingDialogFragment.setTitle(getString(titleRes));
@@ -74,11 +71,11 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected void showHardwareActivity(@NonNull Runnable onCompletion,
                                         @NonNull Action1<Throwable> onError) {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY),
-                ignored -> onCompletion.run(),
-                e -> {
-                    Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
-                    onError.call(e);
-                });
+                         ignored -> onCompletion.run(),
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
+                             onError.call(e);
+                         });
     }
 
     protected void hideHardwareActivity(@NonNull Runnable onCompletion,
@@ -101,19 +98,19 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.STOP),
-                ignored -> onCompletion.run(),
-                e -> {
-                    Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);
+                         ignored -> onCompletion.run(),
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);
 
-                    onCompletion.run();
-                });
+                             onCompletion.run();
+                         });
     }
 
 
     protected void hideAllActivityForSuccess(@NonNull Runnable onCompletion,
                                              @NonNull Action1<Throwable> onError) {
         hideHardwareActivity(() -> hideBlockingActivity(true, onCompletion),
-                e -> hideBlockingActivity(false, () -> onError.call(e)));
+                             e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
     protected void hideAllActivityForFailure(@NonNull Runnable onCompletion) {
@@ -136,14 +133,14 @@ public abstract class HardwareFragment extends InjectionFragment {
         SenseBottomSheet options = new SenseBottomSheet(getActivity());
         options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
-                .setTitle(R.string.action_factory_reset)
-                .setTitleColor(getResources().getColor(R.color.destructive_accent))
-                .setDescription(R.string.description_recovery_factory_reset));
+                                  .setTitle(R.string.action_factory_reset)
+                                  .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                                  .setDescription(R.string.description_recovery_factory_reset));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             options.addOption(new SenseBottomSheet.Option(1)
-                    .setTitle("Debug")
-                    .setTitleColor(getResources().getColor(R.color.light_accent))
-                    .setDescription("If you're adventurous, but here there be dragons."));
+                                      .setTitle("Debug")
+                                      .setTitleColor(getResources().getColor(R.color.light_accent))
+                                      .setDescription("If you're adventurous, but here there be dragons."));
         }
         options.setOnOptionSelectedListener(option -> {
             switch (option.getOptionId()) {
@@ -172,7 +169,7 @@ public abstract class HardwareFragment extends InjectionFragment {
         confirmation.setMessage(R.string.dialog_message_factory_reset);
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setPositiveButton(R.string.action_factory_reset,
-                (ignored, which) -> performRecoveryFactoryReset());
+                                       (ignored, which) -> performRecoveryFactoryReset());
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmation.show();
     }
@@ -182,32 +179,32 @@ public abstract class HardwareFragment extends InjectionFragment {
 
         if (!hardwarePresenter.hasPeripheral()) {
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                    ignored -> performRecoveryFactoryReset(),
-                    this::presentFactoryResetError);
+                             ignored -> performRecoveryFactoryReset(),
+                             this::presentFactoryResetError);
         } else if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
-                    state -> {
-                        if (state != Operation.CONNECTED) {
-                            return;
-                        }
-                        performRecoveryFactoryReset();
-                    },
-                    this::presentFactoryResetError);
+                             state -> {
+                                 if (state != Operation.CONNECTED) {
+                                     return;
+                                 }
+                                 performRecoveryFactoryReset();
+                             },
+                             this::presentFactoryResetError);
         } else {
             showHardwareActivity(() -> {
                 bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
-                        ignored -> {
-                            hideBlockingActivity(true, () -> {
-                                Analytics.setSenseId("unpaired");
+                                 ignored -> {
+                                     hideBlockingActivity(true, () -> {
+                                         Analytics.setSenseId("unpaired");
 
-                                MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
-                                        R.string.message_power_cycle_sense_factory_reset);
-                                powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+                                         MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                                                                                                    R.string.message_power_cycle_sense_factory_reset);
+                                         powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
-                                getOnboardingActivity().showSetupSense();
-                            });
-                        },
-                        this::presentFactoryResetError);
+                                         getOnboardingActivity().showSetupSense();
+                                     });
+                                 },
+                                 this::presentFactoryResetError);
             }, this::presentFactoryResetError);
         }
     }

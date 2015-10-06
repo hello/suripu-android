@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:textAppearance="?attr/senseTextAppearanceHeading"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/title_register_height"/>
 
@@ -28,7 +28,7 @@
         android:layout_below="@id/fragment_onboarding_register_height_heading"
         android:layout_alignParentStart="true"
         android:layout_marginTop="@dimen/gap_small"
-        android:textAppearance="@style/AppTheme.Text.Subheading"
+        android:textAppearance="?attr/senseTextAppearanceSubheading"
         android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/onboarding_register_info_explanation"/>
 

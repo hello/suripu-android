@@ -24,7 +24,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -63,12 +62,12 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
-        View header = inflater.inflate(R.layout.item_static_text, listView, false);
+        View header = inflater.inflate(R.layout.item_settings_detail, listView, false);
 
-        TextView headerTitle = (TextView) header.findViewById(R.id.item_static_text_title);
+        TextView headerTitle = (TextView) header.findViewById(R.id.item_settings_detail_title);
         headerTitle.setText(R.string.label_time_zone);
 
-        this.headerDetail = (TextView) header.findViewById(R.id.item_static_text_detail);
+        this.headerDetail = (TextView) header.findViewById(R.id.item_settings_detail_detail);
         headerDetail.setText(R.string.missing_data_placeholder);
 
         listView.addHeaderView(header, null, false);
@@ -138,8 +137,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
 
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
 
-                             FragmentNavigation navigation = (FragmentNavigation) getActivity();
-                             navigation.popFragment(this, true);
+                             getFragmentNavigation().popFragment(this, true);
                          },
                          this::presentError);
     }

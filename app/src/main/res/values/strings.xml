@@ -4,7 +4,6 @@
     <string name="app_name">Sense</string>
     <string name="app_version_fmt">%1$s %2$s</string>
     <string name="action_settings">Settings</string>
-    <string name="activity_debug">Debug</string>
 
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
@@ -83,8 +82,8 @@
     <string name="title_connecting_network_connect_failed">Failed to Connect, Retrying</string>
     <string name="wifi_network_secured">Secured Network</string>
     <string name="wifi_network_was_scanned">Scanned</string>
-    <string name="title_choose_wifi_network">Connecting Sense to WiFi</string>
-    <string name="info_choose_wifi_network">Please select your WiFi network from the list below:</string>
+    <string name="title_choose_wifi_network">Connecting Sense to Wi-Fi</string>
+    <string name="info_choose_wifi_network">Please select your Wi-Fi network from the list below:</string>
     <string name="title_sign_into_wifi_selection">Enter password for</string>
     <string name="title_sign_into_wifi_selection_open">Connect to</string>
     <string name="title_sign_into_wifi_other">Enter WiFi credentials</string>
@@ -184,7 +183,7 @@ so you can sleep better.</string>
     <string name="action_no_thanks">Not Right Now</string>
     <string name="title_onboarding_2nd_pill_info">Have your partner get the Sense app.</string>
     <string name="info_onboarding_2nd_pill_info">Your Sense is now in Pairing Mode. Have your partner visit <b>http://senseapp.com</b> on their mobile device to download the Sense app, and create a new account.\n\nThey will be given instructions to set up their Sleep Pill.</string>
-    <string name="label_finding_wifi_networks">Finding WiFi Networks…</string>
+    <string name="label_finding_wifi_networks">Finding Wi-Fi Networks…</string>
     <string name="action_help">Help</string>
     <string name="dialog_title_troubleshoot_sense">Sense Not Found</string>
     <string name="dialog_message_troubleshoot_sense">We could not connect to your Sense. Please make sure your Sense is plugged in, nearby, and in Pairing Mode.</string>
@@ -283,7 +282,7 @@ so you can sleep better.</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
-    <string name="label_wifi_network_name">"WiFi network: "</string>
+    <string name="label_wifi_network_name">"Wi-Fi network: "</string>
     <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep talking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
     <string name="onboarding_title_enhanced_audio">Enable Enhanced Audio</string>
     <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
@@ -485,6 +484,7 @@ so you can sleep better.</string>
     <string name="question_text_rating_prompt_bad_yes">Sure</string>
     <string name="question_text_rating_prompt_bad_no">No, thanks</string>
     <string name="title_alarm_repeat">Repeat</string>
+    <string name="title_edit_wifi">Edit Wi-Fi</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

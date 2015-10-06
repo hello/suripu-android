@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_xsmall"
-            android:textAppearance="@style/AppTheme.Text.Heading.Strong"
+            android:textAppearance="?attr/senseTextAppearanceHeading"
             android:textColor="@color/white"
             android:text="@string/label_sleep_summary" />
 

@@ -14,21 +14,9 @@
         <item name="android:textColor">@color/text_dark</item>
     </style>
 
-    <style name="AppTheme.Text.Heading.Strong">
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="AppTheme.Text.Heading.Card">
-        <item name="android:textSize">@dimen/text_size_heading_card</item>
-    </style>
-
-    <style name="AppTheme.Text.Heading.Large">
-        <item name="android:textSize">@dimen/text_size_heading_large</item>
-    </style>
-
-    <style name="AppTheme.Text.Heading.Alert">
+    <style name="AppTheme.Text.Heading.New">
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_heading_alert</item>
+        <item name="android:textSize">@dimen/text_size_heading_new</item>
         <item name="android:textColor">@color/text_heading_major</item>
     </style>
 
@@ -37,10 +25,6 @@
         <item name="android:textSize">@dimen/text_size_subheading</item>
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_subheading</item>
         <item name="android:textColor">@color/text_medium</item>
-    </style>
-
-    <style name="AppTheme.Text.Subheading.Dark">
-        <item name="android:textColor">@color/text_dark</item>
     </style>
 
     <style name="AppTheme.Text.ParagraphHeading">
@@ -55,14 +39,6 @@
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
         <item name="android:textColor">@color/text_dark</item>
-    </style>
-    
-    <style name="AppTheme.Text.Actionable">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_body_small</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Text.SectionHeading">
@@ -111,12 +87,20 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Medium.Accent">
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    </style>
+
     <style name="AppTheme.Text.Body.MidSized">
         <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
     </style>
 
-    <style name="AppTheme.Text.Body.MidSized.Neutral">
+    <style name="AppTheme.Text.Body.MidSized.New">
         <item name="android:textColor">@color/text_body_new</item>
+    </style>
+
+    <style name="AppTheme.Text.Body.MidSized.Dim">
+        <item name="android:textColor">@color/text_dim</item>
     </style>
 
     <style name="AppTheme.Text.Body.Small">
@@ -138,10 +122,6 @@
 
     <style name="AppTheme.Text.Body.Dimmed">
         <item name="android:textColor">@color/grey</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Footer" parent="AppTheme.Text.Body.Small">
-        <item name="android:textColor">@color/text_footer</item>
     </style>
 
     <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">

@@ -32,6 +32,6 @@
         android:layout_marginRight="@dimen/gap_outer"
         android:gravity="center"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:textAppearance="@style/AppTheme.Text.Heading"/>
+        android:textAppearance="?attr/senseTextAppearanceHeading"/>
 
 </RelativeLayout>

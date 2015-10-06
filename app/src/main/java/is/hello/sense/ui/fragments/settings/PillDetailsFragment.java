@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
@@ -54,18 +55,22 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
-        addDeviceAction(R.string.action_replace_battery, true, this::replaceBattery);
-        addDeviceAction(R.string.title_advanced, false, this::showAdvancedOptions);
+        addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
+        addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
 
         if (device.getState() == Device.State.LOW_BATTERY) {
-            showTroubleshootingAlert(R.string.issue_message_low_battery,
-                                     R.string.action_replace_battery,
-                                     this::replaceBattery);
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(R.string.issue_message_low_battery))
+                    .setPrimaryButtonTitle(R.string.action_replace_battery)
+                    .setPrimaryButtonOnClick(this::replaceBattery);
+            showTroubleshootingAlert(alert);
         } else if (device.isMissing()) {
-            String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
-            showTroubleshootingAlert(missingMessage,
-                                     R.string.action_troubleshoot,
-                                     () -> showSupportFor(UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
+            final String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
+            final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setMessage(StringRef.from(missingMessage))
+                    .setPrimaryButtonTitle(R.string.action_troubleshoot)
+                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SLEEP_PILL_MISSING));
+            showTroubleshootingAlert(alert);
         } else {
             hideAlert();
         }

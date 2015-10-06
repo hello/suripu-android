@@ -21,6 +21,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Device;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.DevicesAdapter;
@@ -30,7 +31,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -51,11 +52,11 @@ public class DeviceListFragment extends InjectionFragment
     private TextView supportInfoFooter;
 
     public static void startStandaloneFrom(@NonNull Activity activity) {
-        Bundle intentArguments = FragmentNavigationActivity.getArguments(activity.getString(R.string.label_devices),
-                DeviceListFragment.class, null);
-        Intent intent = new Intent(activity, FragmentNavigationActivity.class);
-        intent.putExtras(intentArguments);
-        activity.startActivity(intent);
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(activity, HardwareFragmentActivity.class);
+        builder.setDefaultTitle(R.string.label_devices);
+        builder.setFragmentClass(DeviceListFragment.class);
+        activity.startActivity(builder.toIntent());
     }
 
     @Override
@@ -80,7 +81,7 @@ public class DeviceListFragment extends InjectionFragment
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
 
         this.adapter = new DevicesAdapter(getActivity(), preferences);
@@ -163,7 +164,7 @@ public class DeviceListFragment extends InjectionFragment
             }
             fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
 
-            final FragmentNavigation fragmentNavigation = (FragmentNavigation) getActivity();
+            final FragmentNavigation fragmentNavigation = getFragmentNavigation();
             fragmentNavigation.pushFragmentAllowingStateLoss(fragment,
                                                              getString(device.getType().nameRes),
                                                              true);

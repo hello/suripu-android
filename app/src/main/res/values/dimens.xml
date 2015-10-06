@@ -3,7 +3,6 @@
 
     <dimen name="gap_outer">24dp</dimen>
     <dimen name="gap_outer_dialog_buttons">14dp</dimen>
-    <dimen name="gap_outer_footer">40dp</dimen>
     <dimen name="gap_action_bar_start">63dp</dimen>
     <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_xsmall">6dp</dimen>
@@ -34,8 +33,7 @@
     <dimen name="text_size_paragraph_heading">18sp</dimen>
     <dimen name="text_size_question">24sp</dimen>
     <dimen name="text_size_heading">24sp</dimen>
-    <dimen name="text_size_heading_card">22sp</dimen>
-    <dimen name="text_size_heading_alert">20sp</dimen>
+    <dimen name="text_size_heading_new">20sp</dimen>
     <dimen name="text_size_heading_large">32sp</dimen>
     <dimen name="text_size_tiny_score">28sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>

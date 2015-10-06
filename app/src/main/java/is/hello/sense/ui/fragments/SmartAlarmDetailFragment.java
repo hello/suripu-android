@@ -39,6 +39,7 @@ import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Drawables;
+import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -134,7 +135,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         smartRow.setOnClickListener(ignored -> smartToggle.toggle());
 
         final ImageButton smartHelp = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
-        Drawables.setTintColor(smartHelp.getDrawable(), getResources().getColor(R.color.light_accent));
+        final int accent = getResources().getColor(R.color.light_accent);
+        final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
+        Drawables.setTintColor(smartHelp.getDrawable(), dimmedAccent);
         Views.setSafeOnClickListener(smartHelp, this::showSmartAlarmIntro);
 
 

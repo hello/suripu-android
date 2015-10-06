@@ -4,6 +4,9 @@
     <attr name="showAsAction" format="string" />
     <!-- end workaround -->
 
+    <attr name="senseTextAppearanceHeading" format="reference" />
+    <attr name="senseTextAppearanceSubheading" format="reference" />
+
     <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />
         <attr name="senseGridDrawable" format="integer" />

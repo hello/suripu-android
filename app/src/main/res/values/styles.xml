@@ -34,10 +34,16 @@
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
+
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@color/background_onboarding</item>
+
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Subheading</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -64,7 +70,7 @@
     <style name="AppTheme.Text.ActionTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Text.ActionSubtitle">
@@ -239,7 +245,7 @@
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/selector_button_rounded</item>
-        <item name="android:textColor">@color/text_color_selector_white</item>
+        <item name="android:textColor">@color/text_white_button</item>
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -248,7 +254,7 @@
 
     <style name="AppTheme.Button.Rounded.Light">
         <item name="android:background">@drawable/selector_button_rounded_white</item>
-        <item name="android:textColor">@color/text_color_selector_white</item>
+        <item name="android:textColor">@color/text_white_button</item>
     </style>
 
     <style name="AppTheme.Button.ModeSelector">

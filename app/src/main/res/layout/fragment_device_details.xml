@@ -5,33 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/background">
+    android:background="@color/background_light">
 
     <LinearLayout
         android:id="@+id/fragment_device_details_container"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/gap_card_horizontal"
-        android:paddingRight="@dimen/gap_card_horizontal"
-        android:paddingTop="@dimen/gap_card_vertical"
-        android:paddingBottom="@dimen/gap_card_vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/fragment_device_details_alert"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/gap_medium"
-            android:layout_marginBottom="@dimen/gap_small"
-            android:visibility="gone"
-            style="@style/AppTheme.Card">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/fragment_device_details_alert_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/gap_medium"
                 android:src="@drawable/icon_warning"
                 tools:ignore="ContentDescription" />
 
@@ -39,6 +34,7 @@
                 android:id="@+id/fragment_device_details_alert_busy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/gap_outer"
                 android:layout_gravity="center"
                 android:visibility="gone" />
 
@@ -46,7 +42,8 @@
                 android:id="@+id/fragment_device_details_alert_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_medium"
+                android:layout_marginLeft="@dimen/gap_outer"
+                android:layout_marginRight="@dimen/gap_outer"
                 android:gravity="center"
                 android:textAppearance="@style/AppTheme.Text.Body"
                 android:text="@string/app_name"
@@ -56,24 +53,42 @@
                 android:id="@+id/fragment_device_details_alert_action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_medium"
+                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginLeft="@dimen/gap_outer"
+                android:layout_marginRight="@dimen/gap_outer"
                 android:text="@string/action_troubleshoot"
                 style="@style/AppTheme.Button.Rounded" />
 
+            <Button
+                android:id="@+id/fragment_device_details_alert_action_secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap_small"
+                android:layout_marginLeft="@dimen/gap_outer"
+                android:layout_marginRight="@dimen/gap_outer"
+                android:text="@string/action_retry"
+                android:visibility="gone"
+                style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
+
+            <View
+                android:layout_marginTop="@dimen/gap_outer"
+                style="@style/Divider.Horizontal" />
+
         </LinearLayout>
 
-        <is.hello.sense.ui.widget.RoundedLinearLayout
+        <LinearLayout
             android:id="@+id/fragment_device_details_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            style="@style/AppTheme.Card"/>
+            android:paddingTop="@dimen/gap_small"
+            android:paddingBottom="@dimen/gap_small"
+            android:orientation="vertical" />
+
+        <View style="@style/Divider.Horizontal" />
 
         <include
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_outer"
             layout="@layout/item_device_support_footer" />
 
     </LinearLayout>

@@ -12,6 +12,11 @@
             android:theme="@style/AppTheme.Dialog.Simple"/>
 
         <activity
+            android:name="is.hello.sense.ui.activities.DebugActivity"
+            android:label="@string/activity_debug"
+            android:launchMode="singleTop" />
+
+        <activity
             android:name="net.hockeyapp.android.UpdateActivity" />
 
         <activity

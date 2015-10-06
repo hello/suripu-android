@@ -8,10 +8,9 @@
     <application>
 
         <activity
-            android:name="net.hockeyapp.android.UpdateActivity" />
-
-        <activity
-            android:name="net.hockeyapp.android.FeedbackActivity" />
+            android:name="is.hello.sense.ui.activities.DebugActivity"
+            android:label="@string/activity_debug"
+            android:launchMode="singleTop" />
 
         <receiver
             android:name="is.hello.sense.notifications.NotificationReceiver"

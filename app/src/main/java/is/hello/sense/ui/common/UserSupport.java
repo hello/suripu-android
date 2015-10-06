@@ -84,12 +84,10 @@ public class UserSupport {
     public static void showContactForm(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
 
-        final Intent intent = new Intent(from, FragmentNavigationActivity.class);
-        intent.putExtras(FragmentNavigationActivity.getArguments(
-                from.getString(R.string.title_select_a_topic),
-                TicketSelectTopicFragment.class,
-                null));
-        from.startActivity(intent);
+        final FragmentNavigationActivity.Builder builder = new FragmentNavigationActivity.Builder(from);
+        builder.setDefaultTitle(R.string.title_select_a_topic);
+        builder.setFragmentClass(TicketSelectTopicFragment.class);
+        from.startActivity(builder.toIntent());
     }
 
     public static void showForOnboardingStep(@NonNull Activity from, @NonNull OnboardingStep onboardingStep) {
