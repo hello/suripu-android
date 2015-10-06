@@ -8,9 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
-import com.bugsnag.android.Bugsnag;
-import com.crashlytics.android.Crashlytics;
-
 import java.io.File;
 
 import javax.inject.Inject;
@@ -127,20 +124,7 @@ public class DebugActivity extends InjectionActivity {
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 
-    public void crash(@NonNull StaticItemAdapter.TextItem item) {
-        SenseAlertDialog confirm = new SenseAlertDialog(this);
-        confirm.setTitle("Are you sure?");
-        confirm.setMessage("A report of this crash will be uploaded to Crashlytics.");
-        confirm.setPositiveButton("Crash", (dialog, which) -> {
-            Crashlytics.log("Simulating crash");
-            throw new RuntimeException("Simulated crash");
-        });
-        confirm.setNegativeButton(android.R.string.cancel, null);
-        confirm.setButtonDestructive(SenseAlertDialog.BUTTON_POSITIVE, true);
-        confirm.show();
-    }
-
-    public void reEnableReviewPrompt(@NonNull StaticItemAdapter.TextItem item) {
+    public void reEnableReviewPrompt() {
         preferences.edit()
                    .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)
                    .apply();
