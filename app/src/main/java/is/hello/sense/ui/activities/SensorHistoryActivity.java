@@ -1,6 +1,7 @@
 package is.hello.sense.ui.activities;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -8,6 +9,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
+import is.hello.sense.util.Analytics;
 
 public class SensorHistoryActivity extends SenseActivity {
     public static final String EXTRA_SENSOR = SensorHistoryActivity.class.getName() + ".EXTRA_SENSOR";
@@ -64,7 +66,13 @@ public class SensorHistoryActivity extends SenseActivity {
     }
 
     public String getSensor() {
-        return getIntent().getStringExtra(EXTRA_SENSOR);
+        final String sensorName = getIntent().getStringExtra(EXTRA_SENSOR);
+        if (TextUtils.isEmpty(sensorName)) {
+            Analytics.trackUnexpectedError(new IllegalStateException("EXTRA_SENSOR is absent!"));
+            return ApiService.SENSOR_NAME_TEMPERATURE;
+        } else {
+            return sensorName;
+        }
     }
 
     public boolean showWelcomeDialog(boolean overrideCheck) {
