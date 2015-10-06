@@ -79,7 +79,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 .setHeadingText(R.string.title_pair_sense)
                 .setSubheadingText(R.string.info_pair_sense)
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
-                .setDiagramEdgeToEdge(false)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
                 .setSecondaryOnClickListener(this::showPairingModeHelp)
                 .setPrimaryOnClickListener(ignored -> next())
