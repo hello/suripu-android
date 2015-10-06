@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -12,9 +13,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
@@ -23,8 +26,8 @@ public class OnboardingToolbar {
     private final Fragment fragment;
     private final FrameLayout toolbarView;
 
-    private final View backButton;
-    private final View helpButton;
+    private final ImageButton backButton;
+    private final ImageButton helpButton;
 
     private @Nullable View.OnClickListener onHelpClickListener;
     private @Nullable View.OnLongClickListener onHelpLongClickListener;
@@ -37,10 +40,17 @@ public class OnboardingToolbar {
         this.fragment = fragment;
         this.toolbarView = (FrameLayout) toolbarView;
 
-        this.backButton = toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
+        final Resources resources = fragment.getResources();
+        this.backButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
+        final Drawable backIcon = backButton.getDrawable().mutate();
+        Drawables.setTintColor(backIcon, resources.getColor(R.color.light_accent));
+        backButton.setImageDrawable(backIcon);
         Views.setSafeOnClickListener(backButton, this::onBack);
 
-        this.helpButton = toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
+        this.helpButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
+        final Drawable helpIcon = helpButton.getDrawable().mutate();
+        Drawables.setTintColor(helpIcon, resources.getColor(R.color.light_accent));
+        helpButton.setImageDrawable(helpIcon);
         Views.setSafeOnClickListener(helpButton, this::onHelp);
         helpButton.setOnLongClickListener(this::onHelpLongClick);
 
@@ -50,11 +60,12 @@ public class OnboardingToolbar {
 
 
     private void onBack(View view) {
-        Activity activity = fragment.getActivity();
+        final Activity activity = fragment.getActivity();
         if (activity != null) {
-            View focusView = activity.getCurrentFocus();
+            final View focusView = activity.getCurrentFocus();
             if (focusView != null && focusView instanceof EditText) {
-                InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                final InputMethodManager inputMethodManager =
+                        (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
             }
 
@@ -74,7 +85,7 @@ public class OnboardingToolbar {
         if (onHelpLongClickListener != null) {
             return onHelpLongClickListener.onLongClick(view);
         } else if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            Activity activity = fragment.getActivity();
+            final Activity activity = fragment.getActivity();
             if (activity != null) {
                 Distribution.startDebugActivity(activity);
             }
@@ -126,7 +137,7 @@ public class OnboardingToolbar {
     }
 
     public OnboardingToolbar setCompact(boolean compact) {
-        Resources resources = toolbarView.getResources();
+        final Resources resources = toolbarView.getResources();
         if (compact) {
             toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height_compact);
         } else {
@@ -138,7 +149,9 @@ public class OnboardingToolbar {
     }
 
     public OnboardingToolbar replaceHelpButton(@NonNull View view) {
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        final FrameLayout.LayoutParams layoutParams =
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                             ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
         toolbarView.removeViewAt(1);
         toolbarView.addView(view, layoutParams);

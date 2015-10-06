@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|start"
         android:padding="0dp"
+        android:scaleType="center"
         android:src="@drawable/app_style_ab_up"
         android:contentDescription="@string/action_back"/>
 
@@ -19,7 +20,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|end"
         android:padding="0dp"
-        android:src="@drawable/onboarding_help_icon"
+        android:scaleType="center"
+        android:src="@drawable/action_info"
         android:contentDescription="@string/action_help"/>
 
 </FrameLayout>

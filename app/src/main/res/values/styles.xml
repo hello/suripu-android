@@ -150,7 +150,10 @@
         <item name="android:windowBackground">@color/background_light</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
-        <item name="android:padding">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
     </style>
 
     <style name="AppTheme.Dialog.BottomAlert" parent="Platform.Dialog.NoElevation">
@@ -158,7 +161,10 @@
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
-        <item name="android:padding">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
     </style>
 
     <style name="WindowAnimations" parent="android:style/Animation" />
@@ -189,7 +195,10 @@
     <style name="AppTheme.Button.Borderless">
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:padding">@dimen/gap_small</item>
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingLeft">@dimen/gap_small</item>
+        <item name="android:paddingRight">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
         <item name="android:background">@drawable/selectable_dark</item>
     </style>
 
@@ -204,7 +213,10 @@
     <style name="AppTheme.Button.Borderless.Question">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:padding">@dimen/gap_outer</item>
+        <item name="android:paddingTop">@dimen/gap_outer</item>
+        <item name="android:paddingLeft">@dimen/gap_outer</item>
+        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:paddingBottom">@dimen/gap_outer</item>
         <item name="android:textColor">@color/text_dim</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
@@ -243,12 +255,18 @@
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body.Medium</item>
-        <item name="android:padding">@dimen/gap_medium</item>
+        <item name="android:paddingTop">@dimen/gap_medium</item>
+        <item name="android:paddingLeft">@dimen/gap_medium</item>
+        <item name="android:paddingRight">@dimen/gap_medium</item>
+        <item name="android:paddingBottom">@dimen/gap_medium</item>
     </style>
 
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
         <item name="android:background">@drawable/button_selector_gender</item>
-        <item name="android:padding">36dp</item>
+        <item name="android:paddingTop">36dp</item>
+        <item name="android:paddingLeft">36dp</item>
+        <item name="android:paddingRight">36dp</item>
+        <item name="android:paddingBottom">36dp</item>
     </style>
     
     <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">
@@ -288,7 +306,10 @@
     </style>
 
     <style name="AppTheme.Button.Circular">
-        <item name="android:padding">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:minWidth">@dimen/button_circular_area</item>
         <item name="android:minHeight">@dimen/button_circular_area</item>
         <item name="android:textColor">@color/white</item>
