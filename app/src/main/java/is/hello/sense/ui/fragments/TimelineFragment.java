@@ -760,12 +760,12 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void adjustTime(@NonNull TimelineEvent event) {
-        DateTime initialTime = event.getShiftedTimestamp();
-        RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
-            LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
-            completeAdjustTime(event, newTime);
+        final DateTime initialTime = event.getShiftedTimestamp();
+        final RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
+            final LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
+            stateSafeExecutor.execute(() -> completeAdjustTime(event, newTime));
         };
-        RotaryTimePickerDialog timePicker = new RotaryTimePickerDialog(
+        final RotaryTimePickerDialog timePicker = new RotaryTimePickerDialog(
                 getActivity(),
                 listener,
                 initialTime.getHourOfDay(),

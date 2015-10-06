@@ -3,6 +3,7 @@ package is.hello.sense.ui.handholding;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -62,6 +63,7 @@ public class TutorialOverlayView extends RelativeLayout {
         this.activity = activity;
         this.tutorial = tutorial;
 
+        final Resources resources = getResources();
         final LayoutInflater inflater = LayoutInflater.from(activity);
         final ViewGroup descriptionContainer = (ViewGroup) inflater.inflate(R.layout.item_tutorial_description,
                                                                             this, false);
@@ -74,15 +76,25 @@ public class TutorialOverlayView extends RelativeLayout {
         descriptionText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, dismissIcon, null);
 
         final View shadow = new View(activity);
-        final int shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_size);
-        final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                               shadowHeight);
+        final int shadowHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
+        final ViewGroup.LayoutParams shadowLayoutParams
+                = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                             shadowHeight);
         if (tutorial.descriptionGravity == Gravity.TOP) {
             shadow.setBackgroundResource(R.drawable.shadow_bottom);
-            descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), layoutParams);
+            descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
+
+            final View topLine = new View(activity);
+            topLine.setBackgroundResource(R.color.light_accent_dimmed);
+            final int topLineHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+            final ViewGroup.LayoutParams topLineLayoutParams
+                    = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                 topLineHeight);
+            descriptionContainer.addView(topLine, 0, topLineLayoutParams);
         } else {
+            descriptionContainer.setBackgroundResource(R.color.light_accent);
             shadow.setBackgroundResource(R.drawable.shadow_top);
-            descriptionContainer.addView(shadow, 0, layoutParams);
+            descriptionContainer.addView(shadow, 0, shadowLayoutParams);
         }
 
         addView(descriptionContainer, tutorial.generateDescriptionLayoutParams());
@@ -158,14 +170,12 @@ public class TutorialOverlayView extends RelativeLayout {
             throw new IllegalStateException("Could not find view by id " + idName);
         }
 
-        descriptionText.setAlpha(0f);
+        setAlpha(0f);
         container.addView(this);
 
         bindAndSubscribe(Views.observeNextLayout(this),
                          ignored -> {
-                             descriptionText.setTranslationY(descriptionText.getMeasuredHeight());
-                             animatorFor(descriptionText)
-                                     .translationY(0f)
+                             animatorFor(this)
                                      .alpha(1f)
                                      .start();
                          },
@@ -175,7 +185,7 @@ public class TutorialOverlayView extends RelativeLayout {
     public void dismiss(boolean animate) {
         if (container != null) {
             if (animate) {
-                ViewGroup oldContainer = container;
+                final ViewGroup oldContainer = container;
                 animatorFor(this)
                         .withDuration(Anime.DURATION_VERY_FAST)
                         .fadeOut(GONE)
