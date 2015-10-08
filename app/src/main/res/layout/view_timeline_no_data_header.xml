@@ -32,7 +32,7 @@
         android:layout_marginRight="@dimen/gap_xlarge"
         android:layout_marginBottom="@dimen/gap_medium"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
         android:lineSpacingMultiplier="@dimen/line_multiple_body" />
 
     <Button
@@ -43,6 +43,6 @@
         android:layout_marginRight="@dimen/gap_xlarge"
         android:layout_marginBottom="@dimen/gap_outer"
         android:visibility="gone"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
+        style="@style/AppTheme.Button.Dialog" />
 
 </merge>

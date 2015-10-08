@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textColor="@color/light_accent"
-                style="@style/AppTheme.Text.Body.Medium"
+                style="@style/AppTheme.Text.Body.MidSized"
                 android:text="@string/no_sound_placeholder"/>
 
         </LinearLayout>
@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textColor="@color/light_accent"
-                style="@style/AppTheme.Text.Body.Medium" />
+                style="@style/AppTheme.Text.Body.MidSized" />
 
         </LinearLayout>
 
