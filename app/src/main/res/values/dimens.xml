@@ -61,8 +61,6 @@
     <dimen name="divider_height_edit_text">1dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>
 
-    <dimen name="gap_raised_item_inset_side">1px</dimen>
-    <dimen name="gap_raised_item_inset_bottom">2dp</dimen>
     <dimen name="raised_item_corner_radius">2dp</dimen>
     <dimen name="card_large_corner_radius">3dp</dimen>
 
