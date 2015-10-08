@@ -110,9 +110,9 @@ public abstract class DeviceDetailsFragment extends InjectionFragment {
         actionsContainer.setVisibility(View.VISIBLE);
     }
 
-    protected View addDeviceAction(@DrawableRes int iconRes,
-                                   @StringRes int titleRes,
-                                   @NonNull Runnable onClick) {
+    protected TextView addDeviceAction(@DrawableRes int iconRes,
+                                       @StringRes int titleRes,
+                                       @NonNull Runnable onClick) {
         final Context context = getActivity();
         final Resources resources = context.getResources();
 

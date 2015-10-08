@@ -94,6 +94,10 @@
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Small.New">
+        <item name="android:textColor">@color/text_body_new</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Bold">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
