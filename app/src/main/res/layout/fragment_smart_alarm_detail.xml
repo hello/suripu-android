@@ -18,14 +18,15 @@
             android:background="@color/light_accent"
             android:paddingStart="@dimen/gap_action_bar_start"
             android:paddingEnd="@dimen/gap_outer"
-            android:paddingBottom="@dimen/gap_outer">
+            android:paddingBottom="@dimen/gap_outer"
+            android:layout_marginBottom="@dimen/gap_small">
 
             <TextView
                 android:id="@+id/fragment_smart_alarm_detail_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_xsmall"
-                android:layout_marginBottom="@dimen/gap_medium"
+                android:layout_marginBottom="@dimen/gap_small"
+                android:includeFontPadding="false"
                 android:background="@drawable/background_alarm_time"
                 style="@style/AppTheme.Text.SmartAlarm.Time.Big" />
 
