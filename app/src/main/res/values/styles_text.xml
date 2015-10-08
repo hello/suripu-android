@@ -107,7 +107,7 @@
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Dimmed">
+    <style name="AppTheme.Text.Body.Dim">
         <item name="android:textColor">@color/text_dim</item>
     </style>
 

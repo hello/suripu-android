@@ -157,6 +157,7 @@ public abstract class DeviceDetailsFragment extends InjectionFragment {
         secondaryAlertAction.setVisibility(View.GONE);
 
         alertText.setGravity(Gravity.CENTER);
+        alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_New);
         alertText.setText(messageRes);
 
         alertContainer.setVisibility(View.VISIBLE);
@@ -169,6 +170,7 @@ public abstract class DeviceDetailsFragment extends InjectionFragment {
         primaryAlertAction.setVisibility(View.VISIBLE);
 
         alertText.setGravity(Gravity.TOP | Gravity.START);
+        alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_MidSized);
         alertText.setText(alert.message.resolve(getActivity()));
 
         if (alert.primaryButtonTitle != 0 && alert.primaryButtonOnClick != null) {

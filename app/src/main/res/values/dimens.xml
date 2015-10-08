@@ -25,7 +25,8 @@
     <dimen name="text_size_body_small">13sp</dimen>
     <dimen name="text_size_graph_header">11sp</dimen>
     <dimen name="text_size_graph_footer">14sp</dimen>
-    <dimen name="text_size_button">16sp</dimen>
+    <dimen name="text_size_button">14sp</dimen>
+    <dimen name="text_size_button_large">16sp</dimen>
     <dimen name="text_size_section_heading">11sp</dimen>
     <dimen name="text_size_section_heading_large">12sp</dimen>
     <dimen name="text_size_timeline_time">12sp</dimen>

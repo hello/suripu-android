@@ -20,7 +20,7 @@
     <string name="device_pill">Sleep Pill</string>
     <string name="device_unknown">Other</string>
 
-    <string name="device_network_unknown"><i>Connected</i></string>
+    <string name="device_network_unknown">Connected</string>
 
     <string name="device_state_normal">Good</string>
     <string name="device_state_low_battery">Low</string>
