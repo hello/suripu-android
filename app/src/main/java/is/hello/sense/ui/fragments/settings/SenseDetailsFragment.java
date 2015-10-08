@@ -230,7 +230,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     private void setEnabled(@NonNull TextView item, boolean enabled) {
         final Drawable drawable = item.getCompoundDrawablesRelative()[0];
-        drawable.setAlpha(enabled ? 255 : 155);
+        drawable.setAlpha(enabled ? 255 : 0x45);
         item.setEnabled(enabled);
     }
 
