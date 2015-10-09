@@ -6,18 +6,36 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+import is.hello.sense.functional.Lists;
+
 public class Devices extends ApiResponse {
     @SerializedName("senses")
     public final ArrayList<SenseDevice> senses;
 
     @SerializedName("pills")
-    public final ArrayList<Device> sleepPills;
+    public final ArrayList<SleepPillDevice> sleepPills;
 
 
     public Devices(@NonNull ArrayList<SenseDevice> senses,
-                   @NonNull ArrayList<Device> sleepPills) {
+                   @NonNull ArrayList<SleepPillDevice> sleepPills) {
         this.senses = senses;
         this.sleepPills = sleepPills;
+    }
+
+    public SenseDevice getSense() {
+        if (!Lists.isEmpty(senses)) {
+            return senses.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public SleepPillDevice getSleepPill() {
+        if (!Lists.isEmpty(sleepPills)) {
+            return sleepPills.get(0);
+        } else {
+            return null;
+        }
     }
 
 

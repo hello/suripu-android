@@ -9,7 +9,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightInfo;
@@ -191,7 +191,7 @@ public interface ApiService {
     //region Devices
 
     @GET("/v1/devices")
-    Observable<ArrayList<Device>> registeredDevices();
+    Observable<Devices> registeredDevices();
 
     @GET("/v1/devices/info")
     Observable<DevicesInfo> devicesInfo();

@@ -13,12 +13,14 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.BaseDevice;
+import is.hello.sense.api.model.Devices;
+import is.hello.sense.api.model.PlaceholderDevice;
+import is.hello.sense.api.model.SenseDevice;
+import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
@@ -40,7 +42,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class DeviceListFragment extends InjectionFragment
         implements DevicesAdapter.OnPairNewDeviceListener,
-            ArrayRecyclerAdapter.OnItemClickedListener<Device> {
+            ArrayRecyclerAdapter.OnItemClickedListener<BaseDevice> {
     private static final int DEVICE_REQUEST_CODE = 0x14;
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
@@ -134,7 +136,7 @@ public class DeviceListFragment extends InjectionFragment
     }
 
 
-    public void bindDevices(@NonNull List<Device> devices) {
+    public void bindDevices(@NonNull Devices devices) {
         adapter.bindDevices(devices);
         loadingIndicator.setVisibility(View.GONE);
         supportInfoFooter.setVisibility(View.VISIBLE);
@@ -152,27 +154,28 @@ public class DeviceListFragment extends InjectionFragment
 
 
     @Override
-    public void onItemClicked(int position, Device device) {
-        if (device.exists()) {
-            final DeviceDetailsFragment fragment;
-            if (device.getType() == Device.Type.SENSE) {
-                fragment = SenseDetailsFragment.newInstance(device);
-            } else if (device.getType() == Device.Type.PILL) {
-                fragment = PillDetailsFragment.newInstance(device);
-            } else {
-                return;
-            }
-            fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
-
-            final FragmentNavigation fragmentNavigation = getFragmentNavigation();
-            fragmentNavigation.pushFragmentAllowingStateLoss(fragment,
-                                                             getString(device.getType().nameRes),
-                                                             true);
+    public void onItemClicked(int position, BaseDevice device) {
+        final DeviceDetailsFragment fragment;
+        final String title;
+        if (device instanceof SenseDevice) {
+            fragment = SenseDetailsFragment.newInstance((SenseDevice) device);
+            title = getString(R.string.device_sense);
+        } else if (device instanceof SleepPillDevice) {
+            fragment = PillDetailsFragment.newInstance((SleepPillDevice) device);
+            title = getString(R.string.device_pill);
+        } else {
+            return;
         }
+        fragment.setTargetFragment(this, DEVICE_REQUEST_CODE);
+
+        final FragmentNavigation fragmentNavigation = getFragmentNavigation();
+        fragmentNavigation.pushFragmentAllowingStateLoss(fragment,
+                                                         title,
+                                                         true);
     }
 
     @Override
-    public void onPairNewDevice(@NonNull Device.Type type) {
+    public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         switch (type) {
             case SENSE: {
@@ -181,7 +184,7 @@ public class DeviceListFragment extends InjectionFragment
                 break;
             }
 
-            case PILL: {
+            case SLEEP_PILL: {
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;

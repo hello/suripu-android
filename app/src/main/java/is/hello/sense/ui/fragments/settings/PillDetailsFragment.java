@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -26,7 +26,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class PillDetailsFragment extends DeviceDetailsFragment {
+public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> {
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
 
     private static final int OPTION_ID_REPLACE_PILL = 0;
@@ -35,7 +35,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
 
     //region Lifecycle
 
-    public static PillDetailsFragment newInstance(@NonNull Device device) {
+    public static PillDetailsFragment newInstance(@NonNull SleepPillDevice device) {
         PillDetailsFragment fragment = new PillDetailsFragment();
         fragment.setArguments(createArguments(device));
         return fragment;
@@ -58,7 +58,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment {
         addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
 
-        if (device.getState() == Device.State.LOW_BATTERY) {
+        if (device.state == SleepPillDevice.State.LOW_BATTERY) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setMessage(StringRef.from(R.string.issue_message_low_battery))
                     .setPrimaryButtonTitle(R.string.action_replace_battery)

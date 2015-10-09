@@ -7,12 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.Devices;
+import is.hello.sense.api.model.PlaceholderDevice;
+import is.hello.sense.api.model.SenseDevice;
+import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -41,52 +44,17 @@ public class DevicesAdapterTests extends InjectionTestCase {
     //region Rendering
 
     @Test
-    public void onlyOneDevicePerType() throws Exception {
-        final Device sense1 = new Device.Builder(Device.Type.SENSE)
-                .setLastUpdated(DateTime.now())
-                .setColor(Device.Color.WHITE)
-                .setDeviceId("1234")
-                .build();
-
-        final Device sense2 = new Device.Builder(Device.Type.SENSE)
-                .setLastUpdated(DateTime.now())
-                .setColor(Device.Color.WHITE)
-                .setDeviceId("3833")
-                .build();
-
-        final Device pill1 = new Device.Builder(Device.Type.PILL)
-                .setLastUpdated(DateTime.now())
-                .setColor(Device.Color.RED)
-                .setDeviceId("asdf")
-                .build();
-
-        final Device pill2 = new Device.Builder(Device.Type.PILL)
-                .setLastUpdated(DateTime.now())
-                .setColor(Device.Color.BLUE)
-                .setDeviceId("qwer")
-                .build();
-
-        adapter.bindDevices(Lists.newArrayList(sense1, sense2, pill1, pill2));
-
-        assertThat(adapter.getItemCount(), is(equalTo(2)));
-        assertThat(adapter.getItem(0), is(equalTo(sense1)));
-        assertThat(adapter.getItem(1), is(equalTo(pill1)));
-    }
-
-    @Test
     public void senseNormalDisplay() throws Exception {
-        final Device sense = new Device.Builder(Device.Type.SENSE)
-                .setState(Device.State.NORMAL)
-                .setDeviceId("1234")
-                .setFirmwareVersion("ffffff")
-                .setLastUpdated(DateTime.now().minusHours(2))
-                .setColor(Device.Color.WHITE)
-                .build();
+        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
+                                                  SenseDevice.Color.BLACK,
+                                                  "1234",
+                                                  "ffffff",
+                                                  DateTime.now().minusHours(2),
+                                                  null);
+        adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
-        adapter.bindDevices(Lists.newArrayList(sense));
-
-        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                                                                fakeParent, adapter.getItemViewType(0), 0);
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                    fakeParent, adapter.getItemViewType(0), 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -100,17 +68,16 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void senseMissingDisplay() throws Exception {
-        final Device sense = new Device.Builder(Device.Type.SENSE)
-                .setState(Device.State.UNKNOWN)
-                .setDeviceId("1234")
-                .setFirmwareVersion("ffffff")
-                .setLastUpdated(DateTime.now().minusDays(5))
-                .setColor(Device.Color.WHITE)
-                .build();
+        final SenseDevice sense = new SenseDevice(SenseDevice.State.UNKNOWN,
+                                                  SenseDevice.Color.BLACK,
+                                                  "1234",
+                                                  "ffffff",
+                                                  DateTime.now().minusDays(5),
+                                                  null);
 
-        adapter.bindDevices(Lists.newArrayList(sense));
+        adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
-        final DevicesAdapter.DeviceViewHolder senseHolder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.SenseViewHolder senseHolder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(0), 0);
 
         assertThat(senseHolder.title.getText().toString(), is(equalTo("Sense")));
@@ -125,17 +92,16 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void sleepPillNormalDisplay() throws Exception {
-        final Device sleepPill = new Device.Builder(Device.Type.PILL)
-                .setState(Device.State.NORMAL)
-                .setDeviceId("1234")
-                .setFirmwareVersion("ffffff")
-                .setLastUpdated(DateTime.now().minusHours(2))
-                .setColor(Device.Color.BLUE)
-                .build();
+        final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.NORMAL,
+                                                              SleepPillDevice.Color.BLUE,
+                                                              "1234",
+                                                              "ffffff",
+                                                              DateTime.now().minusHours(2),
+                                                              0);
 
-        adapter.bindDevices(Lists.newArrayList(sleepPill));
+        adapter.bindDevices(new Devices(new ArrayList<>(), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
@@ -148,17 +114,16 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void sleepPillLowBatteryDisplay() throws Exception {
-        final Device sleepPill = new Device.Builder(Device.Type.PILL)
-                .setState(Device.State.LOW_BATTERY)
-                .setDeviceId("1234")
-                .setFirmwareVersion("ffffff")
-                .setLastUpdated(DateTime.now().minusHours(2))
-                .setColor(Device.Color.BLUE)
-                .build();
+        final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.LOW_BATTERY,
+                                                              SleepPillDevice.Color.BLUE,
+                                                              "1234",
+                                                              "ffffff",
+                                                              DateTime.now().minusHours(2),
+                                                              0);
 
-        adapter.bindDevices(Lists.newArrayList(sleepPill));
+        adapter.bindDevices(new Devices(new ArrayList<>(), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
@@ -171,17 +136,16 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void sleepPillMissingDisplay() throws Exception {
-        final Device sleepPill = new Device.Builder(Device.Type.PILL)
-                .setState(Device.State.UNKNOWN)
-                .setDeviceId("1234")
-                .setFirmwareVersion("ffffff")
-                .setLastUpdated(DateTime.now().minusDays(5))
-                .setColor(Device.Color.BLUE)
-                .build();
+        final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.UNKNOWN,
+                                                              SleepPillDevice.Color.BLUE,
+                                                              "1234",
+                                                              "ffffff",
+                                                              DateTime.now().minusDays(5),
+                                                              0);
 
-        adapter.bindDevices(Lists.newArrayList(sleepPill));
+        adapter.bindDevices(new Devices(new ArrayList<>(), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.DeviceViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, adapter.getItemViewType(1), 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
@@ -194,9 +158,9 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void pairSenseDisplay() throws Exception {
-        adapter.bindDevices(Collections.emptyList());
+        adapter.bindDevices(new Devices(new ArrayList<>(), new ArrayList<>()));
 
-        final LambdaVar<Device.Type> clickedType = LambdaVar.empty();
+        final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -210,14 +174,14 @@ public class DevicesAdapterTests extends InjectionTestCase {
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertThat(clickedType.get(), is(equalTo(Device.Type.SENSE)));
+        assertThat(clickedType.get(), is(equalTo(PlaceholderDevice.Type.SENSE)));
     }
 
     @Test
     public void pairPillDisplayNoSense() throws Exception {
-        adapter.bindDevices(Collections.emptyList());
+        adapter.bindDevices(new Devices(new ArrayList<>(), new ArrayList<>()));
 
-        final LambdaVar<Device.Type> clickedType = LambdaVar.empty();
+        final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -230,17 +194,16 @@ public class DevicesAdapterTests extends InjectionTestCase {
 
     @Test
     public void pairPillDisplayWithSense() throws Exception {
-        final Device sense = new Device.Builder(Device.Type.SENSE)
-                .setState(Device.State.UNKNOWN)
-                .setDeviceId("1234")
-                .setFirmwareVersion("ffffff")
-                .setLastUpdated(DateTime.now().minusDays(5))
-                .setColor(Device.Color.WHITE)
-                .build();
+        final SenseDevice sense = new SenseDevice(SenseDevice.State.UNKNOWN,
+                                                  SenseDevice.Color.UNKNOWN,
+                                                  "1234",
+                                                  "ffffff",
+                                                  DateTime.now().minusDays(5),
+                                                  null);
 
-        adapter.bindDevices(Lists.newArrayList(sense));
+        adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
-        final LambdaVar<Device.Type> clickedType = LambdaVar.empty();
+        final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
         adapter.setOnPairNewDeviceListener(clickedType::set);
 
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -254,7 +217,7 @@ public class DevicesAdapterTests extends InjectionTestCase {
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertThat(clickedType.get(), is(equalTo(Device.Type.PILL)));
+        assertThat(clickedType.get(), is(equalTo(PlaceholderDevice.Type.SLEEP_PILL)));
     }
 
     //endregion

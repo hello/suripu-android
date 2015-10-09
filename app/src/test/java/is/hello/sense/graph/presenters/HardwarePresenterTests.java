@@ -12,7 +12,8 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.errors.BluetoothGattError;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.BaseDevice;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
@@ -92,7 +93,9 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertThrowsNoDeviceError(presenter.linkPill());
         assertThrowsNoDeviceError(presenter.pushData());
         assertThrowsNoDeviceError(presenter.putIntoPairingMode());
-        assertThrowsNoDeviceError(presenter.factoryReset(new Device()));
+        assertThrowsNoDeviceError(presenter.factoryReset(new SenseDevice(BaseDevice.State.UNKNOWN,
+                                                                         SenseDevice.Color.UNKNOWN,
+                                                                         "", "", null, null)));
     }
 
     @Test

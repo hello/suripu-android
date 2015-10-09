@@ -1,23 +1,31 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
+
 public class SenseDevice extends BaseDevice {
+    @SerializedName("color")
+    public final Color color;
+
     @SerializedName("wifi_info")
     public final WiFiInfo wiFiInfo;
 
-    public SenseDevice(@NonNull State state,
-                       @NonNull Color color,
-                       @NonNull String id,
-                       @NonNull String firmwareVersion,
-                       @NonNull DateTime lastUpdated,
-                       @NonNull WiFiInfo wiFiInfo) {
-        super(state, color, id, firmwareVersion, lastUpdated);
+    public SenseDevice(State state,
+                       Color color,
+                       String deviceId,
+                       String firmwareVersion,
+                       DateTime lastUpdated,
+                       WiFiInfo wiFiInfo) {
+        super(state, deviceId, firmwareVersion, lastUpdated);
 
+        this.color = color;
         this.wiFiInfo = wiFiInfo;
     }
 
@@ -33,23 +41,20 @@ public class SenseDevice extends BaseDevice {
         public final String ssid;
 
         @SerializedName("rssi")
-        public final long rssi;
+        public final int rssi;
 
         @SerializedName("last_updated")
         public final DateTime lastUpdated;
 
-        @SerializedName("condition")
-        public final String condition;
 
-
-        public WiFiInfo(@NonNull String ssid,
-                        long rssi,
-                        @NonNull DateTime lastUpdated,
-                        @NonNull String condition) {
+        public WiFiInfo(@NonNull String ssid, int rssi, @NonNull DateTime lastUpdated) {
             this.ssid = ssid;
             this.rssi = rssi;
             this.lastUpdated = lastUpdated;
-            this.condition = condition;
+        }
+
+        public WiFiSignalStrength getSignalStrength() {
+            return WiFiSignalStrength.fromRssi(rssi);
         }
 
 
@@ -59,8 +64,24 @@ public class SenseDevice extends BaseDevice {
                     "ssid='" + ssid + '\'' +
                     ", rssi=" + rssi +
                     ", lastUpdated=" + lastUpdated +
-                    ", condition=" + condition +
                     '}';
+        }
+    }
+
+    public enum Color implements Enums.FromString {
+        BLACK(R.string.device_color_black),
+        WHITE(R.string.device_color_white),
+        UNKNOWN(R.string.missing_data_placeholder);
+
+        public final @StringRes
+        int nameRes;
+
+        Color(int nameRes) {
+            this.nameRes = nameRes;
+        }
+
+        public static Color fromString(@NonNull String string) {
+            return Enums.fromString(string, values(), UNKNOWN);
         }
     }
 }
