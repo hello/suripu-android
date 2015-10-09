@@ -39,7 +39,6 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -61,7 +60,6 @@ public class ConnectToWiFiFragment extends HardwareFragment
     private static final int ERROR_REQUEST_CODE = 0x30;
 
     @Inject ApiService apiService;
-    @Inject PreferencesPresenter preferences;
 
     private boolean useInAppEvents;
     private boolean sendAccessToken;
@@ -340,9 +338,6 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
                 if (status.state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
                     this.hasConnectedToNetwork = true;
-                    preferences.edit()
-                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, networkName)
-                            .apply();
                     sendAccessToken();
                 } else {
                     showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));

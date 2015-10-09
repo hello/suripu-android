@@ -47,7 +47,7 @@ public class SenseDevice extends BaseDevice {
         public final DateTime lastUpdated;
 
 
-        public WiFiInfo(@NonNull String ssid, int rssi, @NonNull DateTime lastUpdated) {
+        public WiFiInfo(String ssid, int rssi, DateTime lastUpdated) {
             this.ssid = ssid;
             this.rssi = rssi;
             this.lastUpdated = lastUpdated;

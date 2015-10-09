@@ -190,19 +190,19 @@ public interface ApiService {
 
     //region Devices
 
-    @GET("/v1/devices")
+    @GET("/v2/devices")
     Observable<Devices> registeredDevices();
 
-    @GET("/v1/devices/info")
+    @GET("/v2/devices/info")
     Observable<DevicesInfo> devicesInfo();
 
-    @DELETE("/v1/devices/pill/{id}")
+    @DELETE("/v2/devices/pill/{id}")
     Observable<VoidResponse> unregisterPill(@Path("id") @NonNull String pillId);
 
-    @DELETE("/v1/devices/sense/{id}")
+    @DELETE("/v2/devices/sense/{id}")
     Observable<VoidResponse> unregisterSense(@Path("id") @NonNull String senseId);
 
-    @DELETE("/v1/devices/sense/{id}/all")
+    @DELETE("/v2/devices/sense/{id}/all")
     Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId);
 
     //endregion
