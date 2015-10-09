@@ -50,7 +50,7 @@ public class DevicesAdapterTests extends InjectionTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  null);
+                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now()));
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -61,7 +61,7 @@ public class DevicesAdapterTests extends InjectionTestCase {
         assertThat(holder.lastSeen.getCurrentTextColor(),
                    is(equalTo(getResources().getColor(R.color.text_dark))));
         assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
-        assertThat(holder.status1.getText().toString(), is(equalTo("Connected")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Mostly Radiation")));
         assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
         assertThat(holder.status2.getText().toString(), is(equalTo("ffffff")));
     }
@@ -88,6 +88,52 @@ public class DevicesAdapterTests extends InjectionTestCase {
         assertThat(senseHolder.status1.getText().toString(), is(equalTo("--")));
         assertThat(senseHolder.status2Label.getText().toString(), is(equalTo("Firmware")));
         assertThat(senseHolder.status2.getText().toString(), is(equalTo("ffffff")));
+    }
+
+    @Test
+    public void senseNoWiFiDisplay() throws Exception {
+        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
+                                                  SenseDevice.Color.BLACK,
+                                                  "1234",
+                                                  "ffffff",
+                                                  DateTime.now().minusHours(2),
+                                                  null);
+        adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
+
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                               fakeParent, adapter.getItemViewType(0), 0);
+
+        assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.lastSeen.getCurrentTextColor(),
+                   is(equalTo(getResources().getColor(R.color.text_dark))));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("--")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("ffffff")));
+    }
+
+    @Test
+    public void senseWithWiFiNameMissingDisplay() throws Exception {
+        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
+                                                  SenseDevice.Color.BLACK,
+                                                  "1234",
+                                                  "ffffff",
+                                                  DateTime.now().minusHours(2),
+                                                  new SenseDevice.WiFiInfo(null, 50, DateTime.now()));
+        adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
+
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                               fakeParent, adapter.getItemViewType(0), 0);
+
+        assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
+        assertThat(holder.lastSeen.getCurrentTextColor(),
+                   is(equalTo(getResources().getColor(R.color.text_dark))));
+        assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
+        assertThat(holder.status1.getText().toString(), is(equalTo("Connected")));
+        assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
+        assertThat(holder.status2.getText().toString(), is(equalTo("ffffff")));
     }
 
     @Test

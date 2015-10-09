@@ -184,16 +184,18 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
             status1Label.setText(R.string.label_wifi);
 
-            String networkName = preferences.getString(PreferencesPresenter.PAIRED_DEVICE_SSID, null);
-            if (TextUtils.isEmpty(networkName)) {
-                if (device.isMissing()) {
-                    status1.setText(R.string.missing_data_placeholder);
-                } else {
-                    status1.setText(R.string.device_network_unknown);
-                }
+            final SenseDevice.WiFiInfo wiFiInfo = device.wiFiInfo;
+            if (wiFiInfo == null) {
+                status1.setText(R.string.missing_data_placeholder);
             } else {
-                status1.setText(networkName);
+                final String networkName = wiFiInfo.ssid;
+                if (TextUtils.isEmpty(networkName)) {
+                    status1.setText(R.string.device_network_unknown);
+                } else {
+                    status1.setText(networkName);
+                }
             }
+
             status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body);
 
             status2Label.setText(R.string.label_firmware_version);
