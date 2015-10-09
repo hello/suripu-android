@@ -42,7 +42,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -70,7 +69,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private static final int OPTION_ID_FACTORY_RESET = 1;
 
     @Inject DevicesPresenter devicesPresenter;
-    @Inject PreferencesPresenter preferences;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject AccountPresenter accountPresenter;
     @Inject BluetoothStack bluetoothStack;
@@ -369,10 +367,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             showBlockingAlert(R.string.title_checking_connectivity);
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
                              network -> {
-                                 preferences.edit()
-                                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                                            .apply();
-
                                  this.currentWifiNetwork = network;
 
                                  showConnectedSenseActions(network);
