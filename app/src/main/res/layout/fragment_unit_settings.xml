@@ -20,7 +20,7 @@
         android:drawablePadding="@dimen/gap_small"
         android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
         android:textColor="@color/text_dark"
-        android:textAppearance="@style/AppTheme.Text.Body.Medium"
+        android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/setting_title_use_24_time" />
 
     <View
@@ -46,7 +46,7 @@
         android:paddingEnd="@dimen/gap_tiny"
         android:paddingBottom="@dimen/gap_medium"
         android:text="@string/setting_unit_temperature"
-        android:textAppearance="@style/AppTheme.Text.Body.Medium" />
+        android:textAppearance="@style/AppTheme.Text.Body" />
 
     <Spinner
         android:id="@+id/fragment_unit_settings_weight"
@@ -66,7 +66,7 @@
         android:paddingEnd="@dimen/gap_tiny"
         android:paddingBottom="@dimen/gap_medium"
         android:text="@string/setting_unit_weight"
-        android:textAppearance="@style/AppTheme.Text.Body.Medium" />
+        android:textAppearance="@style/AppTheme.Text.Body" />
 
     <Spinner
         android:id="@+id/fragment_unit_settings_height"
@@ -86,6 +86,6 @@
         android:paddingEnd="@dimen/gap_tiny"
         android:paddingBottom="@dimen/gap_medium"
         android:text="@string/setting_unit_height"
-        android:textAppearance="@style/AppTheme.Text.Body.Medium" />
+        android:textAppearance="@style/AppTheme.Text.Body" />
 
 </RelativeLayout>

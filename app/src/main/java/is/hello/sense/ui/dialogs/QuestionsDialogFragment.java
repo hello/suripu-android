@@ -183,7 +183,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
                     this.hasClearedAllViews = true;
 
                     rootContainer.removeAllViews();
-                    onCompletion.run();
+                    stateSafeExecutor.execute(onCompletion);
                 }
             });
         }

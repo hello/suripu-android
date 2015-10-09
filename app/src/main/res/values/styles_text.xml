@@ -69,26 +69,13 @@
 
     <style name="AppTheme.Text.Body">
         <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="AppTheme.Text.Body.New">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/text_body_new</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Thin">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Medium">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Medium.Accent">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Text.Body.MidSized">
@@ -107,6 +94,10 @@
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Small.New">
+        <item name="android:textColor">@color/text_body_new</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Bold">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
@@ -120,8 +111,8 @@
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Dimmed">
-        <item name="android:textColor">@color/grey</item>
+    <style name="AppTheme.Text.Body.Dim">
+        <item name="android:textColor">@color/text_dim</item>
     </style>
 
     <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">

@@ -44,8 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/gap_small"
                 android:gravity="center"
-                android:textAppearance="@style/AppTheme.Text.Body"
+                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                 android:text="@string/app_name"
                 android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
@@ -53,9 +54,10 @@
                 android:id="@+id/fragment_device_details_alert_action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginTop="@dimen/gap_small"
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/gap_small"
                 android:text="@string/action_troubleshoot"
                 style="@style/AppTheme.Button.Rounded" />
 
@@ -63,7 +65,6 @@
                 android:id="@+id/fragment_device_details_alert_action_secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_small"
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
                 android:text="@string/action_retry"
@@ -71,7 +72,7 @@
                 style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
 
             <View
-                android:layout_marginTop="@dimen/gap_outer"
+                android:layout_marginTop="@dimen/gap_small"
                 style="@style/Divider.Horizontal" />
 
         </LinearLayout>

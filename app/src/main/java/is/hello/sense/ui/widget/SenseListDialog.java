@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,7 +38,12 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
     protected void initialize() {
         setContentView(R.layout.dialog_sense_list);
 
+        final Resources resources = getContext().getResources();
+
         this.listView = (ListView) findViewById(android.R.id.list);
+        listView.setFadingEdgeLength(resources.getDimensionPixelSize(R.dimen.shadow_size));
+        listView.setVerticalFadingEdgeEnabled(true);
+        listView.setCacheColorHint(0xf6f6f6);
         listView.setOnItemClickListener(this);
 
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_list_positive);

@@ -194,7 +194,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
                     } else {
                         status1.setText(networkName);
                     }
-                    status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Medium);
+                    status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body);
 
                     status2Label.setText(R.string.label_firmware_version);
                     status2.setText(device.getFirmwareVersion());
@@ -215,7 +215,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<Device, DevicesAdapter.
                     if (state == Device.State.UNKNOWN) {
                         status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold);
                     } else {
-                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Medium);
+                        status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body);
                     }
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 

@@ -6,6 +6,7 @@
 
     <attr name="senseTextAppearanceHeading" format="reference" />
     <attr name="senseTextAppearanceSubheading" format="reference" />
+    <attr name="senseTextAppearanceFieldLabel" format="reference" />
 
     <declare-styleable name="GraphView">
         <attr name="senseNumberOfLines" format="integer" />

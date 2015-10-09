@@ -23,7 +23,7 @@
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
         android:gravity="start"
-        android:textAppearance="@style/AppTheme.Text.Body.Medium" />
+        android:textAppearance="@style/AppTheme.Text.Body" />
 
     <TextView
         android:id="@+id/item_settings_detail_detail"
@@ -34,10 +34,10 @@
         android:layout_marginStart="@dimen/gap_small"
         android:layout_marginEnd="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/gap_small"
         android:layout_centerVertical="true"
         android:gravity="end|center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Body.Medium"
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized"
         android:textColor="@color/text_dim"
         android:text="@string/missing_data_placeholder"
         android:singleLine="true"
@@ -48,6 +48,7 @@
         style="@style/Divider.Horizontal"
         android:layout_alignStart="@id/item_settings_detail_title"
         android:layout_below="@id/item_settings_detail_detail"
+        android:layout_marginBottom="@dimen/gap_small"
         android:layout_marginEnd="@dimen/gap_outer" />
 
 </RelativeLayout>

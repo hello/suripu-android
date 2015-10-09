@@ -20,7 +20,7 @@
     <string name="device_pill">Sleep Pill</string>
     <string name="device_unknown">Other</string>
 
-    <string name="device_network_unknown"><i>Connected</i></string>
+    <string name="device_network_unknown">Connected</string>
 
     <string name="device_state_normal">Good</string>
     <string name="device_state_low_battery">Low</string>
@@ -160,6 +160,7 @@ so you can sleep better.</string>
     </plurals>
     <string name="alarm_repeat_weekly">Weekly</string>
     <string name="label_time_zone">Your Time Zone</string>
+    <string name="label_choose_time_zone">Choose Another Time Zone</string>
     <string name="title_alarm_tone">Tone</string>
     <string name="no_sound_placeholder">None</string>
     <string name="label_delete_alarm">Delete Alarm</string>

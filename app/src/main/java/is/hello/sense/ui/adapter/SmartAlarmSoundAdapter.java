@@ -25,7 +25,7 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
     private boolean playingSoundLoading = false;
 
     public SmartAlarmSoundAdapter(@NonNull Context context) {
-        super(context, R.layout.item_smart_alarm_sound);
+        super(context, R.layout.item_static_choice);
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
@@ -51,7 +51,7 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
-            view = inflater.inflate(R.layout.item_smart_alarm_sound, parent, false);
+            view = inflater.inflate(R.layout.item_static_choice, parent, false);
             view.setTag(new ViewHolder(view));
         }
 
@@ -91,9 +91,9 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
         final ProgressBar busy;
 
         ViewHolder(@NonNull View view) {
-            this.name = (TextView) view.findViewById(R.id.item_smart_alarm_sound_name);
-            this.checked = (ImageView) view.findViewById(R.id.item_smart_alarm_sound_checked);
-            this.busy = (ProgressBar) view.findViewById(R.id.item_smart_alarm_sound_busy);
+            this.name = (TextView) view.findViewById(R.id.item_static_choice_name);
+            this.checked = (ImageView) view.findViewById(R.id.item_static_choice_checked);
+            this.busy = (ProgressBar) view.findViewById(R.id.item_static_choice_progress);
         }
     }
 }

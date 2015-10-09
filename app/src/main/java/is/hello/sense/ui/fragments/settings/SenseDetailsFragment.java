@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
@@ -72,8 +74,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     @Inject AccountPresenter accountPresenter;
     @Inject BluetoothStack bluetoothStack;
 
-    private View pairingMode;
-    private View changeWiFi;
+    private TextView pairingMode;
+    private TextView changeWiFi;
 
     private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
@@ -127,9 +129,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
         super.onViewCreated(view, savedInstanceState);
 
         this.pairingMode = addDeviceAction(R.drawable.icon_settings_pairing_mode, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
-        pairingMode.setEnabled(false);
+        setEnabled(pairingMode, false);
         this.changeWiFi = addDeviceAction(R.drawable.icon_settings_wifi, R.string.action_select_wifi_network, this::changeWifiNetwork);
-        changeWiFi.setEnabled(false);
+        setEnabled(changeWiFi, false);
         addDeviceAction(R.drawable.icon_settings_timezone, R.string.action_change_time_zone, this::changeTimeZone);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
@@ -226,11 +228,16 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     //region Displaying Actions
 
+    private void setEnabled(@NonNull TextView item, boolean enabled) {
+        final Drawable drawable = item.getCompoundDrawablesRelative()[0];
+        drawable.setAlpha(enabled ? 255 : 0x45);
+        item.setEnabled(enabled);
+    }
 
     @Override
     protected void clearActions() {
-        pairingMode.setEnabled(false);
-        changeWiFi.setEnabled(false);
+        setEnabled(pairingMode, false);
+        setEnabled(changeWiFi, false);
     }
 
     private void showRestrictedSenseActions() {
@@ -238,8 +245,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     }
 
     private void showConnectedSenseActions(@Nullable SenseNetworkStatus network) {
-        pairingMode.setEnabled(true);
-        changeWiFi.setEnabled(true);
+        setEnabled(pairingMode, true);
+        setEnabled(changeWiFi, true);
 
         if (network == null ||
                 TextUtils.isEmpty(network.ssid) ||

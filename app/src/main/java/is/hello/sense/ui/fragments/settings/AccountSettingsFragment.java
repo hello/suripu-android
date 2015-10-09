@@ -100,7 +100,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         final Resources resources = getResources();
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final InsetItemDecoration decoration = new InsetItemDecoration();
         recyclerView.addItemDecoration(decoration);
 
