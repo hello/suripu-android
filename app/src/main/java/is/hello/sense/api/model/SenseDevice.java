@@ -36,7 +36,7 @@ public class SenseDevice extends BaseDevice {
                 '}';
     }
 
-    public static class WiFiInfo {
+    public static class WiFiInfo extends ApiResponse {
         @SerializedName("ssid")
         public final String ssid;
 
