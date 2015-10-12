@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -135,9 +136,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         smartRow.setOnClickListener(ignored -> smartToggle.toggle());
 
         final ImageButton smartHelp = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
+        final Drawable smartHelpDrawable = smartHelp.getDrawable().mutate();
         final int accent = getResources().getColor(R.color.light_accent);
         final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
-        Drawables.setTintColor(smartHelp.getDrawable(), dimmedAccent);
+        Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
+        smartHelp.setImageDrawable(smartHelpDrawable);
         Views.setSafeOnClickListener(smartHelp, this::showSmartAlarmIntro);
 
 
