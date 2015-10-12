@@ -3,8 +3,10 @@ package is.hello.sense.ui.fragments.support;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,8 +46,9 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.zendesk.AttachmentPicker;
@@ -72,9 +75,9 @@ public class TicketDetailFragment extends InjectionFragment
     //region Lifecycle
 
     public static TicketDetailFragment newInstance(@NonNull String ticketId, @NonNull String subject) {
-        TicketDetailFragment fragment = new TicketDetailFragment();
+        final TicketDetailFragment fragment = new TicketDetailFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putString(ARG_TICKET_ID, ticketId);
         arguments.putString(ARG_TICKET_SUBJECT, subject);
         fragment.setArguments(arguments);
@@ -89,9 +92,10 @@ public class TicketDetailFragment extends InjectionFragment
         this.attachmentPicker = new AttachmentPicker(this, savedInstanceState);
         this.imageUploadHelper = new ImageUploadHelper(this);
 
-        String ticketId = getArguments().getString(ARG_TICKET_ID);
-        //noinspection ConstantConditions
-        presenter.setTicketId(ticketId);
+        final String ticketId = getArguments().getString(ARG_TICKET_ID);
+        if (ticketId != null) {
+            presenter.setTicketId(ticketId);
+        }
         addPresenter(presenter);
 
         setRetainInstance(true);
@@ -100,7 +104,9 @@ public class TicketDetailFragment extends InjectionFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ticket_detail, container, false);
+        final View view = inflater.inflate(R.layout.fragment_ticket_detail, container, false);
+
+        final Resources resources = getResources();
 
         this.attachmentHost = (AttachmentContainerHost) view.findViewById(R.id.fragment_ticket_detail_comment_attachments);
         attachmentHost.setState(imageUploadHelper);
@@ -108,20 +114,27 @@ public class TicketDetailFragment extends InjectionFragment
         //noinspection Convert2MethodRef
         attachmentHost.setAttachmentContainerListener(f -> imageUploadHelper.removeImage(f));
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_ticket_detail_recycler);
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_ticket_detail_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), true));
+        recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         recyclerView.setItemAnimator(null);
 
         this.adapter = new CommentAdapter(getActivity());
         adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 
+        final @ColorInt int tintColor = resources.getColor(R.color.light_accent);
         this.attach = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_attach);
+        final Drawable attachDrawable = attach.getDrawable().mutate();
+        Drawables.setTintColor(attachDrawable, tintColor);
+        attach.setImageDrawable(attachDrawable);
         Views.setSafeOnClickListener(attach, ignored -> attachmentPicker.showOptions());
 
         this.sendComment = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_send);
+        final Drawable sendDrawable = sendComment.getDrawable().mutate();
+        Drawables.setTintColor(sendDrawable, tintColor);
+        sendComment.setImageDrawable(sendDrawable);
         Views.setSafeOnClickListener(sendComment, this::submit);
 
         this.commentText = (EditText) view.findViewById(R.id.fragment_ticket_detail_comment_text);
@@ -147,7 +160,8 @@ public class TicketDetailFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
 
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm =
+                (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(commentText.getWindowToken(), 0);
 
         commentText.removeTextChangedListener(this);
@@ -173,22 +187,23 @@ public class TicketDetailFragment extends InjectionFragment
     //region Commenting
 
     private void updateButtons() {
-        boolean hasText = !TextUtils.isEmpty(commentText.getText());
-        boolean commentsLoaded = !adapter.isEmpty();
-        boolean uploadsInactive = imageUploadHelper.isImageUploadCompleted();
+        final boolean hasText = !TextUtils.isEmpty(commentText.getText());
+        final boolean commentsLoaded = !adapter.isEmpty();
+        final boolean uploadsInactive = imageUploadHelper.isImageUploadCompleted();
 
-        boolean attachEnabled = commentsLoaded && uploadsInactive;
+        final boolean attachEnabled = commentsLoaded && uploadsInactive;
         attach.setEnabled(attachEnabled);
         attach.getDrawable().setAlpha(attachEnabled ? 0xFF : 0x77);
 
-        boolean sendEnabled = commentsLoaded && hasText && uploadsInactive;
+        final boolean sendEnabled = commentsLoaded && hasText && uploadsInactive;
         sendComment.setEnabled(sendEnabled);
         sendComment.getDrawable().setAlpha(sendEnabled ? 0xFF : 0x77);
     }
 
     public void submit(@NonNull View sender) {
         LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(presenter.submitComment(commentText.getText().toString(), imageUploadHelper.getUploadTokens()),
+        bindAndSubscribe(presenter.submitComment(commentText.getText().toString(),
+                                                 imageUploadHelper.getUploadTokens()),
                 ignored -> {
                     commentText.setText(null);
                     attachmentHost.reset();
@@ -219,7 +234,7 @@ public class TicketDetailFragment extends InjectionFragment
     public void onActivityResult(int requestCode, int resultCode, Intent response) {
         super.onActivityResult(requestCode, resultCode, response);
 
-        List<File> files = attachmentPicker.getFilesFromResult(requestCode, resultCode, response);
+        final List<File> files = attachmentPicker.getFilesFromResult(requestCode, resultCode, response);
         AttachmentHelper.processAndUploadSelectedFiles(files,
                 imageUploadHelper, getActivity(), attachmentHost);
         getActivity().invalidateOptionsMenu();
@@ -271,20 +286,20 @@ public class TicketDetailFragment extends InjectionFragment
     @Override
     public void onItemClicked(int position, CommentResponse comment) {
         if (comment != null && !Lists.isEmpty(comment.getAttachments())) {
-            SenseBottomSheet attachmentPicker = new SenseBottomSheet(getActivity());
+            final SenseBottomSheet attachmentPicker = new SenseBottomSheet(getActivity());
             attachmentPicker.setTitle(R.string.action_view_attachment);
 
-            List<Attachment> attachments = comment.getAttachments();
+            final List<Attachment> attachments = comment.getAttachments();
             for (int i = 0, attachmentsSize = attachments.size(); i < attachmentsSize; i++) {
-                Attachment attachment = attachments.get(i);
+                final Attachment attachment = attachments.get(i);
                 attachmentPicker.addOption(new SenseBottomSheet.Option(i)
                         .setTitle(attachment.getFileName()));
             }
 
             attachmentPicker.setOnOptionSelectedListener(option -> {
-                int index = option.getOptionId();
-                Attachment attachment = attachments.get(index);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
+                final int index = option.getOptionId();
+                final Attachment attachment = attachments.get(index);
+                final Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(attachment.getMappedContentUrl()));
                 startActivity(intent);
 
@@ -311,20 +326,20 @@ public class TicketDetailFragment extends InjectionFragment
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = inflater.inflate(R.layout.item_support_comment, parent, false);
+            final View view = inflater.inflate(R.layout.item_support_comment, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            CommentResponse comment = getItem(position);
+            final CommentResponse comment = getItem(position);
             holder.body.setText(comment.getBody());
 
-            String date = DateFormat.getDateInstance(DateFormat.MEDIUM)
-                    .format(comment.getCreatedAt());
+            final String date = DateFormat.getDateInstance(DateFormat.MEDIUM)
+                                          .format(comment.getCreatedAt());
             if (!Lists.isEmpty(comment.getAttachments())) {
-                int attachmentCount = comment.getAttachments().size();
-                String detailString = resources.getQuantityString(R.plurals.item_support_comment_detail_attachments,
+                final int attachmentCount = comment.getAttachments().size();
+                final String detailString = resources.getQuantityString(R.plurals.item_support_comment_detail_attachments,
                         attachmentCount, date, attachmentCount);
                 holder.detail.setText(detailString);
                 holder.itemView.setBackgroundResource(R.drawable.background_timeline_header_card_selector);

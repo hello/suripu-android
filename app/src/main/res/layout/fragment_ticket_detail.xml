@@ -67,9 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/fragment_ticket_detail_divider"
-        android:requiresFadingEdge="vertical"
-        android:fadingEdge="vertical"
-        android:fadingEdgeLength="@dimen/shadow_size" />
+        android:background="@color/background_light" />
 
     <ProgressBar
         android:id="@+id/fragment_ticket_detail_loading"
