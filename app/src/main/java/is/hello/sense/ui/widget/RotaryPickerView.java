@@ -35,6 +35,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     private final int itemWidth;
     private final int itemHeight;
+    private float recyclerMidY = 0;
     private int itemHorizontalPadding;
     private boolean wrapAroundEventsEnabled = true;
 
@@ -166,6 +167,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             }
         }
 
+        this.recyclerMidY = height / 2f;
         setMeasuredDimension(width, height);
     }
 
@@ -219,10 +221,10 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     }
 
     public void setValue(int newValue, boolean animate) {
-        int constrainedValue = constrainValue(newValue);
-        int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
-        int offset = itemHeight * unfocusedItems;
-        int position = adapter.getItemPosition(newValue);
+        final int constrainedValue = constrainValue(newValue);
+        final int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
+        final int offset = itemHeight * unfocusedItems;
+        final int position = adapter.getItemPosition(newValue);
 
         this.wrapAroundEventsEnabled = false;
         if (animate) {
@@ -309,8 +311,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     //region Data
 
     private boolean isCenterView(View itemView) {
-        final int containerMidY = (getMeasuredHeight() / 2);
-        final View centerView = findChildViewUnder(0, containerMidY);
+        final View centerView = findChildViewUnder(0, recyclerMidY);
         return (centerView == itemView);
     }
 
@@ -328,11 +329,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     class ScrollListener extends RecyclerView.OnScrollListener {
         private int previousState = SCROLL_STATE_IDLE;
         private int lastWrapAroundPosition = NO_POSITION;
-
-        private View findCenterView() {
-            final int containerMidY = (getMeasuredHeight() / 2);
-            return findChildViewUnder(0, containerMidY);
-        }
+        private @Nullable View centerView;
 
         private int getValueForView(@NonNull View view) {
             final int adapterPosition = getChildAdapterPosition(view);
@@ -349,20 +346,18 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            View centerView = null;
-            final int parentCenterY = recyclerView.getMeasuredHeight() / 2;
             for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
                 final View view = recyclerView.getChildAt(i);
                 final float top = view.getTop() + view.getTranslationY();
                 final float bottom = view.getBottom() + view.getTranslationY();
-                if (parentCenterY >= top && parentCenterY <= bottom) {
+                if (recyclerMidY >= top && recyclerMidY <= bottom) {
                     centerView = view;
                 }
 
                 final RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
                 final ItemAdapter.ItemViewHolder eventViewHolder = (ItemAdapter.ItemViewHolder) viewHolder;
                 final float childCenter = (top + bottom) / 2f;
-                final float centerDistance = Math.abs((childCenter - parentCenterY) / (float) parentCenterY);
+                final float centerDistance = Math.abs((childCenter - recyclerMidY) / recyclerMidY);
                 eventViewHolder.setDistanceToCenter(centerDistance);
             }
 
@@ -391,21 +386,20 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 if (onSelectionListener != null) {
                     onSelectionListener.onSelectionWillChange();
                 }
-            } else if (previousState != SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
-                final View centerView = findCenterView();
-                final int containerMidY = getMeasuredHeight() / 2;
-                final int centerViewMidY = (centerView.getTop() + centerView.getBottom()) / 2;
-                final int distanceToNotch = centerViewMidY - containerMidY;
-                if (distanceToNotch == 0) {
-                    RotaryPickerView.this.wrapAroundEventsEnabled = true;
+            } else if (centerView != null) {
+                if (previousState != SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
+                    final int centerViewMidY = (centerView.getTop() + centerView.getBottom()) / 2;
+                    final int distanceToNotch = Math.round(centerViewMidY - recyclerMidY);
+                    if (distanceToNotch == 0) {
+                        RotaryPickerView.this.wrapAroundEventsEnabled = true;
+                        updateValueFromView(centerView);
+                    } else {
+                        smoothScrollBy(0, distanceToNotch);
+                    }
+                } else if (previousState == SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
                     updateValueFromView(centerView);
-                } else {
-                    smoothScrollBy(0, distanceToNotch);
+                    RotaryPickerView.this.wrapAroundEventsEnabled = true;
                 }
-            } else if (previousState == SCROLL_STATE_IDLE && newState == SCROLL_STATE_IDLE) {
-                final View centerView = findCenterView();
-                updateValueFromView(centerView);
-                RotaryPickerView.this.wrapAroundEventsEnabled = true;
             }
 
             this.previousState = newState;
@@ -417,10 +411,10 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
             final int position = parent.getChildAdapterPosition(view);
             if (position == 0) {
-                outRect.top += (parent.getMeasuredHeight() / 2) - (itemHeight / 2);
+                outRect.top += recyclerMidY - (itemHeight / 2);
             }
             if (position == adapter.getItemCount() - 1) {
-                outRect.bottom += (parent.getMeasuredHeight() / 2) - (itemHeight / 2);
+                outRect.bottom += recyclerMidY - (itemHeight / 2);
             }
         }
     }
