@@ -14,7 +14,6 @@ import android.support.annotation.StyleRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -428,16 +427,13 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
+        final float UNFOCUSED_SCALE = 0.625f, FOCUSED_SCALE = 1f;
         final @ColorInt int focusedColor, unfocusedColor, almostGoneColor;
-        final float focusedTextSize, unfocusedTextSize;
 
         ItemAdapter(@NonNull Resources resources) {
             this.focusedColor = resources.getColor(R.color.text_rotary_picker_focused);
             this.unfocusedColor = resources.getColor(R.color.text_rotary_picker_unfocused);
             this.almostGoneColor = resources.getColor(R.color.text_rotary_picker_almost_gone);
-
-            this.focusedTextSize = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_text_focused);
-            this.unfocusedTextSize = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_text_unfocused);
         }
 
         public int getBoundedItemCount() {
@@ -511,33 +507,26 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
             void setDistanceToCenter(float distanceToCenter) {
                 final int color;
-                final float textSize;
+                final float scale;
                 if (distanceToCenter <= 0.5f) {
                     final float fraction = distanceToCenter * 2.0f;
                     color = Anime.interpolateColors(fraction, focusedColor, unfocusedColor);
                     if (magnifyItemsNearCenter) {
-                        textSize = Anime.interpolateFloats(fraction, focusedTextSize, unfocusedTextSize);
+                        scale = Anime.interpolateFloats(fraction, FOCUSED_SCALE, UNFOCUSED_SCALE);
                     } else {
-                        textSize = unfocusedTextSize;
+                        scale = UNFOCUSED_SCALE;
                     }
                 } else {
                     final float fraction = (distanceToCenter - 0.5f) / 0.5f;
                     color = Anime.interpolateColors(fraction, unfocusedColor, almostGoneColor);
-                    textSize = unfocusedTextSize;
+                    scale = UNFOCUSED_SCALE;
                 }
                 text.setTextColor(color);
 
-                // Workaround time! TextView#setTextSize(float) unconditionally requests a
-                // layout pass whenever its called with a new value. The first time the
-                // RotaryPickerView is called, this method will be called from within the
-                // RecyclerView's internal layout pass. As such, calling #setTextSize(float)
-                // will trigger a warning and a second layout. This makes it explicit that
-                // we understand another layout is going to happen, and we don't want the warning.
-                if (text.isInLayout()) {
-                    RotaryPickerView.this.post(() -> text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize));
-                } else {
-                    text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                }
+                // Actually changing the text size has horrible performance
+                // on some devices, so we do a cheap layer scale instead.
+                text.setScaleX(scale);
+                text.setScaleY(scale);
             }
         }
     }
