@@ -3,22 +3,22 @@
 
     <item
         diagram="@drawable/timeline_explain_sleep"
-        text="@string/welcome_dialog_timeline_title_intro"
+        title="@string/welcome_dialog_timeline_title_intro"
         message="@string/welcome_dialog_timeline_intro"/>
 
     <item
         diagram="@drawable/timeline_explain_score"
-        text="@string/welcome_dialog_timeline_title_score"
+        title="@string/welcome_dialog_timeline_title_score"
         message="@string/welcome_dialog_timeline_score"/>
 
     <item
         diagram="@drawable/timeline_explain_summary"
-        text="@string/welcome_dialog_timeline_title_summary"
+        title="@string/welcome_dialog_timeline_title_summary"
         message="@string/welcome_dialog_timeline_summary"/>
 
     <item
         diagram="@drawable/timeline_explain_graph"
-        text="@string/welcome_dialog_timeline_title_events"
+        title="@string/welcome_dialog_timeline_title_events"
         message="@string/welcome_dialog_timeline_events"/>
 
 </dialog>
