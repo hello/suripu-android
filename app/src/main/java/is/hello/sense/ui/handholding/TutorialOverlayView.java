@@ -50,7 +50,6 @@ public class TutorialOverlayView extends RelativeLayout {
     private @Nullable View anchorView;
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
-    private boolean dispatchedLastEvent = false;
 
     private @Nullable ViewGroup container;
     private @Nullable Runnable onDismiss;
@@ -287,23 +286,7 @@ public class TutorialOverlayView extends RelativeLayout {
 
     private boolean interceptTouchEvent(@NonNull MotionEvent event) {
         if (!trackingInteraction && Views.isMotionEventInside(descriptionText, event)) {
-            dispatchTouchEvent(event);
-            this.dispatchedLastEvent = true;
-            return true;
-        }
-
-        if (dispatchedLastEvent) {
-            // If we don't do this, the description won't unhighlight
-            // from the user dragging their finger outside.
-            MotionEvent fakeCancelEvent = MotionEvent.obtain(event);
-            try {
-                fakeCancelEvent.setAction(MotionEvent.ACTION_CANCEL);
-                dispatchTouchEvent(fakeCancelEvent);
-            } finally {
-                fakeCancelEvent.recycle();
-            }
-
-            this.dispatchedLastEvent = false;
+            return false;
         }
 
         switch (event.getAction()) {
