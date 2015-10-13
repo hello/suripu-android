@@ -93,7 +93,8 @@ public class DeviceListFragment extends InjectionFragment
         Styles.initializeSupportFooter(getActivity(), supportInfoFooter);
 
         recyclerView.setAdapter(new HeaderRecyclerAdapter(adapter)
-                .addFooter(supportInfoFooter));
+                                        .addFooter(supportInfoFooter)
+                                        .setFlattenChanges(true));
 
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_device_list_progress);

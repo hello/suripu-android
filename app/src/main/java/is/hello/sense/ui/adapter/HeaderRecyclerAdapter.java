@@ -20,6 +20,7 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @VisibleForTesting final List<View> headers = new ArrayList<>();
     @VisibleForTesting final List<View> footers = new ArrayList<>();
     @VisibleForTesting final RecyclerView.Adapter adapter;
+    private boolean flattenChanges = false;
 
     public HeaderRecyclerAdapter(@NonNull RecyclerView.Adapter<?> adapter) {
         if (adapter instanceof HeaderRecyclerAdapter) {
@@ -44,6 +45,11 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int oldSize = getItemCount();
         footers.add(footer);
         notifyItemInserted(oldSize);
+        return this;
+    }
+
+    public HeaderRecyclerAdapter setFlattenChanges(boolean flattenChanges) {
+        this.flattenChanges = flattenChanges;
         return this;
     }
 
@@ -142,21 +148,37 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
 
         public void onItemRangeChanged(int positionStart, int itemCount) {
-            notifyItemRangeChanged(headers.size() + positionStart, itemCount);
+            if (flattenChanges) {
+                notifyDataSetChanged();
+            } else {
+                notifyItemRangeChanged(headers.size() + positionStart, itemCount);
+            }
         }
 
         public void onItemRangeInserted(int positionStart, int itemCount) {
-            notifyItemRangeInserted(headers.size() + positionStart, itemCount);
+            if (flattenChanges) {
+                notifyDataSetChanged();
+            } else {
+                notifyItemRangeInserted(headers.size() + positionStart, itemCount);
+            }
         }
 
         public void onItemRangeRemoved(int positionStart, int itemCount) {
-            notifyItemRangeRemoved(headers.size() + positionStart, itemCount);
+            if (flattenChanges) {
+                notifyDataSetChanged();
+            } else {
+                notifyItemRangeRemoved(headers.size() + positionStart, itemCount);
+            }
         }
 
         public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-            int offset = headers.size();
-            for (int i = 0; i < itemCount; i++) {
-                notifyItemMoved(offset + fromPosition + i, offset + toPosition + i);
+            if (flattenChanges) {
+                notifyDataSetChanged();
+            } else {
+                final int offset = headers.size();
+                for (int i = 0; i < itemCount; i++) {
+                    notifyItemMoved(offset + fromPosition + i, offset + toPosition + i);
+                }
             }
         }
     }
