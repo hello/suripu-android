@@ -46,7 +46,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     private int maxValue = 100;
     private int value = 0;
     private boolean wrapsAround = false;
-    private int wrapAroundValue;
 
     private @Nullable Drawable itemBackground;
     private boolean wantsLeadingZeros = true;
@@ -196,7 +195,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         }
 
         this.minValue = minValue;
-        setWrapAroundValue(maxValue - minValue);
         adapter.notifyDataSetChanged();
     }
 
@@ -206,12 +204,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         }
 
         this.maxValue = maxValue;
-        setWrapAroundValue(maxValue - minValue);
         adapter.notifyDataSetChanged();
-    }
-
-    public void setWrapAroundValue(int wrapAroundValue) {
-        this.wrapAroundValue = wrapAroundValue;
     }
 
     public void setMagnifyItemsNearCenter(boolean magnifyItemsNearCenter) {
@@ -374,16 +367,25 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                     return;
                 }
 
-                final int position = adapterPosition % adapter.getBoundedItemCount();
-                if (position == wrapAroundValue) {
-                    final RolloverDirection direction = dy > 0f
-                            ? RolloverDirection.FORWARD
-                            : RolloverDirection.BACKWARD;
-                    onSelectionListener.onSelectionRolledOver(RotaryPickerView.this, direction);
-                    this.lastWrapAroundPosition = adapterPosition;
+                if (dy > 0f) {
+                    final int position = adapterPosition % adapter.getBoundedItemCount();
+                    if (position == 0) {
+                        onSelectionListener.onSelectionRolledOver(RotaryPickerView.this,
+                                                                  RolloverDirection.FORWARD);
+                        this.lastWrapAroundPosition = adapterPosition;
+                        return;
+                    }
                 } else {
-                    this.lastWrapAroundPosition = NO_POSITION;
+                    final int position = adapterPosition % adapter.getBoundedItemCount();
+                    if (position == adapter.getBoundedItemCount() - 1) {
+                        onSelectionListener.onSelectionRolledOver(RotaryPickerView.this,
+                                                                  RolloverDirection.BACKWARD);
+                        this.lastWrapAroundPosition = adapterPosition;
+                        return;
+                    }
                 }
+
+                this.lastWrapAroundPosition = NO_POSITION;
             }
         }
 
