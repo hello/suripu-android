@@ -248,19 +248,27 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     }
 
     public void increment() {
-        int newValue = value + 1;
-        if (newValue == maxValue) {
+        int newValue = constrainValue(value + 1);
+        if (newValue == maxValue && !wrapsAround) {
+            return;
+        } else {
             newValue = minValue;
         }
-        setValue(newValue, true);
+
+        smoothScrollBy(0, itemHeight);
+        this.value = newValue;
     }
 
     public void decrement() {
-        int newValue = value - 1;
-        if (newValue == minValue) {
+        int newValue = constrainValue(value - 1);
+        if (newValue == minValue && !wrapsAround) {
+            return;
+        } else {
             newValue = maxValue;
         }
-        setValue(newValue, true);
+
+        smoothScrollBy(0, -itemHeight);
+        this.value = newValue;
     }
 
     public int getValue() {
