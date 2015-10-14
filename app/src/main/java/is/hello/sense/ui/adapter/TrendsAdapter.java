@@ -44,18 +44,18 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_trend, parent, false);
+        final View view = inflater.inflate(R.layout.item_trend, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        TrendsPresenter.Rendered rendered = getItem(position);
+        final TrendsPresenter.Rendered rendered = getItem(position);
 
-        TrendGraph graph = rendered.graph;
+        final TrendGraph graph = rendered.graph;
         holder.title.setText(graph.getTitle());
 
-        GraphDrawable graphDrawable = graph.getGraphType().createDrawable(resources);
+        final GraphDrawable graphDrawable = graph.getGraphType().createDrawable(resources);
         holder.graphView.setGraphDrawable(graphDrawable);
         holder.graphView.setTintColor(graphTintColor);
         holder.graphView.setAdapter(holder.graphAdapter);
@@ -71,7 +71,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         holder.graphView.setGridDrawable(graph.getGraphType().getGridDrawable());
         holder.graphAdapter.bind(rendered);
         if (graphDrawable instanceof LineGraphDrawable) {
-            LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
+            final LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
             lineGraph.setMarkers(holder.graphAdapter.getMarkers());
         }
     }
@@ -98,7 +98,8 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         void addOptionSelector(int index, @NonNull List<String> options, @NonNull String selectedOption) {
             if (optionSelector == null) {
                 this.optionSelector = new SelectorView(itemView.getContext());
-                optionSelector.setBackground(new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.INLINE));
+                optionSelector.setBackground(new TabsBackgroundDrawable(resources,
+                                                                        TabsBackgroundDrawable.Style.INLINE));
                 optionSelector.setOnSelectionChangedListener(this);
                 itemView.addView(optionSelector, 0);
             } else {
@@ -106,8 +107,8 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
                 optionSelector.setEnabled(true);
             }
 
-            for (String option : options) {
-                int optionIndex = optionSelector.addOptionButton(option, option);
+            for (final String option : options) {
+                final int optionIndex = optionSelector.addOptionButton(option, option);
                 if (option.equals(selectedOption)) {
                     optionSelector.setSelectedIndex(optionIndex);
                 }
@@ -128,8 +129,8 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         @Override
         public void onSelectionChanged(int newSelectionIndex) {
             if (optionSelector != null && onTrendOptionSelected != null) {
-                int index = (int) optionSelector.getTag();
-                String option = optionSelector.getButtonTagAt(newSelectionIndex).toString();
+                final int index = (int) optionSelector.getTag();
+                final String option = optionSelector.getButtonTagAt(newSelectionIndex).toString();
                 onTrendOptionSelected.onTrendOptionSelected(index, option);
 
                 optionSelector.setEnabled(false);

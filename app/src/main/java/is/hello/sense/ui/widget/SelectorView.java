@@ -174,14 +174,15 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     //region Options
 
     public int addOptionButton(@NonNull String title, @Nullable Object tag) {
-        Resources resources = getResources();
+        final Resources resources = getResources();
+        final Context context = getContext();
 
         // Creating the button with a style does not actually style it,
         // but on Lollipop it removes the intrusive elevation added to
         // all buttons by default.
-        ToggleButton optionButton = new ToggleButton(getContext(), null, R.style.AppTheme_Button_ModeSelector);
+        final ToggleButton optionButton = new ToggleButton(context, null, R.style.AppTheme_Button_ModeSelector);
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        optionButton.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
+        optionButton.setTextAppearance(context, R.style.AppTheme_Text_Body);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
         optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
         optionButton.setTextOn(title);
@@ -192,15 +193,16 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
 
         if (getChildCount() > 0) {
-            View divider = Styles.createVerticalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
-            LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
-            int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
+            final View divider = Styles.createVerticalDivider(context, ViewGroup.LayoutParams.MATCH_PARENT);
+            final LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
+            final int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }
 
-        int index = buttons.size();
-        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        final int index = buttons.size();
+        final LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                           ViewGroup.LayoutParams.WRAP_CONTENT, 1);
         addView(optionButton, layoutParams);
         return index;
     }
