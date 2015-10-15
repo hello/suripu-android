@@ -21,6 +21,7 @@ apply plugin: 'me.tatarka.retrolambda'
 repositories {
     maven { url 'http://download.crashlytics.com/maven' }
     maven { url 'https://zendesk.artifactoryonline.com/zendesk/repo' }
+    maven { url 'https://dl.bintray.com/hello-inc/maven' }
 }
 
 
@@ -197,7 +198,7 @@ dependencies {
     compile 'me.grantland:autofittextview:0.2.1'
 
     compile 'is.hello.commonsense:ble:1.1.5'
-    compile 'is.hello.go99:anime:0.3.0'
+    compile 'is.hello:anime-android-go-99:0.4.0'
 
     // !! If you remove this, remove the above workaround.
     compile('com.zendesk:sdk:1.4.1.1') {
