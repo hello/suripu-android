@@ -3,14 +3,14 @@ package is.hello.sense.graph.presenters;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.BaseDevice;
+import is.hello.sense.api.model.Devices;
+import is.hello.sense.api.model.SenseDevice;
+import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
@@ -37,24 +37,23 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     }
 
 
-    public static Issue getTopIssue(@NonNull List<Device> devices) {
-        Map<Device.Type, Device> devicesMap = Device.getDevicesMap(devices);
-        Device sense = devicesMap.get(Device.Type.SENSE);
-        Device pill = devicesMap.get(Device.Type.PILL);
+    public static Issue getTopIssue(@NonNull Devices devices) {
+        final SenseDevice sense = devices.getSense();
+        final SleepPillDevice pill = devices.getSleepPill();
 
         if (sense != null) {
-            Analytics.setSenseId(sense.getDeviceId());
+            Analytics.setSenseId(sense.deviceId);
         }
 
         if (sense == null) {
             return Issue.NO_SENSE_PAIRED;
-        } else if (sense.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
+        } else if (sense.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
             return Issue.SENSE_MISSING;
         } else if (pill == null) {
             return Issue.NO_SLEEP_PILL_PAIRED;
-        } else if (pill.getState() == Device.State.LOW_BATTERY) {
+        } else if (pill.state == BaseDevice.State.LOW_BATTERY) {
             return Issue.SLEEP_PILL_LOW_BATTERY;
-        } else if (pill.getHoursSinceLastUpdated() >= Device.MISSING_THRESHOLD_HRS) {
+        } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
             return Issue.SLEEP_PILL_MISSING;
         }
 

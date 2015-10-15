@@ -19,13 +19,13 @@ import android.widget.TextView;
 
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.BaseDevice;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
-public abstract class DeviceDetailsFragment extends InjectionFragment {
+public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends InjectionFragment {
     public static final int RESULT_REPLACED_DEVICE = 0x66;
 
     public static final String ARG_DEVICE = SenseDetailsFragment.class.getName() + ".ARG_DEVICE";
@@ -39,12 +39,12 @@ public abstract class DeviceDetailsFragment extends InjectionFragment {
 
     private LinearLayout actionsContainer;
 
-    protected Device device;
+    protected TDevice device;
 
 
     //region Lifecycle
 
-    protected static Bundle createArguments(@NonNull Device device) {
+    protected static Bundle createArguments(@NonNull BaseDevice device) {
         Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DEVICE, device);
         return arguments;
@@ -54,7 +54,8 @@ public abstract class DeviceDetailsFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.device = (Device) getArguments().getSerializable(ARG_DEVICE);
+        //noinspection unchecked
+        this.device = (TDevice) getArguments().getSerializable(ARG_DEVICE);
 
         setRetainInstance(true);
     }

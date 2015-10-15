@@ -24,7 +24,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.InsightInfo;
@@ -251,7 +251,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Device>> registeredDevices() {
+    public Observable<Devices> registeredDevices() {
         return unimplemented();
     }
 

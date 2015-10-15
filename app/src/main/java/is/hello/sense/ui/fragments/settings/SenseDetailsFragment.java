@@ -36,13 +36,12 @@ import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.sense.R;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -60,7 +59,8 @@ import rx.Observable;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
-public class SenseDetailsFragment extends DeviceDetailsFragment implements FragmentNavigationActivity.BackInterceptingFragment {
+public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
+        implements FragmentNavigationActivity.BackInterceptingFragment {
     private static final int REQUEST_CODE_WIFI = 0x94;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
@@ -69,7 +69,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
     private static final int OPTION_ID_FACTORY_RESET = 1;
 
     @Inject DevicesPresenter devicesPresenter;
-    @Inject PreferencesPresenter preferences;
     @Inject HardwarePresenter hardwarePresenter;
     @Inject AccountPresenter accountPresenter;
     @Inject BluetoothStack bluetoothStack;
@@ -102,8 +101,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
 
     //region Lifecycle
 
-    public static SenseDetailsFragment newInstance(@NonNull Device device) {
-        SenseDetailsFragment fragment = new SenseDetailsFragment();
+    public static SenseDetailsFragment newInstance(@NonNull SenseDevice device) {
+        final SenseDetailsFragment fragment = new SenseDetailsFragment();
         fragment.setArguments(createArguments(device));
         return fragment;
     }
@@ -368,10 +367,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment implements Fragm
             showBlockingAlert(R.string.title_checking_connectivity);
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(),
                              network -> {
-                                 preferences.edit()
-                                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                                            .apply();
-
                                  this.currentWifiNetwork = network;
 
                                  showConnectedSenseActions(network);

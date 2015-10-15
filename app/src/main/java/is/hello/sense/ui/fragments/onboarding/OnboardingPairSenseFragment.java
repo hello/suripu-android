@@ -27,7 +27,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -49,7 +48,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     private static final String OPERATION_LINK_ACCOUNT = "Linking account";
 
     @Inject ApiService apiService;
-    @Inject PreferencesPresenter preferences;
 
     private int linkAccountFailures = 0;
     private boolean hasLinkedAccount = false;
@@ -117,10 +115,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    preferences.edit()
-                            .putString(PreferencesPresenter.PAIRED_DEVICE_SSID, network.ssid)
-                            .apply();
-
                     linkAccount();
                 } else {
                     continueToWifi();

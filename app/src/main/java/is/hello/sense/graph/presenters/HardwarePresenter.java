@@ -29,7 +29,7 @@ import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
-import is.hello.sense.api.model.Device;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -265,10 +265,10 @@ import rx.functions.Action1;
         }
     }
 
-    public Observable<SensePeripheral> discoverPeripheralForDevice(@NonNull Device device) {
-        logEvent("discoverPeripheralForDevice(" + device.getDeviceId() + ")");
+    public Observable<SensePeripheral> discoverPeripheralForDevice(@NonNull SenseDevice device) {
+        logEvent("discoverPeripheralForDevice(" + device.deviceId + ")");
 
-        if (TextUtils.isEmpty(device.getDeviceId()) || device.getType() != Device.Type.SENSE)
+        if (TextUtils.isEmpty(device.deviceId))
             throw new IllegalArgumentException("Malformed Sense device " + device);
 
         if (this.peripheral != null) {
@@ -278,7 +278,7 @@ import rx.functions.Action1;
         }
 
         return pending.bind(TOKEN_DISCOVERY, () -> {
-            return SensePeripheral.rediscover(bluetoothStack, device.getDeviceId(), wantsHighPowerPreScan)
+            return SensePeripheral.rediscover(bluetoothStack, device.deviceId, wantsHighPowerPreScan)
                     .flatMap(peripheral -> {
                         logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
                         this.peripheral = peripheral;
@@ -429,7 +429,7 @@ import rx.functions.Action1;
                          .doOnCompleted(this::clearPeripheral);
     }
 
-    public Observable<Void> factoryReset(@NonNull Device apiDevice) {
+    public Observable<Void> factoryReset(@NonNull SenseDevice apiDevice) {
         logEvent("factoryReset()");
 
         if (peripheral == null) {
