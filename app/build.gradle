@@ -39,7 +39,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 22
         versionCode generateVersionCode()
-        versionName "1.1.6"
+        versionName "1.1.7"
     }
     signingConfigs {
         debug {
