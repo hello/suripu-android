@@ -47,11 +47,11 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_view_static, container, false);
+        final View view = inflater.inflate(R.layout.list_view_static, container, false);
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        final ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
         listView.setDivider(ResourcesCompat.getDrawable(getResources(), R.drawable.divider_horizontal_inset, null));
 
@@ -67,8 +67,8 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
 
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(ticketsPresenter.tickets,
-                this::bindTickets,
-                this::presentError);
+                         this::bindTickets,
+                         this::presentError);
     }
 
     @Override
@@ -88,8 +88,9 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Request ticket = (Request) parent.getItemAtPosition(position);
 
-        final TicketDetailFragment ticketDetailFragment = TicketDetailFragment.newInstance(ticket.getId(),
-                                                                                           ticket.getSubject());
+        final TicketDetailFragment ticketDetailFragment =
+                TicketDetailFragment.newInstance(ticket.getId(),
+                                                 ticket.getSubject());
         getFragmentNavigation().pushFragmentAllowingStateLoss(ticketDetailFragment,
                                                               ticket.getSubject(), true);
     }
@@ -125,8 +126,8 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
                 view.setTag(new ViewHolder(view));
             }
 
-            ViewHolder holder = (ViewHolder) view.getTag();
-            Request ticket = getItem(position);
+            final ViewHolder holder = (ViewHolder) view.getTag();
+            final Request ticket = getItem(position);
             holder.description.setText(ticket.getDescription());
             holder.date.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(ticket.getCreatedAt()));
 

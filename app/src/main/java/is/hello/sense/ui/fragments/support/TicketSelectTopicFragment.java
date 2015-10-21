@@ -37,11 +37,11 @@ public class TicketSelectTopicFragment extends InjectionFragment implements Adap
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_view_static, container, false);
+        final View view = inflater.inflate(R.layout.list_view_static, container, false);
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        final ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
 
         this.adapter = new SupportTopicAdapter(getActivity());
@@ -56,8 +56,8 @@ public class TicketSelectTopicFragment extends InjectionFragment implements Adap
 
         loadingIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(apiService.supportTopics(),
-                this::bindSupportTopics,
-                this::supportTopicsUnavailable);
+                         this::bindSupportTopics,
+                         this::supportTopicsUnavailable);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class TicketSelectTopicFragment extends InjectionFragment implements Adap
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SupportTopic topic = (SupportTopic) parent.getItemAtPosition(position);
-        TicketSubmitFragment ticketSubmitFragment = TicketSubmitFragment.newInstance(topic);
+        final SupportTopic topic = (SupportTopic) parent.getItemAtPosition(position);
+        final TicketSubmitFragment ticketSubmitFragment = TicketSubmitFragment.newInstance(topic);
         getFragmentNavigation().pushFragmentAllowingStateLoss(ticketSubmitFragment,
                                                               topic.displayName, true);
     }

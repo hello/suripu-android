@@ -242,21 +242,23 @@ public class TicketDetailFragment extends InjectionFragment
 
     @Override
     public void allImagesUploaded(Map<File, UploadResponse> map) {
-        updateButtons();
+        stateSafeExecutor.execute(this::updateButtons);
     }
 
     @Override
     public void imageUploaded(UploadResponse uploadResponse, File file) {
-        attachmentHost.setAttachmentUploaded(file);
+        stateSafeExecutor.execute(() -> attachmentHost.setAttachmentUploaded(file));
     }
 
     @Override
     public void imageUploadError(ErrorResponse errorResponse, File file) {
-        Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
-                errorResponse.getResponseBody(), "Zendesk Attachment Upload");
+        stateSafeExecutor.execute(() -> {
+            Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
+                                 errorResponse.getResponseBody(), "Zendesk Attachment Upload");
 
-        AttachmentHelper.showAttachmentTryAgainDialog(getActivity(), file,
-                errorResponse, imageUploadHelper, attachmentHost);
+            AttachmentHelper.showAttachmentTryAgainDialog(getActivity(), file, errorResponse,
+                                                          imageUploadHelper, attachmentHost);
+        });
     }
 
     //endregion
