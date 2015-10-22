@@ -85,9 +85,10 @@ public class OnboardingSignInFragment extends InjectionFragment {
         }
 
         OnboardingToolbar.of(this, view)
-                .setWantsBackButton(true)
-                .setWantsHelpButton(true)
-                .replaceHelpButton(forgotPassword);
+                         .setWantsBackButton(true)
+                         .setWantsHelpButton(true)
+                         .setDark(true)
+                         .replaceHelpButton(forgotPassword);
 
         if (BuildConfig.DEBUG) {
             LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
