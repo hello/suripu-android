@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import is.hello.go99.Anime;
@@ -37,6 +38,8 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
 
     private ViewPager viewPager;
     private Button signInButton;
+    private LinearLayout.LayoutParams signInLayoutParams;
+    private View buttonDivider;
     private Button registerButton;
 
     private Window window;
@@ -83,7 +86,10 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
         pageDots.attach(viewPager);
 
         this.signInButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_sign_in);
+        this.signInLayoutParams = (LinearLayout.LayoutParams) signInButton.getLayoutParams();
         Views.setSafeOnClickListener(signInButton, this::showSignIn);
+
+        this.buttonDivider = view.findViewById(R.id.fragment_onboarding_introduction_button_divider);
 
         this.registerButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_register);
         Views.setSafeOnClickListener(registerButton, this::showRegister);
@@ -151,15 +157,35 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
                                                                          introStatusBarColor,
                                                                          featureStatusBarColor);
             Windows.setStatusBarColor(window, statusBarColor);
+
+            final float fraction = 1f - positionOffset;
+            signInLayoutParams.weight = fraction;
+            signInButton.requestLayout();
+
+            signInButton.setAlpha(fraction);
+            buttonDivider.setAlpha(fraction);
         }
     }
 
     @Override
     public void onPageSelected(int position) {
-        final @ColorInt int statusBarColor = (position == INTRO_POSITION)
-                ? introStatusBarColor
-                : featureStatusBarColor;
+        final @ColorInt int statusBarColor;
+        final float finalFraction;
+        if (position == INTRO_POSITION) {
+            statusBarColor = introStatusBarColor;
+            finalFraction = 1f;
+        } else {
+            statusBarColor = featureStatusBarColor;
+            finalFraction = 0f;
+        }
+
         Windows.setStatusBarColor(window, statusBarColor);
+
+        signInLayoutParams.weight = finalFraction;
+        signInButton.requestLayout();
+
+        signInButton.setAlpha(finalFraction);
+        buttonDivider.setAlpha(finalFraction);
     }
 
     @Override

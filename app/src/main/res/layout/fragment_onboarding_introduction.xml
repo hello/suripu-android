@@ -19,9 +19,12 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/action_log_in"
+            android:singleLine="true"
+            android:ellipsize="none"
             style="@style/AppTheme.Button.Borderless.White" />
 
         <View
+            android:id="@+id/fragment_onboarding_introduction_button_divider"
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/gap_xsmall"
@@ -35,6 +38,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/action_get_started"
+            android:singleLine="true"
+            android:ellipsize="none"
             style="@style/AppTheme.Button.Borderless.White" />
 
     </LinearLayout>
