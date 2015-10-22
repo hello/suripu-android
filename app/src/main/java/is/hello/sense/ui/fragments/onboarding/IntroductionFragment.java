@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -48,7 +50,6 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
 
 
     //region Lifecycle
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -169,6 +170,10 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
 
     @Override
     public void onPageSelected(int position) {
+        final JSONObject properties = Analytics.createProperties(Analytics.Onboarding.PROP_SCREEN,
+                                                                 position + 1);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_INTRO_SWIPED, properties);
+
         final @ColorInt int statusBarColor;
         final float finalFraction;
         if (position == INTRO_POSITION) {

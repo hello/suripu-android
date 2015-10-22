@@ -12,9 +12,20 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.util.Analytics;
 
 public class HaveSenseReadyFragment extends SenseFragment {
     //region Lifecycle
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_START, null);
+        }
+    }
 
     @Nullable
     @Override
@@ -46,6 +57,7 @@ public class HaveSenseReadyFragment extends SenseFragment {
     }
 
     public void showBuySense(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
         UserSupport.openUri(getActivity(), Uri.parse(UserSupport.ORDER_URL));
     }
 
