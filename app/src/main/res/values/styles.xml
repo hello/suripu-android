@@ -51,6 +51,10 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.Black">
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
+    </style>
+
     <!-- Action Bar -->
 
     <style name="AppTheme.ActionBar" parent="Platform.ActionBar" />

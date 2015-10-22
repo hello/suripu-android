@@ -24,6 +24,7 @@ import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.SafeOnClickListener;
 
 public class OnboardingIntroductionFragment extends SenseFragment {
     private ViewPager viewPager;
@@ -53,7 +54,8 @@ public class OnboardingIntroductionFragment extends SenseFragment {
                             R.string.onboarding_intro_feature_conditions_title,
                             R.string.onboarding_intro_feature_conditions_message),
         };
-        final Adapter adapter = new Adapter(inflater, features);
+        final Adapter adapter = new Adapter(inflater, features,
+                                            new SafeOnClickListener(this::watchVideo));
         viewPager.setAdapter(adapter);
 
         final PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
@@ -108,30 +110,37 @@ public class OnboardingIntroductionFragment extends SenseFragment {
     //endregion
 
 
-    class Adapter extends ViewPagerAdapter<Adapter.ItemViewHolder> {
+    static class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {
+        private static final int STATIC_COUNT = 1;
+
         private final LayoutInflater inflater;
         private final Feature[] features;
+        private final View.OnClickListener onWatchVideoClick;
 
-        Adapter(@NonNull LayoutInflater inflater, @NonNull Feature[] features) {
+        Adapter(@NonNull LayoutInflater inflater,
+                @NonNull Feature[] features,
+                @Nullable View.OnClickListener onWatchVideoClick) {
             this.inflater = inflater;
             this.features = features;
+            this.onWatchVideoClick = onWatchVideoClick;
         }
 
         @Override
         public int getCount() {
-            return 1 + features.length;
+            return STATIC_COUNT + features.length;
         }
 
         @Override
-        public ItemViewHolder createViewHolder(ViewGroup container, int position) {
+        public StaticViewHolder createViewHolder(ViewGroup container, int position) {
             if (position == 0) {
                 final View view = inflater.inflate(R.layout.item_onboarding_introduction_first,
                                                    container, false);
 
-                final Button watchVideo = (Button) view.findViewById(R.id.item_onboarding_intro_first_watch_video);
-                Views.setSafeOnClickListener(watchVideo, OnboardingIntroductionFragment.this::watchVideo);
+                final Button watchVideo =
+                        (Button) view.findViewById(R.id.item_onboarding_intro_first_watch_video);
+                watchVideo.setOnClickListener(onWatchVideoClick);
 
-                return new ItemViewHolder(view);
+                return new StaticViewHolder(view);
             } else {
                 final View view = inflater.inflate(R.layout.item_onboarding_introduction_feature,
                                                    container, false);
@@ -140,20 +149,21 @@ public class OnboardingIntroductionFragment extends SenseFragment {
         }
 
         @Override
-        public void bindViewHolder(ItemViewHolder holder, int position) {
+        public void bindViewHolder(StaticViewHolder holder, int position) {
             holder.bind(position);
         }
 
-        class ItemViewHolder extends ViewPagerAdapter.ViewHolder {
-            ItemViewHolder(@NonNull View itemView) {
+        class StaticViewHolder extends ViewPagerAdapter.ViewHolder {
+            StaticViewHolder(@NonNull View itemView) {
                 super(itemView);
             }
 
             void bind(int position) {
+                // Do nothing.
             }
         }
 
-        class FeatureViewHolder extends ItemViewHolder {
+        class FeatureViewHolder extends StaticViewHolder {
             final ImageView diagram;
             final TextView title;
             final TextView message;
@@ -168,8 +178,7 @@ public class OnboardingIntroductionFragment extends SenseFragment {
 
             @Override
             void bind(int position) {
-                final int featurePosition = position - 1;
-                final Feature feature = features[featurePosition];
+                final Feature feature = features[position - STATIC_COUNT];
                 diagram.setImageResource(feature.diagram);
                 title.setText(feature.title);
                 message.setText(feature.message);
@@ -178,11 +187,11 @@ public class OnboardingIntroductionFragment extends SenseFragment {
     }
 
     static class Feature {
-        public final @DrawableRes int diagram;
-        public final @StringRes int title;
-        public final @StringRes int message;
+        final @DrawableRes int diagram;
+        final @StringRes int title;
+        final @StringRes int message;
 
-        public Feature(@DrawableRes int diagram,
+        Feature(@DrawableRes int diagram,
                        @StringRes int title,
                        @StringRes int message) {
             this.diagram = diagram;
