@@ -23,6 +23,7 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -68,7 +69,7 @@ public class OnboardingActivity extends InjectionActivity
     @Inject PreferencesPresenter preferences;
     @Inject BluetoothStack bluetoothStack;
 
-    private FragmentNavigation.Delegate navigationDelegate;
+    private FragmentNavigationDelegate navigationDelegate;
 
     private @Nullable Account account;
     private @Nullable DevicesInfo devicesInfo;
@@ -82,7 +83,7 @@ public class OnboardingActivity extends InjectionActivity
             this.account = (Account) savedInstanceState.getSerializable("account");
         }
 
-        this.navigationDelegate = new Delegate(this,
+        this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                R.id.activity_onboarding_container,
                                                stateSafeExecutor);
 
@@ -138,6 +139,13 @@ public class OnboardingActivity extends InjectionActivity
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("account", account);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        navigationDelegate.onDestroy();
     }
 
     @Override

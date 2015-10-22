@@ -20,4 +20,8 @@ public class Windows {
             return Color.BLACK;
         }
     }
+
+    public static boolean isStatusBarColorAvailable() {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+    }
 }

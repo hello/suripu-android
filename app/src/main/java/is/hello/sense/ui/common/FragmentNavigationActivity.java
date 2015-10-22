@@ -32,14 +32,14 @@ public class FragmentNavigationActivity extends SenseActivity
     @Deprecated
     public static final String EXTRA_ORIENTATION = FragmentNavigationActivity.class.getName() + ".EXTRA_ORIENTATION";
 
-    private FragmentNavigation.Delegate navigationDelegate;
+    private FragmentNavigationDelegate navigationDelegate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_navigation);
 
-        this.navigationDelegate = new Delegate(this,
+        this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                R.id.activity_fragment_navigation_container,
                                                null);
 
@@ -66,6 +66,8 @@ public class FragmentNavigationActivity extends SenseActivity
             final String title = savedInstanceState.getString("title");
             //noinspection ConstantConditions
             getActionBar().setTitle(title);
+
+            navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
         if (intent.hasExtra(EXTRA_WINDOW_COLOR)) {
@@ -102,12 +104,15 @@ public class FragmentNavigationActivity extends SenseActivity
         if (actionBar != null && actionBar.getTitle() != null) {
             outState.putString("title", actionBar.getTitle().toString());
         }
+
+        navigationDelegate.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        navigationDelegate.onDestroy();
         getFragmentManager().removeOnBackStackChangedListener(this);
     }
 

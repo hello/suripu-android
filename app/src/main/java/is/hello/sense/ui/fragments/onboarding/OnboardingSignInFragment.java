@@ -1,8 +1,10 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -33,6 +35,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -43,7 +46,7 @@ import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class OnboardingSignInFragment extends InjectionFragment {
+public class OnboardingSignInFragment extends InjectionFragment implements StatusBarColorProvider {
     @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager apiSessionManager;
     @Inject ApiService apiService;
@@ -119,6 +122,10 @@ public class OnboardingSignInFragment extends InjectionFragment {
         return view;
     }
 
+    @Override
+    public @ColorInt int getStatusBarColor(@NonNull Resources resources) {
+        return resources.getColor(R.color.light_accent_darkened);
+    }
 
     private OnboardingActivity getOnboardingActivity() {
         return (OnboardingActivity) getActivity();
