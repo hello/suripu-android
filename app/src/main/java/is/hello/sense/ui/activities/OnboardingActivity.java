@@ -79,13 +79,15 @@ public class OnboardingActivity extends InjectionActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
+        this.navigationDelegate = new FragmentNavigationDelegate(this,
+                                                                 R.id.activity_onboarding_container,
+                                                                 stateSafeExecutor);
+
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
-        }
 
-        this.navigationDelegate = new FragmentNavigationDelegate(this,
-                                               R.id.activity_onboarding_container,
-                                               stateSafeExecutor);
+            navigationDelegate.onRestoreInstanceState(savedInstanceState);
+        }
 
         if (navigationDelegate.getTopFragment() == null) {
             int lastCheckpoint = getLastCheckPoint();
@@ -139,6 +141,7 @@ public class OnboardingActivity extends InjectionActivity
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("account", account);
+        navigationDelegate.onSaveInstanceState(outState);
     }
 
     @Override
