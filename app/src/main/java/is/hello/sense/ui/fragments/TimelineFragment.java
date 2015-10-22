@@ -502,7 +502,7 @@ public class TimelineFragment extends InjectionFragment
     //region Binding
 
     private void transitionIntoNoDataState(@NonNull Action1<TimelineNoDataHeaderView> configurer) {
-        TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getActivity());
+        final TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getActivity());
         configurer.call(newHeader);
 
         if (animationEnabled && ViewCompat.isLaidOut(recyclerView)) {
@@ -521,7 +521,9 @@ public class TimelineFragment extends InjectionFragment
 
                 @Override
                 public void onItemAnimatorDidStop(boolean finished) {
-                    crossFade.cancel();
+                    if (!finished) {
+                        crossFade.cancel();
+                    }
 
                     itemAnimator.removeListener(this);
                 }
@@ -557,7 +559,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public void bindTimeline(@NonNull Timeline timeline) {
-        boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
+        final boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         if (hasEvents) {
             final Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
                 int targetColor = getResources().getColor(R.color.timeline_background_fill);
@@ -610,11 +612,12 @@ public class TimelineFragment extends InjectionFragment
 
     public void timelineUnavailable(Throwable e) {
         Analytics.trackError(e, "Loading Timeline");
-        CharSequence message = getString(R.string.timeline_error_message);
+        final CharSequence message = getString(R.string.timeline_error_message);
         if (adapter.hasEvents()) {
-            Toast toast = new Toast(homeActivity.getApplicationContext());
+            final Toast toast = new Toast(homeActivity.getApplicationContext());
             @SuppressLint("InflateParams")
-            TextView text = (TextView) homeActivity.getLayoutInflater().inflate(R.layout.toast_text, null);
+            final TextView text = (TextView) homeActivity.getLayoutInflater()
+                                                         .inflate(R.layout.toast_text, null);
             text.setText(message);
             toast.setView(text);
             toast.setDuration(Toast.LENGTH_SHORT);
@@ -670,7 +673,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void showNoActionsAvailable() {
-        SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
+        final SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
         noActions.setTitle(R.string.message_timeline_no_actions_title);
         noActions.setMessage(R.string.message_timeline_no_actions_body);
         noActions.setWantsBigTitle(true);
@@ -680,9 +683,10 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void showAvailableActions(@NonNull TimelineEvent event) {
-        SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences =
+                homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
 
-        SenseBottomSheet actions = new SenseBottomSheet(getActivity());
+        final SenseBottomSheet actions = new SenseBottomSheet(getActivity());
         if (!preferences.getBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, false)) {
             actions.setTitle(R.string.timeline_actions_intro_title);
             actions.setMessage(R.string.timeline_actions_intro_message);
@@ -691,32 +695,24 @@ public class TimelineFragment extends InjectionFragment
         actions.setWantsDividers(true);
 
         if (event.supportsAction(TimelineEvent.Action.VERIFY)) {
-            actions.addOption(
-                    new SenseBottomSheet.Option(ID_EVENT_CORRECT)
+            actions.addOption(new SenseBottomSheet.Option(ID_EVENT_CORRECT)
                             .setTitle(R.string.action_timeline_mark_event_correct)
-                            .setIcon(R.drawable.timeline_action_correct)
-                             );
+                            .setIcon(R.drawable.timeline_action_correct));
         }
         if (event.supportsAction(TimelineEvent.Action.ADJUST_TIME)) {
-            actions.addOption(
-                    new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
+            actions.addOption(new SenseBottomSheet.Option(ID_EVENT_ADJUST_TIME)
                             .setTitle(R.string.action_timeline_event_adjust_time)
-                            .setIcon(R.drawable.timeline_action_adjust)
-                             );
+                            .setIcon(R.drawable.timeline_action_adjust));
         }
         if (event.supportsAction(TimelineEvent.Action.REMOVE)) {
-            actions.addOption(
-                    new SenseBottomSheet.Option(ID_EVENT_REMOVE)
+            actions.addOption(new SenseBottomSheet.Option(ID_EVENT_REMOVE)
                             .setTitle(R.string.action_timeline_event_remove)
-                            .setIcon(R.drawable.timeline_action_remove)
-                             );
+                            .setIcon(R.drawable.timeline_action_remove));
         }
         if (event.supportsAction(TimelineEvent.Action.INCORRECT)) {
-            actions.addOption(
-                    new SenseBottomSheet.Option(ID_EVENT_INCORRECT)
+            actions.addOption(new SenseBottomSheet.Option(ID_EVENT_INCORRECT)
                             .setTitle(R.string.action_timeline_event_incorrect)
-                            .setIcon(R.drawable.timeline_action_remove)
-                             );
+                            .setIcon(R.drawable.timeline_action_remove));
         }
 
         actions.setOnOptionSelectedListener((option) -> {
@@ -724,9 +720,8 @@ public class TimelineFragment extends InjectionFragment
                        .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
                        .apply();
 
-            JSONObject properties = Analytics.createProperties(
-                    Analytics.Timeline.PROP_TYPE, event.getType().toString()
-                                                              );
+            final JSONObject properties = Analytics.createProperties(Analytics.Timeline.PROP_TYPE,
+                                                                     event.getType().toString());
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {
                     doEventAction(actions, timelinePresenter.verifyEvent(event));
@@ -797,7 +792,7 @@ public class TimelineFragment extends InjectionFragment
             Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
         }
 
-        LoadingView loadingView = new LoadingView(getActivity());
+        final LoadingView loadingView = new LoadingView(getActivity());
         bottomSheet.replaceContent(loadingView, null);
         bottomSheet.setCancelable(false);
         bindAndSubscribe(action,
@@ -824,20 +819,20 @@ public class TimelineFragment extends InjectionFragment
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             if (!itemAnimator.isRunning()) {
-                int recyclerHeight = recyclerView.getMeasuredHeight(),
-                        recyclerCenter = recyclerHeight / 2;
+                final int recyclerHeight = recyclerView.getMeasuredHeight(),
+                          recyclerCenter = recyclerHeight / 2;
                 for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {
-                    View view = recyclerView.getChildAt(i);
-                    RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+                    final View view = recyclerView.getChildAt(i);
+                    final RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
                     if (viewHolder instanceof TimelineAdapter.EventViewHolder) {
                         TimelineAdapter.EventViewHolder eventViewHolder = (TimelineAdapter.EventViewHolder) viewHolder;
-                        int viewTop = view.getTop(),
-                                viewBottom = view.getBottom(),
-                                viewHeight = viewBottom - viewTop,
-                                viewCenter = (viewTop + viewBottom) / 2;
+                        final int viewTop = view.getTop(),
+                                  viewBottom = view.getBottom(),
+                                  viewHeight = viewBottom - viewTop,
+                                  viewCenter = (viewTop + viewBottom) / 2;
 
-                        float centerDistanceAmount = (viewCenter - recyclerCenter) / (float) recyclerCenter;
-                        float bottomDistanceAmount;
+                        final float centerDistanceAmount = (viewCenter - recyclerCenter) / (float) recyclerCenter;
+                        final float bottomDistanceAmount;
                         if (viewBottom < recyclerHeight) {
                             bottomDistanceAmount = 1f;
                         } else {
@@ -870,7 +865,7 @@ public class TimelineFragment extends InjectionFragment
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int position = parent.getChildAdapterPosition(view);
+            final int position = parent.getChildAdapterPosition(view);
             if (position >= headerCount && position == parent.getAdapter().getItemCount() - 1) {
                 outRect.bottom = bottomPadding;
             }

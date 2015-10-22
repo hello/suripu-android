@@ -60,9 +60,9 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     //region Lifecycle
 
     public static TicketSubmitFragment newInstance(@NonNull SupportTopic topic) {
-        TicketSubmitFragment fragment = new TicketSubmitFragment();
+        final TicketSubmitFragment fragment = new TicketSubmitFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_SUPPORT_TOPIC, topic);
         fragment.setArguments(arguments);
 
@@ -87,16 +87,17 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_contact_us, container, false);
+        final View view = inflater.inflate(R.layout.fragment_contact_us, container, false);
 
         this.text = (EditText) view.findViewById(R.id.fragment_contact_us_text);
         text.addTextChangedListener(this);
 
-        LinearLayout textContainer = (LinearLayout) view.findViewById(R.id.fragment_contact_us_container);
+        final LinearLayout textContainer = (LinearLayout) view.findViewById(R.id.fragment_contact_us_container);
         textContainer.setOnClickListener(ignored -> {
             text.requestFocus();
 
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            final InputMethodManager imm =
+                    (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(text, 0);
         });
 
@@ -114,7 +115,8 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     public void onDestroyView() {
         super.onDestroyView();
 
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm =
+                (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
 
         text.removeTextChangedListener(this);
@@ -166,8 +168,8 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        boolean hasText = !TextUtils.isEmpty(text.getText());
-        boolean uploadsInactive = imageUploadHelper.isImageUploadCompleted();
+        final boolean hasText = !TextUtils.isEmpty(text.getText());
+        final boolean uploadsInactive = imageUploadHelper.isImageUploadCompleted();
         addAttachmentItem.setEnabled(uploadsInactive);
         addAttachmentItem.getIcon().setAlpha(uploadsInactive ? 0xFF : 0x77);
 
@@ -183,42 +185,46 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     private void showAttachOptions() {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(ticketsPresenter.initializeIfNeeded(),
-                config -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                    attachmentPicker.showOptions();
-                }, e -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentError(getActivity(), e);
-                });
+                         config -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             attachmentPicker.showOptions();
+                         },
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentError(getActivity(), e);
+                         });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent response) {
         super.onActivityResult(requestCode, resultCode, response);
 
-        List<File> files = attachmentPicker.getFilesFromResult(requestCode, resultCode, response);
-        AttachmentHelper.processAndUploadSelectedFiles(files,
-                imageUploadHelper, getActivity(), attachmentHost);
+        final List<File> files = attachmentPicker.getFilesFromResult(requestCode, resultCode, response);
+        AttachmentHelper.processAndUploadSelectedFiles(files, imageUploadHelper,
+                                                       getActivity(), attachmentHost);
         getActivity().invalidateOptionsMenu();
     }
 
     @Override
     public void allImagesUploaded(Map<File, UploadResponse> map) {
-        getActivity().invalidateOptionsMenu();
+        stateSafeExecutor.execute(() -> getActivity().invalidateOptionsMenu());
     }
 
     @Override
     public void imageUploaded(UploadResponse uploadResponse, File file) {
-        attachmentHost.setAttachmentUploaded(file);
+        stateSafeExecutor.execute(() -> attachmentHost.setAttachmentUploaded(file));
     }
 
     @Override
     public void imageUploadError(ErrorResponse errorResponse, File file) {
-        Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
-                errorResponse.getResponseBody(), "Zendesk Attachment Upload");
+        stateSafeExecutor.execute(() -> {
+            Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
+                                 errorResponse.getResponseBody(), "Zendesk Attachment Upload");
 
-        AttachmentHelper.showAttachmentTryAgainDialog(getActivity(), file,
-                errorResponse, imageUploadHelper, attachmentHost);
+            AttachmentHelper.showAttachmentTryAgainDialog(getActivity(), file,
+                                                          errorResponse, imageUploadHelper,
+                                                          attachmentHost);
+        });
     }
 
     //endregion
@@ -229,16 +235,19 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     private void send() {
         LoadingDialogFragment.show(getFragmentManager());
 
-        Observable<CreateRequest> openTicket = ticketsPresenter.createTicket(supportTopic,
-                text.getText().toString(), imageUploadHelper.getUploadTokens());
+        final Observable<CreateRequest> openTicket =
+                ticketsPresenter.createTicket(supportTopic,
+                                              text.getText().toString(),
+                                              imageUploadHelper.getUploadTokens());
         bindAndSubscribe(openTicket,
-                ignored -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                    getFragmentNavigation().popFragment(this, false);
-                }, e -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentError(getActivity(), e);
-                });
+                         ignored -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             getFragmentNavigation().popFragment(this, false);
+                         },
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentError(getActivity(), e);
+                         });
     }
 
     @Override

@@ -48,6 +48,13 @@ public class Lists {
         return sortedCopy;
     }
 
+    public static <T extends Comparable<T>> List<T> sorted(@NonNull Collection<T> toSort) {
+        List<T> sortedCopy = new ArrayList<>(toSort.size());
+        sortedCopy.addAll(toSort);
+        Collections.sort(sortedCopy);
+        return sortedCopy;
+    }
+
     public static <T> List<T> filtered(@NonNull Iterable<T> toFilter, @NonNull Function<T, Boolean> predicate) {
         List<T> results = new ArrayList<>();
         for (T value : toFilter) {

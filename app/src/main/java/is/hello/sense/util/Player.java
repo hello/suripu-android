@@ -349,16 +349,23 @@ public final class Player implements MediaPlayer.OnPreparedListener,
     //region Video
 
     public void setVideoSurfaceAsync(@Nullable Surface surface) {
+        // Setting the player surface takes just long enough to be
+        // problematic if run on the main thread. The underlying
+        // native implementation has a mutex guard, so this is safe.
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
             if (getState() == STATE_RECYCLED) {
                 Logger.warn(getClass().getSimpleName(), "setVideoSurfaceAsync(...) called after recycle()");
                 return;
             }
 
-            // This call is just long enough to be problematic
-            // if run on the main thread. The underlying native
-            // implementation has a mutex guard, so this is safe.
-            mediaPlayer.setSurface(surface);
+            // It's possible for the surface to be destroyed between
+            // this task being posted, and it being run. We have to
+            // guard against invalid surfaces to prevent crashes.
+            if (surface != null && surface.isValid()) {
+                mediaPlayer.setSurface(surface);
+            } else {
+                mediaPlayer.setSurface(null);
+            }
         });
     }
 

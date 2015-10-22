@@ -5,12 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.sense.functional.Lists;
 
 /**
  * A simple staggered fade-in animation.
@@ -54,14 +54,16 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
 
     @Override
     public void runPendingAnimations() {
-        Collections.sort(pending);
+        final List<Transaction> toAnimate = Lists.sorted(pending);
+        pending.clear();
+
         getAnimatorContext().transaction(template, AnimatorContext.OPTIONS_DEFAULT, t -> {
             dispatchAnimationWillStart(t);
 
             final long delayAmount = getDelayAmount();
             long transactionDelay = 0;
-            for (Transaction transaction : pending) {
-                RecyclerView.ViewHolder target = transaction.target;
+            for (final Transaction transaction : toAnimate) {
+                final RecyclerView.ViewHolder target = transaction.target;
 
                 switch (transaction.action) {
                     case ADD: {
@@ -89,11 +91,10 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
                 transactionDelay += delayAmount;
             }
 
-            running.addAll(pending);
-            pending.clear();
+            running.addAll(toAnimate);
         }, finished -> {
-            for (Transaction transaction : running) {
-                RecyclerView.ViewHolder target = transaction.target;
+            for (final Transaction transaction : toAnimate) {
+                final RecyclerView.ViewHolder target = transaction.target;
                 switch (transaction.action) {
                     case ADD: {
                         target.itemView.setAlpha(1f);
@@ -112,7 +113,7 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
                 }
             }
 
-            running.clear();
+            running.removeAll(toAnimate);
 
             dispatchAnimationDidEnd(finished);
         });
@@ -150,7 +151,7 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
     @Override
     public void endAnimations() {
         pending.clear();
-        for (Transaction transaction : running) {
+        for (final Transaction transaction : running) {
             Anime.cancelAll(transaction.target.itemView);
         }
     }

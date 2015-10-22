@@ -3,7 +3,6 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -29,30 +28,26 @@ public class FixedViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        final PagerAdapter adapter = getAdapter();
-        if (adapter == null || adapter.getCount() == 0) {
-            return false;
-        }
-
         try {
             return super.onInterceptTouchEvent(ev);
         } catch (IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
+            return false;
+        } catch (IndexOutOfBoundsException e) {
+            Logger.warn(getClass().getSimpleName(), "Swallowing index out of bounds exception", e);
             return false;
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        final PagerAdapter adapter = getAdapter();
-        if (adapter == null || adapter.getCount() == 0) {
-            return false;
-        }
-
         try {
             return super.onTouchEvent(event);
         } catch (IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
+            return false;
+        } catch (IndexOutOfBoundsException e) {
+            Logger.warn(getClass().getSimpleName(), "Swallowing index out of bounds exception", e);
             return false;
         }
     }

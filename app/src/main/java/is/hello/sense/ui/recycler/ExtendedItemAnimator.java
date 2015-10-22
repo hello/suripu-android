@@ -95,15 +95,19 @@ public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
     }
 
     protected void dispatchAnimationWillStart(@NonNull AnimatorContext.Transaction transaction) {
-        for (Listener listener : listeners) {
-            listener.onItemAnimatorWillStart(transaction);
+        if (!isRunning()) {
+            for (Listener listener : listeners) {
+                listener.onItemAnimatorWillStart(transaction);
+            }
         }
     }
 
     protected void dispatchAnimationDidEnd(boolean finished) {
-        dispatchAnimationsFinished();
-        for (int i = listeners.size() - 1; i >= 0; i--) {
-            listeners.get(i).onItemAnimatorDidStop(finished);
+        if (!isRunning()) {
+            dispatchAnimationsFinished();
+            for (int i = listeners.size() - 1; i >= 0; i--) {
+                listeners.get(i).onItemAnimatorDidStop(finished);
+            }
         }
     }
 
