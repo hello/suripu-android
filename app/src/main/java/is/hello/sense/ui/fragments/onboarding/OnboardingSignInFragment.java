@@ -78,6 +78,7 @@ public class OnboardingSignInFragment extends InjectionFragment
 
         this.emailText = (EditText) view.findViewById(R.id.fragment_onboarding_email);
         emailText.addTextChangedListener(this);
+
         this.passwordText = (EditText) view.findViewById(R.id.fragment_onboarding_password);
         passwordText.addTextChangedListener(this);
         passwordText.setOnEditorActionListener(new EditorActionHandler(this::signIn));

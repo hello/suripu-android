@@ -84,7 +84,7 @@
         android:layout_marginBottom="@dimen/gap_large"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:text="@string/action_next"
+        android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 
 </LinearLayout>
