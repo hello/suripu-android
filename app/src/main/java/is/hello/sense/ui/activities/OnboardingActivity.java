@@ -2,7 +2,6 @@ package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -59,9 +58,8 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditor.Container {
-    private static final String FRAGMENT_TAG = "OnboardingFragment";
-
+public class OnboardingActivity extends InjectionActivity
+        implements FragmentNavigation, AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
@@ -69,6 +67,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
     @Inject BluetoothStack bluetoothStack;
+
+    private FragmentNavigation.Delegate navigationDelegate;
 
     private @Nullable Account account;
     private @Nullable DevicesInfo devicesInfo;
@@ -82,7 +82,11 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
             this.account = (Account) savedInstanceState.getSerializable("account");
         }
 
-        if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+        this.navigationDelegate = new Delegate(this,
+                                               R.id.activity_onboarding_container,
+                                               stateSafeExecutor);
+
+        if (navigationDelegate.getTopFragment() == null) {
             int lastCheckpoint = getLastCheckPoint();
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
@@ -138,41 +142,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
 
     @Override
     public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
-        // Fixes issue #94011528. There appears to be a race condition on some devices where
-        // OnClickListener callbacks can be invoked after an Activity has been paused. See
-        // <http://stackoverflow.com/questions/14262312> for more details.
-        stateSafeExecutor.execute(() -> {
-            if (!wantsBackStackEntry) {
-                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
-
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
-                transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-            } else {
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-            }
-
-            if (wantsBackStackEntry) {
-                transaction.setBreadCrumbTitle(title);
-                transaction.addToBackStack(fragment.getClass().getSimpleName());
-            }
-
-            transaction.commit();
-            getFragmentManager().executePendingTransactions();
-        });
+        navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
 
     @Override
     public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
-        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
+        navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
     }
 
     @Override
     public void popFragment(@NonNull Fragment fragment,
                             boolean immediate) {
-        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
+        navigationDelegate.popFragment(fragment, immediate);
     }
 
     @Override
@@ -187,7 +168,7 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Nullable
     @Override
     public Fragment getTopFragment() {
-        return getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        return navigationDelegate.getTopFragment();
     }
 
     @Override

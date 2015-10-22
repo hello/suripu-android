@@ -32,10 +32,16 @@ public class FragmentNavigationActivity extends SenseActivity
     @Deprecated
     public static final String EXTRA_ORIENTATION = FragmentNavigationActivity.class.getName() + ".EXTRA_ORIENTATION";
 
+    private FragmentNavigation.Delegate navigationDelegate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_navigation);
+
+        this.navigationDelegate = new Delegate(this,
+                                               R.id.activity_fragment_navigation_container,
+                                               null);
 
         getFragmentManager().addOnBackStackChangedListener(this);
 
@@ -117,42 +123,18 @@ public class FragmentNavigationActivity extends SenseActivity
         super.onBackPressed();
     }
 
-    protected FragmentTransaction createTransaction(@NonNull Fragment fragment,
-                                                    @Nullable String title,
-                                                    boolean wantsBackStackEntry) {
-        final FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        final String tag = fragment.getClass().getSimpleName();
-        if (getTopFragment() == null) {
-            transaction.add(R.id.activity_fragment_navigation_container, fragment, tag);
-        } else {
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            transaction.replace(R.id.activity_fragment_navigation_container, fragment, tag);
-        }
-
-        if (wantsBackStackEntry) {
-            transaction.setBreadCrumbTitle(title);
-            transaction.addToBackStack(tag);
-        }
-
-        return transaction;
-    }
-
     @Override
     public void pushFragment(@NonNull Fragment fragment,
                              @Nullable String title,
                              boolean wantsBackStackEntry) {
-        final FragmentTransaction transaction = createTransaction(fragment, title,
-                                                                  wantsBackStackEntry);
-        transaction.commit();
+        navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
 
     @Override
     public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment,
                                               @Nullable String title,
                                               boolean wantsBackStackEntry) {
-        final FragmentTransaction transaction = createTransaction(fragment, title,
-                                                                  wantsBackStackEntry);
-        transaction.commitAllowingStateLoss();
+        navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
     }
 
     public void overlayFragmentAllowingStateLoss(@NonNull Fragment fragment,
@@ -171,12 +153,7 @@ public class FragmentNavigationActivity extends SenseActivity
 
     @Override
     public void popFragment(@NonNull Fragment fragment, boolean immediate) {
-        final String tag = fragment.getClass().getSimpleName();
-        if (immediate) {
-            getFragmentManager().popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else {
-            getFragmentManager().popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
+        navigationDelegate.popFragment(fragment, immediate);
     }
 
     @Override
@@ -208,7 +185,7 @@ public class FragmentNavigationActivity extends SenseActivity
 
     @Override
     public @Nullable Fragment getTopFragment() {
-        return getFragmentManager().findFragmentById(R.id.activity_fragment_navigation_container);
+        return navigationDelegate.getTopFragment();
     }
 
     protected @Nullable String getDefaultTitle() {
