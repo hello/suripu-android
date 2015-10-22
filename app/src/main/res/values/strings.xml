@@ -55,7 +55,6 @@
 
     <string name="title_register">Introduce yourself</string>
     <string name="title_sign_in">Welcome back</string>
-    <string name="title_introduction">Meet Sense</string>
     <string name="label_account">My Account</string>
     <string name="label_units_and_time">Units and Time</string>
     <string name="label_devices">Sense and Sleep Pill</string>
@@ -90,8 +89,6 @@
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
     <string name="action_skip">Skip</string>
-    <string name="info_introduction">A simple system that tracks your sleep, monitors the surroundings in your bedroom and reinvents the alarm,
-so you can sleep better.</string>
     <string name="action_play_video">Play</string>
     <string name="action_get_started">Get Started</string>
     <string name="action_buy_sense">I don\'t have a sense</string>
@@ -486,6 +483,18 @@ so you can sleep better.</string>
     <string name="question_text_rating_prompt_bad_no">No, thanks</string>
     <string name="title_alarm_repeat">Repeat</string>
     <string name="title_edit_wifi">Edit Wi-Fi</string>
+
+    <string name="onboarding_intro_heading">Meet Sense</string>
+    <string name="onboarding_intro_subheading">The first system for understanding\nyour sleep and bedroom.</string>
+    <string name="onboarding_intro_feature_alarm_title">Smart Alarm</string>
+    <string name="onboarding_intro_feature_alarm_message">Unlike a normal alarm, Sense‘s Smart Alarm analyzes your sleep cycle to know when you‘re sleeping lightly, and wakes you up at the optimal time to start your day off right.</string>
+    <string name="onboarding_intro_feature_timeline_title">Sleep Timeline</string>
+    <string name="onboarding_intro_feature_timeline_message">Your Sleep Timeline shows you a detailed analysis of your sleep cycles and helps you see how even minor interruptions to your sleep, like tossing and turning, can impact the quality of your rest.</string>
+    <string name="onboarding_intro_feature_sleep_score_title">Sleep Score</string>
+    <string name="onboarding_intro_feature_sleep_score_message">Get instant feedback on your sleep and see how the quality of your sleep fluctuates over time with your Sleep Score. Sense takes the environmental readings of your bedroom, your sleep during the night, and analyzes the information to provide you with a unique score out of 100.</string>
+    <string name="onboarding_intro_feature_conditions_title">Current Conditions</string>
+    <string name="onboarding_intro_feature_conditions_message">It’s hard to believe that something so small could be so powerful. Sense is packed with sensors that monitor the conditions of your bedroom, giving you unparalleled insight into how temperature, humidity, light, sound, and even air quality affects how well you sleep.</string>
+    <string name="action_watch_video">Watch Video</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

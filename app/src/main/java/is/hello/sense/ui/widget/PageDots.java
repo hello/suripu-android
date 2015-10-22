@@ -76,8 +76,8 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         super(context, attrs, defStyleAttr);
 
 
-        Resources resources = getResources();
-        int padding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final Resources resources = getResources();
+        final int padding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         setPadding(padding, padding, padding, padding);
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
@@ -85,7 +85,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
         this.dotLayout = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-        int dotMargin = resources.getDimensionPixelSize(R.dimen.page_dot_margin);
+        final int dotMargin = resources.getDimensionPixelSize(R.dimen.page_dot_margin);
         dotLayout.setMargins(dotMargin, 0, dotMargin, 0);
 
         this.unselectedDotSizeHalf = resources.getDimensionPixelSize(R.dimen.page_dot_unselected_size) / 2;
@@ -93,9 +93,10 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
 
         if (attrs != null) {
-            TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.PageDots, defStyleAttr, 0);
+            final TypedArray styles = context.obtainStyledAttributes(attrs, R.styleable.PageDots,
+                                                                     defStyleAttr, 0);
 
-            @DotStyle int dotStyle = styles.getInt(R.styleable.PageDots_dotStyle, STYLE_WHITE);
+            final @DotStyle int dotStyle = styles.getInt(R.styleable.PageDots_dotStyle, STYLE_WHITE);
             setDotStyle(dotStyle);
 
             styles.recycle();
@@ -110,10 +111,10 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     //region Internal
 
     private ImageView createDotView() {
-        ImageView dotView = new ImageView(getContext());
+        final ImageView dotView = new ImageView(getContext());
         dotView.setScaleType(ImageView.ScaleType.CENTER);
 
-        DotDrawable dotDrawable = new DotDrawable();
+        final DotDrawable dotDrawable = new DotDrawable();
         dotDrawable.setColor(color);
         dotView.setImageDrawable(dotDrawable);
 
@@ -121,13 +122,13 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     }
 
     private DotDrawable getDotDrawableAt(int position) {
-        ImageView dotView = (ImageView) getChildAt(position);
+        final ImageView dotView = (ImageView) getChildAt(position);
         return (DotDrawable) dotView.getDrawable();
     }
 
     private void updateCount(int newCount) {
         if (newCount > getChildCount()) {
-            int delta = newCount - getChildCount();
+            final int delta = newCount - getChildCount();
             for (int i = 0; i < delta; i++) {
                 addView(createDotView(), dotLayout);
             }
@@ -138,7 +139,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     private void syncSelection() {
         for (int i = 0; i < count; i++) {
-            DotDrawable dot = getDotDrawableAt(i);
+            final DotDrawable dot = getDotDrawableAt(i);
             if (i == selection) {
                 dot.setFocusAmount(1f);
             } else {
@@ -156,7 +157,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         this.color = color;
 
         for (int i = 0; i < count; i++) {
-            DotDrawable dot = getDotDrawableAt(i);
+            final DotDrawable dot = getDotDrawableAt(i);
             dot.setColor(color);
         }
     }
@@ -194,7 +195,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     public void attach(@NonNull ViewPager viewPager) {
         viewPager.addOnPageChangeListener(this);
-        PagerAdapter adapter = viewPager.getAdapter();
+        final PagerAdapter adapter = viewPager.getAdapter();
         if (adapter == null) {
             throw new IllegalStateException("Cannot attach to a view pager without an adapter.");
         }
@@ -211,10 +212,10 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         if (position < count - 1) {
-            DotDrawable current = getDotDrawableAt(position);
+            final DotDrawable current = getDotDrawableAt(position);
             current.setFocusAmount(1f - positionOffset);
 
-            DotDrawable upcoming = getDotDrawableAt(position + 1);
+            final DotDrawable upcoming = getDotDrawableAt(position + 1);
             upcoming.setFocusAmount(positionOffset);
         }
     }
@@ -262,12 +263,14 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
         @Override
         public void draw(Canvas canvas) {
-            int halfWidth = canvas.getWidth() / 2,
-                halfHeight = canvas.getHeight() / 2;
+            final int halfWidth = canvas.getWidth() / 2,
+                      halfHeight = canvas.getHeight() / 2;
 
-            int halfDotSize = focusEvaluator.evaluate(focusAmount, unselectedDotSizeHalf, selectedDotSizeHalf);
+            final int halfDotSize = focusEvaluator.evaluate(focusAmount,
+                                                            unselectedDotSizeHalf,
+                                                            selectedDotSizeHalf);
             rect.set(halfWidth - halfDotSize, halfHeight - halfDotSize,
-                    halfWidth + halfDotSize, halfHeight + halfDotSize);
+                     halfWidth + halfDotSize, halfHeight + halfDotSize);
             canvas.drawOval(rect, paint);
         }
 
@@ -302,7 +305,7 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
         }
 
         public void setColor(int color) {
-            int savedAlpha = paint.getAlpha();
+            final int savedAlpha = paint.getAlpha();
             paint.setColor(color);
             paint.setAlpha(savedAlpha);
             invalidateSelf();

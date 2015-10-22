@@ -3,8 +3,11 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,141 +15,77 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
-import is.hello.sense.ui.widget.BlockableFrameLayout;
-import is.hello.sense.ui.widget.PanImageView;
+import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-import static is.hello.go99.Anime.cancelAll;
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
+public class OnboardingIntroductionFragment extends SenseFragment {
+    private ViewPager viewPager;
+    private Button signInButton;
+    private Button registerButton;
 
-public class OnboardingIntroductionFragment extends SenseFragment implements FragmentNavigation.BackInterceptingFragment {
-    private BlockableFrameLayout rootView;
 
-    private PanImageView sceneBackground;
-    private TextView titleText;
-    private TextView infoText;
-
-    private ImageView play;
-
-    private ViewGroup accountActions;
-    private ViewGroup getStartedActions;
+    //region Lifecycle
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.rootView = (BlockableFrameLayout) inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
+        final View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
-        this.sceneBackground = (PanImageView) rootView.findViewById(R.id.fragment_onboarding_introduction_scene);
+        this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_introduction_pager);
 
-        this.titleText = (TextView) rootView.findViewById(R.id.fragment_onboarding_intro_title);
-        this.infoText = (TextView) rootView.findViewById(R.id.fragment_onboarding_intro_info);
+        final Feature[] features = {
+                new Feature(R.drawable.onboarding_intro_feature_alarm,
+                            R.string.onboarding_intro_feature_alarm_title,
+                            R.string.onboarding_intro_feature_alarm_message),
+                new Feature(R.drawable.onboarding_intro_feature_timeline,
+                            R.string.onboarding_intro_feature_timeline_title,
+                            R.string.onboarding_intro_feature_timeline_message),
+                new Feature(R.drawable.onboarding_intro_feature_sleep_score,
+                            R.string.onboarding_intro_feature_sleep_score_title,
+                            R.string.onboarding_intro_feature_sleep_score_message),
+                new Feature(R.drawable.onboarding_intro_feature_conditions,
+                            R.string.onboarding_intro_feature_conditions_title,
+                            R.string.onboarding_intro_feature_conditions_message),
+        };
+        final Adapter adapter = new Adapter(inflater, features);
+        viewPager.setAdapter(adapter);
 
-        this.getStartedActions = (ViewGroup) rootView.findViewById(R.id.fragment_onboarding_intro_account_get_started);
+        final PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
+        pageDots.attach(viewPager);
 
-        Button getStarted = (Button) getStartedActions.findViewById(R.id.fragment_onboarding_intro_get_started);
-        Views.setSafeOnClickListener(getStarted, this::getStarted);
+        this.signInButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_sign_in);
+        Views.setSafeOnClickListener(signInButton, this::showSignIn);
 
-        Button buySense = (Button) getStartedActions.findViewById(R.id.fragment_onboarding_intro_buy_sense);
-        Views.setSafeOnClickListener(buySense, this::buySense);
+        this.registerButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_register);
+        Views.setSafeOnClickListener(registerButton, this::showRegister);
 
-
-        this.play = (ImageView) rootView.findViewById(R.id.fragment_onboarding_intro_play);
-        Views.setSafeOnClickListener(play, this::playIntroVideo);
-
-
-        this.accountActions = (ViewGroup) rootView.findViewById(R.id.fragment_onboarding_intro_account_actions);
-
-        Button register = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_register);
-        Views.setSafeOnClickListener(register, this::showRegister);
-
-        Button signIn = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_sign_in);
-        Views.setSafeOnClickListener(signIn, this::showSignIn);
-
-        Button cancel = (Button) accountActions.findViewById(R.id.fragment_onboarding_intro_cancel);
-        Views.setSafeOnClickListener(cancel, this::cancel);
-
-
-        return rootView;
+        return view;
     }
 
     @Override
-    public boolean onInterceptBack(@NonNull Runnable back) {
-        if (infoText.getAlpha() != 1f) {
-            cancel(accountActions);
-            return true;
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
 
-        return false;
+        viewPager.clearOnPageChangeListeners();
+
+        this.viewPager = null;
+        this.signInButton = null;
+        this.registerButton = null;
     }
+
+    //endregion
+
+
+    //region Actions
 
     private OnboardingActivity getOnboardingActivity() {
         return (OnboardingActivity) getActivity();
-    }
-
-
-    public void getStarted(@NonNull View sender) {
-        cancelAll(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
-
-        rootView.setTouchEnabled(false);
-
-        animatorFor(getStartedActions)
-                .fadeOut(View.INVISIBLE)
-                .start();
-
-        animatorFor(accountActions)
-                .fadeIn()
-                .start();
-
-        animatorFor(infoText)
-                .fadeOut(View.INVISIBLE)
-                .start();
-
-        animatorFor(play)
-                .slideXAndFade(0f, -(play.getMeasuredWidth() / 2), 1f, 0f)
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        play.setVisibility(View.INVISIBLE);
-                    }
-                })
-                .start();
-
-        animatorFor(titleText)
-                .withDuration(Anime.DURATION_NORMAL / 2)
-                .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> {
-                    titleText.setText(R.string.welcome);
-                })
-                .andThen()
-                .fadeIn()
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        rootView.setTouchEnabled(true);
-                    }
-                })
-                .start();
-
-        sceneBackground.animateToPanAmount(1f, Anime.DURATION_NORMAL, null);
-    }
-
-    public void playIntroVideo(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PLAY_VIDEO, null);
-
-        Bundle arguments = VideoPlayerActivity.getArguments(Uri.parse("http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772"));
-        Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
-        intent.putExtras(arguments);
-        startActivity(intent);
-    }
-
-    public void buySense(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
-        UserSupport.openUri(getActivity(), Uri.parse(UserSupport.ORDER_URL));
     }
 
     public void showRegister(@NonNull View sender) {
@@ -157,42 +96,98 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Fra
         getOnboardingActivity().showSignIn();
     }
 
-    public void cancel(@NonNull View sender) {
-        cancelAll(sceneBackground, getStartedActions, accountActions, infoText, play, titleText);
+    public void watchVideo(@NonNull View sender) {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_PLAY_VIDEO, null);
 
-        rootView.setTouchEnabled(false);
+        final Bundle arguments = VideoPlayerActivity.getArguments(Uri.parse(UserSupport.VIDEO_URL));
+        final Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
+        intent.putExtras(arguments);
+        startActivity(intent);
+    }
 
-        animatorFor(getStartedActions)
-                .fadeIn()
-                .start();
+    //endregion
 
-        animatorFor(accountActions)
-                .fadeOut(View.INVISIBLE)
-                .start();
 
-        animatorFor(infoText)
-                .fadeIn()
-                .start();
+    class Adapter extends ViewPagerAdapter<Adapter.ItemViewHolder> {
+        private final LayoutInflater inflater;
+        private final Feature[] features;
 
-        animatorFor(play)
-                .slideXAndFade(0f, play.getMeasuredWidth() / 2, 0f, 1f)
-                .start();
+        Adapter(@NonNull LayoutInflater inflater, @NonNull Feature[] features) {
+            this.inflater = inflater;
+            this.features = features;
+        }
 
-        animatorFor(titleText)
-                .withDuration(Anime.DURATION_NORMAL / 2)
-                .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> {
-                    titleText.setText(R.string.title_introduction);
-                })
-                .andThen()
-                .fadeIn()
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        rootView.setTouchEnabled(true);
-                    }
-                })
-                .start();
+        @Override
+        public int getCount() {
+            return 1 + features.length;
+        }
 
-        sceneBackground.animateToPanAmount(0f, Anime.DURATION_NORMAL, null);
+        @Override
+        public ItemViewHolder createViewHolder(ViewGroup container, int position) {
+            if (position == 0) {
+                final View view = inflater.inflate(R.layout.item_onboarding_introduction_first,
+                                                   container, false);
+
+                final Button watchVideo = (Button) view.findViewById(R.id.item_onboarding_intro_first_watch_video);
+                Views.setSafeOnClickListener(watchVideo, OnboardingIntroductionFragment.this::watchVideo);
+
+                return new ItemViewHolder(view);
+            } else {
+                final View view = inflater.inflate(R.layout.item_onboarding_introduction_feature,
+                                                   container, false);
+                return new FeatureViewHolder(view);
+            }
+        }
+
+        @Override
+        public void bindViewHolder(ItemViewHolder holder, int position) {
+            holder.bind(position);
+        }
+
+        class ItemViewHolder extends ViewPagerAdapter.ViewHolder {
+            ItemViewHolder(@NonNull View itemView) {
+                super(itemView);
+            }
+
+            void bind(int position) {
+            }
+        }
+
+        class FeatureViewHolder extends ItemViewHolder {
+            final ImageView diagram;
+            final TextView title;
+            final TextView message;
+
+            FeatureViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                this.diagram = (ImageView) itemView.findViewById(R.id.item_onboarding_introduction_feature_diagram);
+                this.title = (TextView) itemView.findViewById(R.id.item_onboarding_introduction_feature_title);
+                this.message = (TextView) itemView.findViewById(R.id.item_onboarding_introduction_feature_message);
+            }
+
+            @Override
+            void bind(int position) {
+                final int featurePosition = position - 1;
+                final Feature feature = features[featurePosition];
+                diagram.setImageResource(feature.diagram);
+                title.setText(feature.title);
+                message.setText(feature.message);
+            }
+        }
+    }
+
+    static class Feature {
+        public final @DrawableRes int diagram;
+        public final @StringRes int title;
+        public final @StringRes int message;
+
+        public Feature(@DrawableRes int diagram,
+                       @StringRes int title,
+                       @StringRes int message) {
+            this.diagram = diagram;
+            this.title = title;
+            this.message = message;
+        }
     }
 }
