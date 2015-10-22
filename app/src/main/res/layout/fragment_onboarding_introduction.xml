@@ -33,7 +33,7 @@
             android:importantForAccessibility="no" />
 
         <Button
-            android:id="@+id/fragment_onboarding_introduction_register"
+            android:id="@+id/fragment_onboarding_introduction_get_started"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

@@ -24,25 +24,32 @@ import org.json.JSONObject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.ui.widget.PageDots;
+import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SafeOnClickListener;
 
-public class IntroductionFragment extends SenseFragment implements ViewPager.OnPageChangeListener {
+public class IntroductionFragment extends SenseFragment
+        implements StatusBarColorProvider, OnViewPagerChangeAdapter.Listener {
+    public static final int RESPONSE_SIGN_IN = 0;
+    public static final int RESPONSE_GET_STARTED = 1;
+
     private static final int INTRO_POSITION = 0;
 
     private ViewPager viewPager;
+    private OnViewPagerChangeAdapter onViewPagerChangeAdapter;
+
     private Button signInButton;
     private LinearLayout.LayoutParams signInLayoutParams;
     private View buttonDivider;
-    private Button registerButton;
+    private Button getStartedButton;
 
     private Window window;
     private @ColorInt int introStatusBarColor;
@@ -63,7 +70,9 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
         final View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_introduction_pager);
-        viewPager.addOnPageChangeListener(this);
+
+        this.onViewPagerChangeAdapter = new OnViewPagerChangeAdapter(viewPager, this);
+        viewPager.addOnPageChangeListener(onViewPagerChangeAdapter);
 
         final Feature[] features = {
                 new Feature(R.drawable.onboarding_intro_feature_alarm,
@@ -88,12 +97,12 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
 
         this.signInButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_sign_in);
         this.signInLayoutParams = (LinearLayout.LayoutParams) signInButton.getLayoutParams();
-        Views.setSafeOnClickListener(signInButton, this::showSignIn);
+        Views.setSafeOnClickListener(signInButton, this::signIn);
 
         this.buttonDivider = view.findViewById(R.id.fragment_onboarding_introduction_button_divider);
 
-        this.registerButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_register);
-        Views.setSafeOnClickListener(registerButton, this::showRegister);
+        this.getStartedButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_get_started);
+        Views.setSafeOnClickListener(getStartedButton, this::getStarted);
 
         final Resources resources = getResources();
         this.introStatusBarColor = resources.getColor(R.color.status_bar_grey);
@@ -106,11 +115,14 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
     public void onDestroyView() {
         super.onDestroyView();
 
+        onViewPagerChangeAdapter.destroy();
+        this.onViewPagerChangeAdapter = null;
+
         viewPager.clearOnPageChangeListeners();
 
         this.viewPager = null;
         this.signInButton = null;
-        this.registerButton = null;
+        this.getStartedButton = null;
     }
 
     @Override
@@ -120,21 +132,22 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
         this.window = null;
     }
 
+    @Override
+    public int getStatusBarColor(@NonNull Resources resources) {
+        return resources.getColor(R.color.status_bar_grey);
+    }
+
     //endregion
 
 
     //region Actions
 
-    private OnboardingActivity getOnboardingActivity() {
-        return (OnboardingActivity) getActivity();
+    public void getStarted(@NonNull View sender) {
+        getFragmentNavigation().flowFinished(this, RESPONSE_GET_STARTED, null);
     }
 
-    public void showRegister(@NonNull View sender) {
-        getOnboardingActivity().beginRegistration(false);
-    }
-
-    public void showSignIn(@NonNull View sender) {
-        getOnboardingActivity().showSignIn();
+    public void signIn(@NonNull View sender) {
+        getFragmentNavigation().flowFinished(this, RESPONSE_SIGN_IN, null);
     }
 
     public void watchVideo(@NonNull View sender) {
@@ -152,16 +165,19 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
     //region Pages
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageChangeScrolled(int position, float offset) {
         if (position == INTRO_POSITION) {
-            final @ColorInt int statusBarColor = Anime.interpolateColors(positionOffset,
+            final @ColorInt int statusBarColor = Anime.interpolateColors(offset,
                                                                          introStatusBarColor,
                                                                          featureStatusBarColor);
             Windows.setStatusBarColor(window, statusBarColor);
 
-            final float fraction = 1f - positionOffset;
+            final float fraction = 1f - offset;
             signInLayoutParams.weight = fraction;
-            signInButton.requestLayout();
+            // To avoid extra layouts immediately after inflate
+            if (!signInButton.isInLayout()) {
+                signInButton.requestLayout();
+            }
 
             signInButton.setAlpha(fraction);
             buttonDivider.setAlpha(fraction);
@@ -169,7 +185,7 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
     }
 
     @Override
-    public void onPageSelected(int position) {
+    public void onPageChangeCompleted(int position) {
         final JSONObject properties = Analytics.createProperties(Analytics.Onboarding.PROP_SCREEN,
                                                                  position + 1);
         Analytics.trackEvent(Analytics.Onboarding.EVENT_INTRO_SWIPED, properties);
@@ -191,10 +207,6 @@ public class IntroductionFragment extends SenseFragment implements ViewPager.OnP
 
         signInButton.setAlpha(finalFraction);
         buttonDivider.setAlpha(finalFraction);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
     }
 
     static class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {

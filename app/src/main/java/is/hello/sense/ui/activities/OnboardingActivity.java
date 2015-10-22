@@ -171,7 +171,13 @@ public class OnboardingActivity extends InjectionActivity
     public void flowFinished(@NonNull Fragment fragment,
                              int responseCode,
                              @Nullable Intent result) {
-        if (fragment instanceof ConnectToWiFiFragment) {
+        if (fragment instanceof IntroductionFragment) {
+            if (responseCode == IntroductionFragment.RESPONSE_SIGN_IN) {
+                showSignIn();
+            } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
+                showGetStarted(false);
+            }
+        } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         }
     }
@@ -238,7 +244,7 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new OnboardingSignInFragment(), null, true);
     }
 
-    public void beginRegistration(boolean overrideDeviceUnsupported) {
+    public void showGetStarted(boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && hardwarePresenter.getDeviceSupportLevel() != BluetoothStack.SupportLevel.TESTED) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
         } else {
