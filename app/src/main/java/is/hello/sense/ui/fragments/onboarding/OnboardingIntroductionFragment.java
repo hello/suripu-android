@@ -1,8 +1,11 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,10 +14,12 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
@@ -23,22 +28,38 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SafeOnClickListener;
 
-public class OnboardingIntroductionFragment extends SenseFragment {
+public class OnboardingIntroductionFragment extends SenseFragment implements ViewPager.OnPageChangeListener {
+    private static final int INTRO_POSITION = 0;
+
     private ViewPager viewPager;
     private Button signInButton;
     private Button registerButton;
 
+    private Window window;
+    private @ColorInt int introStatusBarColor;
+    private @ColorInt int featureStatusBarColor;
+
 
     //region Lifecycle
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        this.window = activity.getWindow();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_introduction_pager);
+        viewPager.addOnPageChangeListener(this);
 
         final Feature[] features = {
                 new Feature(R.drawable.onboarding_intro_feature_alarm,
@@ -67,6 +88,10 @@ public class OnboardingIntroductionFragment extends SenseFragment {
         this.registerButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_register);
         Views.setSafeOnClickListener(registerButton, this::showRegister);
 
+        final Resources resources = getResources();
+        this.introStatusBarColor = resources.getColor(R.color.status_bar_grey);
+        this.featureStatusBarColor = resources.getColor(R.color.light_accent_darkened);
+
         return view;
     }
 
@@ -79,6 +104,13 @@ public class OnboardingIntroductionFragment extends SenseFragment {
         this.viewPager = null;
         this.signInButton = null;
         this.registerButton = null;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        this.window = null;
     }
 
     //endregion
@@ -110,6 +142,30 @@ public class OnboardingIntroductionFragment extends SenseFragment {
     //endregion
 
 
+    //region Pages
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        if (position == INTRO_POSITION) {
+            final @ColorInt int statusBarColor = Anime.interpolateColors(positionOffset,
+                                                                         introStatusBarColor,
+                                                                         featureStatusBarColor);
+            Windows.setStatusBarColor(window, statusBarColor);
+        }
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        final @ColorInt int statusBarColor = (position == INTRO_POSITION)
+                ? introStatusBarColor
+                : featureStatusBarColor;
+        Windows.setStatusBarColor(window, statusBarColor);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
     static class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {
         private static final int STATIC_COUNT = 1;
 
@@ -132,7 +188,7 @@ public class OnboardingIntroductionFragment extends SenseFragment {
 
         @Override
         public StaticViewHolder createViewHolder(ViewGroup container, int position) {
-            if (position == 0) {
+            if (position == INTRO_POSITION) {
                 final View view = inflater.inflate(R.layout.item_onboarding_introduction_first,
                                                    container, false);
 
@@ -199,4 +255,6 @@ public class OnboardingIntroductionFragment extends SenseFragment {
             this.message = message;
         }
     }
+
+    //endregion
 }
