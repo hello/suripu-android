@@ -53,7 +53,7 @@ public class HaveSenseReadyFragment extends SenseFragment {
     }
 
     public void pairSense(@NonNull View sender) {
-        getOnboardingActivity().pushFragment(new OnboardingRegisterFragment(), null, true);
+        getOnboardingActivity().pushFragment(new RegisterFragment(), null, true);
     }
 
     public void showBuySense(@NonNull View sender) {

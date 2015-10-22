@@ -48,7 +48,7 @@ import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class OnboardingSignInFragment extends InjectionFragment
+public class SignInFragment extends InjectionFragment
         implements StatusBarColorProvider, TextWatcher {
     @Inject ApiEndpoint apiEndpoint;
     @Inject ApiSessionManager apiSessionManager;
@@ -173,7 +173,7 @@ public class OnboardingSignInFragment extends InjectionFragment
             return;
         }
 
-        final String email = this.emailText.getText().toString().trim();
+        final String email = AccountPresenter.normalizeInput(emailText.getText());
         this.emailText.setText(email);
 
         final String password = this.passwordText.getText().toString();

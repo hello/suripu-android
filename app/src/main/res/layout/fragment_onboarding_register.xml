@@ -21,12 +21,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/gap_small"
+            android:paddingBottom="@dimen/gap_small"
             android:paddingLeft="@dimen/gap_outer"
             android:paddingRight="@dimen/gap_outer"
-            android:paddingBottom="@dimen/gap_small"
             android:orientation="vertical"
             android:background="@color/background_onboarding"
-            android:gravity="center"
             android:animateLayoutChanges="true">
 
             <TextView
@@ -77,7 +76,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/fragment_onboarding_register_go"
+        android:id="@+id/fragment_onboarding_register_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
