@@ -28,7 +28,7 @@
         android:layout_marginTop="@dimen/gap_small"
         android:layout_above="@id/fragment_onboarding_next"
         android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Onboarding"/>
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
 
     <ScrollView
         android:layout_width="match_parent"

@@ -33,7 +33,7 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SafeOnClickListener;
 
-public class OnboardingIntroductionFragment extends SenseFragment implements ViewPager.OnPageChangeListener {
+public class IntroductionFragment extends SenseFragment implements ViewPager.OnPageChangeListener {
     private static final int INTRO_POSITION = 0;
 
     private ViewPager viewPager;
@@ -129,7 +129,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
     }
 
     public void showRegister(@NonNull View sender) {
-        getOnboardingActivity().showRegistration(false);
+        getOnboardingActivity().beginRegistration(false);
     }
 
     public void showSignIn(@NonNull View sender) {
@@ -193,7 +193,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
     }
 
     static class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {
-        private static final int STATIC_COUNT = 1;
+        private static final int NON_FEATURE_COUNT = 1;
 
         private final LayoutInflater inflater;
         private final Feature[] features;
@@ -209,7 +209,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
 
         @Override
         public int getCount() {
-            return STATIC_COUNT + features.length;
+            return NON_FEATURE_COUNT + features.length;
         }
 
         @Override
@@ -260,7 +260,7 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
 
             @Override
             void bind(int position) {
-                final Feature feature = features[position - STATIC_COUNT];
+                final Feature feature = features[position - NON_FEATURE_COUNT];
                 diagram.setImageResource(feature.diagram);
                 title.setText(feature.title);
                 message.setText(feature.message);
@@ -274,8 +274,8 @@ public class OnboardingIntroductionFragment extends SenseFragment implements Vie
         final @StringRes int message;
 
         Feature(@DrawableRes int diagram,
-                       @StringRes int title,
-                       @StringRes int message) {
+                @StringRes int title,
+                @StringRes int message) {
             this.diagram = diagram;
             this.title = title;
             this.message = message;

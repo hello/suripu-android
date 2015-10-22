@@ -30,15 +30,15 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
+import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingDoneFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment;
@@ -231,25 +231,18 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showIntroductionFragment() {
-        pushFragment(new OnboardingIntroductionFragment(), null, false);
+        pushFragment(new IntroductionFragment(), null, false);
     }
 
     public void showSignIn() {
         pushFragment(new OnboardingSignInFragment(), null, true);
     }
 
-    public void showRegistration(boolean overrideDeviceUnsupported) {
+    public void beginRegistration(boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && hardwarePresenter.getDeviceSupportLevel() != BluetoothStack.SupportLevel.TESTED) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
         } else {
-            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
-            builder.setHeadingText(R.string.title_have_sense_ready);
-            builder.setSubheadingText(R.string.info_have_sense_ready);
-            builder.setDiagramImage(R.drawable.onboarding_have_sense_ready);
-            builder.setWantsBack(true);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_START);
-            builder.setNextFragmentClass(OnboardingRegisterFragment.class);
-            pushFragment(builder.toFragment(), null, true);
+            pushFragment(new HaveSenseReadyFragment(), null, true);
         }
     }
 

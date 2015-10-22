@@ -91,7 +91,8 @@
     <string name="action_skip">Skip</string>
     <string name="action_play_video">Play</string>
     <string name="action_get_started">Get Started</string>
-    <string name="action_buy_sense">I don\'t have a sense</string>
+    <string name="action_buy_sense">Order a Sense</string>
+    <string name="action_pair_your_sense">Pair your Sense</string>
     <string name="welcome">Welcome</string>
     <string name="title_register_birthday">What is your birthday?</string>
     <string name="action_next">Next</string>

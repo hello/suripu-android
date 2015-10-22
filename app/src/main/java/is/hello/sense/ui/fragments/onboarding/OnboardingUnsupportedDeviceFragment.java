@@ -65,6 +65,6 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
     }
 
     public void continueAnyway() {
-        getOnboardingActivity().showRegistration(true);
+        getOnboardingActivity().beginRegistration(true);
     }
 }
