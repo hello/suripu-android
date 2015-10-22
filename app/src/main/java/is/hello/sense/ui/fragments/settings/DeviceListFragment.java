@@ -22,7 +22,6 @@ import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -47,7 +46,6 @@ public class DeviceListFragment extends InjectionFragment
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
     @Inject DevicesPresenter devicesPresenter;
-    @Inject PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -86,7 +84,7 @@ public class DeviceListFragment extends InjectionFragment
         recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
 
-        this.adapter = new DevicesAdapter(getActivity(), preferences);
+        this.adapter = new DevicesAdapter(getActivity());
         adapter.setOnItemClickedListener(this);
         adapter.setOnPairNewDeviceListener(this);
 

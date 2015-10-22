@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.BaseDevice;
@@ -21,8 +22,6 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -34,16 +33,14 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
     private final LayoutInflater inflater;
     private final Resources resources;
-    private final PreferencesPresenter preferences;
 
     private @Nullable OnPairNewDeviceListener onPairNewDeviceListener;
 
-    public DevicesAdapter(@NonNull Context context, @NonNull PreferencesPresenter preferences) {
+    public DevicesAdapter(@NonNull Context context) {
         super(new ArrayList<>());
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
-        this.preferences = preferences;
     }
 
 
@@ -57,13 +54,17 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
         if (sense == null) {
             sense = new PlaceholderDevice(PlaceholderDevice.Type.SENSE);
-        }
-
-        if (sleepPill == null) {
+            sleepPill = null;
+        } else if (sleepPill == null) {
             sleepPill = new PlaceholderDevice(PlaceholderDevice.Type.SLEEP_PILL);
         }
 
-        replaceAll(Lists.newArrayList(sense, sleepPill));
+        final List<BaseDevice> deviceList = new ArrayList<>(2);
+        deviceList.add(sense);
+        if (sleepPill != null) {
+            deviceList.add(sleepPill);
+        }
+        replaceAll(deviceList);
     }
 
     public void devicesUnavailable(@SuppressWarnings("UnusedParameters") Throwable e) {

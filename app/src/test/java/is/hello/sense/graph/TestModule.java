@@ -44,7 +44,6 @@ import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
 import is.hello.sense.graph.presenters.questions.ApiQuestionProviderTests;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProviderTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
-import is.hello.sense.ui.adapter.DevicesAdapterTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.DateFormatterTests;
@@ -91,8 +90,6 @@ import static org.mockito.Mockito.mock;
 
         TrendsPresenterTests.class,
         TrendsPresenter.class,
-
-        DevicesAdapterTests.class,
 
         LocalUsageTrackerTests.class,
         ReviewQuestionProviderTests.class,
