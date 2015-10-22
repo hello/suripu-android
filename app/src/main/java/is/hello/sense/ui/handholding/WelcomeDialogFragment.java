@@ -42,6 +42,7 @@ import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
@@ -143,9 +144,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         dialog.setCancelable(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final int activityStatusBarColor = getActivity().getWindow().getStatusBarColor();
+            final int activityStatusBarColor = Windows.getStatusBarColor(getActivity().getWindow());
             final int myStatusBarColor = Drawing.darkenColorBy(activityStatusBarColor, 0.5f);
-            dialog.getWindow().setStatusBarColor(myStatusBarColor);
+            Windows.setStatusBarColor(dialog.getWindow(), myStatusBarColor);
         }
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
