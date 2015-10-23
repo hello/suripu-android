@@ -7,7 +7,6 @@ import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.bugsnag.android.Bugsnag;
-import com.crashlytics.android.Crashlytics;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -38,6 +37,10 @@ public class SenseApplication extends Application {
         return instance;
     }
 
+    public static boolean isRunningInRobolectric() {
+        return "robolectric".equals(Build.FINGERPRINT);
+    }
+
     private ObjectGraph graph;
 
     @Override
@@ -48,12 +51,11 @@ public class SenseApplication extends Application {
         SenseApplication.instance = this;
 
         // And always do this second.
-        final boolean isRunningInRobolectric = "robolectric".equals(Build.FINGERPRINT);
+        final boolean isRunningInRobolectric = isRunningInRobolectric();
         if (!isRunningInRobolectric) {
-            Crashlytics.start(this);
-            Crashlytics.setString("BuildValues_type", BuildConfig.BUILD_TYPE);
-
             Bugsnag.init(this);
+            Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);
+            Bugsnag.setNotifyReleaseStages("beta", "store");
         }
 
 

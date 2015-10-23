@@ -5,11 +5,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.bugsnag.android.Bugsnag;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONObject;
 
 import is.hello.sense.BuildConfig;
+import is.hello.sense.SenseApplication;
 import retrofit.RestAdapter;
 
 /**
@@ -23,9 +23,6 @@ public class Logger {
 
     public static void println(int priority, @NonNull String tag, @NonNull String message) {
         if (priority >= MIN_LOGGING_LEVEL) {
-            if (Crashlytics.getInstance().isInitialized()) {
-                Crashlytics.log(priority, tag, message);
-            }
             SessionLogger.println(priority, tag, message);
             Log.println(priority, tag, message);
         }
@@ -83,8 +80,9 @@ public class Logger {
         //noinspection ConstantConditions
         if (MIN_LOGGING_LEVEL <= Log.INFO) {
             Logger.info(Analytics.LOG_TAG, event + ": " + properties);
-        } else if (Crashlytics.getInstance().isInitialized()) {
-            Crashlytics.log(Log.INFO, Analytics.LOG_TAG, event);
+        }
+
+        if (!SenseApplication.isRunningInRobolectric()) {
             Bugsnag.leaveBreadcrumb(event + ": " + properties);
         }
     }

@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
-import com.crashlytics.android.Crashlytics;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.joda.time.DateTime;
@@ -489,11 +488,9 @@ public class Analytics {
     public static void trackUserIdentifier(@NonNull String userId) {
         Logger.info(Analytics.LOG_TAG, "Began session for " + userId);
 
-        if (Crashlytics.getInstance().isInitialized()) {
-            Crashlytics.setUserIdentifier(userId);
+        if (!SenseApplication.isRunningInRobolectric()) {
+            Bugsnag.setUserId(userId);
         }
-
-        Bugsnag.setUserId(userId);
     }
 
     public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
@@ -666,11 +663,7 @@ public class Analytics {
     }
 
     public static void trackUnexpectedError(@Nullable Throwable e) {
-        if (e != null) {
-            if (Crashlytics.getInstance().isInitialized()) {
-                Crashlytics.logException(e);
-            }
-
+        if (e != null && !SenseApplication.isRunningInRobolectric()) {
             Bugsnag.notify(e, Severity.WARNING);
         }
     }
