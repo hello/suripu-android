@@ -60,14 +60,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
         android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Onboarding"/>
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
 
     <Button
         android:id="@+id/fragment_onboarding_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/gap_small"
-        android:text="@string/action_next"
+        android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 
 </LinearLayout>

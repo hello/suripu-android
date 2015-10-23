@@ -21,6 +21,7 @@ import is.hello.sense.util.Logger;
 
 public class UserSupport {
     public static final String ORDER_URL = "https://order.hello.is";
+    public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
 
     public static Intent createViewUriIntent(@NonNull Resources resources, @NonNull Uri uri) {

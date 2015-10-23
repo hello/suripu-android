@@ -2,7 +2,6 @@ package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -24,21 +23,23 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
+import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingDoneFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingIntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment;
@@ -46,11 +47,11 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSignInFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -59,9 +60,8 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class OnboardingActivity extends InjectionActivity implements FragmentNavigation, AccountEditor.Container {
-    private static final String FRAGMENT_TAG = "OnboardingFragment";
-
+public class OnboardingActivity extends InjectionActivity
+        implements FragmentNavigation, AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
 
@@ -69,6 +69,8 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Inject HardwarePresenter hardwarePresenter;
     @Inject PreferencesPresenter preferences;
     @Inject BluetoothStack bluetoothStack;
+
+    private FragmentNavigationDelegate navigationDelegate;
 
     private @Nullable Account account;
     private @Nullable DevicesInfo devicesInfo;
@@ -78,11 +80,17 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
+        this.navigationDelegate = new FragmentNavigationDelegate(this,
+                                                                 R.id.activity_onboarding_container,
+                                                                 stateSafeExecutor);
+
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
+
+            navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+        if (navigationDelegate.getTopFragment() == null) {
             int lastCheckpoint = getLastCheckPoint();
             switch (lastCheckpoint) {
                 case Constants.ONBOARDING_CHECKPOINT_NONE:
@@ -134,52 +142,43 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("account", account);
+        navigationDelegate.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        navigationDelegate.onDestroy();
     }
 
     @Override
     public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
-        // Fixes issue #94011528. There appears to be a race condition on some devices where
-        // OnClickListener callbacks can be invoked after an Activity has been paused. See
-        // <http://stackoverflow.com/questions/14262312> for more details.
-        stateSafeExecutor.execute(() -> {
-            if (!wantsBackStackEntry) {
-                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
-
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            if (getFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
-                transaction.add(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-            } else {
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.replace(R.id.activity_onboarding_container, fragment, FRAGMENT_TAG);
-            }
-
-            if (wantsBackStackEntry) {
-                transaction.setBreadCrumbTitle(title);
-                transaction.addToBackStack(fragment.getClass().getSimpleName());
-            }
-
-            transaction.commit();
-            getFragmentManager().executePendingTransactions();
-        });
+        navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
 
     @Override
     public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
-        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
+        navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
     }
 
     @Override
     public void popFragment(@NonNull Fragment fragment,
                             boolean immediate) {
-        throw new AbstractMethodError("not implemented by " + getClass().getSimpleName());
+        navigationDelegate.popFragment(fragment, immediate);
     }
 
     @Override
     public void flowFinished(@NonNull Fragment fragment,
                              int responseCode,
                              @Nullable Intent result) {
-        if (fragment instanceof ConnectToWiFiFragment) {
+        if (fragment instanceof IntroductionFragment) {
+            if (responseCode == IntroductionFragment.RESPONSE_SIGN_IN) {
+                showSignIn();
+            } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
+                showGetStarted(false);
+            }
+        } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         }
     }
@@ -187,14 +186,14 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     @Nullable
     @Override
     public Fragment getTopFragment() {
-        return getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        return navigationDelegate.getTopFragment();
     }
 
     @Override
     public void onBackPressed() {
         Fragment topFragment = getTopFragment();
-        if (topFragment instanceof BackInterceptingFragment) {
-            if (((BackInterceptingFragment) topFragment).onInterceptBack(this::back)) {
+        if (topFragment instanceof OnBackPressedInterceptor) {
+            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
                 return;
             }
         }
@@ -239,25 +238,18 @@ public class OnboardingActivity extends InjectionActivity implements FragmentNav
     }
 
     public void showIntroductionFragment() {
-        pushFragment(new OnboardingIntroductionFragment(), null, false);
+        pushFragment(new IntroductionFragment(), null, false);
     }
 
     public void showSignIn() {
-        pushFragment(new OnboardingSignInFragment(), null, true);
+        pushFragment(new SignInFragment(), null, true);
     }
 
-    public void showRegistration(boolean overrideDeviceUnsupported) {
+    public void showGetStarted(boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && hardwarePresenter.getDeviceSupportLevel() != BluetoothStack.SupportLevel.TESTED) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
         } else {
-            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
-            builder.setHeadingText(R.string.title_have_sense_ready);
-            builder.setSubheadingText(R.string.info_have_sense_ready);
-            builder.setDiagramImage(R.drawable.onboarding_have_sense_ready);
-            builder.setWantsBack(true);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_START);
-            builder.setNextFragmentClass(OnboardingRegisterFragment.class);
-            pushFragment(builder.toFragment(), null, true);
+            pushFragment(new HaveSenseReadyFragment(), null, true);
         }
     }
 

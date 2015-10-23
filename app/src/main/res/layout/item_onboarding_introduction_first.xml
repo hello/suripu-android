@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/onboarding_intro_sense"
+        android:contentDescription="@string/device_sense" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_xsmall"
+        android:gravity="center"
+        android:textSize="@dimen/text_size_heading_large"
+        android:textAppearance="@style/AppTheme.Text.Heading"
+        android:text="@string/onboarding_intro_heading" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:gravity="center"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
+        android:text="@string/onboarding_intro_subheading" />
+
+    <Button
+        android:id="@+id/item_onboarding_intro_first_watch_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_small"
+        android:drawableStart="@drawable/onboarding_intro_play"
+        android:drawablePadding="@dimen/gap_small"
+        android:textColor="#8b8b8b"
+        android:text="@string/action_watch_video"
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
+
+</LinearLayout>

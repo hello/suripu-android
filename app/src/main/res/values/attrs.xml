@@ -25,11 +25,6 @@
         <attr name="scaleValue" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="PanImageView">
-        <attr name="panImage" format="reference" />
-        <attr name="panAmount" format="float" />
-    </declare-styleable>
-
     <declare-styleable name="PageDots">
         <attr name="dotStyle" format="enum">
             <enum name="white" value="0" />

@@ -39,7 +39,7 @@
         android:layout_marginTop="@dimen/gap_small"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:text="@string/action_next"
+        android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 
     <Button
@@ -50,7 +50,7 @@
         android:layout_alignParentStart="true"
         android:layout_above="@id/fragment_onboarding_next"
         android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Onboarding"/>
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
 
     <RelativeLayout
         android:id="@+id/fragment_onboarding_register_height_scale_container"

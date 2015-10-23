@@ -42,6 +42,7 @@ import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
@@ -143,9 +144,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         dialog.setCancelable(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final int activityStatusBarColor = getActivity().getWindow().getStatusBarColor();
+            final int activityStatusBarColor = Windows.getStatusBarColor(getActivity().getWindow());
             final int myStatusBarColor = Drawing.darkenColorBy(activityStatusBarColor, 0.5f);
-            dialog.getWindow().setStatusBarColor(myStatusBarColor);
+            Windows.setStatusBarColor(dialog.getWindow(), myStatusBarColor);
         }
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
@@ -167,36 +168,35 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
         int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
-        Views.observeNextLayout(dialog.getWindow().getDecorView())
-             .subscribe(v -> {
-                 boolean isFloating = false;
+        Views.runWhenLaidOut(dialog.getWindow().getDecorView(), () -> {
+            boolean isFloating = false;
 
-                 int height = viewPager.getMeasuredHeight();
-                 if (height > maxHeight) {
-                     viewPager.getLayoutParams().height = maxHeight;
-                     viewPager.invalidate();
+            int height = viewPager.getMeasuredHeight();
+            if (height > maxHeight) {
+                viewPager.getLayoutParams().height = maxHeight;
+                viewPager.invalidate();
 
-                     isFloating = true;
-                 }
+                isFloating = true;
+            }
 
-                 int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
-                 if (width > maxWidth) {
-                     int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
-                     viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
-                     viewPager.setPageMargin(newPageMargin);
+            int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
+            if (width > maxWidth) {
+                int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
+                viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
+                viewPager.setPageMargin(newPageMargin);
 
-                     isFloating = true;
-                 }
+                isFloating = true;
+            }
 
-                 if (!isFloating) {
-                     viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
-                 }
+            if (!isFloating) {
+                viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
+            }
 
-                 viewPager.setAdapter(adapter);
-                 if (items.size() > 1) {
-                     pageDots.attach(viewPager);
-                 }
-             });
+            viewPager.setAdapter(adapter);
+            if (items.size() > 1) {
+                pageDots.attach(viewPager);
+            }
+        });
 
         return dialog;
     }
@@ -212,6 +212,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        pageDots.detach();
         adapter.destroyDiagramVideoViews();
     }
 

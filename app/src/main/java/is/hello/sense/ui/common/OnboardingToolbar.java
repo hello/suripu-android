@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -155,6 +157,31 @@ public class OnboardingToolbar {
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
         toolbarView.removeViewAt(1);
         toolbarView.addView(view, layoutParams);
+        return this;
+    }
+
+    public OnboardingToolbar setDark(boolean isDark) {
+        final Resources resources = fragment.getResources();
+        final @ColorInt int tintColor;
+        final @ColorInt int backgroundColor;
+        if (isDark) {
+            tintColor = resources.getColor(R.color.white);
+            backgroundColor = resources.getColor(R.color.light_accent);
+        } else {
+            tintColor = resources.getColor(R.color.light_accent);
+            backgroundColor = Color.TRANSPARENT;
+        }
+
+        final Drawable backIcon = backButton.getDrawable().mutate();
+        Drawables.setTintColor(backIcon, tintColor);
+        backButton.setImageDrawable(backIcon);
+
+        final Drawable helpIcon = helpButton.getDrawable().mutate();
+        Drawables.setTintColor(helpIcon, tintColor);
+        helpButton.setImageDrawable(helpIcon);
+
+        toolbarView.setBackgroundColor(backgroundColor);
+
         return this;
     }
 }

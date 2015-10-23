@@ -1,9 +1,9 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
@@ -28,6 +28,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
+@SuppressLint("ViewConstructor") // This is intentional
 public class OnboardingSimpleStepView extends RelativeLayout {
     public final OnboardingToolbar toolbar;
 
@@ -131,16 +132,6 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         return this;
     }
 
-    public OnboardingSimpleStepView setPrimaryButtonText(@Nullable CharSequence text) {
-        primaryButton.setText(text);
-        return this;
-    }
-
-    public OnboardingSimpleStepView setSecondaryButtonText(@Nullable CharSequence text) {
-        secondaryButton.setText(text);
-        return this;
-    }
-
     public OnboardingSimpleStepView setSecondaryButtonText(@StringRes int resId) {
         secondaryButton.setText(resId);
         return this;
@@ -163,6 +154,33 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         } else {
             secondaryButton.setVisibility(View.GONE);
         }
+        return this;
+    }
+
+    public OnboardingSimpleStepView withSecondaryOnBottom() {
+        final Resources resources = getResources();
+        final int gapOuter = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        final int gapSmall = resources.getDimensionPixelSize(R.dimen.gap_small);
+
+        final LayoutParams secondaryLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                    LayoutParams.WRAP_CONTENT);
+        secondaryLayoutParams.setMargins(gapOuter, gapSmall, gapOuter, gapOuter);
+        secondaryLayoutParams.addRule(ALIGN_PARENT_BOTTOM);
+
+        final LayoutParams primaryLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                  LayoutParams.WRAP_CONTENT);
+        primaryLayoutParams.setMargins(gapOuter, gapSmall, gapOuter, 0);
+        primaryLayoutParams.addRule(ABOVE, secondaryButton.getId());
+
+        primaryButton.setLayoutParams(primaryLayoutParams);
+        secondaryButton.setLayoutParams(secondaryLayoutParams);
+
+        final LayoutParams scrollViewLayoutParams =
+                (RelativeLayout.LayoutParams) contentsScrollView.getLayoutParams();
+        scrollViewLayoutParams.removeRule(ABOVE);
+        scrollViewLayoutParams.addRule(ABOVE, primaryButton.getId());
+        contentsScrollView.requestLayout();
+
         return this;
     }
 
@@ -228,16 +246,6 @@ public class OnboardingSimpleStepView extends RelativeLayout {
                                                                LayoutParams.WRAP_CONTENT);
             contents.addView(diagramVideo, contents.getChildCount() - 1, layoutParams);
         }
-    }
-
-    public OnboardingSimpleStepView setDiagramImage(@Nullable Drawable image) {
-        if (diagramVideo != null) {
-            diagramVideo.setPlaceholder(image);
-        } else {
-            ensureDiagramImage();
-            diagramImage.setImageDrawable(image);
-        }
-        return this;
     }
 
     public OnboardingSimpleStepView setDiagramImage(@DrawableRes @ColorRes int resId) {

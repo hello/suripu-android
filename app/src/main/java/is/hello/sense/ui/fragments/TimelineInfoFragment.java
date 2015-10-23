@@ -55,6 +55,7 @@ import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.markup.text.MarkupString;
 
@@ -185,8 +186,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     @Override
     protected void onSkipEnterAnimator() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
-            this.savedStatusBarColor = window.getStatusBarColor();
-            window.setStatusBarColor(darkenedScoreColor);
+            this.savedStatusBarColor = Windows.getStatusBarColor(window);
+            Windows.setStatusBarColor(window, darkenedScoreColor);
         }
 
         header.setVisibility(View.VISIBLE);

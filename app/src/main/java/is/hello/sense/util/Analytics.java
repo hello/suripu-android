@@ -131,6 +131,13 @@ public class Analytics {
         String EVENT_START = "Onboarding Start";
 
         /**
+         * When the user swipes the intro pages
+         */
+        String EVENT_INTRO_SWIPED = "Onboarding intro swiped";
+
+        String PROP_SCREEN = "screen";
+
+        /**
          * When the user lands on the unsupported device screen.
          *
          * @see #PROP_DEVICE_SUPPORT_LEVEL
