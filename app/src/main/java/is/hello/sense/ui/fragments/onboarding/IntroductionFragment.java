@@ -158,9 +158,11 @@ public class IntroductionFragment extends SenseFragment
         this.pageDots = null;
 
         viewPager.clearOnPageChangeListeners();
-
         this.viewPager = null;
+
         this.signInButton = null;
+        this.signInLayoutParams = null;
+        this.buttonDivider = null;
         this.getStartedButton = null;
     }
 
