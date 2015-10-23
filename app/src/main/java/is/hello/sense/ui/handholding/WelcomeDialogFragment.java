@@ -168,36 +168,35 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
         int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
-        Views.observeNextLayout(dialog.getWindow().getDecorView())
-             .subscribe(v -> {
-                 boolean isFloating = false;
+        Views.runWhenLaidOut(dialog.getWindow().getDecorView(), () -> {
+            boolean isFloating = false;
 
-                 int height = viewPager.getMeasuredHeight();
-                 if (height > maxHeight) {
-                     viewPager.getLayoutParams().height = maxHeight;
-                     viewPager.invalidate();
+            int height = viewPager.getMeasuredHeight();
+            if (height > maxHeight) {
+                viewPager.getLayoutParams().height = maxHeight;
+                viewPager.invalidate();
 
-                     isFloating = true;
-                 }
+                isFloating = true;
+            }
 
-                 int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
-                 if (width > maxWidth) {
-                     int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
-                     viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
-                     viewPager.setPageMargin(newPageMargin);
+            int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
+            if (width > maxWidth) {
+                int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
+                viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
+                viewPager.setPageMargin(newPageMargin);
 
-                     isFloating = true;
-                 }
+                isFloating = true;
+            }
 
-                 if (!isFloating) {
-                     viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
-                 }
+            if (!isFloating) {
+                viewPager.setPageTransformer(true, new ParallaxTransformer(viewPager));
+            }
 
-                 viewPager.setAdapter(adapter);
-                 if (items.size() > 1) {
-                     pageDots.attach(viewPager);
-                 }
-             });
+            viewPager.setAdapter(adapter);
+            if (items.size() > 1) {
+                pageDots.attach(viewPager);
+            }
+        });
 
         return dialog;
     }
@@ -213,6 +212,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
+        pageDots.detach();
         adapter.destroyDiagramVideoViews();
     }
 

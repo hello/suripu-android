@@ -42,6 +42,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private DiagramVideoView senseWave;
 
     private ViewPager viewPager;
+    private PageDots pageDots;
     private OnViewPagerChangeAdapter pagerChangeAdapter;
     private ViewGroup bottomContainer;
     private Button nextButton;
@@ -97,7 +98,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         this.adapter = new ColorsAdapter(senseColors);
         viewPager.setAdapter(adapter);
 
-        final PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_sense_colors_dots);
+        this.pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_sense_colors_dots);
         pageDots.attach(viewPager);
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_colors_continue);
@@ -154,6 +155,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
 
         senseWave.destroy();
         pagerChangeAdapter.destroy();
+        pageDots.detach();
         viewPager.clearOnPageChangeListeners();
 
         this.senseBackground = null;
@@ -162,6 +164,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         this.senseRed = null;
         this.senseWave = null;
 
+        this.pageDots = null;
         this.pagerChangeAdapter = null;
         this.adapter = null;
     }

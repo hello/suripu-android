@@ -3,6 +3,8 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -10,6 +12,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,8 +45,22 @@ public class IntroductionFragment extends SenseFragment
     public static final int RESPONSE_GET_STARTED = 1;
 
     private static final int INTRO_POSITION = 0;
+    private static final int DRAWABLE_ON_SCREEN = 0;
+    private static final int DRAWABLE_OFF_SCREEN = 1;
+    private static final @DrawableRes int[] DIAGRAMS = {
+            R.color.transparent,
+            R.drawable.onboarding_intro_feature_alarm,
+            R.drawable.onboarding_intro_feature_timeline,
+            R.drawable.onboarding_intro_feature_sleep_score,
+            R.drawable.onboarding_intro_feature_conditions,
+            R.color.transparent,
+    };
+
+    private ImageView diagramImage;
+    private LayerDrawable diagramLayers;
 
     private ViewPager viewPager;
+    private PageDots pageDots;
     private OnViewPagerChangeAdapter onViewPagerChangeAdapter;
 
     private Button signInButton;
@@ -66,8 +83,29 @@ public class IntroductionFragment extends SenseFragment
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        final Resources resources = getResources();
+        final Drawable onScreen = ResourcesCompat.getDrawable(resources,
+                                                              DIAGRAMS[0],
+                                                              null);
+        final Drawable offScreen = ResourcesCompat.getDrawable(resources,
+                                                               DIAGRAMS[1],
+                                                               null);
+        offScreen.setAlpha(0);
+        final Drawable[] layers = { onScreen, offScreen };
+        this.diagramLayers = new LayerDrawable(layers);
+        diagramLayers.setId(DRAWABLE_ON_SCREEN, DRAWABLE_ON_SCREEN);
+        diagramLayers.setId(DRAWABLE_OFF_SCREEN, DRAWABLE_OFF_SCREEN);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
+
+        this.diagramImage = (ImageView) view.findViewById(R.id.fragment_onboarding_introduction_diagram);
+        diagramImage.setImageDrawable(diagramLayers);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_introduction_pager);
 
@@ -75,25 +113,23 @@ public class IntroductionFragment extends SenseFragment
         viewPager.addOnPageChangeListener(onViewPagerChangeAdapter);
 
         final Feature[] features = {
-                new Feature(R.drawable.onboarding_intro_feature_alarm,
-                            R.string.onboarding_intro_feature_alarm_title,
+                new Feature(R.string.onboarding_intro_feature_alarm_title,
                             R.string.onboarding_intro_feature_alarm_message),
-                new Feature(R.drawable.onboarding_intro_feature_timeline,
-                            R.string.onboarding_intro_feature_timeline_title,
+                new Feature(R.string.onboarding_intro_feature_timeline_title,
                             R.string.onboarding_intro_feature_timeline_message),
-                new Feature(R.drawable.onboarding_intro_feature_sleep_score,
-                            R.string.onboarding_intro_feature_sleep_score_title,
+                new Feature(R.string.onboarding_intro_feature_sleep_score_title,
                             R.string.onboarding_intro_feature_sleep_score_message),
-                new Feature(R.drawable.onboarding_intro_feature_conditions,
-                            R.string.onboarding_intro_feature_conditions_title,
+                new Feature(R.string.onboarding_intro_feature_conditions_title,
                             R.string.onboarding_intro_feature_conditions_message),
         };
         final Adapter adapter = new Adapter(inflater, features,
                                             new SafeOnClickListener(this::watchVideo));
-        viewPager.setAdapter(adapter);
 
-        final PageDots pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
-        pageDots.attach(viewPager);
+        this.pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
+        Views.runWhenLaidOut(view, () -> {
+            viewPager.setAdapter(adapter);
+            pageDots.attach(viewPager);
+        });
 
         this.signInButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_sign_in);
         this.signInLayoutParams = (LinearLayout.LayoutParams) signInButton.getLayoutParams();
@@ -117,6 +153,9 @@ public class IntroductionFragment extends SenseFragment
 
         onViewPagerChangeAdapter.destroy();
         this.onViewPagerChangeAdapter = null;
+
+        pageDots.detach();
+        this.pageDots = null;
 
         viewPager.clearOnPageChangeListeners();
 
@@ -182,6 +221,10 @@ public class IntroductionFragment extends SenseFragment
             signInButton.setAlpha(fraction);
             buttonDivider.setAlpha(fraction);
         }
+
+        final int alpha = Math.round(255f * offset);
+        diagramLayers.getDrawable(DRAWABLE_ON_SCREEN).setAlpha(255 - alpha);
+        diagramLayers.getDrawable(DRAWABLE_OFF_SCREEN).setAlpha(alpha);
     }
 
     @Override
@@ -207,9 +250,21 @@ public class IntroductionFragment extends SenseFragment
 
         signInButton.setAlpha(finalFraction);
         buttonDivider.setAlpha(finalFraction);
+
+        final Resources resources = getResources();
+        final Drawable onScreen = ResourcesCompat.getDrawable(resources,
+                                                              DIAGRAMS[position],
+                                                              null);
+        diagramLayers.setDrawableByLayerId(DRAWABLE_ON_SCREEN, onScreen);
+
+        final Drawable offScreen = ResourcesCompat.getDrawable(resources,
+                                                               DIAGRAMS[position + 1],
+                                                               null);
+        offScreen.setAlpha(0);
+        diagramLayers.setDrawableByLayerId(DRAWABLE_OFF_SCREEN, offScreen);
     }
 
-    static class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {
+    class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {
         private static final int NON_FEATURE_COUNT = 1;
 
         private final LayoutInflater inflater;
@@ -263,14 +318,15 @@ public class IntroductionFragment extends SenseFragment
         }
 
         class FeatureViewHolder extends StaticViewHolder {
-            final ImageView diagram;
             final TextView title;
             final TextView message;
 
             FeatureViewHolder(@NonNull View itemView) {
                 super(itemView);
 
-                this.diagram = (ImageView) itemView.findViewById(R.id.item_onboarding_introduction_feature_diagram);
+                final ViewGroup rootView = (ViewGroup) itemView.findViewById(R.id.item_onboarding_introduction_feature_root);
+                rootView.setPadding(0, diagramImage.getMeasuredHeight(), 0, 0);
+
                 this.title = (TextView) itemView.findViewById(R.id.item_onboarding_introduction_feature_title);
                 this.message = (TextView) itemView.findViewById(R.id.item_onboarding_introduction_feature_message);
             }
@@ -278,7 +334,6 @@ public class IntroductionFragment extends SenseFragment
             @Override
             void bind(int position) {
                 final Feature feature = features[position - NON_FEATURE_COUNT];
-                diagram.setImageResource(feature.diagram);
                 title.setText(feature.title);
                 message.setText(feature.message);
             }
@@ -286,14 +341,11 @@ public class IntroductionFragment extends SenseFragment
     }
 
     static class Feature {
-        final @DrawableRes int diagram;
         final @StringRes int title;
         final @StringRes int message;
 
-        Feature(@DrawableRes int diagram,
-                @StringRes int title,
+        Feature(@StringRes int title,
                 @StringRes int message) {
-            this.diagram = diagram;
             this.title = title;
             this.message = message;
         }

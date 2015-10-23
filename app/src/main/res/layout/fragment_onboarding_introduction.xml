@@ -51,6 +51,14 @@
         android:layout_above="@id/fragment_onboarding_introduction_button_bar"
         app:dotStyle="blue" />
 
+    <ImageView
+        android:id="@+id/fragment_onboarding_introduction_diagram"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/fragment_onboarding_introduction_pager"
         android:layout_width="match_parent"

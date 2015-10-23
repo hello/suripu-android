@@ -26,8 +26,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 
-public final class PageDots extends LinearLayout implements ViewPager.OnPageChangeListener {
+public final class PageDots extends LinearLayout implements OnViewPagerChangeAdapter.Listener {
     //region Styles
 
     public static final int STYLE_WHITE = 0;
@@ -52,12 +53,11 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
     //region Properties
 
+    private OnViewPagerChangeAdapter onViewPagerChangeAdapter;
     private int color;
 
     private int count = 0;
     private int selection = 0;
-
-    private boolean updateOnSelection = true;
 
     //endregion
 
@@ -194,7 +194,8 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
     }
 
     public void attach(@NonNull ViewPager viewPager) {
-        viewPager.addOnPageChangeListener(this);
+        this.onViewPagerChangeAdapter = new OnViewPagerChangeAdapter(viewPager, this);
+        viewPager.addOnPageChangeListener(onViewPagerChangeAdapter);
         final PagerAdapter adapter = viewPager.getAdapter();
         if (adapter == null) {
             throw new IllegalStateException("Cannot attach to a view pager without an adapter.");
@@ -202,34 +203,35 @@ public final class PageDots extends LinearLayout implements ViewPager.OnPageChan
 
         adapter.registerDataSetObserver(new AdapterChangeObserver(adapter));
         setCount(adapter.getCount());
+        setSelection(viewPager.getCurrentItem());
+    }
+
+    public void detach() {
+        if (onViewPagerChangeAdapter != null) {
+            onViewPagerChangeAdapter.destroy();
+            this.onViewPagerChangeAdapter = null;
+        }
     }
 
     //endregion
 
 
-    //region OnPageChangeListener
+    //region Listener
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageChangeScrolled(int position, float offset) {
         if (position < count - 1) {
             final DotDrawable current = getDotDrawableAt(position);
-            current.setFocusAmount(1f - positionOffset);
+            current.setFocusAmount(1f - offset);
 
             final DotDrawable upcoming = getDotDrawableAt(position + 1);
-            upcoming.setFocusAmount(positionOffset);
+            upcoming.setFocusAmount(offset);
         }
     }
 
     @Override
-    public void onPageSelected(int position) {
-        if (updateOnSelection) {
-            setSelection(position);
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        this.updateOnSelection = (state == ViewPager.SCROLL_STATE_IDLE);
+    public void onPageChangeCompleted(int position) {
+        setSelection(position);
     }
 
     //endregion
