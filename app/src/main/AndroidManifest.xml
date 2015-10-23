@@ -50,6 +50,7 @@
             android:name=".ui.activities.OnboardingActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.Onboarding"
             android:screenOrientation="portrait" />
 
