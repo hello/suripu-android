@@ -463,6 +463,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     }
 
     private void cancelTouchInteraction() {
+        getHandler().removeMessages(MSG_TOUCH_DELAY);
+
         if (highlightListener != null) {
             highlightListener.onGraphHighlightEnd();
         }
@@ -480,9 +482,9 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        getHandler().removeMessages(MSG_TOUCH_DELAY);
-
         if (ignoreTouchUntilEnd) {
+            getHandler().removeMessages(MSG_TOUCH_DELAY);
+
             int action = event.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 this.ignoreTouchUntilEnd = false;
@@ -516,6 +518,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
             case MotionEvent.ACTION_MOVE: {
                 if (trackingTouchEvents) {
+                    getHandler().removeMessages(MSG_TOUCH_DELAY);
                     int section = adapterCache.findSectionAtX(width, eventX);
                     int segment = adapterCache.findSegmentAtX(width, section, eventX);
 
@@ -524,6 +527,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                         highlightListener.onGraphValueHighlighted(section, segment);
                     }
                 } else if (shouldBeginTouchInteraction(eventX, eventY)) {
+                    getHandler().removeMessages(MSG_TOUCH_DELAY);
                     beginTouchInteraction(eventX);
                 }
 
@@ -531,6 +535,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             }
 
             case MotionEvent.ACTION_UP: {
+                getHandler().removeMessages(MSG_TOUCH_DELAY);
                 if (trackingTouchEvents) {
                     if (highlightListener != null) {
                         highlightListener.onGraphHighlightEnd();
@@ -544,6 +549,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             }
 
             case MotionEvent.ACTION_CANCEL: {
+                getHandler().removeMessages(MSG_TOUCH_DELAY);
                 if (trackingTouchEvents) {
                     cancelTouchInteraction();
                 }
