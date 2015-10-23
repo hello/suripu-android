@@ -37,6 +37,10 @@ public class SenseApplication extends Application {
         return instance;
     }
 
+    public static boolean isRunningInRobolectric() {
+        return "robolectric".equals(Build.FINGERPRINT);
+    }
+
     private ObjectGraph graph;
 
     @Override
@@ -47,7 +51,7 @@ public class SenseApplication extends Application {
         SenseApplication.instance = this;
 
         // And always do this second.
-        final boolean isRunningInRobolectric = "robolectric".equals(Build.FINGERPRINT);
+        final boolean isRunningInRobolectric = isRunningInRobolectric();
         if (!isRunningInRobolectric) {
             Bugsnag.init(this);
             Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);

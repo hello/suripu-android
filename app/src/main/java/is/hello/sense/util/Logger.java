@@ -9,6 +9,7 @@ import com.bugsnag.android.Bugsnag;
 import org.json.JSONObject;
 
 import is.hello.sense.BuildConfig;
+import is.hello.sense.SenseApplication;
 import retrofit.RestAdapter;
 
 /**
@@ -81,7 +82,9 @@ public class Logger {
             Logger.info(Analytics.LOG_TAG, event + ": " + properties);
         }
 
-        Bugsnag.leaveBreadcrumb(event + ": " + properties);
+        if (!SenseApplication.isRunningInRobolectric()) {
+            Bugsnag.leaveBreadcrumb(event + ": " + properties);
+        }
     }
 
     //endregion
