@@ -25,6 +25,7 @@ import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -191,8 +192,8 @@ public class OnboardingActivity extends InjectionActivity
     @Override
     public void onBackPressed() {
         Fragment topFragment = getTopFragment();
-        if (topFragment instanceof BackInterceptingFragment) {
-            if (((BackInterceptingFragment) topFragment).onInterceptBack(this::back)) {
+        if (topFragment instanceof OnBackPressedInterceptor) {
+            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
                 return;
             }
         }

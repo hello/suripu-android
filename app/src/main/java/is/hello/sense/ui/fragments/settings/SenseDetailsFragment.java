@@ -43,6 +43,7 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -60,7 +61,7 @@ import rx.Observable;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
-        implements FragmentNavigationActivity.BackInterceptingFragment {
+        implements OnBackPressedInterceptor {
     private static final int REQUEST_CODE_WIFI = 0x94;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
@@ -205,16 +206,16 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     @Override
-    public boolean onInterceptBack(@NonNull Runnable back) {
+    public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
         if (didEnableBluetooth) {
             SenseAlertDialog turnOffDialog = new SenseAlertDialog(getActivity());
             turnOffDialog.setTitle(R.string.title_turn_off_bluetooth);
             turnOffDialog.setMessage(R.string.message_turn_off_bluetooth);
             turnOffDialog.setPositiveButton(R.string.action_turn_off, (dialog, which) -> {
                 hardwarePresenter.turnOffBluetooth().subscribe(Functions.NO_OP, Functions.LOG_ERROR);
-                back.run();
+                defaultBehavior.run();
             });
-            turnOffDialog.setNegativeButton(R.string.action_no_thanks, (dialog, which) -> back.run());
+            turnOffDialog.setNegativeButton(R.string.action_no_thanks, (dialog, which) -> defaultBehavior.run());
             turnOffDialog.show();
 
             return true;

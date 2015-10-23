@@ -119,8 +119,8 @@ public class FragmentNavigationActivity extends SenseActivity
     @Override
     public void onBackPressed() {
         final Fragment topFragment = getTopFragment();
-        if (topFragment instanceof BackInterceptingFragment) {
-            if (((BackInterceptingFragment) topFragment).onInterceptBack(super::onBackPressed)) {
+        if (topFragment instanceof OnBackPressedInterceptor) {
+            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(super::onBackPressed)) {
                 return;
             }
         }

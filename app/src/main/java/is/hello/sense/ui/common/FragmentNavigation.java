@@ -22,9 +22,4 @@ public interface FragmentNavigation {
                       @Nullable Intent result);
 
     @Nullable Fragment getTopFragment();
-
-    interface BackInterceptingFragment {
-        boolean onInterceptBack(@NonNull Runnable back);
-    }
-
 }

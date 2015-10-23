@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.common.UserSupport;
@@ -40,7 +41,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SafeOnClickListener;
 
 public class IntroductionFragment extends SenseFragment
-        implements StatusBarColorProvider, OnViewPagerChangeAdapter.Listener {
+        implements StatusBarColorProvider, OnBackPressedInterceptor,
+        OnViewPagerChangeAdapter.Listener {
     public static final int RESPONSE_SIGN_IN = 0;
     public static final int RESPONSE_GET_STARTED = 1;
 
@@ -176,6 +178,16 @@ public class IntroductionFragment extends SenseFragment
     @Override
     public int getStatusBarColor(@NonNull Resources resources) {
         return resources.getColor(R.color.status_bar_grey);
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
+        if (viewPager.getCurrentItem() > 0) {
+            viewPager.setCurrentItem(INTRO_POSITION, true);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //endregion
