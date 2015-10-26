@@ -358,6 +358,11 @@ public class IntroductionFragment extends SenseFragment
         class StaticViewHolder extends ViewPagerAdapter.ViewHolder {
             StaticViewHolder(@NonNull View itemView) {
                 super(itemView);
+
+                itemView.setPadding(itemView.getPaddingLeft(),
+                                    itemView.getPaddingTop(),
+                                    itemView.getPaddingRight(),
+                                    itemView.getPaddingBottom() + pageDots.getMeasuredHeight());
             }
 
             void bind(int position) {

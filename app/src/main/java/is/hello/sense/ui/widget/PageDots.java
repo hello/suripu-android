@@ -103,6 +103,8 @@ public final class PageDots extends LinearLayout implements OnViewPagerChangeAda
         } else {
             setDotStyle(STYLE_WHITE);
         }
+
+        setCount(1);
     }
 
     //endregion

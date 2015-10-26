@@ -58,11 +58,9 @@
         android:scaleType="fitXY"
         android:importantForAccessibility="no" />
 
-    <android.support.v4.view.ViewPager
+    <is.hello.sense.ui.widget.FixedViewPager
         android:id="@+id/fragment_onboarding_introduction_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/fragment_onboarding_introduction_page_dots"
-        android:overScrollMode="never" />
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
