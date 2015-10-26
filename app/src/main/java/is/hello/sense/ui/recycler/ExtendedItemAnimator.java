@@ -3,6 +3,7 @@ package is.hello.sense.ui.recycler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.SparseBooleanArray;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.functional.Functions;
 import rx.functions.Func1;
 
-public abstract class ExtendedItemAnimator extends RecyclerView.ItemAnimator {
+public abstract class ExtendedItemAnimator extends SimpleItemAnimator {
     private final AnimatorContext animatorContext;
     private final List<Listener> listeners = new ArrayList<>();
     private final SparseBooleanArray enabledAnimations = new SparseBooleanArray(2);
