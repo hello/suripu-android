@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -170,6 +171,14 @@ public class RegisterFragment extends InjectionFragment
     @Override
     public int getStatusBarColor(@NonNull Resources resources) {
         return resources.getColor(R.color.status_bar_grey);
+    }
+
+    @Override
+    public void onStatusBarTransitionBegan(@ColorInt int targetColor) {
+    }
+
+    @Override
+    public void onStatusBarTransitionEnded(@ColorInt int finalColor) {
     }
 
     //endregion

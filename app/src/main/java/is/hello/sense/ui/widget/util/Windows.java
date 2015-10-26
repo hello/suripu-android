@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget.util;
 
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.ColorInt;
@@ -18,6 +19,17 @@ public class Windows {
             return window.getStatusBarColor();
         } else {
             return Color.BLACK;
+        }
+    }
+
+    public static AnimatorUpdateListener createStatusBarUpdateListener(@NonNull Window forWindow) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return animator -> {
+                final @ColorInt int color = (int) animator.getAnimatedValue();
+                forWindow.setStatusBarColor(color);
+            };
+        } else {
+            return ignored -> {};
         }
     }
 

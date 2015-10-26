@@ -143,10 +143,12 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
 
         final @ColorInt int targetColor;
         final Fragment topFragment = getTopFragment();
+        final StatusBarColorProvider provider;
         if (topFragment instanceof StatusBarColorProvider) {
-            final StatusBarColorProvider provider = (StatusBarColorProvider) topFragment;
+            provider = (StatusBarColorProvider) topFragment;
             targetColor = provider.getStatusBarColor(activity.getResources());
         } else {
+            provider = null;
             targetColor = defaultStatusBarColor;
         }
 
@@ -155,14 +157,25 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         if (currentColor != targetColor) {
             this.statusBarAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(currentColor,
                                                                                   targetColor);
-            statusBarAnimator.addUpdateListener(a -> {
-                final @ColorInt int color = (int) a.getAnimatedValue();
-                Windows.setStatusBarColor(window, color);
-            });
+            statusBarAnimator.addUpdateListener(Windows.createStatusBarUpdateListener(window));
             statusBarAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    if (provider != null) {
+                        provider.onStatusBarTransitionBegan(targetColor);
+                    }
+                }
+
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     Windows.setStatusBarColor(window, targetColor);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (provider != null) {
+                        provider.onStatusBarTransitionEnded(Windows.getStatusBarColor(window));
+                    }
                 }
             });
             statusBarAnimator.start();

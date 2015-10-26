@@ -486,15 +486,15 @@
     <string name="title_edit_wifi">Edit Wi-Fi</string>
 
     <string name="onboarding_intro_heading">Meet Sense</string>
-    <string name="onboarding_intro_subheading">The first system for understanding\nyour sleep and bedroom.</string>
+    <string name="onboarding_intro_subheading">Wake up feeling great, improve your sleep, and\nlearn how the environment of your bedroom\naffects your rest.</string>
     <string name="onboarding_intro_feature_alarm_title">Smart Alarm</string>
     <string name="onboarding_intro_feature_alarm_message">Unlike a normal alarm, Sense‘s Smart Alarm analyzes your sleep cycle to know when you‘re sleeping lightly, and wakes you up at the optimal time to start your day off right.</string>
     <string name="onboarding_intro_feature_timeline_title">Sleep Timeline</string>
     <string name="onboarding_intro_feature_timeline_message">Your Sleep Timeline shows you a detailed analysis of your sleep cycles and helps you see how even minor interruptions to your sleep, like tossing and turning, can impact the quality of your rest.</string>
     <string name="onboarding_intro_feature_sleep_score_title">Sleep Score</string>
-    <string name="onboarding_intro_feature_sleep_score_message">Get instant feedback on your sleep and see how the quality of your sleep fluctuates over time with your Sleep Score. Sense takes the environmental readings of your bedroom, your sleep during the night, and analyzes the information to provide you with a unique score out of 100.</string>
+    <string name="onboarding_intro_feature_sleep_score_message">Get instant feedback on your sleep and see how the quality of your sleep fluctuates over time. Make adjustments to your bedroom environment and sleep habits, get better sleep, and raise your Sleep Score.</string>
     <string name="onboarding_intro_feature_conditions_title">Current Conditions</string>
-    <string name="onboarding_intro_feature_conditions_message">It’s hard to believe that something so small could be so powerful. Sense is packed with sensors that monitor the conditions of your bedroom, giving you unparalleled insight into how temperature, humidity, light, sound, and even air quality affects how well you sleep.</string>
+    <string name="onboarding_intro_feature_conditions_message">Sense is packed with sensors that monitor the conditions of your bedroom, giving you unparalleled insight into how temperature, humidity, light, sound, and even air quality affects how well you sleep.</string>
     <string name="action_watch_video">Watch Video</string>
 
     <plurals name="item_support_comment_detail_attachments">

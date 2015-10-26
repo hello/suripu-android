@@ -155,6 +155,14 @@ public class SignInFragment extends InjectionFragment
         return resources.getColor(R.color.light_accent_darkened);
     }
 
+    @Override
+    public void onStatusBarTransitionBegan(@ColorInt int targetColor) {
+    }
+
+    @Override
+    public void onStatusBarTransitionEnded(@ColorInt int finalColor) {
+    }
+
     //endregion
 
 
