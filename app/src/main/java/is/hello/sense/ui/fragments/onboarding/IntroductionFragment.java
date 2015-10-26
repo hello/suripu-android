@@ -74,6 +74,9 @@ public class IntroductionFragment extends SenseFragment
     private @ColorInt int introStatusBarColor;
     private @ColorInt int featureStatusBarColor;
 
+    private int lastSelectedPage = INTRO_POSITION;
+    private boolean statusBarChanging = false;
+
 
     //region Lifecycle
 
@@ -87,6 +90,10 @@ public class IntroductionFragment extends SenseFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            this.lastSelectedPage = savedInstanceState.getInt("lastSelectedPage", INTRO_POSITION);
+        }
 
         final Resources resources = getResources();
         final Drawable onScreen = ResourcesCompat.getDrawable(resources,
@@ -150,6 +157,13 @@ public class IntroductionFragment extends SenseFragment
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("lastSelectedPage", lastSelectedPage);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
@@ -177,7 +191,21 @@ public class IntroductionFragment extends SenseFragment
 
     @Override
     public int getStatusBarColor(@NonNull Resources resources) {
-        return resources.getColor(R.color.status_bar_grey);
+        if (lastSelectedPage > INTRO_POSITION) {
+            return resources.getColor(R.color.light_accent_darkened);
+        } else {
+            return resources.getColor(R.color.status_bar_grey);
+        }
+    }
+
+    @Override
+    public void onStatusBarTransitionBegan(@ColorInt int targetColor) {
+        this.statusBarChanging = true;
+    }
+
+    @Override
+    public void onStatusBarTransitionEnded(@ColorInt int finalColor) {
+        this.statusBarChanging = false;
     }
 
     @Override
@@ -220,10 +248,12 @@ public class IntroductionFragment extends SenseFragment
     @Override
     public void onPageChangeScrolled(int position, float offset) {
         if (position == INTRO_POSITION) {
-            final @ColorInt int statusBarColor = Anime.interpolateColors(offset,
-                                                                         introStatusBarColor,
-                                                                         featureStatusBarColor);
-            Windows.setStatusBarColor(window, statusBarColor);
+            if (!statusBarChanging) {
+                final @ColorInt int statusBarColor = Anime.interpolateColors(offset,
+                                                                             introStatusBarColor,
+                                                                             featureStatusBarColor);
+                Windows.setStatusBarColor(window, statusBarColor);
+            }
 
             final float fraction = 1f - offset;
             signInLayoutParams.weight = fraction;
@@ -257,7 +287,9 @@ public class IntroductionFragment extends SenseFragment
             finalFraction = 0f;
         }
 
-        Windows.setStatusBarColor(window, statusBarColor);
+        if (!statusBarChanging) {
+            Windows.setStatusBarColor(window, statusBarColor);
+        }
 
         signInLayoutParams.weight = finalFraction;
         signInButton.requestLayout();
@@ -276,6 +308,8 @@ public class IntroductionFragment extends SenseFragment
                                                                null);
         offScreen.setAlpha(0);
         diagramLayers.setDrawableByLayerId(DRAWABLE_OFF_SCREEN, offScreen);
+
+        this.lastSelectedPage = position;
     }
 
     class Adapter extends ViewPagerAdapter<Adapter.StaticViewHolder> {
