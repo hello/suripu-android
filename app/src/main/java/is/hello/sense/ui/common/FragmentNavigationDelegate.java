@@ -157,10 +157,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         if (currentColor != targetColor) {
             this.statusBarAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(currentColor,
                                                                                   targetColor);
-            statusBarAnimator.addUpdateListener(a -> {
-                final @ColorInt int color = (int) a.getAnimatedValue();
-                Windows.setStatusBarColor(window, color);
-            });
+            statusBarAnimator.addUpdateListener(Windows.createStatusBarUpdateListener(window));
             statusBarAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
