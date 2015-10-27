@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget.util;
 
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.text.Layout;
 import android.text.Spannable;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.util.SafeOnClickListener;
+import is.hello.sense.util.StateSafeExecutor;
 import rx.Observable;
 import rx.subscriptions.Subscriptions;
 
@@ -146,7 +148,13 @@ public final class Views {
     }
 
     public static void setSafeOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener) {
-        view.setOnClickListener(new SafeOnClickListener(onClickListener));
+        view.setOnClickListener(new SafeOnClickListener(null, onClickListener));
+    }
+
+    public static void setSafeOnClickListener(@NonNull View view,
+                                              @Nullable StateSafeExecutor stateSafeExecutor,
+                                              @NonNull View.OnClickListener onClickListener) {
+        view.setOnClickListener(new SafeOnClickListener(stateSafeExecutor, onClickListener));
     }
 
 

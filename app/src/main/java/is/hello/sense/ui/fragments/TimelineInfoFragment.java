@@ -141,7 +141,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         this.rootView = (FrameLayout) inflater.inflate(R.layout.fragment_timeline_info, container, false);
 
         this.header = rootView.findViewById(R.id.fragment_timeline_info_header);
-        Views.setSafeOnClickListener(header, ignored -> {
+        Views.setSafeOnClickListener(header, stateSafeExecutor, ignored -> {
             getFragmentManager().popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
