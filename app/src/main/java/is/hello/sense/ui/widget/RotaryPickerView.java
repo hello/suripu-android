@@ -12,6 +12,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
@@ -24,9 +25,9 @@ import android.widget.TextView;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Drawing;
+import is.hello.sense.ui.widget.util.Views;
 
 public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
-    public static final int NUM_VISIBLE_ITEMS = 5;
     public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_RotaryPickerItem;
     public static final @StyleRes int ITEM_TEXT_APPEARANCE_FOCUSED = R.style.AppTheme_Text_RotaryPickerItem_Focused;
 
@@ -36,12 +37,12 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     private final LinearLayoutManager layoutManager;
     private final int glyphWidth, glyphHeight;
 
-    private int maximumGlyphCount = 3;
     private int itemHorizontalPadding;
     private int itemVerticalPadding;
     private int itemWidth;
     private int itemHeight;
 
+    private int longestValueStringLength = 3;
     private float recyclerMidY = 0;
     private boolean wrapAroundEventsEnabled = true;
 
@@ -49,6 +50,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     //region Attributes
 
+    private int unfocusedItemCount = 2;
+    private int visibleItemCount = (unfocusedItemCount * 2) + 1;
     private int minValue = 0;
     private int maxValue = 100;
     private int value = 0;
@@ -86,8 +89,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         final TextPaint measuringPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         Drawing.updateTextPaintFromStyle(measuringPaint, context, ITEM_TEXT_APPEARANCE_FOCUSED);
-
-        this.glyphWidth = (int) Math.ceil(measuringPaint.measureText("W", 0, 1));
+        this.glyphWidth = Drawing.getMaximumGlyphWidth(measuringPaint);
         this.glyphHeight = Drawing.getEstimatedTextHeight(measuringPaint);
 
         this.adapter = new ItemAdapter(resources);
@@ -105,6 +107,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             this.itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
             this.wantsLeadingZeros = styles.getBoolean(R.styleable.RotaryPickerView_senseWantsLeadingZeros, true);
             this.itemGravity = styles.getInt(R.styleable.RotaryPickerView_android_gravity, Gravity.CENTER);
+            this.unfocusedItemCount = styles.getInt(R.styleable.RotaryPickerView_unfocusedItemCount, 2);
+            this.visibleItemCount = (unfocusedItemCount * 2) + 1;
 
             styles.recycle();
         }
@@ -140,7 +144,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     @Override
     protected int getSuggestedMinimumHeight() {
-        return (itemHeight * NUM_VISIBLE_ITEMS);
+        return (itemHeight * visibleItemCount);
     }
 
     @Override
@@ -150,7 +154,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         final int widthSize = MeasureSpec.getSize(widthSpec);
         final int heightSize = MeasureSpec.getSize(heightSpec);
 
-        this.itemWidth = (maximumGlyphCount * glyphWidth) + (itemHorizontalPadding * 2);
+        this.itemWidth = (longestValueStringLength * glyphWidth) + (itemHorizontalPadding * 2);
         this.itemHeight = glyphHeight + (itemVerticalPadding * 2);
 
         int width;
@@ -179,7 +183,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             }
 
             case MeasureSpec.AT_MOST: {
-                height = Math.min(heightSize, itemHeight * NUM_VISIBLE_ITEMS);
+                height = Math.min(heightSize, itemHeight * visibleItemCount);
                 break;
             }
 
@@ -213,9 +217,9 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                     longestLength = length;
                 }
             }
-            this.maximumGlyphCount = longestLength;
+            this.longestValueStringLength = longestLength;
         } else {
-            this.maximumGlyphCount = Integer.toString(maxValue, 10).length();
+            this.longestValueStringLength = Integer.toString(maxValue, 10).length();
         }
     }
 
@@ -227,6 +231,14 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         } else {
             return value;
         }
+    }
+
+    public void setUnfocusedItemCount(int unfocusedItemCount) {
+        this.unfocusedItemCount = unfocusedItemCount;
+        this.visibleItemCount = (unfocusedItemCount * 2) + 1;
+
+        requestLayout();
+        invalidate();
     }
 
     public void setMinValue(int minValue) {
@@ -255,19 +267,31 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     public void setValue(int newValue, boolean animate) {
         final int constrainedValue = constrainValue(newValue);
-        final int unfocusedItems = (NUM_VISIBLE_ITEMS / 2);
-        final int offset = itemHeight * unfocusedItems;
+        this.value = constrainedValue;
+
+        if (!ViewCompat.isLaidOut(this)) {
+            Views.runWhenLaidOut(this, () -> {
+                if (itemHeight == 0) {
+                    throw new IllegalStateException("itemHeight == 0 after layout");
+                }
+
+                setValue(newValue, animate);
+            });
+            return;
+        }
+
+        final int distanceToFocusedItem = itemHeight * unfocusedItemCount;
         final int position = adapter.getItemPosition(newValue);
 
         this.wrapAroundEventsEnabled = false;
         if (animate) {
             if (constrainedValue > this.value) {
-                smoothScrollToPosition(position + unfocusedItems);
+                smoothScrollToPosition(position + unfocusedItemCount);
             } else {
-                smoothScrollToPosition(Math.max(0, position - unfocusedItems));
+                smoothScrollToPosition(Math.max(0, position - unfocusedItemCount));
             }
         } else {
-            layoutManager.scrollToPositionWithOffset(position, offset);
+            layoutManager.scrollToPositionWithOffset(position, distanceToFocusedItem);
             post(() -> {
                 // #scrollToPositionWithOffset will fire one #onScrolled event
                 // on the next run-loop cycle when the recycler view re-lays out.
@@ -276,8 +300,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 this.wrapAroundEventsEnabled = true;
             });
         }
-
-        this.value = constrainedValue;
     }
 
     public void increment() {
