@@ -28,6 +28,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 
 public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
+    public static final int DEFAULT_UNFOCUSED_ITEM_COUNT = 2;
     public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_RotaryPickerItem;
     public static final @StyleRes int ITEM_TEXT_APPEARANCE_FOCUSED = R.style.AppTheme_Text_RotaryPickerItem_Focused;
 
@@ -50,7 +51,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     //region Attributes
 
-    private int unfocusedItemCount = 2;
+    private int unfocusedItemCount = DEFAULT_UNFOCUSED_ITEM_COUNT;
     private int visibleItemCount = (unfocusedItemCount * 2) + 1;
     private int minValue = 0;
     private int maxValue = 100;
@@ -106,8 +107,10 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
             this.itemBackground = styles.getDrawable(R.styleable.RotaryPickerView_senseItemBackground);
             this.wantsLeadingZeros = styles.getBoolean(R.styleable.RotaryPickerView_senseWantsLeadingZeros, true);
-            this.itemGravity = styles.getInt(R.styleable.RotaryPickerView_android_gravity, Gravity.CENTER);
-            this.unfocusedItemCount = styles.getInt(R.styleable.RotaryPickerView_unfocusedItemCount, 2);
+            this.itemGravity = styles.getInt(R.styleable.RotaryPickerView_android_gravity,
+                                             Gravity.CENTER);
+            this.unfocusedItemCount = styles.getInt(R.styleable.RotaryPickerView_unfocusedItemCount,
+                                                    DEFAULT_UNFOCUSED_ITEM_COUNT);
             this.visibleItemCount = (unfocusedItemCount * 2) + 1;
 
             styles.recycle();

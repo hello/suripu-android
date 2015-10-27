@@ -125,6 +125,19 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
     //region Attributes
 
+    public void setCompact(boolean compact) {
+        final int unfocusedItemCount;
+        if (compact) {
+            unfocusedItemCount = 1;
+        } else {
+            unfocusedItemCount = RotaryPickerView.DEFAULT_UNFOCUSED_ITEM_COUNT;
+        }
+
+        hourPicker.setUnfocusedItemCount(unfocusedItemCount);
+        minutePicker.setUnfocusedItemCount(unfocusedItemCount);
+        periodPicker.setUnfocusedItemCount(unfocusedItemCount);
+    }
+
     public void setUse24Time(boolean use24Time) {
         if (use24Time == this.use24Time) {
             return;

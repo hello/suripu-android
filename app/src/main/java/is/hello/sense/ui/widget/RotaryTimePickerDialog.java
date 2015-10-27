@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +25,11 @@ public class RotaryTimePickerDialog extends SenseAlertDialog
                                   boolean is24HourView) {
         super(context);
 
+        final int orientation = context.getResources().getConfiguration().orientation;
+        final boolean isLandscape = (orientation == Configuration.ORIENTATION_LANDSCAPE);
+
         this.rotaryTimePickerView = new RotaryTimePickerView(context);
+        rotaryTimePickerView.setCompact(isLandscape);
         rotaryTimePickerView.setUse24Time(is24HourView);
         rotaryTimePickerView.setTime(hourOfDay, minute);
         rotaryTimePickerView.setOnSelectionListener(this);
