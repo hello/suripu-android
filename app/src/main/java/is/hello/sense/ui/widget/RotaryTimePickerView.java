@@ -74,7 +74,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         hourPicker.setOnSelectionListener(this);
         hourPicker.setMinValue(1);
         hourPicker.setMaxValue(12);
-        hourPicker.setRolloverPositions(10, 11);
+        hourPicker.setRolloverPositions(10, 11); /* e.g. 11am, 12pm */
         hourPicker.setWrapsAround(true);
         hourPicker.setWantsLeadingZeros(false);
         hourPicker.setItemGravity(Gravity.CENTER);
@@ -164,7 +164,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
             hourPicker.setMinValue(1);
             hourPicker.setMaxValue(12);
-            hourPicker.setRolloverPositions(10, 11);
+            hourPicker.setRolloverPositions(10, 11); /* e.g. 11am, 12pm */
         }
 
         hourPicker.setWantsLeadingZeros(use24Time);
