@@ -61,6 +61,7 @@
     <is.hello.sense.ui.widget.FixedViewPager
         android:id="@+id/fragment_onboarding_introduction_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/fragment_onboarding_introduction_button_bar" />
 
 </RelativeLayout>
