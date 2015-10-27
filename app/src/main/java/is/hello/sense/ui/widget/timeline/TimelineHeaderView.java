@@ -193,8 +193,8 @@ public class TimelineHeaderView extends RelativeLayout {
 
     public void setOnScoreClickListener(@Nullable View.OnClickListener listener) {
         if (listener != null) {
-            SafeOnClickListener wrapper = new SafeOnClickListener(listener);
-            boolean clickEnabled = isScoreClickEnabled();
+            final SafeOnClickListener wrapper = new SafeOnClickListener(null, listener);
+            final boolean clickEnabled = isScoreClickEnabled();
             scoreContainer.setOnClickListener(wrapper);
             cardContainer.setOnClickListener(wrapper);
             setScoreClickEnabled(clickEnabled);

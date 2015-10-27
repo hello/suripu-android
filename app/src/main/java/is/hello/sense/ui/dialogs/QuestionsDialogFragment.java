@@ -296,7 +296,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LayoutParams choiceLayoutParams = createChoiceLayoutParams();
         LayoutParams dividerLayoutParams = createDividerLayoutParams();
-        View.OnClickListener onClickListener = new SafeOnClickListener(this::singleChoiceSelected);
+        View.OnClickListener onClickListener = new SafeOnClickListener(stateSafeExecutor, this::singleChoiceSelected);
 
         List<Question.Choice> choices = question.getChoices();
         for (int i = 0; i < choices.size(); i++) {

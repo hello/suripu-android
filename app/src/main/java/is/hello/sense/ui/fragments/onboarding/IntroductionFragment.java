@@ -132,7 +132,7 @@ public class IntroductionFragment extends SenseFragment
                             R.string.onboarding_intro_feature_conditions_message),
         };
         final Adapter adapter = new Adapter(inflater, features,
-                                            new SafeOnClickListener(this::watchVideo));
+                                            new SafeOnClickListener(null, this::watchVideo));
 
         this.pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
         Views.runWhenLaidOut(view, () -> {
