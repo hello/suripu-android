@@ -265,27 +265,13 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         adapter.notifyDataSetChanged();
     }
 
-    public void setValue(int newValue, boolean animate) {
-        final int constrainedValue = constrainValue(newValue);
-        this.value = constrainedValue;
-
-        if (!ViewCompat.isLaidOut(this)) {
-            Views.runWhenLaidOut(this, () -> {
-                if (itemHeight == 0) {
-                    throw new IllegalStateException("itemHeight == 0 after layout");
-                }
-
-                setValue(newValue, animate);
-            });
-            return;
-        }
-
+    private void scrollToValue(int oldValue, int newValue, boolean animate) {
         final int distanceToFocusedItem = itemHeight * unfocusedItemCount;
         final int position = adapter.getItemPosition(newValue);
 
         this.wrapAroundEventsEnabled = false;
         if (animate) {
-            if (constrainedValue > this.value) {
+            if (newValue > oldValue) {
                 smoothScrollToPosition(position + unfocusedItemCount);
             } else {
                 smoothScrollToPosition(Math.max(0, position - unfocusedItemCount));
@@ -299,6 +285,24 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 // more or less as intended.
                 this.wrapAroundEventsEnabled = true;
             });
+        }
+    }
+
+    public void setValue(int newValue, boolean animate) {
+        final int oldValue = this.value;
+        final int constrainedValue = constrainValue(newValue);
+        this.value = constrainedValue;
+
+        if (!ViewCompat.isLaidOut(this)) {
+            Views.runWhenLaidOut(this, () -> {
+                if (itemHeight == 0) {
+                    throw new IllegalStateException("itemHeight == 0 after layout");
+                }
+
+                scrollToValue(oldValue, constrainedValue, animate);
+            });
+        } else {
+            scrollToValue(oldValue, constrainedValue, animate);
         }
     }
 
