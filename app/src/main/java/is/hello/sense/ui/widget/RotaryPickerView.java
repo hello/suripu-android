@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Drawing;
 
 public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
     public static final int NUM_VISIBLE_ITEMS = 5;
@@ -31,11 +34,15 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     private final ItemAdapter adapter;
     private final LinearLayoutManager layoutManager;
+    private final int glyphWidth, glyphHeight;
 
-    private final int itemWidth;
-    private final int itemHeight;
-    private float recyclerMidY = 0;
+    private int maximumGlyphCount = 3;
     private int itemHorizontalPadding;
+    private int itemVerticalPadding;
+    private int itemWidth;
+    private int itemHeight;
+
+    private float recyclerMidY = 0;
     private boolean wrapAroundEventsEnabled = true;
 
     //endregion
@@ -74,9 +81,14 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         final Resources resources = getResources();
 
         this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        this.itemWidth = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_width);
-        this.itemHeight = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_item_height);
-        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_small);
+        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+
+        final TextPaint measuringPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        Drawing.updateTextPaintFromStyle(measuringPaint, context, ITEM_TEXT_APPEARANCE_FOCUSED);
+
+        this.glyphWidth = (int) Math.ceil(measuringPaint.measureText("W", 0, 1));
+        this.glyphHeight = Drawing.getEstimatedTextHeight(measuringPaint);
 
         this.adapter = new ItemAdapter(resources);
 
@@ -122,11 +134,24 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     //region Measurement
 
     @Override
+    protected int getSuggestedMinimumWidth() {
+        return itemWidth;
+    }
+
+    @Override
+    protected int getSuggestedMinimumHeight() {
+        return (itemHeight * NUM_VISIBLE_ITEMS);
+    }
+
+    @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         final int widthMode = MeasureSpec.getMode(widthSpec);
         final int heightMode = MeasureSpec.getMode(heightSpec);
         final int widthSize = MeasureSpec.getSize(widthSpec);
         final int heightSize = MeasureSpec.getSize(heightSpec);
+
+        this.itemWidth = (maximumGlyphCount * glyphWidth) + (itemHorizontalPadding * 2);
+        this.itemHeight = glyphHeight + (itemVerticalPadding * 2);
 
         int width;
         switch (widthMode) {
@@ -179,6 +204,21 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     //region Attributes
 
+    protected void populateMaximumGlyphCount() {
+        if (valueStrings != null) {
+            int longestLength = 0;
+            for (final String valueString : valueStrings) {
+                final int length = valueString.length();
+                if (length > longestLength) {
+                    longestLength = length;
+                }
+            }
+            this.maximumGlyphCount = longestLength;
+        } else {
+            this.maximumGlyphCount = Integer.toString(maxValue, 10).length();
+        }
+    }
+
     protected int constrainValue(int value) {
         if (value < minValue) {
             return minValue;
@@ -204,6 +244,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         }
 
         this.maxValue = maxValue;
+        populateMaximumGlyphCount();
         adapter.notifyDataSetChanged();
     }
 
@@ -298,6 +339,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
     public void setValueStrings(@Nullable String[] valueStrings) {
         this.valueStrings = valueStrings;
+        populateMaximumGlyphCount();
         adapter.notifyDataSetChanged();
     }
 
@@ -483,7 +525,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             itemView.setBackground(itemBackground);
             itemView.setGravity(itemGravity);
             itemView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, itemHeight));
-            itemView.setPadding(itemHorizontalPadding, 0, itemHorizontalPadding, 0);
             itemView.setIncludeFontPadding(false);
             itemView.setOnClickListener(RotaryPickerView.this);
             return new ItemViewHolder(itemView);
