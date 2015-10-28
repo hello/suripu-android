@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Views;
 
 public class SenseListDialog<T> extends Dialog
@@ -38,8 +40,11 @@ public class SenseListDialog<T> extends Dialog
     protected void initialize() {
         setContentView(R.layout.dialog_sense_list);
 
+        final Resources resources = getContext().getResources();
+
         this.recyclerView = (RecyclerView) findViewById(R.id.dialog_sense_list_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);

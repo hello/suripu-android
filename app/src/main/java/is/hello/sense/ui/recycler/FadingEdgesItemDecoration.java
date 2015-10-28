@@ -23,7 +23,7 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
 
         final @ColorInt int colors[] = {
                 Color.TRANSPARENT,
-                0xF6000000,
+                resources.getColor(R.color.shadow_end),
         };
         this.gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                      colors);
@@ -31,20 +31,23 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        final int width = c.getWidth();
-        final int height = c.getHeight();
+        final int itemCount = parent.getAdapter().getItemCount();
+        if (itemCount > parent.getChildCount()) {
+            final int width = c.getWidth();
+            final int height = c.getHeight();
 
-        if (layoutManager.findFirstCompletelyVisibleItemPosition() > 0) {
-            gradientDrawable.setBounds(0, 0, width, edgeHeight);
-            gradientDrawable.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
-            gradientDrawable.draw(c);
-        }
+            if (layoutManager.findFirstCompletelyVisibleItemPosition() > 0) {
+                gradientDrawable.setBounds(0, 0, width, edgeHeight);
+                gradientDrawable.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
+                gradientDrawable.draw(c);
+            }
 
-        final int lastItem = parent.getAdapter().getItemCount() - 1;
-        if (layoutManager.findLastCompletelyVisibleItemPosition() < lastItem) {
-            gradientDrawable.setBounds(0, height - edgeHeight - edgeHeight, width, height);
-            gradientDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
-            gradientDrawable.draw(c);
+            final int lastItem = itemCount - 1;
+            if (layoutManager.findLastCompletelyVisibleItemPosition() < lastItem) {
+                gradientDrawable.setBounds(0, height - edgeHeight, width, height);
+                gradientDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
+                gradientDrawable.draw(c);
+            }
         }
     }
 }
