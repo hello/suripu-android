@@ -3,31 +3,31 @@ package is.hello.sense.ui.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.util.Views;
 
-public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClickListener {
+public class SenseListDialog<T> extends Dialog
+        implements ArrayRecyclerAdapter.OnItemClickedListener<T> {
     private Listener<T> listener;
 
     private Button positiveButton;
     private Button negativeButton;
     private TextView messageText;
     private View messageDivider;
-    private ListView listView;
+    private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
 
     public SenseListDialog(Context context) {
@@ -38,13 +38,11 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
     protected void initialize() {
         setContentView(R.layout.dialog_sense_list);
 
-        final Resources resources = getContext().getResources();
-
-        this.listView = (ListView) findViewById(android.R.id.list);
-        listView.setFadingEdgeLength(resources.getDimensionPixelSize(R.dimen.shadow_size));
-        listView.setVerticalFadingEdgeEnabled(true);
-        listView.setCacheColorHint(0xf6f6f6);
-        listView.setOnItemClickListener(this);
+        this.recyclerView = (RecyclerView) findViewById(R.id.dialog_sense_list_recycler);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(null);
 
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_list_positive);
         Views.setSafeOnClickListener(positiveButton, this::onDone);
@@ -107,8 +105,9 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
         messageText.setText(messageRes);
     }
 
-    public void setAdapter(@NonNull ListAdapter adapter) {
-        listView.setAdapter(adapter);
+    public void setAdapter(@NonNull ArrayRecyclerAdapter<T, ?> adapter) {
+        adapter.setOnItemClickedListener(this);
+        recyclerView.setAdapter(adapter);
     }
 
     public void setPositiveButtonEnabled(boolean enabled) {
@@ -161,12 +160,11 @@ public class SenseListDialog<T> extends Dialog implements AdapterView.OnItemClic
         dismiss();
     }
 
-
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public void onItemClicked(int position, T item) {
         if (listener != null) {
             //noinspection unchecked
-            listener.onItemClicked(this, position, (T) adapterView.getItemAtPosition(position));
+            listener.onItemClicked(this, position, item);
         }
     }
 

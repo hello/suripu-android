@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseListDialog;
 import is.hello.sense.util.DateFormatter;
@@ -83,13 +83,12 @@ public class AlarmRepeatDialogFragment extends SenseDialogFragment
     }
 
 
-    static class DayAdapter extends ArrayAdapter<Integer> {
+    static class DayAdapter extends ArrayRecyclerAdapter<Integer, DayAdapter.ViewHolder> {
         private final LayoutInflater inflater;
         private final Set<Integer> selectedDays = new HashSet<>();
 
         public DayAdapter(@NonNull Context context, @NonNull List<Integer> days) {
-            super(context, R.layout.item_settings_toggle, days);
-
+            super(days);
             this.inflater = LayoutInflater.from(context);
         }
 
@@ -113,29 +112,29 @@ public class AlarmRepeatDialogFragment extends SenseDialogFragment
 
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null) {
-                view = inflater.inflate(R.layout.item_settings_toggle, parent, false);
-                view.setTag(new ViewHolder(view));
-            }
-
-            final int day = getItem(position);
-            final ViewHolder viewHolder = (ViewHolder) view.getTag();
-            viewHolder.checkBox.setChecked(selectedDays.contains(day));
-            viewHolder.title.setText(new DateTime().withDayOfWeek(day).toString("EEEE"));
-
-            return view;
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            final View view = inflater.inflate(R.layout.item_settings_toggle, parent, false);
+            return new ViewHolder(view);
         }
 
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            final int day = getItem(position);
+            holder.checkBox.setChecked(selectedDays.contains(day));
+            holder.title.setText(new DateTime().withDayOfWeek(day).toString("EEEE"));
+        }
 
-        static class ViewHolder {
+        class ViewHolder extends ArrayRecyclerAdapter.ViewHolder {
             final CheckBox checkBox;
             final TextView title;
 
             ViewHolder(@NonNull View view) {
+                super(view);
+
                 this.checkBox = (CheckBox) view.findViewById(R.id.item_settings_toggle_check_box);
                 this.title = (TextView) view.findViewById(R.id.item_settings_toggle_check_title);
+
+                view.setOnClickListener(this);
             }
         }
     }
