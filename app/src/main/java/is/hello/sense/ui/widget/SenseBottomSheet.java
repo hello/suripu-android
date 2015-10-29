@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -129,9 +130,11 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
         TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
+        ImageView imageIcon = (ImageView) optionView.findViewById(R.id.item_bottom_sheet_option_icon);
 
         if (option.iconRes != 0) {
-            title.setCompoundDrawablesRelativeWithIntrinsicBounds(option.iconRes, 0, 0, 0);
+            imageIcon.setVisibility(View.VISIBLE);
+            imageIcon.setImageResource(option.iconRes);
         }
 
         if (option.getTitle() != null) {

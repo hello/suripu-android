@@ -7,6 +7,11 @@
             <stroke
                 android:width="@dimen/divider_size"
                 android:color="@color/border" />
+            <corners
+                android:bottomRightRadius="@dimen/button_corner_radius"
+                android:bottomLeftRadius="0dp"
+                android:topLeftRadius="0dp"
+                android:topRightRadius="@dimen/button_corner_radius"/>
         </shape>
     </item>
 </layer-list>

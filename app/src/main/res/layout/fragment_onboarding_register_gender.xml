@@ -88,7 +88,7 @@
                     android:drawablePadding="@dimen/gap_large"
                     android:textOn="@string/gender_male"
                     android:textOff="@string/gender_male"
-                    style="@style/AppTheme.Button.Gender"/>
+                    style="@style/AppTheme.Button.Gender.Left"/>
 
                 <ToggleButton
                     android:layout_width="0dp"
@@ -98,7 +98,7 @@
                     android:drawablePadding="@dimen/gap_large"
                     android:textOn="@string/gender_female"
                     android:textOff="@string/gender_female"
-                    style="@style/AppTheme.Button.Gender"/>
+                    style="@style/AppTheme.Button.Gender.Right"/>
 
             </is.hello.sense.ui.widget.SelectorView>
 

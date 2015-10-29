@@ -485,8 +485,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
                         .setTitle(R.string.action_replace_this_sense)
-                        .setTitleColor(getResources().getColor(R.color.light_accent))
+                        .setTitleColor(getResources().getColor(R.color.black))
                         .setDescription(R.string.description_replace_this_sense)
+                        .setIcon(R.drawable.settings_advanced)
                    );
         if (hardwarePresenter.isConnected()) {
             options.add(
@@ -494,6 +495,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                             .setTitle(R.string.action_factory_reset)
                             .setTitleColor(getResources().getColor(R.color.destructive_accent))
                             .setDescription(R.string.description_factory_reset)
+                            .setIcon(R.drawable.settings_factory_reset)
                        );
         }
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);

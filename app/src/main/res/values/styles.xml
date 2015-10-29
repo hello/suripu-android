@@ -265,13 +265,20 @@
     </style>
 
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
-        <item name="android:background">@drawable/button_selector_gender</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/text_size_button_large</item>
         <item name="android:paddingTop">36dp</item>
         <item name="android:paddingLeft">36dp</item>
         <item name="android:paddingRight">36dp</item>
         <item name="android:paddingBottom">36dp</item>
+    </style>
+
+    <style name="AppTheme.Button.Gender.Left" parent="AppTheme.Button.Gender">
+        <item name="android:background">@drawable/button_selector_gender_left</item>
+    </style>
+
+    <style name="AppTheme.Button.Gender.Right" parent="AppTheme.Button.Gender">
+        <item name="android:background">@drawable/button_selector_gender_right</item>
     </style>
     
     <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">

@@ -44,7 +44,6 @@
     <style name="AppTheme.Text.SectionHeading">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
-        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/text_section_header</item>
     </style>
 
