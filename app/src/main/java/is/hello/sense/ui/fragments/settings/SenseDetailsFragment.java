@@ -485,7 +485,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
                         .setTitle(R.string.action_replace_this_sense)
-                        .setTitleColor(getResources().getColor(R.color.black))
+                        .setTitleColor(getResources().getColor(R.color.text_dark))
                         .setDescription(R.string.description_replace_this_sense)
                         .setIcon(R.drawable.settings_advanced)
                    );
