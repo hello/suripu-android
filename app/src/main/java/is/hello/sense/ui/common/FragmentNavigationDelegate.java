@@ -101,18 +101,21 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
                              boolean wantsBackStackEntry) {
         final FragmentTransaction transaction = createTransaction(fragment, title,
                                                                   wantsBackStackEntry);
+        final FragmentManager fragmentManager = getFragmentManager();
         if (stateSafeExecutor != null) {
             stateSafeExecutor.execute(() -> {
                 if (!wantsBackStackEntry) {
-                    getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 }
                 transaction.commit();
+                fragmentManager.executePendingTransactions();
             });
         } else {
             if (!wantsBackStackEntry) {
-                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
             transaction.commit();
+            fragmentManager.executePendingTransactions();
         }
     }
 
