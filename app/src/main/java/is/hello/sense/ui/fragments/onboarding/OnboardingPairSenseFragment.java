@@ -106,7 +106,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             hardwarePresenter.setWantsHighPowerPreScan(true);
             next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
-            getOnboardingActivity().showSelectWifiNetwork(true);
+            getOnboardingActivity().showSelectWifiNetwork();
         }
     }
 
@@ -127,7 +127,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     private void continueToWifi() {
-        hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(true),
+        hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(),
                                   e -> presentError(e, "Turning off LEDs"));
     }
 

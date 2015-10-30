@@ -332,8 +332,8 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showSelectWifiNetwork(boolean wantsBackStackEntry) {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, wantsBackStackEntry);
+    public void showSelectWifiNetwork() {
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
     }
 
     public void showPairPill(boolean showIntroduction) {
