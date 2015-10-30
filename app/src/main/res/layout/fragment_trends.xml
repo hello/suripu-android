@@ -15,17 +15,6 @@
 
     </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
 
-    <TextView
-        android:id="@+id/fragment_trends_placeholder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Body.Dim"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:gravity="center"
-        android:text="@string/message_not_enough_data"
-        android:visibility="gone"/>
-
     <ProgressBar
         android:id="@+id/fragment_trends_loading"
         android:layout_width="wrap_content"

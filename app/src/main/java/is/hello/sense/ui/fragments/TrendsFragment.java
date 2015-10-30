@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -32,7 +31,6 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     private TrendsAdapter trendsAdapter;
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView noDataPlaceholder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,6 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         recyclerView.setAdapter(trendsAdapter);
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
-        this.noDataPlaceholder = (TextView) view.findViewById(R.id.fragment_trends_placeholder);
 
         return view;
     }
@@ -87,7 +84,6 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
-        this.noDataPlaceholder = null;
     }
 
     @Override
@@ -105,23 +101,19 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.replaceAll(trends);
-
         initialActivityIndicator.setVisibility(View.GONE);
         if (Lists.isEmpty(trends)) {
-            noDataPlaceholder.setText(R.string.message_not_enough_data);
-            noDataPlaceholder.setVisibility(View.VISIBLE);
-        } else {
-            noDataPlaceholder.setVisibility(View.GONE);
+            trendsAdapter.displayNoDataMessage(false);
+        }else{
+
         }
     }
 
     public void presentError(Throwable e) {
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.clear();
-
         initialActivityIndicator.setVisibility(View.GONE);
-        noDataPlaceholder.setText(R.string.trends_message_error);
-        noDataPlaceholder.setVisibility(View.VISIBLE);
+        trendsAdapter.displayNoDataMessage(true);
     }
 
 

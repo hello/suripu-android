@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -25,6 +26,10 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
     private final LayoutInflater inflater;
     private final Resources resources;
     private final int graphTintColor;
+    private final int VIEW_ERROR = 0;
+    private final int VIEW_NO_TRENDS = 1;
+    private final int VIEW_TRENDS = 2;
+    private int viewType;
 
     private @Nullable OnTrendOptionSelected onTrendOptionSelected;
 
@@ -34,6 +39,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
         this.graphTintColor = resources.getColor(R.color.light_accent);
+        this.viewType = VIEW_TRENDS;
     }
 
 
@@ -41,15 +47,65 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         this.onTrendOptionSelected = onTrendOptionSelected;
     }
 
+    public void displayNoDataMessage(boolean networkError){
+        if (networkError){
+            viewType = VIEW_ERROR;
+        } else {
+            viewType = VIEW_NO_TRENDS;
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean replaceAll(@NonNull Collection<? extends TrendsPresenter.Rendered> collection) {
+        if (collection.size() > 0 ){
+            viewType = VIEW_TRENDS;
+        }
+        return super.replaceAll(collection);
+    }
+
+    @Override
+    public int getItemCount() {
+        if (viewType != VIEW_TRENDS){
+            return 1;
+        }else{
+            return super.getItemCount();
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return viewType;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = inflater.inflate(R.layout.item_trend, parent, false);
-        return new ViewHolder(view);
+        switch (viewType) {
+            case VIEW_ERROR: {
+                final View view = inflater.inflate(R.layout.item_trends_missing_card, parent, false);
+                view.findViewById(R.id.item_trends_missing_card_placeholder).setVisibility(View.GONE);
+                view.findViewById(R.id.fragment_trends_no_data).setVisibility(View.VISIBLE);
+                return new TrendsAdapter.ViewHolder(view);
+            }
+            case VIEW_NO_TRENDS:{
+                final View view = inflater.inflate(R.layout.item_trends_missing_card, parent, false);
+                return new TrendsAdapter.ViewHolder(view);
+            }
+            case VIEW_TRENDS: {
+                final View view = inflater.inflate(R.layout.item_trend, parent, false);
+                return new ViewHolder(view);
+            }
+            default:{
+                throw new IllegalArgumentException();
+            }
+        }
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if (viewType != VIEW_TRENDS){
+            return;
+        }
         final TrendsPresenter.Rendered rendered = getItem(position);
 
         final TrendGraph graph = rendered.graph;
