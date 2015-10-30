@@ -166,9 +166,10 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         adapter.bindAlarms(alarms);
         if (alarms.isEmpty()) {
-            final SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(R.string.title_smart_alarms,
+            final SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(0,
                     StringRef.from(R.string.message_smart_alarm_placeholder));
             message.actionRes = R.string.action_new_alarm;
+            message.titleIconRes = R.drawable.illustration_no_alarm;
             message.onClickListener = this::newAlarm;
             adapter.bindMessage(message);
         }
@@ -193,9 +194,9 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 412)) {
-            message = new SmartAlarmAdapter.Message(R.string.device_sense,
+            message = new SmartAlarmAdapter.Message(0,
                     StringRef.from(R.string.error_smart_alarm_requires_device));
-            message.titleIconRes = R.drawable.sense_icon;
+            message.titleIconRes = R.drawable.illustration_no_sense;
             message.titleStyleRes = R.style.AppTheme_Text_Body;
             message.actionRes = R.string.action_pair_new_sense;
             message.onClickListener = ignored -> {

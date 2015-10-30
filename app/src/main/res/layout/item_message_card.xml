@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer"
-    style="@style/AppTheme.Card">
+    style="@style/AppTheme.Card"
+    app:senseCornerRadius="@dimen/card_large_corner_radius">
+
+    <ImageView
+        android:id="@+id/item_message_card_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
 
     <TextView
+        android:paddingTop="@dimen/gap_outer"
+        android:paddingLeft="@dimen/gap_outer"
+        android:paddingRight="@dimen/gap_outer"
         android:id="@+id/item_message_card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawablePadding="@dimen/gap_small"
         android:gravity="start|center_vertical"
         android:singleLine="true"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading" />
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/item_message_card_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_outer"
         android:layout_marginBottom="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/gap_large"
+        android:layout_marginRight="@dimen/gap_large"
+        android:layout_marginTop="@dimen/gap_outer"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body.MidSized"
         android:lineSpacingMultiplier="@dimen/line_multiple_body" />
@@ -30,6 +45,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@android:string/ok"
-        style="@style/AppTheme.Button.Rounded" />
+        style="@style/AppTheme.Button.Rounded"
+        android:layout_marginBottom="@dimen/gap_xsmall"
+        android:layout_marginLeft="@dimen/gap_xsmall"
+        android:layout_marginRight="@dimen/gap_xsmall"/>
 
-</LinearLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>

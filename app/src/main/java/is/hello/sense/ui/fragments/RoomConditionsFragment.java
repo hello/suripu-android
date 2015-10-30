@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -180,7 +181,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
         adapter.clear();
         if (ApiException.statusEquals(e, 404)) {
             adapter.displayMessage(true,
-                                   R.string.device_sense,
+                                   0,
                                    getString(R.string.error_room_conditions_no_sense),
                                    R.string.action_pair_new_sense,
                                    ignored -> {
@@ -281,12 +282,18 @@ public class RoomConditionsFragment extends UndersideTabFragment
                 case VIEW_ID_MESSAGE: {
                     final View view = inflater.inflate(R.layout.item_message_card, parent, false);
 
-                    final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
-                    title.setText(messageTitle);
-                    title.setTextAppearance(title.getContext(), R.style.AppTheme_Text_Body);
-                    title.setAllCaps(false);
+                    if (messageTitle != 0) {
+                        final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+                        title.setText(messageTitle);
+                        title.setTextAppearance(title.getContext(), R.style.AppTheme_Text_Body);
+                        title.setAllCaps(false);
+                        title.setVisibility(View.VISIBLE);
+                    }
+
                     if (messageWantsSenseIcon) {
-                        title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.sense_icon, 0, 0, 0);
+                        final ImageView image = (ImageView) view.findViewById(R.id.item_message_card_image);
+                        image.setImageResource(R.drawable.illustration_no_sense);
+                        image.setVisibility(View.VISIBLE);
                     }
 
                     final TextView messageText = (TextView) view.findViewById(R.id.item_message_card_message);

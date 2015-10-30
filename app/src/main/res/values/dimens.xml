@@ -13,7 +13,7 @@
 
     <!-- Cards -->
 
-    <dimen name="gap_card_horizontal">@dimen/gap_medium</dimen>
+    <dimen name="gap_card_horizontal">@dimen/gap_xsmall</dimen>
     <dimen name="gap_card_vertical">@dimen/gap_medium</dimen>
     <dimen name="gap_card_inter">@dimen/gap_medium</dimen>
     <dimen name="gap_card_inter_compact">8dp</dimen>
