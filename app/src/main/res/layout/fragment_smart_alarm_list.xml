@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,19 +26,5 @@
         android:src="@drawable/button_smart_alarm_add"
         android:contentDescription="@string/action_new_alarm"
         style="@style/AppTheme.Button.Circular"/>
-
-    <TextView
-        android:id="@+id/fragment_smart_alarm_list_first_prompt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_above="@id/fragment_smart_alarm_list_add"
-        android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:text="@string/prompt_set_your_first_alarm"
-        android:visibility="visible"
-        tools:ignore="RtlSymmetry" />
 
 </RelativeLayout>

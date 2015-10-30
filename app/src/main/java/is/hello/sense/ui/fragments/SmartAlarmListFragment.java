@@ -51,7 +51,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
-    private View emptyPrompt;
     private ImageButton addButton;
 
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
@@ -75,7 +74,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
 
-        this.emptyPrompt = view.findViewById(R.id.fragment_smart_alarm_list_first_prompt);
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_smart_alarm_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -113,7 +111,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         this.recyclerView = null;
         this.activityIndicator = null;
-        this.emptyPrompt = null;
 
         this.adapter = null;
     }
@@ -143,22 +140,11 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     public void startLoading() {
         adapter.clearMessage();
-        emptyPrompt.setVisibility(View.GONE);
         activityIndicator.setVisibility(View.VISIBLE);
     }
 
-    public void finishLoading(boolean success) {
+    public void finishLoading() {
         activityIndicator.setVisibility(View.GONE);
-
-        if (currentAlarms.isEmpty()) {
-            if (success) {
-                emptyPrompt.setVisibility(View.VISIBLE);
-            } else {
-                emptyPrompt.setVisibility(View.GONE);
-            }
-        } else {
-            emptyPrompt.setVisibility(View.GONE);
-        }
     }
 
     public void bindAlarms(@NonNull ArrayList<Alarm> alarms) {
@@ -172,11 +158,12 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             message.titleIconRes = R.drawable.illustration_no_alarm;
             message.onClickListener = this::newAlarm;
             adapter.bindMessage(message);
+            addButton.setVisibility(View.GONE);
+        }else {
+            addButton.setVisibility(View.VISIBLE);
         }
 
-        addButton.setEnabled(true);
-
-        finishLoading(true);
+        finishLoading();
     }
 
     public void alarmsUnavailable(Throwable e) {
@@ -212,13 +199,12 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             message.onClickListener = this::retry;
         }
         adapter.bindMessage(message);
-        addButton.setEnabled(!ApiException.statusEquals(e, 412));
-
-        finishLoading(false);
+        addButton.setVisibility(View.GONE);
+        finishLoading();
     }
 
     public void presentError(Throwable e) {
-        finishLoading(true);
+        finishLoading();
 
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
