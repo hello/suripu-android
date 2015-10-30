@@ -103,11 +103,15 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
                                                                   wantsBackStackEntry);
         if (stateSafeExecutor != null) {
             stateSafeExecutor.execute(() -> {
-                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                if (!wantsBackStackEntry) {
+                    getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
                 transaction.commit();
             });
         } else {
-            getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            if (!wantsBackStackEntry) {
+                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
             transaction.commit();
         }
     }
@@ -117,15 +121,17 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
                                               boolean wantsBackStackEntry) {
         final FragmentTransaction transaction = createTransaction(fragment, title,
                                                                   wantsBackStackEntry);
-        try {
+        if (!wantsBackStackEntry) {
             // There's no state safe way to pop the back stack to the beginning.
             // Since state loss is fine inside of this method, we just swallow
             // any IllegalStateExceptions thrown.
-            getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } catch (IllegalStateException e) {
-            Logger.info(getClass().getSimpleName(),
-                        "Popping back stack is currently impossible. State loss happening.",
-                        e);
+            try {
+                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            } catch (IllegalStateException e) {
+                Logger.info(getClass().getSimpleName(),
+                            "Popping back stack is currently impossible. State loss happening.",
+                            e);
+            }
         }
         transaction.commitAllowingStateLoss();
     }
