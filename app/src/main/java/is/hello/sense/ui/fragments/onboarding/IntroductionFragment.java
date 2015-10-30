@@ -136,8 +136,12 @@ public class IntroductionFragment extends SenseFragment
 
         this.pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
         Views.runWhenLaidOut(view, () -> {
-            viewPager.setAdapter(adapter);
-            pageDots.attach(viewPager);
+            // Can be called after the view is destroyed
+            // due to the back stack being cleared out.
+            if (viewPager != null) {
+                viewPager.setAdapter(adapter);
+                pageDots.attach(viewPager);
+            }
         });
 
         this.signInButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_sign_in);
