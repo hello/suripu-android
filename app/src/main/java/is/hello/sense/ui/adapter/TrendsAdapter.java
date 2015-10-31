@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -82,13 +84,23 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_ERROR: {
-                final View view = inflater.inflate(R.layout.item_trends_missing_card, parent, false);
-                view.findViewById(R.id.item_trends_missing_card_placeholder).setVisibility(View.GONE);
-                view.findViewById(R.id.fragment_trends_no_data).setVisibility(View.VISIBLE);
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                view.findViewById(R.id.item_message_card_image).setVisibility(View.GONE);
+                view.findViewById(R.id.item_message_card_title).setVisibility(View.GONE);
+                view.findViewById(R.id.item_message_card_action).setVisibility(View.GONE);
+                TextView message = (TextView)view.findViewById(R.id.item_message_card_message);
+                message.setText(R.string.trends_message_error);
+                message.setGravity(Gravity.CENTER_HORIZONTAL);
+                view.setBackground(null);
+
                 return new TrendsAdapter.ViewHolder(view);
             }
             case VIEW_NO_TRENDS:{
-                final View view = inflater.inflate(R.layout.item_trends_missing_card, parent, false);
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                ((ImageView)view.findViewById(R.id.item_message_card_image)).setImageResource(R.drawable.illustration_no_trends);
+                view.findViewById(R.id.item_message_card_title).setVisibility(View.GONE);
+                view.findViewById(R.id.item_message_card_action).setVisibility(View.GONE);
+                ((TextView)view.findViewById(R.id.item_message_card_message)).setText(R.string.message_no_trends_yet);
                 return new TrendsAdapter.ViewHolder(view);
             }
             case VIEW_TRENDS: {

@@ -104,8 +104,6 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         initialActivityIndicator.setVisibility(View.GONE);
         if (Lists.isEmpty(trends)) {
             trendsAdapter.displayNoDataMessage(false);
-        }else{
-
         }
     }
 

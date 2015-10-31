@@ -214,7 +214,6 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         void bind(int ignored) {
             if (currentMessage.titleRes != 0 ) {
                 titleText.setAllCaps(false);
-                titleText.setTextAppearance(titleText.getContext(), currentMessage.titleStyleRes);
                 titleText.setText(currentMessage.titleRes);
                 titleText.setVisibility(View.VISIBLE);
             }else{
@@ -248,7 +247,6 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         public final StringRef message;
 
         public @DrawableRes int titleIconRes = 0;
-        public @StyleRes int titleStyleRes = R.style.AppTheme_Text_SectionHeading;
 
         public @StringRes int actionRes = android.R.string.ok;
         public View.OnClickListener onClickListener;

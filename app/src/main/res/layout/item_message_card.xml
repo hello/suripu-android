@@ -13,20 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:visibility="gone"
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:paddingTop="@dimen/gap_outer"
-        android:paddingLeft="@dimen/gap_outer"
-        android:paddingRight="@dimen/gap_outer"
+        android:paddingTop="@dimen/gap_xsmall"
+        android:paddingLeft="@dimen/gap_xsmall"
+        android:paddingRight="@dimen/gap_xsmall"
         android:id="@+id/item_message_card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
         android:singleLine="true"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:visibility="gone"/>
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <TextView
         android:id="@+id/item_message_card_message"

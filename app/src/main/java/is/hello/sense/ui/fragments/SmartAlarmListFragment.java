@@ -184,7 +184,6 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             message = new SmartAlarmAdapter.Message(0,
                     StringRef.from(R.string.error_smart_alarm_requires_device));
             message.titleIconRes = R.drawable.illustration_no_sense;
-            message.titleStyleRes = R.style.AppTheme_Text_Body;
             message.actionRes = R.string.action_pair_new_sense;
             message.onClickListener = ignored -> {
                 DeviceListFragment.startStandaloneFrom(getActivity());

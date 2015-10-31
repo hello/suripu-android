@@ -280,20 +280,23 @@ public class RoomConditionsFragment extends UndersideTabFragment
         public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case VIEW_ID_MESSAGE: {
+
                     final View view = inflater.inflate(R.layout.item_message_card, parent, false);
 
+                    final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
                     if (messageTitle != 0) {
-                        final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
                         title.setText(messageTitle);
-                        title.setTextAppearance(title.getContext(), R.style.AppTheme_Text_Body);
-                        title.setAllCaps(false);
                         title.setVisibility(View.VISIBLE);
+                    }else{
+                        title.setVisibility(View.GONE);
                     }
 
+                    final ImageView image = (ImageView) view.findViewById(R.id.item_message_card_image);
                     if (messageWantsSenseIcon) {
-                        final ImageView image = (ImageView) view.findViewById(R.id.item_message_card_image);
                         image.setImageResource(R.drawable.illustration_no_sense);
                         image.setVisibility(View.VISIBLE);
+                    }else{
+                        image.setVisibility(View.GONE);
                     }
 
                     final TextView messageText = (TextView) view.findViewById(R.id.item_message_card_message);
