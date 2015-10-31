@@ -412,6 +412,10 @@ public class Analytics {
         String EVENT_ALARMS = "Alarms";
         String EVENT_NEW_ALARM = "New Alarm";
         String EVENT_ALARM_SAVED = "Alarm Saved";
+        String PROP_ALARM_DAYS_REPEATED = "days_repeated";
+        String PROP_ALARM_ENABLED = "enabled";
+        String PROP_ALARM_IS_SMART = "smart_alarm";
+
         String EVENT_ALARM_ON_OFF = "Alarm On/Off";
         String EVENT_EDIT_ALARM = "Edit Alarm";
 

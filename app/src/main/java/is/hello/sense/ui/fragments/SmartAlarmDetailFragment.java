@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.joda.time.LocalTime;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -352,7 +353,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void finish() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_SAVED, null);
+        final String daysRepeated = TextUtils.join(", ", alarm.getSortedDaysOfWeek());
+        final JSONObject properties =
+                Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED, alarm.isEnabled(),
+                                           Analytics.TopView.PROP_ALARM_IS_SMART, alarm.isSmart(),
+                                           Analytics.TopView.PROP_ALARM_DAYS_REPEATED, daysRepeated);
+        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_SAVED, properties);
 
         LoadingDialogFragment.close(getFragmentManager());
         getActivity().setResult(Activity.RESULT_OK);
