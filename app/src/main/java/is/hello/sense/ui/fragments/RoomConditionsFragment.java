@@ -89,7 +89,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), true));
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
 
         this.adapter = new Adapter(getActivity());

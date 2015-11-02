@@ -81,7 +81,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         recyclerView.setItemAnimator(null);
 
         final Resources resources = getResources();
-        final CardItemDecoration decoration = new CardItemDecoration(resources, true);
+        final CardItemDecoration decoration = new CardItemDecoration(resources);
         decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
 

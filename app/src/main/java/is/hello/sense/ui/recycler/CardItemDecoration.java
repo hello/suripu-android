@@ -16,15 +16,10 @@ public final class CardItemDecoration extends RecyclerView.ItemDecoration {
 
     public @Nullable Rect contentInset;
 
-    public CardItemDecoration(@NonNull Resources resources, boolean useCompact) {
+    public CardItemDecoration(@NonNull Resources resources) {
         this.outerHorizontal = resources.getDimensionPixelSize(R.dimen.gap_card_horizontal);
         this.outerVertical = resources.getDimensionPixelSize(R.dimen.gap_card_vertical);
-
-        if (useCompact) {
-            this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter_compact);
-        } else {
-            this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter);
-        }
+        this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter_compact);
     }
 
     @Override
