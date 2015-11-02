@@ -12,6 +12,7 @@
     <color name="status_bar_grey">#b5b5b5</color>
 
     <color name="background">#F2F2F2</color>
+    <color name="background_underside">#EBEDF0</color>
     <color name="background_light">@color/white</color>
     <color name="background_light_overlay">#99ffffff</color>
     <color name="background_dark_overlay">#80000000</color>
