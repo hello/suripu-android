@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -198,6 +199,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         final TextView titleText;
         final TextView messageText;
         final Button actionButton;
+        final ImageView imageView;
 
         MessageViewHolder(@NonNull View view) {
             super(view);
@@ -205,18 +207,25 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             this.titleText = (TextView) view.findViewById(R.id.item_message_card_title);
             this.messageText = (TextView) view.findViewById(R.id.item_message_card_message);
             this.actionButton = (Button) view.findViewById(R.id.item_message_card_action);
+            this.imageView = (ImageView) view.findViewById(R.id.item_message_card_image);
         }
 
         @Override
         void bind(int ignored) {
-            titleText.setAllCaps(false);
-            titleText.setTextAppearance(titleText.getContext(), currentMessage.titleStyleRes);
-            if (currentMessage.titleIconRes != 0) {
-                titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(currentMessage.titleIconRes, 0, 0, 0);
-            } else {
-                titleText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+            if (currentMessage.titleRes != 0 ) {
+                titleText.setAllCaps(false);
+                titleText.setText(currentMessage.titleRes);
+                titleText.setVisibility(View.VISIBLE);
+            }else{
+                titleText.setVisibility(View.GONE);
             }
-            titleText.setText(currentMessage.titleRes);
+
+            if (currentMessage.titleIconRes != 0) {
+                imageView.setImageResource(currentMessage.titleIconRes);
+                imageView.setVisibility(View.VISIBLE);
+            }else{
+                imageView.setVisibility(View.GONE);
+            }
             messageText.setText(currentMessage.message.resolve(messageText.getContext()));
 
             actionButton.setText(currentMessage.actionRes);
@@ -238,7 +247,6 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         public final StringRef message;
 
         public @DrawableRes int titleIconRes = 0;
-        public @StyleRes int titleStyleRes = R.style.AppTheme_Text_SectionHeading;
 
         public @StringRes int actionRes = android.R.string.ok;
         public View.OnClickListener onClickListener;

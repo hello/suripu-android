@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -25,6 +28,10 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
     private final LayoutInflater inflater;
     private final Resources resources;
     private final int graphTintColor;
+    private final int VIEW_ERROR = 0;
+    private final int VIEW_NO_TRENDS = 1;
+    private final int VIEW_TRENDS = 2;
+    private int viewType;
 
     private @Nullable OnTrendOptionSelected onTrendOptionSelected;
 
@@ -34,6 +41,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
         this.graphTintColor = resources.getColor(R.color.light_accent);
+        this.viewType = VIEW_TRENDS;
     }
 
 
@@ -41,15 +49,75 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         this.onTrendOptionSelected = onTrendOptionSelected;
     }
 
+    public void displayNoDataMessage(boolean networkError){
+        if (networkError){
+            viewType = VIEW_ERROR;
+        } else {
+            viewType = VIEW_NO_TRENDS;
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean replaceAll(@NonNull Collection<? extends TrendsPresenter.Rendered> collection) {
+        if (collection.size() > 0 ){
+            viewType = VIEW_TRENDS;
+        }
+        return super.replaceAll(collection);
+    }
+
+    @Override
+    public int getItemCount() {
+        if (viewType != VIEW_TRENDS){
+            return 1;
+        }else{
+            return super.getItemCount();
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return viewType;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = inflater.inflate(R.layout.item_trend, parent, false);
-        return new ViewHolder(view);
+        switch (viewType) {
+            case VIEW_ERROR: {
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                view.findViewById(R.id.item_message_card_image).setVisibility(View.GONE);
+                view.findViewById(R.id.item_message_card_title).setVisibility(View.GONE);
+                view.findViewById(R.id.item_message_card_action).setVisibility(View.GONE);
+                TextView message = (TextView)view.findViewById(R.id.item_message_card_message);
+                message.setText(R.string.trends_message_error);
+                message.setGravity(Gravity.CENTER_HORIZONTAL);
+                view.setBackground(null);
+
+                return new TrendsAdapter.ViewHolder(view);
+            }
+            case VIEW_NO_TRENDS:{
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                ((ImageView)view.findViewById(R.id.item_message_card_image)).setImageResource(R.drawable.illustration_no_trends);
+                view.findViewById(R.id.item_message_card_title).setVisibility(View.GONE);
+                view.findViewById(R.id.item_message_card_action).setVisibility(View.GONE);
+                ((TextView)view.findViewById(R.id.item_message_card_message)).setText(R.string.message_no_trends_yet);
+                return new TrendsAdapter.ViewHolder(view);
+            }
+            case VIEW_TRENDS: {
+                final View view = inflater.inflate(R.layout.item_trend, parent, false);
+                return new ViewHolder(view);
+            }
+            default:{
+                throw new IllegalArgumentException();
+            }
+        }
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if (viewType != VIEW_TRENDS){
+            return;
+        }
         final TrendsPresenter.Rendered rendered = getItem(position);
 
         final TrendGraph graph = rendered.graph;

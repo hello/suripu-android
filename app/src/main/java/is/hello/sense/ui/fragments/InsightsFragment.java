@@ -80,7 +80,7 @@ public class InsightsFragment extends UndersideTabFragment
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources(), false));
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
