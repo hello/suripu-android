@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -123,7 +124,7 @@ public class TimelineAdapterTests extends SenseTestCase {
 
     private List<TimelineEvent> generateSimpleTimeline() {
         List<TimelineEvent> events = new ArrayList<>();
-        DateTime base = DateTime.now();
+        DateTime base = DateTime.now(DateTimeZone.UTC);
 
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.IN_BED)
@@ -182,7 +183,7 @@ public class TimelineAdapterTests extends SenseTestCase {
     @Test
     public void segmentRendering() throws Exception {
         TimelineEvent segment = new TimelineEventBuilder()
-                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30))
+                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30, DateTimeZone.UTC))
                 .setType(TimelineEvent.Type.IN_BED)
                 .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
                 .build();
@@ -205,7 +206,7 @@ public class TimelineAdapterTests extends SenseTestCase {
     @Test
     public void eventRendering() throws Exception {
         TimelineEvent event = new TimelineEventBuilder()
-                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30))
+                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30, DateTimeZone.UTC))
                 .setType(TimelineEvent.Type.GENERIC_MOTION)
                 .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
                 .setMessage(new MarkupString("Y u mov so much???"))
@@ -240,7 +241,7 @@ public class TimelineAdapterTests extends SenseTestCase {
     @Test
     public void alarmRangRendering() throws Exception {
         TimelineEvent event = new TimelineEventBuilder()
-                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30))
+                .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30, DateTimeZone.UTC))
                 .setType(TimelineEvent.Type.ALARM_RANG)
                 .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
                 .setMessage(new MarkupString("Alarm rang at 8:00"))
@@ -298,7 +299,7 @@ public class TimelineAdapterTests extends SenseTestCase {
         adapter.setUse24Time(false);
 
         List<TimelineEvent> events = new ArrayList<>();
-        DateTime timestamp = DateTime.now().withTime(0, 30, 0, 0);
+        DateTime timestamp = DateTime.now(DateTimeZone.UTC).withTime(0, 30, 0, 0);
         events.add(new TimelineEventBuilder()
                 .setType(TimelineEvent.Type.GOT_IN_BED)
                 .setSleepDepth(0, TimelineEvent.SleepState.AWAKE)
