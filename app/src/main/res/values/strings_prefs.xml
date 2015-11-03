@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="setting_title_use_24_time">Use 24 hour time</string>
+    <string name="setting_time_unit">Time Unit</string>
+    <string name="setting_time_12_hour">12 Hour</string>
+    <string name="setting_time_24_hour">24 Hour</string>
     <string name="setting_unit_temperature">Temperature Unit</string>
     <string name="setting_unit_weight">Weight Unit</string>
     <string name="setting_unit_height">Height Unit</string>
