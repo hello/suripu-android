@@ -74,6 +74,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         hourPicker.setOnSelectionListener(this);
         hourPicker.setMinValue(1);
         hourPicker.setMaxValue(12);
+        hourPicker.setRolloverPositions(10, 11); /* e.g. 11am, 12pm */
         hourPicker.setWrapsAround(true);
         hourPicker.setWantsLeadingZeros(false);
         hourPicker.setItemGravity(Gravity.CENTER);
@@ -125,6 +126,19 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
     //region Attributes
 
+    public void setCompact(boolean compact) {
+        final int unfocusedItemCount;
+        if (compact) {
+            unfocusedItemCount = 1;
+        } else {
+            unfocusedItemCount = RotaryPickerView.DEFAULT_UNFOCUSED_ITEM_COUNT;
+        }
+
+        hourPicker.setUnfocusedItemCount(unfocusedItemCount);
+        minutePicker.setUnfocusedItemCount(unfocusedItemCount);
+        periodPicker.setUnfocusedItemCount(unfocusedItemCount);
+    }
+
     public void setUse24Time(boolean use24Time) {
         if (use24Time == this.use24Time) {
             return;
@@ -150,6 +164,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
             hourPicker.setMinValue(1);
             hourPicker.setMaxValue(12);
+            hourPicker.setRolloverPositions(10, 11); /* e.g. 11am, 12pm */
         }
 
         hourPicker.setWantsLeadingZeros(use24Time);

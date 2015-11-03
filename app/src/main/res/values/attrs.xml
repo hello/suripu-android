@@ -40,6 +40,7 @@
     <declare-styleable name="RotaryPickerView">
         <attr name="senseItemBackground" format="reference" />
         <attr name="senseWantsLeadingZeros" format="reference" />
+        <attr name="unfocusedItemCount" format="reference" />
         <attr name="android:gravity" />
     </declare-styleable>
 

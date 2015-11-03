@@ -26,12 +26,20 @@ public class Drawing {
 
     /**
      * Returns the estimated height that text rendered with a given paint will have.
-     * <p/>
+     * <p>
      * This method allocates.
      */
     public static int getEstimatedTextHeight(@NonNull Paint paint) {
         Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
         return Math.abs(fontMetrics.bottom - fontMetrics.top);
+    }
+
+    /**
+     * Returns the estimated maximum glyph width for a given paint's text configuration.
+     */
+    public static int getMaximumGlyphWidth(@NonNull Paint paint) {
+        // 'W' is the widest glyph in Roboto.
+        return (int) Math.ceil(paint.measureText("W", 0, 1));
     }
 
     public static int colorWithAlpha(int color, int newAlpha) {
