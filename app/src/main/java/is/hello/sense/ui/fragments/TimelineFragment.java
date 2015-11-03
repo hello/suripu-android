@@ -117,9 +117,9 @@ public class TimelineFragment extends InjectionFragment
     public static TimelineFragment newInstance(@NonNull LocalDate date,
                                                @Nullable Timeline cachedTimeline,
                                                boolean isFirstTimeline) {
-        TimelineFragment fragment = new TimelineFragment();
+        final TimelineFragment fragment = new TimelineFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DATE, date);
         arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
         arguments.putBoolean(ARG_IS_FIRST_TIMELINE, isFirstTimeline);
@@ -139,10 +139,9 @@ public class TimelineFragment extends InjectionFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocalDate date = getDate();
-        JSONObject properties = Analytics.createProperties(
-                Analytics.Timeline.PROP_DATE, date.toString()
-                                                          );
+        final LocalDate date = getDate();
+        final JSONObject properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
+                                                                 date.toString());
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
 
         this.firstTimeline = getArguments().getBoolean(ARG_IS_FIRST_TIMELINE, false);
@@ -311,6 +310,7 @@ public class TimelineFragment extends InjectionFragment
 
         recyclerView.setAdapter(null);
 
+        this.toolbar = null;
         this.headerView = null;
         this.recyclerView = null;
         this.layoutManager = null;
@@ -337,16 +337,20 @@ public class TimelineFragment extends InjectionFragment
     public void onTopViewWillSlideDown() {
         dismissVisibleOverlaysAndDialogs();
 
-        toolbar.setOverflowOpen(true);
-        toolbar.setTitleDimmed(true);
-        toolbar.setShareVisible(false);
+        if (toolbar != null) {
+            toolbar.setOverflowOpen(true);
+            toolbar.setTitleDimmed(true);
+            toolbar.setShareVisible(false);
+        }
     }
 
     @Override
     public void onTopViewDidSlideUp() {
-        toolbar.setOverflowOpen(false);
-        toolbar.setTitleDimmed(false);
-        toolbar.setShareVisible(adapter.hasEvents());
+        if (toolbar != null) {
+            toolbar.setOverflowOpen(false);
+            toolbar.setTitleDimmed(false);
+            toolbar.setShareVisible(adapter.hasEvents());
+        }
     }
 
     public void share(@NonNull View sender) {
@@ -363,14 +367,16 @@ public class TimelineFragment extends InjectionFragment
                                  return;
                              }
 
-                             LocalDate date = timelinePresenter.getDate();
-                             String scoreString = score.toString();
-                             String shareCopy;
+                             final LocalDate date = timelinePresenter.getDate();
+                             final String scoreString = score.toString();
+                             final String shareCopy;
                              if (DateFormatter.isLastNight(date)) {
-                                 shareCopy = getString(R.string.timeline_share_last_night_fmt, scoreString);
+                                 shareCopy = getString(R.string.timeline_share_last_night_fmt,
+                                                       scoreString);
                              } else {
-                                 String dateString = dateFormatter.formatAsTimelineDate(date);
-                                 shareCopy = getString(R.string.timeline_share_other_days_fmt, scoreString, dateString);
+                                 final String dateString = dateFormatter.formatAsTimelineDate(date);
+                                 shareCopy = getString(R.string.timeline_share_other_days_fmt,
+                                                       scoreString, dateString);
                              }
 
                              Share.text(shareCopy)
@@ -391,8 +397,12 @@ public class TimelineFragment extends InjectionFragment
 
         bindAndSubscribe(timelinePresenter.latest(),
                          timeline -> {
-                             TimelineInfoFragment infoOverlay = TimelineInfoFragment.newInstance(timeline, headerView.getCardViewId());
-                             infoOverlay.show(getFragmentManager(), R.id.activity_home_container, TimelineInfoFragment.TAG);
+                             final TimelineInfoFragment infoOverlay =
+                                     TimelineInfoFragment.newInstance(timeline,
+                                                                      headerView.getCardViewId());
+                             infoOverlay.show(getFragmentManager(),
+                                              R.id.activity_home_container,
+                                              TimelineInfoFragment.TAG);
                          },
                          Functions.LOG_ERROR);
     }
@@ -455,13 +465,17 @@ public class TimelineFragment extends InjectionFragment
 
         boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(homeActivity);
         if (firstTimeline && showZoomOutTutorial) {
-            SharedPreferences preferences = homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-            int numberTimelinesShown = preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
+            final SharedPreferences preferences =
+                    homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+            final int numberTimelinesShown =
+                    preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
             if (numberTimelinesShown < 5) {
-                Logger.debug(getClass().getSimpleName(), "Incrementing timelines shown to " + (numberTimelinesShown + 1));
+                Logger.debug(getClass().getSimpleName(),
+                             "Incrementing timelines shown to " + (numberTimelinesShown + 1));
 
                 preferences.edit()
-                           .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, numberTimelinesShown + 1)
+                           .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN,
+                                   numberTimelinesShown + 1)
                            .apply();
 
                 showZoomOutTutorial = false;
