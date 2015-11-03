@@ -23,6 +23,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.UnitSettingsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
 public class UnitSettingsFragment extends InjectionFragment implements Handler.Callback, UnitSettingsAdapter.OnRadioChangeListener {
@@ -53,7 +54,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_unit_settings, container, false);
+        final View view = inflater.inflate(R.layout.fragment_unit_settings, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_unit_settings_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -64,26 +65,27 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
         unitSettingsAdapter = new UnitSettingsAdapter(getActivity(), this);
         recyclerView.setAdapter(unitSettingsAdapter);
 
+        final boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_24_TIME,
                                                                      R.string.setting_time_unit,
                                                                      R.string.setting_time_12_hour,
                                                                      R.string.setting_time_24_hour),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_24_TIME, false));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_24_TIME, preferencesPresenter.getUse24Time()));
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_CELSIUS,
                                                                      R.string.setting_unit_temperature,
                                                                      R.string.setting_option_temperature_us,
                                                                      R.string.setting_option_temperature_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS, false));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultIsMetric));
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_GRAMS,
                                                                      R.string.setting_unit_weight,
                                                                      R.string.setting_option_weight_us,
                                                                      R.string.setting_option_weight_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS, false));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS, defaultIsMetric));
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_CENTIMETERS,
                                                                      R.string.setting_unit_height,
                                                                      R.string.setting_option_height_us,
                                                                      R.string.setting_option_height_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS, false));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultIsMetric));
         return view;
     }
 

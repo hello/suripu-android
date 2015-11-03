@@ -19,7 +19,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 
-public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapter.BaseViewHolder> {
+public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapter.UnitSettingsHolder> {
 
     private final LayoutInflater inflater;
     private final OnRadioChangeListener radioChangeListener;
@@ -27,7 +27,7 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
     private @Nullable List<UnitItem> items;
     private @Nullable HashMap<String, Boolean> itemValues;
 
-    public UnitSettingsAdapter(@NonNull Context context, OnRadioChangeListener radioChangeListener){
+    public UnitSettingsAdapter(@NonNull Context context, @NonNull OnRadioChangeListener radioChangeListener){
         this.radioChangeListener = radioChangeListener;
         this.inflater = LayoutInflater.from(context);
     }
@@ -88,26 +88,18 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
 
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(UnitSettingsHolder holder, int position) {
         holder.bind(position);
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UnitSettingsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = inflater.inflate(R.layout.item_section_radio, parent, false);
         return new UnitSettingsHolder(view);
     }
 
-    abstract class BaseViewHolder extends RecyclerView.ViewHolder {
-        BaseViewHolder(@NonNull View itemView) {
-            super(itemView);
-        }
-
-        abstract void bind(int position);
-    }
-
-    private class UnitSettingsHolder extends BaseViewHolder{
+    class UnitSettingsHolder extends  RecyclerView.ViewHolder{
         final TextView title;
         final RadioButton leftButton;
         final RadioButton rightButton;
@@ -121,7 +113,6 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
             this.radioGroup = (RadioGroup) view.findViewById(R.id.item_section_radio_group);
         }
 
-        @Override
         void bind(int position) {
             UnitItem item = getUnitItem(position);
             if (item == null){
@@ -135,8 +126,10 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
             boolean itemValue = getUnitItemValue(item.key);
             if (itemValue){
                 rightButton.setChecked(true);
+                leftButton.setChecked(false);
             } else {
                 leftButton.setChecked(true);
+                rightButton.setChecked(false);
             }
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -153,10 +146,10 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
     //endregion
 
     public static class UnitItem {
-        public final String key;
-        public int titleRes;
-        public int leftValueRes;
-        public int rightValueRes;
+        @StringRes public final String key;
+        @StringRes public int titleRes;
+        @StringRes public int leftValueRes;
+        @StringRes public int rightValueRes;
 
         public UnitItem(@NonNull String key,
                         @StringRes int titleRes,
