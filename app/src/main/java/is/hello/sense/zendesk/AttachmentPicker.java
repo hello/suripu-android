@@ -59,9 +59,11 @@ public class AttachmentPicker {
         chooseSource.setTitle(R.string.action_add_attachment);
 
         chooseSource.addOption(new SenseBottomSheet.Option(0)
-                .setTitle(R.string.action_take_photo));
+                .setTitle(R.string.action_take_photo)
+                .setIcon(R.drawable.settings_camera));
         chooseSource.addOption(new SenseBottomSheet.Option(1)
-                .setTitle(R.string.action_pick_image));
+                .setTitle(R.string.action_pick_image)
+                .setIcon(R.drawable.settings_photo_library));
 
         chooseSource.setOnOptionSelectedListener(option -> {
             switch (option.getOptionId()) {
@@ -76,6 +78,8 @@ public class AttachmentPicker {
             }
             return true;
         });
+
+        chooseSource.setWantsDividers(false);
         chooseSource.show();
 
         return true;

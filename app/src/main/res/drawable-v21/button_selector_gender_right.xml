@@ -3,8 +3,8 @@
     android:color="@color/light_accent">
     <item>
         <selector>
-            <item android:state_checked="true" android:drawable="@drawable/button_gender_checked" />
-            <item android:drawable="@drawable/button_gender_normal" />
+            <item android:state_checked="true" android:drawable="@drawable/button_gender_checked_right" />
+            <item android:drawable="@drawable/button_gender_normal_right" />
         </selector>
     </item>
 </ripple>
