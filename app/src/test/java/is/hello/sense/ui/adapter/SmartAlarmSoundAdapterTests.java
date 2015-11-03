@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.util.ListAdapterTesting;
+import is.hello.sense.util.RecyclerAdapterTesting;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,21 +26,23 @@ public class SmartAlarmSoundAdapterTests extends SenseTestCase {
 
     @Test
     public void nowPlayingRendering() throws Exception {
-        adapter.addAll(new Alarm.Sound(1, "Chimes", "http://does.not/exist.mp3"),
-                new Alarm.Sound(2, "Bells", "http://does.not/exist.mp3"));
+        adapter.add(new Alarm.Sound(1, "Chimes", "http://does.not/exist.mp3"));
+        adapter.add(new Alarm.Sound(2, "Bells", "http://does.not/exist.mp3"));
 
         adapter.setPlayingSoundId(1, true);
 
-        View view1 = adapter.getView(0, null, fakeParent);
-        SmartAlarmSoundAdapter.ViewHolder holder1 = ListAdapterTesting.getViewHolder(view1);
+        final SmartAlarmSoundAdapter.ViewHolder holder1 =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
+                                                         adapter.getItemViewType(0), 0);
 
         assertEquals(View.VISIBLE, holder1.busy.getVisibility());
         assertEquals(View.INVISIBLE, holder1.checked.getVisibility());
         assertEquals("Chimes", holder1.name.getText().toString());
 
 
-        View view2 = adapter.getView(1, null, fakeParent);
-        SmartAlarmSoundAdapter.ViewHolder holder2 = ListAdapterTesting.getViewHolder(view2);
+        final SmartAlarmSoundAdapter.ViewHolder holder2 =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
+                                                         adapter.getItemViewType(1), 1);
 
         assertEquals(View.GONE, holder2.busy.getVisibility());
         assertEquals(View.VISIBLE, holder2.checked.getVisibility());
@@ -49,21 +51,23 @@ public class SmartAlarmSoundAdapterTests extends SenseTestCase {
 
     @Test
     public void selectedRendering() throws Exception {
-        adapter.addAll(new Alarm.Sound(1, "Chimes", "http://does.not/exist.mp3"),
-                new Alarm.Sound(2, "Bells", "http://does.not/exist.mp3"));
+        adapter.add(new Alarm.Sound(1, "Chimes", "http://does.not/exist.mp3"));
+        adapter.add(new Alarm.Sound(2, "Bells", "http://does.not/exist.mp3"));
 
         adapter.setSelectedSoundId(1);
 
-        View view1 = adapter.getView(0, null, fakeParent);
-        SmartAlarmSoundAdapter.ViewHolder holder1 = ListAdapterTesting.getViewHolder(view1);
+        final SmartAlarmSoundAdapter.ViewHolder holder1 =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
+                                                         adapter.getItemViewType(0), 0);
 
         assertEquals(View.GONE, holder1.busy.getVisibility());
         assertEquals(View.VISIBLE, holder1.checked.getVisibility());
         assertEquals("Chimes", holder1.name.getText().toString());
 
 
-        View view2 = adapter.getView(1, null, fakeParent);
-        SmartAlarmSoundAdapter.ViewHolder holder2 = ListAdapterTesting.getViewHolder(view2);
+        final SmartAlarmSoundAdapter.ViewHolder holder2 =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
+                                                         adapter.getItemViewType(1), 1);
 
         assertEquals(View.GONE, holder2.busy.getVisibility());
         assertEquals(View.VISIBLE, holder2.checked.getVisibility());

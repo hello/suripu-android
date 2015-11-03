@@ -99,7 +99,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
     public void bindSounds(@NonNull ArrayList<Alarm.Sound> sounds) {
         dialog.setActivityIndicatorVisible(false);
-        adapter.addAll(sounds);
+        adapter.replaceAll(sounds);
     }
 
     public void presentError(Throwable e) {

@@ -6,15 +6,16 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 
-public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
+public class SmartAlarmSoundAdapter extends ArrayRecyclerAdapter<Alarm.Sound, SmartAlarmSoundAdapter.ViewHolder> {
     public static final int NONE = -1;
 
     private final LayoutInflater inflater;
@@ -25,7 +26,7 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
     private boolean playingSoundLoading = false;
 
     public SmartAlarmSoundAdapter(@NonNull Context context) {
-        super(context, R.layout.item_static_choice);
+        super(new ArrayList<>());
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
@@ -48,16 +49,14 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.item_static_choice, parent, false);
-            view.setTag(new ViewHolder(view));
-        }
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View view = inflater.inflate(R.layout.item_static_choice, parent, false);
+        return new ViewHolder(view);
+    }
 
-        ViewHolder holder = (ViewHolder) view.getTag();
-
-        Alarm.Sound sound = getItem(position);
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final Alarm.Sound sound = getItem(position);
         holder.name.setText(sound.name);
 
         if (selectedSoundId == sound.id) {
@@ -80,20 +79,21 @@ public class SmartAlarmSoundAdapter extends ArrayAdapter<Alarm.Sound> {
             holder.checked.setVisibility(View.VISIBLE);
             holder.busy.setVisibility(View.GONE);
         }
-
-        return view;
     }
 
-
-    class ViewHolder {
+    class ViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         final TextView name;
         final ImageView checked;
         final ProgressBar busy;
 
         ViewHolder(@NonNull View view) {
+            super(view);
+
             this.name = (TextView) view.findViewById(R.id.item_static_choice_name);
             this.checked = (ImageView) view.findViewById(R.id.item_static_choice_checked);
             this.busy = (ProgressBar) view.findViewById(R.id.item_static_choice_progress);
+
+            view.setOnClickListener(this);
         }
     }
 }

@@ -57,13 +57,12 @@
         android:layout_above="@id/dialog_sense_list_positive"
         style="@style/Divider.Horizontal" />
 
-    <ListView
-        android:id="@android:id/list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/dialog_sense_list_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/dialog_sense_list_message_divider"
-        android:layout_above="@id/dialog_sense_list_button_divider"
-        android:divider="@null" />
+        android:layout_above="@id/dialog_sense_list_button_divider" />
 
     <ProgressBar
         android:id="@+id/dialog_sense_list_loading"
