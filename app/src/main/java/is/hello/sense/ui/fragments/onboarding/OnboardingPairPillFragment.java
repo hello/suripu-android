@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.util.StringRef;
@@ -55,7 +57,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
+        final View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
@@ -70,8 +72,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
 
         OnboardingToolbar.of(this, view)
-                .setWantsBackButton(false)
-                .setOnHelpClickListener(this::help);
+                         .setWantsBackButton(false)
+                         .setOnHelpClickListener(this::help);
 
         if (BuildConfig.DEBUG) {
             diagram.setOnLongClickListener(ignored -> {
@@ -120,7 +122,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
     private void finishedPairing(boolean success) {
         LoadingDialogFragment.show(getFragmentManager(),
-                null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             stateSafeExecutor.execute(() -> {
@@ -139,9 +141,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
 
     public void skipPairingPill() {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "pill_pairing"));
+        final JSONObject properties =
+                Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "pill_pairing");
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, properties);
 
-        SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
+        final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
         confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
@@ -191,7 +195,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void presentError(Throwable e) {
         this.isPairing = false;
 
-        diagram.suspendPlayback();
+        diagram.suspendPlayback(true);
         hideAllActivityForFailure(() -> {
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
@@ -199,7 +203,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             skipButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.VISIBLE);
 
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
+            final ErrorDialogFragment.Builder errorDialogBuilder =
+                    new ErrorDialogFragment.Builder(e, getResources());
             errorDialogBuilder.withOperation("Pair Pill");
             if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
@@ -213,7 +218,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                 errorDialogBuilder.withUnstableBluetoothHelp(getResources());
             }
 
-            ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }

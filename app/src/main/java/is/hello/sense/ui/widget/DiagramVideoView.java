@@ -279,9 +279,8 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
         player.startPlayback();
     }
 
-    public void suspendPlayback() {
+    public void suspendPlayback(boolean rewind) {
         setAutoStart(false);
-        boolean rewind = (player.getState() == Player.STATE_PLAYING);
         player.pausePlayback();
         if (rewind) {
             player.seekTo(0);

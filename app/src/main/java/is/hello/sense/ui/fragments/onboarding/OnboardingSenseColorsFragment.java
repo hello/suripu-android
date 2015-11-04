@@ -137,7 +137,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     public void onPause() {
         super.onPause();
 
-        senseWave.suspendPlayback();
+        senseWave.suspendPlayback(true);
     }
 
     @Override
@@ -236,7 +236,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseYellow.setAlpha(1f);
                 senseRed.setAlpha(0f);
             } else if (position == POSITION_ALERT) {
-                senseWave.suspendPlayback();
+                senseWave.suspendPlayback(false);
 
                 senseGreen.setAlpha(0f);
                 senseYellow.setAlpha(0f);
