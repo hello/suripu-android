@@ -3,13 +3,13 @@ package is.hello.sense.ui.fragments.settings;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.RadioButton;
 
 import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
@@ -26,15 +26,17 @@ import is.hello.sense.ui.adapter.TimeZoneAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class DeviceTimeZoneFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    @Inject AccountPresenter accountPresenter;
+public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZoneAdapter.OnRadioClickListener {
+    @Inject
+    AccountPresenter accountPresenter;
 
-    private ListView listView;
+    private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
-    private TextView headerDetail;
+    private RadioButton currentTimeZone;
 
 
     //region Lifecycle
@@ -54,22 +56,17 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.list_view_static, container, false);
-
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
-
-        this.listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-
-        final View header = inflater.inflate(R.layout.sub_fragment_device_time_zone_header, listView, false);
-        this.headerDetail = (TextView) header.findViewById(R.id.item_static_choice_name);
-        headerDetail.setText(R.string.missing_data_placeholder);
-
-        listView.addHeaderView(header, null, false);
-
-        final TimeZoneAdapter adapter = new TimeZoneAdapter(getActivity());
-        listView.setAdapter(adapter);
-
+        final View view = inflater.inflate(R.layout.fragment_device_time_zone, container, false);
+        activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_time_zone_loading);
+        currentTimeZone = (RadioButton) view.findViewById(R.id.fragment_device_time_zone_current_zone);
+        recyclerView = (RecyclerView) view.findViewById(R.id.fragment_device_time_zone_recycler);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources()));
+        currentTimeZone.setText(R.string.missing_data_placeholder);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(null);
+        recyclerView.setAdapter(new TimeZoneAdapter(getActivity(), this));
         return view;
     }
 
@@ -84,35 +81,33 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        this.listView = null;
+        this.recyclerView = null;
         this.activityIndicator = null;
-        this.headerDetail = null;
+        this.currentTimeZone = null;
     }
 
     //endregion
 
 
     private void beginActivity() {
-        listView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
         activityIndicator.setVisibility(View.VISIBLE);
     }
 
     private void endActivity(boolean success) {
         if (success) {
-            listView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
         }
         activityIndicator.setVisibility(View.GONE);
     }
 
-
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        final String timeZoneId = (String) parent.getItemAtPosition(position);
-        if (timeZoneId == null) {
-            return;
+    public void onRadioValueChanged(int position) {
+        String[] timeZoneIds = getActivity().getResources().getStringArray(R.array.timezone_ids);
+        if (timeZoneIds == null || timeZoneIds.length == 0 || timeZoneIds.length < position+1){
+            return; // error
         }
-
+        String timeZoneId = timeZoneIds[position];
         final DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
         final SenseTimeZone senseTimeZone = SenseTimeZone.fromDateTimeZone(timeZone);
         LoadingDialogFragment.show(getFragmentManager(),
@@ -139,7 +134,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements Adapter
         final TimeZone displayTimeZone = timeZone.toTimeZone();
         final boolean inDST = displayTimeZone.inDaylightTime(new Date());
         final String timeZoneName = displayTimeZone.getDisplayName(inDST, TimeZone.LONG);
-        headerDetail.setText(timeZoneName);
+        currentTimeZone.setText(timeZoneName);
 
         endActivity(true);
     }
