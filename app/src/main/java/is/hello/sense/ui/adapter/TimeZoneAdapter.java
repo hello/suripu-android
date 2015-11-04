@@ -2,71 +2,108 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
+
 
 import is.hello.sense.R;
 
-public class TimeZoneAdapter extends ArrayAdapter<String> {
-    private final LayoutInflater inflater;
-    private final String[] names;
+public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseViewHolder> {
+    private final String[] timeZoneNames;
+    private final Context context;
+    private final int itemVerticalPadding;
+    private final OnRadioClickListener clickListener;
+    private final int VIEW_TYPE_HEADER = 0;
+    private final int VIEW_TYPE_RADIO = 1;
 
-    public TimeZoneAdapter(@NonNull Context context) {
-        super(context,
-              R.layout.item_static_choice,
-              context.getResources().getStringArray(R.array.timezone_ids));
-
-        this.inflater = LayoutInflater.from(context);
-        this.names = context.getResources().getStringArray(R.array.timezone_names);
+    public TimeZoneAdapter(@NonNull Context context, @NonNull OnRadioClickListener clickListener) {
+        this.context = context;
+        final String[] timeZoneArray = context.getResources().getStringArray(R.array.timezone_names);
+        this.timeZoneNames = new String[timeZoneArray.length + 1];
+        this.timeZoneNames[0] = context.getString(R.string.label_choose_time_zone);
+        System.arraycopy(timeZoneArray, 0, this.timeZoneNames, 1, timeZoneArray.length);
+        this.clickListener = clickListener;
+        itemVerticalPadding = context.getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
     }
 
 
     protected String getDisplayName(int position) {
-        return names[position];
+        return timeZoneNames[position];
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.item_static_choice, parent, false);
-
-            final ViewHolder viewHolder = new ViewHolder(view);
-            viewHolder.setChecked(false);
-            view.setTag(viewHolder);
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_HEADER) {
+            return new HeaderHolder(new TextView(context));
         }
+        return new TimeZoneHolder(new RadioButton(context));
+    }
 
-        final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        viewHolder.title.setText(getDisplayName(position));
 
-        return view;
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return VIEW_TYPE_HEADER;
+        }
+        return VIEW_TYPE_RADIO;
     }
 
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return getView(position, convertView, parent);
+    public int getItemCount() {
+        return timeZoneNames.length;
     }
 
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        holder.bind(position);
+    }
 
-    static class ViewHolder {
-        final ImageView checked;
-        final TextView title;
-
-        ViewHolder(@NonNull View view) {
-            this.checked = (ImageView) view.findViewById(R.id.item_static_choice_checked);
-            this.title = (TextView) view.findViewById(R.id.item_static_choice_name);
+    abstract class BaseViewHolder extends RecyclerView.ViewHolder {
+        BaseViewHolder(@NonNull View itemView) {
+            super(itemView);
         }
 
-        void setChecked(boolean checked) {
-            if (checked) {
-                this.checked.setImageResource(R.drawable.radio_on);
-            } else {
-                this.checked.setImageResource(R.drawable.radio_off);
-            }
+        abstract void bind(int position);
+    }
+
+    class HeaderHolder extends BaseViewHolder {
+
+        final TextView header;
+
+        public HeaderHolder(@NonNull View view) {
+            super(view);
+            this.header = (TextView) view;
+            this.header.setPadding(0, itemVerticalPadding * 2, 0, itemVerticalPadding);
+            this.header.setTextAppearance(context, R.style.AppTheme_Text_SectionHeading_Large);
         }
+
+        void bind(int position) {
+            header.setText(getDisplayName(position));
+        }
+    }
+
+    class TimeZoneHolder extends BaseViewHolder {
+
+        final RadioButton radioButton;
+
+        public TimeZoneHolder(@NonNull View view) {
+            super(view);
+            this.radioButton = (RadioButton) view;
+            this.radioButton.setPadding(0, itemVerticalPadding, 0, itemVerticalPadding);
+        }
+
+        void bind(int position) {
+            radioButton.setText(getDisplayName(position));
+            radioButton.setOnCheckedChangeListener((button, isChecked) -> {
+                clickListener.onRadioValueChanged(position - 1); // This list has 1 more element (the header) than the list of time zone ids.
+            });
+        }
+    }
+
+    public interface OnRadioClickListener {
+        void onRadioValueChanged(int position);
     }
 }
