@@ -60,9 +60,9 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
         activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_time_zone_loading);
         currentTimeZone = (RadioButton) view.findViewById(R.id.fragment_device_time_zone_current_zone);
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_device_time_zone_recycler);
+        currentTimeZone.setText(R.string.missing_data_placeholder);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources()));
-        currentTimeZone.setText(R.string.missing_data_placeholder);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
@@ -104,7 +104,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
     @Override
     public void onRadioValueChanged(int position) {
         String[] timeZoneIds = getActivity().getResources().getStringArray(R.array.timezone_ids);
-        if (timeZoneIds == null || timeZoneIds.length == 0 || timeZoneIds.length < position+1){
+        if (timeZoneIds == null || timeZoneIds.length == 0 || timeZoneIds.length < position + 1) {
             return; // error
         }
         String timeZoneId = timeZoneIds[position];

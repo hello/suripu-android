@@ -2,6 +2,7 @@
     <!-- Standard Sizing -->
 
     <dimen name="gap_outer">24dp</dimen>
+    <dimen name="gap_outer_half">12dp</dimen>
     <dimen name="gap_outer_dialog_buttons">14dp</dimen>
     <dimen name="gap_action_bar_start">63dp</dimen>
     <dimen name="gap_tiny">3dp</dimen>

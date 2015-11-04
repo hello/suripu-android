@@ -34,38 +34,23 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/fragment_device_time_zone_header"
-        android:background="@color/divider_color"/>
+        android:background="@color/border"/>
 
-    <LinearLayout
-        android:id="@+id/fragment_device_time_zone_list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_device_time_zone_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/fragment_device_time_zone_divider"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_choose_time_zone"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/fragment_device_time_zone_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="@dimen/gap_medium"/>
-    </LinearLayout>
+        android:paddingLeft="@dimen/gap_outer"
+        android:paddingRight="@dimen/gap_outer"/>
 
 
     <ProgressBar
         android:id="@+id/fragment_device_time_zone_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:visibility="gone"/>
 
 

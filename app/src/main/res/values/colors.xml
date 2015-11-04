@@ -74,6 +74,4 @@
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
-
-    <color name="divider_color">#19000000</color>
 </resources>
