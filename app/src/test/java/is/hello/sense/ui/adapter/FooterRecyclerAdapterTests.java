@@ -16,34 +16,29 @@ import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.RecyclerAdapterTesting;
 import is.hello.sense.util.RecyclerAdapterTesting.Observer.Change.Type;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public class HeaderRecyclerAdapterTests extends SenseTestCase {
+public class FooterRecyclerAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private final TestAdapter adapter = new TestAdapter();
-    private final HeaderRecyclerAdapter wrapper = new HeaderRecyclerAdapter(adapter);
+    private final FooterRecyclerAdapter wrapper = new FooterRecyclerAdapter(adapter);
     private final RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
 
-    public HeaderRecyclerAdapterTests() {
+    public FooterRecyclerAdapterTests() {
         wrapper.registerAdapterDataObserver(observer);
     }
 
     @After
     public void tearDown() {
-        wrapper.headers.clear();
         wrapper.footers.clear();
 
         adapter.setOnItemClickedListener(null);
         adapter.clear();
 
         observer.reset();
-    }
-
-    private void addHeaders(int count) {
-        for (int i = 0; i < count; i++) {
-            wrapper.addHeader(new View(getContext()));
-        }
     }
 
     private void addFooters(int count) {
@@ -59,105 +54,75 @@ public class HeaderRecyclerAdapterTests extends SenseTestCase {
 
     @Test
     public void basicMethods() throws Exception {
-        addHeaders(2);
         addFooters(2);
         addContent();
+        assertThat(wrapper.getItemCount(), is(equalTo(5)));
 
-        assertEquals(7, wrapper.getItemCount());
+        assertThat(wrapper.getItemId(0), is(equalTo(0L)));
+        assertThat(wrapper.getItemId(1), is(equalTo(0L)));
+        assertThat(wrapper.getItemId(2), is(equalTo(0L)));
+        assertThat(wrapper.getItemId(3), is(equalTo(Long.MAX_VALUE)));
+        assertThat(wrapper.getItemId(4), is(equalTo(Long.MAX_VALUE - 1L)));
 
-        assertEquals(-2, wrapper.getItemId(0));
-        assertEquals(-1, wrapper.getItemId(1));
-        assertEquals(0, wrapper.getItemId(2));
-        assertEquals(0, wrapper.getItemId(3));
-        assertEquals(0, wrapper.getItemId(4));
-        assertEquals(Integer.MAX_VALUE, wrapper.getItemId(5));
-        assertEquals(Integer.MAX_VALUE - 1, wrapper.getItemId(6));
-
-        assertEquals(HeaderRecyclerAdapter.VIEW_ID_HEADER_FOOTER, wrapper.getItemViewType(0));
-        assertEquals(HeaderRecyclerAdapter.VIEW_ID_HEADER_FOOTER, wrapper.getItemViewType(1));
-        assertEquals(0, wrapper.getItemId(2));
-        assertEquals(0, wrapper.getItemId(3));
-        assertEquals(0, wrapper.getItemId(4));
-        assertEquals(HeaderRecyclerAdapter.VIEW_ID_HEADER_FOOTER, wrapper.getItemViewType(5));
-        assertEquals(HeaderRecyclerAdapter.VIEW_ID_HEADER_FOOTER, wrapper.getItemViewType(6));
-    }
-
-    @Test
-    public void headers() throws Exception {
-        addContent();
-        assertEquals(3, wrapper.getItemCount());
-
-        addHeaders(1);
-        assertEquals(4, wrapper.getItemCount());
-        assertEquals(HeaderRecyclerAdapter.VIEW_ID_HEADER_FOOTER, wrapper.getItemViewType(0));
-        assertEquals(0, wrapper.getItemId(1));
-        observer.assertChangeOccurred(Type.INSERTED, 0, 1);
-
-        RecyclerView.ViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(wrapper,
-                fakeParent, wrapper.getItemViewType(0), 0);
-        assertTrue(holder1 instanceof HeaderRecyclerAdapter.HeaderFooterViewHolder);
-
-        RecyclerView.ViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(wrapper,
-                fakeParent, wrapper.getItemViewType(1), 1);
-        assertTrue(holder2 instanceof ArrayRecyclerAdapter.ViewHolder);
+        assertThat(wrapper.getItemId(0), is(equalTo(0L)));
+        assertThat(wrapper.getItemId(1), is(equalTo(0L)));
+        assertThat(wrapper.getItemId(2), is(equalTo(0L)));
+        assertThat(wrapper.getItemViewType(3), is(equalTo(FooterRecyclerAdapter.VIEW_ID_FOOTER)));
+        assertThat(wrapper.getItemViewType(4), is(equalTo(FooterRecyclerAdapter.VIEW_ID_FOOTER)));
     }
 
     @Test
     public void footers() throws Exception {
         addContent();
-        assertEquals(3, wrapper.getItemCount());
+        assertThat(wrapper.getItemCount(), is(equalTo(3)));
 
         addFooters(1);
-        assertEquals(4, wrapper.getItemCount());
-        assertEquals(0, wrapper.getItemId(0));
-        assertEquals(HeaderRecyclerAdapter.VIEW_ID_HEADER_FOOTER, wrapper.getItemViewType(3));
+        assertThat(wrapper.getItemCount(), is(equalTo(4)));
+        assertThat(wrapper.getItemId(0), is(equalTo(0L)));
+        assertThat(wrapper.getItemViewType(3), is(equalTo(FooterRecyclerAdapter.VIEW_ID_FOOTER)));
         observer.assertChangeOccurred(Type.INSERTED, 3, 1);
 
         RecyclerView.ViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(wrapper,
                 fakeParent, wrapper.getItemViewType(3), 3);
-        assertTrue(holder1 instanceof HeaderRecyclerAdapter.HeaderFooterViewHolder);
+        assertThat(holder1, is(instanceOf(FooterRecyclerAdapter.FooterViewHolder.class)));
 
         RecyclerView.ViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(wrapper,
                 fakeParent, wrapper.getItemViewType(0), 0);
-        assertTrue(holder2 instanceof ArrayRecyclerAdapter.ViewHolder);
+        assertThat(holder2, is(instanceOf(ArrayRecyclerAdapter.ViewHolder.class)));
     }
 
     @Test
     public void forwardsInsertions() throws Exception {
-        addHeaders(2);
         addFooters(2);
         addContent();
-        observer.assertChangeOccurred(Type.INSERTED, 2, 3);
+        observer.assertChangeOccurred(Type.INSERTED, 0, 3);
     }
 
     @Test
     public void forwardsChanges() throws Exception {
-        addHeaders(2);
         addFooters(2);
         addContent();
         adapter.set(0, "different!");
-        observer.assertChangeOccurred(Type.CHANGED, 2, 1);
+        observer.assertChangeOccurred(Type.CHANGED, 0, 1);
     }
 
     @Test
     public void forwardsRemovals() throws Exception {
-        addHeaders(2);
         addFooters(2);
         addContent();
         adapter.remove(0);
-        observer.assertChangeOccurred(Type.REMOVED, 2, 1);
+        observer.assertChangeOccurred(Type.REMOVED, 0, 1);
     }
 
     @Test
     public void forwardsMoves() throws Exception {
-        addHeaders(1);
         addContent();
 
         adapter.notifyItemMoved(0, 1);
-        observer.assertChangeOccurred(Type.MOVED, 1, 2, 1);
+        observer.assertChangeOccurred(Type.MOVED, 0, 1, 1);
 
         adapter.notifyItemMoved(2, 1);
-        observer.assertChangeOccurred(Type.MOVED, 3, 2, 1);
+        observer.assertChangeOccurred(Type.MOVED, 2, 1, 1);
     }
 
     @Test
