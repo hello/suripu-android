@@ -26,7 +26,7 @@ import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.DevicesAdapter;
-import is.hello.sense.ui.adapter.HeaderRecyclerAdapter;
+import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -92,7 +92,7 @@ public class DeviceListFragment extends InjectionFragment
         supportInfoFooter.setVisibility(View.INVISIBLE);
         Styles.initializeSupportFooter(getActivity(), supportInfoFooter);
 
-        recyclerView.setAdapter(new HeaderRecyclerAdapter(adapter)
+        recyclerView.setAdapter(new FooterRecyclerAdapter(adapter)
                                         .addFooter(supportInfoFooter)
                                         .setFlattenChanges(true));
 

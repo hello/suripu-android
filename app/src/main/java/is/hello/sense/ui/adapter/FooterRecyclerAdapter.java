@@ -10,20 +10,19 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public static int VIEW_ID_HEADER_FOOTER = Integer.MIN_VALUE;
+public class FooterRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static int VIEW_ID_FOOTER = Integer.MIN_VALUE;
 
-    private final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT);
+    private final FrameLayout.LayoutParams layoutParams =
+            new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                                         FrameLayout.LayoutParams.WRAP_CONTENT);
 
-    @VisibleForTesting final List<View> headers = new ArrayList<>();
     @VisibleForTesting final List<View> footers = new ArrayList<>();
     @VisibleForTesting final RecyclerView.Adapter adapter;
     private boolean flattenChanges = false;
 
-    public HeaderRecyclerAdapter(@NonNull RecyclerView.Adapter<?> adapter) {
-        if (adapter instanceof HeaderRecyclerAdapter) {
+    public FooterRecyclerAdapter(@NonNull RecyclerView.Adapter<?> adapter) {
+        if (adapter instanceof FooterRecyclerAdapter) {
             throw new IllegalArgumentException("Cannot nest HeaderRecyclerAdapter.");
         }
 
@@ -32,23 +31,16 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
 
-    //region Headers & Footers
+    //region Footers
 
-    public HeaderRecyclerAdapter addHeader(@NonNull View header) {
-        int oldSize = headers.size();
-        headers.add(header);
-        notifyItemInserted(oldSize);
-        return this;
-    }
-
-    public HeaderRecyclerAdapter addFooter(@NonNull View footer) {
+    public FooterRecyclerAdapter addFooter(@NonNull View footer) {
         int oldSize = getItemCount();
         footers.add(footer);
         notifyItemInserted(oldSize);
         return this;
     }
 
-    public HeaderRecyclerAdapter setFlattenChanges(boolean flattenChanges) {
+    public FooterRecyclerAdapter setFlattenChanges(boolean flattenChanges) {
         this.flattenChanges = flattenChanges;
         return this;
     }
@@ -60,39 +52,34 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
-        return headers.size() + footers.size() + adapter.getItemCount();
+        return footers.size() + adapter.getItemCount();
     }
 
     @Override
     public int getItemViewType(int position) {
-        int headersSize = headers.size();
-        if (position < headersSize ||
-                position >= (headersSize + adapter.getItemCount())) {
-            return VIEW_ID_HEADER_FOOTER;
+        if (position >= adapter.getItemCount()) {
+            return VIEW_ID_FOOTER;
         } else {
-            return adapter.getItemViewType(position - headersSize);
+            return adapter.getItemViewType(position);
         }
     }
 
     @Override
     public long getItemId(int position) {
-        int headersSize = headers.size();
-        if (position < headersSize) {
-            return position - headersSize;
-        } else if (position >= (headersSize + adapter.getItemCount())) {
-            int shiftedPosition = position - headersSize - adapter.getItemCount();
-            return Integer.MAX_VALUE - shiftedPosition;
+        if (position >= adapter.getItemCount()) {
+            int shiftedPosition = position - adapter.getItemCount();
+            return Long.MAX_VALUE - shiftedPosition;
         } else {
-            return adapter.getItemViewType(position - headersSize);
+            return adapter.getItemViewType(position);
         }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_ID_HEADER_FOOTER) {
+        if (viewType == VIEW_ID_FOOTER) {
             FrameLayout frameLayout = new FrameLayout(parent.getContext());
             frameLayout.setLayoutParams(layoutParams);
-            return new HeaderFooterViewHolder(frameLayout);
+            return new FooterViewHolder(frameLayout);
         } else {
             return adapter.createViewHolder(parent, viewType);
         }
@@ -101,30 +88,24 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        int headersSize = headers.size();
-        if (holder instanceof HeaderFooterViewHolder) {
-            View view;
-            if (position < headersSize) {
-                view = headers.get(position);
-            } else {
-                int shiftedPosition = position - headersSize - adapter.getItemCount();
-                view = footers.get(shiftedPosition);
-            }
+        if (holder instanceof FooterViewHolder) {
+            final int shiftedPosition = position - adapter.getItemCount();
+            final View view = footers.get(shiftedPosition);
 
-            FrameLayout root = ((HeaderFooterViewHolder) holder).root;
+            final FrameLayout root = ((FooterViewHolder) holder).root;
             if (view.getParent() != root) {
                 root.removeAllViews();
                 root.addView(view, layoutParams);
             }
         } else {
-            adapter.bindViewHolder(holder, position - headersSize);
+            adapter.bindViewHolder(holder, position);
         }
     }
 
     @Override
     public void onViewRecycled(RecyclerView.ViewHolder holder) {
-        if (holder instanceof HeaderFooterViewHolder) {
-            FrameLayout root = ((HeaderFooterViewHolder) holder).root;
+        if (holder instanceof FooterViewHolder) {
+            final FrameLayout root = ((FooterViewHolder) holder).root;
             root.removeAllViews();
         }
     }
@@ -132,10 +113,10 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     //endregion
 
 
-    static class HeaderFooterViewHolder extends RecyclerView.ViewHolder {
+    static class FooterViewHolder extends RecyclerView.ViewHolder {
         final FrameLayout root;
 
-        HeaderFooterViewHolder(@NonNull FrameLayout itemView) {
+        FooterViewHolder(@NonNull FrameLayout itemView) {
             super(itemView);
 
             this.root = itemView;
@@ -151,7 +132,7 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if (flattenChanges) {
                 notifyDataSetChanged();
             } else {
-                notifyItemRangeChanged(headers.size() + positionStart, itemCount);
+                notifyItemRangeChanged(positionStart, itemCount);
             }
         }
 
@@ -159,7 +140,7 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if (flattenChanges) {
                 notifyDataSetChanged();
             } else {
-                notifyItemRangeInserted(headers.size() + positionStart, itemCount);
+                notifyItemRangeInserted(positionStart, itemCount);
             }
         }
 
@@ -167,7 +148,7 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if (flattenChanges) {
                 notifyDataSetChanged();
             } else {
-                notifyItemRangeRemoved(headers.size() + positionStart, itemCount);
+                notifyItemRangeRemoved(positionStart, itemCount);
             }
         }
 
@@ -175,9 +156,8 @@ public class HeaderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             if (flattenChanges) {
                 notifyDataSetChanged();
             } else {
-                final int offset = headers.size();
                 for (int i = 0; i < itemCount; i++) {
-                    notifyItemMoved(offset + fromPosition + i, offset + toPosition + i);
+                    notifyItemMoved(fromPosition + i, toPosition + i);
                 }
             }
         }
