@@ -318,7 +318,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         if (!ViewCompat.isLaidOut(this)) {
             Views.runWhenLaidOut(this, () -> {
-                if (itemHeight == 0) {
+                if (itemHeight == 0 && getVisibility() != GONE) {
                     throw new IllegalStateException("itemHeight == 0 after layout");
                 }
 
