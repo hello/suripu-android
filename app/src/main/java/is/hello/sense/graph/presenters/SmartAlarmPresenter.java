@@ -25,7 +25,7 @@ import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
-    private static final int FUTURE_CUT_OFF_MINUTES = 5;
+    private static final int FUTURE_CUT_OFF_MINUTES = 2;
 
     private final ApiService apiService;
     private ArrayList<Alarm.Sound> availableAlarmSounds;
