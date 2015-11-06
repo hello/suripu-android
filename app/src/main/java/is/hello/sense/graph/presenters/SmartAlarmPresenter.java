@@ -106,7 +106,25 @@ import rx.subjects.ReplaySubject;
         DateTime nowDate = nowTime.toDateTimeToday();
         DateTime cutOff = nowDate.plusMinutes(FUTURE_CUT_OFF_MINUTES);
         DateTime alarmTime = alarm.getTime().toDateTimeToday();
-        return new Interval(nowDate, cutOff).contains(alarmTime);
+        Set<Integer> daysOfWeek = alarm.getDaysOfWeek();
+        if (daysOfWeek == null || daysOfWeek.size() == 0) {
+            // Alarm is for every day of the week, check if next 2 minutes
+            return new Interval(nowDate, cutOff).contains(alarmTime);
+        }else{
+            int dayOfWeek = nowDate.getDayOfWeek();
+            if (dayOfWeek == 0){
+                // S M T W T F S
+                // 7 1 2 3 4 5 6 -- Our Alarm
+                // 0 1 2 3 4 5 6 -- DateTime
+                dayOfWeek = 7; // Sunday is 7 for our Alarm, but 0 in DateTime
+            }
+            if (daysOfWeek.contains(dayOfWeek)){
+                // User choose today as one of their options, check if next 2 minutes.
+                return new Interval(nowDate, cutOff).contains(alarmTime);
+            }
+        }
+        // Alarm isn't for today.
+        return false;
     }
 
     public boolean isAlarmTooSoon(@NonNull Alarm alarm) {
