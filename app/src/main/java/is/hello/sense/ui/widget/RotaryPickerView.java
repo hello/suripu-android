@@ -231,8 +231,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     }
 
     protected void calculateRollOverPoints() {
-        this.rollBackwardPosition = 0;
-        this.rollForwardPosition = adapter.getBoundedItemCount() - 1;
+        this.rollBackwardPosition = adapter.getBoundedItemCount() - 1;
+        this.rollForwardPosition = 0;
     }
 
     protected void calculateVisibleItemCount() {
