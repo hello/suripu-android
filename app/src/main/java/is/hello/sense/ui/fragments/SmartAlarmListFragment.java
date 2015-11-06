@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -245,7 +247,9 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             smartAlarm.setRingOnce();
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
+        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED,
+                                                                 enabled);
+        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, properties);
 
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),

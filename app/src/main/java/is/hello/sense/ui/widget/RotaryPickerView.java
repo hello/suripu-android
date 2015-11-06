@@ -231,8 +231,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
     }
 
     protected void calculateRollOverPoints() {
-        this.rollBackwardPosition = 0;
-        this.rollForwardPosition = adapter.getBoundedItemCount() - 1;
+        this.rollBackwardPosition = adapter.getBoundedItemCount() - 1;
+        this.rollForwardPosition = 0;
     }
 
     protected void calculateVisibleItemCount() {
@@ -339,14 +339,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         smoothScrollBy(0, itemHeight);
         this.value = newValue;
-
-        if (wrapAroundEventsEnabled && onSelectionListener != null
-                && wrapsAround && newValue == rollForwardPosition) {
-            onSelectionListener.onSelectionRolledOver(this, RolloverDirection.FORWARD);
-
-            final View centerView = findChildViewUnder(0, recyclerMidY);
-            this.lastWrapAroundPosition = getChildAdapterPosition(centerView);
-        }
     }
 
     public void decrement() {
@@ -359,13 +351,6 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
 
         smoothScrollBy(0, -itemHeight);
         this.value = newValue;
-        if (wrapAroundEventsEnabled && onSelectionListener != null
-                && wrapsAround && newValue == rollBackwardPosition) {
-            onSelectionListener.onSelectionRolledOver(this, RolloverDirection.FORWARD);
-
-            final View centerView = findChildViewUnder(0, recyclerMidY);
-            this.lastWrapAroundPosition = getChildAdapterPosition(centerView);
-        }
     }
 
     public int getValue() {
