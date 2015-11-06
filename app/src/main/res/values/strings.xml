@@ -367,7 +367,7 @@
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
     <string name="trends_message_error">Trends could not be loaded.</string>
-    <string name="message_no_trends_yet">Your trends appear after a week of sleep.</string>
+    <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
@@ -442,7 +442,7 @@
     <string name="error_timeline_sound_playback_failed">Could not play sound</string>
     <string name="timeline_actions_intro_title">Sense Learns</string>
     <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms that Sense uses to detect and analyze your sleep.</string>
-    <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair a Sense to view current conditions.</string>
+    <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair with Sense to view current conditions.</string>
     <string name="message_timeline_no_actions_title">No Actions Available</string>
     <string name="message_timeline_no_actions_body">The event you selected does not have any actions available.</string>
     <string name="action_send">Send</string>
