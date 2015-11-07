@@ -25,7 +25,7 @@ import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
-    private static final int FUTURE_CUT_OFF_MINUTES = 5;
+    private static final int FUTURE_CUT_OFF_MINUTES = 2;
 
     private final ApiService apiService;
     private ArrayList<Alarm.Sound> availableAlarmSounds;
@@ -106,7 +106,13 @@ import rx.subjects.ReplaySubject;
         DateTime nowDate = nowTime.toDateTimeToday();
         DateTime cutOff = nowDate.plusMinutes(FUTURE_CUT_OFF_MINUTES);
         DateTime alarmTime = alarm.getTime().toDateTimeToday();
-        return new Interval(nowDate, cutOff).contains(alarmTime);
+        Set<Integer> daysOfWeek = alarm.getDaysOfWeek();
+        if (daysOfWeek == null || daysOfWeek.size() == 0 || daysOfWeek.contains(nowDate.getDayOfWeek())) {
+            // Alarm includes today, check if next 2 minutes
+            return new Interval(nowDate, cutOff).contains(alarmTime);
+        }
+        // Alarm isn't for today.
+        return false;
     }
 
     public boolean isAlarmTooSoon(@NonNull Alarm alarm) {

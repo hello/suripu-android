@@ -21,7 +21,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 
 public class Alarm extends ApiResponse {
-    public static final int FUTURE_CUT_OFF_MINUTES = 5;
+    public static final int FUTURE_CUT_OFF_MINUTES = 2;
 
 
     @SerializedName("id")
