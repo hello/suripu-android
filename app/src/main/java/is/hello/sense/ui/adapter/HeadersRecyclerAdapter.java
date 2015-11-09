@@ -84,7 +84,10 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
     @Override
     public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType < VIEW_TYPE_CONTENT) {
-            return new HeaderViewHolder(new FrameLayout(parent.getContext()));
+            final FrameLayout root = new FrameLayout(parent.getContext());
+            root.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                            ViewGroup.LayoutParams.WRAP_CONTENT));
+            return new HeaderViewHolder(root);
         } else {
             return onCreateContentViewHolder(parent, viewType);
         }
@@ -96,7 +99,7 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
             ((HeaderViewHolder) holder).bind(getHeaderAt(position));
         } else {
             @SuppressWarnings("unchecked")
-            VH contentViewHolder = (VH) holder;
+            final VH contentViewHolder = (VH) holder;
             final int contentPosition = (position - getHeaderCount());
             contentViewHolder.setContentPosition(contentPosition);
             onBindContentViewHolder(contentViewHolder, contentPosition);
@@ -110,7 +113,7 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
             ((HeaderViewHolder) holder).recycle();
         } else {
             @SuppressWarnings("unchecked")
-            VH contentViewHolder = (VH) holder;
+            final VH contentViewHolder = (VH) holder;
             contentViewHolder.setContentPosition(RecyclerView.NO_POSITION);
         }
     }
@@ -121,7 +124,7 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
     //region View Holders
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        static final FrameLayout.LayoutParams LAYOUT_PARAMS =
+        static final FrameLayout.LayoutParams CONTENT_LAYOUT_PARAMS =
                 new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                                              FrameLayout.LayoutParams.WRAP_CONTENT);
         final FrameLayout container;
@@ -139,7 +142,7 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
                 if (oldParent != null) {
                     oldParent.removeView(view);
                 }
-                container.addView(view, LAYOUT_PARAMS);
+                container.addView(view, CONTENT_LAYOUT_PARAMS);
             }
         }
 

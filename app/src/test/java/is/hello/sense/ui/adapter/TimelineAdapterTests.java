@@ -1,6 +1,5 @@
 package is.hello.sense.ui.adapter;
 
-import android.content.res.Resources;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +42,8 @@ public class TimelineAdapterTests extends SenseTestCase {
 
     @Before
     public void setUp() throws Exception {
-        View[] headers = { headerView };
-        this.adapter = new TimelineAdapter(getContext(), dateFormatter, headers);
+        this.adapter = new TimelineAdapter(getContext(), dateFormatter);
+        adapter.addHeader(headerView);
     }
 
     //endregion
@@ -54,67 +53,62 @@ public class TimelineAdapterTests extends SenseTestCase {
 
     @Test
     public void differentialBindInsertion() throws Exception {
-        RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
+        final RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
         adapter.registerAdapterDataObserver(observer);
 
-        List<TimelineEvent> firstBatch = Lists.newArrayList(
-                TimelineEventBuilder.randomEvent(random),
-                TimelineEventBuilder.randomEvent(random)
-        );
+        final List<TimelineEvent> firstBatch =
+                Lists.newArrayList(TimelineEventBuilder.randomEvent(random),
+                                   TimelineEventBuilder.randomEvent(random));
         adapter.bindEvents(firstBatch);
 
         observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
-                adapter.getHeaderCount(), 2);
+                                      adapter.getHeaderCount(), 2);
 
-        List<TimelineEvent> secondBatch = Lists.newArrayList(
-                TimelineEventBuilder.randomEvent(random),
-                TimelineEventBuilder.randomEvent(random),
-                TimelineEventBuilder.randomEvent(random)
-        );
+        final List<TimelineEvent> secondBatch =
+                Lists.newArrayList(TimelineEventBuilder.randomEvent(random),
+                                   TimelineEventBuilder.randomEvent(random),
+                                   TimelineEventBuilder.randomEvent(random));
         adapter.bindEvents(secondBatch);
         assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
-                adapter.getHeaderCount(), 2));
+                                              adapter.getHeaderCount(), 2));
         assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
-                adapter.getHeaderCount() + 2, 1));
+                                              adapter.getHeaderCount() + 2, 1));
     }
 
     @Test
     public void differentialBindChange() throws Exception {
-        List<TimelineEvent> events = Lists.newArrayList(
-                TimelineEventBuilder.randomEvent(random),
-                TimelineEventBuilder.randomEvent(random)
-        );
+        final List<TimelineEvent> events =
+                Lists.newArrayList(TimelineEventBuilder.randomEvent(random),
+                                   TimelineEventBuilder.randomEvent(random));
         adapter.bindEvents(events);
 
-        RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
+        final RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
         adapter.registerAdapterDataObserver(observer);
 
         adapter.bindEvents(events);
 
         observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
-                adapter.getHeaderCount(), 2);
+                                      adapter.getHeaderCount(), 2);
     }
 
     @Test
     public void differentialBindRemove() throws Exception {
-        List<TimelineEvent> firstBatch = Lists.newArrayList(
-                TimelineEventBuilder.randomEvent(random),
-                TimelineEventBuilder.randomEvent(random)
-        );
+        final List<TimelineEvent> firstBatch =
+                Lists.newArrayList(TimelineEventBuilder.randomEvent(random),
+                                   TimelineEventBuilder.randomEvent(random));
         adapter.bindEvents(firstBatch);
 
-        RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
+        final RecyclerAdapterTesting.Observer observer = new RecyclerAdapterTesting.Observer();
         adapter.registerAdapterDataObserver(observer);
 
-        List<TimelineEvent> secondBatch = Lists.newArrayList(
-                TimelineEventBuilder.randomEvent(random)
-        );
+        final List<TimelineEvent> secondBatch =
+                Lists.newArrayList(TimelineEventBuilder.randomEvent(random));
         adapter.bindEvents(secondBatch);
 
         observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
-                adapter.getHeaderCount(), 1);
+                                      adapter.getHeaderCount(), 1);
         observer.assertChangeOccurred(RecyclerAdapterTesting.Observer.Change.Type.REMOVED,
-                adapter.getHeaderCount() + 1, 1);
+                                      adapter.getHeaderCount() + 1, 1);
     }
 
     //endregion
@@ -123,33 +117,33 @@ public class TimelineAdapterTests extends SenseTestCase {
     //region Rendering
 
     private List<TimelineEvent> generateSimpleTimeline() {
-        List<TimelineEvent> events = new ArrayList<>();
-        DateTime base = DateTime.now(DateTimeZone.UTC);
+        final List<TimelineEvent> events = new ArrayList<>();
+        final DateTime base = DateTime.now(DateTimeZone.UTC);
 
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.IN_BED)
-                .setShiftedTimestamp(base.withTime(1, 20, 0, 0))
-                .build());
+                           .setType(TimelineEvent.Type.IN_BED)
+                           .setShiftedTimestamp(base.withTime(1, 20, 0, 0))
+                           .build());
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.LIGHTS_OUT)
-                .setMessage(new MarkupString("Blah blah blah"))
-                .setShiftedTimestamp(base.withTime(1, 30, 0, 0))
-                .build());
+                           .setType(TimelineEvent.Type.LIGHTS_OUT)
+                           .setMessage(new MarkupString("Blah blah blah"))
+                           .setShiftedTimestamp(base.withTime(1, 30, 0, 0))
+                           .build());
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.FELL_ASLEEP)
-                .setMessage(new MarkupString("Blah blah blah"))
-                .setShiftedTimestamp(base.withTime(2, 0, 0, 0))
-                .build());
+                           .setType(TimelineEvent.Type.FELL_ASLEEP)
+                           .setMessage(new MarkupString("Blah blah blah"))
+                           .setShiftedTimestamp(base.withTime(2, 0, 0, 0))
+                           .build());
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.IN_BED)
-                .setDuration(30, TimeUnit.MINUTES)
-                .setShiftedTimestamp(base.withTime(3, 30, 0, 0))
-                .build());
+                           .setType(TimelineEvent.Type.IN_BED)
+                           .setDuration(30, TimeUnit.MINUTES)
+                           .setShiftedTimestamp(base.withTime(3, 30, 0, 0))
+                           .build());
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.GENERIC_MOTION)
-                .setMessage(new MarkupString("Y u mov so much???"))
-                .setShiftedTimestamp(base.withTime(4, 45, 0, 0))
-                .build());
+                           .setType(TimelineEvent.Type.GENERIC_MOTION)
+                           .setMessage(new MarkupString("Y u mov so much???"))
+                           .setShiftedTimestamp(base.withTime(4, 45, 0, 0))
+                           .build());
         return events;
     }
 
@@ -157,40 +151,41 @@ public class TimelineAdapterTests extends SenseTestCase {
     public void heights() throws Exception {
         adapter.bindEvents(generateSimpleTimeline());
 
-        int headerCount = adapter.getHeaderCount();
-        assertEquals(16, adapter.getSegmentHeight(headerCount));
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(headerCount + 1));
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(headerCount + 2));
-        assertEquals(25, adapter.getSegmentHeight(headerCount + 3));
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(headerCount + 4));
+        assertEquals(16, adapter.getSegmentHeight(0));
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(1));
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(2));
+        assertEquals(25, adapter.getSegmentHeight(3));
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(4));
     }
 
     @Test
     public void viewHolderTypes() throws Exception {
-        FrameLayout fakeParent = new FrameLayout(getContext());
+        final FrameLayout fakeParent = new FrameLayout(getContext());
         adapter.bindEvents(generateSimpleTimeline());
 
-        TimelineBaseViewHolder headerHolder = adapter.createViewHolder(fakeParent, 0 /* header view type = position */);
-        assertTrue(headerHolder instanceof TimelineAdapter.StaticViewHolder);
-
-        TimelineBaseViewHolder segmentHolder = adapter.createViewHolder(fakeParent, TimelineAdapter.VIEW_TYPE_SEGMENT);
+        final TimelineBaseViewHolder segmentHolder =
+                (TimelineBaseViewHolder) adapter.createViewHolder(fakeParent,
+                                                                  TimelineAdapter.VIEW_TYPE_SEGMENT);
         assertTrue(segmentHolder instanceof TimelineAdapter.SegmentViewHolder);
 
-        TimelineBaseViewHolder eventHolder = adapter.createViewHolder(fakeParent, TimelineAdapter.VIEW_TYPE_EVENT);
+        final TimelineBaseViewHolder eventHolder =
+                (TimelineBaseViewHolder) adapter.createViewHolder(fakeParent,
+                                                                  TimelineAdapter.VIEW_TYPE_EVENT);
         assertTrue(eventHolder instanceof TimelineAdapter.EventViewHolder);
     }
 
     @Test
     public void segmentRendering() throws Exception {
-        TimelineEvent segment = new TimelineEventBuilder()
+        final TimelineEvent segment = new TimelineEventBuilder()
                 .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30, DateTimeZone.UTC))
                 .setType(TimelineEvent.Type.IN_BED)
                 .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
                 .build();
         adapter.bindEvents(Lists.newArrayList(segment));
 
-        TimelineAdapter.SegmentViewHolder holder = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_SEGMENT, adapter.getHeaderCount());
+        final TimelineAdapter.SegmentViewHolder holder =
+                createAndBindView(adapter, fakeParent,
+                                  adapter.getHeaderCount());
         adapter.bindViewHolder(holder, adapter.getHeaderCount());
 
         assertEquals(0.5f, holder.drawable.getSleepDepthFraction(), 0f);
@@ -205,7 +200,7 @@ public class TimelineAdapterTests extends SenseTestCase {
 
     @Test
     public void eventRendering() throws Exception {
-        TimelineEvent event = new TimelineEventBuilder()
+        final TimelineEvent event = new TimelineEventBuilder()
                 .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30, DateTimeZone.UTC))
                 .setType(TimelineEvent.Type.GENERIC_MOTION)
                 .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
@@ -213,8 +208,9 @@ public class TimelineAdapterTests extends SenseTestCase {
                 .build();
         adapter.bindEvents(Lists.newArrayList(event));
 
-        TimelineAdapter.EventViewHolder holder = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, adapter.getHeaderCount());
+        final TimelineAdapter.EventViewHolder holder =
+                createAndBindView(adapter, fakeParent,
+                                  adapter.getHeaderCount());
         holder.setExcludedFromParallax(true);
 
         assertEquals(0.5f, holder.drawable.getSleepDepthFraction(), 0f);
@@ -233,14 +229,13 @@ public class TimelineAdapterTests extends SenseTestCase {
         assertEquals(0, holder.containerLayoutParams.topMargin);
         assertEquals(0, holder.containerLayoutParams.bottomMargin);
 
-        Resources resources = getContext().getResources();
-        assertEquals(ResourcesCompat.getDrawable(resources, R.drawable.timeline_generic_motion, null),
-                holder.iconImage.getDrawable());
+        assertEquals(ResourcesCompat.getDrawable(getResources(), R.drawable.timeline_generic_motion, null),
+                     holder.iconImage.getDrawable());
     }
 
     @Test
     public void alarmRangRendering() throws Exception {
-        TimelineEvent event = new TimelineEventBuilder()
+        final TimelineEvent event = new TimelineEventBuilder()
                 .setShiftedTimestamp(new DateTime(2015, 7, 13, 1, 30, DateTimeZone.UTC))
                 .setType(TimelineEvent.Type.ALARM_RANG)
                 .setSleepDepth(50, TimelineEvent.SleepState.MEDIUM)
@@ -248,8 +243,9 @@ public class TimelineAdapterTests extends SenseTestCase {
                 .build();
         adapter.bindEvents(Lists.newArrayList(event));
 
-        TimelineAdapter.EventViewHolder holder = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, adapter.getHeaderCount());
+        final TimelineAdapter.EventViewHolder holder =
+                createAndBindView(adapter, fakeParent,
+                                  adapter.getHeaderCount());
         holder.setExcludedFromParallax(true);
 
         assertNotEquals(View.VISIBLE, holder.dateText.getVisibility());
@@ -257,37 +253,40 @@ public class TimelineAdapterTests extends SenseTestCase {
 
     @Test
     public void eventScoreStealing() throws Exception {
-        List<TimelineEvent> events = new ArrayList<>();
+        final List<TimelineEvent> events = new ArrayList<>();
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.GENERIC_MOTION)
-                .setSleepDepth(10, TimelineEvent.SleepState.MEDIUM)
-                .build());
+                           .setType(TimelineEvent.Type.GENERIC_MOTION)
+                           .setSleepDepth(10, TimelineEvent.SleepState.MEDIUM)
+                           .build());
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.GENERIC_MOTION)
-                .setSleepDepth(80, TimelineEvent.SleepState.MEDIUM)
-                .build());
+                           .setType(TimelineEvent.Type.GENERIC_MOTION)
+                           .setSleepDepth(80, TimelineEvent.SleepState.MEDIUM)
+                           .build());
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.GENERIC_MOTION)
-                .setSleepDepth(40, TimelineEvent.SleepState.MEDIUM)
-                .build());
+                           .setType(TimelineEvent.Type.GENERIC_MOTION)
+                           .setSleepDepth(40, TimelineEvent.SleepState.MEDIUM)
+                           .build());
         adapter.bindEvents(events);
 
-        int headerCount = adapter.getHeaderCount();
+        final int headerCount = adapter.getHeaderCount();
 
-        TimelineAdapter.EventViewHolder holder1 = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, headerCount);
+        final TimelineAdapter.EventViewHolder holder1 =
+                createAndBindView(adapter, fakeParent,
+                                  headerCount);
         assertEquals(0f, holder1.drawable.getStolenTopSleepDepthFraction(), 0f);
         assertEquals(0.1f, holder1.drawable.getSleepDepthFraction(), 0f);
         assertEquals(0.8f, holder1.drawable.getStolenBottomSleepDepthFraction(), 0f);
 
-        TimelineAdapter.EventViewHolder holder2 = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, headerCount + 1);
+        final TimelineAdapter.EventViewHolder holder2 =
+                createAndBindView(adapter, fakeParent,
+                                  headerCount + 1);
         assertEquals(0.1f, holder2.drawable.getStolenTopSleepDepthFraction(), 0f);
         assertEquals(0.8f, holder2.drawable.getSleepDepthFraction(), 0f);
         assertEquals(0.4f, holder2.drawable.getStolenBottomSleepDepthFraction(), 0f);
 
-        TimelineAdapter.EventViewHolder holder3 = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, headerCount + 2);
+        final TimelineAdapter.EventViewHolder holder3 =
+                createAndBindView(adapter, fakeParent,
+                                  headerCount + 2);
         assertEquals(0.8f, holder3.drawable.getStolenTopSleepDepthFraction(), 0f);
         assertEquals(0.4f, holder3.drawable.getSleepDepthFraction(), 0f);
         assertEquals(0f, holder3.drawable.getStolenBottomSleepDepthFraction(), 0f);
@@ -298,28 +297,30 @@ public class TimelineAdapterTests extends SenseTestCase {
     public void use24TimeUpdating() throws Exception {
         adapter.setUse24Time(false);
 
-        List<TimelineEvent> events = new ArrayList<>();
-        DateTime timestamp = DateTime.now(DateTimeZone.UTC).withTime(0, 30, 0, 0);
+        final List<TimelineEvent> events = new ArrayList<>();
+        final DateTime timestamp = DateTime.now(DateTimeZone.UTC).withTime(0, 30, 0, 0);
         events.add(new TimelineEventBuilder()
-                .setType(TimelineEvent.Type.GOT_IN_BED)
-                .setSleepDepth(0, TimelineEvent.SleepState.AWAKE)
-                .setMessage(new MarkupString("Whatevs"))
-                .setShiftedTimestamp(timestamp)
-                .build());
+                           .setType(TimelineEvent.Type.GOT_IN_BED)
+                           .setSleepDepth(0, TimelineEvent.SleepState.AWAKE)
+                           .setMessage(new MarkupString("Whatevs"))
+                           .setShiftedTimestamp(timestamp)
+                           .build());
         adapter.bindEvents(events);
 
-        int headerCount = adapter.getHeaderCount();
+        final int headerCount = adapter.getHeaderCount();
 
-        TimelineAdapter.EventViewHolder holder12Hour = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, headerCount);
+        final TimelineAdapter.EventViewHolder holder12Hour =
+                createAndBindView(adapter, fakeParent,
+                                  headerCount);
 
         assertEquals("12 AM", holder12Hour.drawable.getTimestamp().toString());
         assertEquals("12:30 AM", holder12Hour.dateText.getText().toString());
 
         adapter.setUse24Time(true);
 
-        TimelineAdapter.EventViewHolder holder24Hour = createAndBindView(adapter, fakeParent,
-                TimelineAdapter.VIEW_TYPE_EVENT, headerCount);
+        final TimelineAdapter.EventViewHolder holder24Hour =
+                createAndBindView(adapter, fakeParent,
+                                  headerCount);
 
         assertEquals("00:00", holder24Hour.drawable.getTimestamp().toString());
         assertEquals("00:30", holder24Hour.dateText.getText().toString());
