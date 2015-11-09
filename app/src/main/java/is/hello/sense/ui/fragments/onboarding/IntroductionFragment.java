@@ -102,6 +102,7 @@ public class IntroductionFragment extends SenseFragment
         final Drawable offScreen = ResourcesCompat.getDrawable(resources,
                                                                DIAGRAMS[1],
                                                                null);
+        //noinspection ConstantConditions
         offScreen.setAlpha(0);
         final Drawable[] layers = { onScreen, offScreen };
         this.diagramLayers = new LayerDrawable(layers);
@@ -178,6 +179,7 @@ public class IntroductionFragment extends SenseFragment
         this.pageDots = null;
 
         viewPager.clearOnPageChangeListeners();
+        viewPager.setAdapter(null);
         this.viewPager = null;
 
         this.signInButton = null;
@@ -310,6 +312,7 @@ public class IntroductionFragment extends SenseFragment
         final Drawable offScreen = ResourcesCompat.getDrawable(resources,
                                                                DIAGRAMS[position + 1],
                                                                null);
+        //noinspection ConstantConditions
         offScreen.setAlpha(0);
         diagramLayers.setDrawableByLayerId(DRAWABLE_OFF_SCREEN, offScreen);
 
@@ -363,10 +366,13 @@ public class IntroductionFragment extends SenseFragment
             StaticViewHolder(@NonNull View itemView) {
                 super(itemView);
 
+                // Guard against the ViewPager animating after
+                // the fragment's view has been destroyed.
+                final int pageDotsHeight = pageDots != null ? pageDots.getMeasuredHeight() : 0;
                 itemView.setPadding(itemView.getPaddingLeft(),
                                     itemView.getPaddingTop(),
                                     itemView.getPaddingRight(),
-                                    itemView.getPaddingBottom() + pageDots.getMeasuredHeight());
+                                    itemView.getPaddingBottom() + pageDotsHeight);
             }
 
             void bind(int position) {
