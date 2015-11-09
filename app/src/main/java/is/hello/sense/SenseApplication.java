@@ -60,7 +60,9 @@ public class SenseApplication extends Application {
 
 
         JodaTimeAndroid.init(this);
-        Analytics.initialize(this);
+        if (!isRunningInRobolectric){
+            Analytics.initialize(this);
+        }
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             SessionLogger.init(this);
         }
