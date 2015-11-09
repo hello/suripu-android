@@ -25,9 +25,11 @@ import is.hello.sense.util.RecyclerAdapterTesting;
 import is.hello.sense.util.markup.text.MarkupString;
 
 import static is.hello.sense.util.RecyclerAdapterTesting.createAndBindView;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 public class TimelineAdapterTests extends SenseTestCase {
     private final Random random = new Random();
@@ -69,10 +71,12 @@ public class TimelineAdapterTests extends SenseTestCase {
                                    TimelineEventBuilder.randomEvent(random),
                                    TimelineEventBuilder.randomEvent(random));
         adapter.bindEvents(secondBatch);
-        assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
-                                              adapter.getHeaderCount(), 2));
-        assertTrue(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
-                                              adapter.getHeaderCount() + 2, 1));
+        assertThat(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.CHANGED,
+                                              adapter.getHeaderCount(), 2),
+                   is(true));
+        assertThat(observer.hasObservedChange(RecyclerAdapterTesting.Observer.Change.Type.INSERTED,
+                                              adapter.getHeaderCount() + 2, 1),
+                   is(true));
     }
 
     @Test
@@ -151,11 +155,11 @@ public class TimelineAdapterTests extends SenseTestCase {
     public void heights() throws Exception {
         adapter.bindEvents(generateSimpleTimeline());
 
-        assertEquals(16, adapter.getSegmentHeight(0));
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(1));
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(2));
-        assertEquals(25, adapter.getSegmentHeight(3));
-        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, adapter.getSegmentHeight(4));
+        assertThat(adapter.getSegmentHeight(0), is(equalTo(16)));
+        assertThat(adapter.getSegmentHeight(1), is(equalTo(ViewGroup.LayoutParams.WRAP_CONTENT)));
+        assertThat(adapter.getSegmentHeight(2), is(equalTo(ViewGroup.LayoutParams.WRAP_CONTENT)));
+        assertThat(adapter.getSegmentHeight(3), is(equalTo(25)));
+        assertThat(adapter.getSegmentHeight(4), is(equalTo(ViewGroup.LayoutParams.WRAP_CONTENT)));
     }
 
     @Test
@@ -166,12 +170,12 @@ public class TimelineAdapterTests extends SenseTestCase {
         final TimelineBaseViewHolder segmentHolder =
                 (TimelineBaseViewHolder) adapter.createViewHolder(fakeParent,
                                                                   TimelineAdapter.VIEW_TYPE_SEGMENT);
-        assertTrue(segmentHolder instanceof TimelineAdapter.SegmentViewHolder);
+        assertThat(segmentHolder, is(instanceOf(TimelineAdapter.SegmentViewHolder.class)));
 
         final TimelineBaseViewHolder eventHolder =
                 (TimelineBaseViewHolder) adapter.createViewHolder(fakeParent,
                                                                   TimelineAdapter.VIEW_TYPE_EVENT);
-        assertTrue(eventHolder instanceof TimelineAdapter.EventViewHolder);
+        assertThat(eventHolder, is(instanceOf(TimelineAdapter.EventViewHolder.class)));
     }
 
     @Test
@@ -188,14 +192,14 @@ public class TimelineAdapterTests extends SenseTestCase {
                                   adapter.getHeaderCount());
         adapter.bindViewHolder(holder, adapter.getHeaderCount());
 
-        assertEquals(0.5f, holder.drawable.getSleepDepthFraction(), 0f);
-        assertEquals(0x80009cff, holder.drawable.getSleepDepthColor());
+        assertThat(holder.drawable.getSleepDepthFraction(), is(equalTo(0.5f)));
+        assertThat(holder.drawable.getSleepDepthColor(), is(equalTo(0x80009cff)));
 
-        assertEquals(0f, holder.drawable.getStolenTopSleepDepthFraction(), 0f);
-        assertEquals(0f, holder.drawable.getStolenBottomSleepDepthFraction(), 0f);
+        assertThat(holder.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0f)));
+        assertThat(holder.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0f)));
 
         //noinspection ConstantConditions
-        assertEquals("1 AM", holder.drawable.getTimestamp().toString());
+        assertThat(holder.drawable.getTimestamp().toString(), is(equalTo("1 AM")));
     }
 
     @Test
@@ -213,24 +217,23 @@ public class TimelineAdapterTests extends SenseTestCase {
                                   adapter.getHeaderCount());
         holder.setExcludedFromParallax(true);
 
-        assertEquals(0.5f, holder.drawable.getSleepDepthFraction(), 0f);
-        assertEquals(0x80009cff, holder.drawable.getSleepDepthColor());
+        assertThat(holder.drawable.getSleepDepthFraction(), is(equalTo(0.5f)));
+        assertThat(holder.drawable.getSleepDepthColor(), is(equalTo(0x80009cff)));
 
-        assertEquals(0f, holder.drawable.getStolenTopSleepDepthFraction(), 0f);
-        assertEquals(0f, holder.drawable.getStolenBottomSleepDepthFraction(), 0f);
+        assertThat(holder.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0f)));
+        assertThat(holder.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0f)));
 
         //noinspection ConstantConditions
-        assertEquals("1 AM", holder.drawable.getTimestamp().toString());
+        assertThat(holder.drawable.getTimestamp().toString(), is(equalTo("1 AM")));
 
-        assertEquals("Y u mov so much???", holder.messageText.getText().toString());
-        assertEquals("1:30 AM", holder.dateText.getText().toString());
-        assertEquals(View.VISIBLE, holder.dateText.getVisibility());
+        assertThat(holder.messageText.getText().toString(), is(equalTo("Y u mov so much???")));
+        assertThat(holder.dateText.getText().toString(), is(equalTo("1:30 AM")));
+        assertThat(holder.dateText.getVisibility(), is(equalTo(View.VISIBLE)));
 
-        assertEquals(0, holder.containerLayoutParams.topMargin);
-        assertEquals(0, holder.containerLayoutParams.bottomMargin);
+        assertThat(holder.containerLayoutParams.topMargin, is(equalTo(0)));
+        assertThat(holder.containerLayoutParams.bottomMargin, is(equalTo(0)));
 
-        assertEquals(ResourcesCompat.getDrawable(getResources(), R.drawable.timeline_generic_motion, null),
-                     holder.iconImage.getDrawable());
+        assertThat(holder.iconImage.getDrawable(), is(equalTo(ResourcesCompat.getDrawable(getResources(), R.drawable.timeline_generic_motion, null))));
     }
 
     @Test
@@ -248,7 +251,7 @@ public class TimelineAdapterTests extends SenseTestCase {
                                   adapter.getHeaderCount());
         holder.setExcludedFromParallax(true);
 
-        assertNotEquals(View.VISIBLE, holder.dateText.getVisibility());
+        assertThat(holder.dateText.getVisibility(), is(not(equalTo(View.VISIBLE))));
     }
 
     @Test
@@ -273,23 +276,23 @@ public class TimelineAdapterTests extends SenseTestCase {
         final TimelineAdapter.EventViewHolder holder1 =
                 createAndBindView(adapter, fakeParent,
                                   headerCount);
-        assertEquals(0f, holder1.drawable.getStolenTopSleepDepthFraction(), 0f);
-        assertEquals(0.1f, holder1.drawable.getSleepDepthFraction(), 0f);
-        assertEquals(0.8f, holder1.drawable.getStolenBottomSleepDepthFraction(), 0f);
+        assertThat(holder1.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0f)));
+        assertThat(holder1.drawable.getSleepDepthFraction(), is(equalTo(0.1f)));
+        assertThat(holder1.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0.8f)));
 
         final TimelineAdapter.EventViewHolder holder2 =
                 createAndBindView(adapter, fakeParent,
                                   headerCount + 1);
-        assertEquals(0.1f, holder2.drawable.getStolenTopSleepDepthFraction(), 0f);
-        assertEquals(0.8f, holder2.drawable.getSleepDepthFraction(), 0f);
-        assertEquals(0.4f, holder2.drawable.getStolenBottomSleepDepthFraction(), 0f);
+        assertThat(holder2.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0.1f)));
+        assertThat(holder2.drawable.getSleepDepthFraction(), is(equalTo(0.8f)));
+        assertThat(holder2.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0.4f)));
 
         final TimelineAdapter.EventViewHolder holder3 =
                 createAndBindView(adapter, fakeParent,
                                   headerCount + 2);
-        assertEquals(0.8f, holder3.drawable.getStolenTopSleepDepthFraction(), 0f);
-        assertEquals(0.4f, holder3.drawable.getSleepDepthFraction(), 0f);
-        assertEquals(0f, holder3.drawable.getStolenBottomSleepDepthFraction(), 0f);
+        assertThat(holder3.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0.8f)));
+        assertThat(holder3.drawable.getSleepDepthFraction(), is(equalTo(0.4f)));
+        assertThat(holder3.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0f)));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -313,8 +316,8 @@ public class TimelineAdapterTests extends SenseTestCase {
                 createAndBindView(adapter, fakeParent,
                                   headerCount);
 
-        assertEquals("12 AM", holder12Hour.drawable.getTimestamp().toString());
-        assertEquals("12:30 AM", holder12Hour.dateText.getText().toString());
+        assertThat(holder12Hour.drawable.getTimestamp().toString(), is(equalTo("12 AM")));
+        assertThat(holder12Hour.dateText.getText().toString(), is(equalTo("12:30 AM")));
 
         adapter.setUse24Time(true);
 
@@ -322,8 +325,8 @@ public class TimelineAdapterTests extends SenseTestCase {
                 createAndBindView(adapter, fakeParent,
                                   headerCount);
 
-        assertEquals("00:00", holder24Hour.drawable.getTimestamp().toString());
-        assertEquals("00:30", holder24Hour.dateText.getText().toString());
+        assertThat(holder24Hour.drawable.getTimestamp().toString(), is(equalTo("00:00")));
+        assertThat(holder24Hour.dateText.getText().toString(), is(equalTo("00:30")));
     }
 
     //endregion
