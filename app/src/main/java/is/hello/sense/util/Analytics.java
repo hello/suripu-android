@@ -13,12 +13,13 @@ import android.support.annotation.Nullable;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.segment.analytics.Traits;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import is.hello.buruberi.util.Errors;
@@ -31,7 +32,8 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
-    private static @Nullable MixpanelAPI provider;
+    //private static @Nullable MixpanelAPI provider;
+    private static @Nullable Context context;
 
     public interface Global {
 
@@ -468,9 +470,12 @@ public class Analytics {
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
-        if (provider == null) {
-            Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
+        Analytics.context = context;
+        com.segment.analytics.Analytics.Builder builder = new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
+        if (BuildConfig.DEBUG) {
+            builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
+        com.segment.analytics.Analytics.setSingletonInstance(builder.build());
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -479,8 +484,8 @@ public class Analytics {
 
     @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        if (provider != null) {
-            provider.flush();
+        if (context != null) {
+            com.segment.analytics.Analytics.with(context).flush();
         }
     }
 
@@ -506,27 +511,14 @@ public class Analytics {
             accountId = "";
         }
 
-        if (provider != null) {
+        if (context != null) {
+            Traits traits = new Traits();
+            traits.putName(name);
+            traits.putCreatedAt(created.toString());
+            traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
 
-            if (name == null) {
-                name = "";
-            }
-
-            MixpanelAPI.People people = provider.getPeople();
-
-            String distinctId = provider.getDistinctId();
-            provider.alias(accountId, distinctId);
-            people.identify(distinctId);
-
-            people.set("$name", name);
-            people.set("$created", created.toString());
-            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-
-            provider.registerSuperProperties(createProperties(
-                    Global.GLOBAL_PROP_NAME, name,
-                    Global.GLOBAL_PROP_PLATFORM, PLATFORM
-                                                             ));
+            com.segment.analytics.Analytics.with(context).identify(traits);
         }
 
         trackUserIdentifier(accountId);
@@ -535,18 +527,17 @@ public class Analytics {
     public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        if (provider != null) {
-            provider.identify(accountId);
-
-            final MixpanelAPI.People people = provider.getPeople();
-            people.identify(accountId);
-            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        if (context != null) {
+            Traits traits = new Traits();
+            traits.putName(name);
+            traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+            traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
 
             if (name != null) {
-                people.set("$name", name);
+                traits.putName(name);
             }
 
+            com.segment.analytics.Analytics.with(context).identify(accountId, traits, null);
         }
 
         trackUserIdentifier(accountId);
@@ -555,8 +546,10 @@ public class Analytics {
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
 
-        if (provider != null) {
-            provider.getPeople().set(Global.GLOBAL_PROP_SENSE_ID, senseId);
+        if (context != null) {
+            Traits traits = new Traits();
+            traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
+            com.segment.analytics.Analytics.with(context).identify(traits);
         }
 
         Context context = SenseApplication.getInstance();
@@ -588,6 +581,23 @@ public class Analytics {
                 properties.put(pairs[i].toString(), pairs[i + 1]);
             }
         } catch (JSONException ignored) {
+        }
+        return properties;
+    }
+
+    public static com.segment.analytics.Properties createProperties(@Nullable JSONObject jsonObject){
+        if (jsonObject == null){
+            return null;
+        }
+        com.segment.analytics.Properties properties =  new com.segment.analytics.Properties();
+        Iterator<?> keys = jsonObject.keys();
+        while( keys.hasNext() ) {
+            String key = (String)keys.next();
+            try {
+                properties.put(key, jsonObject.get(key));
+            } catch (JSONException e) {
+                //todo take action
+            }
         }
         return properties;
     }
@@ -635,8 +645,8 @@ public class Analytics {
     }
 
     public static void trackEvent(@NonNull String event, @Nullable JSONObject properties) {
-        if (provider != null) {
-            provider.track(event, properties);
+        if (context != null) {
+            com.segment.analytics.Analytics.with(context).track(event, createProperties(properties));
         }
 
         Logger.analytic(event, properties);
