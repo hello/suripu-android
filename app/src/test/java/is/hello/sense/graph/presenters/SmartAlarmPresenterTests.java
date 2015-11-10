@@ -13,6 +13,8 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,11 +32,11 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     @Test
     public void validateAlarms() throws Exception {
         Alarm sunday = new Alarm();
-        sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        sunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         sunday.setSmart(true);
 
         Alarm monday = new Alarm();
-        monday.getDaysOfWeek().add(DateTimeConstants.MONDAY);
+        monday.addDayOfWeek(DateTimeConstants.MONDAY);
         monday.setSmart(true);
 
         assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, monday)));
@@ -43,11 +45,11 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
         final Alarm stupidSunday = new Alarm();
         stupidSunday.setSmart(false);
-        stupidSunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        stupidSunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, stupidSunday)));
 
         Alarm disabledSunday = new Alarm();
-        disabledSunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        disabledSunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         disabledSunday.setSmart(true);
         disabledSunday.setEnabled(false);
         assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, disabledSunday)));
@@ -57,10 +59,10 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
     public void save() throws Exception {
         ArrayList<Alarm> goodAlarms = new ArrayList<>();
         Sync.wrap(presenter.save(goodAlarms))
-            .assertNotNull();
+            .assertThat(is(notNullValue()));
 
         Alarm sunday = new Alarm();
-        sunday.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        sunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         sunday.setSmart(true);
         ArrayList<Alarm> badAlarms = Lists.newArrayList(sunday, sunday);
 

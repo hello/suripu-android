@@ -83,8 +83,8 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         final Alarm alarm1 = new Alarm();
         alarm1.setEnabled(true);
         alarm1.setRepeated(true);
-        alarm1.getDaysOfWeek().add(DateTimeConstants.SATURDAY);
-        alarm1.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        alarm1.addDayOfWeek(DateTimeConstants.SATURDAY);
+        alarm1.addDayOfWeek(DateTimeConstants.SUNDAY);
         alarm1.setSmart(true);
         alarm1.setTime(new LocalTime(8, 30));
 
@@ -116,8 +116,8 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         final Alarm alarm1 = new Alarm();
         alarm1.setEnabled(true);
         alarm1.setRepeated(true);
-        alarm1.getDaysOfWeek().add(DateTimeConstants.SATURDAY);
-        alarm1.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        alarm1.addDayOfWeek(DateTimeConstants.SATURDAY);
+        alarm1.addDayOfWeek(DateTimeConstants.SUNDAY);
         alarm1.setSmart(false);
         alarm1.setTime(new LocalTime(8, 30));
 
@@ -149,8 +149,8 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         final Alarm alarm = new Alarm();
         alarm.setEnabled(true);
         alarm.setRepeated(true);
-        alarm.getDaysOfWeek().add(DateTimeConstants.SATURDAY);
-        alarm.getDaysOfWeek().add(DateTimeConstants.SUNDAY);
+        alarm.addDayOfWeek(DateTimeConstants.SATURDAY);
+        alarm.addDayOfWeek(DateTimeConstants.SUNDAY);
         alarm.setSmart(false);
         alarm.setTime(new LocalTime(8, 30));
 
