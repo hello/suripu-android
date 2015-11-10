@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -152,6 +153,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status1Label;
         final TextView status2;
         final TextView status2Label;
+        final ImageView wifiIcon;
 
         SenseViewHolder(@NonNull View view) {
             super(view);
@@ -161,6 +163,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status1Label = (TextView) view.findViewById(R.id.item_device_status_label);
             this.status2 = (TextView) view.findViewById(R.id.item_device_status2);
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
+            this.wifiIcon = (ImageView) view.findViewById(R.id.item_device_wifi_icon);
 
             view.setOnClickListener(this);
         }
@@ -194,6 +197,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     status1.setText(R.string.device_network_unknown);
                 } else {
                     status1.setText(networkName);
+                }
+                if (wiFiInfo.getSignalStrength() != null){
+                    int iconRes = wiFiInfo.getSignalStrength().icon;
+                    if (iconRes != 0){
+                        wifiIcon.setImageResource(iconRes);
+                    }
                 }
             }
 
