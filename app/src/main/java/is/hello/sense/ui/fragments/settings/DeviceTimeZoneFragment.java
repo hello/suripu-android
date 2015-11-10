@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.DateTimeZone;
-import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -116,7 +117,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
                          ignored -> {
                              Logger.info(getClass().getSimpleName(), "Updated time zone");
 
-                             final JSONObject properties =
+                             final Properties properties =
                                      Analytics.createProperties(Analytics.TopView.PROP_TIME_ZONE,
                                                                 senseTimeZone.timeZoneId);
                              Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);

@@ -13,13 +13,11 @@ import android.support.annotation.Nullable;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
+import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
 
 import org.joda.time.DateTime;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import is.hello.buruberi.util.Errors;
@@ -32,8 +30,9 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
-    //private static @Nullable MixpanelAPI provider;
-    private static @Nullable Context context;
+    private static
+    @Nullable
+    Context context;
 
     public interface Global {
 
@@ -162,12 +161,10 @@ public class Analytics {
          */
         String EVENT_BIRTHDAY = "Onboarding Birthday";
         /**
-
          * User lands on Gender screen (do not log if user comes from Settings)
          */
         String EVENT_GENDER = "Onboarding Gender";
         /**
-
          * User lands on Height screen (do not log if user comes from Settings)
          */
         String EVENT_HEIGHT = "Onboarding Height";
@@ -484,9 +481,7 @@ public class Analytics {
 
     @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        if (context != null) {
-            com.segment.analytics.Analytics.with(context).flush();
-        }
+        com.segment.analytics.Analytics.with(context).flush();
     }
 
     //endregion
@@ -505,52 +500,49 @@ public class Analytics {
     public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
 
-        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
-
         if (accountId == null) {
             accountId = "";
         }
 
-        if (context != null) {
-            Traits traits = new Traits();
-            traits.putName(name);
-            traits.putCreatedAt(created.toString());
-            traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+        com.segment.analytics.Analytics.with(context).alias(accountId);
 
-            com.segment.analytics.Analytics.with(context).identify(traits);
-        }
 
+        Traits traits = new Traits();
+        traits.putName(name);
+        traits.putCreatedAt(created.toString());
+        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+
+        com.segment.analytics.Analytics.with(context).identify(traits);
         trackUserIdentifier(accountId);
     }
 
     public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
+        com.segment.analytics.Analytics.with(context).identify(accountId);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        if (context != null) {
-            Traits traits = new Traits();
-            traits.putName(name);
-            traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-
-            if (name != null) {
-                traits.putName(name);
-            }
-
-            com.segment.analytics.Analytics.with(context).identify(accountId, traits, null);
-        }
+        Traits traits = new Traits();
+        traits.putName(name);
+        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+       // com.segment.analytics.Analytics.with(context).alias(accountId); not working. Skipping
+        com.segment.analytics.Analytics.with(context).identify(traits);
 
         trackUserIdentifier(accountId);
+    }
+
+    public static void signOut() {
+
+        com.segment.analytics.Analytics.with(context).reset();
     }
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
 
-        if (context != null) {
-            Traits traits = new Traits();
-            traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
-            com.segment.analytics.Analytics.with(context).identify(traits);
-        }
+        Traits traits = new Traits();
+        traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
+        com.segment.analytics.Analytics.with(context).identify(traits);
 
         Context context = SenseApplication.getInstance();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -570,34 +562,16 @@ public class Analytics {
 
     //region Events
 
-    public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
+    public static
+    @NonNull
+    Properties createProperties(@NonNull Object... pairs) {
         if ((pairs.length % 2) != 0) {
             throw new IllegalArgumentException("even number of arguments required");
         }
 
-        JSONObject properties = new JSONObject();
-        try {
-            for (int i = 0; i < pairs.length; i += 2) {
-                properties.put(pairs[i].toString(), pairs[i + 1]);
-            }
-        } catch (JSONException ignored) {
-        }
-        return properties;
-    }
-
-    public static com.segment.analytics.Properties createProperties(@Nullable JSONObject jsonObject){
-        if (jsonObject == null){
-            return null;
-        }
-        com.segment.analytics.Properties properties =  new com.segment.analytics.Properties();
-        Iterator<?> keys = jsonObject.keys();
-        while( keys.hasNext() ) {
-            String key = (String)keys.next();
-            try {
-                properties.put(key, jsonObject.get(key));
-            } catch (JSONException e) {
-                //todo take action
-            }
+        Properties properties = new Properties();
+        for (int i = 0; i < pairs.length; i += 2) {
+            properties.put(pairs[i].toString(), pairs[i + 1]);
         }
         return properties;
     }
@@ -607,9 +581,11 @@ public class Analytics {
                 connectionState == BluetoothAdapter.STATE_CONNECTED);
     }
 
-    public static @NonNull JSONObject createBluetoothTrackingProperties(@NonNull Context context) {
+    public static
+    @NonNull
+    Properties createBluetoothTrackingProperties(@NonNull Context context) {
         int bondedCount = 0,
-            connectedCount = 0;
+                connectedCount = 0;
 
         boolean headsetConnected = false,
                 a2dpConnected = false,
@@ -636,18 +612,16 @@ public class Analytics {
         }
 
         return createProperties(
-            Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
-            Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
-            Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
-            Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
-            Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected
-        );
+                Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
+                Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
+                Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
+                Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
+                Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected
+                               );
     }
 
-    public static void trackEvent(@NonNull String event, @Nullable JSONObject properties) {
-        if (context != null) {
-            com.segment.analytics.Analytics.with(context).track(event, createProperties(properties));
-        }
+    public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
+        com.segment.analytics.Analytics.with(context).track(event, properties);
 
         Logger.analytic(event, properties);
     }
@@ -656,12 +630,12 @@ public class Analytics {
                                   @Nullable String errorType,
                                   @Nullable String errorContext,
                                   @Nullable String errorOperation) {
-        JSONObject properties = createProperties(
-            Global.PROP_ERROR_MESSAGE, message,
-            Global.PROP_ERROR_TYPE, errorType,
-            Global.PROP_ERROR_CONTEXT, errorContext,
-            Global.PROP_ERROR_OPERATION, errorOperation
-        );
+        Properties properties = createProperties(
+                Global.PROP_ERROR_MESSAGE, message,
+                Global.PROP_ERROR_TYPE, errorType,
+                Global.PROP_ERROR_CONTEXT, errorContext,
+                Global.PROP_ERROR_OPERATION, errorOperation
+                                                );
         trackEvent(Global.EVENT_ERROR, properties);
     }
 

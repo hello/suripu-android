@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.segment.analytics.Properties;
+
 import org.json.JSONObject;
 
 import is.hello.sense.R;
@@ -57,7 +59,7 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
         this.issue = DeviceIssuesPresenter.Issue.values()[issueOrdinal];
 
         if (savedInstanceState == null) {
-            JSONObject properties = Analytics.createProperties(
+            Properties properties = Analytics.createProperties(
                 Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, issue.systemAlertType
             );
             Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
@@ -84,14 +86,14 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
     //region Actions
 
     private void dispatchLater() {
-        JSONObject properties = Analytics.createProperties(
+        Properties properties = Analytics.createProperties(
             Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
         );
         Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
     }
 
     private void dispatchIssue() {
-        JSONObject properties = Analytics.createProperties(
+        Properties properties = Analytics.createProperties(
             Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW
         );
         Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);

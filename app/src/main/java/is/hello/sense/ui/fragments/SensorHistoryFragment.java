@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.segment.analytics.Properties;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -85,7 +87,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         addPresenter(conditionsPresenter);
 
         if (savedInstanceState == null) {
-            final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor);
+            final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor);
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, properties);
         }
 

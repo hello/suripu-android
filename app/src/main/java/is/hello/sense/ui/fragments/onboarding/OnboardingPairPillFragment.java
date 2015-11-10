@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
@@ -141,7 +141,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
 
     public void skipPairingPill() {
-        final JSONObject properties =
+        final Properties properties =
                 Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "pill_pairing");
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, properties);
 

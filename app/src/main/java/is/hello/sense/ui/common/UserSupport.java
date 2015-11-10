@@ -9,7 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
+
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
@@ -92,7 +93,7 @@ public class UserSupport {
     }
 
     public static void showForOnboardingStep(@NonNull Activity from, @NonNull OnboardingStep onboardingStep) {
-        final JSONObject properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
+        final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
                                                                  onboardingStep.toProperty());
         Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, properties);
 
@@ -100,7 +101,7 @@ public class UserSupport {
     }
 
     public static void showForDeviceIssue(@NonNull Activity from, @NonNull DeviceIssue issue) {
-        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
                                                                  issue.toProperty());
         Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
 
@@ -108,7 +109,7 @@ public class UserSupport {
     }
 
     public static void showReplaceBattery(@NonNull Activity from) {
-        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "replace-battery");
         Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
 
@@ -117,7 +118,7 @@ public class UserSupport {
     }
 
     public static void showSupportedDevices(@NonNull Activity from) {
-        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "supported-devices");
         Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
 

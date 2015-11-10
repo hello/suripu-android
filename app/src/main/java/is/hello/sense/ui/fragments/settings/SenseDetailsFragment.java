@@ -21,8 +21,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.DateTimeZone;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -116,7 +117,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             this.didEnableBluetooth = savedInstanceState.getBoolean("didEnableBluetooth", false);
             this.blockConnection = savedInstanceState.getBoolean("blockConnection", false);
         } else {
-            JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
+            Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, properties);
         }
 
@@ -459,7 +460,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                              ignored -> {
                                  Logger.info(getClass().getSimpleName(), "Updated time zone");
 
-                                 JSONObject properties = Analytics.createProperties(
+                                 Properties properties = Analytics.createProperties(
                                          Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
                                                                                    );
                                  Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
