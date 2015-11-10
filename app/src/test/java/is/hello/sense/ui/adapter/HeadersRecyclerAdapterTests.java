@@ -19,6 +19,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class HeadersRecyclerAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
@@ -86,7 +88,22 @@ public class HeadersRecyclerAdapterTests extends SenseTestCase {
     }
 
     @Test
-    public void changes() {
+    public void contentRecycling() {
+        final NumberAdapter buggedAdapter = spy(adapter);
+
+        final NumberAdapter.ViewHolder holder =
+                RecyclerAdapterTesting.createAndBindView(buggedAdapter, fakeParent, 0);
+        assertThat(holder.getContentPosition(), is(equalTo(0)));
+        assertThat(holder.getAdapterPosition(), is(equalTo(0)));
+        assertThat(holder.text.getText().toString(), is(equalTo("1")));
+
+        RecyclerAdapterTesting.recycle(buggedAdapter, holder);
+
+        verify(buggedAdapter).onContentViewRecycled(holder);
+    }
+
+    @Test
+    public void headerChanges() {
         final Button firstHeader = new Button(getContext());
         adapter.addHeader(firstHeader);
         observer.assertChangeOccurred(Observer.Change.Type.INSERTED, 0, 1);
@@ -101,6 +118,79 @@ public class HeadersRecyclerAdapterTests extends SenseTestCase {
         observer.assertChangeOccurred(Observer.Change.Type.REMOVED, 0, 1);
         assertThat(adapter.getItemCount(), is(equalTo(10)));
     }
+
+    @Test
+    public void notifyContentItemChanged() {
+        final Button firstHeader = new Button(getContext());
+        adapter.addHeader(firstHeader);
+
+        final ImageView secondHeader = new ImageView(getContext());
+        adapter.addHeader(secondHeader);
+
+        adapter.notifyContentItemChanged(1);
+        observer.assertChangeOccurred(Observer.Change.Type.CHANGED, 3, 1);
+    }
+
+    @Test
+    public void notifyContentItemRangeChanged() {
+        final Button firstHeader = new Button(getContext());
+        adapter.addHeader(firstHeader);
+
+        final ImageView secondHeader = new ImageView(getContext());
+        adapter.addHeader(secondHeader);
+
+        adapter.notifyContentItemRangeChanged(1, 3);
+        observer.assertChangeOccurred(Observer.Change.Type.CHANGED, 3, 3);
+    }
+
+    @Test
+    public void notifyContentItemInserted() {
+        final Button firstHeader = new Button(getContext());
+        adapter.addHeader(firstHeader);
+
+        final ImageView secondHeader = new ImageView(getContext());
+        adapter.addHeader(secondHeader);
+
+        adapter.notifyContentItemInserted(1);
+        observer.assertChangeOccurred(Observer.Change.Type.INSERTED, 3, 1);
+    }
+
+    @Test
+    public void notifyContentItemRangeInserted() {
+        final Button firstHeader = new Button(getContext());
+        adapter.addHeader(firstHeader);
+
+        final ImageView secondHeader = new ImageView(getContext());
+        adapter.addHeader(secondHeader);
+
+        adapter.notifyContentItemRangeInserted(1, 3);
+        observer.assertChangeOccurred(Observer.Change.Type.INSERTED, 3, 3);
+    }
+
+    @Test
+    public void notifyContentItemRemoved() {
+        final Button firstHeader = new Button(getContext());
+        adapter.addHeader(firstHeader);
+
+        final ImageView secondHeader = new ImageView(getContext());
+        adapter.addHeader(secondHeader);
+
+        adapter.notifyContentItemRemoved(1);
+        observer.assertChangeOccurred(Observer.Change.Type.REMOVED, 3, 1);
+    }
+
+    @Test
+    public void notifyContentItemRangeRemoved() {
+        final Button firstHeader = new Button(getContext());
+        adapter.addHeader(firstHeader);
+
+        final ImageView secondHeader = new ImageView(getContext());
+        adapter.addHeader(secondHeader);
+
+        adapter.notifyContentItemRangeRemoved(1, 3);
+        observer.assertChangeOccurred(Observer.Change.Type.REMOVED, 3, 3);
+    }
+
 
 
     static class NumberAdapter extends HeadersRecyclerAdapter<NumberAdapter.ViewHolder> {

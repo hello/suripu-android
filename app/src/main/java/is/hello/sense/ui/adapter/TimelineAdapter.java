@@ -167,7 +167,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
     public void setUse24Time(boolean use24Time) {
         if (this.use24Time != use24Time) {
             this.use24Time = use24Time;
-            notifyItemRangeChanged(getHeaderCount(), events.size());
+            notifyContentItemRangeChanged(getHeaderCount(), events.size());
         }
     }
 
@@ -184,13 +184,13 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         }
 
         if (oldSize > newSize) {
-            notifyItemRangeRemoved(getHeaderCount() + newSize, oldSize - newSize);
-            notifyItemRangeChanged(getHeaderCount(), newSize);
+            notifyContentItemRangeRemoved(newSize, oldSize - newSize);
+            notifyContentItemRangeChanged(0, newSize);
         } else if (newSize > oldSize) {
-            notifyItemRangeInserted(getHeaderCount() + oldSize, newSize - oldSize);
-            notifyItemRangeChanged(getHeaderCount(), oldSize);
+            notifyContentItemRangeInserted(oldSize, newSize - oldSize);
+            notifyContentItemRangeChanged(0, oldSize);
         } else {
-            notifyItemRangeChanged(getHeaderCount(), newSize);
+            notifyContentItemRangeChanged(0, newSize);
         }
     }
 
@@ -200,7 +200,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         final int oldSize = events.size();
         events.clear();
         clearCache();
-        notifyItemRangeRemoved(getHeaderCount(), oldSize);
+        notifyContentItemRangeRemoved(0, oldSize);
     }
 
     //endregion
@@ -245,11 +245,11 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
             this.playingPosition = newPosition;
 
             if (oldPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(oldPosition);
+                notifyContentItemChanged(oldPosition);
             }
 
             if (newPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(newPosition);
+                notifyContentItemChanged(newPosition);
             }
         }
     }

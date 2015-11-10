@@ -1,6 +1,5 @@
 package is.hello.sense.ui.adapter;
 
-import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,6 +25,9 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
 
     public abstract VH onCreateContentViewHolder(ViewGroup parent, int viewType);
     public abstract void onBindContentViewHolder(VH viewHolder, int position);
+    public void onContentViewRecycled(VH viewHolder) {
+        // Do nothing.
+    }
 
     //endregion
 
@@ -107,15 +109,44 @@ public abstract class HeadersRecyclerAdapter<VH extends ContentViewHolder>
     }
 
     @Override
-    @CallSuper
-    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+    public final void onViewRecycled(RecyclerView.ViewHolder holder) {
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).recycle();
         } else {
             @SuppressWarnings("unchecked")
             final VH contentViewHolder = (VH) holder;
             contentViewHolder.setContentPosition(RecyclerView.NO_POSITION);
+            onContentViewRecycled(contentViewHolder);
         }
+    }
+
+    //endregion
+
+
+    //region Changes
+
+    public void notifyContentItemChanged(int position) {
+        notifyItemChanged(position + getHeaderCount());
+    }
+
+    public void notifyContentItemRangeChanged(int start, int count) {
+        notifyItemRangeChanged(start + getHeaderCount(), count);
+    }
+
+    public void notifyContentItemInserted(int position) {
+        notifyItemInserted(position + getHeaderCount());
+    }
+
+    public void notifyContentItemRangeInserted(int start, int count) {
+        notifyItemRangeInserted(start + getHeaderCount(), count);
+    }
+
+    public void notifyContentItemRemoved(int position) {
+        notifyItemRemoved(position + getHeaderCount());
+    }
+
+    public void notifyContentItemRangeRemoved(int start, int count) {
+        notifyItemRangeRemoved(start + getHeaderCount(), count);
     }
 
     //endregion
