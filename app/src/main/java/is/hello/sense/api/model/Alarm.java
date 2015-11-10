@@ -11,6 +11,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,10 +20,10 @@ import java.util.UUID;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.util.DateFormatter.JodaWeekDay;
 
 public class Alarm extends ApiResponse {
     public static final int FUTURE_CUT_OFF_MINUTES = 2;
-
 
     @SerializedName("id")
     private String id;
@@ -106,7 +107,7 @@ public class Alarm extends ApiResponse {
         }
 
         setRepeated(false);
-        getDaysOfWeek().clear();
+        daysOfWeek.clear();
     }
 
 
@@ -146,17 +147,37 @@ public class Alarm extends ApiResponse {
         return daysOfWeek;
     }
 
+    public void addDayOfWeek(@JodaWeekDay int dayOfWeek) {
+        daysOfWeek.add(dayOfWeek);
+        setRepeated(true);
+    }
+
+    public void setDaysOfWeek(@NonNull Collection<Integer> newDays) {
+        daysOfWeek.clear();
+        daysOfWeek.addAll(newDays);
+        setRepeated(!daysOfWeek.isEmpty());
+    }
+
+    public void removeDayOfWeek(@JodaWeekDay int dayOfWeek) {
+        daysOfWeek.remove(dayOfWeek);
+        setRepeated(!daysOfWeek.isEmpty());
+    }
+
+    /**
+     * @see org.joda.time.DateTimeConstants
+     */
     public List<Integer> getSortedDaysOfWeek() {
         return Lists.sorted(daysOfWeek, (leftDay, rightDay) -> {
             // Joda-Time considers Sunday to be day 7, which is generally
             // not how it works in English speaking countries.
-            int leftCorrected = (leftDay == DateTimeConstants.SUNDAY) ? 0 : leftDay;
-            int rightCorrected = (rightDay == DateTimeConstants.SUNDAY) ? 0 : rightDay;
+            final int leftCorrected = (leftDay == DateTimeConstants.SUNDAY) ? 0 : leftDay;
+            final int rightCorrected = (rightDay == DateTimeConstants.SUNDAY) ? 0 : rightDay;
             return Functions.compareInts(leftCorrected, rightCorrected);
         });
     }
 
-    public static @NonNull String nameForDayOfWeek(@NonNull Context context, int dayOfWeek) {
+    public static @NonNull String nameForDayOfWeek(@NonNull Context context,
+                                                   @JodaWeekDay int dayOfWeek) {
         switch (dayOfWeek) {
             case DateTimeConstants.MONDAY:
                 return context.getString(R.string.day_monday);
