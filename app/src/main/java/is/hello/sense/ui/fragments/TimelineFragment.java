@@ -21,10 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.joda.time.Weeks;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -604,9 +602,8 @@ public class TimelineFragment extends InjectionFragment
                 final LocalDate creationDate =
                         preferences.getLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE);
                 final boolean isAccountNew = (creationDate == null ||
-                        new Interval(Weeks.ONE, DateTime.now())
-                                .contains(creationDate.toDateTimeAtStartOfDay()));
-                if (homeActivity.isPostOnboarding() && DateFormatter.isTodayForTimeline(getDate()) && isAccountNew) {
+                        creationDate.equals(LocalDate.now()));
+                if (homeActivity.isPostOnboarding() && isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
