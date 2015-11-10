@@ -22,9 +22,10 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.LambdaVar;
 import is.hello.sense.util.RecyclerAdapterTesting;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 public class SmartAlarmAdapterTests extends InjectionTestCase {
     @Inject DateFormatter dateFormatter;
@@ -63,19 +64,19 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
 
         adapter.bindMessage(message);
 
-        assertEquals(1, adapter.getItemCount());
+        assertThat(adapter.getItemCount(), is(equalTo(1)));
 
         final SmartAlarmAdapter.MessageViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_MESSAGE, 0);
-        assertEquals("Sense", holder.titleText.getText().toString());
-        assertEquals("Blah blah blah", holder.messageText.getText().toString());
-        assertEquals("OK", holder.actionButton.getText().toString());
+        assertThat(holder.titleText.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.messageText.getText().toString(), is(equalTo("Blah blah blah")));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo("OK")));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
 
-        assertTrue(clickListenerCalled.get());
+        assertThat(clickListenerCalled.get(), is(true));
     }
 
     @Test
@@ -100,15 +101,15 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
 
         final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
-        assertTrue(holder1.enabled.isChecked());
-        assertEquals("Smart Alarm  ―  Sun, Sat", holder1.repeat.getText().toString());
-        assertEquals("8:30 AM", holder1.time.getText().toString());
+        assertThat(holder1.enabled.isChecked(), is(true));
+        assertThat(holder1.repeat.getText().toString(), is(equalTo("Smart Alarm  ―  Sun, Sat")));
+        assertThat(holder1.time.getText().toString(), is(equalTo("8:30 AM")));
 
         final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
         assertFalse(holder2.enabled.isChecked());
-        assertEquals("Smart Alarm", holder2.repeat.getText().toString());
-        assertEquals("5:45 AM", holder2.time.getText().toString());
+        assertThat(holder2.repeat.getText().toString(), is(equalTo("Smart Alarm")));
+        assertThat(holder2.time.getText().toString(), is(equalTo("5:45 AM")));
     }
 
     @Test
@@ -133,15 +134,15 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
 
         final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
-        assertTrue(holder1.enabled.isChecked());
-        assertEquals("Alarm  ―  Sun, Sat", holder1.repeat.getText().toString());
-        assertEquals("8:30 AM", holder1.time.getText().toString());
+        assertThat(holder1.enabled.isChecked(), is(true));
+        assertThat(holder1.repeat.getText().toString(), is(equalTo("Alarm  ―  Sun, Sat")));
+        assertThat(holder1.time.getText().toString(), is(equalTo("8:30 AM")));
 
         final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
-        assertFalse(holder2.enabled.isChecked());
-        assertEquals("Alarm", holder2.repeat.getText().toString());
-        assertEquals("5:45 AM", holder2.time.getText().toString());
+        assertThat(holder2.enabled.isChecked(), is(false));
+        assertThat(holder2.repeat.getText().toString(), is(equalTo("Alarm")));
+        assertThat(holder2.time.getText().toString(), is(equalTo("5:45 AM")));
     }
 
     @Test
@@ -161,9 +162,9 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
 
         holder.enabled.performClick();
-        assertTrue(alarmEnabledChangedListener.called);
-        assertEquals(0, alarmEnabledChangedListener.position);
-        assertFalse(alarmEnabledChangedListener.enabled);
+        assertThat(alarmEnabledChangedListener.called, is(true));
+        assertThat(alarmEnabledChangedListener.position, is(equalTo(0)));
+        assertThat(alarmEnabledChangedListener.enabled, is(false));
     }
 
     //endregion

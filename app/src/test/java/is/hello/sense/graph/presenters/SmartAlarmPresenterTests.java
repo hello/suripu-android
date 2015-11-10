@@ -13,11 +13,10 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("ConstantConditions")
 public class SmartAlarmPresenterTests extends InjectionTestCase {
@@ -25,46 +24,47 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
     @Test
     public void update() throws Exception {
-        ArrayList<Alarm> smartAlarms = Sync.wrapAfter(presenter::update, presenter.alarms).last();
-        assertEquals(1, smartAlarms.size());
+        final ArrayList<Alarm> smartAlarms = Sync.wrapAfter(presenter::update, presenter.alarms)
+                                                 .last();
+        assertThat(smartAlarms.size(), is(equalTo(1)));
     }
 
     @Test
     public void validateAlarms() throws Exception {
-        Alarm sunday = new Alarm();
+        final Alarm sunday = new Alarm();
         sunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         sunday.setSmart(true);
 
-        Alarm monday = new Alarm();
+        final Alarm monday = new Alarm();
         monday.addDayOfWeek(DateTimeConstants.MONDAY);
         monday.setSmart(true);
 
-        assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, monday)));
-        assertFalse(presenter.validateAlarms(Lists.newArrayList(sunday, sunday)));
-        assertFalse(presenter.validateAlarms(Lists.newArrayList(monday, monday)));
+        assertThat(presenter.validateAlarms(Lists.newArrayList(sunday, monday)), is(true));
+        assertThat(presenter.validateAlarms(Lists.newArrayList(sunday, sunday)), is(false));
+        assertThat(presenter.validateAlarms(Lists.newArrayList(monday, monday)), is(false));
 
         final Alarm stupidSunday = new Alarm();
         stupidSunday.setSmart(false);
         stupidSunday.addDayOfWeek(DateTimeConstants.SUNDAY);
-        assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, stupidSunday)));
+        assertThat(presenter.validateAlarms(Lists.newArrayList(sunday, stupidSunday)), is(true));
 
-        Alarm disabledSunday = new Alarm();
+        final Alarm disabledSunday = new Alarm();
         disabledSunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         disabledSunday.setSmart(true);
         disabledSunday.setEnabled(false);
-        assertTrue(presenter.validateAlarms(Lists.newArrayList(sunday, disabledSunday)));
+        assertThat(presenter.validateAlarms(Lists.newArrayList(sunday, disabledSunday)), is(true));
     }
 
     @Test
     public void save() throws Exception {
-        ArrayList<Alarm> goodAlarms = new ArrayList<>();
+        final ArrayList<Alarm> goodAlarms = new ArrayList<>();
         Sync.wrap(presenter.save(goodAlarms))
             .assertThat(is(notNullValue()));
 
-        Alarm sunday = new Alarm();
+        final Alarm sunday = new Alarm();
         sunday.addDayOfWeek(DateTimeConstants.SUNDAY);
         sunday.setSmart(true);
-        ArrayList<Alarm> badAlarms = Lists.newArrayList(sunday, sunday);
+        final ArrayList<Alarm> badAlarms = Lists.newArrayList(sunday, sunday);
 
         Sync.wrap(presenter.save(badAlarms))
             .assertThrows(SmartAlarmPresenter.DayOverlapError.class);
@@ -72,41 +72,41 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
 
     @Test
     public void isTooSoon() throws Exception {
-        Alarm alarm = new Alarm();
+        final Alarm alarm = new Alarm();
 
-        LocalTime midHour = new LocalTime(9, 30, 0);
-        LocalTime tooSoonMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
-        LocalTime pastCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
-        LocalTime beforeCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        final LocalTime midHour = new LocalTime(9, 30, 0);
+        final LocalTime tooSoonMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
+        final LocalTime pastCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        final LocalTime beforeCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
 
         alarm.setTime(midHour);
-        assertTrue(presenter.isAlarmTooSoon(midHour, alarm));
+        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(true));
 
         alarm.setTime(tooSoonMidHour);
-        assertTrue(presenter.isAlarmTooSoon(midHour, alarm));
+        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(true));
 
         alarm.setTime(pastCutOffMidHour);
-        assertFalse(presenter.isAlarmTooSoon(midHour, alarm));
+        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(false));
 
         alarm.setTime(beforeCutOffMidHour);
-        assertFalse(presenter.isAlarmTooSoon(midHour, alarm));
+        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(false));
 
 
-        LocalTime hourBoundary = new LocalTime(9, 59, 0);
-        LocalTime tooSoonBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
-        LocalTime pastCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
-        LocalTime beforeCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        final LocalTime hourBoundary = new LocalTime(9, 59, 0);
+        final LocalTime tooSoonBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
+        final LocalTime pastCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
+        final LocalTime beforeCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
 
         alarm.setTime(hourBoundary);
-        assertTrue(presenter.isAlarmTooSoon(hourBoundary, alarm));
+        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(true));
 
         alarm.setTime(tooSoonBoundary);
-        assertTrue(presenter.isAlarmTooSoon(hourBoundary, alarm));
+        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(true));
 
         alarm.setTime(pastCutOffBoundary);
-        assertFalse(presenter.isAlarmTooSoon(hourBoundary, alarm));
+        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(false));
 
         alarm.setTime(beforeCutOffBoundary);
-        assertFalse(presenter.isAlarmTooSoon(hourBoundary, alarm));
+        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(false));
     }
 }
