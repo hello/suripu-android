@@ -5,19 +5,21 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 
 import is.hello.sense.R;
 
 public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseViewHolder> {
+    private final static int VIEW_TYPE_HEADER = 0;
+    private final static int VIEW_TYPE_RADIO = 1;
+    private final static ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
     private final String[] timeZoneNames;
     private final Context context;
     private final int itemVerticalPadding;
+    private final int imagePadding;
     private final OnRadioClickListener clickListener;
-    private final int VIEW_TYPE_HEADER = 0;
-    private final int VIEW_TYPE_RADIO = 1;
 
     public TimeZoneAdapter(@NonNull Context context, @NonNull OnRadioClickListener clickListener) {
         this.context = context;
@@ -26,9 +28,11 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
         this.timeZoneNames[0] = context.getString(R.string.label_choose_time_zone);
         System.arraycopy(timeZoneArray, 0, this.timeZoneNames, 1, timeZoneArray.length);
         this.clickListener = clickListener;
-        itemVerticalPadding = context.getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
-    }
+        this.itemVerticalPadding = context.getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
+        this.imagePadding = context.getResources().getDimensionPixelSize(R.dimen.gap_large);
 
+
+    }
 
     protected String getDisplayName(int position) {
         return timeZoneNames[position];
@@ -37,9 +41,14 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_HEADER) {
-            return new HeaderHolder(new TextView(context));
+            return new HeaderHolder(new TextView(context, null, R.attr.senseTextAppearanceFieldLabel));
         }
-        return new TimeZoneHolder(new RadioButton(context));
+        TextView textView = new TextView(context, null, R.style.AppTheme_Text_Body);
+        textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_off, 0, 0, 0);
+        textView.setCompoundDrawablePadding(imagePadding);
+        textView.setBackgroundResource(R.drawable.selectable_dark_bounded);
+        textView.setLayoutParams(layoutParams);
+        return new TimeZoneHolder(textView);
     }
 
 
@@ -77,7 +86,6 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
             super(view);
             this.header = (TextView) view;
             this.header.setPadding(0, itemVerticalPadding * 2, 0, itemVerticalPadding);
-            this.header.setTextAppearance(context, R.style.AppTheme_Text_SectionHeading_Large);
         }
 
         void bind(int position) {
@@ -87,23 +95,26 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
 
     class TimeZoneHolder extends BaseViewHolder {
 
-        final RadioButton radioButton;
+        final TextView title;
 
         public TimeZoneHolder(@NonNull View view) {
             super(view);
-            this.radioButton = (RadioButton) view;
-            this.radioButton.setPadding(0, itemVerticalPadding, 0, itemVerticalPadding);
+            view.setPadding(0, itemVerticalPadding, 0, itemVerticalPadding);
+            this.title = (TextView) view;
         }
 
         void bind(int position) {
-            radioButton.setText(getDisplayName(position));
-            radioButton.setOnCheckedChangeListener((button, isChecked) -> {
+            title.setText(getDisplayName(position));
+            title.setOnClickListener((view) -> {
+                title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_on, 0, 0, 0);
                 clickListener.onRadioValueChanged(position - 1); // This list has 1 more element (the header) than the list of time zone ids.
             });
         }
+
     }
 
     public interface OnRadioClickListener {
         void onRadioValueChanged(int position);
     }
+
 }
