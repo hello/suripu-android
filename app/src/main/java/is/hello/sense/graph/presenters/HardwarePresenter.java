@@ -10,6 +10,8 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -340,12 +342,23 @@ import rx.functions.Action1;
         }
     }
 
-    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks(boolean sendCountryCode) {
         if (peripheral == null) {
             return noDeviceError();
         }
-
-        return peripheral.scanForWifiNetworks()
+        SensePeripheral.CountryCodes countryCode = null;
+        if (sendCountryCode){
+            DateTimeZone timeZone = DateTimeZone.getDefault();
+            String timeZoneId = timeZone.getID();
+            if (timeZoneId.contains("America")) {
+                countryCode = SensePeripheral.CountryCodes.US;
+            } else if (timeZoneId.contains("Japan")) {
+                countryCode = SensePeripheral.CountryCodes.JP;
+            } else {
+                countryCode = SensePeripheral.CountryCodes.EU;
+            }
+        }
+        return peripheral.scanForWifiNetworks(countryCode)
                          .subscribeOn(Rx.mainThreadScheduler())
                          .doOnError(this.respondToError)
                          .map(networks -> {
@@ -367,8 +380,9 @@ import rx.functions.Action1;
     }
 
     public Observable<SenseConnectToWiFiUpdate> sendWifiCredentials(@NonNull String ssid,
-                                                                             @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
-                                                                             @NonNull String password) {
+                                                                    @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
+                                                                    @NonNull String password
+                                                                   ) {
         logEvent("sendWifiCredentials()");
 
         if (peripheral == null) {
