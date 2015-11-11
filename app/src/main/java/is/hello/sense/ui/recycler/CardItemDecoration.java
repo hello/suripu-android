@@ -19,7 +19,7 @@ public final class CardItemDecoration extends RecyclerView.ItemDecoration {
     public CardItemDecoration(@NonNull Resources resources) {
         this.outerHorizontal = resources.getDimensionPixelSize(R.dimen.gap_card_horizontal);
         this.outerVertical = resources.getDimensionPixelSize(R.dimen.gap_card_vertical);
-        this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter_compact);
+        this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter);
     }
 
     @Override
