@@ -10,9 +10,10 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,7 +31,6 @@ import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
-import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -348,18 +348,14 @@ import rx.functions.Action1;
         }
         SensePeripheral.CountryCodes countryCode = null;
         if (sendCountryCode){
-            TimeZone timeZone = TimeZone.getDefault();
-            if (timeZone != null){
-                String timeZoneId = timeZone.getID();
-                if (timeZoneId != null){
-                    if (timeZoneId.contains(context.getResources().getString(R.string.country_US))) {
-                        countryCode = SensePeripheral.CountryCodes.US;
-                    } else if (timeZoneId.contains(context.getResources().getString(R.string.country_JP))) {
-                        countryCode = SensePeripheral.CountryCodes.JP;
-                    } else {
-                        countryCode = SensePeripheral.CountryCodes.EU;
-                    }
-                }
+            DateTimeZone timeZone = DateTimeZone.getDefault();
+            String timeZoneId = timeZone.getID();
+            if (timeZoneId.contains("America")) {
+                countryCode = SensePeripheral.CountryCodes.US;
+            } else if (timeZoneId.contains("Japan")) {
+                countryCode = SensePeripheral.CountryCodes.JP;
+            } else {
+                countryCode = SensePeripheral.CountryCodes.EU;
             }
         }
         return peripheral.scanForWifiNetworks(countryCode)

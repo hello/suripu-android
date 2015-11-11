@@ -498,9 +498,6 @@
     <string name="onboarding_intro_feature_conditions_message">Sense is packed with sensors that monitor the conditions of your bedroom, giving you unparalleled insight into how temperature, humidity, light, sound, and even air quality affects how well you sleep.</string>
     <string name="action_watch_video">Watch Video</string>
 
-    <string name="country_US">America</string>
-    <string name="country_JP">Japan</string>
-
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>
         <item quantity="other">%1$s – %2$d attachments</item>
