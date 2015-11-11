@@ -56,19 +56,20 @@
             android:id="@+id/fragment_onboarding_pair_pill_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            style="@style/AppTheme.ProgressBar.Small" />
 
         <TextView
             android:id="@+id/fragment_onboarding_pair_pill_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginTop="@dimen/gap_medium"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
             android:layout_marginBottom="@dimen/gap_outer"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:textColor="@color/light_accent"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
+            android:textColor="#40000000"
             android:text="@string/label_searching_for_pill"/>
 
         <Button
