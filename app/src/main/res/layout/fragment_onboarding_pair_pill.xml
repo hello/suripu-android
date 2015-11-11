@@ -69,7 +69,7 @@
             android:layout_marginBottom="@dimen/gap_outer"
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
-            android:textColor="#40000000"
+            android:textColor="@color/text_detail_grey"
             android:text="@string/label_searching_for_pill"/>
 
         <Button
