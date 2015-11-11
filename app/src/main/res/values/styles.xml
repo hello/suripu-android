@@ -28,7 +28,7 @@
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
         <item name="android:textColorLink">@color/text_link</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
@@ -129,7 +129,7 @@
 
     <style name="AppTheme.Dialog" parent="Platform.Dialog">
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Small</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
     </style>
 
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
@@ -440,6 +440,14 @@
 
     <style name="AppTheme.ProgressBar.Small">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_small</item>
+        <item name="android:minWidth">40dp</item>
+        <item name="android:maxWidth">40dp</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:maxHeight">40dp</item>
+    </style>
+
+    <style name="AppTheme.ProgressBar.Tiny">
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_tiny</item>
         <item name="android:minWidth">20dp</item>
         <item name="android:maxWidth">20dp</item>
         <item name="android:minHeight">20dp</item>
