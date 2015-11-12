@@ -481,6 +481,9 @@ public class Analytics {
 
     @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
+        if (context == null){
+            return;
+        }
         com.segment.analytics.Analytics.with(context).flush();
     }
 
@@ -499,6 +502,9 @@ public class Analytics {
 
     public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
+        if (context == null){
+            return;
+        }
 
         if (accountId == null) {
             accountId = "";
@@ -519,6 +525,9 @@ public class Analytics {
     }
 
     public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
+        if (context == null){
+            return;
+        }
         com.segment.analytics.Analytics.with(context).identify(accountId);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
@@ -533,12 +542,18 @@ public class Analytics {
     }
 
     public static void signOut() {
+        if (context == null){
+            return;
+        }
 
         com.segment.analytics.Analytics.with(context).reset();
     }
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
+        if (context == null){
+            return;
+        }
 
         Traits traits = new Traits();
         traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
@@ -621,6 +636,9 @@ public class Analytics {
     }
 
     public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
+        if (context == null){
+            return;
+        }
         com.segment.analytics.Analytics.with(context).track(event, properties);
 
         Logger.analytic(event, properties);
