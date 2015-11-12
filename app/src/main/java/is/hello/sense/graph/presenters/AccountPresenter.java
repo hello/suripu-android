@@ -1,5 +1,6 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -14,6 +15,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import rx.Observable;
 
@@ -26,7 +28,11 @@ public class AccountPresenter extends ValuePresenter<Account> {
     @Inject PreferencesPresenter preferences;
 
     public final PresenterSubject<Account> account = this.subject;
+    @NonNull private final Context context;
 
+    public @Inject AccountPresenter(@NonNull Context context){
+        this.context = context;
+    }
 
     @Override
     protected boolean isDataDisposable() {
@@ -154,9 +160,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
 
     //region Logging out
-
     public void logOut() {
         sessionManager.logOut();
+        NotificationRegistration.resetAppVersion(context);
+
     }
 
     //endregion
