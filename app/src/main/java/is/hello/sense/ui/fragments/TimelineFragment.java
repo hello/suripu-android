@@ -599,7 +599,11 @@ public class TimelineFragment extends InjectionFragment
         } else {
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended
-                if (homeActivity.isPostOnboarding() && DateFormatter.isLastNight(getDate())) {
+                final LocalDate creationDate =
+                        preferences.getLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE);
+                final boolean isAccountNew = (creationDate == null ||
+                        creationDate.equals(LocalDate.now()));
+                if (homeActivity.isPostOnboarding() && isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);

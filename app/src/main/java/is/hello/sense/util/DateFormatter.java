@@ -106,6 +106,13 @@ import is.hello.sense.ui.widget.util.Styles;
     }
 
     /**
+     * Returns whether or not a given local date is considered to be today.
+     */
+    public static boolean isTodayForTimeline(@NonNull LocalDate localDate) {
+        return todayForTimeline().equals(localDate);
+    }
+
+    /**
      * Returns the date considered to represent last night.
      */
     public static @NonNull LocalDate lastNight() {

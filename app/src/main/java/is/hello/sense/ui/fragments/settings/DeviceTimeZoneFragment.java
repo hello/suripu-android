@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
+import android.widget.TextView;
 
 import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
-    private RadioButton currentTimeZone;
+    private TextView currentTimeZone;
 
 
     //region Lifecycle
@@ -58,7 +58,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_device_time_zone, container, false);
         activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_time_zone_loading);
-        currentTimeZone = (RadioButton) view.findViewById(R.id.fragment_device_time_zone_current_zone);
+        currentTimeZone = (TextView) view.findViewById(R.id.fragment_device_time_current_zone);
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_device_time_zone_recycler);
         currentTimeZone.setText(R.string.missing_data_placeholder);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

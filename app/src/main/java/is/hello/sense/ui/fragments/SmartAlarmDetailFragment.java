@@ -231,8 +231,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             markDirty();
         } else if (requestCode == REPEAT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(AlarmRepeatDialogFragment.RESULT_DAYS);
-            alarm.getDaysOfWeek().clear();
-            alarm.getDaysOfWeek().addAll(selectedDays);
+            alarm.setDaysOfWeek(selectedDays);
             repeatDays.setText(alarm.getRepeatSummary(getActivity()));
 
             markDirty();

@@ -67,6 +67,14 @@
         android:text="@string/device_unknown"
         android:singleLine="true"/>
 
+    <ImageView
+        android:id="@+id/item_device_wifi_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:layout_above="@+id/item_device_status2_label"
+        android:layout_toStartOf="@+id/item_device_status"/>
+
     <TextView
         android:id="@+id/item_device_status2_label"
         android:layout_width="wrap_content"

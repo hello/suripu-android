@@ -10,7 +10,9 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.RecyclerAdapterTesting;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class SmartAlarmSoundAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
@@ -35,18 +37,18 @@ public class SmartAlarmSoundAdapterTests extends SenseTestCase {
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
                                                          adapter.getItemViewType(0), 0);
 
-        assertEquals(View.VISIBLE, holder1.busy.getVisibility());
-        assertEquals(View.INVISIBLE, holder1.checked.getVisibility());
-        assertEquals("Chimes", holder1.name.getText().toString());
+        assertThat(holder1.busy.getVisibility(), is(equalTo(View.VISIBLE)));
+        assertThat(holder1.checked.getVisibility(), is(equalTo(View.INVISIBLE)));
+        assertThat(holder1.name.getText().toString(), is(equalTo("Chimes")));
 
 
         final SmartAlarmSoundAdapter.ViewHolder holder2 =
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
                                                          adapter.getItemViewType(1), 1);
 
-        assertEquals(View.GONE, holder2.busy.getVisibility());
-        assertEquals(View.VISIBLE, holder2.checked.getVisibility());
-        assertEquals("Bells", holder2.name.getText().toString());
+        assertThat(holder2.busy.getVisibility(), is(equalTo(View.GONE)));
+        assertThat(holder2.checked.getVisibility(), is(equalTo(View.VISIBLE)));
+        assertThat(holder2.name.getText().toString(), is(equalTo("Bells")));
     }
 
     @Test
@@ -60,18 +62,18 @@ public class SmartAlarmSoundAdapterTests extends SenseTestCase {
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
                                                          adapter.getItemViewType(0), 0);
 
-        assertEquals(View.GONE, holder1.busy.getVisibility());
-        assertEquals(View.VISIBLE, holder1.checked.getVisibility());
-        assertEquals("Chimes", holder1.name.getText().toString());
+        assertThat(holder1.busy.getVisibility(), is(equalTo(View.GONE)));
+        assertThat(holder1.checked.getVisibility(), is(equalTo(View.VISIBLE)));
+        assertThat(holder1.name.getText().toString(), is(equalTo("Chimes")));
 
 
         final SmartAlarmSoundAdapter.ViewHolder holder2 =
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent,
                                                          adapter.getItemViewType(1), 1);
 
-        assertEquals(View.GONE, holder2.busy.getVisibility());
-        assertEquals(View.VISIBLE, holder2.checked.getVisibility());
-        assertEquals("Bells", holder2.name.getText().toString());
+        assertThat(holder2.busy.getVisibility(), is(equalTo(View.GONE)));
+        assertThat(holder2.checked.getVisibility(), is(equalTo(View.VISIBLE)));
+        assertThat(holder2.name.getText().toString(), is(equalTo("Bells")));
     }
 
     //endregion

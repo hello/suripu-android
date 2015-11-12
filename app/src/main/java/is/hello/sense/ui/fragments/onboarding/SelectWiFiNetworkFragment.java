@@ -112,7 +112,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
             } else {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN, null);
             }
-            rescan();
+            rescan(true);
         });
 
         final OnboardingToolbar toolbar = OnboardingToolbar.of(this, view);
@@ -150,7 +150,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
             } else {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
             }
-            rescan();
+            rescan(false);
         } else {
             scanningIndicatorLabel.setVisibility(View.GONE);
             scanningIndicator.setVisibility(View.GONE);
@@ -197,7 +197,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
     }
 
 
-    public void rescan() {
+    public void rescan(boolean sendCountryCode) {
         scanningIndicatorLabel.setVisibility(View.VISIBLE);
         scanningIndicator.setVisibility(View.VISIBLE);
         if (subheading.getVisibility() != View.GONE) {
@@ -210,7 +210,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
 
         if (!hardwarePresenter.hasPeripheral()) {
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             ignored -> rescan(),
+                             ignored -> rescan(sendCountryCode),
                              this::peripheralRediscoveryFailed);
             return;
         }
@@ -221,14 +221,14 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
                     return;
                 }
 
-                rescan();
+                rescan(sendCountryCode);
             }, this::peripheralRediscoveryFailed);
 
             return;
         }
 
         showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(),
+            bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(sendCountryCode),
                              this::bindScanResults,
                              this::scanResultsUnavailable);
         }, this::scanResultsUnavailable);

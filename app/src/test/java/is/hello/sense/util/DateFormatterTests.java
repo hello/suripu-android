@@ -69,6 +69,29 @@ public class DateFormatterTests extends InjectionTestCase {
     }
 
     @Test
+    public void isTodayForTimeline() {
+        assertThat(DateFormatter.isTodayForTimeline(DateFormatter.todayForTimeline()), is(true));
+        assertThat(DateFormatter.isTodayForTimeline(DateFormatter.todayForTimeline().minusDays(5)), is(false));
+        assertThat(DateFormatter.isTodayForTimeline(DateFormatter.todayForTimeline().plusDays(5)), is(false));
+
+
+        final DateTime beforeBoundary = new DateTime(1969, 7, 21, 2, 0);
+        DateTimeUtils.setCurrentMillisFixed(beforeBoundary.getMillis());
+
+        assertThat(DateFormatter.isTodayForTimeline(new LocalDate(1969, 7, 19)), is(false));
+        assertThat(DateFormatter.isTodayForTimeline(new LocalDate(1969, 7, 20)), is(true));
+        assertThat(DateFormatter.isTodayForTimeline(new LocalDate(1969, 7, 21)), is(false));
+
+
+        final DateTime afterBoundary = new DateTime(1969, 7, 21, 5, 0);
+        DateTimeUtils.setCurrentMillisFixed(afterBoundary.getMillis());
+
+        assertThat(DateFormatter.isTodayForTimeline(new LocalDate(1969, 7, 19)), is(false));
+        assertThat(DateFormatter.isTodayForTimeline(new LocalDate(1969, 7, 20)), is(false));
+        assertThat(DateFormatter.isTodayForTimeline(new LocalDate(1969, 7, 21)), is(true));
+    }
+
+    @Test
     public void lastNight() {
         final DateTime fixedPoint = new DateTime(1969, 7, 21, 5, 0);
         DateTimeUtils.setCurrentMillisFixed(fixedPoint.getMillis());
