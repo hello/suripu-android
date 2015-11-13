@@ -36,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/gap_outer"
                 android:layout_gravity="center"
-                android:visibility="gone" />
+                android:visibility="gone"
+                style="@style/AppTheme.ProgressBar.Small" />
 
             <TextView
                 android:id="@+id/fragment_device_details_alert_text"
