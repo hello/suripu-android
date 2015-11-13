@@ -39,9 +39,8 @@
                 android:layout_marginTop="@dimen/device_detail_progress_margin"
                 android:layout_marginBottom="@dimen/device_detail_text_margin"
                 android:layout_gravity="center"
-                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                 android:visibility="gone"
-                style="@style/AppTheme.ProgressBar.Medium" />
+                style="@style/AppTheme.ProgressBar.Small" />
 
             <TextView
                 android:id="@+id/fragment_device_details_alert_text"
