@@ -34,10 +34,14 @@
                 android:id="@+id/fragment_device_details_alert_busy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/gap_outer"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:layout_marginTop="@dimen/device_detail_progress_margin"
+                android:layout_marginBottom="@dimen/device_detail_text_margin"
                 android:layout_gravity="center"
+                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                 android:visibility="gone"
-                style="@style/AppTheme.ProgressBar.Small" />
+                style="@style/AppTheme.ProgressBar.Medium" />
 
             <TextView
                 android:id="@+id/fragment_device_details_alert_text"
@@ -45,7 +49,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_small"
                 android:gravity="center"
                 android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                 android:text="@string/app_name"
@@ -73,7 +76,7 @@
                 style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
 
             <View
-                android:layout_marginTop="@dimen/gap_small"
+                android:layout_marginTop="@dimen/device_detail_text_margin"
                 style="@style/Divider.Horizontal" />
 
         </LinearLayout>
