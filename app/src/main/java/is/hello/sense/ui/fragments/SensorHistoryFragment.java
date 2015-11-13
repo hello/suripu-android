@@ -310,18 +310,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @NonNull
         @Override
         public String getSectionFooter(int section) {
-            final float value = getSection(section).get(0).getValue();
-            if (value == ApiService.PLACEHOLDER_VALUE) {
-                return getString(R.string.missing_data_placeholder);
-            } else {
-                final UnitPrinter printer;
-                if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensor)) {
-                    printer = UnitPrinter.SIMPLE;
-                } else {
-                    printer = unitFormatter.getUnitPrinterForSensor(sensor);
-                }
-                return printer.print(value).toString();
-            }
+            return "";
         }
 
         //endregion
