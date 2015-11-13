@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
@@ -279,7 +279,7 @@ public class IntroductionFragment extends SenseFragment
 
     @Override
     public void onPageChangeCompleted(int position) {
-        final JSONObject properties = Analytics.createProperties(Analytics.Onboarding.PROP_SCREEN,
+        final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_SCREEN,
                                                                  position + 1);
         Analytics.trackEvent(Analytics.Onboarding.EVENT_INTRO_SWIPED, properties);
 

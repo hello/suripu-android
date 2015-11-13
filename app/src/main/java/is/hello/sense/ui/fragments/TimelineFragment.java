@@ -20,10 +20,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
@@ -140,7 +141,7 @@ public class TimelineFragment extends InjectionFragment
         super.onCreate(savedInstanceState);
 
         final LocalDate date = getDate();
-        final JSONObject properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
+        final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
                                                                  date.toString());
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
 
@@ -738,7 +739,7 @@ public class TimelineFragment extends InjectionFragment
                        .putBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, true)
                        .apply();
 
-            final JSONObject properties = Analytics.createProperties(Analytics.Timeline.PROP_TYPE,
+            final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_TYPE,
                                                                      event.getType().toString());
             switch (option.getOptionId()) {
                 case ID_EVENT_CORRECT: {

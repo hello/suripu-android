@@ -13,11 +13,10 @@ import android.support.annotation.Nullable;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.segment.analytics.Properties;
+import com.segment.analytics.Traits;
 
 import org.joda.time.DateTime;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Set;
 
@@ -31,7 +30,9 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
-    private static @Nullable MixpanelAPI provider;
+    private static
+    @Nullable
+    Context context;
 
     public interface Global {
 
@@ -160,12 +161,10 @@ public class Analytics {
          */
         String EVENT_BIRTHDAY = "Onboarding Birthday";
         /**
-
          * User lands on Gender screen (do not log if user comes from Settings)
          */
         String EVENT_GENDER = "Onboarding Gender";
         /**
-
          * User lands on Height screen (do not log if user comes from Settings)
          */
         String EVENT_HEIGHT = "Onboarding Height";
@@ -468,9 +467,12 @@ public class Analytics {
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
-        if (provider == null) {
-            Analytics.provider = MixpanelAPI.getInstance(context, BuildConfig.MP_API_KEY);
+        Analytics.context = context;
+        com.segment.analytics.Analytics.Builder builder = new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
+        if (BuildConfig.DEBUG) {
+            builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
+        com.segment.analytics.Analytics.setSingletonInstance(builder.build());
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -479,9 +481,10 @@ public class Analytics {
 
     @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        if (provider != null) {
-            provider.flush();
+        if (context == null){
+            return;
         }
+        com.segment.analytics.Analytics.with(context).flush();
     }
 
     //endregion
@@ -499,65 +502,62 @@ public class Analytics {
 
     public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
-
-        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+        if (context == null){
+            return;
+        }
 
         if (accountId == null) {
             accountId = "";
         }
 
-        if (provider != null) {
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
+        com.segment.analytics.Analytics.with(context).alias(accountId);
 
-            if (name == null) {
-                name = "";
-            }
 
-            MixpanelAPI.People people = provider.getPeople();
+        Traits traits = new Traits();
+        traits.putName(name);
+        traits.putCreatedAt(created.toString());
+        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
 
-            String distinctId = provider.getDistinctId();
-            provider.alias(accountId, distinctId);
-            people.identify(distinctId);
-
-            people.set("$name", name);
-            people.set("$created", created.toString());
-            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-
-            provider.registerSuperProperties(createProperties(
-                    Global.GLOBAL_PROP_NAME, name,
-                    Global.GLOBAL_PROP_PLATFORM, PLATFORM
-                                                             ));
-        }
-
+        com.segment.analytics.Analytics.with(context).identify(traits);
         trackUserIdentifier(accountId);
     }
 
     public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
+        if (context == null){
+            return;
+        }
+        com.segment.analytics.Analytics.with(context).identify(accountId);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        if (provider != null) {
-            provider.identify(accountId);
-
-            final MixpanelAPI.People people = provider.getPeople();
-            people.identify(accountId);
-            people.set(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-            people.set(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-
-            if (name != null) {
-                people.set("$name", name);
-            }
-
-        }
+        Traits traits = new Traits();
+        traits.putName(name);
+        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+       // com.segment.analytics.Analytics.with(context).alias(accountId); not working. Skipping
+        com.segment.analytics.Analytics.with(context).identify(traits);
 
         trackUserIdentifier(accountId);
     }
 
+    public static void signOut() {
+        if (context == null){
+            return;
+        }
+
+        com.segment.analytics.Analytics.with(context).reset();
+    }
+
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-
-        if (provider != null) {
-            provider.getPeople().set(Global.GLOBAL_PROP_SENSE_ID, senseId);
+        if (context == null){
+            return;
         }
+
+        Traits traits = new Traits();
+        traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
+        com.segment.analytics.Analytics.with(context).identify(traits);
 
         Context context = SenseApplication.getInstance();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -577,17 +577,16 @@ public class Analytics {
 
     //region Events
 
-    public static @NonNull JSONObject createProperties(@NonNull Object... pairs) {
+    public static
+    @NonNull
+    Properties createProperties(@NonNull Object... pairs) {
         if ((pairs.length % 2) != 0) {
             throw new IllegalArgumentException("even number of arguments required");
         }
 
-        JSONObject properties = new JSONObject();
-        try {
-            for (int i = 0; i < pairs.length; i += 2) {
-                properties.put(pairs[i].toString(), pairs[i + 1]);
-            }
-        } catch (JSONException ignored) {
+        Properties properties = new Properties();
+        for (int i = 0; i < pairs.length; i += 2) {
+            properties.put(pairs[i].toString(), pairs[i + 1]);
         }
         return properties;
     }
@@ -597,9 +596,11 @@ public class Analytics {
                 connectionState == BluetoothAdapter.STATE_CONNECTED);
     }
 
-    public static @NonNull JSONObject createBluetoothTrackingProperties(@NonNull Context context) {
+    public static
+    @NonNull
+    Properties createBluetoothTrackingProperties(@NonNull Context context) {
         int bondedCount = 0,
-            connectedCount = 0;
+                connectedCount = 0;
 
         boolean headsetConnected = false,
                 a2dpConnected = false,
@@ -626,18 +627,19 @@ public class Analytics {
         }
 
         return createProperties(
-            Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
-            Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
-            Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
-            Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
-            Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected
-        );
+                Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
+                Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
+                Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
+                Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
+                Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected
+                               );
     }
 
-    public static void trackEvent(@NonNull String event, @Nullable JSONObject properties) {
-        if (provider != null) {
-            provider.track(event, properties);
+    public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
+        if (context == null){
+            return;
         }
+        com.segment.analytics.Analytics.with(context).track(event, properties);
 
         Logger.analytic(event, properties);
     }
@@ -646,12 +648,12 @@ public class Analytics {
                                   @Nullable String errorType,
                                   @Nullable String errorContext,
                                   @Nullable String errorOperation) {
-        JSONObject properties = createProperties(
-            Global.PROP_ERROR_MESSAGE, message,
-            Global.PROP_ERROR_TYPE, errorType,
-            Global.PROP_ERROR_CONTEXT, errorContext,
-            Global.PROP_ERROR_OPERATION, errorOperation
-        );
+        Properties properties = createProperties(
+                Global.PROP_ERROR_MESSAGE, message,
+                Global.PROP_ERROR_TYPE, errorType,
+                Global.PROP_ERROR_CONTEXT, errorContext,
+                Global.PROP_ERROR_OPERATION, errorOperation
+                                                );
         trackEvent(Global.EVENT_ERROR, properties);
     }
 

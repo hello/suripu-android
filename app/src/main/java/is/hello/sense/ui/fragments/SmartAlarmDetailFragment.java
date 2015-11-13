@@ -16,6 +16,8 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
@@ -353,7 +355,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     public void finish() {
         final String daysRepeated = TextUtils.join(", ", alarm.getSortedDaysOfWeek());
-        final JSONObject properties =
+        final Properties properties =
                 Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED, alarm.isEnabled(),
                                            Analytics.TopView.PROP_ALARM_IS_SMART, alarm.isSmart(),
                                            Analytics.TopView.PROP_ALARM_DAYS_REPEATED, daysRepeated);

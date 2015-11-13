@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.bugsnag.android.Bugsnag;
+import com.segment.analytics.Properties;
 
 import org.json.JSONObject;
 
@@ -76,7 +77,7 @@ public class Logger {
         error(tag, message, null);
     }
 
-    public static void analytic(@NonNull String event, @Nullable JSONObject properties) {
+    public static void analytic(@NonNull String event, @Nullable Properties properties) {
         //noinspection ConstantConditions
         if (MIN_LOGGING_LEVEL <= Log.INFO) {
             Logger.info(Analytics.LOG_TAG, event + ": " + properties);

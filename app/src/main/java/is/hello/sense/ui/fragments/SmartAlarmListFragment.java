@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import java.util.ArrayList;
 
@@ -247,7 +247,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             smartAlarm.setRingOnce();
         }
 
-        final JSONObject properties = Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED,
+        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED,
                                                                  enabled);
         Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, properties);
 

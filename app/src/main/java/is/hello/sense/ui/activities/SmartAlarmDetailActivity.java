@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 
@@ -56,7 +58,7 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
         if (savedInstanceState == null) {
             if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
-                JSONObject properties = Analytics.createProperties(
+                Properties properties = Analytics.createProperties(
                     Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SET_ALARM"
                 );
                 Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);

@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
@@ -22,7 +22,7 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
 
         this.supportLevel = hardwarePresenter.getDeviceSupportLevel();
 
-        JSONObject properties = Analytics.createProperties(
+        Properties properties = Analytics.createProperties(
             Analytics.Onboarding.PROP_DEVICE_SUPPORT_LEVEL, supportLevel.toString()
         );
         Analytics.trackEvent(Analytics.Onboarding.EVENT_UNSUPPORTED_DEVICE, properties);

@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import java.lang.ref.WeakReference;
 
@@ -33,7 +33,7 @@ public class OnboardingDoneFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
+            Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
             Analytics.trackEvent(Analytics.Onboarding.EVENT_END, properties);
         }
     }

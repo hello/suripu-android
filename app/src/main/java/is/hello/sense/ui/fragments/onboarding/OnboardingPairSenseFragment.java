@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import javax.inject.Inject;
 
@@ -60,7 +60,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
         }
 
-        JSONObject properties = Analytics.createBluetoothTrackingProperties(getActivity());
+        Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
         if (isPairOnlySession()) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP, properties);
         } else {

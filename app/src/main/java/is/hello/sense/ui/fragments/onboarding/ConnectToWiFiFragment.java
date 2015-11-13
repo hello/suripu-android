@@ -25,7 +25,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.json.JSONObject;
+import com.segment.analytics.Properties;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -89,7 +89,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
-        JSONObject properties = Analytics.createProperties(
+        Properties properties = Analytics.createProperties(
             Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
         );
         if (useInAppEvents) {
@@ -313,7 +313,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
                 return;
             }
 
-            final JSONObject properties = Analytics.createProperties(
+            final Properties properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
             );
             final String updateEvent;
@@ -327,7 +327,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
             final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
-                JSONObject updateProperties = Analytics.createProperties(
+                Properties updateProperties = Analytics.createProperties(
                     Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
                     Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
                     Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode

@@ -18,6 +18,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.LocalDate;
 import org.json.JSONObject;
 
@@ -136,7 +138,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
-            JSONObject properties = Analytics.createProperties(
+            Properties properties = Analytics.createProperties(
                     Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
                                                               );
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
@@ -192,7 +194,7 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onNewIntent(intent);
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
-            JSONObject properties = Analytics.createProperties(
+            Properties properties = Analytics.createProperties(
                     Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SHOW_ALARMS"
                                                               );
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
