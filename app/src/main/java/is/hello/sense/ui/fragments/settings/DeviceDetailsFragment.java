@@ -158,7 +158,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         secondaryAlertAction.setVisibility(View.GONE);
 
         alertText.setGravity(Gravity.CENTER);
-        alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_New);
+        alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_MidSized_DarkText);
         alertText.setText(messageRes);
 
         alertContainer.setVisibility(View.VISIBLE);

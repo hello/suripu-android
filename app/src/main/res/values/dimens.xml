@@ -108,6 +108,9 @@
     <dimen name="bottom_sheet_option_vertical_margin">18dp</dimen>
     <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>
 
+    <dimen name="device_detail_progress_margin">40dp</dimen>
+    <dimen name="device_detail_text_margin">32dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>

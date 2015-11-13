@@ -42,6 +42,7 @@
     <color name="text_link">#009CFF</color>
     <color name="text_body_new">#808080</color>
     <color name="text_heading_major">#4D4D4D</color>
+    <color name="text_black_70">#b3000000</color>
 
     <color name="text_rotary_picker_focused">@color/light_accent</color>
     <color name="text_rotary_picker_unfocused">#999999</color>
