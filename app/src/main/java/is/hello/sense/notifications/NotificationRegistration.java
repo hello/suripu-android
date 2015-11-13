@@ -52,6 +52,13 @@ public final class NotificationRegistration {
                 preferences.getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, null) == null);
     }
 
+    public static void resetAppVersion(@NonNull Context context){
+        getNotificationPreferences(context).edit()
+                .putInt(Constants.NOTIFICATION_PREF_APP_VERSION, 0)
+                .apply();
+
+    }
+
     public NotificationRegistration(@NonNull Activity activity) {
         this.activity = activity;
         SenseApplication.getInstance().inject(this);
