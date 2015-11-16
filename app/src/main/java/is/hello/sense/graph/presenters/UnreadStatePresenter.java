@@ -2,8 +2,6 @@ package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
 
-import org.joda.time.DateTime;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -24,7 +22,8 @@ import rx.Observable;
         this.apiService = apiService;
         this.preferences = preferences;
 
-        final boolean initialValue = preferences.getBoolean(PreferencesPresenter.HAS_UNREAD_INSIGHT_ITEMS, false);
+        final boolean initialValue =
+                preferences.getBoolean(PreferencesPresenter.HAS_UNREAD_INSIGHT_ITEMS, false);
         hasUnreadItems.onNext(initialValue);
     }
 
@@ -55,9 +54,7 @@ import rx.Observable;
     public void updateInsightsLastViewed() {
         logEvent("Updating insights last viewed");
 
-        final AppStats appStats = new AppStats();
-        appStats.setInsightsLastViewed(DateTime.now());
-        apiService.updateStats(appStats)
+        apiService.updateStats(AppStats.withLastViewedForNow())
                   .subscribe(ignored -> {
                                  logEvent("Updated insights last viewed");
                                  update();
