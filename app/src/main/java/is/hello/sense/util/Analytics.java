@@ -52,6 +52,11 @@ public class Analytics {
         String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
 
         /**
+         * The account email of the user
+         */
+        String GLOBAL_PROP_ACCOUNT_EMAIL = "email";
+
+        /**
          * The id of the user's Sense.
          */
         String GLOBAL_PROP_SENSE_ID = "Sense Id";
@@ -500,8 +505,8 @@ public class Analytics {
         }
     }
 
-    public static void trackRegistration(@Nullable String accountId, @Nullable String name, @NonNull DateTime created) {
-        Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', created: '" + created + "' }");
+    public static void trackRegistration(@Nullable String accountId, @Nullable final String name, @Nullable final String email, @NonNull final DateTime created) {
+        Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', email: '" + email + "', created: '" + created + "' }");
         if (context == null){
             return;
         }
@@ -519,12 +524,13 @@ public class Analytics {
         traits.putCreatedAt(created.toString());
         traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
         traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
 
         com.segment.analytics.Analytics.with(context).identify(traits);
         trackUserIdentifier(accountId);
     }
 
-    public static void trackSignIn(@NonNull final String accountId, @Nullable final String name) {
+    public static void trackSignIn(@NonNull final String accountId, @Nullable final String name, @Nullable final String email) {
         if (context == null){
             return;
         }
@@ -535,6 +541,8 @@ public class Analytics {
         traits.putName(name);
         traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
         traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
+
        // com.segment.analytics.Analytics.with(context).alias(accountId); not working. Skipping
         com.segment.analytics.Analytics.with(context).identify(traits);
 

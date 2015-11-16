@@ -201,13 +201,13 @@ public class SignInFragment extends InjectionFragment
 
             bindAndSubscribe(initializeLocalState,
                              account -> {
-                                 Analytics.trackSignIn(account.getId(), account.getName());
+                                 Analytics.trackSignIn(account.getId(), account.getName(), account.getEmail());
                                  getOnboardingActivity().showHomeActivity();
                              },
                              e -> {
                                  Logger.warn(getClass().getSimpleName(),
                                              "Could not update local account state", e);
-                                 Analytics.trackSignIn(session.getAccountId(), null);
+                                 Analytics.trackSignIn(session.getAccountId(),null, null);
                                  getOnboardingActivity().showHomeActivity();
                              });
         }, error -> {
