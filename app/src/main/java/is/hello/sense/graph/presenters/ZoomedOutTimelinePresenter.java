@@ -134,6 +134,9 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     }
 
     public void clearDataViews() {
+        for(DataView dataView : dataViews){
+            dataView.cancelAnimation(false);
+        }
         dataViews.clear();
     }
 
@@ -171,5 +174,6 @@ public class ZoomedOutTimelinePresenter extends Presenter {
         boolean wantsUpdates();
         void onUpdateAvailable(@NonNull Timeline timeline);
         void onUpdateFailed(Throwable e);
+        void cancelAnimation(boolean showLoading);
     }
 }

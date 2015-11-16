@@ -5,14 +5,18 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
@@ -72,14 +76,12 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     @Override
     public void onViewDetachedFromWindow(ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-
         presenter.removeDataView(holder);
     }
 
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
-
         holder.unbind();
         presenter.removeDataView(holder);
     }
@@ -124,24 +126,27 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         public final TextView score;
         public final TimelinePreviewView preview;
         public final SleepScoreDrawable scoreDrawable;
-
+        public final ProgressBar progressBar;
+        public final View scoreContainer;
         private boolean hasTimeline = false;
+        private boolean showScore = false;
         private LocalDate date;
+
 
 
         //region Lifecycle
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             this.dayNumber = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_number);
             this.dayName = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_name);
             this.score = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_score);
             this.preview = (TimelinePreviewView) itemView.findViewById(R.id.item_zoomed_out_timeline_preview);
+            this.progressBar = (ProgressBar) itemView.findViewById(R.id.item_zoomed_out_timeline_progress);
 
             this.scoreDrawable = new SleepScoreDrawable(context.getResources(), false);
 
-            View scoreContainer = itemView.findViewById(R.id.item_zoomed_out_timeline_score_container);
+            scoreContainer = itemView.findViewById(R.id.item_zoomed_out_timeline_score_container);
             scoreContainer.setBackground(scoreDrawable);
 
             itemView.setOnClickListener(this);
@@ -157,32 +162,63 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             this.date = date;
             dayNumber.setText(date.toString("d"));
             dayName.setText(date.toString("EE"));
-
-            if (timeline == null || isTimelineEmpty(timeline)) {
-                int sleepScoreColor = resources.getColor(ScoreCondition.UNAVAILABLE.colorRes);
-                score.setText(R.string.missing_data_placeholder);
-                score.setTextColor(sleepScoreColor);
-                scoreDrawable.setFillColor(sleepScoreColor);
-                scoreDrawable.setValue(0);
-
-                preview.setTimelineEvents(null);
-
+            if (timeline == null ){
+                cancelAnimation(true);
                 this.hasTimeline = false;
-            } else {
-                int sleepScore = timeline.getScore();
-                int sleepScoreColor = resources.getColor(timeline.getScoreCondition().colorRes);
-                score.setText(Integer.toString(sleepScore));
-                score.setTextColor(sleepScoreColor);
-                scoreDrawable.setFillColor(sleepScoreColor);
-                scoreDrawable.setValue(sleepScore);
+            }else {
+                showScore = true;
+                if (isTimelineEmpty(timeline)) {
+                    int sleepScoreColor = resources.getColor(ScoreCondition.UNAVAILABLE.colorRes);
+                    score.setText(null);
+                    score.setTextColor(sleepScoreColor);
+                    scoreDrawable.setFillColor(sleepScoreColor);
+                    scoreDrawable.setValue(0);
+                    showScore = false;
+                    preview.setTimelineEvents(null);
 
-                preview.setTimelineEvents(timeline.getEvents());
+                } else {
+                    int sleepScore = timeline.getScore();
+                    int sleepScoreColor = resources.getColor(timeline.getScoreCondition().colorRes);
+                    score.setText(Integer.toString(sleepScore));
+                    score.setTextColor(sleepScoreColor);
+                    scoreDrawable.setFillColor(sleepScoreColor);
+                    scoreDrawable.setValue(sleepScore);
 
+                    preview.setTimelineEvents(timeline.getEvents());
+
+                }
                 this.hasTimeline = true;
+                if (progressBar.getVisibility() == View.VISIBLE) {
+                    scoreContainer.setVisibility(View.INVISIBLE);
+                    preview.setVisibility(View.INVISIBLE);
+                    MultiAnimator.animatorFor(progressBar)
+                                 .fadeOut(View.GONE)
+                                 .setDuration(Anime.DURATION_NORMAL)
+                                 .addOnAnimationCompleted(finished -> {
+                                     if (!finished) {
+                                         return;
+                                     }
+
+                                     if (showScore) {
+                                         MultiAnimator.animatorFor(preview)
+                                                      .fadeIn()
+                                                      .setDuration(1250)
+                                                      .start();
+
+                                     }
+
+                                     MultiAnimator.animatorFor(scoreContainer)
+                                                  .fadeIn()
+                                                  .setDuration(1250)
+                                                  .start();
+                                 })
+                                 .start();
+                }
             }
         }
 
         private void unbind() {
+            cancelAnimation(false);
             this.hasTimeline = false;
             this.date = null;
         }
@@ -217,6 +253,11 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             }
         }
 
+        @Override
+        public void cancelAnimation(boolean showLoading) {
+            Anime.cancelAll(progressBar, scoreContainer, preview);
+            showLoading(showLoading);
+        }
         //endregion
 
 
@@ -225,6 +266,23 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         @Override
         public void onClick(View ignored) {
             dispatchClick(this);
+        }
+
+        //endregion
+
+        //region view support
+
+        private void showLoading(boolean show) {
+            if (show) {
+                scoreContainer.setVisibility(View.GONE);
+                preview.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setAlpha(1f);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                scoreContainer.setVisibility(View.VISIBLE);
+                preview.setVisibility(View.VISIBLE);
+            }
         }
 
         //endregion
