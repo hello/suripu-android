@@ -25,6 +25,21 @@ public class RecyclerAdapterTesting {
         return holder;
     }
 
+    public static <VH extends RecyclerView.ViewHolder> VH createAndBindView(@NonNull RecyclerView.Adapter adapter,
+                                                                            @NonNull ViewGroup parent,
+                                                                            int adapterPosition) {
+        return createAndBindView(adapter,
+                                 parent,
+                                 adapter.getItemViewType(adapterPosition),
+                                 adapterPosition);
+    }
+
+    public static <VH extends RecyclerView.ViewHolder> void recycle(@NonNull RecyclerView.Adapter<VH> adapter,
+                                                                    @NonNull VH holder) {
+        doReturn(RecyclerView.NO_POSITION).when(holder).getAdapterPosition();
+        adapter.onViewRecycled(holder);
+    }
+
     public static class Observer extends RecyclerView.AdapterDataObserver {
         public final List<Change> changes = new ArrayList<>();
 

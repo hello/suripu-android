@@ -156,7 +156,9 @@ public class TimelineFragment extends InjectionFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_timeline, container, false);
+        final View view = inflater.inflate(R.layout.fragment_timeline, container, false);
+
+        final Resources resources = getResources();
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
@@ -191,17 +193,17 @@ public class TimelineFragment extends InjectionFragment
         headerView.setAnimationEnabled(animationEnabled);
         headerView.setOnScoreClickListener(this::showBreakdown);
 
-        View[] headers = { toolbar, headerView };
-
         this.itemAnimator = new StaggeredFadeItemAnimator(getAnimatorContext());
         recyclerView.setItemAnimator(itemAnimator);
-        recyclerView.addItemDecoration(new BottomInsetDecoration(getResources(), headers.length));
+        recyclerView.addItemDecoration(new BottomInsetDecoration(resources, 2));
 
-        int backgroundFillColor = getResources().getColor(R.color.background_timeline);
+        final int backgroundFillColor = resources.getColor(R.color.background_timeline);
         this.backgroundFill = new ColorDrawableCompat(backgroundFillColor);
         recyclerView.setBackground(backgroundFill);
 
-        this.adapter = new TimelineAdapter(getActivity(), dateFormatter, headers);
+        this.adapter = new TimelineAdapter(getActivity(), dateFormatter);
+        adapter.addHeader(toolbar);
+        adapter.addHeader(headerView);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
 
@@ -553,7 +555,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void transitionOutOfNoDataState() {
-        if (adapter.getHeader(1) == headerView) {
+        if (adapter.getHeaderAt(1) == headerView) {
             return;
         }
 
