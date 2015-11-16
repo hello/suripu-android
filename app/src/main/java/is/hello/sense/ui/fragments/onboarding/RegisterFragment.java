@@ -314,6 +314,7 @@ public class RegisterFragment extends InjectionFragment
 
             Analytics.trackRegistration(session.getAccountId(),
                                         createdAccount.getName(),
+                                        createdAccount.getEmail(),
                                         DateTime.now());
 
             getOnboardingActivity().showBirthday(createdAccount);
