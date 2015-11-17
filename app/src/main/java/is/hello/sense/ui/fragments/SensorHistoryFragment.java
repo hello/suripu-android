@@ -1,7 +1,9 @@
 package is.hello.sense.ui.fragments;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -13,8 +15,6 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
@@ -102,7 +101,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sensor_history, container, false);
+        final View view = inflater.inflate(R.layout.fragment_sensor_history, container, false);
 
         this.scrollView = (BlockableScrollView) view.findViewById(R.id.fragment_sensor_history_scroll_view);
 
@@ -122,8 +121,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         this.historyModeSelector = (SelectorView) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
-        historyModeSelector.setButtonTags(SensorHistoryPresenter.Mode.DAY, SensorHistoryPresenter.Mode.WEEK);
-        historyModeSelector.setBackground(new TabsBackgroundDrawable(getResources(), TabsBackgroundDrawable.Style.INLINE));
+        historyModeSelector.setButtonTags(SensorHistoryPresenter.Mode.DAY,
+                                          SensorHistoryPresenter.Mode.WEEK);
+        historyModeSelector.setBackground(new TabsBackgroundDrawable(getResources(),
+                                                                     TabsBackgroundDrawable.Style.INLINE));
 
         return view;
     }
@@ -190,19 +191,20 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             messageText.setText(null);
             insightText.setText(null);
         } else {
-            SensorState condition = result.conditions.getSensorStateWithName(sensor);
+            final SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
-                UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+                final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
 
-                CharSequence formattedValue = condition.getFormattedValue(printer);
+                final CharSequence formattedValue = condition.getFormattedValue(printer);
                 if (formattedValue != null) {
                     readingText.setText(formattedValue);
                 } else {
                     readingText.setText(R.string.missing_data_placeholder);
                 }
 
-                int sensorColor = getResources().getColor(condition.getCondition().colorRes);
-                readingText.setTextColor(getResources().getColor(condition.getCondition().colorRes));
+                final Resources resources = getResources();
+                final @ColorInt int sensorColor = resources.getColor(condition.getCondition().colorRes);
+                readingText.setTextColor(resources.getColor(condition.getCondition().colorRes));
 
                 markdown.renderInto(messageText, condition.getMessage());
                 markdown.renderInto(insightText, condition.getIdealConditions());
@@ -219,7 +221,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void conditionUnavailable(@NonNull Throwable e) {
         Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
         readingText.setText(R.string.missing_data_placeholder);
-        StringRef errorMessage = Errors.getDisplayMessage(e);
+        final StringRef errorMessage = Errors.getDisplayMessage(e);
         if (errorMessage != null) {
             messageText.setText(errorMessage.resolve(getActivity()));
         } else {
@@ -241,7 +243,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         graphPlaceholder.setVisibility(View.GONE);
         sensorDataSource.clear();
 
-        SensorHistoryPresenter.Mode newMode = (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTagAt(newSelectionIndex);
+        final SensorHistoryPresenter.Mode newMode =
+                (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTagAt(newSelectionIndex);
         sensorHistoryPresenter.setMode(newMode);
     }
 
@@ -258,7 +261,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 return;
             }
 
-            Observable<Update> update = Update.forHistorySeries(history, false);
+            final Observable<Update> update = Update.forHistorySeries(history, false);
             bindAndSubscribe(update, this::update, this::historyUnavailable);
 
             animatorFor(loadingIndicator)
@@ -289,6 +292,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             return getSectionCount();
         }
 
+        @ColorInt
         @Override
         public int getSectionHeaderTextColor(int section) {
             return Color.TRANSPARENT;
@@ -300,6 +304,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             return "";
         }
 
+        @ColorInt
         @Override
         public int getSectionFooterTextColor(int section) {
             if (section == getSectionHeaderFooterCount() - 1) {
