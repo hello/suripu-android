@@ -261,6 +261,8 @@ public class Analytics {
 
         String PROP_WIFI_IS_OTHER = "Is Other";
 
+        String PROP_WIFI_RSSI = "RSSI";
+
         /**
          * When the user or the app sends WiFi credentials to Sense.
          */
