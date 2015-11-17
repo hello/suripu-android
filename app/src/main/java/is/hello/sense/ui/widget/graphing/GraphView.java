@@ -459,12 +459,14 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         final int section = adapterCache.findSectionAtX(width, eventX);
         if (section == GraphAdapterCache.NOT_FOUND) {
             this.trackingTouchEvents = false;
+            this.ignoreTouchUntilEnd = true;
             return;
         }
 
         final int segment = adapterCache.findSegmentAtX(width, section, eventX);
         if (segment == GraphAdapterCache.NOT_FOUND) {
             this.trackingTouchEvents = false;
+            this.ignoreTouchUntilEnd = true;
             return;
         }
 
