@@ -440,11 +440,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public void onPageSelected(int position) {
-        if (new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false).findFirstCompletelyVisibleItemPosition() == 0) {
-            showAlarmShortcut();
-        }else{
-            hideAlarmShortcut();
-        }
     }
 
     @Override
