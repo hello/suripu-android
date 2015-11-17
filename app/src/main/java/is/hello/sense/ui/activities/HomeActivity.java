@@ -15,13 +15,11 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.segment.analytics.Properties;
 
 import org.joda.time.LocalDate;
-import org.json.JSONObject;
 
 import javax.inject.Inject;
 
@@ -53,7 +51,6 @@ import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.timeline.PerspectiveTransformer;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -61,7 +58,6 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.go99.Anime.isAnimating;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class HomeActivity extends ScopedInjectionActivity
@@ -97,7 +93,6 @@ public class HomeActivity extends ScopedInjectionActivity
     private ViewPager viewPager;
     private TimelineFragmentAdapter viewPagerAdapter;
     private int lastPagerScrollState = ViewPager.SCROLL_STATE_IDLE;
-    private ImageButton smartAlarmButton;
 
     private boolean isFirstActivityRun;
     private boolean showUnderside;
@@ -149,12 +144,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
 
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
-
-
-        this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
-        Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
-        });
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
         viewPager.addOnPageChangeListener(this);
@@ -412,7 +401,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public void onPageSelected(int position) {
-        showAlarmShortcut();
     }
 
     @Override
@@ -449,31 +437,6 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         return null;
-    }
-
-    public void hideAlarmShortcut() {
-        if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
-            int contentHeight = rootContainer.getMeasuredHeight();
-
-            animatorFor(smartAlarmButton, animatorContext)
-                    .translationY(contentHeight - smartAlarmButton.getTop())
-                    .addOnAnimationCompleted(finished -> {
-                        if (finished) {
-                            smartAlarmButton.setVisibility(View.INVISIBLE);
-                        }
-                    })
-                    .start();
-        }
-    }
-
-    public void showAlarmShortcut() {
-        if (smartAlarmButton.getVisibility() == View.INVISIBLE && !isAnimating(smartAlarmButton)) {
-            smartAlarmButton.setVisibility(View.VISIBLE);
-
-            animatorFor(smartAlarmButton, animatorContext)
-                    .translationY(0f)
-                    .start();
-        }
     }
 
     //endregion

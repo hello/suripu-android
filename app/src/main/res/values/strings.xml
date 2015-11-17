@@ -407,7 +407,6 @@
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
 
     <string name="action_save">Save</string>
-    <string name="action_show_alarms">Alarms</string>
     <string name="title_alarm">Alarm</string>
     <string name="action_change_time_zone">Change Time Zone</string>
     <string name="action_refresh">Refresh</string>
