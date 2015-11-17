@@ -864,14 +864,6 @@ public class TimelineFragment extends InjectionFragment
                     }
                 }
             }
-
-            if (getUserVisibleHint()) {
-                if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
-                    homeActivity.showAlarmShortcut();
-                } else {
-                    homeActivity.hideAlarmShortcut();
-                }
-            }
         }
     }
 
