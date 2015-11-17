@@ -249,6 +249,7 @@ public class TimelineFragment extends InjectionFragment
 
     private void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
+            homeActivity.showAlarmShortcut();
             timelinePresenter.updateIfEmpty();
 
             stateSafeExecutor.execute(headerView::startPulsing);
@@ -264,7 +265,14 @@ public class TimelineFragment extends InjectionFragment
             bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                              toolbar::setUnreadVisible,
                              Functions.LOG_ERROR);
+        } else if (getUserVisibleHint() && layoutManager != null) {
+            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                homeActivity.showAlarmShortcut();
+            } else {
+                homeActivity.hideAlarmShortcut();
+            }
         }
+
     }
 
     @Override
