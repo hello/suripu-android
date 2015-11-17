@@ -92,9 +92,13 @@ public class ConnectToWiFiFragment extends HardwareFragment
         Properties properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
                                                           );
+
+        int rssi = 0;
         if (network!= null){
-            properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, network.getRssi());
+           rssi =  network.getRssi();
         }
+        properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
+
         if (useInAppEvents) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP, properties);
         } else {
