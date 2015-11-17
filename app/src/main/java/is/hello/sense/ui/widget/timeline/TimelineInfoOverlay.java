@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget.timeline;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Path;
@@ -11,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -21,9 +21,9 @@ import android.text.SpannableStringBuilder;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import is.hello.go99.Anime;
@@ -41,7 +41,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
     private final Handler delayHandler = new Handler(Looper.getMainLooper(), this);
     private final Resources resources;
-    private final PopupWindow popupWindow;
+    private final Dialog dialog;
 
     private final FrameLayout contents;
     private final TextView tooltip;
@@ -57,14 +57,13 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.animatorContext = animatorContext;
 
         this.resources = activity.getResources();
-        this.popupWindow = new PopupWindow(activity);
-        popupWindow.setBackgroundDrawable(null);
-        popupWindow.setTouchable(false);
-        popupWindow.setWindowLayoutMode(LayoutParams.MATCH_PARENT,
-                                        LayoutParams.MATCH_PARENT);
+        this.dialog = new Dialog(activity, R.style.AppTheme_Dialog_FullScreen);
+        dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        dialog.getWindow().setWindowAnimations(R.style.WindowAnimations);
+        dialog.setCancelable(true);
 
         this.contents = new FrameLayout(activity);
-        popupWindow.setContentView(contents);
+        dialog.setContentView(contents);
 
         this.tooltip = new TextView(activity);
         tooltip.setTextAppearance(activity, R.style.AppTheme_Text_Timeline);
@@ -114,7 +113,8 @@ public class TimelineInfoOverlay implements Handler.Callback {
                                screenSize.x, viewTop,
                                Path.Direction.CW);
 
-        int gutterSize = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
+        final int gutterSize =
+                resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
         backgroundPath.addRect(screenSize.x - gutterSize, viewTop,
                                screenSize.x, viewBottom,
                                Path.Direction.CW);
@@ -152,7 +152,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
     }
 
     public void show(@NonNull View fromView, boolean animate) {
-        if (popupWindow.isShowing()) {
+        if (dialog.isShowing()) {
             return;
         }
 
@@ -160,18 +160,12 @@ public class TimelineInfoOverlay implements Handler.Callback {
         fromView.getGlobalVisibleRect(viewFrame);
 
         final Point screenSize = new Point();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final View contentRoot = activity.findViewById(Window.ID_ANDROID_CONTENT);
-            screenSize.x = contentRoot.getWidth();
-            screenSize.y = contentRoot.getHeight();
+        final View contentRoot = activity.findViewById(Window.ID_ANDROID_CONTENT);
+        screenSize.x = contentRoot.getWidth();
+        screenSize.y = contentRoot.getHeight();
 
-            viewFrame.top -= contentRoot.getTop();
-            viewFrame.bottom -= contentRoot.getTop();
-        } else {
-            activity.getWindowManager()
-                    .getDefaultDisplay()
-                    .getSize(screenSize);
-        }
+        viewFrame.top -= contentRoot.getTop();
+        viewFrame.bottom -= contentRoot.getTop();
 
         contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
 
@@ -180,7 +174,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         layoutParams.bottomMargin = (screenSize.y - viewFrame.top) + tooltipBottomMargin;
         tooltip.requestLayout();
 
-        popupWindow.showAtLocation(fromView, Gravity.TOP, 0, 0);
+        dialog.show();
 
         if (animate) {
             contents.setAlpha(0f);
@@ -221,7 +215,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
                 t.animatorFor(contents)
                  .alpha(0f);
             }, finished -> {
-                popupWindow.dismiss();
+                dialog.dismiss();
 
                 if (onDismiss != null) {
                     onDismiss.call(this);
@@ -229,7 +223,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
             });
         } else {
             Anime.cancelAll(contents, tooltip);
-            popupWindow.dismiss();
+            dialog.dismiss();
             contents.setAlpha(0f);
 
             if (onDismiss != null) {
