@@ -181,8 +181,8 @@ public class TimelineFragment extends InjectionFragment
             }
             homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
         });
-        toolbar.setTitle(getTitle());
         toolbar.setTitleDimmed(overflowOpen);
+        updateTitle();
 
         toolbar.setShareOnClickListener(this::share);
         toolbar.setShareVisible(false);
@@ -353,6 +353,12 @@ public class TimelineFragment extends InjectionFragment
             toolbar.setOverflowOpen(false);
             toolbar.setTitleDimmed(false);
             toolbar.setShareVisible(adapter.hasEvents());
+        }
+    }
+
+    public void updateTitle() {
+        if (toolbar != null) {
+            toolbar.setTitle(getTitle());
         }
     }
 

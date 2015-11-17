@@ -3,6 +3,8 @@ package is.hello.sense.ui.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -27,7 +29,6 @@ import javax.inject.Inject;
 import is.hello.buruberi.util.Rx;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -50,7 +51,6 @@ import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
-import is.hello.sense.ui.widget.timeline.PerspectiveTransformer;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -102,6 +102,30 @@ public class HomeActivity extends ScopedInjectionActivity
     private boolean showUnderside;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
+    private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final LocalDate newToday = DateFormatter.todayForTimeline();
+            final LocalDate selectedDate = viewPagerAdapter.getItemDate(viewPager.getCurrentItem());
+            if (newToday.isBefore(selectedDate)) {
+                // ViewPager does not correctly shrink when the number of items in it
+                // decrease, so we have to clear its adapter, update the adapter, then
+                // re-set the adapter for the update to work correctly.
+                viewPager.setAdapter(null);
+                viewPagerAdapter.setLatestDate(newToday);
+                viewPager.setAdapter(viewPagerAdapter);
+                viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
+            } else {
+                viewPagerAdapter.setLatestDate(newToday);
+
+                final TimelineFragment currentFragment =
+                        (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+                if (currentFragment != null) {
+                    currentFragment.updateTitle();
+                }
+            }
+        }
+    };
 
 
     //region Lifecycle
@@ -157,9 +181,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
         viewPager.addOnPageChangeListener(this);
-        if (BuildConfig.DEBUG) {
-            viewPager.setPageTransformer(false, new PerspectiveTransformer());
-        }
 
         this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager(),
                                                             preferences.getAccountCreationDate());
@@ -187,6 +208,8 @@ public class HomeActivity extends ScopedInjectionActivity
             getFragmentManager().popBackStack(ZoomedOutTimelineFragment.TAG,
                                               FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+
+        registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
     }
 
     @Override
@@ -284,6 +307,7 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onDestroy() {
         super.onDestroy();
 
+        unregisterReceiver(onTimeChanged);
         viewPager.removeOnPageChangeListener(this);
 
         if (isFinishing()) {
