@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -139,11 +140,13 @@ public class TrendGraphAdapter implements GraphAdapter, GraphView.HeaderFooterPr
     }
 
 
+    @ColorInt
     @Override
     public int getSectionHeaderTextColor(int section) {
         return Color.GRAY;
     }
 
+    @ColorInt
     @Override
     public int getSectionFooterTextColor(int section) {
         if (trendGraph.getGraphType() == GraphType.HISTOGRAM &&

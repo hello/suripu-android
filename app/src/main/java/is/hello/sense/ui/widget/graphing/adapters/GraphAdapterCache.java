@@ -10,6 +10,8 @@ import android.util.SparseIntArray;
  * line graph calculations.
  */
 public class GraphAdapterCache {
+    public static final int NOT_FOUND = -1;
+
     private GraphAdapter adapter;
 
     private float baseMagnitude = 0f;
@@ -58,22 +60,30 @@ public class GraphAdapterCache {
     }
 
     public float calculateSegmentY(float hostHeight, int section, int position) {
-        float magnitude = adapter.getMagnitudeAt(section, position);
-        float percentage = calculateMagnitudePercentage(magnitude);
+        final float magnitude = adapter.getMagnitudeAt(section, position);
+        final float percentage = calculateMagnitudePercentage(magnitude);
         return Math.round(hostHeight * percentage);
     }
 
     public int findSectionAtX(int hostWidth, float x) {
-        int limit = getNumberSections();
-        return (int) Math.min(limit - 1, Math.floor(x / calculateSectionWidth(hostWidth)));
+        final int limit = getNumberSections();
+        if (limit == 0) {
+            return NOT_FOUND;
+        } else {
+            return (int) Math.min(limit - 1, Math.floor(x / calculateSectionWidth(hostWidth)));
+        }
     }
 
     public int findSegmentAtX(int hostWidth, int section, float x) {
-        int limit = getSectionCount(section);
-        float sectionMinX = calculateSectionWidth(hostWidth) * section;
-        float segmentWidth = calculateSegmentWidth(hostWidth, section);
-        float xInSection = x - sectionMinX;
-        return (int) Math.min(limit - 1, xInSection / segmentWidth);
+        final int limit = getSectionCount(section);
+        if (limit == 0) {
+            return NOT_FOUND;
+        } else {
+            final float sectionMinX = calculateSectionWidth(hostWidth) * section;
+            final float segmentWidth = calculateSegmentWidth(hostWidth, section);
+            final float xInSection = x - sectionMinX;
+            return (int) Math.min(limit - 1, xInSection / segmentWidth);
+        }
     }
 
     //endregion
@@ -88,7 +98,7 @@ public class GraphAdapterCache {
             this.baseMagnitude = adapter.getBaseMagnitude();
             this.peakMagnitude = adapter.getPeakMagnitude();
             for (int section = 0, sections = adapter.getSectionCount(); section < sections; section++) {
-                int count = adapter.getSectionPointCount(section);
+                final int count = adapter.getSectionPointCount(section);
                 sectionCounts.append(section, count);
             }
         }

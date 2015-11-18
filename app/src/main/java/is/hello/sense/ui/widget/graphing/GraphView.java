@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Message;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,8 +33,6 @@ import is.hello.sense.ui.widget.graphing.drawables.GraphDrawable;
 import is.hello.sense.ui.widget.util.Views;
 
 public class GraphView extends View implements GraphAdapter.ChangeObserver {
-    private static final int NONE = -1;
-
     private static final int TOUCH_DELAY_MS = 50;
     private static final int MSG_TOUCH_DELAY = 0x12;
 
@@ -57,7 +56,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     private final Paint highlightPaint = new Paint();
     private final RectF pointBounds = new RectF();
 
-    private int highlightedSection = NONE, highlightedSegment = NONE;
+    private int highlightedSection = GraphAdapterCache.NOT_FOUND;
+    private int highlightedSegment = GraphAdapterCache.NOT_FOUND;
     private boolean ignoreTouchUntilEnd = false;
     private int touchSlop;
     private float startEventX = 0f, startEventY = 0f;
@@ -81,24 +81,18 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     };
 
 
-    public GraphView(Context context) {
-        super(context);
-        initialize(null, 0);
+    public GraphView(@NonNull Context context) {
+        this(context, null);
     }
 
-    public GraphView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initialize(attrs, 0);
+    public GraphView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public GraphView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public GraphView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize(attrs, defStyleAttr);
-    }
 
-
-    protected void initialize(@Nullable AttributeSet attrs, int defStyleAttr) {
-        Resources resources = getResources();
+        final Resources resources = getResources();
 
         this.markerPointHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
 
@@ -121,7 +115,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         highlightPaint.setAlpha(0);
 
         if (attrs != null) {
-            TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.GraphView, defStyleAttr, 0);
+            final TypedArray styles = getContext().obtainStyledAttributes(attrs,
+                                                                          R.styleable.GraphView,
+                                                                          defStyleAttr,
+                                                                          0);
 
             this.numberOfLines = styles.getInt(R.styleable.GraphView_senseNumberOfLines, 0);
             setGridDrawable(styles.getDrawable(R.styleable.GraphView_senseGridDrawable));
@@ -163,7 +160,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     }
 
     protected boolean isHighlighted() {
-        return (highlightedSection != NONE && highlightedSegment != NONE);
+        return (highlightedSection != GraphAdapterCache.NOT_FOUND &&
+                highlightedSegment != GraphAdapterCache.NOT_FOUND);
     }
 
     @Override
@@ -174,10 +172,11 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             height = getDrawingHeight();
 
         if (gridDrawable != null && numberOfLines > 0) {
-            int lineDistance = width / numberOfLines;
+            final int lineDistance = width / numberOfLines;
             int lineOffset = lineDistance;
             for (int line = 1; line < numberOfLines; line++) {
-                gridDrawable.setBounds(lineOffset, minY, lineOffset + 1, height);
+                gridDrawable.setBounds(lineOffset, minY,
+                                       lineOffset + 1, height);
                 gridDrawable.draw(canvas);
                 lineOffset += lineDistance;
             }
@@ -188,18 +187,18 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         }
 
         if (headerFooterProvider != null) {
-            int sectionCount = headerFooterProvider.getSectionHeaderFooterCount();
+            final int sectionCount = headerFooterProvider.getSectionHeaderFooterCount();
             if (sectionCount > 0) {
-                int headerHeight = calculateHeaderHeight(),
-                    footerHeight = calculateFooterHeight();
+                final int headerHeight = calculateHeaderHeight(),
+                          footerHeight = calculateFooterHeight();
 
-                float sectionWidth = width / sectionCount;
+                final float sectionWidth = width / sectionCount;
 
                 if (wantsHeaders) {
                     height -= headerHeight;
                     minY += headerHeight;
                 } else {
-                    int topSpacing = (int) Math.ceil(markerPointHalf);
+                    final int topSpacing = (int) Math.ceil(markerPointHalf);
                     height -= topSpacing;
                     minY += topSpacing;
                 }
@@ -210,30 +209,31 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
                 for (int section = 0; section < sectionCount; section++) {
                     if (wantsHeaders) {
-                        int savedAlpha = headerTextPaint.getAlpha();
+                        final int savedAlpha = headerTextPaint.getAlpha();
                         headerTextPaint.setColor(headerFooterProvider.getSectionHeaderTextColor(section));
                         headerTextPaint.setAlpha(savedAlpha);
 
-                        String text = headerFooterProvider.getSectionHeader(section);
+                        final String text = headerFooterProvider.getSectionHeader(section);
                         headerTextPaint.getTextBounds(text, 0, text.length(), textRect);
 
-                        float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
-                        float textX = Math.round(sectionMidX - textRect.centerX());
-                        float textY = Math.round((headerHeight / 2) - textRect.centerY());
+                        final float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
+                        final float textX = Math.round(sectionMidX - textRect.centerX());
+                        final float textY = Math.round((headerHeight / 2) - textRect.centerY());
                         canvas.drawText(text, textX, textY, headerTextPaint);
                     }
 
                     if (wantsFooters) {
-                        int savedAlpha = footerTextPaint.getAlpha();
+                        final int savedAlpha = footerTextPaint.getAlpha();
                         footerTextPaint.setColor(headerFooterProvider.getSectionFooterTextColor(section));
                         footerTextPaint.setAlpha(savedAlpha);
 
-                        String text = headerFooterProvider.getSectionFooter(section);
+                        final String text = headerFooterProvider.getSectionFooter(section);
                         footerTextPaint.getTextBounds(text, 0, text.length(), textRect);
 
-                        float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
-                        float textX = Math.round(sectionMidX - textRect.centerX());
-                        float textY = Math.round((minY + height) + ((footerHeight / 2) - textRect.centerY()));
+                        final float sectionMidX = (sectionWidth * section) + (sectionWidth / 2);
+                        final float textX = Math.round(sectionMidX - textRect.centerX());
+                        final float textY =
+                                Math.round((minY + height) + ((footerHeight / 2) - textRect.centerY()));
                         canvas.drawText(text, textX, textY, footerTextPaint);
                     }
                 }
@@ -241,17 +241,23 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         }
 
         if (isHighlighted()) {
-            GraphAdapterCache adapterCache = getAdapterCache();
-            float sectionWidth = adapterCache.calculateSectionWidth(width);
-            float segmentWidth = adapterCache.calculateSegmentWidth(width, highlightedSection);
-            float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, highlightedSection, highlightedSegment);
-            float segmentY = adapterCache.calculateSegmentY(height, highlightedSection, highlightedSegment);
+            final GraphAdapterCache adapterCache = getAdapterCache();
+            final float sectionWidth = adapterCache.calculateSectionWidth(width);
+            final float segmentWidth = adapterCache.calculateSegmentWidth(width, highlightedSection);
+            final float segmentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth,
+                                                                  highlightedSection,
+                                                                  highlightedSegment);
+            final float segmentY = adapterCache.calculateSegmentY(height,
+                                                                  highlightedSection,
+                                                                  highlightedSegment);
 
             pointBounds.set(segmentX - markerPointHalf, minY + (segmentY - markerPointHalf),
                             segmentX + markerPointHalf, minY + (segmentY + markerPointHalf));
             canvas.drawOval(pointBounds, highlightPaint);
 
-            canvas.drawRect(pointBounds.centerX(), 0f, pointBounds.centerX() + 1f, getDrawingHeight(), highlightPaint);
+            canvas.drawRect(pointBounds.centerX(), 0f,
+                            pointBounds.centerX() + 1f, getDrawingHeight(),
+                            highlightPaint);
         }
     }
 
@@ -276,7 +282,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                 graphDrawable.setBottomInset(0);
             }
 
-            graphDrawable.setBounds(getDrawingMinX(), getDrawingMinY(), getDrawingWidth(), getDrawingHeight());
+            graphDrawable.setBounds(getDrawingMinX(), getDrawingMinY(),
+                                    getDrawingWidth(), getDrawingHeight());
         }
     }
 
@@ -308,7 +315,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     public void setAdapter(@Nullable GraphAdapter adapter) {
         if (graphDrawable == null) {
-            throw new IllegalStateException("Cannot set the adapter on a compound graph view without specifying a drawable first");
+            throw new IllegalStateException("Cannot set the adapter on a compound graph view " +
+                                                    "without specifying a drawable first");
         }
 
         if (isHighlighted()) {
@@ -328,7 +336,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         return graphDrawable.getAdapterCache();
     }
 
-    public void setTintColor(int color) {
+    public void setTintColor(@ColorInt int color) {
         if (graphDrawable == null) {
             throw new IllegalStateException();
         }
@@ -413,15 +421,15 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     }
 
     protected void animateHighlightAlphaTo(int alpha, @Nullable Runnable onCompletion) {
-        ValueAnimator alphaAnimator = ValueAnimator.ofInt(highlightPaint.getAlpha(), alpha);
+        final ValueAnimator alphaAnimator = ValueAnimator.ofInt(highlightPaint.getAlpha(), alpha);
         alphaAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         alphaAnimator.setDuration(Anime.DURATION_FAST);
 
         alphaAnimator.addUpdateListener(a -> {
-            int newAlpha = (int) a.getAnimatedValue();
+            final int newAlpha = (int) a.getAnimatedValue();
             highlightPaint.setAlpha(newAlpha);
 
-            int invertedNewAlpha = 255 - newAlpha;
+            final int invertedNewAlpha = 255 - newAlpha;
             headerTextPaint.setAlpha(invertedNewAlpha);
             footerTextPaint.setAlpha(invertedNewAlpha);
 
@@ -446,10 +454,21 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     }
 
     private void beginTouchInteraction(float eventX) {
-        GraphAdapterCache adapterCache = getAdapterCache();
-        int width = getDrawingWidth();
-        int section = adapterCache.findSectionAtX(width, eventX);
-        int segment = adapterCache.findSegmentAtX(width, section, eventX);
+        final GraphAdapterCache adapterCache = getAdapterCache();
+        final int width = getDrawingWidth();
+        final int section = adapterCache.findSectionAtX(width, eventX);
+        if (section == GraphAdapterCache.NOT_FOUND) {
+            this.trackingTouchEvents = false;
+            this.ignoreTouchUntilEnd = true;
+            return;
+        }
+
+        final int segment = adapterCache.findSegmentAtX(width, section, eventX);
+        if (segment == GraphAdapterCache.NOT_FOUND) {
+            this.trackingTouchEvents = false;
+            this.ignoreTouchUntilEnd = true;
+            return;
+        }
 
         setHighlightedValue(section, segment);
         if (highlightListener != null) {
@@ -471,11 +490,14 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
         highlightPaint.setAlpha(0);
         headerTextPaint.setAlpha(255);
-        setHighlightedValue(NONE, NONE);
+        setHighlightedValue(GraphAdapterCache.NOT_FOUND,
+                            GraphAdapterCache.NOT_FOUND);
     }
 
     private Message obtainBeginTouchInteractionMessage(float eventX) {
-        Message message = Message.obtain(getHandler(), () -> beginTouchInteraction(eventX));
+        final Message message = Message.obtain(getHandler(), () -> {
+            beginTouchInteraction(eventX);
+        });
         message.what = MSG_TOUCH_DELAY;
         return message;
     }
@@ -485,7 +507,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         if (ignoreTouchUntilEnd) {
             getHandler().removeMessages(MSG_TOUCH_DELAY);
 
-            int action = event.getAction();
+            final int action = event.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 this.ignoreTouchUntilEnd = false;
                 this.trackingTouchEvents = false;
@@ -498,10 +520,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             return false;
         }
 
-        GraphAdapterCache adapterCache = getAdapterCache();
-        int width = getDrawingWidth();
-        float eventX = Views.getNormalizedX(event),
-              eventY = Views.getNormalizedY(event);
+        final GraphAdapterCache adapterCache = getAdapterCache();
+        final int width = getDrawingWidth();
+        final float eventX = Views.getNormalizedX(event),
+                    eventY = Views.getNormalizedY(event);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
@@ -510,7 +532,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
                 this.trackingTouchEvents = false;
 
-                Message message = obtainBeginTouchInteractionMessage(eventX);
+                final Message message = obtainBeginTouchInteractionMessage(eventX);
                 getHandler().sendMessageDelayed(message, TOUCH_DELAY_MS);
 
                 return true;
@@ -519,8 +541,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             case MotionEvent.ACTION_MOVE: {
                 if (trackingTouchEvents) {
                     getHandler().removeMessages(MSG_TOUCH_DELAY);
-                    int section = adapterCache.findSectionAtX(width, eventX);
-                    int segment = adapterCache.findSegmentAtX(width, section, eventX);
+                    final int section = adapterCache.findSectionAtX(width, eventX);
+                    final int segment = adapterCache.findSegmentAtX(width, section, eventX);
 
                     setHighlightedValue(section, segment);
                     if (highlightListener != null) {
@@ -541,7 +563,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                         highlightListener.onGraphHighlightEnd();
                     }
 
-                    animateHighlightAlphaTo(0, () -> setHighlightedValue(NONE, NONE));
+                    animateHighlightAlphaTo(0, () -> {
+                        setHighlightedValue(GraphAdapterCache.NOT_FOUND,
+                                            GraphAdapterCache.NOT_FOUND);
+                    });
                 }
                 this.trackingTouchEvents = false;
 
@@ -575,8 +600,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     public interface HeaderFooterProvider {
         int getSectionHeaderFooterCount();
-        int getSectionHeaderTextColor(int section);
-        int getSectionFooterTextColor(int section);
+        @ColorInt int getSectionHeaderTextColor(int section);
+        @ColorInt int getSectionFooterTextColor(int section);
         @NonNull String getSectionHeader(int section);
         @NonNull String getSectionFooter(int section);
     }

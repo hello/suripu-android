@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget.graphing.drawables;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
@@ -21,7 +22,7 @@ public abstract class GraphDrawable extends Drawable implements GraphAdapter.Cha
         return PixelFormat.TRANSLUCENT;
     }
 
-    public void setTintColor(int color) {
+    public void setTintColor(@ColorInt int color) {
         setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     }
 
