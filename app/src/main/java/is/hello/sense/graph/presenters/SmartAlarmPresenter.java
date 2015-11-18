@@ -1,12 +1,11 @@
 package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
-import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,12 +19,15 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
-    private static final int FUTURE_CUT_OFF_MINUTES = 2;
+    // Interval is an exclusive range, so we have to add on to
+    // the actual too soon minutes to get the correct result.
+    private static final Minutes TOO_SOON = Minutes.minutes(Alarm.TOO_SOON_MINUTES + 1);
 
     private final ApiService apiService;
     private ArrayList<Alarm.Sound> availableAlarmSounds;
@@ -101,23 +103,24 @@ import rx.subjects.ReplaySubject;
         return true;
     }
 
-    @VisibleForTesting
-    boolean isAlarmTooSoon(@NonNull LocalTime nowTime, @NonNull Alarm alarm) {
-        DateTime nowDate = nowTime.toDateTimeToday();
-        DateTime cutOff = nowDate.plusMinutes(FUTURE_CUT_OFF_MINUTES);
-        DateTime alarmTime = alarm.getTime().toDateTimeToday();
-        Set<Integer> daysOfWeek = alarm.getDaysOfWeek();
-        if (daysOfWeek == null || daysOfWeek.size() == 0 || daysOfWeek.contains(nowDate.getDayOfWeek())) {
+    /**
+     * Checks if an alarms ring time is within the next {@link #TOO_SOON} minutes.
+     *
+     * @param alarm The alarm to check
+     * @return true if the alarm would ring within the too soon time period; false otherwise.
+     */
+    public boolean isAlarmTooSoon(@NonNull Alarm alarm) {
+        final DateTime now = DateTime.now(DateTimeZone.getDefault())
+                                     .withSecondOfMinute(0)
+                                     .withMillisOfSecond(0);
+        final DateTime alarmTime = alarm.getTime().toDateTimeToday();
+        final Set<Integer> daysOfWeek = alarm.getDaysOfWeek();
+        if (Lists.isEmpty(daysOfWeek) || daysOfWeek.contains(now.getDayOfWeek())) {
             // Alarm includes today, check if next 2 minutes
-            return new Interval(nowDate, cutOff).contains(alarmTime);
+            return new Interval(now, TOO_SOON).contains(alarmTime);
         }
         // Alarm isn't for today.
         return false;
-    }
-
-    public boolean isAlarmTooSoon(@NonNull Alarm alarm) {
-        LocalTime nowTime = LocalTime.now(DateTimeZone.getDefault());
-        return isAlarmTooSoon(nowTime, alarm);
     }
 
     //endregion

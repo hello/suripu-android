@@ -1,7 +1,9 @@
 package is.hello.sense.graph.presenters;
 
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalTime;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -21,6 +23,11 @@ import static org.junit.Assert.assertThat;
 @SuppressWarnings("ConstantConditions")
 public class SmartAlarmPresenterTests extends InjectionTestCase {
     @Inject SmartAlarmPresenter presenter;
+
+    @After
+    public void tearDown() {
+        DateTimeUtils.setCurrentMillisSystem();
+    }
 
     @Test
     public void update() throws Exception {
@@ -75,38 +82,44 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         final Alarm alarm = new Alarm();
 
         final LocalTime midHour = new LocalTime(9, 30, 0);
-        final LocalTime tooSoonMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
-        final LocalTime pastCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
-        final LocalTime beforeCutOffMidHour = midHour.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
 
+        DateTimeUtils.setCurrentMillisFixed(new LocalTime(9, 30, 30).toDateTimeToday().getMillis());
         alarm.setTime(midHour);
-        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(true));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
 
-        alarm.setTime(tooSoonMidHour);
-        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(true));
+        DateTimeUtils.setCurrentMillisFixed(midHour.toDateTimeToday().getMillis());
+        alarm.setTime(midHour);
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
 
-        alarm.setTime(pastCutOffMidHour);
-        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(false));
+        alarm.setTime(midHour.plusMinutes(Alarm.TOO_SOON_MINUTES / 2));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
 
-        alarm.setTime(beforeCutOffMidHour);
-        assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(false));
+        alarm.setTime(midHour.plusMinutes(Alarm.TOO_SOON_MINUTES));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
+
+        alarm.setTime(midHour.plusMinutes(Alarm.TOO_SOON_MINUTES * 2));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(false));
+
+        alarm.setTime(midHour.minusMinutes(Alarm.TOO_SOON_MINUTES * 2));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(false));
 
 
         final LocalTime hourBoundary = new LocalTime(9, 59, 0);
-        final LocalTime tooSoonBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES / 2);
-        final LocalTime pastCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
-        final LocalTime beforeCutOffBoundary = hourBoundary.plusMinutes(Alarm.FUTURE_CUT_OFF_MINUTES * 2);
 
+        DateTimeUtils.setCurrentMillisFixed(hourBoundary.toDateTimeToday().getMillis());
         alarm.setTime(hourBoundary);
-        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(true));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
 
-        alarm.setTime(tooSoonBoundary);
-        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(true));
+        alarm.setTime(hourBoundary.plusMinutes(Alarm.TOO_SOON_MINUTES / 2));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
 
-        alarm.setTime(pastCutOffBoundary);
-        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(false));
+        alarm.setTime(hourBoundary.plusMinutes(Alarm.TOO_SOON_MINUTES));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(true));
 
-        alarm.setTime(beforeCutOffBoundary);
-        assertThat(presenter.isAlarmTooSoon(hourBoundary, alarm), is(false));
+        alarm.setTime(hourBoundary.plusMinutes(Alarm.TOO_SOON_MINUTES * 2));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(false));
+
+        alarm.setTime(hourBoundary.minusMinutes(Alarm.TOO_SOON_MINUTES * 2));
+        assertThat(presenter.isAlarmTooSoon(alarm), is(false));
     }
 }
