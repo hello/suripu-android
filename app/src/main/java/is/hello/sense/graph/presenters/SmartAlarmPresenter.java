@@ -25,7 +25,9 @@ import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 @Singleton public class SmartAlarmPresenter extends ValuePresenter<ArrayList<Alarm>> {
-    private static final Minutes TOO_SOON = Minutes.minutes(Alarm.TOO_SOON_MINUTES);
+    // Interval is an exclusive range, so we have to add on to
+    // the actual too soon minutes to get the correct result.
+    private static final Minutes TOO_SOON = Minutes.minutes(Alarm.TOO_SOON_MINUTES + 1);
 
     private final ApiService apiService;
     private ArrayList<Alarm.Sound> availableAlarmSounds;
