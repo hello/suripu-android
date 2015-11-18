@@ -23,7 +23,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter.JodaWeekDay;
 
 public class Alarm extends ApiResponse {
-    public static final int FUTURE_CUT_OFF_MINUTES = 2;
+    public static final int TOO_SOON_MINUTES = 2;
 
     @SerializedName("id")
     private String id;
