@@ -82,6 +82,9 @@ public class SmartAlarmPresenterTests extends InjectionTestCase {
         alarm.setTime(midHour);
         assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(true));
 
+        alarm.setTime(midHour);
+        assertThat(presenter.isAlarmTooSoon(new LocalTime(9, 30, 30), alarm), is(true));
+
         alarm.setTime(tooSoonMidHour);
         assertThat(presenter.isAlarmTooSoon(midHour, alarm), is(true));
 
