@@ -340,7 +340,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
                 final Resources resources = getResources();
                 final ColorDrawableCompat fill = Styles.createGraphFillSolidDrawable(resources);
                 this.lineGraphDrawable = new LineGraphDrawable(resources, fill);
-                lineGraphDrawable.setBottomInset(graphBottomInset);
+                lineGraphDrawable.setBottomInset(0);
 
                 final View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);
