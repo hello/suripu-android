@@ -113,10 +113,10 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.graphPlaceholder = (TextView) view.findViewById(R.id.fragment_sensor_history_placeholder);
         this.graphView = (GraphView) view.findViewById(R.id.fragment_sensor_history_graph);
 
+        graphView.setWantsFooters(false);
+        graphView.setWantsHeaders(false);
         graphView.setGraphDrawable(new LineGraphDrawable(getResources()));
         graphView.setAdapter(sensorDataSource);
-        graphView.setHeaderFooterProvider(sensorDataSource);
-        graphView.setHighlightListener(sensorDataSource);
         graphView.setTintColor(getResources().getColor(R.color.sensor_unknown));
 
         this.historyModeSelector = (SelectorView) view.findViewById(R.id.fragment_sensor_history_mode);
@@ -249,7 +249,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
 
-    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HeaderFooterProvider, GraphView.HighlightListener {
+    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HighlightListener {
         private boolean use24Time = false;
 
         public void bindHistory(@NonNull ArrayList<SensorGraphSample> history) {
@@ -285,39 +285,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         public void setUse24Time(boolean use24Time) {
             this.use24Time = use24Time;
             notifyDataChanged();
-        }
-
-        @Override
-        public int getSectionHeaderFooterCount() {
-            return getSectionCount();
-        }
-
-        @ColorInt
-        @Override
-        public int getSectionHeaderTextColor(int section) {
-            return Color.TRANSPARENT;
-        }
-
-        @NonNull
-        @Override
-        public String getSectionHeader(int section) {
-            return "";
-        }
-
-        @ColorInt
-        @Override
-        public int getSectionFooterTextColor(int section) {
-            if (section == getSectionHeaderFooterCount() - 1) {
-                return Color.BLACK;
-            } else {
-                return Color.GRAY;
-            }
-        }
-
-        @NonNull
-        @Override
-        public String getSectionFooter(int section) {
-            return "";
         }
 
         //endregion
