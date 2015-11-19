@@ -251,8 +251,8 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                                                                   highlightedSection,
                                                                   highlightedSegment);
 
-            pointBounds.set(segmentX - markerPointHalf, minY + (segmentY - markerPointHalf),
-                            segmentX + markerPointHalf, minY + (segmentY + markerPointHalf));
+            pointBounds.set(segmentX - markerPointHalf, minY * 2 + (segmentY - markerPointHalf),
+                            segmentX + markerPointHalf, minY * 2 + (segmentY + markerPointHalf));
             canvas.drawOval(pointBounds, highlightPaint);
 
             canvas.drawRect(pointBounds.centerX(), 0f,

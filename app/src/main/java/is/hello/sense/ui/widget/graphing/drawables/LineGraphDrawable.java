@@ -85,7 +85,7 @@ public class LineGraphDrawable extends GraphDrawable {
                     float segmentWidth = sectionWidth / (float) pointCount;
                     for (int position = 0; position < pointCount; position++) {
                         float currentX = adapterCache.calculateSegmentX(sectionWidth, segmentWidth, section, position);
-                        float currentY = minY + adapterCache.calculateSegmentY(height, section, position);
+                        float currentY = minY * 2 + adapterCache.calculateSegmentY(height, section, position);
 
                         if (section == 0 && position == 0) {
                             linePath.moveTo(currentX, currentY);
