@@ -202,6 +202,10 @@ public class ZoomedOutTimelinePresenterTests extends InjectionTestCase {
             countDownLatch.countDown();
         }
 
+        @Override
+        public void cancelAnimation(boolean showLoading) {
+
+        }
 
         void clearResult() {
             this.result = null;
