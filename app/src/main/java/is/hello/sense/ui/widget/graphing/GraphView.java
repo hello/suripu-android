@@ -186,26 +186,26 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
             graphDrawable.draw(canvas);
         }
 
+        final int headerHeight = calculateHeaderHeight(),
+                  footerHeight = calculateFooterHeight();
+
+        if (wantsHeaders) {
+            height -= headerHeight;
+            minY += headerHeight;
+        } else {
+            final int topSpacing = (int) Math.ceil(markerPointHalf);
+            height -= topSpacing;
+            minY += topSpacing;
+        }
+
+        if (wantsFooters) {
+            height -= footerHeight;
+        }
+
         if (headerFooterProvider != null) {
             final int sectionCount = headerFooterProvider.getSectionHeaderFooterCount();
             if (sectionCount > 0) {
-                final int headerHeight = calculateHeaderHeight(),
-                          footerHeight = calculateFooterHeight();
-
                 final float sectionWidth = width / sectionCount;
-
-                if (wantsHeaders) {
-                    height -= headerHeight;
-                    minY += headerHeight;
-                } else {
-                    final int topSpacing = (int) Math.ceil(markerPointHalf);
-                    height -= topSpacing;
-                    minY += topSpacing;
-                }
-
-                if (wantsFooters) {
-                    height -= footerHeight;
-                }
 
                 for (int section = 0; section < sectionCount; section++) {
                     if (wantsHeaders) {
