@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -114,8 +113,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         this.graphView = (GraphView) view.findViewById(R.id.fragment_sensor_history_graph);
 
         graphView.setWantsFooters(false);
-        graphView.setWantsHeaders(false);
         graphView.setGraphDrawable(new LineGraphDrawable(getResources()));
+        graphView.setHighlightListener(sensorDataSource);
         graphView.setAdapter(sensorDataSource);
         graphView.setTintColor(getResources().getColor(R.color.sensor_unknown));
 
@@ -315,7 +314,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphValueHighlighted(int section, int position) {
             final SensorGraphSample instant = getSection(section).get(position);
-            if (instant.isValuePlaceholder() || instant.getValue() == 0) {
+            if (instant.isValuePlaceholder()) {
                 readingText.setText(R.string.missing_data_placeholder);
             } else {
                 final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
