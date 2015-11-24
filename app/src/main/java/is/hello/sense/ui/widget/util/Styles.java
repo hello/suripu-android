@@ -170,6 +170,10 @@ public final class Styles {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
+    public static @NonNull CharSequence assembleReadingAndUnit(String value, @NonNull String suffix) {
+        return assembleReadingAndUnit(String.format("%1$2s", value), suffix, UNIT_STYLE_SUPERSCRIPT);
+    }
+
     public static @NonNull GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
         return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
                 resources.getColor(R.color.graph_fill_gradient_top),
