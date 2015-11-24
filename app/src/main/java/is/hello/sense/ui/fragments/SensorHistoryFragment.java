@@ -314,13 +314,9 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphValueHighlighted(int section, int position) {
             final SensorGraphSample instant = getSection(section).get(position);
-            if (instant.isValuePlaceholder()) {
-                readingText.setText(R.string.missing_data_placeholder);
-            } else {
-                final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
-                final CharSequence reading = printer.print(instant.getValue());
-                readingText.setText(reading);
-            }
+            final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+            final CharSequence reading = printer.print(instant.getValue());
+            readingText.setText(reading);
 
             if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
                 messageText.setText(dateFormatter.formatAsDayAndTime(instant.getShiftedTime(), use24Time));

@@ -1,5 +1,6 @@
 package is.hello.sense.units;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -7,6 +8,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.widget.util.Styles;
@@ -28,6 +30,7 @@ public class UnitFormatter {
 
     private final PreferencesPresenter preferences;
     private final boolean defaultMetric;
+    private final String placeHolder;
 
     public static boolean isDefaultLocaleMetric() {
         String country = Locale.getDefault().getCountry();
@@ -36,9 +39,10 @@ public class UnitFormatter {
                 !"MM".equals(country));
     }
 
-    @Inject public UnitFormatter(@NonNull PreferencesPresenter preferences) {
+    @Inject public UnitFormatter(@NonNull PreferencesPresenter preferences, @NonNull Context context) {
         this.preferences = preferences;
         this.defaultMetric = isDefaultLocaleMetric();
+        this.placeHolder = context.getString(R.string.missing_data_placeholder);
     }
 
     public Observable<String> unitPreferenceChanges() {
@@ -50,6 +54,9 @@ public class UnitFormatter {
     //region Formatting
 
     public @NonNull CharSequence formatTemperature(double value) {
+        if (value == -1){
+            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
+        }
         double convertedValue = value;
         if (!preferences.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultMetric)) {
             convertedValue = UnitOperations.celsiusToFahrenheit(convertedValue);
@@ -84,7 +91,9 @@ public class UnitFormatter {
     }
 
     public @NonNull CharSequence formatLight(double value) {
-        if (value < 10.0) {
+        if (value == -1){
+            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_LIGHT);
+        }else if (value < 10.0) {
             return Styles.assembleReadingAndUnit(String.format("%.1f", value),
                                                  UNIT_SUFFIX_LIGHT,
                                                  Styles.UNIT_STYLE_SUPERSCRIPT);
@@ -94,14 +103,23 @@ public class UnitFormatter {
     }
 
     public @NonNull CharSequence formatHumidity(double value) {
+        if (value == -1){
+            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_HUMIDITY);
+        }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_HUMIDITY);
     }
 
     public @NonNull CharSequence formatAirQuality(double value) {
+        if (value == -1){
+            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_AIR_QUALITY);
+        }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
     }
 
     public @NonNull CharSequence formatNoise(double value) {
+        if (value == -1){
+            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_NOISE);
+        }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
     }
 
