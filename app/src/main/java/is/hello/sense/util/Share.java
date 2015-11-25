@@ -37,6 +37,7 @@ public abstract class Share {
     }
 
     public abstract void send(@NonNull Activity from);
+    public abstract void sendForResult(@NonNull Activity from, int requestCode) throws Exception;
 
     //endregion
 
@@ -77,6 +78,11 @@ public abstract class Share {
         public void send(@NonNull Activity from) {
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
         }
+
+        @Override
+        public void sendForResult(@NonNull Activity from, int requestCode){
+            from.startActivityForResult(Intent.createChooser(intent, from.getString(R.string.action_share)), requestCode);
+        }
     }
 
     public static class Email extends Share {
@@ -98,6 +104,11 @@ public abstract class Share {
         public Email withAttachment(@NonNull Uri attachment) {
             intent.putExtra(Intent.EXTRA_STREAM, attachment);
             return this;
+        }
+
+        @Override
+        public void sendForResult(@NonNull Activity from, int requestCode) throws Exception {
+            throw new Exception("sendForResult() method not implemented yet");
         }
 
         @Override
@@ -182,6 +193,11 @@ public abstract class Share {
                               loadingDialogFragment.dismissSafely();
                           }
                       });
+        }
+
+        @Override
+        public void sendForResult(@NonNull Activity from, int requestCode) throws Exception {
+            throw new Exception("sendForResult method not implemented yet");
         }
     }
 

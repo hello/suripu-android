@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,8 +20,10 @@ import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
+import is.hello.sense.util.Share;
 
 public class AppSettingsFragment extends UndersideTabFragment {
+    private static final int SHARE_CODE = 0;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,9 @@ public class AppSettingsFragment extends UndersideTabFragment {
         View supportItem = view.findViewById(R.id.fragment_app_settings_support);
         Views.setSafeOnClickListener(supportItem, ignored -> showFragment(SupportFragment.class, R.string.action_support));
 
+        View tellAFriendItem = view.findViewById(R.id.fragment_app_settings_tell_a_friend);
+        Views.setSafeOnClickListener(tellAFriendItem, ignored -> tellAFriend());
+
         TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
@@ -69,6 +75,10 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_COMPLETED, null); // never hit
+    }
 
     private void showDeviceList(@NonNull View ignored) {
         final FragmentNavigationActivity.Builder builder =
@@ -84,5 +94,12 @@ public class AppSettingsFragment extends UndersideTabFragment {
         builder.setDefaultTitle(titleRes);
         builder.setFragmentClass(fragmentClass);
         startActivity(builder.toIntent());
+    }
+
+    private void tellAFriend() {
+        Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_TAPPED, null);
+        Share.text(getString(R.string.tell_a_friend_body))
+             .withSubject(getString(R.string.tell_a_friend_subject))
+             .sendForResult(getActivity(), SHARE_CODE);
     }
 }

@@ -58,6 +58,9 @@
     <string name="label_account">My Account</string>
     <string name="label_units_and_time">Units and Time</string>
     <string name="label_devices">Sense and Sleep Pill</string>
+    <string name="label_tell_a_friend">Tell a friend about Sense</string>
+    <string name="tell_a_friend_subject">Try Sense</string>
+    <string name="tell_a_friend_body">Sense tracks your sleep, monitors the environment of your bedroom, and helps you wake up feeling great: https://hello.is</string>
     <string name="title_time_frame_24_hrs">Last Day</string>
     <string name="title_time_frame_week">Past Week</string>
     <string name="title_info">Info</string>
