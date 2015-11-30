@@ -532,10 +532,17 @@ public class Analytics {
         trackUserIdentifier(accountId);
     }
 
-    public static void trackSignIn(@NonNull final String accountId, @Nullable final String name, @Nullable final String email) {
+    public static void trackSignIn(@NonNull final String accountId, @Nullable  String name, @Nullable  String email) {
         if (context == null){
             return;
         }
+        if (name == null) {
+            name = "";
+        }
+        if (email == null) {
+            email = "";
+        }
+
         com.segment.analytics.Analytics.with(context).identify(accountId);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
