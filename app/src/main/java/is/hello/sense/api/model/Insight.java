@@ -1,5 +1,6 @@
 package is.hello.sense.api.model;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
@@ -7,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import is.hello.sense.api.model.v2.ImageUrl;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Insight extends ApiResponse {
@@ -31,6 +33,9 @@ public class Insight extends ApiResponse {
     @SerializedName("info_preview")
     private String infoPreview;
 
+    @SerializedName("image")
+    private ImageUrl imageUrl;
+
 
     public static Insight createError(@NonNull String message) {
         Insight insight = new Insight();
@@ -53,6 +58,7 @@ public class Insight extends ApiResponse {
         insight.created = created;
         insight.category = category;
         insight.infoPreview = infoPreview;
+        insight.imageUrl = null;
         return insight;
     }
 
@@ -81,6 +87,12 @@ public class Insight extends ApiResponse {
         return infoPreview;
     }
 
+    public String getImageUrl(Context context) {
+        if (imageUrl == null)
+            return null;
+        return imageUrl.getUrl(context);
+    }
+
     @Override
     public String toString() {
         return "Insight{" +
@@ -90,6 +102,7 @@ public class Insight extends ApiResponse {
                 ", created=" + created +
                 ", category=" + category +
                 ", infoPreview='" + infoPreview + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 
