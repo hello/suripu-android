@@ -16,11 +16,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -28,6 +32,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
@@ -52,6 +57,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,12 +85,15 @@ public class InsightsFragment extends UndersideTabFragment
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(this);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
-
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
+        progressBar = (ProgressBar)view.findViewById(R.id.fragment_insights_progress);
 
         final Resources resources = getResources();
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new CardItemDecoration(resources));
+        recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
+        recyclerView.setItemAnimator(null);
+
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new CardItemDecoration(resources));
@@ -105,12 +114,12 @@ public class InsightsFragment extends UndersideTabFragment
         // we actually merge the endpoints on the backend.
 
         bindAndSubscribe(insightsPresenter.insights,
-                         insightsAdapter::bindInsights,
-                         insightsAdapter::insightsUnavailable);
+                         this::bindInsights,
+                         this::insightsUnavailable);
 
         bindAndSubscribe(questionsPresenter.question,
-                         insightsAdapter::bindQuestion,
-                         insightsAdapter::questionUnavailable);
+                         this::bindQuestion,
+                         this::questionUnavailable);
     }
 
     @Override
@@ -195,10 +204,31 @@ public class InsightsFragment extends UndersideTabFragment
         updateQuestion();
     }
 
+    private void bindInsights(List<Insight> insights){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.bindInsights(insights);
+    }
+
+    private void insightsUnavailable(Throwable e){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.insightsUnavailable(e);
+    }
+
     //endregion
 
 
     //region Questions
+
+    private void bindQuestion(Question question){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.bindQuestion(question);
+    }
+
+
+    private void questionUnavailable(Throwable e){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.questionUnavailable(e);
+    }
 
     public void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> {

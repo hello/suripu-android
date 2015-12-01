@@ -15,6 +15,7 @@ import java.util.List;
 
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.v2.ImageUrl;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.DateFormatter;

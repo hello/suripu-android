@@ -10,6 +10,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Request;
+import com.squareup.picasso.RequestHandler;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -19,6 +23,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -129,6 +134,14 @@ public class ApiModule {
         client.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         client.setReadTimeout(Constants.HTTP_READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         return client;
+    }
+
+    @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context,
+                                                @NonNull OkHttpClient client){
+        Picasso.Builder builder = new Picasso.Builder(context);
+        builder.downloader(new OkHttpDownloader(client));
+        Picasso.setSingletonInstance(Picasso.with(context));
+        return builder.build();
     }
 
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull Gson gson,
