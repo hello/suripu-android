@@ -3,148 +3,95 @@ package is.hello.sense.ui.dialogs;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightInfo;
-import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.ImageLoader;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class InsightInfoDialogFragment extends InjectionDialogFragment {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
 
-    private static final String ARG_INSIGHT_CATEGORY = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_CATEGORY";
-    private static final String ARG_INSIGHT_TITLE = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_TITLE";
-    private static final String ARG_INSIGHT_MESSAGE = InsightInfoDialogFragment.class.getName() + ".ARG_INSIGHT_MESSAGE";
+    private static final String ARG_TITLE = InsightInfoDialogFragment.class.getName() + ".ARG_TITLE";
+    private static final String ARG_MESSAGE = InsightInfoDialogFragment.class.getName() + ".ARG_MESSAGE";
+    private static final String ARG_IMAGE_URL = InsightInfoDialogFragment.class.getName() + ".ARG_IMAGE_URL";
+    private static final String ARG_INFO = InsightInfoDialogFragment.class.getName() + ".ARG_INFO";
 
-    @Inject InsightInfoPresenter presenter;
+    @Inject Picasso picasso;
 
-    private boolean hasCategory;
+    private String title;
+    private MarkupString message;
+    private String imageUrl;
+    private MarkupString info;
 
-    private LinearLayout contentContainer;
-    private ProgressBar loadingIndicator;
-    private ImageView illustrationImage;
-    private TextView titleText;
-    private TextView messageText;
+    public static InsightInfoDialogFragment newInstance(@NonNull String title,
+                                                        @NonNull MarkupString message,
+                                                        @Nullable String imageUrl,
+                                                        @Nullable MarkupString info) {
+        final InsightInfoDialogFragment fragment = new InsightInfoDialogFragment();
 
-    public static InsightInfoDialogFragment newInstance(@NonNull Insight insight) {
-        InsightInfoDialogFragment dialogFragment = new InsightInfoDialogFragment();
+        final Bundle arguments = new Bundle();
+        arguments.putString(ARG_TITLE, title);
+        arguments.putParcelable(ARG_MESSAGE, message);
+        arguments.putString(ARG_IMAGE_URL, imageUrl);
+        arguments.putParcelable(ARG_INFO, info);
+        fragment.setArguments(arguments);
 
-        Bundle arguments = new Bundle();
-        if (!Insight.CATEGORY_GENERIC.equalsIgnoreCase(insight.getCategory())) {
-            arguments.putString(ARG_INSIGHT_CATEGORY, insight.getCategory());
-        } else {
-            arguments.putString(ARG_INSIGHT_TITLE, insight.getTitle());
-            arguments.putParcelable(ARG_INSIGHT_MESSAGE, insight.getMessage());
-        }
-        dialogFragment.setArguments(arguments);
-
-        return dialogFragment;
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = getArguments();
-        this.hasCategory = arguments.containsKey(ARG_INSIGHT_CATEGORY);
-        if (hasCategory) {
-            String category = arguments.getString(ARG_INSIGHT_CATEGORY);
-            presenter.setInsightCategory(category);
-            addPresenter(presenter);
-        }
+        final Bundle arguments = getArguments();
+        this.title = arguments.getString(ARG_TITLE);
+        this.message = arguments.getParcelable(ARG_MESSAGE);
+        this.imageUrl = arguments.getString(ARG_IMAGE_URL);
+        this.info = arguments.getParcelable(ARG_INFO);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
+        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
         dialog.setContentView(R.layout.fragment_dialog_insight_info);
 
-        this.contentContainer = (LinearLayout) dialog.findViewById(R.id.fragment_dialog_insight_info_content);
-        this.loadingIndicator = (ProgressBar) contentContainer.findViewById(R.id.fragment_dialog_insight_info_loading);
+        final ImageView illustrationImage =
+                (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_illustration);
+        if (imageUrl != null) {
 
-        this.illustrationImage = (ImageView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_illustration);
-        this.titleText = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_title);
-        this.messageText = (TextView) contentContainer.findViewById(R.id.fragment_dialog_insight_info_message);
-
-        Button doneButton = (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
-        Views.setSafeOnClickListener(doneButton, this::done);
-
-        if (hasCategory) {
-            bindAndSubscribe(presenter.insightInfo, this::bindInsightInfo, this::insightInfoUnavailable);
         } else {
-            String title = getArguments().getString(ARG_INSIGHT_TITLE);
-            MarkupString message = getArguments().getParcelable(ARG_INSIGHT_MESSAGE);
-
-            titleText.setText(title);
-            messageText.setText(message);
-
-            showContent();
+            illustrationImage.setVisibility(View.GONE);
         }
+
+        final TextView titleText =
+                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_title);
+        titleText.setText(title);
+
+        final TextView messageText =
+                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_message);
+        if (TextUtils.isEmpty(info)) {
+            messageText.setText(message);
+        } else {
+            messageText.setText(info);
+        }
+
+        final Button doneButton =
+                (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
+        Views.setSafeOnClickListener(doneButton, this::done);
 
         return dialog;
     }
-
-
-    public void showContent() {
-        loadingIndicator.setVisibility(View.GONE);
-        illustrationImage.setVisibility(View.VISIBLE);
-        titleText.setVisibility(View.VISIBLE);
-        messageText.setVisibility(View.VISIBLE);
-    }
-
-    public void bindInsightInfo(@NonNull InsightInfo insightInfo) {
-        titleText.setText(insightInfo.getTitle());
-        messageText.setText(insightInfo.getText());
-
-        illustrationImage.setImageDrawable(null);
-        String imageUrl = insightInfo.getImageUrl();
-        if (!TextUtils.isEmpty(imageUrl)) {
-            bindAndSubscribe(ImageLoader.withUrl(imageUrl),
-                             image -> {
-                                 illustrationImage.setImageBitmap(image);
-                                 contentContainer.setGravity(Gravity.TOP);
-                                 showContent();
-                             },
-                             e -> {
-                                 Logger.error(getClass().getSimpleName(), "Could not load image", e);
-                                 showContent();
-                             });
-        } else {
-            showContent();
-        }
-    }
-
-    public void insightInfoUnavailable(Throwable e) {
-        illustrationImage.setImageDrawable(null);
-        titleText.setText(R.string.dialog_error_title);
-
-        StringRef message = Errors.getDisplayMessage(e);
-        if (message != null) {
-            messageText.setText(message.resolve(getActivity()));
-        } else {
-            messageText.setText(R.string.dialog_error_generic_message);
-        }
-
-        showContent();
-    }
-
 
     public void done(@NonNull View sender) {
         dismissAllowingStateLoss();
