@@ -60,15 +60,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/gap_small"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <View
+            style="@style/Divider.Horizontal" />
 
         <Button
             android:id="@+id/fragment_dialog_insight_info_done"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.Button.Rounded"
-            android:text="@android:string/ok"/>
+            android:text="@string/action_close"
+            style="@style/AppTheme.Button.Borderless.Primary" />
 
     </LinearLayout>
 

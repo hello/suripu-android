@@ -324,6 +324,21 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
+    <style name="AppTheme.Button.Borderless.Primary">
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingLeft">@dimen/gap_small</item>
+        <item name="android:paddingRight">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:minHeight">56dp</item>
+
+        <item name="android:textAllCaps">true</item>
+        <item name="android:background">@drawable/selectable_dark_bounded</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    </style>
+
     <style name="AppTheme.Button.Circular">
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">0dp</item>
