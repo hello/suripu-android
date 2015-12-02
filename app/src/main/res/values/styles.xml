@@ -150,6 +150,12 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
     </style>
 
+    <style name="AppTheme.Dialog.InsightInfo" parent="AppTheme.Dialog.FullScreen">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_mixed_content</item>
+    </style>
+
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
         <item name="android:textColor">@color/black</item>
     </style>

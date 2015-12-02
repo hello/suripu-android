@@ -10,6 +10,7 @@
     <color name="light_accent_darkened">#007DCD</color>
     <color name="destructive_accent">#ff0000</color>
     <color name="status_bar_grey">#b5b5b5</color>
+    <color name="status_bar_mixed_content">#22000000</color>
 
     <color name="background">#EBEDF0</color>
     <color name="background_light">@color/white</color>
@@ -17,6 +18,7 @@
     <color name="background_dark_overlay">#80000000</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
+    <color name="background_insight_illustration">#CFDCE6</color>
 
     <color name="background_dark_item_clicked">#EBF7FF</color>
 

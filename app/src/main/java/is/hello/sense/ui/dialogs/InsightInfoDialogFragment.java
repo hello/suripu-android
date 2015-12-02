@@ -1,11 +1,14 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +36,10 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
     private MarkupString message;
     private String imageUrl;
     private MarkupString info;
+
+    private ImageView illustrationImage;
+
+    //region Lifecycle
 
     public static InsightInfoDialogFragment newInstance(@NonNull String title,
                                                         @NonNull MarkupString message,
@@ -63,15 +70,26 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
+        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_InsightInfo);
         dialog.setContentView(R.layout.fragment_dialog_insight_info);
 
-        final ImageView illustrationImage =
-                (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_illustration);
-        if (imageUrl != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            final Window window = dialog.getWindow();
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                                                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
 
-        } else {
-            illustrationImage.setVisibility(View.GONE);
+        this.illustrationImage =
+                (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_illustration);
+
+        Views.runWhenLaidOut(illustrationImage, () -> {
+            final int width = illustrationImage.getMeasuredWidth();
+            illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */);
+            illustrationImage.requestLayout();
+        });
+
+        if (!TextUtils.isEmpty(imageUrl)) {
+            picasso.load(imageUrl).into(illustrationImage);
         }
 
         final TextView titleText =
@@ -88,12 +106,19 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment {
 
         final Button doneButton =
                 (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
-        Views.setSafeOnClickListener(doneButton, this::done);
+        Views.setSafeOnClickListener(doneButton, ignored -> {
+            dismissAllowingStateLoss();
+        });
 
         return dialog;
     }
 
-    public void done(@NonNull View sender) {
-        dismissAllowingStateLoss();
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        picasso.cancelRequest(illustrationImage);
     }
+
+    //endregion
 }
