@@ -33,6 +33,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
@@ -93,12 +94,16 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.static_recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.EDGE_TOP));
 
         this.adapter = new SettingsRecyclerAdapter(getActivity());
 
-        final Resources resources = getResources();
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final InsetItemDecoration decoration = new InsetItemDecoration();

@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -79,10 +81,15 @@ public class DeviceListFragment extends InjectionFragment
         final View view = inflater.inflate(R.layout.fragment_settings_device_list, container, false);
 
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.EDGE_TOP));
 
         this.adapter = new DevicesAdapter(getActivity());
         adapter.setOnItemClickedListener(this);

@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -23,6 +23,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.UnitSettingsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
@@ -57,10 +58,15 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
         final View view = inflater.inflate(R.layout.fragment_unit_settings, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.fragment_unit_settings_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.EDGE_TOP));
 
         unitSettingsAdapter = new UnitSettingsAdapter(getActivity(), this);
         recyclerView.setAdapter(unitSettingsAdapter);
