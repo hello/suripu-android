@@ -22,6 +22,7 @@
         android:id="@+id/fragment_dialog_insight_info_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:overScrollMode="never"
         android:layout_above="@id/fragment_dialog_insight_info_done_divider">
 
         <LinearLayout
