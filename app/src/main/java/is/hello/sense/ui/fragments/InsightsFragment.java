@@ -158,6 +158,7 @@ public class InsightsFragment extends UndersideTabFragment
                 final InsightInfoDialogFragment infoFragment =
                         InsightInfoDialogFragment.newInstance(insight.getTitle(),
                                                               insight.getMessage(),
+                                                              // Replace this with the new image API
                                                               insightInfo.getImageUrl(),
                                                               insightInfo.getText());
                 infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
@@ -174,6 +175,7 @@ public class InsightsFragment extends UndersideTabFragment
             final InsightInfoDialogFragment infoFragment =
                     InsightInfoDialogFragment.newInstance(insight.getTitle(),
                                                           insight.getMessage(),
+                                                          // Replace this with the new image API
                                                           null,
                                                           null);
             infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
