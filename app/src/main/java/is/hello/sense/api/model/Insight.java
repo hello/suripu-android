@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import java.util.HashMap;
+
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Insight extends ApiResponse {
@@ -30,6 +32,9 @@ public class Insight extends ApiResponse {
 
     @SerializedName("info_preview")
     private String infoPreview;
+
+    @SerializedName("image")
+    public HashMap<String, String> tempImage;
 
 
     public static Insight createError(@NonNull String message) {
