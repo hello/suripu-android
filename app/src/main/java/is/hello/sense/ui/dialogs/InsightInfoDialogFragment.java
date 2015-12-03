@@ -6,13 +6,17 @@ import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -34,6 +38,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
+import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
 public class InsightInfoDialogFragment extends InjectionDialogFragment implements Target {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
@@ -46,9 +51,9 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
     @Inject Picasso picasso;
 
     private String title;
-    private MarkupString message;
     private String imageUrl;
-    private MarkupString info;
+    private CharSequence message;
+    private CharSequence info;
 
     private ImageView illustrationImage;
     private ValueAnimator loadedAnimator;
@@ -77,9 +82,13 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
 
         final Bundle arguments = getArguments();
         this.title = arguments.getString(ARG_TITLE);
-        this.message = arguments.getParcelable(ARG_MESSAGE);
         this.imageUrl = arguments.getString(ARG_IMAGE_URL);
-        this.info = arguments.getParcelable(ARG_INFO);
+
+        final MarkupString message = arguments.getParcelable(ARG_MESSAGE);
+        this.message = addEmphasisFormatting(message);
+
+        final MarkupString info = arguments.getParcelable(ARG_INFO);
+        this.info = addEmphasisFormatting(info);
     }
 
     @Override
@@ -100,11 +109,16 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
                 (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_title);
         titleText.setText(title);
 
+        final TextView summaryText =
+                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_summary);
         final TextView messageText =
                 (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_message);
         if (TextUtils.isEmpty(info)) {
+            summaryText.setVisibility(View.GONE);
             messageText.setText(message);
         } else {
+            summaryText.setVisibility(View.VISIBLE);
+            summaryText.setText(message);
             messageText.setText(info);
         }
 
@@ -149,6 +163,34 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
 
     //endregion
 
+
+    private Spanned addEmphasisFormatting(@Nullable MarkupString source) {
+        if (source == null) {
+            return null;
+        }
+
+        final @ColorInt int emphasisColor = getResources().getColor(R.color.text_dark);
+        final SpannableStringBuilder toFormat = new SpannableStringBuilder(source);
+        final MarkupStyleSpan[] spans = toFormat.getSpans(0, toFormat.length(),
+                                                          MarkupStyleSpan.class);
+        for (final MarkupStyleSpan span : spans) {
+            if (span.getStyle() == Typeface.NORMAL) {
+                continue;
+            }
+
+            final int start = toFormat.getSpanStart(span);
+            final int end = toFormat.getSpanEnd(span);
+            final int flags = toFormat.getSpanFlags(span);
+
+            toFormat.setSpan(new ForegroundColorSpan(emphasisColor), start, end, flags);
+
+            if (span.getStyle() == Typeface.BOLD) {
+                toFormat.removeSpan(span);
+            }
+        }
+
+        return toFormat;
+    }
 
     private static @ColorInt int getStatusBarColor(@NonNull Bitmap bitmap) {
         return Drawing.darkenColorBy(bitmap.getPixel(0, 0), 0.2f);
