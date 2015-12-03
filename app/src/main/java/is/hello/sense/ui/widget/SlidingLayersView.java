@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -8,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -28,13 +28,13 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public class SlidingLayersView extends FrameLayout {
     private static final String ANIMATOR_NAME = SlidingLayersView.class.getSimpleName() + "#onTouchEvent";
 
-    private int touchSlop;
-    private int topViewOpenHeight;
+    private final int touchSlop;
+    private final int topViewOpenHeight;
+    private final int topViewDividerHeight;
     private float totalMovementHeight;
     private float startEventX, startEventY;
     private float lastEventX, lastEventY;
 
-    private FrameLayout topViewContainer;
     private View topView;
     private float topViewY;
     private RecyclerView recyclerView;
@@ -47,51 +47,39 @@ public class SlidingLayersView extends FrameLayout {
     private @Nullable Listener listener;
     private @Nullable InteractiveAnimator interactiveAnimator;
     private @Nullable AnimatorContext animatorContext;
-    private int shadowHeight;
 
 
     //region Lifecycle
 
-    @SuppressWarnings("UnusedDeclaration")
-    public SlidingLayersView(Context context) {
-        super(context);
-        initialize();
+    public SlidingLayersView(@NonNull Context context) {
+        this(context, null);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public SlidingLayersView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initialize();
+    public SlidingLayersView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public SlidingLayersView(Context context, AttributeSet attrs, int defStyle) {
+    public SlidingLayersView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initialize();
-    }
 
-    protected void initialize() {
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         setFocusable(false);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        setWillNotDraw(false);
+
+        final Resources resources = getResources();
 
         // ListView eats some vertical motion events, so our touch slop has
         // to be lower than standard in order for the swipe gesture to work.
-        this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop() / 2;
-        this.topViewOpenHeight = getResources().getDimensionPixelSize(R.dimen.sliding_layers_open_height);
-
-        this.topViewContainer = new FrameLayout(getContext());
-
-        this.shadowHeight = getResources().getDimensionPixelSize(R.dimen.shadow_size);
-        View topShadowView = new View(getContext());
-        topShadowView.setBackgroundResource(R.drawable.shadow_top);
-        topViewContainer.addView(topShadowView, new LayoutParams(LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP));
+        this.touchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop() / 2;
+        this.topViewOpenHeight = resources.getDimensionPixelSize(R.dimen.sliding_layers_open_height);
+        this.topViewDividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         if (state instanceof Bundle) {
-            Bundle savedState = (Bundle) state;
+            final Bundle savedState = (Bundle) state;
             this.isOpen = savedState.getBoolean("isOpen");
             state = savedState.getParcelable("savedState");
 
@@ -108,7 +96,7 @@ public class SlidingLayersView extends FrameLayout {
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        Bundle savedState = new Bundle();
+        final Bundle savedState = new Bundle();
         savedState.putBoolean("isOpen", isOpen());
         savedState.putParcelable("savedState", super.onSaveInstanceState());
         return savedState;
@@ -204,29 +192,26 @@ public class SlidingLayersView extends FrameLayout {
 
     @Override
     public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
-        int normalizedIndex = index < 0 ? getChildCount() : index;
+        final int normalizedIndex = index < 0 ? getChildCount() : index;
 
         if (normalizedIndex > 1) {
             throw new IllegalStateException("too many children for " + getClass().getSimpleName());
         }
 
         if (normalizedIndex == 0) {
-            MarginLayoutParams marginLayoutParams;
+            final MarginLayoutParams marginLayoutParams;
             if (params instanceof MarginLayoutParams) {
                 marginLayoutParams = (MarginLayoutParams) params;
             } else {
                 marginLayoutParams = new MarginLayoutParams(params);
             }
-            marginLayoutParams.bottomMargin = topViewOpenHeight - shadowHeight;
+            marginLayoutParams.bottomMargin = topViewOpenHeight - topViewDividerHeight;
             params = marginLayoutParams;
         } else if (normalizedIndex == 1) {
-            LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.TOP);
-            layoutParams.setMargins(0, shadowHeight, 0, 0);
-            topViewContainer.addView(child, layoutParams);
-            child = topViewContainer;
-            LayoutParams containerLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            containerLayoutParams.topMargin = -shadowHeight;
-            params = containerLayoutParams;
+            final LayoutParams updatedParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                LayoutParams.MATCH_PARENT);
+            updatedParams.topMargin = -topViewDividerHeight;
+            params = updatedParams;
         }
 
         super.addView(child, index, params);
@@ -246,7 +231,7 @@ public class SlidingLayersView extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int intendedY = MeasureSpec.getSize(heightMeasureSpec) - topViewOpenHeight;
+        final int intendedY = MeasureSpec.getSize(heightMeasureSpec) - topViewOpenHeight;
         if (!animating && isOpen && getChildAt(1).getY() != intendedY) {
             getChildAt(1).setY(intendedY);
         }
@@ -257,9 +242,11 @@ public class SlidingLayersView extends FrameLayout {
 
     //region Scrollable children
 
-    protected @Nullable <T extends View> T findFirstViewIn(@NonNull Class<T> viewClass, @NonNull ViewGroup view, @NonNull MotionEvent event) {
+    protected @Nullable <T extends View> T findFirstViewIn(@NonNull Class<T> viewClass,
+                                                           @NonNull ViewGroup view,
+                                                           @NonNull MotionEvent event) {
         for (int i = 0, c = view.getChildCount(); i < c; i++) {
-            View child = view.getChildAt(i);
+            final View child = view.getChildAt(i);
             if (!Views.isMotionEventInside(child, event)) {
                 continue;
             }
@@ -268,7 +255,7 @@ public class SlidingLayersView extends FrameLayout {
                 // noinspection unchecked
                 return (T) child;
             } else if (child instanceof ViewGroup) {
-                T childScrollableView = findFirstViewIn(viewClass, (ViewGroup) child, event);
+                final T childScrollableView = findFirstViewIn(viewClass, (ViewGroup) child, event);
                 if (childScrollableView != null) {
                     return childScrollableView;
                 }
@@ -283,7 +270,8 @@ public class SlidingLayersView extends FrameLayout {
             return true;
         }
 
-        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        final LinearLayoutManager layoutManager =
+                (LinearLayoutManager) recyclerView.getLayoutManager();
         return (layoutManager.findFirstCompletelyVisibleItemPosition() == 0);
     }
 
@@ -332,7 +320,7 @@ public class SlidingLayersView extends FrameLayout {
     private void animateClosed(long duration) {
         this.animating = true;
         animatorFor(topView, animatorContext)
-                .y(-shadowHeight)
+                .y(-topViewDividerHeight)
                 .withDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
@@ -368,9 +356,9 @@ public class SlidingLayersView extends FrameLayout {
 
                     velocityTracker.addMovement(event);
 
-                    float y = Views.getNormalizedY(event);
-                    float deltaY = y - lastEventY;
-                    float newY = Math.max(0f, Math.min(totalMovementHeight, topViewY + deltaY));
+                    final float y = Views.getNormalizedY(event);
+                    final float deltaY = y - lastEventY;
+                    final float newY = Math.max(0f, Math.min(totalMovementHeight, topViewY + deltaY));
 
                     if (interactiveAnimator != null) {
                         float amount = newY / totalMovementHeight;
@@ -389,14 +377,14 @@ public class SlidingLayersView extends FrameLayout {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                float travelX = Math.abs(startEventX - event.getX()),
-                      travelY = Math.abs(startEventY - event.getY());
+                final float travelX = Math.abs(startEventX - event.getX()),
+                            travelY = Math.abs(startEventY - event.getY());
                 if (velocityTracker == null || isOpen && travelX < touchSlop && travelY < touchSlop) {
                     animateClosed(Anime.DURATION_NORMAL);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
-                    float velocity = velocityTracker.getYVelocity();
-                    long duration = Anime.calculateDuration(velocity, getMeasuredHeight());
+                    final float velocity = velocityTracker.getYVelocity();
+                    final long duration = Anime.calculateDuration(velocity, getMeasuredHeight());
                     if (shouldSnapOpen(velocity)) {
                         animateOpen(duration);
                     } else {
@@ -458,9 +446,9 @@ public class SlidingLayersView extends FrameLayout {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                float x = Views.getNormalizedX(event), y = Views.getNormalizedY(event);
-                float deltaX = x - lastEventX;
-                float deltaY = y - lastEventY;
+                final float x = Views.getNormalizedX(event), y = Views.getNormalizedY(event);
+                final float deltaX = x - lastEventX;
+                final float deltaY = y - lastEventY;
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
                         (!isOpen && deltaY > 0.0) && isRecyclerViewAtTop(recyclerView)) {
                     this.trackingTouchEvents = true;
