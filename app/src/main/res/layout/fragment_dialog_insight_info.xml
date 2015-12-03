@@ -60,9 +60,9 @@
                 android:layout_marginLeft="@dimen/gap_outer"
                 android:layout_marginRight="@dimen/gap_outer"
                 android:layout_marginBottom="@dimen/gap_outer"
-                android:fontFamily="sans-serif-light"
                 android:textColor="@color/text_dark"
                 android:textSize="@dimen/text_size_heading"
+                android:fontFamily="sans-serif-medium"
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading" />
 
             <TextView

@@ -33,7 +33,7 @@
     <color name="timeline_segment_stripe">#40009cff</color>
 
     <color name="text_dark">#4D4D4D</color>
-    <color name="text_medium">#999999</color>
+    <color name="text_medium">#6c6c6c</color>
     <color name="text_light">#b2b2b2</color>
     <color name="text_dark_disabled">#45000000</color>
     <color name="text_dim">#77000000</color>
