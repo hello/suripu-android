@@ -22,7 +22,7 @@
 
     <color name="border">#d9d9d9</color>
     <color name="border_underside_tabs">#d0d0d0</color>
-    <color name="shadow_end">#18000000</color>
+    <color name="shadow_end">#19000000</color>
     <color name="view_time_picker_shadow_end">#10000000</color>
 
     <color name="timeline_header_border">#C5E7FF</color>

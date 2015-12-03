@@ -56,7 +56,7 @@
 
     <!-- Divisions and Borders -->
 
-    <dimen name="shadow_size">3dp</dimen>
+    <dimen name="shadow_size">4dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
     <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
     <dimen name="divider_height_edit_text">1dp</dimen>

@@ -59,9 +59,8 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
         final boolean wantsTopEdge = ((edges & EDGE_TOP) == EDGE_TOP);
         final boolean wantsBottomEdge = ((edges & EDGE_BOTTOM) == EDGE_BOTTOM);
         final int itemCount = parent.getAdapter().getItemCount();
-        if (itemCount > parent.getChildCount()) {
+        if (itemCount > 0 && layoutManager.canScrollVertically()) {
             final int width = c.getWidth();
-            final int height = c.getHeight();
 
             if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() > 0) {
                 gradientDrawable.setBounds(0, 0, width, edgeHeight);
@@ -71,6 +70,7 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
 
             final int lastItem = itemCount - 1;
             if (wantsBottomEdge && layoutManager.findLastCompletelyVisibleItemPosition() < lastItem) {
+                final int height = c.getHeight();
                 gradientDrawable.setBounds(0, height - edgeHeight, width, height);
                 gradientDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
                 gradientDrawable.draw(c);
