@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_light">
 
-    <ScrollView
+    <Button
+        android:id="@+id/fragment_dialog_insight_info_done"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        style="@style/AppTheme.FadingScrollView">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/action_close"
+        style="@style/AppTheme.Button.Borderless.Primary" />
+
+    <View
+        android:id="@+id/fragment_dialog_insight_info_done_divider"
+        android:layout_above="@id/fragment_dialog_insight_info_done"
+        style="@style/Divider.Horizontal" />
+
+    <ScrollView
+        android:id="@+id/fragment_dialog_insight_info_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/fragment_dialog_insight_info_done_divider">
 
         <LinearLayout
             android:id="@+id/fragment_dialog_insight_info_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/white"
-            android:animateLayoutChanges="true">
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/fragment_dialog_insight_info_illustration"
@@ -57,21 +67,14 @@
 
     </ScrollView>
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/fragment_dialog_insight_info_button_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_above="@id/fragment_dialog_insight_info_done_divider"
+        android:src="@drawable/shadow_top"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no"
+        android:visibility="gone"/>
 
-        <View
-            style="@style/Divider.Horizontal" />
-
-        <Button
-            android:id="@+id/fragment_dialog_insight_info_done"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/action_close"
-            style="@style/AppTheme.Button.Borderless.Primary" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

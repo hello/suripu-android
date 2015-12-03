@@ -13,9 +13,12 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -109,6 +112,20 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
                 (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
         Views.setSafeOnClickListener(doneButton, ignored -> {
             dismissAllowingStateLoss();
+        });
+
+        final ScrollView scrollView =
+                (ScrollView) dialog.findViewById(R.id.fragment_dialog_insight_info_scroll);
+        final ViewGroup content =
+                (ViewGroup) dialog.findViewById(R.id.fragment_dialog_insight_info_content);
+        final ImageView doneButtonShadow =
+                (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_button_shadow);
+        Views.runWhenLaidOut(scrollView, () -> {
+            if (content.getMeasuredHeight() > scrollView.getMeasuredHeight()) {
+                doneButtonShadow.setVisibility(View.VISIBLE);
+            } else {
+                doneButtonShadow.setVisibility(View.GONE);
+            }
         });
 
         if (!TextUtils.isEmpty(imageUrl)) {
