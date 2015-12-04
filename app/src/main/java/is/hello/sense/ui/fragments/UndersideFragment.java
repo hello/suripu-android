@@ -26,14 +26,13 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
 public class UndersideFragment extends InjectionFragment
-        implements SelectorView.OnSelectionChangedListener, OnViewPagerChangeAdapter.Listener {
+        implements ViewPager.OnPageChangeListener, SelectorView.OnSelectionChangedListener {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
@@ -53,17 +52,19 @@ public class UndersideFragment extends InjectionFragment
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
 
+    private boolean suppressNextSwipeEvent = false;
+    private int lastState = ViewPager.SCROLL_STATE_IDLE;
+
 
     private static SharedPreferences getInternalPreferences(@NonNull Context context) {
         return context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
     }
 
     public static void saveCurrentItem(@NonNull Context context, int currentItem) {
-        final SharedPreferences preferences = getInternalPreferences(context);
+        SharedPreferences preferences = getInternalPreferences(context);
         preferences.edit()
                    .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
-                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED,
-                            System.currentTimeMillis())
+                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
                    .apply();
     }
 
@@ -105,17 +106,20 @@ public class UndersideFragment extends InjectionFragment
             setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
         }
 
-        pager.addOnPageChangeListener(new OnViewPagerChangeAdapter(pager, this));
+        pager.setPageMargin(resources.getDimensionPixelSize(R.dimen.divider_size));
+        pager.setPageMarginDrawable(R.color.border);
+
+        pager.addOnPageChangeListener(this);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
-        final int[] inactiveIcons = {
+        final @DrawableRes int[] inactiveIcons = {
                 R.drawable.underside_icon_currently,
                 R.drawable.underside_icon_trends,
                 R.drawable.underside_icon_insights,
                 R.drawable.underside_icon_alarm,
                 R.drawable.underside_icon_settings,
         };
-        final int[] activeIcons = {
+        final @DrawableRes int[] activeIcons = {
                 R.drawable.underside_icon_currently_active,
                 R.drawable.underside_icon_trends_active,
                 R.drawable.underside_icon_insights_active,
@@ -125,11 +129,13 @@ public class UndersideFragment extends InjectionFragment
         for (int i = 0; i < tabs.getButtonCount(); i++) {
             final ToggleButton button = tabs.getButtonAt(i);
 
-            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), inactiveIcons[i]);
+            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),
+                                                                   inactiveIcons[i]);
             button.setText(inactiveContent);
             button.setTextOff(inactiveContent);
 
-            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i), activeIcons[i]);
+            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i),
+                                                                 activeIcons[i]);
             button.setTextOn(activeContent);
 
             button.setPadding(0, 0, 0, 0);
@@ -195,7 +201,7 @@ public class UndersideFragment extends InjectionFragment
     }
 
     public void setCurrentItem(int currentItem, int options) {
-        final boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
+        boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
         pager.setCurrentItem(currentItem, animate);
     }
 
@@ -209,22 +215,36 @@ public class UndersideFragment extends InjectionFragment
 
 
     @Override
-    public void onPageChangeScrolled(int position, float offset) {
-        tabLine.setPositionOffset(offset);
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        tabLine.setPositionOffset(positionOffset);
         tabLine.setSelectedIndex(position);
     }
 
     @Override
-    public void onPageChangeCompleted(int position) {
+    public void onPageSelected(int position) {
         tabs.setSelectedIndex(position);
         saveCurrentItem(position);
+    }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        if (lastState != ViewPager.SCROLL_STATE_IDLE &&
+                state == ViewPager.SCROLL_STATE_IDLE) {
+            if (suppressNextSwipeEvent) {
+                this.suppressNextSwipeEvent = false;
+            } else {
+                Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
+            }
+        }
+
+        this.lastState = state;
     }
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
         Analytics.trackEvent(Analytics.TopView.EVENT_TAB_TAPPED, null);
+        this.suppressNextSwipeEvent = true;
+
         setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
     }
 
