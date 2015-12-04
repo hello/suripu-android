@@ -77,7 +77,6 @@ public class LaunchActivity extends InjectionActivity {
 
     private void bounce() {
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
-            Analytics.trackSignIn(sessionManager.getSession().getAccountId(), null, null);
             showHomeActivity();
         } else {
             if (!sessionManager.hasSession()) {
