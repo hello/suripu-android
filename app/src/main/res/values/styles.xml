@@ -150,6 +150,11 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
     </style>
 
+    <style name="AppTheme.Dialog.FullScreen.Insight">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_illustration</item>
+    </style>
+
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
         <item name="android:textColor">@color/black</item>
     </style>
@@ -316,6 +321,21 @@
 
     <style name="AppTheme.Button.Dialog.Positive">
         <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="AppTheme.Button.Borderless.Primary">
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingLeft">@dimen/gap_small</item>
+        <item name="android:paddingRight">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:minHeight">56dp</item>
+
+        <item name="android:textAllCaps">true</item>
+        <item name="android:background">@drawable/selectable_dark_bounded</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
     <style name="AppTheme.Button.Circular">

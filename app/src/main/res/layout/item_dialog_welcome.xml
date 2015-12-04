@@ -10,13 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:minHeight="@dimen/button_rounded_min_height"
-        android:padding="@dimen/gap_small"
-        android:textAllCaps="true"
         android:text="@string/action_done"
-        android:textColor="@color/light_accent"
         android:visibility="gone"
-        style="@style/AppTheme.Text.Body" />
+        style="@style/AppTheme.Button.Borderless.Primary" />
 
     <View
         android:id="@+id/fragment_dialog_welcome_item_dismiss_border"
