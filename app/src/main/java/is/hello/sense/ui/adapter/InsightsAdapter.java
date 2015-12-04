@@ -9,12 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -27,6 +23,7 @@ import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -156,7 +153,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     //region Views
 
-
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
@@ -179,6 +175,10 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         holder.bind(position);
     }
 
+    @Override
+    public void onViewRecycled(BaseViewHolder holder) {
+        holder.unbind();
+    }
 
     abstract class BaseViewHolder extends ParallaxRecyclerViewHolder {
         BaseViewHolder(@NonNull View itemView) {
@@ -186,6 +186,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         abstract void bind(int position);
+        void unbind() {
+        }
 
         @Override
         public void setParallaxPercent(float percent) {
@@ -224,67 +226,51 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     }
 
     class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
-        private static final float ASPECT_RATIO_SCALE = 0.5f /* 1:2 */;
-        private final int parallaxClip, parallaxMaxTranslation;
-
-        final FrameLayout imageAperture; // Contains and clips the image
         final TextView body;
         final TextView date;
         final TextView category;
-        final ImageView image;
-        final ProgressBar progressBar;
+        final ParallaxImageView image;
 
         InsightViewHolder(@NonNull View view) {
             super(view);
-            this.parallaxClip = context.getResources().getDimensionPixelSize(R.dimen.parallax_clip);
-            this.parallaxMaxTranslation = parallaxClip / 2;
+
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
-            this.image = (ImageView) view.findViewById(R.id.item_insight_image);
-            this.progressBar = (ProgressBar) view.findViewById(R.id.item_insight_progress);
-            this.imageAperture = (FrameLayout) view.findViewById(R.id.item_insight_frame);
+            this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
 
             view.setOnClickListener(this);
-
-            Views.runWhenLaidOut(itemView, this::onLaidOut);
         }
 
         @Override
         void bind(int position) {
-            Insight insight = getInsightItem(position);
-            DateTime insightCreated = insight.getCreated();
+            final Insight insight = getInsightItem(position);
+            final DateTime insightCreated = insight.getCreated();
             if (insightCreated == null && Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
                 date.setText(R.string.dialog_error_title);
                 image.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
             } else {
-                CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
+                final CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
                 date.setText(insightDate);
-                String url = insight.getImageUrl(context.getResources());
-                if (url == null) {
-                    progressBar.setVisibility(View.GONE);
+                final String url = insight.getImageUrl(context.getResources());
+                if (url != null) {
+                    picasso.load(url).into(image);
                 } else {
-                    picasso.load(url)
-                           .fit()
-                           .into(image, new Callback() {
-                               @Override
-                               public void onSuccess() {
-                                   progressBar.setVisibility(View.GONE);
-                               }
-
-                               @Override
-                               public void onError() {
-                                   progressBar.setVisibility(View.GONE);
-                               }
-                           });
+                    picasso.cancelRequest(image);
+                    image.setDrawable(null);
                 }
+                image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategory());
             }
 
             body.setText(insight.getMessage());
         }
 
+        @Override
+        void unbind() {
+            image.clearAnimation();
+            image.setDrawable(null);
+        }
 
         @Override
         public void onClick(View ignored) {
@@ -299,40 +285,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             }
         }
 
-
-        private void onLaidOut() {
-            // We know our aspect ratio ahead of time due to the images being
-            // made in-house, so we use that to our advantage to avoid having
-            // to calculate the height of the image in a layout pass.
-            final int width = image.getMeasuredWidth();
-            final int height = Math.round(width * ASPECT_RATIO_SCALE);
-
-            image.getLayoutParams().height = height;
-
-            // The container is slightly smaller than the image
-            // so that we have an aperture to move the image within.
-            imageAperture.getLayoutParams().height = height - parallaxClip;
-
-            // Ensure the image is centered, not sitting at the top of
-            // the parallax container. See below for more discussion.
-            image.setTranslationY(-parallaxMaxTranslation);
-
-            imageAperture.requestLayout();
-        }
-
         @Override
         public void setParallaxPercent(float percent) {
-            // Conceptually, the image's natural position is in the center of the parallax
-            // container. However, FrameLayout does not layout views that are larger than
-            // itself in the center even if told to, so we have to manually adjust our
-            // parallax translation to ensure the image moves relative to the center of
-            // the container and not the top of the container (which would result in the
-            // image having unwanted whitespace; remove -parallaxMaxTranslation to see.)
-            //
-            // A better implementation of this parallax effect would probably be a custom
-            // view that draws an image in its center, and adjusts that center value based
-            // on the parallax percentage we get from our scroll listener.
-            image.setTranslationY(-parallaxMaxTranslation + (parallaxMaxTranslation * percent));
+            image.setParallaxPercent(percent);
         }
     }
 

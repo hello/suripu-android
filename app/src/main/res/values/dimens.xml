@@ -18,7 +18,6 @@
     <dimen name="gap_card_horizontal">@dimen/gap_outer_half</dimen>
     <dimen name="gap_card_vertical">@dimen/gap_medium</dimen>
     <dimen name="gap_card_inter">8dp</dimen>
-    <dimen name="parallax_clip">30dp</dimen>
 
     <!-- Text -->
 
@@ -111,6 +110,8 @@
 
     <dimen name="device_detail_progress_margin">40dp</dimen>
     <dimen name="device_detail_text_margin">32dp</dimen>
+
+    <dimen name="view_parallax_image_clip">15dp</dimen>
 
     <!-- Graphs -->
 
