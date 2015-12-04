@@ -78,10 +78,13 @@ public class InsightsFragment extends UndersideTabFragment
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
+        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
+
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new EdgeShadowsScrollListener(layoutManager));
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
         recyclerView.setAdapter(insightsAdapter);

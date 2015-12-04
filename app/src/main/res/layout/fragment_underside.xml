@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/fragment_underside_tabs"
@@ -52,6 +52,27 @@
     <is.hello.sense.ui.widget.FixedViewPager
         android:id="@+id/fragment_underside_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/fragment_underside_tabs" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/fragment_underside_top_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_underside_tabs"
+        android:src="@drawable/shadow_top_down"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/fragment_underside_bottom_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/shadow_bottom_up"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no"
+        android:visibility="invisible" />
+
+</RelativeLayout>

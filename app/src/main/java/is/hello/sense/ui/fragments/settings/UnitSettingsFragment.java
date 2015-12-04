@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.EnumSet;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -22,6 +24,7 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.UnitSettingsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.units.UnitFormatter;
@@ -66,7 +69,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.EDGE_TOP));
+                                                                     EnumSet.of(ScrollEdge.TOP)));
 
         unitSettingsAdapter = new UnitSettingsAdapter(getActivity(), this);
         recyclerView.setAdapter(unitSettingsAdapter);

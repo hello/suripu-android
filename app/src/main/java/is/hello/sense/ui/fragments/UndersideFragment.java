@@ -14,7 +14,10 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ToggleButton;
+
+import java.util.EnumSet;
 
 import javax.inject.Inject;
 
@@ -23,16 +26,18 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
+import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
 public class UndersideFragment extends InjectionFragment
-        implements ViewPager.OnPageChangeListener, SelectorView.OnSelectionChangedListener {
+        implements SelectorView.OnSelectionChangedListener, OnViewPagerChangeAdapter.Listener {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
@@ -49,11 +54,9 @@ public class UndersideFragment extends InjectionFragment
 
     private SelectorView tabs;
     private TabsBackgroundDrawable tabLine;
+    private ImageView topShadow, bottomShadow;
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
-
-    private boolean suppressNextSwipeEvent = false;
-    private int lastState = ViewPager.SCROLL_STATE_IDLE;
 
 
     private static SharedPreferences getInternalPreferences(@NonNull Context context) {
@@ -61,10 +64,11 @@ public class UndersideFragment extends InjectionFragment
     }
 
     public static void saveCurrentItem(@NonNull Context context, int currentItem) {
-        SharedPreferences preferences = getInternalPreferences(context);
+        final SharedPreferences preferences = getInternalPreferences(context);
         preferences.edit()
                    .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
-                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED,
+                            System.currentTimeMillis())
                    .apply();
     }
 
@@ -83,9 +87,9 @@ public class UndersideFragment extends InjectionFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_underside, container, false);
+        final View view = inflater.inflate(R.layout.fragment_underside, container, false);
 
-        Resources resources = getResources();
+        final Resources resources = getResources();
 
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
@@ -96,15 +100,20 @@ public class UndersideFragment extends InjectionFragment
                                                  new Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);
 
-        final long itemLastUpdated = internalPreferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
+        final long itemLastUpdated =
+                internalPreferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
         if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
-            final int currentItem = internalPreferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
+            final int currentItem =
+                    internalPreferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
             setCurrentItem(currentItem, OPTION_NONE);
         } else {
             setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
         }
 
-        pager.addOnPageChangeListener(this);
+        pager.addOnPageChangeListener(new OnViewPagerChangeAdapter(pager, this));
+
+        this.topShadow = (ImageView) view.findViewById(R.id.fragment_underside_top_shadow);
+        this.bottomShadow = (ImageView) view.findViewById(R.id.fragment_underside_bottom_shadow);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
         final int[] inactiveIcons = {
@@ -162,7 +171,7 @@ public class UndersideFragment extends InjectionFragment
     public void onResume() {
         super.onResume();
 
-        UndersideTabFragment fragment = getCurrentTabFragment();
+        final UndersideTabFragment fragment = getCurrentTabFragment();
         if (fragment != null) {
             fragment.onUpdate();
         }
@@ -178,8 +187,8 @@ public class UndersideFragment extends InjectionFragment
     }
 
     private SpannableString createIconSpan(@NonNull CharSequence title, @DrawableRes int iconRes) {
-        ImageSpan image = new ImageSpan(getActivity(), iconRes);
-        SpannableString span = new SpannableString(title);
+        final ImageSpan image = new ImageSpan(getActivity(), iconRes);
+        final SpannableString span = new SpannableString(title);
         span.setSpan(image, 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
     }
@@ -188,56 +197,71 @@ public class UndersideFragment extends InjectionFragment
     public @Nullable UndersideTabFragment getCurrentTabFragment() {
         // This depends on semi-undefined behavior. It may break in a future update
         // of the Android support library, but won't break if the host OS changes.
-        long itemId = adapter.getItemId(pager.getCurrentItem());
-        String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+        final long itemId = adapter.getItemId(pager.getCurrentItem());
+        final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
         return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
     public void setCurrentItem(int currentItem, int options) {
-        boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
+        final boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
         pager.setCurrentItem(currentItem, animate);
     }
 
     public void saveCurrentItem(int currentItem) {
         internalPreferences.edit()
                            .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
-                           .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                           .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED,
+                                    System.currentTimeMillis())
                            .apply();
     }
 
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        tabLine.setPositionOffset(positionOffset);
+    public void onPageChangeScrolled(int position, float offset) {
+        tabLine.setPositionOffset(offset);
         tabLine.setSelectedIndex(position);
     }
 
     @Override
-    public void onPageSelected(int position) {
+    public void onPageChangeCompleted(int position) {
         tabs.setSelectedIndex(position);
         saveCurrentItem(position);
-    }
 
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        if (lastState != ViewPager.SCROLL_STATE_IDLE &&
-                state == ViewPager.SCROLL_STATE_IDLE) {
-            if (suppressNextSwipeEvent) {
-                this.suppressNextSwipeEvent = false;
-            } else {
-                Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
-            }
-        }
-
-        this.lastState = state;
+        Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
     }
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
         Analytics.trackEvent(Analytics.TopView.EVENT_TAB_TAPPED, null);
-        this.suppressNextSwipeEvent = true;
-
         setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
+    }
+
+
+    private void fadeOutAllScrollEdgeShadows() {
+        getAnimatorContext().transaction(t -> {
+            t.animatorFor(topShadow)
+             .fadeOut(View.INVISIBLE);
+
+            t.animatorFor(bottomShadow)
+             .fadeOut(View.INVISIBLE);
+        }, finished -> {
+        });
+    }
+
+    public void updateScrollEdgeShadows(@NonNull EnumSet<ScrollEdge> edges) {
+        if (edges.contains(ScrollEdge.TOP) && topShadow.getVisibility() != View.VISIBLE) {
+            topShadow.setVisibility(View.VISIBLE);
+            topShadow.setAlpha(1f);
+        } else {
+            topShadow.setVisibility(View.INVISIBLE);
+        }
+
+        if (edges.contains(ScrollEdge.BOTTOM) && bottomShadow.getVisibility() != View.VISIBLE) {
+            bottomShadow.setVisibility(View.VISIBLE);
+            bottomShadow.setAlpha(1f);
+        } else {
+            bottomShadow.setVisibility(View.INVISIBLE);
+        }
     }
 
 

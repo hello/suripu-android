@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.EnumSet;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -31,6 +33,7 @@ import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
@@ -89,7 +92,7 @@ public class DeviceListFragment extends InjectionFragment
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.EDGE_TOP));
+                                                                     EnumSet.of(ScrollEdge.TOP)));
 
         this.adapter = new DevicesAdapter(getActivity());
         adapter.setOnItemClickedListener(this);

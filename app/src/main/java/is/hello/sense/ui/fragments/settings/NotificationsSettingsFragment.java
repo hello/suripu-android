@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.util.EnumSet;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -24,6 +26,7 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
@@ -71,7 +74,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.EDGE_TOP));
+                                                                     EnumSet.of(ScrollEdge.TOP)));
 
         final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final InsetItemDecoration decoration = new InsetItemDecoration();

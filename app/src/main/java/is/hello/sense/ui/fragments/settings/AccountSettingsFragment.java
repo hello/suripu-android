@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.util.EnumSet;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -26,6 +28,7 @@ import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -100,7 +103,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.EDGE_TOP));
+                                                                     EnumSet.of(ScrollEdge.TOP)));
 
         this.adapter = new SettingsRecyclerAdapter(getActivity());
 

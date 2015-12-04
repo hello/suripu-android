@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.EnumSet;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
@@ -30,7 +33,7 @@ public class SupportFragment extends SenseFragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.EDGE_TOP));
+                                                                     EnumSet.of(ScrollEdge.TOP)));
 
         final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final InsetItemDecoration decoration = new InsetItemDecoration();
