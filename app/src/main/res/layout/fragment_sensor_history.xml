@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<is.hello.sense.ui.widget.BlockableScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.ExtendedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_sensor_history_scroll_view"
     android:layout_width="match_parent"
@@ -111,4 +111,4 @@
 
     </LinearLayout>
 
-</is.hello.sense.ui.widget.BlockableScrollView>
+</is.hello.sense.ui.widget.ExtendedScrollView>

@@ -13,7 +13,7 @@ public abstract class UndersideTabFragment extends InjectionFragment {
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        boolean wasVisibleToUser = getUserVisibleHint();
+        final boolean wasVisibleToUser = getUserVisibleHint();
         super.setUserVisibleHint(isVisibleToUser);
         if (!wasVisibleToUser && isVisibleToUser) {
             stateSafeExecutor.execute(() -> {

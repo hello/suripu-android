@@ -2,51 +2,55 @@ package is.hello.sense.ui.recycler;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.ColorInt;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.EnumSet;
+
 import is.hello.sense.R;
+import is.hello.sense.ui.common.ScrollEdge;
 
 public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
     private final LinearLayoutManager layoutManager;
-    private final GradientDrawable gradientDrawable;
-    private final int edgeHeight;
+    private final Drawable topEdge, bottomEdge;
+    private final EnumSet<ScrollEdge> edges;
+
+    public FadingEdgesItemDecoration(@NonNull LinearLayoutManager layoutManager,
+                                     @NonNull Resources resources,
+                                     @NonNull EnumSet<ScrollEdge> edges) {
+        this.layoutManager = layoutManager;
+        this.edges = edges;
+
+        this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
+        this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+    }
 
     public FadingEdgesItemDecoration(@NonNull LinearLayoutManager layoutManager,
                                      @NonNull Resources resources) {
-        this.layoutManager = layoutManager;
-        this.edgeHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
-
-        final @ColorInt int colors[] = {
-                Color.TRANSPARENT,
-                resources.getColor(R.color.shadow_end),
-        };
-        this.gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                     colors);
+        this(layoutManager, resources, EnumSet.of(ScrollEdge.TOP, ScrollEdge.BOTTOM));
     }
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         final int itemCount = parent.getAdapter().getItemCount();
-        if (itemCount > parent.getChildCount()) {
+        if (itemCount > 0 && layoutManager.canScrollVertically()) {
+            final boolean wantsTopEdge = edges.contains(ScrollEdge.TOP);
+            final boolean wantsBottomEdge = edges.contains(ScrollEdge.BOTTOM);
             final int width = c.getWidth();
-            final int height = c.getHeight();
 
-            if (layoutManager.findFirstCompletelyVisibleItemPosition() > 0) {
-                gradientDrawable.setBounds(0, 0, width, edgeHeight);
-                gradientDrawable.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
-                gradientDrawable.draw(c);
+            if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
+                topEdge.setBounds(0, 0, width, topEdge.getIntrinsicHeight());
+                topEdge.draw(c);
             }
 
             final int lastItem = itemCount - 1;
-            if (layoutManager.findLastCompletelyVisibleItemPosition() < lastItem) {
-                gradientDrawable.setBounds(0, height - edgeHeight, width, height);
-                gradientDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
-                gradientDrawable.draw(c);
+            if (wantsBottomEdge && layoutManager.findLastCompletelyVisibleItemPosition() < lastItem) {
+                final int height = c.getHeight();
+                bottomEdge.setBounds(0, height - bottomEdge.getIntrinsicHeight(), width, height);
+                bottomEdge.draw(c);
             }
         }
     }

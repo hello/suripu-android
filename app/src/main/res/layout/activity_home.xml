@@ -26,7 +26,12 @@
             <is.hello.sense.ui.widget.FixedViewPager
                 android:id="@+id/activity_home_view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/divider_size" />
+
+            <View
+                android:layout_gravity="top"
+                style="@style/Divider.Horizontal" />
 
             <ImageButton
                 android:id="@+id/fragment_timeline_smart_alarm"

@@ -41,6 +41,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     private @Nullable List<Insight> insights;
     private Question currentQuestion;
+    private int loadingInsightPosition = RecyclerView.NO_POSITION;
 
 
     public InsightsAdapter(@NonNull Context context,
@@ -61,6 +62,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         interactionListener.onDismissLoadingIndicator();
 
         this.currentQuestion = question;
+        this.loadingInsightPosition = RecyclerView.NO_POSITION;
 
         notifyDataSetChanged();
     }
@@ -70,6 +72,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         Logger.error(getClass().getSimpleName(), "Could not load questions", e);
 
         this.currentQuestion = null;
+        this.loadingInsightPosition = RecyclerView.NO_POSITION;
 
         notifyDataSetChanged();
     }
@@ -78,6 +81,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         interactionListener.onDismissLoadingIndicator();
 
         this.insights = insights;
+        this.loadingInsightPosition = RecyclerView.NO_POSITION;
 
         notifyDataSetChanged();
     }
@@ -88,13 +92,14 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         interactionListener.onDismissLoadingIndicator();
         this.insights = new ArrayList<>();
+        this.loadingInsightPosition = RecyclerView.NO_POSITION;
         this.currentQuestion = null;
 
-        StringRef messageRef = Errors.getDisplayMessage(e);
-        String message = messageRef != null
+        final StringRef messageRef = Errors.getDisplayMessage(e);
+        final String message = messageRef != null
                 ? messageRef.resolve(context)
                 : context.getString(R.string.dialog_error_generic_message);
-        Insight errorInsight = Insight.createError(message);
+        final Insight errorInsight = Insight.createError(message);
         insights.add(errorInsight);
 
         notifyDataSetChanged();
@@ -104,6 +109,18 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     public void clearCurrentQuestion() {
         this.currentQuestion = null;
         notifyDataSetChanged();
+    }
+
+    public void setLoadingInsightPosition(int loadingInsightPosition) {
+        if (this.loadingInsightPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(this.loadingInsightPosition);
+        }
+
+        this.loadingInsightPosition = loadingInsightPosition;
+
+        if (loadingInsightPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(loadingInsightPosition);
+        }
     }
 
     //endregion
@@ -127,7 +144,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     public Insight getInsightItem(int position) {
         if (insights != null) {
-            int adjustedPosition = currentQuestion != null ? position - 1 : position;
+            final int adjustedPosition = currentQuestion != null ? position - 1 : position;
             return insights.get(adjustedPosition);
         } else {
             return null;
@@ -157,11 +174,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_QUESTION: {
-                View view = inflater.inflate(R.layout.sub_fragment_new_question, parent, false);
+                final View view = inflater.inflate(R.layout.sub_fragment_new_question, parent, false);
                 return new QuestionViewHolder(view);
             }
             case TYPE_INSIGHT: {
-                View view = inflater.inflate(R.layout.item_insight, parent, false);
+                final View view = inflater.inflate(R.layout.item_insight, parent, false);
                 return new InsightViewHolder(view);
             }
             default: {
@@ -203,10 +220,10 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
             this.title = (TextView) view.findViewById(R.id.sub_fragment_new_question_title);
 
-            Button skip = (Button) view.findViewById(R.id.sub_fragment_new_question_skip);
+            final Button skip = (Button) view.findViewById(R.id.sub_fragment_new_question_skip);
             Views.setSafeOnClickListener(skip, this::skip);
 
-            Button answer = (Button) view.findViewById(R.id.sub_fragment_new_question_answer);
+            final Button answer = (Button) view.findViewById(R.id.sub_fragment_new_question_answer);
             Views.setSafeOnClickListener(answer, this::answer);
         }
 
@@ -264,6 +281,14 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             }
 
             body.setText(insight.getMessage());
+
+            if (position == loadingInsightPosition) {
+                itemView.setAlpha(0.8f);
+                itemView.setClickable(false);
+            } else {
+                itemView.setAlpha(1f);
+                itemView.setClickable(true);
+            }
         }
 
         @Override
@@ -280,8 +305,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             // view holder before the callback fires.
             final int adapterPosition = getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                Insight insight = getInsightItem(adapterPosition);
-                interactionListener.onInsightClicked(insight);
+                final Insight insight = getInsightItem(adapterPosition);
+                interactionListener.onInsightClicked(adapterPosition, insight);
             }
         }
 
@@ -298,7 +323,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onDismissLoadingIndicator();
         void onSkipQuestion();
         void onAnswerQuestion();
-        void onInsightClicked(@NonNull Insight insight);
+        void onInsightClicked(int position, @NonNull Insight insight);
     }
 
 }

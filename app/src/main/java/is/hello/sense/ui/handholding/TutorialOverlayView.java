@@ -80,7 +80,7 @@ public class TutorialOverlayView extends RelativeLayout {
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                              shadowHeight);
         if (tutorial.descriptionGravity == Gravity.TOP) {
-            shadow.setBackgroundResource(R.drawable.shadow_bottom);
+            shadow.setBackgroundResource(R.drawable.shadow_top_down);
             descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
 
             final View topLine = new View(activity);
@@ -92,7 +92,7 @@ public class TutorialOverlayView extends RelativeLayout {
             descriptionContainer.addView(topLine, 0, topLineLayoutParams);
         } else {
             descriptionContainer.setBackgroundResource(R.color.light_accent);
-            shadow.setBackgroundResource(R.drawable.shadow_top);
+            shadow.setBackgroundResource(R.drawable.shadow_bottom_up);
             descriptionContainer.addView(shadow, 0, shadowLayoutParams);
         }
 

@@ -10,6 +10,7 @@
     <color name="light_accent_darkened">#007DCD</color>
     <color name="destructive_accent">#ff0000</color>
     <color name="status_bar_grey">#b5b5b5</color>
+    <color name="status_bar_illustration">#a9b6c0</color>
 
     <color name="background">#EBEDF0</color>
     <color name="insight_card_background">#DFE1E6</color>
@@ -18,12 +19,13 @@
     <color name="background_dark_overlay">#80000000</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
+    <color name="background_insight_illustration">#CFDCE6</color>
 
     <color name="background_dark_item_clicked">#EBF7FF</color>
 
     <color name="border">#d9d9d9</color>
     <color name="border_underside_tabs">#d0d0d0</color>
-    <color name="shadow_end">#18000000</color>
+    <color name="shadow_end">#19000000</color>
     <color name="view_time_picker_shadow_end">#10000000</color>
 
     <color name="timeline_header_border">#C5E7FF</color>
@@ -32,7 +34,7 @@
     <color name="timeline_segment_stripe">#40009cff</color>
 
     <color name="text_dark">#4D4D4D</color>
-    <color name="text_medium">#999999</color>
+    <color name="text_medium">#6c6c6c</color>
     <color name="text_light">#b2b2b2</color>
     <color name="text_dark_disabled">#45000000</color>
     <color name="text_dim">#77000000</color>

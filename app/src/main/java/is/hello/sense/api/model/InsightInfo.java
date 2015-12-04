@@ -37,6 +37,11 @@ public class InsightInfo extends ApiResponse {
         return text;
     }
 
+    /**
+     * Prefer the new image API in {@link Insight}.
+     * @return The insight info's image URL.
+     */
+    @Deprecated
     public String getImageUrl() {
         return imageUrl;
     }

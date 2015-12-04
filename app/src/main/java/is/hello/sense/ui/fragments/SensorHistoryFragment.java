@@ -35,7 +35,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
-import is.hello.sense.ui.widget.BlockableScrollView;
+import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
@@ -60,7 +60,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
-    private BlockableScrollView scrollView;
+    private ExtendedScrollView scrollView;
     private TextView readingText;
     private TextView messageText;
     private TextView insightText;
@@ -102,7 +102,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sensor_history, container, false);
 
-        this.scrollView = (BlockableScrollView) view.findViewById(R.id.fragment_sensor_history_scroll_view);
+        this.scrollView = (ExtendedScrollView) view.findViewById(R.id.fragment_sensor_history_scroll_view);
 
         this.readingText = (TextView) view.findViewById(R.id.fragment_sensor_history_reading);
         this.messageText = (TextView) view.findViewById(R.id.fragment_sensor_history_message);

@@ -95,6 +95,14 @@ public class Insight extends ApiResponse {
         }
     }
 
+    public boolean isError() {
+        return CATEGORY_IN_APP_ERROR.equalsIgnoreCase(category);
+    }
+
+    public boolean hasInfo() {
+        return !CATEGORY_GENERIC.equalsIgnoreCase(category);
+    }
+
     @Override
     public String toString() {
         return "Insight{" +

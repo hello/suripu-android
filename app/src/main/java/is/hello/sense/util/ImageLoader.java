@@ -1,8 +1,10 @@
 package is.hello.sense.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -46,5 +48,19 @@ public class ImageLoader {
         } catch (MalformedURLException e) {
             return Observable.error(e);
         }
+    }
+
+    public static int getScreenDenisty(Context context) {
+        switch (context.getResources().getDisplayMetrics().densityDpi) {
+            case DisplayMetrics.DENSITY_LOW:
+                return SMALL;
+            case DisplayMetrics.DENSITY_MEDIUM:
+                return MEDIUM;
+            case DisplayMetrics.DENSITY_HIGH:
+                return LARGE;
+            case DisplayMetrics.DENSITY_XHIGH:
+                return LARGE;
+        }
+        return SMALL;
     }
 }
