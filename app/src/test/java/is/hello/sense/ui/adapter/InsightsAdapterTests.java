@@ -95,9 +95,7 @@ public class InsightsAdapterTests extends SenseTestCase {
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
         assertThat(holder.date.getText().toString(), is(equalTo("5 days ago")));
-        assertThat(holder.preview.getText().toString(), is(equalTo("Too much light makes you sleep poorly")));
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
-        assertThat(holder.previewDivider.getVisibility(), is(equalTo(View.VISIBLE)));
     }
 
     @Test
