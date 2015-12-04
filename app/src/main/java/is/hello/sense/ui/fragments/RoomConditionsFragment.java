@@ -43,6 +43,7 @@ import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
@@ -84,13 +85,17 @@ public class RoomConditionsFragment extends UndersideTabFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_room_conditions, container, false);
+        final View view = inflater.inflate(R.layout.fragment_room_conditions, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new CardItemDecoration(resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
 
         this.adapter = new Adapter(getActivity());
         adapter.setOnItemClickedListener(this);
@@ -159,14 +164,16 @@ public class RoomConditionsFragment extends UndersideTabFragment
         final RoomSensorHistory roomSensorHistory = result.roomSensorHistory;
         final List<SensorState> sensors = result.conditions.toList();
 
-        for (SensorState sensor : sensors) {
+        for (final SensorState sensor : sensors) {
             final String sensorName = sensor.getName();
-            final ArrayList<SensorGraphSample> samplesForSensor = roomSensorHistory.getSamplesForSensor(sensorName);
+            final ArrayList<SensorGraphSample> samplesForSensor =
+                    roomSensorHistory.getSamplesForSensor(sensorName);
             final SensorHistoryAdapter sensorGraphAdapter = getSensorGraphAdapter(sensorName);
             bindAndSubscribe(Update.forHistorySeries(samplesForSensor, true),
                              sensorGraphAdapter::update,
                              e -> {
-                                 Logger.error(getClass().getSimpleName(), "Could not update graph.", e);
+                                 Logger.error(getClass().getSimpleName(),
+                                              "Could not update graph.", e);
                                  sensorGraphAdapter.clear();
                              });
         }
@@ -206,7 +213,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
 
     @Override
     public void onItemClicked(int position, SensorState sensorState) {
-        Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
+        final Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
         intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName());
         startActivity(intent);
     }
@@ -276,7 +283,6 @@ public class RoomConditionsFragment extends UndersideTabFragment
         public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case VIEW_ID_MESSAGE: {
-
                     final View view = inflater.inflate(R.layout.item_message_card, parent, false);
 
                     final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);

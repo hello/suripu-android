@@ -14,10 +14,7 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ToggleButton;
-
-import java.util.EnumSet;
 
 import javax.inject.Inject;
 
@@ -26,7 +23,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
@@ -54,7 +50,6 @@ public class UndersideFragment extends InjectionFragment
 
     private SelectorView tabs;
     private TabsBackgroundDrawable tabLine;
-    private ImageView topShadow, bottomShadow;
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
 
@@ -111,9 +106,6 @@ public class UndersideFragment extends InjectionFragment
         }
 
         pager.addOnPageChangeListener(new OnViewPagerChangeAdapter(pager, this));
-
-        this.topShadow = (ImageView) view.findViewById(R.id.fragment_underside_top_shadow);
-        this.bottomShadow = (ImageView) view.findViewById(R.id.fragment_underside_bottom_shadow);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
         final int[] inactiveIcons = {
@@ -234,34 +226,6 @@ public class UndersideFragment extends InjectionFragment
     public void onSelectionChanged(int newSelectionIndex) {
         Analytics.trackEvent(Analytics.TopView.EVENT_TAB_TAPPED, null);
         setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
-    }
-
-
-    private void fadeOutAllScrollEdgeShadows() {
-        getAnimatorContext().transaction(t -> {
-            t.animatorFor(topShadow)
-             .fadeOut(View.INVISIBLE);
-
-            t.animatorFor(bottomShadow)
-             .fadeOut(View.INVISIBLE);
-        }, finished -> {
-        });
-    }
-
-    public void updateScrollEdgeShadows(@NonNull EnumSet<ScrollEdge> edges) {
-        if (edges.contains(ScrollEdge.TOP) && topShadow.getVisibility() != View.VISIBLE) {
-            topShadow.setVisibility(View.VISIBLE);
-            topShadow.setAlpha(1f);
-        } else {
-            topShadow.setVisibility(View.INVISIBLE);
-        }
-
-        if (edges.contains(ScrollEdge.BOTTOM) && bottomShadow.getVisibility() != View.VISIBLE) {
-            bottomShadow.setVisibility(View.VISIBLE);
-            bottomShadow.setAlpha(1f);
-        } else {
-            bottomShadow.setVisibility(View.INVISIBLE);
-        }
     }
 
 

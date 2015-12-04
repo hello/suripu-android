@@ -41,7 +41,7 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
             final boolean wantsBottomEdge = edges.contains(ScrollEdge.BOTTOM);
             final int width = c.getWidth();
 
-            if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() > 0) {
+            if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
                 topEdge.setBounds(0, 0, width, topEdge.getIntrinsicHeight());
                 topEdge.draw(c);
             }
