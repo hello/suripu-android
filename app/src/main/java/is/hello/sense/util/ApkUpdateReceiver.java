@@ -10,12 +10,12 @@ import javax.inject.Inject;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.sessions.ApiSessionManager;
 
-public class UpdateReceiver extends BroadcastReceiver {
+public class ApkUpdateReceiver extends BroadcastReceiver {
 
     @Inject
     ApiSessionManager sessionManager;
 
-    public UpdateReceiver() {
+    public ApkUpdateReceiver() {
         if (!"robolectric".equals(Build.FINGERPRINT)) {
             SenseApplication.getInstance().inject(this);
         }
