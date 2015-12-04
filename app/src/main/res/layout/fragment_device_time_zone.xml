@@ -3,57 +3,45 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
-    android:orientation="vertical">
+    android:background="@color/background_light">
 
-    <LinearLayout
-        android:id="@+id/fragment_device_time_zone_header"
+    <TextView
+        android:id="@+id/fragment_device_time_current_zone_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_margin="@dimen/gap_outer"
-        android:orientation="vertical">
+        android:text="@string/label_time_zone"
+        android:textAppearance="?attr/senseTextAppearanceFieldLabel"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_outer"
-            android:text="@string/label_time_zone"
-            android:textAppearance="?attr/senseTextAppearanceFieldLabel"/>
-
-        <TextView
-            android:id="@+id/fragment_device_time_current_zone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/gap_large"
-            android:drawableStart="@drawable/radio_on"
-            android:text="@string/app_name"
-            android:textAppearance="@style/AppTheme.Text.Body"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/fragment_device_time_current_zone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_device_time_current_zone_header"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/gap_outer"
+        android:drawablePadding="@dimen/gap_large"
+        android:drawableStart="@drawable/radio_on"
+        android:text="@string/app_name"
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <View
         android:id="@+id/fragment_device_time_zone_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/fragment_device_time_zone_header"
-        android:background="@color/border"/>
+        android:layout_below="@id/fragment_device_time_current_zone"
+        style="@style/Divider.Horizontal" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_device_time_zone_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fragment_device_time_zone_divider"
-        android:paddingLeft="@dimen/gap_outer"
-        android:paddingRight="@dimen/gap_outer"/>
-
+        android:layout_below="@id/fragment_device_time_zone_divider" />
 
     <ProgressBar
         android:id="@+id/fragment_device_time_zone_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:visibility="gone"/>
-
+        android:visibility="gone" />
 
 </RelativeLayout>
