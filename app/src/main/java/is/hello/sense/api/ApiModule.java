@@ -185,7 +185,4 @@ public class ApiModule {
         return adapter.create(ApiService.class);
     }
 
-    @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context) {
-        return Picasso.with(context);
-    }
 }
