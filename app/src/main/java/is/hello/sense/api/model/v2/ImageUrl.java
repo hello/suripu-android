@@ -1,13 +1,12 @@
 package is.hello.sense.api.model.v2;
 
 
-import android.content.Context;
+import android.content.res.Resources;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.util.ImageLoader;
 
 public class ImageUrl extends ApiResponse {
 
@@ -20,14 +19,15 @@ public class ImageUrl extends ApiResponse {
     @SerializedName("phone_3x")
     private String phone3x;
 
-    public String getUrl(Context context){
-        int size = ImageLoader.getScreenDenisty(context);
-        if (size == ImageLoader.MEDIUM){
-            return phone2x;
-        }else if (size == ImageLoader.LARGE){
+    public String getUrl(@NonNull Resources resources){
+        final float density = resources.getDisplayMetrics().density;
+        if (density >= 3f) {
             return phone3x;
+        } else if (density >= 1.5f) {
+            return phone2x;
+        } else {
+            return phone1x;
         }
-        return phone1x;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -24,8 +22,6 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
@@ -44,17 +40,19 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     private final LayoutInflater inflater;
     private final DateFormatter dateFormatter;
     private final InteractionListener interactionListener;
+    private final Picasso picasso;
 
     private @Nullable List<Insight> insights;
     private Question currentQuestion;
-    @Inject Picasso picasso;
 
 
     public InsightsAdapter(@NonNull Context context,
                            @NonNull DateFormatter dateFormatter,
-                           @NonNull InteractionListener interactionListener) {
+                           @NonNull InteractionListener interactionListener,
+                           @NonNull Picasso picasso) {
         this.context = context;
         this.dateFormatter = dateFormatter;
+        this.picasso = picasso;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
     }
@@ -248,7 +246,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.imageAperture = (FrameLayout) view.findViewById(R.id.item_insight_frame);
 
             view.setOnClickListener(this);
-            Views.runWhenLaidOut(itemView, InsightViewHolder.this::onLaidOut);
+
+            Views.runWhenLaidOut(itemView, this::onLaidOut);
         }
 
         @Override
@@ -262,12 +261,12 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             } else {
                 CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
                 date.setText(insightDate);
-                String url = insight.getImageUrl(context);
+                String url = insight.getImageUrl(context.getResources());
                 if (url == null) {
                     progressBar.setVisibility(View.GONE);
                 } else {
-                    picasso.with(context)
-                           .load(url)
+                    picasso.load(url)
+                           .fit()
                            .into(image, new Callback() {
                                @Override
                                public void onSuccess() {

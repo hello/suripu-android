@@ -1,8 +1,9 @@
 package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
-import android.view.View;
 import android.widget.FrameLayout;
+
+import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -14,7 +15,6 @@ import java.util.List;
 
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.api.model.v2.ImageUrl;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.DateFormatter;
@@ -34,7 +34,8 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Before
     public void setUp() {
-        this.adapter = new InsightsAdapter(getContext(), dateFormatter, listener);
+        this.adapter = new InsightsAdapter(getContext(), dateFormatter,
+                                           listener, Picasso.with(getContext()));
     }
 
     @After

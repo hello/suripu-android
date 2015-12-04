@@ -1,6 +1,6 @@
 package is.hello.sense.api.model;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
@@ -87,10 +87,12 @@ public class Insight extends ApiResponse {
         return infoPreview;
     }
 
-    public String getImageUrl(Context context) {
-        if (imageUrl == null)
+    public String getImageUrl(@NonNull Resources resources) {
+        if (imageUrl == null) {
             return null;
-        return imageUrl.getUrl(context);
+        } else {
+            return imageUrl.getUrl(resources);
+        }
     }
 
     @Override

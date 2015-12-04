@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -51,6 +53,7 @@ public class InsightsFragment extends UndersideTabFragment
     @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject QuestionsPresenter questionsPresenter;
+    @Inject Picasso picasso;
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -90,7 +93,7 @@ public class InsightsFragment extends UndersideTabFragment
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
         recyclerView.setItemAnimator(null);
 
-        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
+        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
 
         return view;

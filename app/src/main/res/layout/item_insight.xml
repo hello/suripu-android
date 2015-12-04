@@ -8,15 +8,6 @@
     android:background="@color/insight_card_background"
     android:orientation="vertical">
 
-
-    <ProgressBar
-        android:id="@+id/item_insight_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/gap_xlarge"
-        android:layout_marginTop="@dimen/gap_xlarge"/>
-
     <FrameLayout
         android:id="@+id/item_insight_frame"
         android:layout_width="match_parent"
@@ -28,6 +19,12 @@
             android:layout_height="wrap_content"
             android:importantForAccessibility="no"
             android:scaleType="centerCrop"/>
+
+        <ProgressBar
+            android:id="@+id/item_insight_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
 
     </FrameLayout>
 
@@ -78,7 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="right"
+                android:gravity="end"
                 android:textAllCaps="true"
                 android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
         </LinearLayout>

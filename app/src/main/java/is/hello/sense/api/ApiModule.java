@@ -12,8 +12,6 @@ import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Request;
-import com.squareup.picasso.RequestHandler;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -22,7 +20,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -137,9 +134,8 @@ public class ApiModule {
 
     @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context,
                                                 @NonNull OkHttpClient client){
-        Picasso.Builder builder = new Picasso.Builder(context);
+        final Picasso.Builder builder = new Picasso.Builder(context);
         builder.downloader(new OkHttpDownloader(client));
-        Picasso.setSingletonInstance(Picasso.with(context));
         return builder.build();
     }
 
