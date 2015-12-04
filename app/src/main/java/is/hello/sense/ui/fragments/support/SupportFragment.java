@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.support;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,10 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.EnumSet;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 
 public class SupportFragment extends SenseFragment {
@@ -22,8 +27,13 @@ public class SupportFragment extends SenseFragment {
 
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.static_recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     EnumSet.of(ScrollEdge.TOP)));
 
         final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final InsetItemDecoration decoration = new InsetItemDecoration();

@@ -18,7 +18,7 @@
         android:layout_above="@id/fragment_dialog_insight_info_done"
         style="@style/Divider.Horizontal" />
 
-    <ScrollView
+    <is.hello.sense.ui.widget.ExtendedScrollView
         android:id="@+id/fragment_dialog_insight_info_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -78,14 +78,23 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </is.hello.sense.ui.widget.ExtendedScrollView>
 
     <ImageView
-        android:id="@+id/fragment_dialog_insight_info_button_shadow"
+        android:id="@+id/fragment_dialog_insight_info_top_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/shadow_top_down"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/fragment_dialog_insight_info_bottom_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/fragment_dialog_insight_info_done_divider"
-        android:src="@drawable/shadow_top"
+        android:src="@drawable/shadow_bottom_up"
         android:scaleType="fitXY"
         android:importantForAccessibility="no"
         android:visibility="gone"/>

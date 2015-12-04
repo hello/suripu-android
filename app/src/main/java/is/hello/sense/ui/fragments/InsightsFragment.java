@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -79,10 +81,14 @@ public class InsightsFragment extends UndersideTabFragment
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new CardItemDecoration(resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
         recyclerView.setAdapter(insightsAdapter);

@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
@@ -46,17 +48,21 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_trends, container, false);
+        final View view = inflater.inflate(R.layout.fragment_trends, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(trendsPresenter::update);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_trends_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_trends_recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
         recyclerView.setItemAnimator(null);
+
+        final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new CardItemDecoration(resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
 
         this.trendsAdapter = new TrendsAdapter(getActivity());
         trendsAdapter.setOnTrendOptionSelected(this);
@@ -118,6 +124,8 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     @Override
     public void onTrendOptionSelected(int trendIndex, @NonNull String option) {
         swipeRefreshLayout.setRefreshing(true);
-        bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option), Functions.NO_OP, this::presentError);
+        bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option),
+                         Functions.NO_OP,
+                         this::presentError);
     }
 }

@@ -18,11 +18,9 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -34,13 +32,15 @@ import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
-public class InsightInfoDialogFragment extends InjectionDialogFragment implements Target {
+public class InsightInfoDialogFragment extends InjectionDialogFragment
+        implements Target, ExtendedScrollView.OnScrollListener {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
 
     private static final String ARG_TITLE = InsightInfoDialogFragment.class.getName() + ".ARG_TITLE";
@@ -55,6 +55,8 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
     private CharSequence message;
     private CharSequence info;
 
+    private ExtendedScrollView scrollView;
+    private ImageView topShadow, bottomShadow;
     private ImageView illustrationImage;
     private ValueAnimator loadedAnimator;
 
@@ -128,19 +130,11 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
             dismissAllowingStateLoss();
         });
 
-        final ScrollView scrollView =
-                (ScrollView) dialog.findViewById(R.id.fragment_dialog_insight_info_scroll);
-        final ViewGroup content =
-                (ViewGroup) dialog.findViewById(R.id.fragment_dialog_insight_info_content);
-        final ImageView doneButtonShadow =
-                (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_button_shadow);
-        Views.runWhenLaidOut(scrollView, () -> {
-            if (content.getMeasuredHeight() > scrollView.getMeasuredHeight()) {
-                doneButtonShadow.setVisibility(View.VISIBLE);
-            } else {
-                doneButtonShadow.setVisibility(View.GONE);
-            }
-        });
+        this.topShadow = (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_top_shadow);
+        this.bottomShadow = (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_bottom_shadow);
+
+        this.scrollView = (ExtendedScrollView) dialog.findViewById(R.id.fragment_dialog_insight_info_scroll);
+        scrollView.setOnScrollListener(this);
 
         if (!TextUtils.isEmpty(imageUrl)) {
             picasso.load(imageUrl)
@@ -163,6 +157,8 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
 
     //endregion
 
+
+    //region Utilities
 
     private Spanned addEmphasisFormatting(@Nullable MarkupString source) {
         if (source == null) {
@@ -195,6 +191,11 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
     private static @ColorInt int getStatusBarColor(@NonNull Bitmap bitmap) {
         return Drawing.darkenColorBy(bitmap.getPixel(0, 0), 0.2f);
     }
+
+    //endregion
+
+
+    //region Bitmap Loading
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -254,4 +255,27 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment implement
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
     }
+
+    //endregion
+
+
+    //region Scroll handling
+
+    @Override
+    public void onScrollChanged(int scrollX, int scrollY,
+                                int oldScrollX, int oldScrollY) {
+        if (scrollY >= illustrationImage.getMeasuredHeight()) {
+            topShadow.setVisibility(View.VISIBLE);
+        } else {
+            topShadow.setVisibility(View.GONE);
+        }
+
+        if (scrollView.canScrollVertically(1)) {
+            bottomShadow.setVisibility(View.VISIBLE);
+        } else {
+            bottomShadow.setVisibility(View.GONE);
+        }
+    }
+
+    //endregion
 }
