@@ -21,4 +21,13 @@
         android:layout_gravity="center"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/list_view_static_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
+        android:visibility="gone" />
+
 </FrameLayout>

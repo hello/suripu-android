@@ -68,7 +68,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         trackError(message.toString(), errorType, contextInfo, operation);
 
         if (getTargetFragment() != null) {
-            dialog.setNegativeButton(android.R.string.ok, (ignored, which) -> {
+            dialog.setPositiveButton(android.R.string.ok, (ignored, which) -> {
                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, null);
             });
         } else {
