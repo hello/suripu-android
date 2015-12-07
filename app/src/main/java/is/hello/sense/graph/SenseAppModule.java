@@ -52,7 +52,6 @@ import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
-import is.hello.sense.util.ApkUpdateReceiver;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
@@ -106,9 +105,6 @@ import is.hello.sense.zendesk.ZendeskModule;
         SmartAlarmDetailFragment.class,
         SmartAlarmSoundDialogFragment.class,
         SmartAlarmPresenter.class,
-
-        ApkUpdateReceiver.class,
-
     }
 )
 @SuppressWarnings("UnusedDeclaration")
