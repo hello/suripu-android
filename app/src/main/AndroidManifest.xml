@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="is.hello.sense">
+          package="is.hello.sense">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -88,12 +88,9 @@
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
 
-        <activity
-            android:name="com.mixpanel.android.surveys.SurveyActivity" />
-
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="f464ccd280d3e5730dcdaa9b64d1d108694ee9a9"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <meta-data
             android:name="com.bugsnag.android.API_KEY"
