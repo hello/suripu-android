@@ -44,7 +44,7 @@ public class LaunchActivity extends InjectionActivity {
 
         if (sessionManager.getSession() != null) {
             String accountId = sessionManager.getSession().getAccountId();
-            Analytics.trackUserIdentifier(accountId);
+            Analytics.trackUserIdentifier(this, accountId, true);
         }
     }
 

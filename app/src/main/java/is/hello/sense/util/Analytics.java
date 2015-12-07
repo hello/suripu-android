@@ -30,9 +30,7 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
-    private static
-    @Nullable
-    Context context;
+    private static @Nullable Context context;
 
     public interface Global {
 
@@ -40,11 +38,6 @@ public class Analytics {
          * iOS | android
          */
         String GLOBAL_PROP_PLATFORM = "Platform";
-
-        /**
-         * The actual Name of the user that was set upon registration
-         */
-        String GLOBAL_PROP_NAME = "Name";
 
         /**
          * The account id of the user
@@ -475,7 +468,9 @@ public class Analytics {
 
     public static void initialize(@NonNull Context context) {
         Analytics.context = context;
-        com.segment.analytics.Analytics.Builder builder = new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
+
+        final com.segment.analytics.Analytics.Builder builder =
+                new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
         if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
@@ -486,12 +481,8 @@ public class Analytics {
     public static void onResume(@NonNull Activity activity) {
     }
 
-    @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        if (context == null){
-            return;
-        }
-        com.segment.analytics.Analytics.with(context).flush();
+        com.segment.analytics.Analytics.with(activity).flush();
     }
 
     //endregion
@@ -499,67 +490,71 @@ public class Analytics {
 
     //region User Identity
 
-    public static void trackUserIdentifier(@NonNull String userId) {
-        Logger.info(Analytics.LOG_TAG, "Began session for " + userId);
+    public static void trackUserIdentifier(@NonNull Context context,
+                                           @NonNull String accountId,
+                                           boolean includeSegment) {
+        Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
 
         if (!SenseApplication.isRunningInRobolectric()) {
-            Bugsnag.setUserId(userId);
+            Bugsnag.setUserId(accountId);
+            if (includeSegment) {
+                com.segment.analytics.Analytics.with(context).identify(accountId);
+            }
         }
     }
 
-    public static void trackRegistration(@Nullable String accountId, @Nullable final String name, @Nullable final String email, @NonNull final DateTime created) {
-        Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId + "', name: '" + name + "', email: '" + email + "', created: '" + created + "' }");
-        if (context == null){
+    public static void trackRegistration(@NonNull String accountId,
+                                         @Nullable final String name,
+                                         @Nullable final String email,
+                                         @NonNull final DateTime created) {
+        Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId +
+                "', name: '" + name + "', email: '" + email + "', created: '" + created + "' }");
+        if (context == null) {
             return;
-        }
-
-        if (accountId == null) {
-            accountId = "";
         }
 
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
         com.segment.analytics.Analytics.with(context).alias(accountId);
 
 
-        Traits traits = new Traits();
-        traits.putName(name);
+        final Traits traits = new Traits();
         traits.putCreatedAt(created.toString());
         traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
         traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        traits.putName(name);
         traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
 
         com.segment.analytics.Analytics.with(context).identify(traits);
-        trackUserIdentifier(accountId);
+        trackUserIdentifier(context, accountId, false);
     }
 
-    public static void trackSignIn(@NonNull final String accountId, @Nullable  String name, @Nullable  String email) {
-        if (context == null){
+    public static void trackSignIn(@NonNull final String accountId,
+                                   @Nullable String name,
+                                   @Nullable String email) {
+        if (context == null) {
             return;
         }
-        if (name == null) {
-            name = "";
-        }
-        if (email == null) {
-            email = "";
-        }
 
-        com.segment.analytics.Analytics.with(context).identify(accountId);
+        trackUserIdentifier(context, accountId, true);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        Traits traits = new Traits();
-        traits.putName(name);
+        final Traits traits = new Traits();
         traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
         traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
 
-       // com.segment.analytics.Analytics.with(context).alias(accountId); not working. Skipping
+        if (name != null) {
+            traits.putName(name);
+        }
+
+        if (email != null) {
+            traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
+        }
+
         com.segment.analytics.Analytics.with(context).identify(traits);
-
-        trackUserIdentifier(accountId);
     }
 
     public static void signOut() {
-        if (context == null){
+        if (context == null) {
             return;
         }
 
@@ -568,24 +563,24 @@ public class Analytics {
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-        if (context == null){
+        if (context == null) {
             return;
         }
 
-        Traits traits = new Traits();
+        final Traits traits = new Traits();
         traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
         com.segment.analytics.Analytics.with(context).identify(traits);
 
-        Context context = SenseApplication.getInstance();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final Context context = SenseApplication.getInstance();
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit()
                    .putString(PreferencesPresenter.PAIRED_SENSE_ID, senseId)
                    .apply();
     }
 
     public static String getSenseId() {
-        Context context = SenseApplication.getInstance();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final Context context = SenseApplication.getInstance();
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getString(PreferencesPresenter.PAIRED_SENSE_ID, "");
     }
 
@@ -594,14 +589,12 @@ public class Analytics {
 
     //region Events
 
-    public static
-    @NonNull
-    Properties createProperties(@NonNull Object... pairs) {
+    public static @NonNull Properties createProperties(@NonNull Object... pairs) {
         if ((pairs.length % 2) != 0) {
             throw new IllegalArgumentException("even number of arguments required");
         }
 
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         for (int i = 0; i < pairs.length; i += 2) {
             properties.put(pairs[i].toString(), pairs[i + 1]);
         }
@@ -613,25 +606,25 @@ public class Analytics {
                 connectionState == BluetoothAdapter.STATE_CONNECTED);
     }
 
-    public static
-    @NonNull
-    Properties createBluetoothTrackingProperties(@NonNull Context context) {
+    public static @NonNull Properties createBluetoothTrackingProperties(@NonNull Context context) {
         int bondedCount = 0,
-                connectedCount = 0;
+            connectedCount = 0;
 
         boolean headsetConnected = false,
                 a2dpConnected = false,
                 healthConnected = false;
 
-        BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager != null) {
-            BluetoothAdapter adapter = bluetoothManager.getAdapter();
+            final BluetoothAdapter adapter = bluetoothManager.getAdapter();
 
             if (adapter != null && adapter.isEnabled()) {
-                Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
+                final Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
                 bondedCount = bondedDevices.size();
                 for (BluetoothDevice bondedDevice : bondedDevices) {
-                    int gattConnectionState = bluetoothManager.getConnectionState(bondedDevice, BluetoothProfile.GATT);
+                    final int gattConnectionState =
+                            bluetoothManager.getConnectionState(bondedDevice, BluetoothProfile.GATT);
                     if (isConnected(gattConnectionState)) {
                         connectedCount++;
                     }
@@ -643,17 +636,15 @@ public class Analytics {
             }
         }
 
-        return createProperties(
-                Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
-                Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
-                Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
-                Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
-                Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected
-                               );
+        return createProperties(Global.PROP_BLUETOOTH_PAIRED_DEVICE_COUNT, bondedCount,
+                                Global.PROP_BLUETOOTH_CONNECTED_DEVICE_COUNT, connectedCount,
+                                Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
+                                Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
+                                Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected);
     }
 
     public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
-        if (context == null){
+        if (context == null) {
             return;
         }
         com.segment.analytics.Analytics.with(context).track(event, properties);
@@ -665,18 +656,16 @@ public class Analytics {
                                   @Nullable String errorType,
                                   @Nullable String errorContext,
                                   @Nullable String errorOperation) {
-        Properties properties = createProperties(
-                Global.PROP_ERROR_MESSAGE, message,
-                Global.PROP_ERROR_TYPE, errorType,
-                Global.PROP_ERROR_CONTEXT, errorContext,
-                Global.PROP_ERROR_OPERATION, errorOperation
-                                                );
+        final Properties properties = createProperties(Global.PROP_ERROR_MESSAGE, message,
+                                                       Global.PROP_ERROR_TYPE, errorType,
+                                                       Global.PROP_ERROR_CONTEXT, errorContext,
+                                                       Global.PROP_ERROR_OPERATION, errorOperation);
         trackEvent(Global.EVENT_ERROR, properties);
     }
 
     public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
-        StringRef message = Errors.getDisplayMessage(e);
-        String messageString;
+        final StringRef message = Errors.getDisplayMessage(e);
+        final String messageString;
         if (message != null && SenseApplication.getInstance() != null) {
             messageString = message.resolve(SenseApplication.getInstance());
         } else {
