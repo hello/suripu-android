@@ -28,10 +28,10 @@
             android:id="@+id/item_insight_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_medium"
-            android:layout_marginRight="@dimen/gap_medium"
+            android:layout_marginLeft="@dimen/gap_xsmall"
+            android:layout_marginRight="@dimen/gap_xsmall"
             android:lineSpacingMultiplier="@dimen/line_multiple_body"
-            android:textAppearance="@style/AppTheme.Text.Body"/>
+            android:textAppearance="@style/AppTheme.Text.Body.New"/>
 
         <View
             android:id="@+id/item_insight_preview_divider"
