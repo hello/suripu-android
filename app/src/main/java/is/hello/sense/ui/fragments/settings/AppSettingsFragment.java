@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +78,8 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_COMPLETED, null); // never hit
+        super.onActivityResult(requestCode, resultCode, data);
+        Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_COMPLETED, null);
     }
 
     private void showDeviceList(@NonNull View ignored) {
@@ -100,6 +102,6 @@ public class AppSettingsFragment extends UndersideTabFragment {
         Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_TAPPED, null);
         Share.text(getString(R.string.tell_a_friend_body))
              .withSubject(getString(R.string.tell_a_friend_subject))
-             .sendForResult(getActivity(), SHARE_CODE);
+             .sendForResult(this, SHARE_CODE);
     }
 }

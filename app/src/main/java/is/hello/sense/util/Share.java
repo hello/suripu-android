@@ -1,6 +1,7 @@
 package is.hello.sense.util;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -37,7 +38,7 @@ public abstract class Share {
     }
 
     public abstract void send(@NonNull Activity from);
-    public abstract void sendForResult(@NonNull Activity from, int requestCode) throws Exception;
+    public abstract void sendForResult(@NonNull Fragment from, int requestCode) throws Exception;
 
     //endregion
 
@@ -80,7 +81,7 @@ public abstract class Share {
         }
 
         @Override
-        public void sendForResult(@NonNull Activity from, int requestCode){
+        public void sendForResult(@NonNull Fragment from, int requestCode){
             from.startActivityForResult(Intent.createChooser(intent, from.getString(R.string.action_share)), requestCode);
         }
     }
@@ -107,7 +108,7 @@ public abstract class Share {
         }
 
         @Override
-        public void sendForResult(@NonNull Activity from, int requestCode) throws Exception {
+        public void sendForResult(@NonNull Fragment from, int requestCode) throws Exception {
             throw new Exception("sendForResult() method not implemented yet");
         }
 
@@ -196,7 +197,7 @@ public abstract class Share {
         }
 
         @Override
-        public void sendForResult(@NonNull Activity from, int requestCode) throws Exception {
+        public void sendForResult(@NonNull Fragment from, int requestCode) throws Exception {
             throw new Exception("sendForResult method not implemented yet");
         }
     }
