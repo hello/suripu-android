@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<is.hello.sense.ui.widget.RoundedLinearLayout
     style="@style/AppTheme.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -66,4 +66,4 @@
         </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>
