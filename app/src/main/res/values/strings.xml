@@ -405,6 +405,7 @@
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
     <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
+    <string name="tutorial_tap_insight_card">Tap insight cards for more info.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>

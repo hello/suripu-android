@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -40,6 +41,8 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
@@ -61,6 +64,8 @@ public class InsightsFragment extends UndersideTabFragment
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
+
+    private @Nullable TutorialOverlayView tutorialOverlayView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,6 +134,11 @@ public class InsightsFragment extends UndersideTabFragment
     public void onDestroyView() {
         super.onDestroyView();
 
+        if (tutorialOverlayView != null) {
+            tutorialOverlayView.dismiss(false);
+            this.tutorialOverlayView = null;
+        }
+
         insightsPresenter.unbindScope();
         this.insightsAdapter = null;
         this.swipeRefreshLayout = null;
@@ -166,6 +176,7 @@ public class InsightsFragment extends UndersideTabFragment
         }
 
         Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
+        Tutorial.TAP_INSIGHT_CARD.markShown(getActivity());
 
         // InsightsFragment lives inside of a child fragment manager,
         // which we don't want to use to display dialogs.
@@ -206,12 +217,22 @@ public class InsightsFragment extends UndersideTabFragment
         updateQuestion();
     }
 
-    private void bindInsights(@NonNull List<Insight> insights){
+    private void bindInsights(@NonNull List<Insight> insights) {
         progressBar.setVisibility(View.GONE);
         insightsAdapter.bindInsights(insights);
+
+        final Activity activity = getActivity();
+        if (tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
+            this.tutorialOverlayView = new TutorialOverlayView(activity,
+                                                               Tutorial.TAP_INSIGHT_CARD);
+            tutorialOverlayView.setOnDismiss(() -> {
+                this.tutorialOverlayView = null;
+            });
+            tutorialOverlayView.postShow(R.id.activity_home_container);
+        }
     }
 
-    private void insightsUnavailable(@Nullable Throwable e){
+    private void insightsUnavailable(@Nullable Throwable e) {
         progressBar.setVisibility(View.GONE);
         insightsAdapter.insightsUnavailable(e);
     }

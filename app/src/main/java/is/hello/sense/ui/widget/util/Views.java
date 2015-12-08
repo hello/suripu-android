@@ -13,11 +13,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import is.hello.buruberi.util.Rx;
 import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.StateSafeExecutor;
-import rx.Observable;
-import rx.subscriptions.Subscriptions;
 
 public final class Views {
     /**
@@ -97,26 +94,6 @@ public final class Views {
      */
     public static int getCenterX(@NonNull View view) {
         return (view.getLeft() + view.getRight()) / 2;
-    }
-
-    /**
-     * A one time signal that will notify observers of a given view's next global layout event.
-     *
-     * @deprecated You probably want {@link Views#runWhenLaidOut(View, Runnable)} instead.
-     */
-    @Deprecated
-    public static <T extends View> Observable<T> observeNextLayout(@NonNull T view) {
-        return Observable.create((Observable.OnSubscribe<T>) s -> {
-            ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    s.onNext(view);
-                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            };
-            s.add(Subscriptions.create(() -> view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)));
-            view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
-        }).subscribeOn(Rx.mainThreadScheduler());
     }
 
     /**
