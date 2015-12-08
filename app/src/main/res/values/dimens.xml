@@ -20,7 +20,7 @@
     <dimen name="gap_card_inter">8dp</dimen>
     <dimen name="parallax_clip">30dp</dimen>
 
-    <!-- Text -->108662392
+    <!-- Text -->
 
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_size_body_mid_sized">14sp</dimen>
