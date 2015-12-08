@@ -19,6 +19,9 @@ import retrofit.http.Path;
 import rx.Observable;
 
 public class NonsenseTimelineService implements TimelineService {
+    public static final String NET_SERVICE_NAME = "nonsense-server";
+    public static final String NET_SERVICE_TYPE = "_http._tcp.";
+
     private final TimelineService delegate;
     private final String host;
 
@@ -66,5 +69,12 @@ public class NonsenseTimelineService implements TimelineService {
                                                         @Path("timestamp") long timestamp,
                                                         @NonNull @Body String stupidOkHttp) {
         return Observable.error(new InvalidObjectException("Amendment not supported in nonsense mode"));
+    }
+
+    @Override
+    public String toString() {
+        return "NonsenseTimelineService{" +
+                "host='" + host + '\'' +
+                '}';
     }
 }
