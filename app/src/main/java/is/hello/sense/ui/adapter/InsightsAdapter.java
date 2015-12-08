@@ -166,6 +166,13 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
     }
 
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            ((BaseViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i))).unbind();
+        }
+    }
     //endregion
 
 
