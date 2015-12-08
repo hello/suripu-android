@@ -206,12 +206,12 @@ public class InsightsFragment extends UndersideTabFragment
         updateQuestion();
     }
 
-    private void bindInsights(List<Insight> insights){
+    private void bindInsights(@NonNull List<Insight> insights){
         progressBar.setVisibility(View.GONE);
         insightsAdapter.bindInsights(insights);
     }
 
-    private void insightsUnavailable(Throwable e){
+    private void insightsUnavailable(@Nullable Throwable e){
         progressBar.setVisibility(View.GONE);
         insightsAdapter.insightsUnavailable(e);
     }
@@ -221,13 +221,13 @@ public class InsightsFragment extends UndersideTabFragment
 
     //region Questions
 
-    private void bindQuestion(Question question){
+    private void bindQuestion(@Nullable Question question){
         progressBar.setVisibility(View.GONE);
         insightsAdapter.bindQuestion(question);
     }
 
 
-    private void questionUnavailable(Throwable e){
+    private void questionUnavailable(@Nullable Throwable e){
         progressBar.setVisibility(View.GONE);
         insightsAdapter.questionUnavailable(e);
     }

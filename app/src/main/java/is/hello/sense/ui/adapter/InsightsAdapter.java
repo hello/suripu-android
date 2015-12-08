@@ -67,7 +67,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void questionUnavailable(Throwable e) {
+    public void questionUnavailable(@Nullable Throwable e) {
         Analytics.trackError(e, "Loading questions");
         Logger.error(getClass().getSimpleName(), "Could not load questions", e);
 
@@ -86,7 +86,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(Throwable e) {
+    public void insightsUnavailable(@Nullable Throwable e) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 
