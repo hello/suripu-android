@@ -16,11 +16,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.Question;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -28,6 +34,7 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
@@ -49,9 +56,11 @@ public class InsightsFragment extends UndersideTabFragment
     @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject QuestionsPresenter questionsPresenter;
+    @Inject Picasso picasso;
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,18 +88,21 @@ public class InsightsFragment extends UndersideTabFragment
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(this);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
-
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
+        progressBar = (ProgressBar)view.findViewById(R.id.fragment_insights_progress);
 
         final Resources resources = getResources();
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
+        final int cardMargin = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new CardItemDecoration(cardMargin, cardMargin, resources.getDimensionPixelSize(R.dimen.gap_card_inter)));
+        recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
+        recyclerView.setItemAnimator(null);
+
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new CardItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
 
-        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
+        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
 
         return view;
@@ -105,12 +117,12 @@ public class InsightsFragment extends UndersideTabFragment
         // we actually merge the endpoints on the backend.
 
         bindAndSubscribe(insightsPresenter.insights,
-                         insightsAdapter::bindInsights,
-                         insightsAdapter::insightsUnavailable);
+                         this::bindInsights,
+                         this::insightsUnavailable);
 
         bindAndSubscribe(questionsPresenter.question,
-                         insightsAdapter::bindQuestion,
-                         insightsAdapter::questionUnavailable);
+                         this::bindQuestion,
+                         this::questionUnavailable);
     }
 
     @Override
@@ -158,14 +170,14 @@ public class InsightsFragment extends UndersideTabFragment
         // InsightsFragment lives inside of a child fragment manager,
         // which we don't want to use to display dialogs.
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
+        final String imageUrl = insight.getImageUrl(getResources());
         if (insight.hasInfo()) {
             insightsAdapter.setLoadingInsightPosition(position);
             bindAndSubscribe(insightsPresenter.infoForInsight(insight), insightInfo -> {
                 final InsightInfoDialogFragment infoFragment =
                         InsightInfoDialogFragment.newInstance(insight.getTitle(),
                                                               insight.getMessage(),
-                                                              // Replace this with the new image API
-                                                              insightInfo.getImageUrl(),
+                                                              imageUrl,
                                                               insightInfo.getText());
                 infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
 
@@ -181,8 +193,7 @@ public class InsightsFragment extends UndersideTabFragment
             final InsightInfoDialogFragment infoFragment =
                     InsightInfoDialogFragment.newInstance(insight.getTitle(),
                                                           insight.getMessage(),
-                                                          // Replace this with the new image API
-                                                          null,
+                                                          imageUrl,
                                                           null);
             infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
         }
@@ -195,10 +206,31 @@ public class InsightsFragment extends UndersideTabFragment
         updateQuestion();
     }
 
+    private void bindInsights(@NonNull List<Insight> insights){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.bindInsights(insights);
+    }
+
+    private void insightsUnavailable(@Nullable Throwable e){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.insightsUnavailable(e);
+    }
+
     //endregion
 
 
     //region Questions
+
+    private void bindQuestion(@Nullable Question question){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.bindQuestion(question);
+    }
+
+
+    private void questionUnavailable(@Nullable Throwable e){
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.questionUnavailable(e);
+    }
 
     public void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> {

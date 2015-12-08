@@ -5,12 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 
@@ -22,6 +23,7 @@ import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -35,16 +37,20 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     private final LayoutInflater inflater;
     private final DateFormatter dateFormatter;
     private final InteractionListener interactionListener;
+    private final Picasso picasso;
 
     private @Nullable List<Insight> insights;
     private Question currentQuestion;
     private int loadingInsightPosition = RecyclerView.NO_POSITION;
 
+
     public InsightsAdapter(@NonNull Context context,
                            @NonNull DateFormatter dateFormatter,
-                           @NonNull InteractionListener interactionListener) {
+                           @NonNull InteractionListener interactionListener,
+                           @NonNull Picasso picasso) {
         this.context = context;
         this.dateFormatter = dateFormatter;
+        this.picasso = picasso;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
     }
@@ -61,7 +67,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void questionUnavailable(Throwable e) {
+    public void questionUnavailable(@Nullable Throwable e) {
         Analytics.trackError(e, "Loading questions");
         Logger.error(getClass().getSimpleName(), "Could not load questions", e);
 
@@ -80,7 +86,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(Throwable e) {
+    public void insightsUnavailable(@Nullable Throwable e) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
 
@@ -132,7 +138,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         if (currentQuestion != null) {
             count++;
         }
-        
+
         return count;
     }
 
@@ -159,11 +165,17 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
     }
 
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            ((BaseViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i))).unbind();
+        }
+    }
     //endregion
 
 
     //region Views
-
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -187,13 +199,24 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         holder.bind(position);
     }
 
+    @Override
+    public void onViewRecycled(BaseViewHolder holder) {
+        holder.unbind();
+    }
 
-    abstract class BaseViewHolder extends RecyclerView.ViewHolder {
+    abstract class BaseViewHolder extends ParallaxRecyclerViewHolder {
         BaseViewHolder(@NonNull View itemView) {
             super(itemView);
         }
 
         abstract void bind(int position);
+        void unbind() {
+        }
+
+        @Override
+        public void setParallaxPercent(float percent) {
+
+        }
     }
 
     class QuestionViewHolder extends BaseViewHolder {
@@ -210,6 +233,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             final Button answer = (Button) view.findViewById(R.id.sub_fragment_new_question_answer);
             Views.setSafeOnClickListener(answer, this::answer);
         }
+
 
         void skip(@NonNull View ignored) {
             interactionListener.onSkipQuestion();
@@ -228,16 +252,16 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
-        final View previewDivider;
-        final TextView preview;
+        final TextView category;
+        final ParallaxImageView image;
 
         InsightViewHolder(@NonNull View view) {
             super(view);
 
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
-            this.previewDivider = view.findViewById(R.id.item_insight_preview_divider);
-            this.preview = (TextView) view.findViewById(R.id.item_insight_preview);
+            this.category = (TextView) view.findViewById(R.id.item_insight_category);
+            this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
 
             view.setOnClickListener(this);
         }
@@ -245,22 +269,22 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         @Override
         void bind(int position) {
             final Insight insight = getInsightItem(position);
-
             final DateTime insightCreated = insight.getCreated();
             if (insightCreated == null && Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
                 date.setText(R.string.dialog_error_title);
+                image.setVisibility(View.GONE);
             } else {
                 final CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
                 date.setText(insightDate);
-            }
-
-            if (!TextUtils.isEmpty(insight.getInfoPreview())) {
-                previewDivider.setVisibility(View.VISIBLE);
-                preview.setVisibility(View.VISIBLE);
-                preview.setText(insight.getInfoPreview());
-            } else {
-                previewDivider.setVisibility(View.GONE);
-                preview.setVisibility(View.GONE);
+                final String url = insight.getImageUrl(context.getResources());
+                if (url != null) {
+                    picasso.load(url).into(image);
+                } else {
+                    picasso.cancelRequest(image);
+                    image.setDrawable(null);
+                }
+                image.setVisibility(View.VISIBLE);
+                category.setText(insight.getFormattedInsightCategory());
             }
 
             body.setText(insight.getMessage());
@@ -274,6 +298,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             }
         }
 
+        @Override
+        void unbind() {
+            image.clearAnimation();
+            image.setDrawable(null);
+        }
 
         @Override
         public void onClick(View ignored) {
@@ -287,6 +316,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 interactionListener.onInsightClicked(adapterPosition, insight);
             }
         }
+
+        @Override
+        public void setParallaxPercent(float percent) {
+            image.setParallaxPercent(percent);
+        }
     }
 
     //endregion
@@ -298,4 +332,5 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onAnswerQuestion();
         void onInsightClicked(int position, @NonNull Insight insight);
     }
+
 }
