@@ -9,13 +9,14 @@ import org.joda.time.LocalTime;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.TimelineService;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
 public class TimelinePresenter extends ValuePresenter<Timeline> {
-    @Inject ApiService service;
+    @Inject TimelineService timelineService;
 
     private LocalDate date;
 
@@ -33,7 +34,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
 
     @Override
     protected Observable<Timeline> provideUpdateObservable() {
-        return service.timelineForDate(date.toString(ApiService.DATE_FORMAT));
+        return timelineService.timelineForDate(date.toString(ApiService.DATE_FORMAT));
     }
 
 
@@ -53,7 +54,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
             String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
             TimelineEvent.TimeAmendment timeAmendment = new TimelineEvent.TimeAmendment(newTime,
                     event.getTimezone().getOffset(event.getShiftedTimestamp()));
-            return service.amendTimelineEventTime(date, event.getType(),
+            return timelineService.amendTimelineEventTime(date, event.getType(),
                     event.getRawTimestamp().getMillis(), timeAmendment)
                     .doOnNext(this.timeline::onNext)
                     .map(ignored -> null);
@@ -63,7 +64,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     public Observable<Void> verifyEvent(@NonNull TimelineEvent event) {
         return latest().flatMap(timeline -> {
             String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
-            return service.verifyTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis(), "")
+            return timelineService.verifyTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis(), "")
                     .map(ignored -> null);
         });
     }
@@ -71,7 +72,7 @@ public class TimelinePresenter extends ValuePresenter<Timeline> {
     public Observable<Void> deleteEvent(@NonNull TimelineEvent event) {
         return latest().flatMap(timeline -> {
             String date = timeline.getDate().toString(ApiService.DATE_FORMAT);
-            return service.deleteTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
+            return timelineService.deleteTimelineEvent(date, event.getType(), event.getRawTimestamp().getMillis())
                     .doOnNext(this.timeline::onNext)
                     .map(ignored -> null);
         });

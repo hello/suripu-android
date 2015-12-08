@@ -8,11 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,15 +35,9 @@ import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.ScoreCondition;
-import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.api.model.v2.TimelineBuilder;
-import is.hello.sense.api.model.v2.TimelineEvent;
-import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.markup.text.MarkupString;
 import retrofit.http.Body;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -149,65 +138,6 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
         return safeJust(new VoidResponse());
-    }
-
-    @Override
-    public Observable<Timeline> timelineForDate(@NonNull @Path("date") String date) {
-        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
-        return safeJust(
-                new TimelineBuilder()
-                        .setDate(dateTime)
-                        .setScore(90, ScoreCondition.IDEAL)
-                        .setMessage(new MarkupString("This is *just* a test."))
-                        .build()
-        );
-    }
-
-
-
-    @Override
-    public Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
-                                                        @NonNull @Path("type") TimelineEvent.Type type,
-                                                        @Path("timestamp") long timestamp,
-                                                        @NonNull @Body String stupidOkHttp) {
-        return safeJust(new VoidResponse());
-    }
-
-    @Override
-    public Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
-                                                       @NonNull @Path("type") TimelineEvent.Type type,
-                                                       @Path("timestamp") long timestamp,
-                                                       @NonNull @Body TimelineEvent.TimeAmendment amendment) {
-        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
-        return safeJust(
-                new TimelineBuilder()
-                        .setDate(dateTime)
-                        .setScore(90, ScoreCondition.IDEAL)
-                        .setMessage(new MarkupString("This is *just* a test."))
-                        .addEvent(new TimelineEventBuilder()
-                                .setType(type)
-                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()).withTime(amendment.newTime))
-                                .build())
-                        .build()
-        );
-    }
-
-    @Override
-    public Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
-                                                    @NonNull @Path("type") TimelineEvent.Type type,
-                                                    @Path("timestamp") long timestamp) {
-        LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
-        return safeJust(
-                new TimelineBuilder()
-                        .setDate(dateTime)
-                        .setScore(90, ScoreCondition.IDEAL)
-                        .setMessage(new MarkupString("This is *just* a test."))
-                        .addEvent(new TimelineEventBuilder()
-                                .setType(type)
-                                .setShiftedTimestamp(new DateTime(timestamp, DateTimeZone.getDefault()))
-                                .build())
-                        .build()
-        );
     }
 
     @Override
@@ -324,7 +254,7 @@ public final class TestApiService implements ApiService {
         return unimplemented();
     }
 
-    private static <T> Observable<T> safeJust(T value) {
+    static <T> Observable<T> safeJust(T value) {
         Observable<T> observable = Observable.create(s -> {
             if (s.isUnsubscribed()) {
                 return;

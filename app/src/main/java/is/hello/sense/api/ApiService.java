@@ -25,8 +25,6 @@ import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -109,32 +107,6 @@ public interface ApiService {
 
     @PUT("/v2/account/preferences")
     Observable<Account.Preferences> updateAccountPreferences(@NonNull @Body Account.Preferences preference);
-
-    //endregion
-
-
-    //region Timeline
-
-    @GET("/v2/timeline/{date}")
-    Observable<Timeline> timelineForDate(@NonNull @Path("date") String date);
-
-    @PATCH("/v2/timeline/{date}/events/{type}/{timestamp}")
-    Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
-                                                @NonNull @Path("type") TimelineEvent.Type type,
-                                                @Path("timestamp") long timestamp,
-                                                @NonNull @Body TimelineEvent.TimeAmendment amendment);
-
-    @DELETE("/v2/timeline/{date}/events/{type}/{timestamp}")
-    Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
-                                             @NonNull @Path("type") TimelineEvent.Type type,
-                                             @Path("timestamp") long timestamp);
-
-    @PUT("/v2/timeline/{date}/events/{type}/{timestamp}")
-    @Headers("Content-Type: application/json")
-    Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
-                                                 @NonNull @Path("type") TimelineEvent.Type type,
-                                                 @Path("timestamp") long timestamp,
-                                                 @NonNull @Body String stupidOkHttp);
 
     //endregion
 

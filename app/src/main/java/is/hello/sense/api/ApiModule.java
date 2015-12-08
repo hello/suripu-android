@@ -172,6 +172,10 @@ public class ApiModule {
         return adapter.create(ApiService.class);
     }
 
+    @Singleton @Provides TimelineService provideTimelineService(@NonNull RestAdapter adapter) {
+        return adapter.create(TimelineService.class);
+    }
+
     @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context) {
         return Picasso.with(context);
     }
