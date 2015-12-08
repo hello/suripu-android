@@ -140,6 +140,8 @@ public class ParallaxImageView extends View implements Target {
     //region Attributes
 
     public void setDrawable(@Nullable Drawable drawable) {
+        clearAnimation();
+
         if (this.drawable != null) {
             this.drawable.setCallback(null);
         }

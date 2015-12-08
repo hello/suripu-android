@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.DimenRes;
@@ -39,7 +40,11 @@ public enum Tutorial {
     SCRUB_SENSOR_HISTORY(R.string.tutorial_scrub_sensor_history,
                          Gravity.TOP,
                          R.id.fragment_sensor_history_graph,
-                         Interaction.SWIPE_LEFT);
+                         Interaction.SWIPE_LEFT),
+    TAP_INSIGHT_CARD(R.string.tutorial_tap_insight_card,
+                     Gravity.BOTTOM,
+                     R.id.item_insight_card,
+                     Interaction.TAP);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;
@@ -61,13 +66,16 @@ public enum Tutorial {
         return "tutorial_" + toString().toLowerCase() + "_shown";
     }
 
-    public boolean shouldShow(@NonNull Context context) {
-        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        return !preferences.getBoolean(getShownKey(), false);
+    public boolean shouldShow(@NonNull Activity activity) {
+        final SharedPreferences preferences =
+                activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        return (!preferences.getBoolean(getShownKey(), false) &&
+                activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null);
     }
 
     public void markShown(@NonNull Context context) {
-        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences =
+                context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         preferences.edit()
                    .putBoolean(getShownKey(), true)
                    .apply();
@@ -77,12 +85,12 @@ public enum Tutorial {
     //region Vending Animations
 
     public static Animator createPulseAnimation(@NonNull View view) {
-        ValueAnimator animator = ValueAnimator.ofFloat(1f, 0.8f, 1f);
+        final ValueAnimator animator = ValueAnimator.ofFloat(1f, 0.8f, 1f);
         animator.setStartDelay(350);
         animator.setDuration(1250);
         animator.setInterpolator(new AnticipateOvershootInterpolator(3.0f, 1.5f));
         animator.addUpdateListener(a -> {
-            float scale = (float) a.getAnimatedValue();
+            final float scale = (float) a.getAnimatedValue();
             view.setScaleX(scale);
             view.setScaleY(scale);
         });
