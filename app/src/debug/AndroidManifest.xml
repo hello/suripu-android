@@ -17,6 +17,12 @@
             android:launchMode="singleTop" />
 
         <activity
+            android:name="is.hello.sense.debug.TimelineSourceActivity"
+            android:theme="@style/AppTheme.Dialog.Simple"
+            android:label="@string/title_timeline_source"
+            android:launchMode="singleTop" />
+
+        <activity
             android:name="net.hockeyapp.android.UpdateActivity" />
 
         <activity

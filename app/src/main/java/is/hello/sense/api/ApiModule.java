@@ -179,4 +179,8 @@ public class ApiModule {
     @Singleton @Provides ApiService provideApiService(@NonNull RestAdapter adapter) {
         return adapter.create(ApiService.class);
     }
+
+    @Singleton @Provides TimelineService provideTimelineService(@NonNull RestAdapter adapter) {
+        return adapter.create(TimelineService.class);
+    }
 }
