@@ -1,48 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedRelativeLayout
+    style="@style/AppTheme.Card.Clickable"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/AppTheme.Card.Clickable"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/item_insight_date"
+    <is.hello.sense.ui.widget.ParallaxImageView
+        android:id="@+id/item_insight_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:layout_marginEnd="@dimen/gap_medium"
-        android:layout_marginStart="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
+        android:background="@color/insight_card_background"/>
 
     <TextView
         android:id="@+id/item_insight_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_medium"
-        android:layout_marginRight="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Body"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+        android:layout_below="@+id/item_insight_image"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_outer"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:textAppearance="@style/AppTheme.Text.Body.New"/>
 
     <View
         android:id="@+id/item_insight_preview_divider"
+        style="@style/Divider.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:layout_marginStart="@dimen/gap_medium"
-        style="@style/Divider.Horizontal" />
+        android:layout_below="@+id/item_insight_body"
+        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"/>
 
     <TextView
-        android:id="@+id/item_insight_preview"
+        android:id="@+id/item_insight_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_medium"
-        android:drawableEnd="@drawable/disclosure_chevron"
-        android:drawablePadding="@dimen/gap_small"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"
-        android:text="@string/app_name"/>
+        android:layout_below="@+id/item_insight_preview_divider"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:textAllCaps="true"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/item_insight_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_insight_preview_divider"
+        android:layout_marginBottom="@dimen/gap_outer_half"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:layout_marginLeft="@dimen/gap_outer"
+        android:layout_marginRight="@dimen/gap_outer"
+        android:textAllCaps="true"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
+
+</is.hello.sense.ui.widget.RoundedRelativeLayout>

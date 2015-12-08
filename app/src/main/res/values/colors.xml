@@ -13,6 +13,7 @@
     <color name="status_bar_illustration">#a9b6c0</color>
 
     <color name="background">#EBEDF0</color>
+    <color name="insight_card_background">#DFE1E6</color>
     <color name="background_light">@color/white</color>
     <color name="background_light_overlay">#99ffffff</color>
     <color name="background_dark_overlay">#80000000</color>

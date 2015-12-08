@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
@@ -131,6 +132,13 @@ public class ApiModule {
         return client;
     }
 
+    @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context,
+                                                @NonNull OkHttpClient client){
+        final Picasso.Builder builder = new Picasso.Builder(context);
+        builder.downloader(new OkHttpDownloader(client));
+        return builder.build();
+    }
+
     @Singleton @Provides RestAdapter provideRestAdapter(@NonNull Gson gson,
                                                         @NonNull OkHttpClient httpClient,
                                                         @NonNull ApiEndpoint endpoint,
@@ -170,9 +178,5 @@ public class ApiModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull RestAdapter adapter) {
         return adapter.create(ApiService.class);
-    }
-
-    @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context) {
-        return Picasso.with(context);
     }
 }

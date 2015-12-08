@@ -1,9 +1,11 @@
 package is.hello.sense.ui.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.FrameLayout;
+
+import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -36,7 +38,11 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Before
     public void setUp() {
-        this.adapter = new InsightsAdapter(getContext(), dateFormatter, listener);
+        final Context context = getContext();
+        this.adapter = new InsightsAdapter(context,
+                                           dateFormatter,
+                                           listener,
+                                           Picasso.with(context));
     }
 
     @After
@@ -94,9 +100,7 @@ public class InsightsAdapterTests extends SenseTestCase {
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
         assertThat(holder.date.getText().toString(), is(equalTo("5 days ago")));
-        assertThat(holder.preview.getText().toString(), is(equalTo("Too much light makes you sleep poorly")));
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
-        assertThat(holder.previewDivider.getVisibility(), is(equalTo(View.VISIBLE)));
     }
 
     @Test
