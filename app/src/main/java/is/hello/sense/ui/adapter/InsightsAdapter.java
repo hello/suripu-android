@@ -28,7 +28,6 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.TextFormatter;
 
 public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseViewHolder> {
     @VisibleForTesting static final int TYPE_QUESTION = 0;
@@ -285,7 +284,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     image.setDrawable(null);
                 }
                 image.setVisibility(View.VISIBLE);
-                category.setText(TextFormatter.formatInsightCategory(insight.getCategory()));
+                category.setText(insight.getFormattedInsightCategory());
             }
 
             body.setText(insight.getMessage());

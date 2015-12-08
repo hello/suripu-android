@@ -83,6 +83,10 @@ public class Insight extends ApiResponse {
         return category;
     }
 
+    public String getFormattedInsightCategory(){
+        return category.replaceAll("_", " ").toUpperCase();
+    }
+
     public String getInfoPreview() {
         return infoPreview;
     }
@@ -115,6 +119,8 @@ public class Insight extends ApiResponse {
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
+
+
 
 
 }
