@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import is.hello.sense.util.StateSafeExecutor;
 
@@ -55,8 +56,14 @@ public class SenseDialogFragment extends DialogFragment implements StateSafeExec
 
     public int showAllowingStateLoss(@NonNull FragmentManager fm, @NonNull String tag) {
         return fm.beginTransaction()
-                .add(this, tag)
-                .commitAllowingStateLoss();
+                 .add(this, tag)
+                 .commitAllowingStateLoss();
+    }
+    public int showAllowingStateLossWithTransition(@NonNull FragmentManager fm, @NonNull String tag, @NonNull View view, @NonNull String transitionName) {
+        return fm.beginTransaction()
+                 .add(this, tag)
+                 .addSharedElement(view, transitionName)
+                 .commitAllowingStateLoss();
     }
 
     public void dismissSafely() {

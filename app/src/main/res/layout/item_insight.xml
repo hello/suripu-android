@@ -9,6 +9,7 @@
     android:orientation="vertical">
 
     <is.hello.sense.ui.widget.ParallaxImageView
+        android:transitionName="transitionnimage"
         android:id="@+id/item_insight_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

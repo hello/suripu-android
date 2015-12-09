@@ -180,6 +180,10 @@ public class ParallaxImageView extends View implements Target {
         this.animatorContext = animatorContext;
     }
 
+    public Drawable getDrawable(){
+        return this.drawable;
+    }
+
     //endregion
 
 

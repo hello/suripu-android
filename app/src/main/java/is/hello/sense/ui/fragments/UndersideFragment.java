@@ -91,7 +91,7 @@ public class UndersideFragment extends InjectionFragment
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new Item(TrendsFragment.class, getString(R.string.title_trends)),
-                                                 new Item(InsightsFragment.class, getString(R.string.action_insights)),
+                                                 new Item(   InsightsFragment.class, getString(R.string.action_insights)),
                                                  new Item(SmartAlarmListFragment.class, getString(R.string.action_alarm)),
                                                  new Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);

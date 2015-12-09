@@ -249,7 +249,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
     }
 
-    class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
+    public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
         final TextView category;
@@ -320,6 +320,10 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         @Override
         public void setParallaxPercent(float percent) {
             image.setParallaxPercent(percent);
+        }
+
+        public ParallaxImageView getImage() {
+            return image;
         }
     }
 

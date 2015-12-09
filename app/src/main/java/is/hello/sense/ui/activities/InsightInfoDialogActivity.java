@@ -1,10 +1,12 @@
-package is.hello.sense.ui.dialogs;
+package is.hello.sense.ui.activities;
+
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,7 +34,8 @@ import javax.inject.Inject;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
-import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.common.ScopedInjectionActivity;
+import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
@@ -40,7 +43,7 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
-public class InsightInfoDialogFragment extends InjectionDialogFragment
+public class InsightInfoDialogActivity extends ScopedInjectionActivity
         implements Target, ExtendedScrollView.OnScrollListener {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
 
@@ -49,7 +52,8 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
     private static final String ARG_IMAGE_URL = InsightInfoDialogFragment.class.getName() + ".ARG_IMAGE_URL";
     private static final String ARG_INFO = InsightInfoDialogFragment.class.getName() + ".ARG_INFO";
 
-    @Inject Picasso picasso;
+    @Inject
+    Picasso picasso;
 
     private String title;
     private String imageUrl;
@@ -63,41 +67,38 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
 
     //region Lifecycle
 
-    public static InsightInfoDialogFragment newInstance(@NonNull String title,
+    public static Intent newInstance(@NonNull String title,
                                                         @NonNull MarkupString message,
                                                         @Nullable String imageUrl,
                                                         @Nullable MarkupString info) {
-        final InsightInfoDialogFragment fragment = new InsightInfoDialogFragment();
+        final Intent intent = new Intent();
 
-        final Bundle arguments = new Bundle();
-        arguments.putString(ARG_TITLE, title);
-        arguments.putParcelable(ARG_MESSAGE, message);
-        arguments.putString(ARG_IMAGE_URL, imageUrl);
-        arguments.putParcelable(ARG_INFO, info);
-        fragment.setArguments(arguments);
+        intent.putExtra(ARG_TITLE, title);
+        intent.(ARG_MESSAGE, message);
+        intent.putExtra(ARG_IMAGE_URL, imageUrl);
+        intent.putExtra(ARG_INFO, info);
 
-        return fragment;
+        return intent;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        this.title = intent.getStringExtra(ARG_TITLE);
+        this.imageUrl = intent.getStringExtra(ARG_IMAGE_URL);
 
-        final Bundle arguments = getArguments();
-        this.title = arguments.getString(ARG_TITLE);
-        this.imageUrl = arguments.getString(ARG_IMAGE_URL);
-
-        final MarkupString message = arguments.getParcelable(ARG_MESSAGE);
+        final MarkupString message = intent.getParcelableExtra(ARG_MESSAGE);
         this.message = addEmphasisFormatting(message);
 
-        final MarkupString info = arguments.getParcelable(ARG_INFO);
+        final MarkupString info = intent.getParcelableExtra(ARG_INFO);
         this.info = addEmphasisFormatting(info);
     }
 
-    @Override
+    /*@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bitmap imageBitmap = null;
-        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen_Insight);
+        final Dialog dialog = new Dialog(this, R.style.AppTheme_Dialog_FullScreen_Insight);
         dialog.setContentView(R.layout.fragment_dialog_insight_info);
 
         this.illustrationImage =
@@ -111,7 +112,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         }
         Views.runWhenLaidOut(illustrationImage, () -> {
             final int width = illustrationImage.getMeasuredWidth();
-            illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */);
+            illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */ /*);
             illustrationImage.requestLayout();
         });
 
@@ -135,7 +136,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         final Button doneButton =
                 (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
         Views.setSafeOnClickListener(doneButton, ignored -> {
-            dismissAllowingStateLoss();
+            finish();
         });
 
         this.topShadow = (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_top_shadow);
@@ -144,14 +145,15 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         this.scrollView = (ExtendedScrollView) dialog.findViewById(R.id.fragment_dialog_insight_info_scroll);
         scrollView.setOnScrollListener(this);
 
-        /*if (!TextUtils.isEmpty(imageUrl)) {
+        if (!TextUtils.isEmpty(imageUrl)) {
             picasso.load(imageUrl)
                    .into(this);
-        }*/
+        }
         this.illustrationImage.setImageBitmap(imageBitmap);
 
         return dialog;
     }
+
 
     @Override
     public void onDismiss(DialogInterface dialog) {
@@ -163,6 +165,8 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
 
         picasso.cancelRequest(this);
     }
+
+    */
 
     //endregion
 
@@ -206,8 +210,10 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
 
     //region Bitmap Loading
 
+
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        /*
         if (!isAdded()) {
             return;
         }
@@ -242,15 +248,18 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
             @Override
             public void onAnimationEnd(Animator animation) {
                 if (loadedAnimator == animation) {
-                    InsightInfoDialogFragment.this.loadedAnimator = null;
+                    InsightInfoDialogActivity.this.loadedAnimator = null;
                 }
             }
         });
         loadedAnimator.start();
+        */
     }
+
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
+    /*
         if (!isAdded()) {
             return;
         }
@@ -259,7 +268,9 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         final @ColorInt int statusBar = getResources().getColor(R.color.status_bar_illustration);
         Windows.setStatusBarColor(window, statusBar);
         illustrationImage.setImageDrawable(errorDrawable);
+        */
     }
+
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
