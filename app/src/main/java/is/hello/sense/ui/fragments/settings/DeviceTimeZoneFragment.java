@@ -73,7 +73,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
         final LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources(),
-                                                                     EnumSet.of(ScrollEdge.TOP)));
+                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
         recyclerView.setAdapter(new TimeZoneAdapter(activity, this));
 
         return view;

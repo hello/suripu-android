@@ -103,7 +103,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     EnumSet.of(ScrollEdge.TOP)));
+                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
         this.adapter = new SettingsRecyclerAdapter(getActivity());
 

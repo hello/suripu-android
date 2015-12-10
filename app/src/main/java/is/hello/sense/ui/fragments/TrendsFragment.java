@@ -62,7 +62,8 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new CardItemDecoration(resources));
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
 
         this.trendsAdapter = new TrendsAdapter(getActivity());
         trendsAdapter.setOnTrendOptionSelected(this);

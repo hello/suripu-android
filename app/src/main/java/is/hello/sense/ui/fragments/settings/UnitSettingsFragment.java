@@ -69,7 +69,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     EnumSet.of(ScrollEdge.TOP)));
+                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
         unitSettingsAdapter = new UnitSettingsAdapter(getActivity(), this);
         recyclerView.setAdapter(unitSettingsAdapter);

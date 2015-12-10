@@ -92,7 +92,7 @@ public class DeviceListFragment extends InjectionFragment
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     EnumSet.of(ScrollEdge.TOP)));
+                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
         this.adapter = new DevicesAdapter(getActivity());
         adapter.setOnItemClickedListener(this);

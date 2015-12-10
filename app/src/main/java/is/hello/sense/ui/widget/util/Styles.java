@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -12,10 +13,12 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,6 +27,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
@@ -42,6 +46,8 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
+import is.hello.sense.util.markup.text.MarkupString;
+import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
 public final class Styles {
     public static final float LETTER_SPACING_SECTION_HEADING_LARGE = 0.2f;
@@ -50,6 +56,7 @@ public final class Styles {
 
     public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);
     public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
+
     @IntDef({
         UNIT_STYLE_SUPERSCRIPT,
         UNIT_STYLE_SUBSCRIPT,
@@ -194,6 +201,35 @@ public final class Styles {
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
+    }
+
+    public static Spanned darkenEmphasis(@NonNull Resources resources,
+                                         @Nullable MarkupString source) {
+        if (source == null) {
+            return null;
+        }
+
+        final @ColorInt int emphasisColor = resources.getColor(R.color.black);
+        final SpannableStringBuilder toFormat = new SpannableStringBuilder(source);
+        final MarkupStyleSpan[] spans = toFormat.getSpans(0, toFormat.length(),
+                                                          MarkupStyleSpan.class);
+        for (final MarkupStyleSpan span : spans) {
+            if (span.getStyle() == Typeface.NORMAL) {
+                continue;
+            }
+
+            final int start = toFormat.getSpanStart(span);
+            final int end = toFormat.getSpanEnd(span);
+            final int flags = toFormat.getSpanFlags(span);
+
+            toFormat.setSpan(new ForegroundColorSpan(emphasisColor), start, end, flags);
+
+            if (span.getStyle() == Typeface.BOLD) {
+                toFormat.removeSpan(span);
+            }
+        }
+
+        return toFormat;
     }
 
     public static SpannableStringBuilder resolveSupportLinks(@NonNull Activity activity,

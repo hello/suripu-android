@@ -20,17 +20,27 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
 
     public FadingEdgesItemDecoration(@NonNull LinearLayoutManager layoutManager,
                                      @NonNull Resources resources,
-                                     @NonNull EnumSet<ScrollEdge> edges) {
+                                     @NonNull EnumSet<ScrollEdge> edges,
+                                     @NonNull Style style) {
         this.layoutManager = layoutManager;
         this.edges = edges;
 
-        this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
-        this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+        if (style == Style.ROUNDED_EDGES) {
+            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_top_down, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_bottom_up, null);
+        } else {
+            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+        }
     }
 
     public FadingEdgesItemDecoration(@NonNull LinearLayoutManager layoutManager,
-                                     @NonNull Resources resources) {
-        this(layoutManager, resources, EnumSet.of(ScrollEdge.TOP, ScrollEdge.BOTTOM));
+                                     @NonNull Resources resources,
+                                     @NonNull Style style) {
+        this(layoutManager,
+             resources,
+             EnumSet.of(ScrollEdge.TOP, ScrollEdge.BOTTOM),
+             style);
     }
 
     @Override
@@ -53,5 +63,10 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
                 bottomEdge.draw(c);
             }
         }
+    }
+
+    public enum Style {
+        STRAIGHT,
+        ROUNDED_EDGES,
     }
 }

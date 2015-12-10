@@ -5,6 +5,7 @@
     <dimen name="gap_outer_half">12dp</dimen>
     <dimen name="gap_outer_dialog_buttons">14dp</dimen>
     <dimen name="gap_action_bar_start">63dp</dimen>
+    <dimen name="gap_card_content">20dp</dimen>
     <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_xsmall">6dp</dimen>
     <dimen name="gap_small">10dp</dimen>

@@ -105,7 +105,8 @@ public class InsightsFragment extends UndersideTabFragment
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
 
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);

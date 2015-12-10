@@ -31,7 +31,8 @@ public class ParallaxRecyclerScrollListener extends RecyclerView.OnScrollListene
             // | <--- (bottom mid-point)
             // |
             // +------- (bottom, 1.0f)
-            final float percent = (childViewCenter - recyclerCenter) / (float) recyclerCenter;
+            final float rawPercent = (childViewCenter - recyclerCenter) / (float) recyclerCenter;
+            final float percent = Math.min(1f, Math.max(-1f, rawPercent));
             viewHolder.setParallaxPercent(percent);
         }
     }
