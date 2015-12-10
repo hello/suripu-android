@@ -106,9 +106,6 @@ public class UndersideFragment extends InjectionFragment
             setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
         }
 
-        pager.setPageMargin(resources.getDimensionPixelSize(R.dimen.divider_size));
-        pager.setPageMarginDrawable(R.color.border);
-
         pager.addOnPageChangeListener(this);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);

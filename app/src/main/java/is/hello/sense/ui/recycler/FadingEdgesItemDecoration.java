@@ -27,7 +27,7 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
 
         if (style == Style.ROUNDED_EDGES) {
             this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_top_down, null);
-            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_bottom_up, null);
         } else {
             this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
             this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
