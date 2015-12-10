@@ -15,7 +15,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.transition.Explode;
+import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -134,6 +137,11 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+            getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
+            getWindow().setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
+        }
         setContentView(R.layout.activity_home);
 
         deviceIssuesPresenter.bindScope(this);

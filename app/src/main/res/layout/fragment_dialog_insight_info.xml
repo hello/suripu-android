@@ -31,8 +31,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:transitionName="transitionnimage"
+            <is.hello.sense.ui.widget.ParallaxImageView
+                android:transitionName="target"
                 android:id="@+id/fragment_dialog_insight_info_illustration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

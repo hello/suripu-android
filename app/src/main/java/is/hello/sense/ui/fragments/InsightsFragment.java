@@ -9,15 +9,19 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
@@ -74,7 +78,6 @@ public class InsightsFragment extends UndersideTabFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         deviceIssuesPresenter.bindScope(getScope());
         addPresenter(deviceIssuesPresenter);
         addPresenter(insightsPresenter);
@@ -92,6 +95,7 @@ public class InsightsFragment extends UndersideTabFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         final View view = inflater.inflate(R.layout.fragment_insights, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
@@ -192,92 +196,24 @@ public class InsightsFragment extends UndersideTabFragment
             insightsAdapter.setLoadingInsightPosition(position);
             bindAndSubscribe(insightsPresenter.infoForInsight(insight), insightInfo -> {
                 ParallaxImageView imageView = null;
-                View child = recyclerView.getChildAt(position);
+                View child = recyclerView.getChildAt(position % recyclerView.getChildCount());
                 if (child != null) {
-                    InsightsAdapter.InsightViewHolder insightViewHolder = ((InsightsAdapter.InsightViewHolder) recyclerView.getChildViewHolder(child));
+                    InsightsAdapter.InsightViewHolder insightViewHolder = ((InsightsAdapter.InsightViewHolder)recyclerView.getChildViewHolder(child));
                     if (insightViewHolder != null) {
                         imageView = insightViewHolder.getImage();
+
                     }
                 }
-                final Intent infoActivity = InsightInfoActivity.newInstance(getActivity(),
-                                                                            insight.getTitle(),
-                                                                            insight.getMessage(),
-                                                                            imageUrl,
-                                                                            insightInfo.getText());
-
-                startActivity(infoActivity);
 
 
-/*
-
-
-                infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
+                InsightInfoActivity.startActivity(getActivity(),
+                                                  insight.getTitle(),
+                                                  insight.getMessage(),
+                                                  insightInfo.getText(),
+                                                  imageView,
+                                                  imageUrl + position);
 
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
-
-                */
-                if (imageView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-                    /*
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        setSharedElementReturnTransition(TransitionInflater.from(
-                                getActivity()).inflateTransition(R.transition.change_image_transition));
-                        setExitTransition(TransitionInflater.from(
-                                getActivity()).inflateTransition(android.R.transition.fade));
-
-                        infoFragment.setSharedElementEnterTransition(TransitionInflater.from(
-                                getActivity()).inflateTransition(R.transition.change_image_transition));
-                        infoFragment.setEnterTransition(TransitionInflater.from(
-                                getActivity()).inflateTransition(android.R.transition.fade));
-                    }
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("IMAGE", ((BitmapDrawable) imageView.getDrawable()).getBitmap());
-                    infoFragment.setArguments(bundle);
-
-                    *//* fragmentManager.beginTransaction()
-                               //.replace(R.id.fragment_underside_pager, infoFragment)
-                               .addToBackStack("Payment")
-                               .addSharedElement(imageView, "transitionnimage")
-                               .commit();*//*
-
-                    infoFragment.showAllowingStateLossWithTransition(fragmentManager, InsightInfoDialogFragment.TAG, imageView, "transitionnimage");
-
-*//*
-
-
-                    setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transition));
-                    setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
-
-                    // Create new fragment to add (Fragment B)
-                    infoFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transition));
-                    infoFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
-
-                    // Our shared element (in Fragment A)
-                    // Add Fragment B
-                    */
-/*
-                    FragmentTransaction ft = getFragmentManager().beginTransaction()
-                                                                 .replace(R.id.container, infoFragment)
-                                                                 .addToBackStack("transaction")
-                                                                 .addSharedElement(imageView, "transitionnimage");
-                    ft.commit();*//*
-
-                    infoFragment.showAllowingStateLossWithTransition(fragmentManager, InsightInfoDialogFragment.TAG, imageView, "transitionnimage");
-*/
-
-                }else{
-                }
-                insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
-
-
-
-
-
-
-
-
-
             }, e -> {
                 final ErrorDialogFragment errorDialogFragment =
                         new ErrorDialogFragment.Builder(e, getResources()).build();

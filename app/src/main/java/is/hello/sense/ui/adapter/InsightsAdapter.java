@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -79,8 +80,12 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     public void bindInsights(@NonNull List<Insight> insights) {
         interactionListener.onDismissLoadingIndicator();
-
-        this.insights = insights;
+        List<Insight> temp = new ArrayList<>();
+        temp.add(insights.get(0));
+        temp.add(insights.get(1));
+        temp.add(insights.get(2));
+        temp.add(insights.get(3));
+        this.insights = temp;
         this.loadingInsightPosition = RecyclerView.NO_POSITION;
 
         notifyDataSetChanged();
@@ -278,12 +283,16 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 date.setText(insightDate);
                 final String url = insight.getImageUrl(context.getResources());
                 if (url != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        image.setTransitionName(url+position);
+                    }
                     picasso.load(url).into(image);
                 } else {
                     picasso.cancelRequest(image);
                     image.setDrawable(null);
                 }
                 image.setVisibility(View.VISIBLE);
+
                 category.setText(insight.getFormattedInsightCategory());
             }
 
