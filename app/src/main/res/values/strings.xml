@@ -500,6 +500,7 @@
     <string name="action_watch_video">Watch Video</string>
     <string name="action_close">Close</string>
     <string name="ticket_list_empty">No tickets currently open</string>
+    <string name="title_about_you">About you</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

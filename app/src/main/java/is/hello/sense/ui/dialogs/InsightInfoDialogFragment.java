@@ -111,14 +111,18 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
                 (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_title);
         titleText.setText(title);
 
+        final TextView summaryTitleText =
+                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_summary_header);
         final TextView summaryText =
                 (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_summary);
         final TextView messageText =
                 (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_message);
         if (TextUtils.isEmpty(info)) {
+            summaryTitleText.setVisibility(View.GONE);
             summaryText.setVisibility(View.GONE);
             messageText.setText(message);
         } else {
+            summaryTitleText.setVisibility(View.VISIBLE);
             summaryText.setVisibility(View.VISIBLE);
             summaryText.setText(message);
             messageText.setText(info);
