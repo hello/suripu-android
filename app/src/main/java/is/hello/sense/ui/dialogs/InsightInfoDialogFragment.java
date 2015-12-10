@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -96,19 +95,12 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Bitmap imageBitmap = null;
         final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen_Insight);
         dialog.setContentView(R.layout.fragment_dialog_insight_info);
 
         this.illustrationImage =
                 (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_illustration);
-        if (savedInstanceState != null) {
-            imageBitmap = savedInstanceState.getParcelable("IMAGE");
-        }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.illustrationImage.setTransitionName("transitionnimage");
-        }
         Views.runWhenLaidOut(illustrationImage, () -> {
             final int width = illustrationImage.getMeasuredWidth();
             illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */);
@@ -144,11 +136,10 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         this.scrollView = (ExtendedScrollView) dialog.findViewById(R.id.fragment_dialog_insight_info_scroll);
         scrollView.setOnScrollListener(this);
 
-        /*if (!TextUtils.isEmpty(imageUrl)) {
+        if (!TextUtils.isEmpty(imageUrl)) {
             picasso.load(imageUrl)
                    .into(this);
-        }*/
-        this.illustrationImage.setImageBitmap(imageBitmap);
+        }
 
         return dialog;
     }

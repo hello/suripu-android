@@ -2,13 +2,11 @@ package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,15 +15,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Fade;
-import android.transition.TransitionInflater;
-import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -42,6 +35,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.InsightInfoActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
@@ -205,15 +199,18 @@ public class InsightsFragment extends UndersideTabFragment
                         imageView = insightViewHolder.getImage();
                     }
                 }
-                final Intent
+                final Intent infoActivity = InsightInfoActivity.newInstance(getActivity(),
+                                                                            insight.getTitle(),
+                                                                            insight.getMessage(),
+                                                                            imageUrl,
+                                                                            insightInfo.getText());
+
+                startActivity(infoActivity);
+
+
 /*
 
-                final InsightInfoDialogFragment infoFragment =
-                        InsightInfoDialogFragment.newInstance(insight.getTitle(),
-                                                              insight.getMessage(),
-                                                              imageUrl,
-                                                              insightInfo.getText());
-                *//*
+
                 infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
 
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);

@@ -88,6 +88,10 @@
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
 
+        <activity
+            android:name=".ui.activities.InsightInfoActivity"
+            android:parentActivityName=".ui.activities.InsightInfoActivity" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
