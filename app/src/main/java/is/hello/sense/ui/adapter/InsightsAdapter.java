@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -24,6 +25,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.ui.widget.ParallaxImageView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -34,6 +36,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     @VisibleForTesting static final int TYPE_INSIGHT = 1;
 
     private final Context context;
+    private final Resources resources;
     private final LayoutInflater inflater;
     private final DateFormatter dateFormatter;
     private final InteractionListener interactionListener;
@@ -49,6 +52,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                            @NonNull InteractionListener interactionListener,
                            @NonNull Picasso picasso) {
         this.context = context;
+        this.resources = context.getResources();
         this.dateFormatter = dateFormatter;
         this.picasso = picasso;
         this.inflater = LayoutInflater.from(context);
@@ -287,7 +291,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 category.setText(insight.getFormattedInsightCategory());
             }
 
-            body.setText(insight.getMessage());
+            body.setText(Styles.darkenEmphasis(resources, insight.getMessage()));
 
             if (position == loadingInsightPosition) {
                 itemView.setAlpha(0.8f);
