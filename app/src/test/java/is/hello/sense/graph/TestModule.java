@@ -24,6 +24,8 @@ import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenterTests;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
@@ -92,6 +94,9 @@ import static org.mockito.Mockito.mock;
 
         TrendsPresenterTests.class,
         TrendsPresenter.class,
+
+        DeviceIssuesPresenter.class,
+        DeviceIssuesPresenterTests.class,
 
         LocalUsageTrackerTests.class,
         ReviewQuestionProviderTests.class,

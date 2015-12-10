@@ -63,6 +63,8 @@ import rx.subscriptions.Subscriptions;
     public static final String HAS_UNREAD_INSIGHT_ITEMS = "has_unread_insight_items";
     public static final String DISABLE_REVIEW_PROMPT = "disable_review_prompt";
 
+    public static final String SYSTEM_ALERT_LAST_SHOWN = "system_alert_last_shown";
+
 
     private final Context context;
     private final SharedPreferences sharedPreferences;
@@ -151,6 +153,10 @@ import rx.subscriptions.Subscriptions;
 
     public int getInt(String key, int defaultValue) {
         return sharedPreferences.getInt(key, defaultValue);
+    }
+
+    public long getLong(String key, long defValue) {
+        return sharedPreferences.getLong(key, defValue);
     }
 
     public String getString(String key, String defaultValue) {

@@ -1,7 +1,13 @@
 package is.hello.sense.graph.presenters;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.Days;
 
 import javax.inject.Inject;
 
@@ -17,6 +23,7 @@ import rx.Observable;
 
 public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPresenter.Issue> {
     @Inject ApiService apiService;
+    @Inject PreferencesPresenter preferences;
 
     public final PresenterSubject<Issue> topIssue = this.subject;
 
@@ -33,11 +40,11 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     @Override
     protected Observable<Issue> provideUpdateObservable() {
         return apiService.registeredDevices()
-                         .map(DeviceIssuesPresenter::getTopIssue);
+                         .map(this::getTopIssue);
     }
 
 
-    public static Issue getTopIssue(@NonNull Devices devices) {
+    public Issue getTopIssue(@NonNull Devices devices) {
         final SenseDevice sense = devices.getSense();
         final SleepPillDevice pill = devices.getSleepPill();
 
@@ -51,13 +58,36 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.SENSE_MISSING;
         } else if (pill == null) {
             return Issue.NO_SLEEP_PILL_PAIRED;
-        } else if (pill.state == BaseDevice.State.LOW_BATTERY) {
+        } else if (pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
             return Issue.SLEEP_PILL_LOW_BATTERY;
         } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
             return Issue.SLEEP_PILL_MISSING;
         }
 
         return Issue.NONE;
+    }
+
+    private @Nullable DateTime getSystemAlertLastShown() {
+        if (preferences.contains(PreferencesPresenter.SYSTEM_ALERT_LAST_SHOWN)) {
+            return new DateTime(preferences.getLong(PreferencesPresenter.SYSTEM_ALERT_LAST_SHOWN, 0));
+        } else {
+            return null;
+        }
+    }
+
+    @VisibleForTesting
+    boolean shouldReportLowBattery() {
+        final DateTime lastShown = getSystemAlertLastShown();
+        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
+    }
+
+    public void updateSystemAlertLastShown() {
+        logEvent("updateSystemAlertLastShown()");
+
+        preferences.edit()
+                   .putLong(PreferencesPresenter.SYSTEM_ALERT_LAST_SHOWN,
+                            DateTimeUtils.currentTimeMillis())
+                   .apply();
     }
 
 
@@ -80,8 +110,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
                            R.string.issue_message_missing_pill);
 
         public final int systemAlertType;
-        public final @StringRes
-        int titleRes;
+        public final @StringRes int titleRes;
         public final @StringRes int messageRes;
 
         Issue(int systemAlertType,
