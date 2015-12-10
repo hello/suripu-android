@@ -87,7 +87,8 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         final CardItemDecoration decoration = new CardItemDecoration(resources);
         decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
 
         this.adapter = new SmartAlarmAdapter(getActivity(), this, dateFormatter);
         recyclerView.setAdapter(adapter);
