@@ -4,7 +4,9 @@ package is.hello.sense.ui.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -16,6 +18,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.transition.Explode;
 import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.Window;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import javax.inject.Inject;
 
@@ -42,15 +46,12 @@ public class InsightInfoActivity extends ScopedInjectionActivity
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
     private static final String ARG_TITLE = InsightInfoDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_MESSAGE = InsightInfoDialogFragment.class.getName() + ".ARG_MESSAGE";
-    private static final String ARG_TRANSITION_NAME = InsightInfoDialogFragment.class.getName() + ".ARG_TRANSITION_NAME";
+    private static final String ARG_POSITION = InsightInfoDialogFragment.class.getName() + ".ARG_POSITION";
     private static final String ARG_INFO = InsightInfoDialogFragment.class.getName() + ".ARG_INFO";
     private static final String ARG_IMAGE_URL = InsightInfoDialogFragment.class.getName() + ".ARG_IMAGE_URL";
 
-    @Inject Picasso picasso;
-
-    private String title;
-    private CharSequence message;
-    private CharSequence info;
+    @Inject
+    Picasso picasso;
 
     private ExtendedScrollView scrollView;
     private ImageView topShadow, bottomShadow;
@@ -63,21 +64,16 @@ public class InsightInfoActivity extends ScopedInjectionActivity
                                      @NonNull MarkupString message,
                                      @Nullable MarkupString info,
                                      @Nullable String imageUrl,
-                                     @Nullable View sharedElement,
-                                     @Nullable String transitionName) {
-
-        final ActivityOptionsCompat options =
-                ActivityOptionsCompat.makeSceneTransitionAnimation(sourceActivity,
-                                                                   sharedElement,
-                                                                   transitionName);
+                                     @Nullable Bundle options,
+                                     int position) {
 
         final Intent intent = new Intent(sourceActivity, InsightInfoActivity.class);
         intent.putExtra(ARG_TITLE, title);
-        intent.putExtra(ARG_TRANSITION_NAME, transitionName);
+        intent.putExtra(ARG_POSITION, position);
         intent.putExtra(ARG_IMAGE_URL, imageUrl);
         intent.putExtra(ARG_INFO, (Parcelable) info);
         intent.putExtra(ARG_MESSAGE, (Parcelable) message);
-        sourceActivity.startActivity(intent, options.toBundle());
+        sourceActivity.startActivity(intent, options);
     }
 
     @Override
@@ -87,29 +83,29 @@ public class InsightInfoActivity extends ScopedInjectionActivity
             postponeEnterTransition();
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
-            getWindow().setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
+            getWindow().setExitTransition(new Explode());
+            getWindow().setReenterTransition(new Explode());
 
 
         }
         setContentView(R.layout.fragment_dialog_insight_info);
-        this.illustrationImage =
-                (ImageView) findViewById(R.id.fragment_dialog_insight_info_illustration);
+        illustrationImage = (ImageView) findViewById(R.id.fragment_dialog_insight_info_illustration);
+        final TextView summaryText = (TextView) findViewById(R.id.fragment_dialog_insight_info_summary);
+
         Intent intent = getIntent();
         final Bundle arguments = intent.getExtras();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-            final String transitionName = arguments.getString(ARG_TRANSITION_NAME);
-            if (transitionName != null) {
-                illustrationImage.setTransitionName(transitionName);
-            }
+            int position = arguments.getInt(ARG_POSITION);
+            illustrationImage.setTransitionName("image" + position);
+            summaryText.setTransitionName("text" + position);
         }
-        this.title = arguments.getString(ARG_TITLE);
+        final String title = arguments.getString(ARG_TITLE);
 
-        final MarkupString message = arguments.getParcelable(ARG_MESSAGE);
-        this.message = addEmphasisFormatting(message);
+        final MarkupString markupMessage = arguments.getParcelable(ARG_MESSAGE);
+        final CharSequence message = addEmphasisFormatting(markupMessage);
 
-        final MarkupString info = arguments.getParcelable(ARG_INFO);
-        this.info = addEmphasisFormatting(info);
+        final MarkupString markupInfo = arguments.getParcelable(ARG_INFO);
+        final CharSequence info = addEmphasisFormatting(markupInfo);
 
 
         Views.runWhenLaidOut(illustrationImage, () -> {
@@ -117,13 +113,9 @@ public class InsightInfoActivity extends ScopedInjectionActivity
             illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */);
             illustrationImage.requestLayout();
         });
-
-        final TextView titleText =
-                (TextView) findViewById(R.id.fragment_dialog_insight_info_title);
+        final TextView titleText = (TextView) findViewById(R.id.fragment_dialog_insight_info_title);
         titleText.setText(title);
 
-        final TextView summaryText =
-                (TextView) findViewById(R.id.fragment_dialog_insight_info_summary);
         final TextView messageText =
                 (TextView) findViewById(R.id.fragment_dialog_insight_info_message);
         if (TextUtils.isEmpty(info)) {
@@ -149,23 +141,35 @@ public class InsightInfoActivity extends ScopedInjectionActivity
 
         final String imageUrl = intent.getStringExtra(ARG_IMAGE_URL);
         if (!TextUtils.isEmpty(imageUrl)) {
+            final Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    illustrationImage.setImageBitmap(bitmap);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startPostponedEnterTransition();
+                    }
+                    getStatusBarColor(bitmap);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startPostponedEnterTransition();
+                    }
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startPostponedEnterTransition();
+                    }
+                }
+            };
             picasso.load(imageUrl)
                    .noFade()
-                   .into(illustrationImage, new Callback() {
-                       @Override
-                       public void onSuccess() {
-                           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                               startPostponedEnterTransition();
-                           }
-                       }
-
-                       @Override
-                       public void onError() {
-                           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                               startPostponedEnterTransition();
-                           }
-                       }
-                   });
+                   .into(target);
+        }else{
+            illustrationImage.setVisibility(View.GONE);
         }
     }
 
@@ -201,7 +205,9 @@ public class InsightInfoActivity extends ScopedInjectionActivity
         return toFormat;
     }
 
-    private static @ColorInt int getStatusBarColor(@NonNull Bitmap bitmap) {
+    private static
+    @ColorInt
+    int getStatusBarColor(@NonNull Bitmap bitmap) {
         return Drawing.darkenColorBy(bitmap.getPixel(0, 0), 0.2f);
     }
 

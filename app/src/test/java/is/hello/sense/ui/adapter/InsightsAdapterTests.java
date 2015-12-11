@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.squareup.picasso.Picasso;
@@ -157,7 +158,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void onInsightClicked(int position, @NonNull Insight insight) {
+        public void onInsightClicked(View view, int position, @NonNull Insight insight) {
             callbacks.add(Callback.INSIGHT_CLICKED);
         }
 

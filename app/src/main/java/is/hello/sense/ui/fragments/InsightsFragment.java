@@ -7,10 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,9 +21,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.segment.analytics.internal.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -190,23 +196,22 @@ public class InsightsFragment extends UndersideTabFragment
         if (insight.hasInfo()) {
             insightsAdapter.setLoadingInsightPosition(position);
             bindAndSubscribe(insightsPresenter.infoForInsight(insight), insightInfo -> {
-                ParallaxImageView imageView = null;
-                View child = recyclerView.getChildAt(position % recyclerView.getChildCount());
-                if (child != null) {
-                    InsightsAdapter.InsightViewHolder insightViewHolder = ((InsightsAdapter.InsightViewHolder)recyclerView.getChildViewHolder(child));
-                    if (insightViewHolder != null) {
-                        imageView = insightViewHolder.getImage();
-
-                    }
+                Bundle bundle = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    final ParallaxImageView imageView = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
+                    final TextView textView = (TextView) view.findViewById(R.id.item_insight_body);
+                    final Pair<View, String> p1 = Pair.create(imageView, imageView.getTransitionName());
+                    final Pair<View, String> p2 = Pair.create(textView, textView.getTransitionName());
+                    bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), p1, p2).toBundle();
                 }
 
-                imageView = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
                 InsightInfoActivity.startActivity(getActivity(),
                                                   insight.getTitle(),
                                                   insight.getMessage(),
                                                   insightInfo.getText(),
                                                   imageUrl,
-                                                  imageView, imageUrl + position);
+                                                  bundle,
+                                                  position);
 
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
             }, e -> {

@@ -80,14 +80,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     public void bindInsights(@NonNull List<Insight> insights) {
         interactionListener.onDismissLoadingIndicator();
-        List<Insight> temp = new ArrayList<>();
-        temp.add(insights.get(0));
-        temp.add(insights.get(1));
-        temp.add(insights.get(2));
-        temp.add(insights.get(3));
-        this.insights = temp;
-        this.loadingInsightPosition = RecyclerView.NO_POSITION;
 
+        this.loadingInsightPosition = RecyclerView.NO_POSITION;
+        this.insights = insights;
         notifyDataSetChanged();
     }
 
@@ -284,7 +279,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 final String url = insight.getImageUrl(context.getResources());
                 if (url != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        image.setTransitionName(url+position);
+                        image.setTransitionName("image"+position);
+                        body.setTransitionName("text"+position);
                     }
                     picasso.load(url).into(image);
                 } else {
@@ -314,7 +310,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        public void onClick(View ignored) {
+        public void onClick(View view) {
             // View dispatches OnClickListener#onClick(View) calls on
             // the next looper cycle. It's possible for the adapter's
             // containing recycler view to update and invalidate a
@@ -322,7 +318,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             final int adapterPosition = getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
                 final Insight insight = getInsightItem(adapterPosition);
-                interactionListener.onInsightClicked(ignored, adapterPosition, insight);
+                interactionListener.onInsightClicked(view, adapterPosition, insight);
             }
         }
 
