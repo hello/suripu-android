@@ -15,11 +15,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.transition.ChangeBounds;
 import android.transition.Explode;
+import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -85,11 +89,16 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
-    @Inject ApiService apiService;
-    @Inject DeviceIssuesPresenter deviceIssuesPresenter;
-    @Inject PreferencesPresenter preferences;
-    @Inject UnreadStatePresenter unreadStatePresenter;
-    @Inject LocalUsageTracker localUsageTracker;
+    @Inject
+    ApiService apiService;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    UnreadStatePresenter unreadStatePresenter;
+    @Inject
+    LocalUsageTracker localUsageTracker;
 
     private long lastUpdated = System.currentTimeMillis();
 
@@ -131,7 +140,6 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     };
 
-
     //region Lifecycle
 
     @Override
@@ -141,6 +149,7 @@ public class HomeActivity extends ScopedInjectionActivity
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
             getWindow().setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
+
         }
         setContentView(R.layout.activity_home);
 
@@ -423,7 +432,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
 
     @Override
-    public @NonNull AnimatorContext getAnimatorContext() {
+    public
+    @NonNull
+    AnimatorContext getAnimatorContext() {
         return animatorContext;
     }
 
@@ -535,7 +546,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Sliding Layers
 
-    private @Nullable UndersideFragment getUndersideFragment() {
+    private
+    @Nullable
+    UndersideFragment getUndersideFragment() {
         return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
     }
 

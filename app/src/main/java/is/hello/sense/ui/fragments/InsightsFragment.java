@@ -178,7 +178,7 @@ public class InsightsFragment extends UndersideTabFragment
     //region Insights
 
     @Override
-    public void onInsightClicked(int position, @NonNull Insight insight) {
+    public void onInsightClicked(View view, int position, @NonNull Insight insight) {
         if (insight.isError()) {
             return;
         }
@@ -205,7 +205,7 @@ public class InsightsFragment extends UndersideTabFragment
                     }
                 }
 
-
+                imageView = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
                 InsightInfoActivity.startActivity(getActivity(),
                                                   insight.getTitle(),
                                                   insight.getMessage(),

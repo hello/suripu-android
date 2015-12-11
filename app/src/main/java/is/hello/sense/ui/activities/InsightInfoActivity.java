@@ -85,6 +85,7 @@ public class InsightInfoActivity extends ScopedInjectionActivity
         arguments.putParcelable(ARG_INFO, info);
         arguments.putParcelable(ARG_MESSAGE, message);
         intent.putExtras(arguments);
+        //  arguments.putBundle("bundle", options.toBundle());
         activity.startActivity(intent, options.toBundle());
     }
 
@@ -93,8 +94,11 @@ public class InsightInfoActivity extends ScopedInjectionActivity
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             postponeEnterTransition();
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
             getWindow().setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transition));
+
+
         }
         setContentView(R.layout.fragment_dialog_insight_info);
         this.illustrationImage =

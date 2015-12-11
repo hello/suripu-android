@@ -322,7 +322,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             final int adapterPosition = getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
                 final Insight insight = getInsightItem(adapterPosition);
-                interactionListener.onInsightClicked(adapterPosition, insight);
+                interactionListener.onInsightClicked(ignored, adapterPosition, insight);
             }
         }
 
@@ -343,7 +343,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onDismissLoadingIndicator();
         void onSkipQuestion();
         void onAnswerQuestion();
-        void onInsightClicked(int position, @NonNull Insight insight);
+        void onInsightClicked(View view, int position, @NonNull Insight insight);
     }
 
 }
