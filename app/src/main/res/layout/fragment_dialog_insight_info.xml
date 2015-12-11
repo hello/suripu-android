@@ -31,13 +31,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <is.hello.sense.ui.widget.ParallaxImageView
+            <ImageView
                 android:id="@+id/fragment_dialog_insight_info_illustration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
                 android:adjustViewBounds="false"
-                android:background="@color/black"
                 tools:ignore="ContentDescription" />
 
             <TextView

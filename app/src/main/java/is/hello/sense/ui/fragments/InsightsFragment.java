@@ -7,21 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
-import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
@@ -210,8 +205,8 @@ public class InsightsFragment extends UndersideTabFragment
                                                   insight.getTitle(),
                                                   insight.getMessage(),
                                                   insightInfo.getText(),
-                                                  imageView,
-                                                  imageUrl + position);
+                                                  imageUrl,
+                                                  imageView, imageUrl + position);
 
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
             }, e -> {
