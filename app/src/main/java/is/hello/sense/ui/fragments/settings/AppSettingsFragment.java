@@ -24,7 +24,6 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Share;
 
 public class AppSettingsFragment extends UndersideTabFragment {
-    private static final int SHARE_CODE = 0;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,12 +75,6 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_COMPLETED, null);
-    }
-
     private void showDeviceList(@NonNull View ignored) {
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
@@ -102,6 +95,6 @@ public class AppSettingsFragment extends UndersideTabFragment {
         Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_TAPPED, null);
         Share.text(getString(R.string.tell_a_friend_body))
              .withSubject(getString(R.string.tell_a_friend_subject))
-             .sendForResult(this, SHARE_CODE);
+             .send(getActivity());
     }
 }
