@@ -1,7 +1,6 @@
 package is.hello.sense.util;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -78,7 +77,6 @@ public abstract class Share {
         public void send(@NonNull Activity from) {
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
         }
-
     }
 
     public static class Email extends Share {
@@ -185,7 +183,6 @@ public abstract class Share {
                           }
                       });
         }
-
     }
 
     //endregion
