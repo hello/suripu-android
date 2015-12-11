@@ -33,7 +33,6 @@ import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.InsightInfoActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
-import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
@@ -94,7 +93,6 @@ import is.hello.sense.zendesk.ZendeskModule;
         UndersideFragment.class,
         InsightsPresenter.class,
         InsightsFragment.class,
-        InsightInfoDialogFragment.class,
         InsightInfoActivity.class,
         RoomConditionsFragment.class,
         RoomConditionsPresenter.class,

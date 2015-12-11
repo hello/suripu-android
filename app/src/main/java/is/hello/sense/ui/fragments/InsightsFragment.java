@@ -45,7 +45,6 @@ import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
@@ -222,12 +221,15 @@ public class InsightsFragment extends UndersideTabFragment
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
             });
         } else {
-            final InsightInfoDialogFragment infoFragment =
-                    InsightInfoDialogFragment.newInstance(insight.getTitle(),
-                                                          insight.getMessage(),
-                                                          imageUrl,
-                                                          null);
-            infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
+            //todo test this.
+            InsightInfoActivity.startActivity(getActivity(),
+                                              insight.getTitle(),
+                                              insight.getMessage(),
+                                              null,
+                                              imageUrl,
+                                              null,
+                                              position);
+
         }
     }
 

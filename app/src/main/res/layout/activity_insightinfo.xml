@@ -6,7 +6,7 @@
     android:background="@color/background_light">
 
     <Button
-        android:id="@+id/fragment_dialog_insight_info_done"
+        android:id="@+id/activity_dialog_insight_info_done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -14,16 +14,16 @@
         style="@style/AppTheme.Button.Borderless.Primary" />
 
     <View
-        android:id="@+id/fragment_dialog_insight_info_done_divider"
-        android:layout_above="@id/fragment_dialog_insight_info_done"
+        android:id="@+id/activity_dialog_insight_info_done_divider"
+        android:layout_above="@id/activity_dialog_insight_info_done"
         style="@style/Divider.Horizontal" />
 
     <is.hello.sense.ui.widget.ExtendedScrollView
-        android:id="@+id/fragment_dialog_insight_info_scroll"
+        android:id="@+id/activity_dialog_insight_info_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never"
-        android:layout_above="@id/fragment_dialog_insight_info_done_divider">
+        android:layout_above="@id/activity_dialog_insight_info_done_divider">
 
         <LinearLayout
             android:id="@+id/fragment_dialog_insight_info_content"
@@ -32,7 +32,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/fragment_dialog_insight_info_illustration"
+                android:id="@+id/activity_dialog_insight_info_illustration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
@@ -40,7 +40,7 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/fragment_dialog_insight_info_summary"
+                android:id="@+id/activity_dialog_insight_info_summary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap_large"
@@ -52,7 +52,7 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/fragment_dialog_insight_info_title"
+                android:id="@+id/activity_dialog_insight_info_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap_large"
@@ -65,7 +65,7 @@
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading" />
 
             <TextView
-                android:id="@+id/fragment_dialog_insight_info_message"
+                android:id="@+id/activity_dialog_insight_info_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/gap_outer"
@@ -80,7 +80,7 @@
     </is.hello.sense.ui.widget.ExtendedScrollView>
 
     <ImageView
-        android:id="@+id/fragment_dialog_insight_info_top_shadow"
+        android:id="@+id/activity_dialog_insight_info_top_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/shadow_top_down"
@@ -89,10 +89,10 @@
         android:visibility="gone"/>
 
     <ImageView
-        android:id="@+id/fragment_dialog_insight_info_bottom_shadow"
+        android:id="@+id/activity_dialog_insight_info_bottom_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/fragment_dialog_insight_info_done_divider"
+        android:layout_above="@id/activity_dialog_insight_info_done_divider"
         android:src="@drawable/shadow_bottom_up"
         android:scaleType="fitXY"
         android:importantForAccessibility="no"

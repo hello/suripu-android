@@ -4,7 +4,6 @@ package is.hello.sense.ui.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -13,7 +12,6 @@ import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -26,7 +24,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -34,21 +31,21 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
-import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
 public class InsightInfoActivity extends ScopedInjectionActivity
         implements ExtendedScrollView.OnScrollListener {
-    public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
-    private static final String ARG_TITLE = InsightInfoDialogFragment.class.getName() + ".ARG_TITLE";
-    private static final String ARG_MESSAGE = InsightInfoDialogFragment.class.getName() + ".ARG_MESSAGE";
-    private static final String ARG_POSITION = InsightInfoDialogFragment.class.getName() + ".ARG_POSITION";
-    private static final String ARG_INFO = InsightInfoDialogFragment.class.getName() + ".ARG_INFO";
-    private static final String ARG_IMAGE_URL = InsightInfoDialogFragment.class.getName() + ".ARG_IMAGE_URL";
+    public static final String TAG = InsightInfoActivity.class.getSimpleName();
+    private static final String ARG_TITLE = InsightInfoActivity.class.getName() + ".ARG_TITLE";
+    private static final String ARG_MESSAGE = InsightInfoActivity.class.getName() + ".ARG_MESSAGE";
+    private static final String ARG_POSITION = InsightInfoActivity.class.getName() + ".ARG_POSITION";
+    private static final String ARG_INFO = InsightInfoActivity.class.getName() + ".ARG_INFO";
+    private static final String ARG_IMAGE_URL = InsightInfoActivity.class.getName() + ".ARG_IMAGE_URL";
 
     @Inject
     Picasso picasso;
@@ -88,9 +85,9 @@ public class InsightInfoActivity extends ScopedInjectionActivity
 
 
         }
-        setContentView(R.layout.fragment_dialog_insight_info);
-        illustrationImage = (ImageView) findViewById(R.id.fragment_dialog_insight_info_illustration);
-        final TextView summaryText = (TextView) findViewById(R.id.fragment_dialog_insight_info_summary);
+        setContentView(R.layout.activity_insightinfo);
+        illustrationImage = (ImageView) findViewById(R.id.activity_dialog_insight_info_illustration);
+        final TextView summaryText = (TextView) findViewById(R.id.activity_dialog_insight_info_summary);
 
         Intent intent = getIntent();
         final Bundle arguments = intent.getExtras();
@@ -113,11 +110,11 @@ public class InsightInfoActivity extends ScopedInjectionActivity
             illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */);
             illustrationImage.requestLayout();
         });
-        final TextView titleText = (TextView) findViewById(R.id.fragment_dialog_insight_info_title);
+        final TextView titleText = (TextView) findViewById(R.id.activity_dialog_insight_info_title);
         titleText.setText(title);
 
         final TextView messageText =
-                (TextView) findViewById(R.id.fragment_dialog_insight_info_message);
+                (TextView) findViewById(R.id.activity_dialog_insight_info_message);
         if (TextUtils.isEmpty(info)) {
             summaryText.setVisibility(View.GONE);
             messageText.setText(message);
@@ -128,15 +125,15 @@ public class InsightInfoActivity extends ScopedInjectionActivity
         }
 
         final Button doneButton =
-                (Button) findViewById(R.id.fragment_dialog_insight_info_done);
+                (Button) findViewById(R.id.activity_dialog_insight_info_done);
         Views.setSafeOnClickListener(doneButton, ignored -> {
             finish();
         });
 
-        this.topShadow = (ImageView) findViewById(R.id.fragment_dialog_insight_info_top_shadow);
-        this.bottomShadow = (ImageView) findViewById(R.id.fragment_dialog_insight_info_bottom_shadow);
+        this.topShadow = (ImageView) findViewById(R.id.activity_dialog_insight_info_top_shadow);
+        this.bottomShadow = (ImageView) findViewById(R.id.activity_dialog_insight_info_bottom_shadow);
 
-        this.scrollView = (ExtendedScrollView) findViewById(R.id.fragment_dialog_insight_info_scroll);
+        this.scrollView = (ExtendedScrollView) findViewById(R.id.activity_dialog_insight_info_scroll);
         scrollView.setOnScrollListener(this);
 
         final String imageUrl = intent.getStringExtra(ARG_IMAGE_URL);
@@ -148,7 +145,7 @@ public class InsightInfoActivity extends ScopedInjectionActivity
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         startPostponedEnterTransition();
                     }
-                    getStatusBarColor(bitmap);
+                    Windows.setStatusBarColor(getWindow(), getStatusBarColor(bitmap));
                 }
 
                 @Override
