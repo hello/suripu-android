@@ -1,7 +1,8 @@
-package is.hello.sense.api.model;
+package is.hello.sense.api.model.v2;
 
 import com.google.gson.annotations.SerializedName;
 
+import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class InsightInfo extends ApiResponse {

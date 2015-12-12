@@ -22,8 +22,8 @@ import java.util.List;
 import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -288,7 +288,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     image.setDrawable(null);
                 }
                 image.setVisibility(View.VISIBLE);
-                category.setText(insight.getFormattedInsightCategory());
+                category.setText(insight.getCategoryName());
             }
 
             body.setText(Styles.darkenEmphasis(resources, insight.getMessage()));

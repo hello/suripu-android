@@ -26,8 +26,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
