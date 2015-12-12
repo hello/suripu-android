@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightInfo;
+import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 

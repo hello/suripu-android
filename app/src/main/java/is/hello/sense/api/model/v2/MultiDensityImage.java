@@ -8,8 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
 
-public class ImageUrl extends ApiResponse {
-
+public class MultiDensityImage extends ApiResponse {
     @SerializedName("phone_1x")
     private String phone1x;
 
@@ -19,7 +18,7 @@ public class ImageUrl extends ApiResponse {
     @SerializedName("phone_3x")
     private String phone3x;
 
-    public String getUrl(@NonNull Resources resources){
+    public String getUrl(@NonNull Resources resources) {
         final float density = resources.getDisplayMetrics().density;
         if (density >= 3f) {
             return phone3x;
@@ -32,7 +31,7 @@ public class ImageUrl extends ApiResponse {
 
     @Override
     public String toString() {
-        return "ImageUrl{" +
+        return "MultiDensityImage{" +
                 "phone1x=" + phone1x +
                 ", phone2x='" + phone2x + '\'' +
                 ", phone3x='" + phone3x + '\'' +

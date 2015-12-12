@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 

@@ -15,8 +15,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.api.model.Insight;
 import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.DateFormatter;
@@ -90,7 +90,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         final Insight insight = Insight.create(0, "Light is bad",
                                                new MarkupString("You should have less of it"),
                                                DateTime.now().minusDays(5),
-                                               "LIGHT", "Too much light makes you sleep poorly");
+                                               "LIGHT", "Light");
 
         adapter.bindInsights(Lists.newArrayList(insight));
 
@@ -100,6 +100,7 @@ public class InsightsAdapterTests extends SenseTestCase {
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
         assertThat(holder.date.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(holder.category.getText().toString(), is(equalTo("Light")));
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
     }
 
@@ -108,7 +109,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         final Insight insight = Insight.create(0, "Light is bad",
                                                new MarkupString("You should have less of it"),
                                                DateTime.now().minusDays(5),
-                                               "LIGHT", "Too much light makes you sleep poorly");
+                                               "LIGHT", "Light");
 
         adapter.bindInsights(Lists.newArrayList(insight));
 
