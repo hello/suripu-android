@@ -43,8 +43,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap_outer"
                 android:scaleType="centerCrop"
-                android:adjustViewBounds="false"
+                android:adjustViewBounds="true"
                 android:background="@color/background_insight_illustration"
+                android:src="@drawable/empty_illustration"
                 tools:ignore="ContentDescription" />
 
             <TextView

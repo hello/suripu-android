@@ -217,12 +217,8 @@ public class InsightsFragment extends UndersideTabFragment
         // InsightsFragment lives inside of a child fragment manager,
         // which we don't want to use to display dialogs.
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
-        final String imageUrl = insight.getImageUrl(getResources());
-        final InsightInfoFragment infoFragment =
-                InsightInfoFragment.newInstance(insight.getCategory(),
-                                                insight.getTitle(),
-                                                insight.getMessage(),
-                                                imageUrl);
+        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
+                                                                                 getResources());
         infoFragment.setTargetFragment(this, 0x0);
         infoFragment.show(fragmentManager,
                           R.id.activity_home_container,

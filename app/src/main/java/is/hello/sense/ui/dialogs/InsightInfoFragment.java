@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -31,6 +32,7 @@ import is.hello.buruberi.util.Errors;
 import is.hello.buruberi.util.StringRef;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
@@ -47,7 +49,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_TITLE = InsightInfoFragment.class.getName() + ".ARG_TITLE";
-    private static final String ARG_MESSAGE = InsightInfoFragment.class.getName() + ".ARG_MESSAGE";
+    private static final String ARG_SUMMARY = InsightInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_IMAGE_URL = InsightInfoFragment.class.getName() + ".ARG_IMAGE_URL";
 
     @Inject Picasso picasso;
@@ -57,7 +59,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private View fillView;
     private String title;
     private String imageUrl;
-    private CharSequence message;
+    private CharSequence summary;
 
     private ExtendedScrollView scrollView;
     private ImageView topShadow, bottomShadow;
@@ -70,17 +72,15 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     //region Lifecycle
 
-    public static InsightInfoFragment newInstance(@NonNull String category,
-                                                  @NonNull String title,
-                                                  @NonNull MarkupString message,
-                                                  @Nullable String imageUrl) {
+    public static InsightInfoFragment newInstance(@NonNull Insight insight,
+                                                  @NonNull Resources resources) {
         final InsightInfoFragment fragment = new InsightInfoFragment();
 
         final Bundle arguments = new Bundle();
-        arguments.putString(ARG_CATEGORY, category);
-        arguments.putString(ARG_TITLE, title);
-        arguments.putParcelable(ARG_MESSAGE, message);
-        arguments.putString(ARG_IMAGE_URL, imageUrl);
+        arguments.putString(ARG_CATEGORY, insight.getCategory());
+        arguments.putString(ARG_TITLE, insight.getTitle());
+        arguments.putParcelable(ARG_SUMMARY, insight.getMessage());
+        arguments.putString(ARG_IMAGE_URL, insight.getImageUrl(resources));
         fragment.setArguments(arguments);
 
         return fragment;
@@ -99,8 +99,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.title = arguments.getString(ARG_TITLE);
         this.imageUrl = arguments.getString(ARG_IMAGE_URL);
 
-        final MarkupString message = arguments.getParcelable(ARG_MESSAGE);
-        this.message = Styles.darkenEmphasis(getResources(), message);
+        final MarkupString message = arguments.getParcelable(ARG_SUMMARY);
+        this.summary = Styles.darkenEmphasis(getResources(), message);
 
         if (savedInstanceState != null) {
             this.defaultStatusBarColor = savedInstanceState.getInt("defaultStatusBarColor");
@@ -126,7 +126,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.messageText = (TextView) rootView.findViewById(R.id.fragment_insight_info_message);
         final TextView summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
         final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
-        summaryText.setText(message);
+        summaryText.setText(summary);
 
         this.contentViews = new View[] { titleText, messageText, summaryHeaderText, summaryText };
 
@@ -144,13 +144,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         if (existingImage != null) {
             illustrationImage.setImageDrawable(existingImage);
         } else if (!TextUtils.isEmpty(imageUrl)) {
-            Views.runWhenLaidOut(illustrationImage, () -> {
-                final int width = illustrationImage.getMeasuredWidth();
-                illustrationImage.getLayoutParams().height = Math.round(width * 0.5f /* 2:1 */);
-                illustrationImage.requestLayout();
-            });
-
             picasso.load(imageUrl)
+                   .placeholder(R.drawable.empty_illustration)
                    .into(illustrationImage);
         }
 
@@ -188,7 +183,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
-        if (getSource().isComplexTransitionAvailable() && illustrationImage.getDrawable() != null) {
+        if (getSource().isComplexTransitionAvailable()) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
