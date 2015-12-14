@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -91,9 +92,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     //region Lifecycle
 
     public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @IdRes int sourceViewId) {
-        TimelineInfoFragment fragment = new TimelineInfoFragment();
+        final TimelineInfoFragment fragment = new TimelineInfoFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putParcelable(ARG_SUMMARY, timeline.getMessage());
         arguments.putString(ARG_SCORE_CONDITION, timeline.getScoreCondition().toString());
         arguments.putParcelableArrayList(ARG_METRICS, timeline.getMetrics());
@@ -108,7 +109,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = getArguments();
+        final Bundle arguments = getArguments();
 
         //noinspection ConstantConditions
         this.scoreCondition = ScoreCondition.fromString(arguments.getString(ARG_SCORE_CONDITION));
@@ -133,8 +134,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // For the negative space edge effect to have the right color. Yes, really.
-            int styleRes = Styles.getScoreConditionTintThemeRes(scoreCondition);
-            ContextThemeWrapper themeContext = new ContextThemeWrapper(getActivity(), styleRes);
+            final int styleRes = Styles.getScoreConditionTintThemeRes(scoreCondition);
+            final ContextThemeWrapper themeContext = new ContextThemeWrapper(getActivity(), styleRes);
             inflater = LayoutInflater.from(themeContext);
         }
 
@@ -145,13 +146,15 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             getFragmentManager().popBackStack(TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            RippleDrawable headerBackground = new RippleDrawable(ColorStateList.valueOf(darkenedScoreColor),
-                    new ColorDrawable(scoreColor), null);
+            final RippleDrawable headerBackground =
+                    new RippleDrawable(ColorStateList.valueOf(darkenedScoreColor),
+                                       new ColorDrawable(scoreColor), null);
             header.setBackground(headerBackground);
         } else {
-            StateListDrawable headerBackground = new StateListDrawable();
-            headerBackground.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(darkenedScoreColor));
-            headerBackground.addState(new int[]{}, new ColorDrawable(scoreColor));
+            final StateListDrawable headerBackground = new StateListDrawable();
+            headerBackground.addState(new int[] { android.R.attr.state_pressed },
+                                      new ColorDrawable(darkenedScoreColor));
+            headerBackground.addState(new int[] {}, new ColorDrawable(scoreColor));
             header.setBackground(headerBackground);
         }
 
@@ -171,7 +174,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     @Override
     protected Animator onProvideEnterAnimator() {
-        AnimatorSet compound = new AnimatorSet();
+        final AnimatorSet compound = new AnimatorSet();
 
         compound.play(createFadeIn())
                 .with(createHeaderReveal())
@@ -199,7 +202,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     @Override
     protected Animator onProvideExitAnimator() {
-        AnimatorSet compound = new AnimatorSet();
+        final AnimatorSet compound = new AnimatorSet();
 
         compound.play(createFadeOut())
                 .with(createHeaderDismissal())
@@ -230,29 +233,32 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     //region Showing
 
     private static ValueAnimator createViewFrameAnimator(@NonNull View view, @NonNull Rect... rectangles) {
-        ValueAnimator frameAnimator = AnimatorTemplate.DEFAULT.createRectAnimator((Rect[]) rectangles);
+        final ValueAnimator frameAnimator =
+                AnimatorTemplate.DEFAULT.createRectAnimator((Rect[]) rectangles);
         frameAnimator.addUpdateListener(a -> {
-            Rect frame = (Rect) a.getAnimatedValue();
+            final Rect frame = (Rect) a.getAnimatedValue();
             view.layout(frame.left, frame.top, frame.right, frame.bottom);
         });
         return frameAnimator;
     }
 
     private Animator createFadeIn() {
-        ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
+        final ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
             this.savedStatusBarColor = window.getStatusBarColor();
             fadeIn.addUpdateListener(animator -> {
-                float fraction = animator.getAnimatedFraction();
+                final float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
 
-                int statusBar = Anime.interpolateColors(fraction, savedStatusBarColor, darkenedScoreColor);
+                final int statusBar = Anime.interpolateColors(fraction,
+                                                              savedStatusBarColor,
+                                                              darkenedScoreColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
             fadeIn.addUpdateListener(animator -> {
-                float fraction = animator.getAnimatedFraction();
+                final float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(fraction);
             });
         }
@@ -260,7 +266,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     }
 
     private Animator createHeaderReveal() {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(header, "translationY", -header.getMeasuredHeight(), 0f);
+        final ObjectAnimator animator = ObjectAnimator.ofFloat(header, "translationY",
+                                                               -header.getMeasuredHeight(), 0f);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -271,22 +278,24 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     }
 
     private Animator createRecyclerReveal() {
-        ValueAnimator animator;
+        final ValueAnimator animator;
 
-        View fromView = findSourceView();
+        final View fromView = findSourceView();
         if (fromView != null) {
-            Rect initialRect = new Rect();
+            final Rect initialRect = new Rect();
             Views.getFrameInWindow(fromView, initialRect);
 
-            Rect finalRect = Views.copyFrame(recycler);
+            final Rect finalRect = Views.copyFrame(recycler);
             finalRect.top += header.getBottom();
             animator = createViewFrameAnimator(recycler, initialRect, finalRect);
 
             this.finalRecyclerLayoutParams = recycler.getLayoutParams();
 
             @SuppressLint("RtlHardcoded")
-            FrameLayout.LayoutParams initialLayoutParams = new FrameLayout.LayoutParams(initialRect.width(),
-                    initialRect.height(), Gravity.TOP | Gravity.LEFT);
+            final FrameLayout.LayoutParams initialLayoutParams =
+                    new FrameLayout.LayoutParams(initialRect.width(),
+                                                 initialRect.height(),
+                                                 Gravity.TOP | Gravity.LEFT);
             initialLayoutParams.leftMargin = initialRect.left;
             initialLayoutParams.topMargin = initialRect.top;
             recycler.setLayoutParams(initialLayoutParams);
@@ -313,14 +322,14 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     //region Hiding
 
     private Animator createRecyclerDismissal() {
-        ValueAnimator animator;
+        final ValueAnimator animator;
 
-        View fromView = findSourceView();
+        final View fromView = findSourceView();
         if (fromView != null) {
-            Rect finalRect = new Rect();
+            final Rect finalRect = new Rect();
             Views.getFrameInWindow(fromView, finalRect);
 
-            Rect initialRect = Views.copyFrame(recycler);
+            final Rect initialRect = Views.copyFrame(recycler);
             initialRect.top += (header.getBottom() + header.getTranslationY());
             animator = createViewFrameAnimator(recycler, initialRect, finalRect);
         } else {
@@ -339,7 +348,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     }
 
     private Animator createHeaderDismissal() {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(header, "translationY", header.getTranslationY(), -header.getMeasuredHeight());
+        final ObjectAnimator animator = ObjectAnimator.ofFloat(header, "translationY",
+                                                               header.getTranslationY(),
+                                                               -header.getMeasuredHeight());
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -350,16 +361,18 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     }
 
     private Animator createFadeOut() {
-        ValueAnimator fadeOut = ValueAnimator.ofFloat(0f, 1f);
+        final ValueAnimator fadeOut = ValueAnimator.ofFloat(0f, 1f);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
-            int oldStatusBarColor = window.getStatusBarColor();
-            int newStatusBarColor = this.savedStatusBarColor;
+            final int oldStatusBarColor = window.getStatusBarColor();
+            final int newStatusBarColor = this.savedStatusBarColor;
             fadeOut.addUpdateListener(animator -> {
-                float fraction = animator.getAnimatedFraction();
+                final float fraction = animator.getAnimatedFraction();
                 rootView.setAlpha(1f - fraction);
 
-                int statusBar = Anime.interpolateColors(fraction, oldStatusBarColor, newStatusBarColor);
+                final int statusBar = Anime.interpolateColors(fraction,
+                                                              oldStatusBarColor,
+                                                              newStatusBarColor);
                 window.setStatusBarColor(statusBar);
             });
         } else {
@@ -378,7 +391,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     //region Recycler
 
     private @Nullable View findSourceView() {
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
         if (activity != null) {
             if (activity instanceof AnchorProvider) {
                 return ((AnchorProvider) activity).findAnimationAnchorView(sourceViewId);
@@ -411,9 +424,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private class CollapseHeaderScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            RecyclerView.ViewHolder topViewHolder = recycler.findViewHolderForAdapterPosition(0);
-            float headerHeight = header.getMeasuredHeight();
-            float amount = (topViewHolder == null) ? 0f : topViewHolder.itemView.getTop() / headerHeight;
+            final RecyclerView.ViewHolder topViewHolder = recycler.findViewHolderForAdapterPosition(0);
+            final float headerHeight = header.getMeasuredHeight();
+            final float amount = (topViewHolder == null) ? 0f : topViewHolder.itemView.getTop() / headerHeight;
             header.setTranslationY(headerHeight * -(1f - amount));
 
             titleText.setAlpha(amount);
@@ -431,13 +444,13 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             this.dividerSize = resources.getDimensionPixelSize(R.dimen.divider_size);
             this.verticalDividerInset = resources.getDimensionPixelSize(R.dimen.gap_medium);
 
-            int lineColor = resources.getColor(R.color.border);
+            final int lineColor = resources.getColor(R.color.border);
             linePaint.setColor(lineColor);
         }
 
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            int adapterPosition = parent.getChildAdapterPosition(view);
+            final int adapterPosition = parent.getChildAdapterPosition(view);
             if (adapterPosition < GRID_COLUMNS_PER_ROW) {
                 outRect.top += header.getMeasuredHeight();
             }
@@ -452,7 +465,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         @Override
         public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
             for (int i = 0, size = parent.getChildCount(); i < size; i++) {
-                View child = parent.getChildAt(i);
+                final View child = parent.getChildAt(i);
                 if ((i % 2) == 0) {
                     lineRect.set(child.getRight() - dividerSize, child.getTop() + verticalDividerInset,
                             child.getRight(), child.getBottom() - verticalDividerInset);
@@ -468,6 +481,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     private class MetricAdapter extends RecyclerView.Adapter<MetricAdapter.ViewHolder> {
         private final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        private final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
         @Override
         public int getItemCount() {
@@ -476,16 +490,16 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = inflater.inflate(R.layout.item_timeline_info, parent, false);
+            final View view = inflater.inflate(R.layout.item_timeline_info, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            TimelineMetric metric = metrics.get(position);
+            final TimelineMetric metric = metrics.get(position);
 
             holder.titleText.setText(metric.getName().stringRes);
-            Long value = metric.getValue();
+            final Long value = metric.getValue();
             if (value != null) {
                 if (metric.getUnit() == TimelineMetric.Unit.MINUTES) {
                     holder.readingText.setText(dateFormatter.formatDuration(value, TimeUnit.MINUTES));
@@ -494,7 +508,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                     boolean use24Time = preferences.getUse24Time();
                     holder.readingText.setText(dateFormatter.formatForTimelineInfo(date, use24Time));
                 } else {
-                    holder.readingText.setText(value.toString());
+                    holder.readingText.setText(numberFormat.format(value));
                 }
             } else {
                 if (metric.getUnit() == TimelineMetric.Unit.CONDITION) {
@@ -504,11 +518,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 }
             }
 
-            int valueColorRes = metric.getCondition().colorRes;
+            final int valueColorRes = metric.getCondition().colorRes;
             holder.readingText.setTextColor(getResources().getColor(valueColorRes));
         }
 
-        private @StringRes int getConditionText(@NonNull TimelineMetric.Name sensor, @NonNull Condition condition) {
+        private @StringRes int getConditionText(@NonNull TimelineMetric.Name sensor,
+                                                @NonNull Condition condition) {
             switch (condition) {
                 case ALERT: {
                     switch (sensor) {
@@ -546,7 +561,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             final TextView titleText;
             final TextView readingText;
 
-            public ViewHolder(@NonNull View itemView) {
+            ViewHolder(@NonNull View itemView) {
                 super(itemView);
 
                 this.titleText = (TextView) itemView.findViewById(R.id.item_timeline_info_title);
