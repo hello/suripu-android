@@ -1,18 +1,19 @@
 package is.hello.sense.ui.dialogs;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +27,12 @@ import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
-import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.buruberi.util.Errors;
+import is.hello.buruberi.util.StringRef;
+import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -40,40 +45,42 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         implements ExtendedScrollView.OnScrollListener {
     public static final String TAG = InsightInfoFragment.class.getSimpleName();
 
+    private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_TITLE = InsightInfoFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_MESSAGE = InsightInfoFragment.class.getName() + ".ARG_MESSAGE";
     private static final String ARG_IMAGE_URL = InsightInfoFragment.class.getName() + ".ARG_IMAGE_URL";
-    private static final String ARG_INFO = InsightInfoFragment.class.getName() + ".ARG_INFO";
 
     @Inject Picasso picasso;
+    @Inject InsightInfoPresenter presenter;
 
     private View rootView;
+    private View fillView;
     private String title;
     private String imageUrl;
     private CharSequence message;
-    private CharSequence info;
 
     private ExtendedScrollView scrollView;
-    private ViewGroup contentView;
     private ImageView topShadow, bottomShadow;
     private ImageView illustrationImage;
+    private View[] contentViews;
+    private TextView messageText;
     private Button doneButton;
 
     private @ColorInt int defaultStatusBarColor;
 
     //region Lifecycle
 
-    public static InsightInfoFragment newInstance(@NonNull String title,
+    public static InsightInfoFragment newInstance(@NonNull String category,
+                                                  @NonNull String title,
                                                   @NonNull MarkupString message,
-                                                  @Nullable String imageUrl,
-                                                  @Nullable MarkupString info) {
+                                                  @Nullable String imageUrl) {
         final InsightInfoFragment fragment = new InsightInfoFragment();
 
         final Bundle arguments = new Bundle();
+        arguments.putString(ARG_CATEGORY, category);
         arguments.putString(ARG_TITLE, title);
         arguments.putParcelable(ARG_MESSAGE, message);
         arguments.putString(ARG_IMAGE_URL, imageUrl);
-        arguments.putParcelable(ARG_INFO, info);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -84,64 +91,54 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         super.onCreate(savedInstanceState);
 
         final Bundle arguments = getArguments();
+        final String category = arguments.getString(ARG_CATEGORY);
+        if (category != null) {
+            presenter.setCategory(category);
+        }
+
         this.title = arguments.getString(ARG_TITLE);
         this.imageUrl = arguments.getString(ARG_IMAGE_URL);
 
         final MarkupString message = arguments.getParcelable(ARG_MESSAGE);
         this.message = Styles.darkenEmphasis(getResources(), message);
 
-        final MarkupString info = arguments.getParcelable(ARG_INFO);
-        this.info = Styles.darkenEmphasis(getResources(), info);
-
         if (savedInstanceState != null) {
             this.defaultStatusBarColor = savedInstanceState.getInt("defaultStatusBarColor");
         } else {
             this.defaultStatusBarColor = Windows.getStatusBarColor(getActivity().getWindow());
         }
+
+        addPresenter(presenter);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.rootView = inflater.inflate(R.layout.fragment_insight_info, container, false);
+        this.fillView = rootView.findViewById(R.id.fragment_insight_info_fill);
 
         this.illustrationImage =
                 (ImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
 
-        this.contentView = (ViewGroup) rootView.findViewById(R.id.fragment_insight_info_content);
-        contentView.setVisibility(View.INVISIBLE);
-
-        final TextView titleText =
-                (TextView) contentView.findViewById(R.id.fragment_insight_info_title);
+        final TextView titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
         titleText.setText(title);
 
-        final TextView summaryTitleText =
-                (TextView) contentView.findViewById(R.id.fragment_insight_info_summary_header);
-        final TextView summaryText =
-                (TextView) contentView.findViewById(R.id.fragment_insight_info_summary);
-        final TextView messageText =
-                (TextView) contentView.findViewById(R.id.fragment_insight_info_message);
-        if (TextUtils.isEmpty(info)) {
-            summaryTitleText.setVisibility(View.GONE);
-            summaryText.setVisibility(View.GONE);
-            messageText.setText(message);
-        } else {
-            summaryTitleText.setVisibility(View.VISIBLE);
-            summaryText.setVisibility(View.VISIBLE);
-            summaryText.setText(message);
-            messageText.setText(info);
-        }
+        this.messageText = (TextView) rootView.findViewById(R.id.fragment_insight_info_message);
+        final TextView summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
+        final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
+        summaryText.setText(message);
 
-        this.doneButton = (Button) rootView.findViewById(R.id.fragment_insight_info_done);
+        this.contentViews = new View[] { titleText, messageText, summaryHeaderText, summaryText };
+
+        this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
         Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {
             getFragmentManager().popBackStack();
         });
 
-        this.topShadow = (ImageView) rootView.findViewById(R.id.fragment_insight_info_top_shadow);
-        this.bottomShadow = (ImageView) rootView.findViewById(R.id.fragment_insight_info_bottom_shadow);
+        this.topShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_top_shadow);
+        this.bottomShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_bottom_shadow);
 
-        this.scrollView = (ExtendedScrollView) rootView.findViewById(R.id.fragment_insight_info_scroll);
-        scrollView.setOnScrollListener(this);
+        this.scrollView = (ExtendedScrollView) this.rootView.findViewById(R.id.fragment_insight_info_scroll);
 
         final Drawable existingImage = getSource().getInsightImage();
         if (existingImage != null) {
@@ -158,6 +155,15 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        bindAndSubscribe(presenter.insightInfo,
+                         this::bindInsightInfo,
+                         this::insightInfoUnavailable);
     }
 
     @Override
@@ -183,17 +189,24 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
         if (getSource().isComplexTransitionAvailable() && illustrationImage.getDrawable() != null) {
+            topShadow.setVisibility(View.GONE);
+            bottomShadow.setVisibility(View.GONE);
+
             scene.play(createIllustrationEnter())
-                 .with(createBackgroundEnter())
+                 .with(createFillEnter())
                  .with(createStatusBarEnter())
-                 .before(createDoneEnter());
+                 .before(createDoneEnter())
+                 .before(createContentEnter());
         } else {
-            final ObjectAnimator fadeIn =
-                    ObjectAnimator.ofFloat(rootView, "alpha",
-                                           0f, 1f);
+            final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(rootView, "alpha",
+                                                                 0f, 1f);
             scene.play(fadeIn);
         }
-        return AnimatorTemplate.DEFAULT.apply(scene);
+
+        scene.setInterpolator(new FastOutSlowInInterpolator());
+        scene.setDuration(Anime.DURATION_NORMAL);
+
+        return scene;
     }
 
     @Override
@@ -202,24 +215,45 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             final Window window = getActivity().getWindow();
             Windows.setStatusBarColor(window, getTargetStatusBarColor());
         }
+
+        for (final View contentView : contentViews) {
+            contentView.setVisibility(View.VISIBLE);
+            contentView.setAlpha(1f);
+        }
+
+        scrollView.setOnScrollListener(this);
+    }
+
+    @Override
+    protected void onEnterAnimatorEnd() {
+        scrollView.setOnScrollListener(this);
     }
 
     @Override
     protected Animator onProvideExitAnimator() {
         final AnimatorSet scene = new AnimatorSet();
         if (getSource().isComplexTransitionAvailable()) {
+            topShadow.setVisibility(View.GONE);
+            bottomShadow.setVisibility(View.GONE);
+
+            scrollView.setOnScrollListener(null);
+
             scene.play(createIllustrationExit())
                  .with(createStatusBarExit())
-                 .with(createBackgroundExit())
-                 .with(createDoneExit());
+                 .with(createFillExit())
+                 .with(createDoneExit())
+                 .after(createContentExit());
         } else {
-            final ObjectAnimator fadeOut =
-                    ObjectAnimator.ofFloat(rootView, "alpha",
-                                           1f, 0f);
+            final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(rootView, "alpha",
+                                                                  1f, 0f);
             scene.play(fadeOut)
                  .with(createStatusBarExit());
         }
-        return AnimatorTemplate.DEFAULT.apply(scene);
+
+        scene.setInterpolator(new FastOutLinearInInterpolator());
+        scene.setDuration(Anime.DURATION_NORMAL);
+
+        return scene;
     }
 
     //endregion
@@ -227,12 +261,37 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     //region Enter Animations
 
-    private Animator createBackgroundEnter() {
-        final @ColorInt int color = getResources().getColor(R.color.background_dark_overlay);
-        final ColorDrawable background = new ColorDrawable(color);
-        background.setAlpha(0);
-        rootView.setBackground(background);
-        return ObjectAnimator.ofInt(background, "alpha", 0, Color.alpha(color));
+    private Animator createContentEnter() {
+        final AnimatorSet subscene = new AnimatorSet();
+        subscene.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                for (final View contentView : contentViews) {
+                    contentView.setVisibility(View.VISIBLE);
+                    contentView.setAlpha(0f);
+                }
+            }
+        });
+
+        final Animator[] animators = new Animator[contentViews.length];
+        for (int i = 0, length = contentViews.length; i < length; i++) {
+            animators[i] = ObjectAnimator.ofFloat(contentViews[i], "alpha", 0f, 1f);
+        }
+        subscene.playTogether(animators);
+        return subscene;
+    }
+
+    private Animator createFillEnter() {
+        final Rect initialRect = new Rect();
+
+        final Rect finalRect = Views.copyFrame(fillView);
+        getSource().getInsightCardFrame(initialRect);
+        fillView.layout(initialRect.left, initialRect.top,
+                        initialRect.right, initialRect.bottom);
+
+        return Views.createFrameAnimator(fillView,
+                                         initialRect,
+                                         finalRect);
     }
 
     private Animator createStatusBarEnter() {
@@ -271,11 +330,22 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                                       0f, doneButton.getHeight());
     }
 
+    private Animator createContentExit() {
+        final AnimatorSet subscene = new AnimatorSet();
+        final Animator[] animators = new Animator[contentViews.length];
+        for (int i = 0, length = contentViews.length; i < length; i++) {
+            animators[i] = ObjectAnimator.ofFloat(contentViews[i], "alpha", 1f, 0f);
+        }
+        subscene.playTogether(animators);
+        return subscene;
+    }
+
     private Animator createIllustrationExit() {
         final Rect initialRect = Views.copyFrame(illustrationImage);
 
         final Rect finalRect = new Rect();
         getSource().getInsightImageFrame(finalRect);
+        finalRect.offset(scrollView.getScrollX(), scrollView.getScrollY());
 
         return Views.createFrameAnimator(illustrationImage,
                                          initialRect,
@@ -289,11 +359,15 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return Windows.createStatusBarColorAnimator(window, start, end);
     }
 
-    private Animator createBackgroundExit() {
-        final @ColorInt int color = getResources().getColor(R.color.background_dark_overlay);
-        final ColorDrawable background = new ColorDrawable(color);
-        rootView.setBackground(background);
-        return ObjectAnimator.ofInt(background, "alpha", Color.alpha(color), 0);
+    private Animator createFillExit() {
+        final Rect initialRect = Views.copyFrame(fillView);
+
+        final Rect finalRect = new Rect();
+        getSource().getInsightCardFrame(finalRect);
+
+        return Views.createFrameAnimator(fillView,
+                                         initialRect,
+                                         finalRect);
     }
 
     //endregion
@@ -312,6 +386,24 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     private Source getSource() {
         return (Source) getTargetFragment();
+    }
+
+    //endregion
+
+
+    //region Data Bindings
+
+    public void bindInsightInfo(@NonNull InsightInfo info) {
+        messageText.setText(info.getText());
+    }
+
+    public void insightInfoUnavailable(Throwable e) {
+        final StringRef errorMessage = Errors.getDisplayMessage(e);
+        if (errorMessage != null) {
+            messageText.setText(errorMessage.resolve(getActivity()));
+        } else {
+            messageText.setText(R.string.dialog_error_generic_message);
+        }
     }
 
     //endregion

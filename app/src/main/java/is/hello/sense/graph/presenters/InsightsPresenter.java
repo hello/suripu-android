@@ -36,6 +36,7 @@ public class InsightsPresenter extends ScopedValuePresenter<ArrayList<Insight>> 
     }
 
 
+    @Deprecated
     public Observable<InsightInfo> infoForInsight(@NonNull Insight insight) {
         return apiService.insightInfo(insight.getCategory()).flatMap(insights -> {
             if (insights.isEmpty()) {

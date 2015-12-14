@@ -12,6 +12,8 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import is.hello.sense.ui.widget.util.Views;
+
 /**
  * A fragment which has complex enter and exit animations.
  */
@@ -24,17 +26,18 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.hasAnimated = (savedInstanceState != null && savedInstanceState.getBoolean(SAVED_HAS_ANIMATED));
+        this.hasAnimated = (savedInstanceState != null &&
+                savedInstanceState.getBoolean(SAVED_HAS_ANIMATED));
     }
 
     @Override
     public final Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
         if (enter) {
-            AnimatorSet placeholder = new AnimatorSet();
+            final AnimatorSet placeholder = new AnimatorSet();
             if (hasAnimated) {
                 onSkipEnterAnimator();
             } else {
-                View view = getView();
+                final View view = getView();
                 assert(view != null);
                 view.setVisibility(View.INVISIBLE);
                 placeholder.addListener(new AnimatorListenerAdapter() {
@@ -43,11 +46,17 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
                         // The placeholder animation runs before the root view
                         // is attached to the window, somehow. So we do this
                         // on the next run loop cycle to work-around that.
-                        view.post(() -> {
-                            view.setVisibility(View.VISIBLE);
-
-                            Animator animator = onProvideEnterAnimator();
+                        Views.runWhenLaidOut(view, () -> {
+                            final Animator animator = onProvideEnterAnimator();
+                            animator.addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    onEnterAnimatorEnd();
+                                }
+                            });
                             animator.start();
+
+                            view.setVisibility(View.VISIBLE);
                         });
                     }
                 });
@@ -84,6 +93,13 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
      * Called when the fragment is being removed.
      */
     protected abstract Animator onProvideExitAnimator();
+
+    /**
+     * Called when the enter animator finishes.
+     */
+    protected void onEnterAnimatorEnd() {
+        // Do nothing.
+    }
 
     /**
      * Returns whether or not the fragment has already animated its entrance.

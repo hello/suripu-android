@@ -14,6 +14,7 @@ import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -93,6 +94,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         UndersideFragment.class,
         InsightsPresenter.class,
         InsightsFragment.class,
+        InsightInfoPresenter.class,
         InsightInfoFragment.class,
         RoomConditionsFragment.class,
         RoomConditionsPresenter.class,

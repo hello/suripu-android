@@ -218,38 +218,15 @@ public class InsightsFragment extends UndersideTabFragment
         // which we don't want to use to display dialogs.
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final String imageUrl = insight.getImageUrl(getResources());
-        if (insight.hasInfo()) {
-            insightsAdapter.setLoadingInsightPosition(viewHolder.getAdapterPosition());
-            bindAndSubscribe(insightsPresenter.infoForInsight(insight), insightInfo -> {
-                final InsightInfoFragment infoFragment =
-                        InsightInfoFragment.newInstance(insight.getTitle(),
-                                                        insight.getMessage(),
-                                                        imageUrl,
-                                                        insightInfo.getText());
-                infoFragment.setTargetFragment(this, 0x0);
-                infoFragment.show(fragmentManager,
-                                  R.id.activity_home_container,
-                                  InsightInfoFragment.TAG);
-
-                insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
-            }, e -> {
-                final ErrorDialogFragment errorDialogFragment =
-                        new ErrorDialogFragment.Builder(e, getResources()).build();
-                errorDialogFragment.showAllowingStateLoss(fragmentManager, ErrorDialogFragment.TAG);
-
-                insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
-            });
-        } else {
-            final InsightInfoFragment infoFragment =
-                    InsightInfoFragment.newInstance(insight.getTitle(),
-                                                    insight.getMessage(),
-                                                    imageUrl,
-                                                    null);
-            infoFragment.setTargetFragment(this, 0x0);
-            infoFragment.show(fragmentManager,
-                              R.id.activity_home_container,
-                              InsightInfoFragment.TAG);
-        }
+        final InsightInfoFragment infoFragment =
+                InsightInfoFragment.newInstance(insight.getCategory(),
+                                                insight.getTitle(),
+                                                insight.getMessage(),
+                                                imageUrl);
+        infoFragment.setTargetFragment(this, 0x0);
+        infoFragment.show(fragmentManager,
+                          R.id.activity_home_container,
+                          InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;
     }
