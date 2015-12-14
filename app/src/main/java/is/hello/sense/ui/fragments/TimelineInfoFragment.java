@@ -44,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.go99.Anime;
-import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -232,16 +231,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Showing
 
-    private static ValueAnimator createViewFrameAnimator(@NonNull View view, @NonNull Rect... rectangles) {
-        final ValueAnimator frameAnimator =
-                AnimatorTemplate.DEFAULT.createRectAnimator((Rect[]) rectangles);
-        frameAnimator.addUpdateListener(a -> {
-            final Rect frame = (Rect) a.getAnimatedValue();
-            view.layout(frame.left, frame.top, frame.right, frame.bottom);
-        });
-        return frameAnimator;
-    }
-
     private Animator createFadeIn() {
         final ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
@@ -287,7 +276,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             final Rect finalRect = Views.copyFrame(recycler);
             finalRect.top += header.getBottom();
-            animator = createViewFrameAnimator(recycler, initialRect, finalRect);
+            animator = Views.createFrameAnimator(recycler, initialRect, finalRect);
 
             this.finalRecyclerLayoutParams = recycler.getLayoutParams();
 
@@ -331,7 +320,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             final Rect initialRect = Views.copyFrame(recycler);
             initialRect.top += (header.getBottom() + header.getTranslationY());
-            animator = createViewFrameAnimator(recycler, initialRect, finalRect);
+            animator = Views.createFrameAnimator(recycler, initialRect, finalRect);
         } else {
             animator = ObjectAnimator.ofFloat(recycler, "alpha", 1f, 0f);
         }

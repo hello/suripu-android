@@ -161,6 +161,11 @@ public class ParallaxImageView extends View implements Target {
         }
     }
 
+    @Nullable
+    public Drawable getDrawable() {
+        return drawable;
+    }
+
     public void setClip(int clip) {
         this.clip = clip;
         invalidate();

@@ -1,11 +1,16 @@
 package is.hello.sense.ui.widget.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.view.Window;
+
+import is.hello.go99.animators.AnimatorTemplate;
 
 public class Windows {
     public static void setStatusBarColor(@NonNull Window window, @ColorInt int color) {
@@ -30,6 +35,18 @@ public class Windows {
             };
         } else {
             return ignored -> {};
+        }
+    }
+
+    public static Animator createStatusBarColorAnimator(@NonNull Window forWindow,
+                                                        @NonNull @ColorInt int... colors) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final ValueAnimator animator =
+                    AnimatorTemplate.DEFAULT.createColorAnimator((int[]) colors);
+            animator.addUpdateListener(createStatusBarUpdateListener(forWindow));
+            return animator;
+        } else {
+            return AnimatorTemplate.DEFAULT.apply(new AnimatorSet());
         }
     }
 

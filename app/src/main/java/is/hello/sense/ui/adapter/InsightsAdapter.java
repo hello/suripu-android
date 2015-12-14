@@ -253,7 +253,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
     }
 
-    class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
+    public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
         final TextView category;
@@ -316,9 +316,16 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             // view holder before the callback fires.
             final int adapterPosition = getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                final Insight insight = getInsightItem(adapterPosition);
-                interactionListener.onInsightClicked(adapterPosition, insight);
+                interactionListener.onInsightClicked(this);
             }
+        }
+
+        public Insight getInsight() {
+            return getInsightItem(getAdapterPosition());
+        }
+
+        public ParallaxImageView getImageView() {
+            return image;
         }
 
         @Override
@@ -334,7 +341,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onDismissLoadingIndicator();
         void onSkipQuestion();
         void onAnswerQuestion();
-        void onInsightClicked(int position, @NonNull Insight insight);
+        void onInsightClicked(@NonNull InsightViewHolder viewHolder);
     }
-
 }

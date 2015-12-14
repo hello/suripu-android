@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,7 +40,7 @@ import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
+import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
@@ -46,13 +48,15 @@ import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
 public class InsightsFragment extends UndersideTabFragment
-        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener {
+        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
+        InsightInfoFragment.Source {
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject LocalUsageTracker localUsageTracker;
@@ -66,6 +70,7 @@ public class InsightsFragment extends UndersideTabFragment
     private ProgressBar progressBar;
 
     private @Nullable TutorialOverlayView tutorialOverlayView;
+    private @Nullable InsightsAdapter.InsightViewHolder selectedInsightHolder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -171,7 +176,37 @@ public class InsightsFragment extends UndersideTabFragment
     //region Insights
 
     @Override
-    public void onInsightClicked(int position, @NonNull Insight insight) {
+    public boolean isComplexTransitionAvailable() {
+        return (selectedInsightHolder != null);
+    }
+
+    @Override
+    public void getInsightCardFrame(@NonNull Rect outRect) {
+        if (selectedInsightHolder != null) {
+            Views.getFrameInWindow(selectedInsightHolder.itemView, outRect);
+        }
+    }
+
+    @Override
+    public void getInsightImageFrame(@NonNull Rect outRect) {
+        if (selectedInsightHolder != null) {
+            Views.getFrameInWindow(selectedInsightHolder.getImageView(), outRect);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Drawable getInsightImage() {
+        if (selectedInsightHolder != null) {
+            return selectedInsightHolder.getImageView().getDrawable();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
+        final Insight insight = viewHolder.getInsight();
         if (insight.isError()) {
             return;
         }
@@ -184,16 +219,17 @@ public class InsightsFragment extends UndersideTabFragment
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final String imageUrl = insight.getImageUrl(getResources());
         if (insight.hasInfo()) {
-            insightsAdapter.setLoadingInsightPosition(position);
+            insightsAdapter.setLoadingInsightPosition(viewHolder.getAdapterPosition());
             bindAndSubscribe(insightsPresenter.infoForInsight(insight), insightInfo -> {
-                final InsightInfoDialogFragment infoFragment =
-                        InsightInfoDialogFragment.newInstance(insight.getTitle(),
-                                                              insight.getMessage(),
-                                                              imageUrl,
-                                                              insightInfo.getText());
+                final InsightInfoFragment infoFragment =
+                        InsightInfoFragment.newInstance(insight.getTitle(),
+                                                        insight.getMessage(),
+                                                        imageUrl,
+                                                        insightInfo.getText());
+                infoFragment.setTargetFragment(this, 0x0);
                 infoFragment.show(fragmentManager,
                                   R.id.activity_home_container,
-                                  InsightInfoDialogFragment.TAG);
+                                  InsightInfoFragment.TAG);
 
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
             }, e -> {
@@ -204,15 +240,18 @@ public class InsightsFragment extends UndersideTabFragment
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
             });
         } else {
-            final InsightInfoDialogFragment infoFragment =
-                    InsightInfoDialogFragment.newInstance(insight.getTitle(),
-                                                          insight.getMessage(),
-                                                          imageUrl,
-                                                          null);
+            final InsightInfoFragment infoFragment =
+                    InsightInfoFragment.newInstance(insight.getTitle(),
+                                                    insight.getMessage(),
+                                                    imageUrl,
+                                                    null);
+            infoFragment.setTargetFragment(this, 0x0);
             infoFragment.show(fragmentManager,
                               R.id.activity_home_container,
-                              InsightInfoDialogFragment.TAG);
+                              InsightInfoFragment.TAG);
         }
+
+        this.selectedInsightHolder = viewHolder;
     }
 
     @Override
