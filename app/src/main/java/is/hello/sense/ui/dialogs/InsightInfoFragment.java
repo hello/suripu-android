@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -140,7 +141,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         this.scrollView = (ExtendedScrollView) this.rootView.findViewById(R.id.fragment_insight_info_scroll);
 
-        final Drawable existingImage = getSource().getInsightImage();
+        final Source source = getSource();
+        final Drawable existingImage = source != null
+                ? source.getInsightImage()
+                : null;
         if (existingImage != null) {
             illustrationImage.setImageDrawable(existingImage);
         } else if (!TextUtils.isEmpty(imageUrl)) {
@@ -183,7 +187,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
-        if (getSource().isComplexTransitionAvailable()) {
+        final Source source = getSource();
+        if (source != null && source.isComplexTransitionAvailable()) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
@@ -227,7 +232,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected Animator onProvideExitAnimator() {
         final AnimatorSet scene = new AnimatorSet();
-        if (getSource().isComplexTransitionAvailable()) {
+        final Source source = getSource();
+        if (source != null && source.isComplexTransitionAvailable()) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
@@ -236,7 +242,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             scene.play(createIllustrationExit())
                  .with(createStatusBarExit())
                  .with(createFillExit())
-                 .with(createDoneExit())
+                 .after(createDoneExit())
                  .after(createContentExit());
         } else {
             final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(rootView, "alpha",
@@ -280,6 +286,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Rect initialRect = new Rect();
 
         final Rect finalRect = Views.copyFrame(fillView);
+        //noinspection ConstantConditions
         getSource().getInsightCardFrame(initialRect);
         fillView.layout(initialRect.left, initialRect.top,
                         initialRect.right, initialRect.bottom);
@@ -300,6 +307,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Rect initialRect = new Rect();
 
         final Rect finalRect = Views.copyFrame(illustrationImage);
+        //noinspection ConstantConditions
         getSource().getInsightImageFrame(initialRect);
         illustrationImage.layout(initialRect.left, initialRect.top,
                                  initialRect.right, initialRect.bottom);
@@ -339,6 +347,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Rect initialRect = Views.copyFrame(illustrationImage);
 
         final Rect finalRect = new Rect();
+        //noinspection ConstantConditions
         getSource().getInsightImageFrame(finalRect);
         finalRect.offset(scrollView.getScrollX(), scrollView.getScrollY());
 
@@ -358,6 +367,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Rect initialRect = Views.copyFrame(fillView);
 
         final Rect finalRect = new Rect();
+        //noinspection ConstantConditions
         getSource().getInsightCardFrame(finalRect);
 
         return Views.createFrameAnimator(fillView,
@@ -379,8 +389,15 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
     }
 
+    @Nullable
     private Source getSource() {
-        return (Source) getTargetFragment();
+        // The target fragment does not correctly survive state changes.
+        final Fragment targetFragment = getTargetFragment();
+        if (targetFragment instanceof Source) {
+            return (Source) targetFragment;
+        } else {
+            return null;
+        }
     }
 
     //endregion
