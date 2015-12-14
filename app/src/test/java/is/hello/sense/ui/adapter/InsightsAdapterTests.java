@@ -158,7 +158,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void onInsightClicked(int position, @NonNull Insight insight) {
+        public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
             callbacks.add(Callback.INSIGHT_CLICKED);
         }
 
