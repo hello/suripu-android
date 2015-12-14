@@ -3,8 +3,6 @@ package is.hello.sense.ui.dialogs;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,7 +11,9 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
-import is.hello.sense.ui.common.InjectionDialogFragment;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
@@ -35,7 +35,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
 
-public class InsightInfoDialogFragment extends InjectionDialogFragment
+public class InsightInfoDialogFragment extends InjectionFragment
         implements Target, ExtendedScrollView.OnScrollListener {
     public static final String TAG = InsightInfoDialogFragment.class.getSimpleName();
 
@@ -89,13 +89,13 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         this.info = Styles.darkenEmphasis(getResources(), info);
     }
 
+    @Nullable
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen_Insight);
-        dialog.setContentView(R.layout.fragment_dialog_insight_info);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_insight_info, container, false);
 
         this.illustrationImage =
-                (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_illustration);
+                (ImageView) view.findViewById(R.id.fragment_insight_info_illustration);
 
         Views.runWhenLaidOut(illustrationImage, () -> {
             final int width = illustrationImage.getMeasuredWidth();
@@ -104,15 +104,15 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         });
 
         final TextView titleText =
-                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_title);
+                (TextView) view.findViewById(R.id.fragment_insight_info_title);
         titleText.setText(title);
 
         final TextView summaryTitleText =
-                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_summary_header);
+                (TextView) view.findViewById(R.id.fragment_insight_info_summary_header);
         final TextView summaryText =
-                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_summary);
+                (TextView) view.findViewById(R.id.fragment_insight_info_summary);
         final TextView messageText =
-                (TextView) dialog.findViewById(R.id.fragment_dialog_insight_info_message);
+                (TextView) view.findViewById(R.id.fragment_insight_info_message);
         if (TextUtils.isEmpty(info)) {
             summaryTitleText.setVisibility(View.GONE);
             summaryText.setVisibility(View.GONE);
@@ -125,15 +125,15 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
         }
 
         final Button doneButton =
-                (Button) dialog.findViewById(R.id.fragment_dialog_insight_info_done);
-        Views.setSafeOnClickListener(doneButton, ignored -> {
-            dismissAllowingStateLoss();
+                (Button) view.findViewById(R.id.fragment_insight_info_done);
+        Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {
+            getFragmentManager().popBackStack();
         });
 
-        this.topShadow = (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_top_shadow);
-        this.bottomShadow = (ImageView) dialog.findViewById(R.id.fragment_dialog_insight_info_bottom_shadow);
+        this.topShadow = (ImageView) view.findViewById(R.id.fragment_insight_info_top_shadow);
+        this.bottomShadow = (ImageView) view.findViewById(R.id.fragment_insight_info_bottom_shadow);
 
-        this.scrollView = (ExtendedScrollView) dialog.findViewById(R.id.fragment_dialog_insight_info_scroll);
+        this.scrollView = (ExtendedScrollView) view.findViewById(R.id.fragment_insight_info_scroll);
         scrollView.setOnScrollListener(this);
 
         if (!TextUtils.isEmpty(imageUrl)) {
@@ -141,12 +141,12 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
                    .into(this);
         }
 
-        return dialog;
+        return view;
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
+    public void onDestroyView() {
+        super.onDestroyView();
 
         if (loadedAnimator != null) {
             loadedAnimator.cancel();
@@ -175,9 +175,9 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
             return;
         }
 
-        if (getDialog() == null) {
+        if (getActivity() == null) {
             stateSafeExecutor.execute(() -> {
-                final Window window = getDialog().getWindow();
+                final Window window = getActivity().getWindow();
                 final @ColorInt int newStatusBar = getStatusBarColor(bitmap);
                 Windows.setStatusBarColor(window, newStatusBar);
                 illustrationImage.setImageBitmap(bitmap);
@@ -186,7 +186,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
             return;
         }
 
-        final Window window = getDialog().getWindow();
+        final Window window = getActivity().getWindow();
         final BitmapDrawable drawable = new BitmapDrawable(getResources(), bitmap);
         drawable.setAlpha(0);
         illustrationImage.setImageDrawable(drawable);
@@ -218,7 +218,7 @@ public class InsightInfoDialogFragment extends InjectionDialogFragment
             return;
         }
 
-        final Window window = getDialog().getWindow();
+        final Window window = getActivity().getWindow();
         final @ColorInt int statusBar = getResources().getColor(R.color.status_bar_illustration);
         Windows.setStatusBarColor(window, statusBar);
         illustrationImage.setImageDrawable(errorDrawable);

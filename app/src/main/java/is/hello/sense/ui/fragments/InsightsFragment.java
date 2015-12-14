@@ -191,7 +191,9 @@ public class InsightsFragment extends UndersideTabFragment
                                                               insight.getMessage(),
                                                               imageUrl,
                                                               insightInfo.getText());
-                infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
+                infoFragment.show(fragmentManager,
+                                  R.id.activity_home_container,
+                                  InsightInfoDialogFragment.TAG);
 
                 insightsAdapter.setLoadingInsightPosition(RecyclerView.NO_POSITION);
             }, e -> {
@@ -207,7 +209,9 @@ public class InsightsFragment extends UndersideTabFragment
                                                           insight.getMessage(),
                                                           imageUrl,
                                                           null);
-            infoFragment.showAllowingStateLoss(fragmentManager, InsightInfoDialogFragment.TAG);
+            infoFragment.show(fragmentManager,
+                              R.id.activity_home_container,
+                              InsightInfoDialogFragment.TAG);
         }
     }
 
