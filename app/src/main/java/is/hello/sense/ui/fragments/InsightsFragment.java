@@ -223,7 +223,8 @@ public class InsightsFragment extends UndersideTabFragment
         insightsAdapter.bindInsights(insights);
 
         final Activity activity = getActivity();
-        if (tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
+        if (!isPostOnboarding() && tutorialOverlayView == null &&
+                Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
             tutorialOverlayView.setOnDismiss(() -> {
