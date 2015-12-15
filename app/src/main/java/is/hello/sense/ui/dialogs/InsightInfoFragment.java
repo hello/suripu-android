@@ -304,9 +304,16 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             }
         });
 
+        final int initialTranslationY = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final Animator[] animators = new Animator[contentViews.length];
         for (int i = 0, length = contentViews.length; i < length; i++) {
-            animators[i] = ObjectAnimator.ofFloat(contentViews[i], "alpha", 0f, 1f);
+            final View contentView = contentViews[i];
+            contentView.setAlpha(0f);
+            contentView.setTranslationY(initialTranslationY);
+
+            animators[i] = animatorFor(contentView)
+                    .alpha(1f)
+                    .translationY(0f);
         }
         subscene.playTogether(animators);
         return subscene;
@@ -375,10 +382,15 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     private Animator createContentExit() {
         final AnimatorSet subscene = new AnimatorSet();
+
+        final int finalTranslationY = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final Animator[] animators = new Animator[contentViews.length];
         for (int i = 0, length = contentViews.length; i < length; i++) {
-            animators[i] = ObjectAnimator.ofFloat(contentViews[i], "alpha", 1f, 0f);
+            animators[i] = animatorFor(contentViews[i])
+                    .alpha(0f)
+                    .translationY(finalTranslationY);
         }
+
         subscene.playTogether(animators);
         return subscene;
     }
