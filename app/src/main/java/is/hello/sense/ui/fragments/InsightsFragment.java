@@ -212,32 +212,36 @@ public class InsightsFragment extends UndersideTabFragment
     @NonNull
     @Override
     public Animator createChildEnterAnimator() {
-        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
         final AnimatorSet scene = new AnimatorSet();
-        scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 1f, 0.9f),
-                           ObjectAnimator.ofFloat(underside, "scaleY", 1f, 0.9f),
-                           ObjectAnimator.ofFloat(underside, "alpha", 1f, 0.9f));
-        scene.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
-                // return a subtly broken value, and the exit transition will be broken.
-                underside.setScaleX(1f);
-                underside.setScaleY(1f);
-                underside.setAlpha(1f);
-            }
-        });
+        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
+        if (underside != null) {
+            scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 1f, 0.95f),
+                               ObjectAnimator.ofFloat(underside, "scaleY", 1f, 0.95f),
+                               ObjectAnimator.ofFloat(underside, "alpha", 1f, 0.95f));
+            scene.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
+                    // return a subtly broken value, and the exit transition will be broken.
+                    underside.setScaleX(1f);
+                    underside.setScaleY(1f);
+                    underside.setAlpha(1f);
+                }
+            });
+        }
         return scene;
     }
 
     @NonNull
     @Override
     public Animator createChildExitAnimator() {
-        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
         final AnimatorSet scene = new AnimatorSet();
-        scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 0.9f, 1f),
-                           ObjectAnimator.ofFloat(underside, "scaleY", 0.9f, 1f),
-                           ObjectAnimator.ofFloat(underside, "alpha", 0.9f, 1f));
+        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
+        if (underside != null) {
+            scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 0.95f, 1f),
+                               ObjectAnimator.ofFloat(underside, "scaleY", 0.95f, 1f),
+                               ObjectAnimator.ofFloat(underside, "alpha", 0.95f, 1f));
+        }
         return scene;
     }
 

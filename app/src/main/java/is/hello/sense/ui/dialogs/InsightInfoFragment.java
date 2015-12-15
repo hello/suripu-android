@@ -44,6 +44,8 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
 
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
 public class InsightInfoFragment extends AnimatedInjectionFragment
         implements ExtendedScrollView.OnScrollListener {
     public static final String TAG = InsightInfoFragment.class.getSimpleName();
@@ -304,17 +306,29 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     }
 
     private Animator createIllustrationEnter() {
-        final Rect initialRect = new Rect();
-
-        final Rect finalRect = Views.copyFrame(illustrationImage);
+        final Rect imageRect = new Rect();
         //noinspection ConstantConditions
-        getSource().getInsightImageFrame(initialRect);
-        illustrationImage.layout(initialRect.left, initialRect.top,
-                                 initialRect.right, initialRect.bottom);
+        getSource().getInsightImageFrame(imageRect);
 
-        return Views.createFrameAnimator(illustrationImage,
-                                         initialRect,
-                                         finalRect);
+        illustrationImage.setPivotX(0f);
+        illustrationImage.setPivotY(0f);
+
+        final float scaleX = imageRect.width() / (float) illustrationImage.getMeasuredWidth();
+        illustrationImage.setScaleX(scaleX);
+
+        final float scaleY = imageRect.height() / (float) illustrationImage.getMeasuredHeight();
+        illustrationImage.setScaleY(scaleY);
+
+        final float translationX = imageRect.left;
+        illustrationImage.setTranslationX(translationX);
+
+        final float translationY = imageRect.top;
+        illustrationImage.setTranslationY(translationY);
+
+        return animatorFor(illustrationImage)
+                .scale(1f)
+                .translationX(0f)
+                .translationY(0f);
     }
 
     private Animator createDoneEnter() {
@@ -344,16 +358,24 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     }
 
     private Animator createIllustrationExit() {
-        final Rect initialRect = Views.copyFrame(illustrationImage);
-
-        final Rect finalRect = new Rect();
+        final Rect imageRect = new Rect();
         //noinspection ConstantConditions
-        getSource().getInsightImageFrame(finalRect);
-        finalRect.offset(scrollView.getScrollX(), scrollView.getScrollY());
+        getSource().getInsightImageFrame(imageRect);
 
-        return Views.createFrameAnimator(illustrationImage,
-                                         initialRect,
-                                         finalRect);
+        illustrationImage.setPivotX(0f);
+        illustrationImage.setPivotY(0f);
+
+        final float scaleX = imageRect.width() / (float) illustrationImage.getMeasuredWidth();
+        final float scaleY = imageRect.height() / (float) illustrationImage.getMeasuredHeight();
+
+        final float translationX = imageRect.left;
+        final float translationY = imageRect.top;
+
+        return animatorFor(illustrationImage)
+                .scaleX(scaleX)
+                .scaleY(scaleY)
+                .translationX(translationX)
+                .translationY(translationY);
     }
 
     private Animator createStatusBarExit() {
