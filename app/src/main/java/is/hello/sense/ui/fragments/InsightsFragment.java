@@ -67,6 +67,9 @@ public class InsightsFragment extends UndersideTabFragment
 
     private @Nullable TutorialOverlayView tutorialOverlayView;
 
+    private @Nullable Question pendingQuestion;
+    private @Nullable List<Insight> pendingInsights;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,6 +171,73 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
 
+    //region Data Binding
+
+    @Override
+    public void onRefresh() {
+        this.pendingInsights = null;
+        this.pendingQuestion = null;
+
+        swipeRefreshLayout.setRefreshing(true);
+        insightsPresenter.update();
+        updateQuestion();
+    }
+
+    /**
+     * Pushes data into the adapter once both questions and insights have loaded.
+     * <p>
+     * Unfortunately this cannot be done through RxJava, if either the questions
+     * or the insights request fails, the compound Observable will fail and stop
+     * emitting values, even if the requests succeed on retry.
+     */
+    private void bindPendingIfReady() {
+        if (pendingInsights == null || pendingQuestion == null) {
+            return;
+        }
+
+        progressBar.setVisibility(View.GONE);
+
+        insightsAdapter.bindQuestion(pendingQuestion);
+        insightsAdapter.bindInsights(pendingInsights);
+
+        final Activity activity = getActivity();
+        if (!isPostOnboarding() && tutorialOverlayView == null &&
+                Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
+            this.tutorialOverlayView = new TutorialOverlayView(activity,
+                                                               Tutorial.TAP_INSIGHT_CARD);
+            tutorialOverlayView.setOnDismiss(() -> {
+                this.tutorialOverlayView = null;
+            });
+            tutorialOverlayView.postShow(R.id.activity_home_container);
+        }
+
+        this.pendingInsights = null;
+        this.pendingQuestion = null;
+    }
+
+    private void bindInsights(@NonNull List<Insight> insights) {
+        this.pendingInsights = insights;
+        bindPendingIfReady();
+    }
+
+    private void insightsUnavailable(@Nullable Throwable e) {
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.insightsUnavailable(e);
+    }
+
+    private void bindQuestion(@Nullable Question question) {
+        this.pendingQuestion = question;
+        bindPendingIfReady();
+    }
+
+    private void questionUnavailable(@Nullable Throwable e) {
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.questionUnavailable(e);
+    }
+
+    //endregion
+
+
     //region Insights
 
     @Override
@@ -211,49 +281,10 @@ public class InsightsFragment extends UndersideTabFragment
         }
     }
 
-    @Override
-    public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(true);
-        insightsPresenter.update();
-        updateQuestion();
-    }
-
-    private void bindInsights(@NonNull List<Insight> insights) {
-        progressBar.setVisibility(View.GONE);
-        insightsAdapter.bindInsights(insights);
-
-        final Activity activity = getActivity();
-        if (!isPostOnboarding() && tutorialOverlayView == null &&
-                Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
-            this.tutorialOverlayView = new TutorialOverlayView(activity,
-                                                               Tutorial.TAP_INSIGHT_CARD);
-            tutorialOverlayView.setOnDismiss(() -> {
-                this.tutorialOverlayView = null;
-            });
-            tutorialOverlayView.postShow(R.id.activity_home_container);
-        }
-    }
-
-    private void insightsUnavailable(@Nullable Throwable e) {
-        progressBar.setVisibility(View.GONE);
-        insightsAdapter.insightsUnavailable(e);
-    }
-
     //endregion
 
 
     //region Questions
-
-    private void bindQuestion(@Nullable Question question){
-        progressBar.setVisibility(View.GONE);
-        insightsAdapter.bindQuestion(question);
-    }
-
-
-    private void questionUnavailable(@Nullable Throwable e){
-        progressBar.setVisibility(View.GONE);
-        insightsAdapter.questionUnavailable(e);
-    }
 
     public void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> {
