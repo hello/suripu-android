@@ -1,7 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -9,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -60,7 +57,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class InsightsFragment extends UndersideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
-        InsightInfoFragment.Source {
+        InsightInfoFragment.Parent {
     private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
     private static final float FOCUSED_CONTENT_SCALE = 1f;
     private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
@@ -188,21 +185,39 @@ public class InsightsFragment extends UndersideTabFragment
     //region Insights
 
     @Override
-    public boolean isComplexTransitionAvailable() {
-        return (selectedInsightHolder != null);
-    }
-
-    @Override
-    public void getInsightCardFrame(@NonNull Rect outRect) {
+    public boolean provideSharedState(@NonNull InsightInfoFragment.SharedState outState,
+                                      boolean isEnter) {
         if (selectedInsightHolder != null) {
-            Views.getFrameInWindow(selectedInsightHolder.itemView, outRect);
-        }
-    }
-
-    @Override
-    public void getInsightImageFrame(@NonNull Rect outRect) {
-        if (selectedInsightHolder != null) {
-            Views.getFrameInWindow(selectedInsightHolder.getImageView(), outRect);
+            Views.getFrameInWindow(selectedInsightHolder.itemView, outState.cardRectInWindow);
+            Views.getFrameInWindow(selectedInsightHolder.image, outState.imageRectInWindow);
+            outState.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
+            if (recyclerView != null) {
+                if (isEnter) {
+                    outState.parentAnimator = animatorFor(recyclerView)
+                            .scale(UNFOCUSED_CONTENT_SCALE)
+                            .alpha(UNFOCUSED_CONTENT_ALPHA)
+                            .addOnAnimationCompleted(finished -> {
+                                // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
+                                // return a subtly broken value, and the exit transition will be broken.
+                                recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                                recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                                recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                            });
+                } else {
+                    outState.parentAnimator = animatorFor(recyclerView)
+                            .addOnAnimationWillStart(() -> {
+                                // Ensure visual consistency.
+                                recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                                recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                                recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                            })
+                            .scale(FOCUSED_CONTENT_SCALE)
+                            .alpha(FOCUSED_CONTENT_ALPHA);
+                }
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -210,46 +225,9 @@ public class InsightsFragment extends UndersideTabFragment
     @Override
     public Drawable getInsightImage() {
         if (selectedInsightHolder != null) {
-            return selectedInsightHolder.getImageView().getDrawable();
+            return selectedInsightHolder.image.getDrawable();
         } else {
             return null;
-        }
-    }
-
-    @NonNull
-    @Override
-    public Animator createChildEnterAnimator() {
-        if (recyclerView != null) {
-            return animatorFor(recyclerView)
-                    .scale(UNFOCUSED_CONTENT_SCALE)
-                    .alpha(UNFOCUSED_CONTENT_ALPHA)
-                    .addOnAnimationCompleted(finished -> {
-                        // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
-                        // return a subtly broken value, and the exit transition will be broken.
-                        recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
-                        recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
-                        recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
-                    });
-        } else {
-            return new AnimatorSet();
-        }
-    }
-
-    @NonNull
-    @Override
-    public Animator createChildExitAnimator() {
-        if (recyclerView != null) {
-            return animatorFor(recyclerView)
-                    .addOnAnimationWillStart(() -> {
-                        // Ensure visual consistency.
-                        recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
-                        recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
-                        recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
-                    })
-                    .scale(FOCUSED_CONTENT_SCALE)
-                    .alpha(FOCUSED_CONTENT_ALPHA);
-        } else {
-            return new AnimatorSet();
         }
     }
 

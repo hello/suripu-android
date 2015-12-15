@@ -257,7 +257,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
-        final ParallaxImageView image;
+        public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull View view) {
             super(view);
@@ -322,10 +322,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         public Insight getInsight() {
             return getInsightItem(getAdapterPosition());
-        }
-
-        public ParallaxImageView getImageView() {
-            return image;
         }
 
         @Override

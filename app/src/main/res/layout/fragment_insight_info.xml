@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -32,16 +32,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
+            <is.hello.sense.ui.widget.ParallaxImageView
                 android:id="@+id/fragment_insight_info_illustration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap_outer"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true"
                 android:background="@color/background_insight_illustration"
                 android:src="@drawable/empty_illustration"
-                tools:ignore="ContentDescription" />
+                app:senseAspectRatio="2:1" />
 
             <TextView
                 android:id="@+id/fragment_insight_info_title"

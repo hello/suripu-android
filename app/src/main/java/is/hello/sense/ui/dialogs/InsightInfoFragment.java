@@ -26,6 +26,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.lang.ref.WeakReference;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Errors;
@@ -37,6 +39,7 @@ import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
+import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -44,9 +47,10 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.markup.text.MarkupString;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
+import static is.hello.sense.functional.Functions.extract;
 
 public class InsightInfoFragment extends AnimatedInjectionFragment
-        implements ExtendedScrollView.OnScrollListener {
+        implements ExtendedScrollView.OnScrollListener, ParallaxImageView.PicassoListener {
     public static final String TAG = InsightInfoFragment.class.getSimpleName();
 
     private static final long TRANSITION_DURATION = Anime.DURATION_NORMAL;
@@ -55,7 +59,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
      * but not touching it. This creates the effect of the image moving away pulling
      * the color out of the status bar.
      */
-    private static final long STATUS_BAR_DELAY = TRANSITION_DURATION - 100L;
+    private static final long MULTI_PHASE_DELAY = TRANSITION_DURATION - 100L;
 
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_TITLE = InsightInfoFragment.class.getName() + ".ARG_TITLE";
@@ -73,12 +77,18 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     private ExtendedScrollView scrollView;
     private ImageView topShadow, bottomShadow;
-    private ImageView illustrationImage;
+    private ParallaxImageView illustrationImage;
     private View[] contentViews;
     private TextView messageText;
     private Button doneButton;
 
     private @ColorInt int defaultStatusBarColor;
+
+    /**
+     * The one-off status bar animator used for Picasso image loads.
+     */
+    private @Nullable WeakReference<Animator> statusBarAnimator;
+
 
     //region Lifecycle
 
@@ -128,7 +138,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.fillView = rootView.findViewById(R.id.fragment_insight_info_fill);
 
         this.illustrationImage =
-                (ImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
+                (ParallaxImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
+        illustrationImage.setPicassoListener(this);
 
         final TextView titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
         titleText.setText(title);
@@ -150,12 +161,12 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         this.scrollView = (ExtendedScrollView) this.rootView.findViewById(R.id.fragment_insight_info_scroll);
 
-        final Source source = getSource();
-        final Drawable existingImage = source != null
-                ? source.getInsightImage()
+        final Parent parent = getSource();
+        final Drawable existingImage = parent != null
+                ? parent.getInsightImage()
                 : null;
         if (existingImage != null) {
-            illustrationImage.setImageDrawable(existingImage);
+            illustrationImage.setDrawable(existingImage);
         } else if (!TextUtils.isEmpty(imageUrl)) {
             picasso.load(imageUrl)
                    .placeholder(R.drawable.empty_illustration)
@@ -196,16 +207,18 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
-        final Source source = getSource();
-        if (source != null && source.isComplexTransitionAvailable()) {
+        final Parent parent = getSource();
+        final SharedState state = new SharedState();
+        if (parent != null && parent.provideSharedState(/*out*/state, true)) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
-            scene.play(createIllustrationEnter())
-                 .with(createFillEnter())
-                 .with(source.createChildEnterAnimator())
+            scene.play(createIllustrationEnter(state.imageRectInWindow))
+                 .with(createFillEnter(state.cardRectInWindow))
+                 .with(createParallaxEnter(state.imageParallaxPercent))
+                 .with(state.parentAnimator)
                  .with(createStatusBarEnter())
-                 .before(createDoneEnter())
+                 .with(createDoneEnter())
                  .before(createContentEnter());
         } else {
             final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(rootView, "alpha", 0f, 1f);
@@ -240,20 +253,27 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @Override
     protected Animator onProvideExitAnimator() {
+        final Animator statusBarAnimator = extract(this.statusBarAnimator);
+        if (statusBarAnimator != null) {
+            statusBarAnimator.cancel();
+        }
+
         final AnimatorSet scene = new AnimatorSet();
-        final Source source = getSource();
-        if (source != null && source.isComplexTransitionAvailable()) {
+        final Parent parent = getSource();
+        final SharedState state = new SharedState();
+        if (parent != null && parent.provideSharedState(/*out*/state, false)) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
             scrollView.setOnScrollListener(null);
 
-            scene.play(createIllustrationExit())
-                 .with(createFillExit())
-                 .with(source.createChildExitAnimator())
-                 .after(STATUS_BAR_DELAY)
+            scene.play(createIllustrationExit(state.imageRectInWindow))
+                 .with(createFillExit(state.cardRectInWindow))
+                 .with(createParallaxExit(state.imageParallaxPercent))
+                 .with(state.parentAnimator)
+                 .after(MULTI_PHASE_DELAY)
                  .with(createStatusBarExit())
-                 .after(createDoneExit())
+                 .with(createDoneExit())
                  .after(createContentExit());
         } else {
             final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(rootView, "alpha", 1f, 0f);
@@ -292,18 +312,12 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return subscene;
     }
 
-    private Animator createFillEnter() {
-        final Rect initialRect = new Rect();
+    private Animator createFillEnter(@NonNull Rect insightCardRect) {
+        final Rect fillRect = Views.copyFrame(fillView);
+        fillView.layout(insightCardRect.left, insightCardRect.top,
+                        insightCardRect.right, insightCardRect.bottom);
 
-        final Rect finalRect = Views.copyFrame(fillView);
-        //noinspection ConstantConditions
-        getSource().getInsightCardFrame(initialRect);
-        fillView.layout(initialRect.left, initialRect.top,
-                        initialRect.right, initialRect.bottom);
-
-        return Views.createFrameAnimator(fillView,
-                                         initialRect,
-                                         finalRect);
+        return Views.createFrameAnimator(fillView, insightCardRect, fillRect);
     }
 
     private Animator createStatusBarEnter() {
@@ -311,15 +325,16 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final @ColorInt int start = defaultStatusBarColor;
         final @ColorInt int end = getTargetStatusBarColor();
         final Animator animator = Windows.createStatusBarColorAnimator(window, start, end);
-        animator.setStartDelay(STATUS_BAR_DELAY);
+        animator.setStartDelay(MULTI_PHASE_DELAY);
         return animator;
     }
 
-    private Animator createIllustrationEnter() {
-        final Rect imageRect = new Rect();
-        //noinspection ConstantConditions
-        getSource().getInsightImageFrame(imageRect);
+    private Animator createParallaxEnter(float targetPercent) {
+        illustrationImage.setParallaxPercent(targetPercent);
+        return illustrationImage.createParallaxPercentAnimator(0f);
+    }
 
+    private Animator createIllustrationEnter(@NonNull Rect imageRect) {
         illustrationImage.setPivotX(0f);
         illustrationImage.setPivotY(0f);
 
@@ -345,6 +360,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         doneButton.setTranslationY(doneButton.getHeight());
 
         return animatorFor(doneButton)
+                .withStartDelay(MULTI_PHASE_DELAY)
                 .translationY(0f);
     }
 
@@ -367,11 +383,12 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return subscene;
     }
 
-    private Animator createIllustrationExit() {
-        final Rect imageRect = new Rect();
-        //noinspection ConstantConditions
-        getSource().getInsightImageFrame(imageRect);
+    private Animator createParallaxExit(float targetPercent) {
+        illustrationImage.setParallaxPercent(0f);
+        return illustrationImage.createParallaxPercentAnimator(targetPercent);
+    }
 
+    private Animator createIllustrationExit(@NonNull Rect imageRect) {
         illustrationImage.setPivotX(0f);
         illustrationImage.setPivotY(0f);
 
@@ -395,16 +412,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return Windows.createStatusBarColorAnimator(window, start, end);
     }
 
-    private Animator createFillExit() {
-        final Rect initialRect = Views.copyFrame(fillView);
-
-        final Rect finalRect = new Rect();
-        //noinspection ConstantConditions
-        getSource().getInsightCardFrame(finalRect);
-
-        return Views.createFrameAnimator(fillView,
-                                         initialRect,
-                                         finalRect);
+    private Animator createFillExit(@NonNull Rect insightCardRect) {
+        final Rect fillRect = Views.copyFrame(fillView);
+        return Views.createFrameAnimator(fillView, fillRect, insightCardRect);
     }
 
     //endregion
@@ -422,11 +432,12 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     }
 
     @Nullable
-    private Source getSource() {
-        // The target fragment does not correctly survive state changes.
+    private Parent getSource() {
+        // The target fragment does not correctly survive state changes because the
+        // target fragment and this fragment do not share the same fragment manager.
         final Fragment targetFragment = getTargetFragment();
-        if (targetFragment instanceof Source) {
-            return (Source) targetFragment;
+        if (targetFragment instanceof Parent) {
+            return (Parent) targetFragment;
         } else {
             return null;
         }
@@ -448,6 +459,19 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         } else {
             messageText.setText(R.string.dialog_error_generic_message);
         }
+    }
+
+    @Override
+    public void onBitmapLoaded(@NonNull Bitmap bitmap) {
+        final Animator statusBarAnimator = createStatusBarEnter();
+        statusBarAnimator.setStartDelay(0L);
+        statusBarAnimator.start();
+
+        this.statusBarAnimator = new WeakReference<>(statusBarAnimator);
+    }
+
+    @Override
+    public void onBitmapFailed() {
     }
 
     //endregion
@@ -473,12 +497,26 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     //endregion
 
-    public interface Source {
-        @NonNull Animator createChildEnterAnimator();
-        @NonNull Animator createChildExitAnimator();
-        boolean isComplexTransitionAvailable();
-        void getInsightCardFrame(@NonNull Rect outRect);
-        void getInsightImageFrame(@NonNull Rect outRect);
+    public interface Parent {
+        boolean provideSharedState(@NonNull SharedState outState, boolean isEnter);
         @Nullable Drawable getInsightImage();
+    }
+
+    public static class SharedState {
+        public final Rect cardRectInWindow = new Rect();
+        public final Rect imageRectInWindow = new Rect();
+        public float imageParallaxPercent = 0f;
+
+        public @NonNull Animator parentAnimator = new AnimatorSet();
+
+        @Override
+        public String toString() {
+            return "SharedState{" +
+                    "cardRectInWindow=" + cardRectInWindow +
+                    ", imageRectInWindow=" + imageRectInWindow +
+                    ", imageParallaxPercent=" + imageParallaxPercent +
+                    ", parentAnimator=" + parentAnimator +
+                    '}';
+        }
     }
 }
