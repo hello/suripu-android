@@ -167,7 +167,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
     public void setUse24Time(boolean use24Time) {
         if (this.use24Time != use24Time) {
             this.use24Time = use24Time;
-            notifyContentItemRangeChanged(getHeaderCount(), events.size());
+            notifyContentItemRangeChanged(0, events.size());
         }
     }
 
