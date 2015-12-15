@@ -1,5 +1,9 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -98,7 +102,8 @@ public class InsightsFragment extends UndersideTabFragment
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(this);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
-        progressBar = (ProgressBar)view.findViewById(R.id.fragment_insights_progress);
+
+        this.progressBar = (ProgressBar) view.findViewById(R.id.fragment_insights_progress);
 
         final Resources resources = getResources();
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
@@ -204,6 +209,38 @@ public class InsightsFragment extends UndersideTabFragment
         }
     }
 
+    @NonNull
+    @Override
+    public Animator createChildEnterAnimator() {
+        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
+        final AnimatorSet scene = new AnimatorSet();
+        scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 1f, 0.9f),
+                           ObjectAnimator.ofFloat(underside, "scaleY", 1f, 0.9f),
+                           ObjectAnimator.ofFloat(underside, "alpha", 1f, 0.9f));
+        scene.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
+                // return a subtly broken value, and the exit transition will be broken.
+                underside.setScaleX(1f);
+                underside.setScaleY(1f);
+                underside.setAlpha(1f);
+            }
+        });
+        return scene;
+    }
+
+    @NonNull
+    @Override
+    public Animator createChildExitAnimator() {
+        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
+        final AnimatorSet scene = new AnimatorSet();
+        scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 0.9f, 1f),
+                           ObjectAnimator.ofFloat(underside, "scaleY", 0.9f, 1f),
+                           ObjectAnimator.ofFloat(underside, "alpha", 0.9f, 1f));
+        return scene;
+    }
+
     @Override
     public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
         final Insight insight = viewHolder.getInsight();
@@ -214,8 +251,9 @@ public class InsightsFragment extends UndersideTabFragment
         Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
         Tutorial.TAP_INSIGHT_CARD.markShown(getActivity());
 
-        // InsightsFragment lives inside of a child fragment manager,
-        // which we don't want to use to display dialogs.
+        // InsightsFragment lives inside of a child fragment manager, whose root view is inset
+        // on the bottom to make space for the open timeline. We go right to the root fragment
+        // manager to keep things simple.
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());

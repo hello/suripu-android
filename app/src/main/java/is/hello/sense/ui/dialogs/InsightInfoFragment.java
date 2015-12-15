@@ -194,12 +194,12 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
             scene.play(createIllustrationEnter())
                  .with(createFillEnter())
-                 .with(createStatusBarEnter())
+                 .with(source.createChildEnterAnimator())
+                 .before(createStatusBarEnter())
                  .before(createDoneEnter())
                  .before(createContentEnter());
         } else {
-            final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(rootView, "alpha",
-                                                                 0f, 1f);
+            final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(rootView, "alpha", 0f, 1f);
             scene.play(fadeIn);
         }
 
@@ -240,13 +240,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             scrollView.setOnScrollListener(null);
 
             scene.play(createIllustrationExit())
-                 .with(createStatusBarExit())
                  .with(createFillExit())
+                 .with(source.createChildExitAnimator())
+                 .after(createStatusBarExit())
                  .after(createDoneExit())
                  .after(createContentExit());
         } else {
-            final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(rootView, "alpha",
-                                                                  1f, 0f);
+            final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(rootView, "alpha", 1f, 0f);
             scene.play(fadeOut)
                  .with(createStatusBarExit());
         }
@@ -442,6 +442,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     //endregion
 
     public interface Source {
+        @NonNull Animator createChildEnterAnimator();
+        @NonNull Animator createChildExitAnimator();
         boolean isComplexTransitionAvailable();
         void getInsightCardFrame(@NonNull Rect outRect);
         void getInsightImageFrame(@NonNull Rect outRect);
