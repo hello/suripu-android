@@ -14,13 +14,12 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -49,6 +48,14 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public class InsightInfoFragment extends AnimatedInjectionFragment
         implements ExtendedScrollView.OnScrollListener {
     public static final String TAG = InsightInfoFragment.class.getSimpleName();
+
+    private static final long TRANSITION_DURATION = Anime.DURATION_NORMAL;
+    /**
+     * The status bar animation needs to fire when the image is near the status bar,
+     * but not touching it. This creates the effect of the image moving away pulling
+     * the color out of the status bar.
+     */
+    private static final long STATUS_BAR_DELAY = TRANSITION_DURATION - 100L;
 
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_TITLE = InsightInfoFragment.class.getName() + ".ARG_TITLE";
@@ -197,7 +204,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             scene.play(createIllustrationEnter())
                  .with(createFillEnter())
                  .with(source.createChildEnterAnimator())
-                 .before(createStatusBarEnter())
+                 .with(createStatusBarEnter())
                  .before(createDoneEnter())
                  .before(createContentEnter());
         } else {
@@ -205,8 +212,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             scene.play(fadeIn);
         }
 
-        scene.setInterpolator(new FastOutSlowInInterpolator());
-        scene.setDuration(Anime.DURATION_NORMAL);
+        scene.setInterpolator(new DecelerateInterpolator());
+        scene.setDuration(TRANSITION_DURATION);
 
         return scene;
     }
@@ -244,7 +251,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             scene.play(createIllustrationExit())
                  .with(createFillExit())
                  .with(source.createChildExitAnimator())
-                 .after(createStatusBarExit())
+                 .after(STATUS_BAR_DELAY)
+                 .with(createStatusBarExit())
                  .after(createDoneExit())
                  .after(createContentExit());
         } else {
@@ -253,8 +261,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                  .with(createStatusBarExit());
         }
 
-        scene.setInterpolator(new FastOutLinearInInterpolator());
-        scene.setDuration(Anime.DURATION_NORMAL);
+        scene.setInterpolator(new DecelerateInterpolator());
+        scene.setDuration(TRANSITION_DURATION);
 
         return scene;
     }
@@ -302,7 +310,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Window window = getActivity().getWindow();
         final @ColorInt int start = defaultStatusBarColor;
         final @ColorInt int end = getTargetStatusBarColor();
-        return Windows.createStatusBarColorAnimator(window, start, end);
+        final Animator animator = Windows.createStatusBarColorAnimator(window, start, end);
+        animator.setStartDelay(STATUS_BAR_DELAY);
+        return animator;
     }
 
     private Animator createIllustrationEnter() {
@@ -334,8 +344,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private Animator createDoneEnter() {
         doneButton.setTranslationY(doneButton.getHeight());
 
-        return ObjectAnimator.ofFloat(doneButton, "translationY",
-                                      doneButton.getHeight(), 0f);
+        return animatorFor(doneButton)
+                .translationY(0f);
     }
 
     //endregion
@@ -343,8 +353,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     //region Exit Animations
 
     private Animator createDoneExit() {
-        return ObjectAnimator.ofFloat(doneButton, "translationY",
-                                      0f, doneButton.getHeight());
+        return animatorFor(doneButton)
+                .translationY(doneButton.getHeight());
     }
 
     private Animator createContentExit() {
@@ -368,8 +378,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final float scaleX = imageRect.width() / (float) illustrationImage.getMeasuredWidth();
         final float scaleY = imageRect.height() / (float) illustrationImage.getMeasuredHeight();
 
-        final float translationX = imageRect.left;
-        final float translationY = imageRect.top;
+        final float translationX = imageRect.left + scrollView.getScrollX();
+        final float translationY = imageRect.top + scrollView.getScrollY();
 
         return animatorFor(illustrationImage)
                 .scaleX(scaleX)

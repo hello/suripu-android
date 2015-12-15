@@ -16,12 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:text="@string/action_close"
-        style="@style/AppTheme.Button.Borderless.Primary" />
-
-    <View
-        android:id="@+id/fragment_insight_info_done_divider"
-        android:layout_above="@id/fragment_insight_info_done"
-        style="@style/Divider.Horizontal" />
+        style="@style/AppTheme.Button.Borderless.Primary.Bottom" />
 
     <is.hello.sense.ui.widget.ExtendedScrollView
         android:id="@+id/fragment_insight_info_scroll"
@@ -29,7 +24,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:overScrollMode="never"
-        android:layout_above="@id/fragment_insight_info_done_divider">
+        android:layout_above="@id/fragment_insight_info_done">
 
         <LinearLayout
             android:id="@+id/fragment_insight_info_content"
@@ -116,7 +111,7 @@
         android:id="@+id/fragment_insight_info_bottom_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/fragment_insight_info_done_divider"
+        android:layout_above="@id/fragment_insight_info_done"
         android:src="@drawable/shadow_bottom_up"
         android:scaleType="fitXY"
         android:importantForAccessibility="no"

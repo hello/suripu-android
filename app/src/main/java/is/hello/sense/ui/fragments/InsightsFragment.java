@@ -1,9 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -58,9 +56,16 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
 public class InsightsFragment extends UndersideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
         InsightInfoFragment.Source {
+    private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
+    private static final float FOCUSED_CONTENT_SCALE = 1f;
+    private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
+    private static final float FOCUSED_CONTENT_ALPHA = 1f;
+
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject LocalUsageTracker localUsageTracker;
@@ -71,6 +76,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
     private ProgressBar progressBar;
 
     private @Nullable TutorialOverlayView tutorialOverlayView;
@@ -106,10 +112,9 @@ public class InsightsFragment extends UndersideTabFragment
         this.progressBar = (ProgressBar) view.findViewById(R.id.fragment_insights_progress);
 
         final Resources resources = getResources();
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        final int cardMargin = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(cardMargin, cardMargin, resources.getDimensionPixelSize(R.dimen.gap_card_inter)));
+        recyclerView.addItemDecoration(new CardItemDecoration(resources));
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
         recyclerView.setItemAnimator(null);
 
@@ -151,7 +156,9 @@ public class InsightsFragment extends UndersideTabFragment
         }
 
         insightsPresenter.unbindScope();
+
         this.insightsAdapter = null;
+        this.recyclerView = null;
         this.swipeRefreshLayout = null;
     }
 
@@ -212,37 +219,38 @@ public class InsightsFragment extends UndersideTabFragment
     @NonNull
     @Override
     public Animator createChildEnterAnimator() {
-        final AnimatorSet scene = new AnimatorSet();
-        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
-        if (underside != null) {
-            scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 1f, 0.95f),
-                               ObjectAnimator.ofFloat(underside, "scaleY", 1f, 0.95f),
-                               ObjectAnimator.ofFloat(underside, "alpha", 1f, 0.95f));
-            scene.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
-                    // return a subtly broken value, and the exit transition will be broken.
-                    underside.setScaleX(1f);
-                    underside.setScaleY(1f);
-                    underside.setAlpha(1f);
-                }
-            });
+        if (recyclerView != null) {
+            return animatorFor(recyclerView)
+                    .scale(UNFOCUSED_CONTENT_SCALE)
+                    .alpha(UNFOCUSED_CONTENT_ALPHA)
+                    .addOnAnimationCompleted(finished -> {
+                        // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
+                        // return a subtly broken value, and the exit transition will be broken.
+                        recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                        recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                        recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                    });
+        } else {
+            return new AnimatorSet();
         }
-        return scene;
     }
 
     @NonNull
     @Override
     public Animator createChildExitAnimator() {
-        final AnimatorSet scene = new AnimatorSet();
-        final View underside = getActivity().findViewById(R.id.activity_home_underside_container);
-        if (underside != null) {
-            scene.playTogether(ObjectAnimator.ofFloat(underside, "scaleX", 0.95f, 1f),
-                               ObjectAnimator.ofFloat(underside, "scaleY", 0.95f, 1f),
-                               ObjectAnimator.ofFloat(underside, "alpha", 0.95f, 1f));
+        if (recyclerView != null) {
+            return animatorFor(recyclerView)
+                    .addOnAnimationWillStart(() -> {
+                        // Ensure visual consistency.
+                        recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                        recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                        recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                    })
+                    .scale(FOCUSED_CONTENT_SCALE)
+                    .alpha(FOCUSED_CONTENT_ALPHA);
+        } else {
+            return new AnimatorSet();
         }
-        return scene;
     }
 
     @Override
