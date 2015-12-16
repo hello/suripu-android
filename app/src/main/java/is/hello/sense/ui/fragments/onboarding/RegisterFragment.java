@@ -318,7 +318,6 @@ public class RegisterFragment extends InjectionFragment
                                         DateTime.now());
 
             getOnboardingActivity().showBirthday(createdAccount);
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getActivity(), error);
