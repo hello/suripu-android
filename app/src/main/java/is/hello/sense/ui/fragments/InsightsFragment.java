@@ -273,6 +273,7 @@ public class InsightsFragment extends UndersideTabFragment
             tutorialOverlayView.setOnDismiss(() -> {
                 this.tutorialOverlayView = null;
             });
+            tutorialOverlayView.setAnchorContainer(getView());
             tutorialOverlayView.postShow(R.id.activity_home_container);
         }
     }

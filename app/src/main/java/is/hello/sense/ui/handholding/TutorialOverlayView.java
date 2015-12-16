@@ -48,6 +48,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
 
+    private @Nullable View anchorContainer;
     private @Nullable ViewGroup container;
     private @Nullable Runnable onDismiss;
 
@@ -116,7 +117,12 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         if (interactionView == null) {
-            this.anchorView = activity.findViewById(tutorial.anchorId);
+            if (anchorContainer != null) {
+                this.anchorView = anchorContainer.findViewById(tutorial.anchorId);
+            } else {
+                this.anchorView = activity.findViewById(tutorial.anchorId);
+            }
+
             if (anchorView != null) {
                 Views.runWhenLaidOut(anchorView, this::showInteractionFrom);
             }
@@ -144,6 +150,10 @@ public class TutorialOverlayView extends RelativeLayout {
 
     public void setOnDismiss(@Nullable Runnable onDismiss) {
         this.onDismiss = onDismiss;
+    }
+
+    public void setAnchorContainer(@Nullable View anchorContainer) {
+        this.anchorContainer = anchorContainer;
     }
 
     public void show(@IdRes int containerRes) {

@@ -498,6 +498,7 @@ public class TimelineFragment extends InjectionFragment
         tutorialOverlay.setOnDismiss(() -> {
             this.tutorialOverlay = null;
         });
+        tutorialOverlay.setAnchorContainer(getView());
         tutorialOverlay.show(R.id.activity_home_container);
     }
 
