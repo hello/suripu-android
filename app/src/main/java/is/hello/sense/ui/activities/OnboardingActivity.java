@@ -103,13 +103,15 @@ public class OnboardingActivity extends InjectionActivity
                                 getString(R.string.dialog_loading_message),
                                 LoadingDialogFragment.OPAQUE_BACKGROUND);
                         bindAndSubscribe(apiService.getAccount(),
-                                         this::showBirthday,
+                                         account -> {
+                                             showBirthday(account, false);
+                                         },
                                          e -> {
                                              LoadingDialogFragment.close(getFragmentManager());
                                              ErrorDialogFragment.presentError(this, e);
                                          });
                     } else {
-                        showBirthday(account);
+                        showBirthday(account, false);
                     }
                     break;
 
@@ -252,7 +254,7 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showBirthday(@Nullable Account account) {
+    public void showBirthday(@Nullable Account account, boolean withDoneTransition) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
         if (account != null) {
@@ -271,7 +273,11 @@ public class OnboardingActivity extends InjectionActivity
             pushFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
         }
 
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+        if (withDoneTransition) {
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+        } else {
+            LoadingDialogFragment.close(getFragmentManager());
+        }
     }
 
     @NonNull
