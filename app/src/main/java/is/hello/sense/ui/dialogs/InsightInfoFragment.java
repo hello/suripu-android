@@ -166,7 +166,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                 ? parent.getInsightImage()
                 : null;
         if (existingImage != null) {
-            illustrationImage.setDrawable(existingImage);
+            illustrationImage.setDrawable(existingImage, false);
         } else if (!TextUtils.isEmpty(imageUrl)) {
             picasso.load(imageUrl)
                    .placeholder(R.drawable.empty_illustration)

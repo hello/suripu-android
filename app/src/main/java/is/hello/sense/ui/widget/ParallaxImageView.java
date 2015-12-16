@@ -198,14 +198,14 @@ public class ParallaxImageView extends View implements Target {
 
     //region Attributes
 
-    public void setDrawable(@Nullable Drawable drawable) {
+    public void setDrawable(@Nullable Drawable drawable, boolean animate) {
         clearAnimation();
 
         if (this.drawable != null) {
             this.drawable.setCallback(null);
         }
 
-        final boolean wantsFadeIn = (this.drawable == null && drawable != null);
+        final boolean wantsFadeIn = (animate && this.drawable == null && drawable != null);
 
         this.drawable = drawable;
 
@@ -232,7 +232,9 @@ public class ParallaxImageView extends View implements Target {
 
     public void setParallaxPercent(float parallaxPercent) {
         this.parallaxPercent = parallaxPercent;
-        invalidate();
+        if (drawable != null) {
+            invalidate();
+        }
     }
 
     public float getParallaxPercent() {
@@ -286,7 +288,7 @@ public class ParallaxImageView extends View implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        setDrawable(new BitmapDrawable(getResources(), bitmap));
+        setDrawable(new BitmapDrawable(getResources(), bitmap), true);
 
         if (picassoListener != null) {
             picassoListener.onBitmapLoaded(bitmap);
@@ -295,7 +297,7 @@ public class ParallaxImageView extends View implements Target {
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
-        setDrawable(errorDrawable);
+        setDrawable(errorDrawable, true);
 
         if (picassoListener != null) {
             picassoListener.onBitmapFailed();
@@ -304,7 +306,7 @@ public class ParallaxImageView extends View implements Target {
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
-        setDrawable(placeHolderDrawable);
+        setDrawable(placeHolderDrawable, true);
     }
 
     //endregion

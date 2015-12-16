@@ -285,7 +285,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     picasso.load(url).into(image);
                 } else {
                     picasso.cancelRequest(image);
-                    image.setDrawable(null);
+                    image.setDrawable(null, true);
                 }
                 image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategoryName());
@@ -305,7 +305,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         @Override
         void unbind() {
             image.clearAnimation();
-            image.setDrawable(null);
+            image.setDrawable(null, true);
         }
 
         @Override
