@@ -114,12 +114,14 @@ public final class Player implements MediaPlayer.OnPreparedListener,
     }
 
     public void recycle() {
-        if (state != STATE_RECYCLED) {
-            stop();
-            mediaPlayer.reset();
-            mediaPlayer.release();
+        synchronized (mediaPlayer) {
+            if (state != STATE_RECYCLED) {
+                stop();
+                mediaPlayer.reset();
+                mediaPlayer.release();
 
-            setState(STATE_RECYCLED);
+                setState(STATE_RECYCLED);
+            }
         }
     }
 
@@ -353,18 +355,22 @@ public final class Player implements MediaPlayer.OnPreparedListener,
         // problematic if run on the main thread. The underlying
         // native implementation has a mutex guard, so this is safe.
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
-            if (getState() == STATE_RECYCLED) {
-                Logger.warn(getClass().getSimpleName(), "setVideoSurfaceAsync(...) called after recycle()");
-                return;
-            }
+            // We have to guard against the MediaPlayer being recycled.
+            synchronized (mediaPlayer) {
+                if (getState() == STATE_RECYCLED) {
+                    Logger.warn(getClass().getSimpleName(),
+                                "setVideoSurfaceAsync(...) called after recycle()");
+                    return;
+                }
 
-            // It's possible for the surface to be destroyed between
-            // this task being posted, and it being run. We have to
-            // guard against invalid surfaces to prevent crashes.
-            if (surface != null && surface.isValid()) {
-                mediaPlayer.setSurface(surface);
-            } else {
-                mediaPlayer.setSurface(null);
+                // It's possible for the surface to be destroyed between
+                // this task being posted, and it being run. We have to
+                // guard against invalid surfaces to prevent crashes.
+                if (surface != null && surface.isValid()) {
+                    mediaPlayer.setSurface(surface);
+                } else {
+                    mediaPlayer.setSurface(null);
+                }
             }
         });
     }
