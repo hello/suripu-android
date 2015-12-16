@@ -62,23 +62,23 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private static final long MULTI_PHASE_DELAY = TRANSITION_DURATION - 100L;
 
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
-    private static final String ARG_TITLE = InsightInfoFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_SUMMARY = InsightInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_IMAGE_URL = InsightInfoFragment.class.getName() + ".ARG_IMAGE_URL";
 
     @Inject Picasso picasso;
     @Inject InsightInfoPresenter presenter;
 
-    private View rootView;
-    private View fillView;
-    private String title;
     private String imageUrl;
     private CharSequence summary;
+
+    private View rootView;
+    private View fillView;
 
     private ExtendedScrollView scrollView;
     private ImageView topShadow, bottomShadow;
     private ParallaxImageView illustrationImage;
     private View[] contentViews;
+    private TextView titleText;
     private TextView messageText;
     private Button doneButton;
 
@@ -98,7 +98,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         final Bundle arguments = new Bundle();
         arguments.putString(ARG_CATEGORY, insight.getCategory());
-        arguments.putString(ARG_TITLE, insight.getTitle());
         arguments.putParcelable(ARG_SUMMARY, insight.getMessage());
         arguments.putString(ARG_IMAGE_URL, insight.getImageUrl(resources));
         fragment.setArguments(arguments);
@@ -116,7 +115,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             presenter.setCategory(category);
         }
 
-        this.title = arguments.getString(ARG_TITLE);
         this.imageUrl = arguments.getString(ARG_IMAGE_URL);
 
         final MarkupString message = arguments.getParcelable(ARG_SUMMARY);
@@ -141,15 +139,14 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                 (ParallaxImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
         illustrationImage.setPicassoListener(this);
 
-        final TextView titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
-        titleText.setText(title);
+        this.titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
 
         this.messageText = (TextView) rootView.findViewById(R.id.fragment_insight_info_message);
         final TextView summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
         final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
         summaryText.setText(summary);
 
-        this.contentViews = new View[] { titleText, messageText, summaryHeaderText, summaryText };
+        this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText };
 
         this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
         Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {
@@ -461,6 +458,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     //region Data Bindings
 
     public void bindInsightInfo(@NonNull InsightInfo info) {
+        titleText.setText(info.getTitle());
         messageText.setText(info.getText());
     }
 
