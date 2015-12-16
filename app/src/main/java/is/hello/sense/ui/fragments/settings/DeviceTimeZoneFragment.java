@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import com.segment.analytics.Properties;
 import org.joda.time.DateTimeZone;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.TimeZone;
 
 import javax.inject.Inject;
@@ -25,15 +27,15 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZoneAdapter.OnRadioClickListener {
-    @Inject
-    AccountPresenter accountPresenter;
+public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZoneAdapter.OnClickListener {
+    @Inject AccountPresenter accountPresenter;
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
@@ -58,16 +60,22 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_device_time_zone, container, false);
-        activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_time_zone_loading);
-        currentTimeZone = (TextView) view.findViewById(R.id.fragment_device_time_current_zone);
-        recyclerView = (RecyclerView) view.findViewById(R.id.fragment_device_time_zone_recycler);
+
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_device_time_zone_loading);
+        this.currentTimeZone = (TextView) view.findViewById(R.id.fragment_device_time_current_zone);
         currentTimeZone.setText(R.string.missing_data_placeholder);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources()));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_device_time_zone_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
-        recyclerView.setAdapter(new TimeZoneAdapter(getActivity(), this));
+
+        final Activity activity = getActivity();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources(),
+                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
+        recyclerView.setAdapter(new TimeZoneAdapter(activity, this));
+
         return view;
     }
 
@@ -103,12 +111,12 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
     }
 
     @Override
-    public void onRadioValueChanged(int position) {
-        String[] timeZoneIds = getActivity().getResources().getStringArray(R.array.timezone_ids);
+    public void onTimeZoneItemClicked(int position) {
+        final String[] timeZoneIds = getResources().getStringArray(R.array.timezone_ids);
         if (timeZoneIds == null || timeZoneIds.length == 0 || timeZoneIds.length < position + 1) {
             return; // error
         }
-        String timeZoneId = timeZoneIds[position];
+        final String timeZoneId = timeZoneIds[position];
         final DateTimeZone timeZone = DateTimeZone.forID(timeZoneId);
         final SenseTimeZone senseTimeZone = SenseTimeZone.fromDateTimeZone(timeZone);
         LoadingDialogFragment.show(getFragmentManager(),

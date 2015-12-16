@@ -1,11 +1,15 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.NonNull;
+
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
@@ -29,5 +33,17 @@ public class InsightsPresenter extends ScopedValuePresenter<ArrayList<Insight>> 
     protected Observable<ArrayList<Insight>> provideUpdateObservable() {
         return apiService.currentInsights()
                          .doOnCompleted(unreadStatePresenter::updateInsightsLastViewed);
+    }
+
+
+    @Deprecated
+    public Observable<InsightInfo> infoForInsight(@NonNull Insight insight) {
+        return apiService.insightInfo(insight.getCategory()).flatMap(insights -> {
+            if (insights.isEmpty()) {
+                return Observable.error(new InvalidObjectException("No insight info found."));
+            } else {
+                return Observable.just(insights.get(0));
+            }
+        });
     }
 }

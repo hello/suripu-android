@@ -1,5 +1,6 @@
-package is.hello.sense.api.model;
+package is.hello.sense.api.model.v2;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
@@ -7,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Insight extends ApiResponse {
@@ -28,8 +30,11 @@ public class Insight extends ApiResponse {
     @SerializedName("category")
     private String category;
 
-    @SerializedName("info_preview")
-    private String infoPreview;
+    @SerializedName("category_name")
+    private String categoryName;
+
+    @SerializedName("image")
+    private MultiDensityImage image;
 
 
     public static Insight createError(@NonNull String message) {
@@ -45,14 +50,15 @@ public class Insight extends ApiResponse {
                                  MarkupString message,
                                  DateTime created,
                                  String category,
-                                 String infoPreview) {
-        Insight insight = new Insight();
+                                 String categoryName) {
+        final Insight insight = new Insight();
         insight.accountId = accountId;
         insight.title = title;
         insight.message = message;
         insight.created = created;
         insight.category = category;
-        insight.infoPreview = infoPreview;
+        insight.categoryName = categoryName;
+        insight.image = null;
         return insight;
     }
 
@@ -77,8 +83,24 @@ public class Insight extends ApiResponse {
         return category;
     }
 
-    public String getInfoPreview() {
-        return infoPreview;
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public String getImageUrl(@NonNull Resources resources) {
+        if (image == null) {
+            return null;
+        } else {
+            return image.getUrl(resources);
+        }
+    }
+
+    public boolean isError() {
+        return CATEGORY_IN_APP_ERROR.equalsIgnoreCase(category);
+    }
+
+    public boolean hasInfo() {
+        return !CATEGORY_GENERIC.equalsIgnoreCase(category);
     }
 
     @Override
@@ -86,12 +108,11 @@ public class Insight extends ApiResponse {
         return "Insight{" +
                 "accountId=" + accountId +
                 ", title='" + title + '\'' +
-                ", message='" + message + '\'' +
+                ", message=" + message +
                 ", created=" + created +
-                ", category=" + category +
-                ", infoPreview='" + infoPreview + '\'' +
+                ", category='" + category + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", image=" + image +
                 '}';
     }
-
-
 }

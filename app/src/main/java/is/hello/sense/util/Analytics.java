@@ -448,6 +448,7 @@ public class Analytics {
 
         String EVENT_HELP = "Settings Help";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
+        String EVENT_TELL_A_FRIEND_TAPPED = "Tell a friend tapped";
     }
 
     public interface StoreReview {
@@ -608,7 +609,7 @@ public class Analytics {
 
     public static @NonNull Properties createBluetoothTrackingProperties(@NonNull Context context) {
         int bondedCount = 0,
-                connectedCount = 0;
+            connectedCount = 0;
 
         boolean headsetConnected = false,
                 a2dpConnected = false,

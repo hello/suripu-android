@@ -83,9 +83,9 @@ public class UndersideFragment extends InjectionFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_underside, container, false);
+        final View view = inflater.inflate(R.layout.fragment_underside, container, false);
 
-        Resources resources = getResources();
+        final Resources resources = getResources();
 
         this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
@@ -96,9 +96,11 @@ public class UndersideFragment extends InjectionFragment
                                                  new Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);
 
-        final long itemLastUpdated = internalPreferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
+        final long itemLastUpdated =
+                internalPreferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
         if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
-            final int currentItem = internalPreferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
+            final int currentItem =
+                    internalPreferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
             setCurrentItem(currentItem, OPTION_NONE);
         } else {
             setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
@@ -107,14 +109,14 @@ public class UndersideFragment extends InjectionFragment
         pager.addOnPageChangeListener(this);
 
         this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
-        final int[] inactiveIcons = {
+        final @DrawableRes int[] inactiveIcons = {
                 R.drawable.underside_icon_currently,
                 R.drawable.underside_icon_trends,
                 R.drawable.underside_icon_insights,
                 R.drawable.underside_icon_alarm,
                 R.drawable.underside_icon_settings,
         };
-        final int[] activeIcons = {
+        final @DrawableRes int[] activeIcons = {
                 R.drawable.underside_icon_currently_active,
                 R.drawable.underside_icon_trends_active,
                 R.drawable.underside_icon_insights_active,
@@ -124,11 +126,13 @@ public class UndersideFragment extends InjectionFragment
         for (int i = 0; i < tabs.getButtonCount(); i++) {
             final ToggleButton button = tabs.getButtonAt(i);
 
-            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i), inactiveIcons[i]);
+            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),
+                                                                   inactiveIcons[i]);
             button.setText(inactiveContent);
             button.setTextOff(inactiveContent);
 
-            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i), activeIcons[i]);
+            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i),
+                                                                 activeIcons[i]);
             button.setTextOn(activeContent);
 
             button.setPadding(0, 0, 0, 0);
@@ -162,7 +166,7 @@ public class UndersideFragment extends InjectionFragment
     public void onResume() {
         super.onResume();
 
-        UndersideTabFragment fragment = getCurrentTabFragment();
+        final UndersideTabFragment fragment = getCurrentTabFragment();
         if (fragment != null) {
             fragment.onUpdate();
         }
@@ -178,8 +182,8 @@ public class UndersideFragment extends InjectionFragment
     }
 
     private SpannableString createIconSpan(@NonNull CharSequence title, @DrawableRes int iconRes) {
-        ImageSpan image = new ImageSpan(getActivity(), iconRes);
-        SpannableString span = new SpannableString(title);
+        final ImageSpan image = new ImageSpan(getActivity(), iconRes);
+        final SpannableString span = new SpannableString(title);
         span.setSpan(image, 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
     }
@@ -188,8 +192,8 @@ public class UndersideFragment extends InjectionFragment
     public @Nullable UndersideTabFragment getCurrentTabFragment() {
         // This depends on semi-undefined behavior. It may break in a future update
         // of the Android support library, but won't break if the host OS changes.
-        long itemId = adapter.getItemId(pager.getCurrentItem());
-        String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+        final long itemId = adapter.getItemId(pager.getCurrentItem());
+        final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
         return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
@@ -201,7 +205,8 @@ public class UndersideFragment extends InjectionFragment
     public void saveCurrentItem(int currentItem) {
         internalPreferences.edit()
                            .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
-                           .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                           .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED,
+                                    System.currentTimeMillis())
                            .apply();
     }
 

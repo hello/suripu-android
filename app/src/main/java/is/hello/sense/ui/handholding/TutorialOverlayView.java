@@ -28,20 +28,17 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import is.hello.buruberi.util.Rx;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 @SuppressLint("ViewConstructor")
 public class TutorialOverlayView extends RelativeLayout {
+    public static final @IdRes int ROOT_CONTAINER_ID = R.id.item_tutorial_description;
+
     private final Activity activity;
     private final Tutorial tutorial;
     private final TextView descriptionText;
@@ -51,6 +48,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
 
+    private @Nullable View anchorContainer;
     private @Nullable ViewGroup container;
     private @Nullable Runnable onDismiss;
 
@@ -80,7 +78,7 @@ public class TutorialOverlayView extends RelativeLayout {
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                              shadowHeight);
         if (tutorial.descriptionGravity == Gravity.TOP) {
-            shadow.setBackgroundResource(R.drawable.shadow_bottom);
+            shadow.setBackgroundResource(R.drawable.shadow_top_down);
             descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
 
             final View topLine = new View(activity);
@@ -92,7 +90,7 @@ public class TutorialOverlayView extends RelativeLayout {
             descriptionContainer.addView(topLine, 0, topLineLayoutParams);
         } else {
             descriptionContainer.setBackgroundResource(R.color.light_accent);
-            shadow.setBackgroundResource(R.drawable.shadow_top);
+            shadow.setBackgroundResource(R.drawable.shadow_bottom_up);
             descriptionContainer.addView(shadow, 0, shadowLayoutParams);
         }
 
@@ -108,33 +106,25 @@ public class TutorialOverlayView extends RelativeLayout {
         return activity.getWindow();
     }
 
-    private <T> Subscription bindAndSubscribe(@NonNull Observable<T> observable,
-                                              @NonNull Action1<T> onNext,
-                                              @NonNull Action1<Throwable> onError) {
-        return observable.lift(new Rx.OperatorConditionalBinding<>(this, ViewCompat::isAttachedToWindow))
-                         .subscribe(onNext, onError);
-    }
-
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        Window window = getWindow();
+        final Window window = getWindow();
         if (window != null && !(window.getCallback() instanceof EventInterceptor)) {
             Logger.info(getClass().getSimpleName(), "Attaching interceptor");
             window.setCallback(new EventInterceptor(window.getCallback()));
         }
 
         if (interactionView == null) {
-            this.anchorView = activity.findViewById(tutorial.anchorId);
+            if (anchorContainer != null) {
+                this.anchorView = anchorContainer.findViewById(tutorial.anchorId);
+            } else {
+                this.anchorView = activity.findViewById(tutorial.anchorId);
+            }
+
             if (anchorView != null) {
-                if (anchorView.getMeasuredWidth() == 0 || anchorView.getMeasuredHeight() == 0) {
-                    bindAndSubscribe(Views.observeNextLayout(anchorView),
-                                     ignored -> showInteractionFrom(),
-                                     Functions.LOG_ERROR);
-                } else {
-                    showInteractionFrom();
-                }
+                Views.runWhenLaidOut(anchorView, this::showInteractionFrom);
             }
         }
     }
@@ -143,10 +133,10 @@ public class TutorialOverlayView extends RelativeLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        Window window = getWindow();
+        final Window window = getWindow();
         if (window != null && (window.getCallback() instanceof EventInterceptor)) {
             Logger.info(getClass().getSimpleName(), "Detaching interceptor");
-            EventInterceptor interceptor = (EventInterceptor) window.getCallback();
+            final EventInterceptor interceptor = (EventInterceptor) window.getCallback();
             window.setCallback(interceptor.getTarget());
         }
 
@@ -162,23 +152,29 @@ public class TutorialOverlayView extends RelativeLayout {
         this.onDismiss = onDismiss;
     }
 
+    public void setAnchorContainer(@Nullable View anchorContainer) {
+        this.anchorContainer = anchorContainer;
+    }
+
     public void show(@IdRes int containerRes) {
         this.container = (ViewGroup) activity.findViewById(containerRes);
         if (container == null) {
-            String idName = getResources().getResourceName(containerRes);
+            final String idName = getResources().getResourceName(containerRes);
             throw new IllegalStateException("Could not find view by id " + idName);
         }
 
         setAlpha(0f);
         container.addView(this);
 
-        bindAndSubscribe(Views.observeNextLayout(this),
-                         ignored -> {
-                             animatorFor(this)
-                                     .alpha(1f)
-                                     .start();
-                         },
-                         Functions.LOG_ERROR);
+        Views.runWhenLaidOut(this, () -> {
+            animatorFor(this)
+                    .alpha(1f)
+                    .start();
+        });
+    }
+
+    public void postShow(@IdRes int containerRes) {
+        post(() -> show(containerRes));
     }
 
     public void dismiss(boolean animate) {

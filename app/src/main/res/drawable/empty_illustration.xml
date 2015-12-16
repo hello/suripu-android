@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
+
+    <!-- The empty illustration must always match the canonical 2:1 aspect ratio -->
+    <size android:width="100dp"
+          android:height="50dp" />
+
+    <solid android:color="@color/background_insight_illustration" />
+
+</shape>

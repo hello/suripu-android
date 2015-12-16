@@ -102,15 +102,16 @@ public class OnboardingActivity extends InjectionActivity
                         LoadingDialogFragment.show(getFragmentManager(),
                                 getString(R.string.dialog_loading_message),
                                 LoadingDialogFragment.OPAQUE_BACKGROUND);
-                        bindAndSubscribe(apiService.getAccount(), account -> {
-                            LoadingDialogFragment.close(getFragmentManager());
-                            showBirthday(account);
-                        }, e -> {
-                            LoadingDialogFragment.close(getFragmentManager());
-                            ErrorDialogFragment.presentError(this, e);
-                        });
+                        bindAndSubscribe(apiService.getAccount(),
+                                         account -> {
+                                             showBirthday(account, false);
+                                         },
+                                         e -> {
+                                             LoadingDialogFragment.close(getFragmentManager());
+                                             ErrorDialogFragment.presentError(this, e);
+                                         });
                     } else {
-                        showBirthday(account);
+                        showBirthday(account, false);
                     }
                     break;
 
@@ -253,7 +254,7 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showBirthday(@Nullable Account account) {
+    public void showBirthday(@Nullable Account account, boolean withDoneTransition) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
         if (account != null) {
@@ -263,12 +264,19 @@ public class OnboardingActivity extends InjectionActivity
         if (bluetoothStack.isEnabled()) {
             Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
             bindAndSubscribe(hardwarePresenter.closestPeripheral(),
-                    peripheral -> Logger.info(getClass().getSimpleName(), "Found and cached Sense " + peripheral),
-                    Functions.IGNORE_ERROR);
+                             peripheral -> Logger.info(getClass().getSimpleName(),
+                                                       "Found and cached Sense " + peripheral),
+                             Functions.IGNORE_ERROR);
 
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
             pushFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
+        }
+
+        if (withDoneTransition) {
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+        } else {
+            LoadingDialogFragment.close(getFragmentManager());
         }
     }
 

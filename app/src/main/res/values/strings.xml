@@ -58,6 +58,9 @@
     <string name="label_account">My Account</string>
     <string name="label_units_and_time">Units and Time</string>
     <string name="label_devices">Sense and Sleep Pill</string>
+    <string name="label_tell_a_friend">Tell a friend about Sense</string>
+    <string name="tell_a_friend_subject">Try Sense</string>
+    <string name="tell_a_friend_body">Sense tracks your sleep, monitors the environment of your bedroom, and helps you wake up feeling great: https://hello.is</string>
     <string name="title_time_frame_24_hrs">Last Day</string>
     <string name="title_time_frame_week">Past Week</string>
     <string name="title_info">Info</string>
@@ -324,7 +327,7 @@
     <string name="issue_title_missing_pill">Sleep Pill</string>
     <string name="issue_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
     <string name="issue_title_low_battery">Low Battery</string>
-    <string name="issue_message_low_battery">The battery in your Sleep Pill is getting low. Replace it to continue tracking your sleep.</string>
+    <string name="issue_message_low_battery">Your Sleep Pill battery is low, and will need to be replaced soon.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom and recognizes your movements during the night, giving you a full picture of your sleep.\n\nSense takes all this data and builds a Sleep Timeline of your sleep for each night. Swipe left to learn more.</string>
@@ -361,8 +364,8 @@
     <string name="action_support">Support</string>
     <string name="onboarding_title_unsupported_device">Unsupported Device</string>
     <string name="onboarding_message_unsupported_device">Your device is known to have issues setting up Sense for the first time. If you have a different phone or tablet available, it is recommended that you use it to perform the next steps.</string>
-    <string name="onboarding_title_untested_device">Your device may not be supported</string>
-    <string name="onboarding_message_untested_device">We‘ve detected that you‘re using a device that may not work optimally with Sense. Your device does meet the basic hardware and operating system requirements, but it has not been put through thorough compatibility testing with Sense, and may not work as expected. If your device is not compatible, you may need to use a device from our <a href="#supported-devices">Supported Devices</a> list.</string>
+    <string name="onboarding_title_untested_device">Your device has not been tested with Sense</string>
+    <string name="onboarding_message_untested_device">Your device does meet the basic hardware and operating system requirements for use with Sense, but it has not been put through thorough compatibility testing, and may not work as expected. If your device is not compatible, you may need to use a device from our <a href="#supported-devices">Supported Devices</a> list.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
@@ -405,6 +408,7 @@
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
     <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
+    <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
@@ -497,6 +501,9 @@
     <string name="onboarding_intro_feature_conditions_title">Current Conditions</string>
     <string name="onboarding_intro_feature_conditions_message">Sense is packed with sensors that monitor the conditions of your bedroom, giving you unparalleled insight into how temperature, humidity, light, sound, and even air quality affects how well you sleep.</string>
     <string name="action_watch_video">Watch Video</string>
+    <string name="action_close">Close</string>
+    <string name="ticket_list_empty">No tickets currently open</string>
+    <string name="title_about_you">About you</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

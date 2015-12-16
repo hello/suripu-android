@@ -1,9 +1,14 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,11 +19,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Insight;
+import is.hello.sense.api.model.Question;
+import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -26,29 +37,51 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
+import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
 public class InsightsFragment extends UndersideTabFragment
-        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener {
+        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
+        InsightInfoFragment.Parent {
+    private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
+    private static final float FOCUSED_CONTENT_SCALE = 1f;
+    private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
+    private static final float FOCUSED_CONTENT_ALPHA = 1f;
+
     @Inject InsightsPresenter insightsPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject LocalUsageTracker localUsageTracker;
     @Inject DeviceIssuesPresenter deviceIssuesPresenter;
     @Inject PreferencesPresenter preferences;
     @Inject QuestionsPresenter questionsPresenter;
+    @Inject Picasso picasso;
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+
+    private @Nullable TutorialOverlayView tutorialOverlayView;
+    private @Nullable InsightsAdapter.InsightViewHolder selectedInsightHolder;
+
+    private @Nullable Question pendingQuestion;
+    private @Nullable List<Insight> pendingInsights;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,13 +110,21 @@ public class InsightsFragment extends UndersideTabFragment
         swipeRefreshLayout.setOnRefreshListener(this);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        this.progressBar = (ProgressBar) view.findViewById(R.id.fragment_insights_progress);
+
+        final Resources resources = getResources();
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(getResources()));
+        recyclerView.addItemDecoration(new CardItemDecoration(resources));
+        recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
         recyclerView.setItemAnimator(null);
 
-        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+
+        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
 
         return view;
@@ -98,21 +139,29 @@ public class InsightsFragment extends UndersideTabFragment
         // we actually merge the endpoints on the backend.
 
         bindAndSubscribe(insightsPresenter.insights,
-                         insightsAdapter::bindInsights,
-                         insightsAdapter::insightsUnavailable);
+                         this::bindInsights,
+                         this::insightsUnavailable);
 
         bindAndSubscribe(questionsPresenter.question,
-                         insightsAdapter::bindQuestion,
-                         insightsAdapter::questionUnavailable);
+                         this::bindQuestion,
+                         this::questionUnavailable);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
+        if (tutorialOverlayView != null) {
+            tutorialOverlayView.dismiss(false);
+            this.tutorialOverlayView = null;
+        }
+
         insightsPresenter.unbindScope();
+
         this.insightsAdapter = null;
+        this.recyclerView = null;
         this.swipeRefreshLayout = null;
+        this.progressBar = null;
     }
 
     @Override
@@ -138,23 +187,154 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
 
-    //region Insights
+    //region Data Binding
 
     @Override
-    public void onInsightClicked(@NonNull Insight insight) {
-        if (!Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
+    public void onRefresh() {
+        this.pendingInsights = null;
+        this.pendingQuestion = null;
 
-            final InsightInfoDialogFragment dialogFragment = InsightInfoDialogFragment.newInstance(insight);
-            dialogFragment.showAllowingStateLoss(getFragmentManager(), InsightInfoDialogFragment.TAG);
+        swipeRefreshLayout.setRefreshing(true);
+        insightsPresenter.update();
+        updateQuestion();
+    }
+
+    /**
+     * Pushes data into the adapter once both questions and insights have loaded.
+     * <p>
+     * Unfortunately this cannot be done through RxJava, if either the questions
+     * or the insights request fails, the compound Observable will fail and stop
+     * emitting values, even if the requests succeed on retry.
+     */
+    private void bindPendingIfReady() {
+        if (pendingInsights == null || pendingQuestion == null) {
+            return;
+        }
+
+        progressBar.setVisibility(View.GONE);
+
+        insightsAdapter.bindQuestion(pendingQuestion);
+        insightsAdapter.bindInsights(pendingInsights);
+
+        final Activity activity = getActivity();
+        if (!isPostOnboarding() && tutorialOverlayView == null &&
+                Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
+            this.tutorialOverlayView = new TutorialOverlayView(activity,
+                                                               Tutorial.TAP_INSIGHT_CARD);
+            tutorialOverlayView.setOnDismiss(() -> {
+                this.tutorialOverlayView = null;
+            });
+            tutorialOverlayView.setAnchorContainer(getView());
+            tutorialOverlayView.postShow(R.id.activity_home_container);
+        }
+
+        this.pendingInsights = null;
+        this.pendingQuestion = null;
+    }
+
+    private void bindInsights(@NonNull List<Insight> insights) {
+        this.pendingInsights = insights;
+        bindPendingIfReady();
+    }
+
+    private void insightsUnavailable(@Nullable Throwable e) {
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.insightsUnavailable(e);
+    }
+
+    private void bindQuestion(@Nullable Question question) {
+        this.pendingQuestion = question;
+        bindPendingIfReady();
+    }
+
+    private void questionUnavailable(@Nullable Throwable e) {
+        progressBar.setVisibility(View.GONE);
+        insightsAdapter.questionUnavailable(e);
+    }
+
+    //endregion
+
+
+    //region Insights
+
+    private Animator createRecyclerEnter() {
+        return animatorFor(recyclerView)
+                .scale(UNFOCUSED_CONTENT_SCALE)
+                .alpha(UNFOCUSED_CONTENT_ALPHA)
+                .addOnAnimationCompleted(finished -> {
+                    // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
+                    // return a subtly broken value, and the exit transition will be broken.
+                    recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                    recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                    recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                });
+    }
+
+    private Animator createRecyclerExit() {
+        return animatorFor(recyclerView)
+                .addOnAnimationWillStart(() -> {
+                    // Ensure visual consistency.
+                    recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                    recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                    recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                })
+                .scale(FOCUSED_CONTENT_SCALE)
+                .alpha(FOCUSED_CONTENT_ALPHA);
+    }
+
+    @Override
+    @Nullable
+    public InsightInfoFragment.SharedState provideSharedState(boolean isEnter) {
+        if (selectedInsightHolder != null) {
+            final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
+            Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
+            Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
+            state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
+            if (recyclerView != null) {
+                if (isEnter) {
+                    state.parentAnimator = createRecyclerEnter();
+                } else {
+                    state.parentAnimator = createRecyclerExit();
+                }
+            }
+            return state;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Drawable getInsightImage() {
+        if (selectedInsightHolder != null) {
+            return selectedInsightHolder.image.getDrawable();
+        } else {
+            return null;
         }
     }
 
     @Override
-    public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(true);
-        insightsPresenter.update();
-        updateQuestion();
+    public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
+        final Insight insight = viewHolder.getInsight();
+        if (insight.isError()) {
+            return;
+        }
+
+        Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
+        Tutorial.TAP_INSIGHT_CARD.markShown(getActivity());
+
+        // InsightsFragment lives inside of a child fragment manager, whose root view is inset
+        // on the bottom to make space for the open timeline. We go right to the root fragment
+        // manager to keep things simple.
+        final FragmentManager fragmentManager = getActivity().getFragmentManager();
+        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
+                                                                                 getResources());
+        infoFragment.setTargetFragment(this, 0x0);
+        infoFragment.show(fragmentManager,
+                          R.id.activity_home_container,
+                          InsightInfoFragment.TAG);
+
+        this.selectedInsightHolder = viewHolder;
     }
 
     //endregion

@@ -11,8 +11,6 @@ import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
-import is.hello.sense.api.model.Insight;
-import is.hello.sense.api.model.InsightInfo;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
@@ -25,8 +23,8 @@ import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -113,32 +111,6 @@ public interface ApiService {
     //endregion
 
 
-    //region Timeline
-
-    @GET("/v2/timeline/{date}")
-    Observable<Timeline> timelineForDate(@NonNull @Path("date") String date);
-
-    @PATCH("/v2/timeline/{date}/events/{type}/{timestamp}")
-    Observable<Timeline> amendTimelineEventTime(@NonNull @Path("date") String date,
-                                                @NonNull @Path("type") TimelineEvent.Type type,
-                                                @Path("timestamp") long timestamp,
-                                                @NonNull @Body TimelineEvent.TimeAmendment amendment);
-
-    @DELETE("/v2/timeline/{date}/events/{type}/{timestamp}")
-    Observable<Timeline> deleteTimelineEvent(@NonNull @Path("date") String date,
-                                             @NonNull @Path("type") TimelineEvent.Type type,
-                                             @Path("timestamp") long timestamp);
-
-    @PUT("/v2/timeline/{date}/events/{type}/{timestamp}")
-    @Headers("Content-Type: application/json")
-    Observable<VoidResponse> verifyTimelineEvent(@NonNull @Path("date") String date,
-                                                 @NonNull @Path("type") TimelineEvent.Type type,
-                                                 @Path("timestamp") long timestamp,
-                                                 @NonNull @Body String stupidOkHttp);
-
-    //endregion
-
-
     //region Room Conditions
 
     @GET("/v1/room/current")
@@ -161,10 +133,10 @@ public interface ApiService {
 
     //region Insights
 
-    @GET("/v1/insights")
+    @GET("/v2/insights")
     Observable<ArrayList<Insight>> currentInsights();
 
-    @GET("/v1/insights/info/{category}")
+    @GET("/v2/insights/info/{category}")
     Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") String category);
 
     //endregion

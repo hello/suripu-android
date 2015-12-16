@@ -8,9 +8,18 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
+
+import is.hello.sense.ui.widget.util.Views;
 
 /**
  * A fragment which has complex enter and exit animations.
@@ -24,17 +33,18 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.hasAnimated = (savedInstanceState != null && savedInstanceState.getBoolean(SAVED_HAS_ANIMATED));
+        this.hasAnimated = (savedInstanceState != null &&
+                savedInstanceState.getBoolean(SAVED_HAS_ANIMATED));
     }
 
     @Override
     public final Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
         if (enter) {
-            AnimatorSet placeholder = new AnimatorSet();
+            final AnimatorSet placeholder = new AnimatorSet();
             if (hasAnimated) {
                 onSkipEnterAnimator();
             } else {
-                View view = getView();
+                final View view = getView();
                 assert(view != null);
                 view.setVisibility(View.INVISIBLE);
                 placeholder.addListener(new AnimatorListenerAdapter() {
@@ -43,11 +53,17 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
                         // The placeholder animation runs before the root view
                         // is attached to the window, somehow. So we do this
                         // on the next run loop cycle to work-around that.
-                        view.post(() -> {
-                            view.setVisibility(View.VISIBLE);
-
-                            Animator animator = onProvideEnterAnimator();
+                        Views.runWhenLaidOut(view, () -> {
+                            final Animator animator = onProvideEnterAnimator();
+                            animator.addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    onEnterAnimatorEnd();
+                                }
+                            });
                             animator.start();
+
+                            view.setVisibility(View.VISIBLE);
                         });
                     }
                 });
@@ -56,7 +72,14 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
             }
             return placeholder;
         } else {
-            return new NoTargetAnimator(onProvideExitAnimator());
+            final NoTargetAnimator exitAnimator = new NoTargetAnimator(onProvideExitAnimator());
+            exitAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    onExitAnimatorEnd();
+                }
+            });
+            return exitAnimator;
         }
     }
 
@@ -84,6 +107,26 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
      * Called when the fragment is being removed.
      */
     protected abstract Animator onProvideExitAnimator();
+
+    /**
+     * Called when the enter animator finishes.
+     */
+    protected void onEnterAnimatorEnd() {
+        // Do nothing.
+    }
+
+    /**
+     * Called when the exit animator finishes.
+     * <p>
+     * This is the best place to clear fields created in
+     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * <p>
+     * This method will not be called if the fragment exits
+     * without the transition (e.g. on rotation.)
+     */
+    protected void onExitAnimatorEnd() {
+        // Do nothing.
+    }
 
     /**
      * Returns whether or not the fragment has already animated its entrance.
@@ -225,5 +268,16 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
         public final void setTarget(Object target) {
             // Always do nothing.
         }
+    }
+
+    /**
+     * Marks a field as being used in either {@link #onProvideEnterAnimator()}
+     * or {@link #onProvideExitAnimator()}. Fields marked with this annotation should
+     * be cleared in {@link #onExitAnimatorEnd()} instead of {@code onDestroyView()}.
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.SOURCE)
+    @Documented
+    protected @interface UsedInTransition {
     }
 }

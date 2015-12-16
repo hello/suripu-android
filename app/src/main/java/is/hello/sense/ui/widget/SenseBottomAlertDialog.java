@@ -57,22 +57,21 @@ public class SenseBottomAlertDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Views.observeNextLayout(container)
-             .subscribe(view -> {
-                 DisplayMetrics metrics = new DisplayMetrics();
+        Views.runWhenLaidOut(container, () -> {
+                 final DisplayMetrics metrics = new DisplayMetrics();
                  getWindow().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-                 Resources resources = getContext().getResources();
+                 final Resources resources = getContext().getResources();
 
-                 int padding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-                 int paddedScreenHeight = metrics.heightPixels - (padding * 2);
-                 int maxDialogHeight = resources.getDimensionPixelSize(R.dimen.dialog_bottom_max_height);
-                 int maxHeight = Math.min(paddedScreenHeight, maxDialogHeight);
+                 final int padding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+                 final int paddedScreenHeight = metrics.heightPixels - (padding * 2);
+                 final int maxDialogHeight = resources.getDimensionPixelSize(R.dimen.dialog_bottom_max_height);
+                 final int maxHeight = Math.min(paddedScreenHeight, maxDialogHeight);
 
-                 if (view.getMeasuredHeight() > maxHeight) {
-                     view.getLayoutParams().height = maxHeight;
-                     view.requestLayout();
-                     view.invalidate();
+                 if (container.getMeasuredHeight() > maxHeight) {
+                     container.getLayoutParams().height = maxHeight;
+                     container.requestLayout();
+                     container.invalidate();
                  }
              });
     }

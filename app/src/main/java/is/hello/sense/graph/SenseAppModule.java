@@ -33,7 +33,7 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
-import is.hello.sense.ui.dialogs.InsightInfoDialogFragment;
+import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
@@ -94,8 +94,8 @@ import is.hello.sense.zendesk.ZendeskModule;
         UndersideFragment.class,
         InsightsPresenter.class,
         InsightsFragment.class,
-        InsightInfoDialogFragment.class,
         InsightInfoPresenter.class,
+        InsightInfoFragment.class,
         RoomConditionsFragment.class,
         RoomConditionsPresenter.class,
         SensorHistoryFragment.class,
@@ -107,7 +107,6 @@ import is.hello.sense.zendesk.ZendeskModule;
         SmartAlarmDetailFragment.class,
         SmartAlarmSoundDialogFragment.class,
         SmartAlarmPresenter.class,
-
     }
 )
 @SuppressWarnings("UnusedDeclaration")

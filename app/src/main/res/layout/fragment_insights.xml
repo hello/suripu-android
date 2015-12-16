@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<is.hello.sense.ui.widget.FixedSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_insights_refresh_container"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_insights_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <ProgressBar
+        android:id="@+id/fragment_insights_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 
-</is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
+    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
+        android:id="@+id/fragment_insights_refresh_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/fragment_insights_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
+
+</RelativeLayout>

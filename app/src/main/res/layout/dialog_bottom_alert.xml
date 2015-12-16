@@ -8,7 +8,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/shadow_size"
-        android:background="@drawable/shadow_top" />
+        android:background="@drawable/shadow_bottom_up" />
 
     <LinearLayout
         android:layout_width="match_parent"

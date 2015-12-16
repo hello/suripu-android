@@ -44,7 +44,7 @@ public class SenseListDialog<T> extends Dialog
 
         this.recyclerView = (RecyclerView) findViewById(R.id.dialog_sense_list_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources, FadingEdgesItemDecoration.Style.STRAIGHT));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);

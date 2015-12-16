@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget.util;
 
+import android.animation.ValueAnimator;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,11 +14,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import is.hello.buruberi.util.Rx;
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.StateSafeExecutor;
-import rx.Observable;
-import rx.subscriptions.Subscriptions;
 
 public final class Views {
     /**
@@ -51,14 +50,14 @@ public final class Views {
      * Returns whether or not a given motion event is within the bounds of a given view.
      */
     public static boolean isMotionEventInside(@NonNull View view, @NonNull MotionEvent event) {
-        int[] coordinates = {0, 0};
+        final int[] coordinates = { 0, 0 };
         view.getLocationOnScreen(coordinates);
 
-        int width = view.getMeasuredWidth();
-        int height = view.getMeasuredHeight();
+        final int width = view.getMeasuredWidth();
+        final int height = view.getMeasuredHeight();
 
-        float x = event.getRawX();
-        float y = event.getRawY();
+        final float x = event.getRawX();
+        final float y = event.getRawY();
 
         return (x >= coordinates[ORIGIN_X] && x <= coordinates[ORIGIN_X] + width &&
                 y >= coordinates[ORIGIN_Y] && y <= coordinates[ORIGIN_Y] + height);
@@ -69,15 +68,18 @@ public final class Views {
      * <p/>
      * This method makes several allocations and should
      * not be used in performance sensitive code.
+     * <p/>
+     * This method will return incorrect values if one of
+     * the views in your hierarchy has a scale value set.
      *
      * @param view      The view to find the frame for.
      * @param outRect   On return, contains the frame of the view.
      */
     public static void getFrameInWindow(@NonNull View view, @NonNull Rect outRect) {
-        int[] coordinates = {0, 0};
+        final int[] coordinates = { 0, 0 };
         view.getLocationInWindow(coordinates);
 
-        Rect windowFrame = new Rect();
+        final Rect windowFrame = new Rect();
         view.getWindowVisibleDisplayFrame(windowFrame);
 
         outRect.left = coordinates[ORIGIN_X] - windowFrame.left;
@@ -87,7 +89,8 @@ public final class Views {
     }
 
     public static Rect copyFrame(@NonNull View view) {
-        return new Rect(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+        return new Rect(view.getLeft(), view.getTop(),
+                        view.getRight(), view.getBottom());
     }
 
     /**
@@ -97,26 +100,6 @@ public final class Views {
      */
     public static int getCenterX(@NonNull View view) {
         return (view.getLeft() + view.getRight()) / 2;
-    }
-
-    /**
-     * A one time signal that will notify observers of a given view's next global layout event.
-     *
-     * @deprecated You probably want {@link Views#runWhenLaidOut(View, Runnable)} instead.
-     */
-    @Deprecated
-    public static <T extends View> Observable<T> observeNextLayout(@NonNull T view) {
-        return Observable.create((Observable.OnSubscribe<T>) s -> {
-            ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    s.onNext(view);
-                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            };
-            s.add(Subscriptions.create(() -> view.getViewTreeObserver().removeOnGlobalLayoutListener(listener)));
-            view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
-        }).subscribeOn(Rx.mainThreadScheduler());
     }
 
     /**
@@ -162,8 +145,8 @@ public final class Views {
         // From <http://stackoverflow.com/questions/8558732/listview-textview-with-linkmovementmethod-makes-list-item-unclickable>
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         textView.setOnTouchListener((v, event) -> {
-            Spannable spannableText = Spannable.Factory.getInstance().newSpannable(textView.getText());
-            int action = event.getAction();
+            final Spannable spannableText = Spannable.Factory.getInstance().newSpannable(textView.getText());
+            final int action = event.getAction();
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
@@ -174,11 +157,11 @@ public final class Views {
                 x += textView.getScrollX();
                 y += textView.getScrollY();
 
-                Layout layout = textView.getLayout();
-                int line = layout.getLineForVertical(y);
-                int off = layout.getOffsetForHorizontal(line, x);
+                final Layout layout = textView.getLayout();
+                final int line = layout.getLineForVertical(y);
+                final int off = layout.getOffsetForHorizontal(line, x);
 
-                ClickableSpan[] link = spannableText.getSpans(off, off, ClickableSpan.class);
+                final ClickableSpan[] link = spannableText.getSpans(off, off, ClickableSpan.class);
                 if (link.length != 0) {
                     if (action == MotionEvent.ACTION_UP) {
                         link[0].onClick(textView);
@@ -188,5 +171,14 @@ public final class Views {
             }
             return false;
         });
+    }
+
+    public static ValueAnimator createFrameAnimator(@NonNull View view, @NonNull Rect... frames) {
+        final ValueAnimator animator = AnimatorTemplate.DEFAULT.createRectAnimator((Rect[]) frames);
+        animator.addUpdateListener(a -> {
+            final Rect frame = (Rect) a.getAnimatedValue();
+            view.layout(frame.left, frame.top, frame.right, frame.bottom);
+        });
+        return animator;
     }
 }

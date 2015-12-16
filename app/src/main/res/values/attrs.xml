@@ -49,4 +49,10 @@
         <attr name="sensePlaceholder" format="reference" />
         <attr name="senseAutoStart" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="ParallaxImageView">
+        <attr name="senseParallaxClip" format="integer" />
+        <attr name="senseParallaxPercent" format="float" />
+        <attr name="senseAspectRatio" format="string" />
+    </declare-styleable>
 </resources>

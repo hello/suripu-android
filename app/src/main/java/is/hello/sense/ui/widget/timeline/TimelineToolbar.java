@@ -63,6 +63,7 @@ public class TimelineToolbar extends RelativeLayout {
         this.title = (TextView) findViewById(R.id.view_timeline_toolbar_title);
 
         final Resources resources = getResources();
+        //noinspection ConstantConditions
         setOverflowDrawables(ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_closed, null),
                              ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_open, null));
 
@@ -128,6 +129,7 @@ public class TimelineToolbar extends RelativeLayout {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void setUnreadVisible(boolean unreadVisible) {
         if (unreadVisible != this.unreadVisible) {
             final Resources resources = getResources();
@@ -198,6 +200,10 @@ public class TimelineToolbar extends RelativeLayout {
 
     public void setTitleOnClickListener(@NonNull OnClickListener onClickListener) {
         Views.setSafeOnClickListener(title, onClickListener);
+    }
+
+    public void setTitleOnLongClickListener(@Nullable OnLongClickListener onLongClickListener) {
+        title.setOnLongClickListener(onLongClickListener);
     }
 
     public void setTitle(@Nullable CharSequence text) {

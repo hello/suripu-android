@@ -317,8 +317,7 @@ public class RegisterFragment extends InjectionFragment
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
-            getOnboardingActivity().showBirthday(createdAccount);
-            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+            getOnboardingActivity().showBirthday(createdAccount, true);
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getActivity(), error);

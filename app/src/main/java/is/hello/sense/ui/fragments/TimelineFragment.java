@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentCallbacks2;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
@@ -79,6 +81,8 @@ public class TimelineFragment extends InjectionFragment
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
     private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
+
+    private static final int REQUEST_CODE_CHANGE_SRC = 0x50;
 
     private static final int ID_EVENT_CORRECT = 0;
     private static final int ID_EVENT_ADJUST_TIME = 1;
@@ -181,6 +185,21 @@ public class TimelineFragment extends InjectionFragment
             }
             homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
         });
+        if (BuildConfig.DEBUG) {
+            toolbar.setTitleOnLongClickListener(ignored -> {
+                try {
+                    final Class<?> TimelineSourceActivity =
+                            Class.forName("is.hello.sense.debug.TimelineSourceActivity");
+                    startActivityForResult(new Intent(getActivity(), TimelineSourceActivity),
+                                           REQUEST_CODE_CHANGE_SRC);
+                    return true;
+                } catch (ClassNotFoundException e) {
+                    ErrorDialogFragment.presentError(getActivity(), e);
+                    return false;
+                }
+            });
+        }
+
         toolbar.setTitleDimmed(overflowOpen);
         updateTitle();
 
@@ -339,6 +358,15 @@ public class TimelineFragment extends InjectionFragment
         this.homeActivity = null;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_CHANGE_SRC && resultCode == Activity.RESULT_OK) {
+            timelinePresenter.update();
+        }
+    }
+
     //endregion
 
 
@@ -470,6 +498,7 @@ public class TimelineFragment extends InjectionFragment
         tutorialOverlay.setOnDismiss(() -> {
             this.tutorialOverlay = null;
         });
+        tutorialOverlay.setAnchorContainer(getView());
         tutorialOverlay.show(R.id.activity_home_container);
     }
 

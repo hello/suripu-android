@@ -55,17 +55,16 @@ public class SenseAlertDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Views.observeNextLayout(container)
-             .subscribe(view -> {
-                 final DisplayMetrics metrics = view.getResources().getDisplayMetrics();
+        Views.runWhenLaidOut(container, () -> {
+                 final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
 
                  final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
                  final int maxHeight = metrics.heightPixels - (padding * 2);
 
-                 if (view.getMeasuredHeight() > maxHeight) {
-                     view.getLayoutParams().height = maxHeight;
-                     view.requestLayout();
-                     view.invalidate();
+                 if (container.getMeasuredHeight() > maxHeight) {
+                     container.getLayoutParams().height = maxHeight;
+                     container.requestLayout();
+                     container.invalidate();
                  }
              });
     }

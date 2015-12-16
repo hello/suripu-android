@@ -37,6 +37,7 @@ import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -72,20 +73,22 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_smart_alarm_list, container, false);
+        final View view = inflater.inflate(R.layout.fragment_smart_alarm_list, container, false);
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
 
-
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_smart_alarm_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
         final Resources resources = getResources();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
         final CardItemDecoration decoration = new CardItemDecoration(resources);
         decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
 
         this.adapter = new SmartAlarmAdapter(getActivity(), this, dateFormatter);
         recyclerView.setAdapter(adapter);

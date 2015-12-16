@@ -17,11 +17,15 @@ import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
+import is.hello.sense.api.TestTimelineService;
+import is.hello.sense.api.TimelineService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenterTests;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
@@ -91,6 +95,9 @@ import static org.mockito.Mockito.mock;
         TrendsPresenterTests.class,
         TrendsPresenter.class,
 
+        DeviceIssuesPresenter.class,
+        DeviceIssuesPresenterTests.class,
+
         LocalUsageTrackerTests.class,
         ReviewQuestionProviderTests.class,
         UnreadStatePresenterTests.class,
@@ -126,6 +133,10 @@ public final class TestModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull Gson gson) {
         return new TestApiService(context, gson);
+    }
+
+    @Singleton @Provides TimelineService provideTimelineService() {
+        return new TestTimelineService();
     }
 
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {

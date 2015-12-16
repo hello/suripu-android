@@ -30,6 +30,7 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
     @Inject TicketsPresenter ticketsPresenter;
 
     private ProgressBar activityIndicator;
+    private TextView empty;
     private TicketAdapter adapter;
 
     //region Lifecycle
@@ -50,6 +51,7 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
         final View view = inflater.inflate(R.layout.list_view_static, container, false);
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.list_view_static_loading);
+        this.empty = (TextView) view.findViewById(R.id.list_view_static_empty);
 
         final ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
@@ -99,11 +101,19 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
     public void bindTickets(@NonNull List<Request> tickets) {
         activityIndicator.setVisibility(View.GONE);
         adapter.clear();
-        adapter.addAll(tickets);
+        if (tickets.isEmpty()) {
+            empty.setText(R.string.ticket_list_empty);
+            empty.setVisibility(View.VISIBLE);
+        } else {
+            empty.setVisibility(View.GONE);
+            adapter.addAll(tickets);
+        }
     }
 
     public void presentError(Throwable e) {
         activityIndicator.setVisibility(View.GONE);
+        empty.setVisibility(View.VISIBLE);
+        empty.setText(R.string.dialog_error_title);
         adapter.clear();
         ErrorDialogFragment.presentError(getActivity(), e);
     }
