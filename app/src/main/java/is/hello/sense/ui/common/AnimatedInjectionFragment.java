@@ -8,8 +8,15 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 
 import is.hello.sense.ui.widget.util.Views;
@@ -65,7 +72,14 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
             }
             return placeholder;
         } else {
-            return new NoTargetAnimator(onProvideExitAnimator());
+            final NoTargetAnimator exitAnimator = new NoTargetAnimator(onProvideExitAnimator());
+            exitAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    onExitAnimatorEnd();
+                }
+            });
+            return exitAnimator;
         }
     }
 
@@ -98,6 +112,19 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
      * Called when the enter animator finishes.
      */
     protected void onEnterAnimatorEnd() {
+        // Do nothing.
+    }
+
+    /**
+     * Called when the exit animator finishes.
+     * <p>
+     * This is the best place to clear fields created in
+     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * <p>
+     * This method will not be called if the fragment exits
+     * without the transition (e.g. on rotation.)
+     */
+    protected void onExitAnimatorEnd() {
         // Do nothing.
     }
 
@@ -241,5 +268,16 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
         public final void setTarget(Object target) {
             // Always do nothing.
         }
+    }
+
+    /**
+     * Marks a field as being used in either {@link #onProvideEnterAnimator()}
+     * or {@link #onProvideExitAnimator()}. Fields marked with this annotation should
+     * be cleared in {@link #onExitAnimatorEnd()} instead of {@code onDestroyView()}.
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.SOURCE)
+    @Documented
+    protected @interface UsedInTransition {
     }
 }

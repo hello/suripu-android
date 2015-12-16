@@ -71,16 +71,16 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private String imageUrl;
     private CharSequence summary;
 
-    private View rootView;
-    private View fillView;
+    @UsedInTransition private View rootView;
+    @UsedInTransition private View fillView;
 
-    private ExtendedScrollView scrollView;
-    private ImageView topShadow, bottomShadow;
-    private ParallaxImageView illustrationImage;
-    private View[] contentViews;
+    @UsedInTransition private ExtendedScrollView scrollView;
+    @UsedInTransition private ImageView topShadow, bottomShadow;
+    @UsedInTransition private ParallaxImageView illustrationImage;
+    @UsedInTransition private View[] contentViews;
     private TextView titleText;
     private TextView messageText;
-    private Button doneButton;
+    @UsedInTransition private Button doneButton;
 
     private @ColorInt int defaultStatusBarColor;
 
@@ -187,6 +187,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         super.onDestroyView();
 
         picasso.cancelRequest(illustrationImage);
+
+        this.titleText = null;
+        this.messageText = null;
     }
 
     @Override
@@ -248,6 +251,18 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected void onEnterAnimatorEnd() {
         scrollView.setOnScrollListener(this);
+    }
+
+    @Override
+    protected void onExitAnimatorEnd() {
+        this.rootView = null;
+        this.fillView = null;
+        this.scrollView = null;
+        this.topShadow = null;
+        this.bottomShadow = null;
+        this.illustrationImage = null;
+        this.contentViews = null;
+        this.doneButton = null;
     }
 
     @Override

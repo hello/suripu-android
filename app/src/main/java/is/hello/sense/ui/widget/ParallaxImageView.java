@@ -139,23 +139,6 @@ public class ParallaxImageView extends View implements Target {
 
     //region Animations
 
-
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-
-        if (visibility != VISIBLE) {
-            clearAnimation();
-        }
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        clearAnimation();
-    }
-
     @Override
     public void clearAnimation() {
         super.clearAnimation();
