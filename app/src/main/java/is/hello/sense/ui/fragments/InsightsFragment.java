@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -160,6 +161,7 @@ public class InsightsFragment extends UndersideTabFragment
         this.insightsAdapter = null;
         this.recyclerView = null;
         this.swipeRefreshLayout = null;
+        this.progressBar = null;
     }
 
     @Override
@@ -255,40 +257,49 @@ public class InsightsFragment extends UndersideTabFragment
 
     //region Insights
 
+    private Animator createRecyclerEnter() {
+        return animatorFor(recyclerView)
+                .scale(UNFOCUSED_CONTENT_SCALE)
+                .alpha(UNFOCUSED_CONTENT_ALPHA)
+                .addOnAnimationCompleted(finished -> {
+                    // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
+                    // return a subtly broken value, and the exit transition will be broken.
+                    recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                    recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                    recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                });
+    }
+
+    private Animator createRecyclerExit() {
+        return animatorFor(recyclerView)
+                .addOnAnimationWillStart(() -> {
+                    // Ensure visual consistency.
+                    recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                    recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                    recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                })
+                .scale(FOCUSED_CONTENT_SCALE)
+                .alpha(FOCUSED_CONTENT_ALPHA);
+    }
+
     @Override
-    public boolean provideSharedState(@NonNull InsightInfoFragment.SharedState outState,
-                                      boolean isEnter) {
+    @Nullable
+    public InsightInfoFragment.SharedState provideSharedState(boolean isEnter) {
         if (selectedInsightHolder != null) {
-            Views.getFrameInWindow(selectedInsightHolder.itemView, outState.cardRectInWindow);
-            Views.getFrameInWindow(selectedInsightHolder.image, outState.imageRectInWindow);
-            outState.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
+            final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
+            Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
+            Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
+            state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
             if (recyclerView != null) {
                 if (isEnter) {
-                    outState.parentAnimator = animatorFor(recyclerView)
-                            .scale(UNFOCUSED_CONTENT_SCALE)
-                            .alpha(UNFOCUSED_CONTENT_ALPHA)
-                            .addOnAnimationCompleted(finished -> {
-                                // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
-                                // return a subtly broken value, and the exit transition will be broken.
-                                recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
-                                recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
-                                recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
-                            });
+                    state.parentAnimator = createRecyclerEnter();
                 } else {
-                    outState.parentAnimator = animatorFor(recyclerView)
-                            .addOnAnimationWillStart(() -> {
-                                // Ensure visual consistency.
-                                recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
-                                recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
-                                recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
-                            })
-                            .scale(FOCUSED_CONTENT_SCALE)
-                            .alpha(FOCUSED_CONTENT_ALPHA);
+                    state.parentAnimator = createRecyclerExit();
                 }
             }
-            return true;
+            return state;
         } else {
-            return false;
+            return null;
         }
     }
 

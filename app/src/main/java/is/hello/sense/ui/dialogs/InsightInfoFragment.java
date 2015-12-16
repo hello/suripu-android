@@ -158,7 +158,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         this.scrollView = (ExtendedScrollView) this.rootView.findViewById(R.id.fragment_insight_info_scroll);
 
-        final Parent parent = getSource();
+        final Parent parent = getParent();
         final Drawable existingImage = parent != null
                 ? parent.getInsightImage()
                 : null;
@@ -204,9 +204,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
-        final Parent parent = getSource();
-        final SharedState state = new SharedState();
-        if (parent != null && parent.provideSharedState(/*out*/state, true)) {
+        final Parent parent = getParent();
+        final SharedState state = parent != null
+                ? parent.provideSharedState(true)
+                : null;
+        if (state != null) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
@@ -256,9 +258,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
 
         final AnimatorSet scene = new AnimatorSet();
-        final Parent parent = getSource();
-        final SharedState state = new SharedState();
-        if (parent != null && parent.provideSharedState(/*out*/state, false)) {
+        final Parent parent = getParent();
+        final SharedState state = parent != null
+                ? parent.provideSharedState(false)
+                : null;
+        if (state != null) {
             topShadow.setVisibility(View.GONE);
             bottomShadow.setVisibility(View.GONE);
 
@@ -434,14 +438,16 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private @ColorInt int getTargetStatusBarColor() {
         if (illustrationImage.getDrawable() instanceof BitmapDrawable) {
             final Bitmap bitmap = ((BitmapDrawable) illustrationImage.getDrawable()).getBitmap();
-            return Drawing.darkenColorBy(bitmap.getPixel(0, 0), 0.2f);
-        } else {
-            return Windows.getStatusBarColor(getActivity().getWindow());
+            if (bitmap != null) { // @Nullable annotation is missing; nullability in documentation.
+                return Drawing.darkenColorBy(bitmap.getPixel(0, 0), 0.2f);
+            }
         }
+
+        return Windows.getStatusBarColor(getActivity().getWindow());
     }
 
     @Nullable
-    private Parent getSource() {
+    private Parent getParent() {
         // The target fragment does not correctly survive state changes because the
         // target fragment and this fragment do not share the same fragment manager.
         final Fragment targetFragment = getTargetFragment();
@@ -508,7 +514,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     //endregion
 
     public interface Parent {
-        boolean provideSharedState(@NonNull SharedState outState, boolean isEnter);
+        @Nullable SharedState provideSharedState(boolean isEnter);
         @Nullable Drawable getInsightImage();
     }
 
