@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,19 +12,20 @@ import android.widget.ScrollView;
 public class ExtendedScrollView extends ScrollView {
     private boolean scrollingEnabled = true;
     private @Nullable OnScrollListener onScrollListener;
+    private boolean dispatchedInitialScrollEvent = false;
 
 
     //region Lifecycle
 
-    public ExtendedScrollView(Context context) {
+    public ExtendedScrollView(@NonNull Context context) {
         super(context);
     }
 
-    public ExtendedScrollView(Context context, AttributeSet attrs) {
+    public ExtendedScrollView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ExtendedScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ExtendedScrollView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -38,21 +40,43 @@ public class ExtendedScrollView extends ScrollView {
 
     public void setOnScrollListener(@Nullable OnScrollListener onScrollListener) {
         this.onScrollListener = onScrollListener;
+
+        if (onScrollListener != null && ViewCompat.isLaidOut(this)) {
+            final int scrollX = getScrollX();
+            final int scrollY = getScrollY();
+            onScrollListener.onScrollChanged(scrollX, scrollY,
+                                             scrollX, scrollY);
+
+            this.dispatchedInitialScrollEvent = true;
+        } else {
+            this.dispatchedInitialScrollEvent = false;
+        }
     }
 
     public View getContentView() {
         return getChildAt(0);
     }
 
-    @Override
-    public boolean canScrollVertically(int direction) {
-        return super.canScrollVertically(direction);
-    }
-
     //endregion
 
 
     //region Events
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+
+        if (!dispatchedInitialScrollEvent) {
+            if (onScrollListener != null) {
+                final int scrollX = getScrollX();
+                final int scrollY = getScrollY();
+                onScrollListener.onScrollChanged(scrollX, scrollY,
+                                                 scrollX, scrollY);
+            }
+            
+            this.dispatchedInitialScrollEvent = true;
+        }
+    }
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent ev) {

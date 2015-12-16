@@ -18,7 +18,8 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class InjectionFragment extends SenseFragment implements ObservableContainer, StateSafeExecutor.Resumes {
+public class InjectionFragment extends SenseFragment
+        implements ObservableContainer, StateSafeExecutor.Resumes {
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
 

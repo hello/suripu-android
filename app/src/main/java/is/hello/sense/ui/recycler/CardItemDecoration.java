@@ -22,12 +22,6 @@ public final class CardItemDecoration extends RecyclerView.ItemDecoration {
         this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter);
     }
 
-    public CardItemDecoration(int outerHorizontal, int outerVertical, int inter) {
-        this.outerHorizontal = outerHorizontal;
-        this.outerVertical = outerVertical;
-        this.inter = inter;
-    }
-
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         int lastPosition = (parent.getAdapter().getItemCount() - 1);

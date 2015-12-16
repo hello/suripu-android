@@ -31,7 +31,7 @@ import is.hello.sense.util.Constants;
 public enum Tutorial {
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
                    Gravity.BOTTOM,
-                   R.id.activity_home_container,
+                   R.id.fragment_timeline_recycler,
                    Interaction.SWIPE_RIGHT),
     ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
                       Gravity.BOTTOM,

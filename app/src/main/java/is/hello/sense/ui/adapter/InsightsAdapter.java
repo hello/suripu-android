@@ -253,11 +253,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
     }
 
-    class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
+    public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
         final TextView category;
-        final ParallaxImageView image;
+        public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull View view) {
             super(view);
@@ -285,7 +285,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     picasso.load(url).into(image);
                 } else {
                     picasso.cancelRequest(image);
-                    image.setDrawable(null);
+                    image.setDrawable(null, true);
                 }
                 image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategoryName());
@@ -305,7 +305,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         @Override
         void unbind() {
             image.clearAnimation();
-            image.setDrawable(null);
+            image.setDrawable(null, true);
         }
 
         @Override
@@ -316,9 +316,12 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             // view holder before the callback fires.
             final int adapterPosition = getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                final Insight insight = getInsightItem(adapterPosition);
-                interactionListener.onInsightClicked(adapterPosition, insight);
+                interactionListener.onInsightClicked(this);
             }
+        }
+
+        public Insight getInsight() {
+            return getInsightItem(getAdapterPosition());
         }
 
         @Override
@@ -334,7 +337,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onDismissLoadingIndicator();
         void onSkipQuestion();
         void onAnswerQuestion();
-        void onInsightClicked(int position, @NonNull Insight insight);
+        void onInsightClicked(@NonNull InsightViewHolder viewHolder);
     }
-
 }

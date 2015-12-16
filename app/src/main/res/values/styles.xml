@@ -338,6 +338,10 @@
         <item name="android:textColor">@color/text_color_selector_light_accent</item>
     </style>
 
+    <style name="AppTheme.Button.Borderless.Primary.Bottom">
+        <item name="android:background">@drawable/selectable_dark_bounded_bottom</item>
+    </style>
+
     <style name="AppTheme.Button.Circular">
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">0dp</item>
