@@ -12,9 +12,9 @@ import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.text.SpannableStringBuilder;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -152,7 +152,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             withErrorType(Errors.getType(e));
             withContextInfo(Errors.getContextInfo(e));
 
-            if (BluetoothError.isFatal(e)) {
+            if (BuruberiException.isInstabilityLikely(e)) {
                 withUnstableBluetoothHelp(resources);
             }
         }

@@ -6,8 +6,8 @@ import android.text.TextUtils;
 
 import javax.net.ssl.SSLException;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import retrofit.RetrofitError;
 

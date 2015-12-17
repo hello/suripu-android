@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.zendesk.service.ErrorResponse;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 
 public class ZendeskException extends Exception implements Errors.Reporting {
     private final ErrorResponse response;
