@@ -8,7 +8,7 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;

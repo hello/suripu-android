@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.buruberi.bluetooth.Buruberi;
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
 import is.hello.sense.util.Analytics;
@@ -26,7 +26,7 @@ public class BluetoothModule {
         return new ErrorListener() {
             @Override
             public void call(Throwable e) {
-                if (e != null && !(e instanceof BluetoothError)) {
+                if (e != null && !(e instanceof BuruberiException)) {
                     Analytics.trackUnexpectedError(e);
                 }
             }

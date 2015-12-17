@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;

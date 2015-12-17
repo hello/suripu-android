@@ -11,7 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.SessionLogger;

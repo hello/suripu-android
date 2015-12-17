@@ -30,8 +30,8 @@ import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Insight;
@@ -320,16 +320,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             }
         });
 
-        final int initialTranslationY = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final Animator[] animators = new Animator[contentViews.length];
         for (int i = 0, length = contentViews.length; i < length; i++) {
             final View contentView = contentViews[i];
             contentView.setAlpha(0f);
-            contentView.setTranslationY(initialTranslationY);
-
-            animators[i] = animatorFor(contentView)
-                    .alpha(1f)
-                    .translationY(0f);
+            animators[i] = animatorFor(contentView).alpha(1f);
         }
         subscene.playTogether(animators);
         return subscene;
@@ -399,12 +394,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private Animator createContentExit() {
         final AnimatorSet subscene = new AnimatorSet();
 
-        final int finalTranslationY = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         final Animator[] animators = new Animator[contentViews.length];
         for (int i = 0, length = contentViews.length; i < length; i++) {
-            animators[i] = animatorFor(contentViews[i])
-                    .alpha(0f)
-                    .translationY(finalTranslationY);
+            animators[i] = animatorFor(contentViews[i]).alpha(0f);
         }
 
         subscene.playTogether(animators);
