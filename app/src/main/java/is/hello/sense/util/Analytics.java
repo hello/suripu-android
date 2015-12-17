@@ -20,8 +20,8 @@ import org.joda.time.DateTime;
 
 import java.util.Set;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.graph.presenters.PreferencesPresenter;

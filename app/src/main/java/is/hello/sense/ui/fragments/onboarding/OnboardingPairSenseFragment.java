@@ -16,12 +16,12 @@ import com.segment.analytics.Properties;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
-import is.hello.buruberi.util.StringRef;
 import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -259,7 +259,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
                 }
             }
 
-            if (e instanceof PeripheralNotFoundError) {
+            if (e instanceof SenseNotFoundError) {
                 hardwarePresenter.trackPeripheralNotFound();
 
                 if (hardwarePresenter.shouldPromptForHighPowerScan()) {

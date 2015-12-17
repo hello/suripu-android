@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
-import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
+import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
-import is.hello.buruberi.util.StringRef;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -206,7 +206,8 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             final ErrorDialogFragment.Builder errorDialogBuilder =
                     new ErrorDialogFragment.Builder(e, getResources());
             errorDialogBuilder.withOperation("Pair Pill");
-            if (e instanceof OperationTimeoutError || SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
+            if (e instanceof OperationTimeoutException ||
+                    SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));

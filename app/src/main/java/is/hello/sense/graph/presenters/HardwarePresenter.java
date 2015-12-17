@@ -18,15 +18,15 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
-import is.hello.buruberi.bluetooth.errors.PeripheralConnectionError;
-import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
+import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
@@ -78,7 +78,7 @@ import rx.functions.Action1;
         this.respondToError = e -> {
             if (bluetoothStack.errorRequiresReconnect(e)) {
                 clearPeripheral();
-            } else if (e != null && e instanceof PeripheralConnectionError) {
+            } else if (e != null && e instanceof ConnectionStateException) {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
             }
         };
@@ -230,7 +230,7 @@ import rx.functions.Action1;
                             return Observable.just(closestPeripheral);
                         } else {
                             this.peripheral = null;
-                            return Observable.error(new PeripheralNotFoundError());
+                            return Observable.error(new SenseNotFoundError());
                         }
                     });
         });
@@ -260,7 +260,7 @@ import rx.functions.Action1;
 
                                 return Observable.just(peripheral);
                             } else {
-                                return Observable.error(new PeripheralNotFoundError());
+                                return Observable.error(new SenseNotFoundError());
                             }
                         });
             });
@@ -484,9 +484,10 @@ import rx.functions.Action1;
     }
 
 
-    public static class NoConnectedPeripheralException extends BluetoothError {
+    public static class NoConnectedPeripheralException extends BuruberiException {
         public NoConnectedPeripheralException() {
-            super("HardwarePresenter peripheral method called without paired peripheral.", new NullPointerException());
+            super("HardwarePresenter peripheral method called without paired peripheral.",
+                  new NullPointerException());
         }
     }
 }
