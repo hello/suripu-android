@@ -173,7 +173,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         for (int i = 0; i < recyclerView.getChildCount(); i++) {
-            ((BaseViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(i))).unbind();
+            final View view = recyclerView.getChildAt(i);
+            final BaseViewHolder holder = (BaseViewHolder) recyclerView.getChildViewHolder(view);
+            holder.unbind(true);
         }
     }
     //endregion
@@ -205,7 +207,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     @Override
     public void onViewRecycled(BaseViewHolder holder) {
-        holder.unbind();
+        holder.unbind(false);
     }
 
     abstract class BaseViewHolder extends ParallaxRecyclerViewHolder {
@@ -214,7 +216,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         abstract void bind(int position);
-        void unbind() {
+        void unbind(boolean isFinal) {
         }
 
         @Override
@@ -303,9 +305,12 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        void unbind() {
+        void unbind(boolean isFinal) {
             image.clearAnimation();
-            image.setDrawable(null, true);
+
+            if (isFinal) {
+                image.setDrawable(null, false);
+            }
         }
 
         @Override

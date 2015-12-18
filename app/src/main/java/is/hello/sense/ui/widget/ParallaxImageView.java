@@ -165,6 +165,11 @@ public class ParallaxImageView extends View implements Target {
         });
         drawableFadeIn.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationCancel(Animator animation) {
+                drawable.setAlpha(255);
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 if (animation == drawableFadeIn) {
                     ParallaxImageView.this.drawableFadeIn = null;
@@ -183,6 +188,10 @@ public class ParallaxImageView extends View implements Target {
 
     public void setDrawable(@Nullable Drawable drawable, boolean animate) {
         clearAnimation();
+
+        if (drawable == this.drawable) {
+            return;
+        }
 
         if (this.drawable != null) {
             this.drawable.setCallback(null);
