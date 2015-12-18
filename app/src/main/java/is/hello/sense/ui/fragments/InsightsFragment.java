@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -80,8 +81,9 @@ public class InsightsFragment extends UndersideTabFragment
     private @Nullable TutorialOverlayView tutorialOverlayView;
     private @Nullable InsightsAdapter.InsightViewHolder selectedInsightHolder;
 
-    private @Nullable Question pendingQuestion;
-    private @Nullable List<Insight> pendingInsights;
+    private boolean questionLoaded = false, insightsLoaded = false;
+    private @Nullable Question currentQuestion;
+    private @NonNull List<Insight> insights = Collections.emptyList();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -191,8 +193,10 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onRefresh() {
-        this.pendingInsights = null;
-        this.pendingQuestion = null;
+        this.insights = Collections.emptyList();
+        this.insightsLoaded = false;
+        this.currentQuestion = null;
+        this.questionLoaded = false;
 
         swipeRefreshLayout.setRefreshing(true);
         insightsPresenter.update();
@@ -207,14 +211,14 @@ public class InsightsFragment extends UndersideTabFragment
      * emitting values, even if the requests succeed on retry.
      */
     private void bindPendingIfReady() {
-        if (pendingInsights == null || pendingQuestion == null) {
+        if (!questionLoaded || !insightsLoaded) {
             return;
         }
 
         progressBar.setVisibility(View.GONE);
 
-        insightsAdapter.bindQuestion(pendingQuestion);
-        insightsAdapter.bindInsights(pendingInsights);
+        insightsAdapter.bindQuestion(currentQuestion);
+        insightsAdapter.bindInsights(insights);
 
         final Activity activity = getActivity();
         if (!isPostOnboarding() && tutorialOverlayView == null &&
@@ -227,13 +231,11 @@ public class InsightsFragment extends UndersideTabFragment
             tutorialOverlayView.setAnchorContainer(getView());
             tutorialOverlayView.postShow(R.id.activity_home_container);
         }
-
-        this.pendingInsights = null;
-        this.pendingQuestion = null;
     }
 
     private void bindInsights(@NonNull List<Insight> insights) {
-        this.pendingInsights = insights;
+        this.insights = insights;
+        this.insightsLoaded = true;
         bindPendingIfReady();
     }
 
@@ -243,7 +245,8 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
     private void bindQuestion(@Nullable Question question) {
-        this.pendingQuestion = question;
+        this.currentQuestion = question;
+        this.questionLoaded = true;
         bindPendingIfReady();
     }
 
