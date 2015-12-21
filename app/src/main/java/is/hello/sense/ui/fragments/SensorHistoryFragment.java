@@ -45,15 +45,13 @@ import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener {
+public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener, GraphView.OnDrawListener {
     @Inject RoomConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
-    @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
     @Inject PreferencesPresenter preferences;
@@ -85,7 +83,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         addPresenter(conditionsPresenter);
 
         if (savedInstanceState == null) {
-            final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor);
+            final Properties properties =
+                    Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor);
             Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, properties);
         }
 
@@ -115,6 +114,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         graphView.setWantsFooters(false);
         graphView.setGraphDrawable(new LineGraphDrawable(getResources()));
         graphView.setHighlightListener(sensorDataSource);
+        graphView.setOnDrawListener(this);
         graphView.setAdapter(sensorDataSource);
         graphView.setTintColor(getResources().getColor(R.color.sensor_unknown));
 
@@ -162,14 +162,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onResume() {
         super.onResume();
 
-        final SensorHistoryActivity activity = (SensorHistoryActivity) getActivity();
-        final boolean welcomeDialogShown = activity.showWelcomeDialog(false);
-        if (!welcomeDialogShown && tutorialOverlayView == null &&
-                Tutorial.SCRUB_SENSOR_HISTORY.shouldShow(getActivity())) {
-            this.tutorialOverlayView = new TutorialOverlayView(activity, Tutorial.SCRUB_SENSOR_HISTORY);
-            tutorialOverlayView.show(R.id.activity_sensor_history_root);
-        }
-
         updateTimer.schedule();
     }
 
@@ -205,8 +197,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 final @ColorInt int sensorColor = resources.getColor(condition.getCondition().colorRes);
                 readingText.setTextColor(resources.getColor(condition.getCondition().colorRes));
 
-                markdown.renderInto(messageText, condition.getMessage());
-                markdown.renderInto(insightText, condition.getIdealConditions());
+                messageText.setText(condition.getMessage());
+                insightText.setText(condition.getIdealConditions());
 
                 graphView.setTintColor(sensorColor);
             } else {
@@ -218,7 +210,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     }
 
     public void conditionUnavailable(@NonNull Throwable e) {
-        Logger.error(SensorHistoryFragment.class.getSimpleName(), "Could not load conditions", e);
+        Logger.error(SensorHistoryFragment.class.getSimpleName(),
+                     "Could not load conditions", e);
         readingText.setText(R.string.missing_data_placeholder);
         final StringRef errorMessage = Errors.getDisplayMessage(e);
         if (errorMessage != null) {
@@ -247,8 +240,25 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         sensorHistoryPresenter.setMode(newMode);
     }
 
+    @Override
+    public void onGraphDrawCompleted() {
+        if (sensorDataSource.isEmpty()) {
+            return;
+        }
 
-    public class SensorDataSource extends SensorHistoryAdapter implements GraphView.HighlightListener {
+        final SensorHistoryActivity activity = (SensorHistoryActivity) getActivity();
+        final boolean welcomeDialogShown = activity.showWelcomeDialog(false);
+        if (!welcomeDialogShown && tutorialOverlayView == null &&
+                Tutorial.SCRUB_SENSOR_HISTORY.shouldShow(activity)) {
+            this.tutorialOverlayView = new TutorialOverlayView(activity,
+                                                               Tutorial.SCRUB_SENSOR_HISTORY);
+            tutorialOverlayView.show(R.id.activity_sensor_history_root);
+        }
+    }
+
+
+    public class SensorDataSource extends SensorHistoryAdapter
+            implements GraphView.HighlightListener {
         private boolean use24Time = false;
 
         public void bindHistory(@NonNull ArrayList<SensorGraphSample> history) {

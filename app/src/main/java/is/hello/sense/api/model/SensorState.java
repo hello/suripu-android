@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitPrinter;
+import is.hello.sense.util.markup.text.MarkupString;
 
 public class SensorState extends ApiResponse {
     @Expose(deserialize = false, serialize = false)
@@ -19,7 +20,7 @@ public class SensorState extends ApiResponse {
     private Double value;
 
     @SerializedName("message")
-    private String message;
+    private MarkupString message;
 
     @SerializedName("condition")
     private Condition condition;
@@ -31,14 +32,14 @@ public class SensorState extends ApiResponse {
     private DateTime lastUpdated;
 
     @SerializedName("ideal_conditions")
-    private String idealConditions;
+    private MarkupString idealConditions;
 
 
     public SensorState() {
     }
 
     public SensorState(double value,
-                       @NonNull String message,
+                       @NonNull MarkupString message,
                        @NonNull Condition condition,
                        @NonNull String unit,
                        @NonNull DateTime lastUpdated) {
@@ -64,7 +65,7 @@ public class SensorState extends ApiResponse {
         return value;
     }
 
-    public String getMessage() {
+    public MarkupString getMessage() {
         return message;
     }
 
@@ -80,7 +81,7 @@ public class SensorState extends ApiResponse {
         return unit;
     }
 
-    public String getIdealConditions() {
+    public MarkupString getIdealConditions() {
         return idealConditions;
     }
 
