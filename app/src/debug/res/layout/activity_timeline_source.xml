@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:background="@color/background_timeline">
 
@@ -21,63 +21,9 @@
 
     <View style="@style/Divider.Horizontal" />
 
-    <TextView
+    <ListView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_tiny"
-        android:labelFor="@+id/activity_timeline_source_nonsense_host"
-        android:text="@string/label_nonsense_host"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim" />
-
-    <EditText
-        android:id="@+id/activity_timeline_source_nonsense_host"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:selectAllOnFocus="true"
-        android:inputType="textUri"
-        android:imeOptions="actionDone|flagNoExtractUi"
-        android:text="@string/default_nonsense_host">
-
-        <requestFocus />
-
-    </EditText>
-
-    <Button
-        android:id="@+id/activity_timeline_source_use_nonsense"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:text="@string/action_use_nonsense"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
-
-    <Button
-        android:id="@+id/activity_timeline_source_use_api"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:text="@string/action_use_default_host"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
-
-    <View style="@style/Divider.Horizontal" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginBottom="@dimen/gap_outer"
-        android:text="@string/info_timeline_source"
-        android:textAppearance="@style/AppTheme.Text.Body.Small" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
