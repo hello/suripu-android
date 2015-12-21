@@ -24,7 +24,7 @@ import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.StringRef;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;

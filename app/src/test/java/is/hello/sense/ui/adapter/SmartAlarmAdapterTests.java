@@ -13,7 +13,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.functional.Lists;

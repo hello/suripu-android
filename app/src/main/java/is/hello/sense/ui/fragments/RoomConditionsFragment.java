@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
@@ -52,7 +52,6 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
@@ -61,7 +60,6 @@ public class RoomConditionsFragment extends UndersideTabFragment
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
     @Inject RoomConditionsPresenter presenter;
-    @Inject Markdown markdown;
     @Inject UnitFormatter unitFormatter;
 
     private Map<String, SensorHistoryAdapter> graphAdapters = new HashMap<>(5);
@@ -371,7 +369,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
                     reading.setText(R.string.missing_data_placeholder);
                     reading.setTextColor(resources.getColor(R.color.sensor_unknown));
                 }
-                markdown.renderInto(message, sensorState.getMessage());
+                message.setText(sensorState.getMessage());
 
                 lineGraphDrawable.setColorFilter(sensorColor, PorterDuff.Mode.SRC_ATOP);
                 lineGraphDrawable.setAdapter(getSensorGraphAdapter(sensorName));

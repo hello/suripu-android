@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothGattError;
+import is.hello.buruberi.bluetooth.errors.GattException;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.api.model.BaseDevice;
@@ -40,9 +40,10 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     @Test
     public void errorsResetPeripheral() throws Exception {
-        SensePeripheral peripheral = mock(SensePeripheral.class);
-        doReturn(Observable.error(new BluetoothGattError(BluetoothGattError.GATT_STACK_ERROR,
-                                                         BluetoothGattError.Operation.SUBSCRIBE_NOTIFICATION)))
+        final SensePeripheral peripheral = mock(SensePeripheral.class);
+        //noinspection ResourceType
+        doReturn(Observable.error(new GattException(GattException.GATT_STACK_ERROR,
+                                                    GattException.Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral)
                 .getWifiNetwork();
         presenter.peripheral = peripheral;
@@ -63,7 +64,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     @Test
     public void connectivityGetters() throws Exception {
-        SensePeripheral peripheral = mock(SensePeripheral.class);
+        final SensePeripheral peripheral = mock(SensePeripheral.class);
         doReturn(true).when(peripheral).isConnected();
         presenter.peripheral = peripheral;
 
@@ -100,7 +101,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     @Test
     public void wifiSignalStrengthSort() throws Exception {
-        List<wifi_endpoint> endpoints = new ArrayList<>();
+        final List<wifi_endpoint> endpoints = new ArrayList<>();
         endpoints.add(wifi_endpoint.newBuilder()
                                    .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
                                    .setSsid("Test 1")
@@ -117,7 +118,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
                                    .build());
 
         presenter.sortWifiNetworks(endpoints);
-        List<String> endpointNames = Lists.map(endpoints, wifi_endpoint::getSsid);
+        final List<String> endpointNames = Lists.map(endpoints, wifi_endpoint::getSsid);
         assertThat(endpointNames, hasItems("Test 2", "Test 1", "Test 3"));
 
         assertNoThrow(() -> presenter.sortWifiNetworks(Lists.newArrayList()));
@@ -125,10 +126,11 @@ public class HardwarePresenterTests extends InjectionTestCase {
 
     @Test
     public void clearPeripheral() throws Exception {
-        SensePeripheral peripheral = mock(SensePeripheral.class);
+        final SensePeripheral peripheral = mock(SensePeripheral.class);
         doReturn(true)
                 .when(peripheral)
                 .isConnected();
+        //noinspection ResourceType
         doReturn(Observable.just(peripheral))
                 .when(peripheral)
                 .disconnect();
@@ -143,6 +145,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         assertThat(presenter.hasPeripheral(), is(false));
         assertThat(presenter.isConnected(), is(false));
 
+        //noinspection ResourceType
         verify(peripheral, atLeastOnce()).disconnect();
     }
 

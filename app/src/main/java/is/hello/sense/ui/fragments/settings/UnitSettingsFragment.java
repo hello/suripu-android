@@ -30,7 +30,8 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
-public class UnitSettingsFragment extends InjectionFragment implements Handler.Callback, UnitSettingsAdapter.OnRadioChangeListener {
+public class UnitSettingsFragment extends InjectionFragment
+        implements Handler.Callback, UnitSettingsAdapter.OnRadioChangeListener {
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     private static final int DELAY_PUSH_PREFERENCES = 3000;
@@ -40,8 +41,6 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     @Inject PreferencesPresenter preferencesPresenter;
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
-    private UnitSettingsAdapter unitSettingsAdapter;
-    private RecyclerView recyclerView;
 
 
     //region Lifecycle
@@ -60,7 +59,7 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_unit_settings, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.fragment_unit_settings_recycler);
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_unit_settings_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
@@ -69,9 +68,10 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
+                                                                     EnumSet.of(ScrollEdge.TOP),
+                                                                     FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        unitSettingsAdapter = new UnitSettingsAdapter(getActivity(), this);
+        final UnitSettingsAdapter unitSettingsAdapter = new UnitSettingsAdapter(getActivity(), this);
         recyclerView.setAdapter(unitSettingsAdapter);
 
         final boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
@@ -79,22 +79,27 @@ public class UnitSettingsFragment extends InjectionFragment implements Handler.C
                                                                      R.string.setting_time_unit,
                                                                      R.string.setting_time_12_hour,
                                                                      R.string.setting_time_24_hour),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_24_TIME, preferencesPresenter.getUse24Time()));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_24_TIME,
+                                                                    preferencesPresenter.getUse24Time()));
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_CELSIUS,
                                                                      R.string.setting_unit_temperature,
                                                                      R.string.setting_option_temperature_us,
                                                                      R.string.setting_option_temperature_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultIsMetric));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS,
+                                                                    defaultIsMetric));
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_GRAMS,
                                                                      R.string.setting_unit_weight,
                                                                      R.string.setting_option_weight_us,
                                                                      R.string.setting_option_weight_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS, defaultIsMetric));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS,
+                                                                    defaultIsMetric));
+        //noinspection SuspiciousNameCombination
         unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_CENTIMETERS,
                                                                      R.string.setting_unit_height,
                                                                      R.string.setting_option_height_us,
                                                                      R.string.setting_option_height_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultIsMetric));
+                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS,
+                                                                    defaultIsMetric));
         return view;
     }
 

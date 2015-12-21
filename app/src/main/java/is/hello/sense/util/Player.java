@@ -16,8 +16,8 @@ import android.view.Surface;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 
 public final class Player implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener,
