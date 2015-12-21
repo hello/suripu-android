@@ -11,20 +11,26 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 
-public class ParallaxImageView extends View implements Target {
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
+public class ParallaxImageView extends FrameLayout implements Target {
     public static final float ASPECT_RATIO_SCALE_DEFAULT = 0.5f /*2:1*/;
 
     private final Drawable.Callback DRAWABLE_CALLBACK = new Drawable.Callback() {
@@ -52,6 +58,8 @@ public class ParallaxImageView extends View implements Target {
     private @Nullable Drawable drawable;
     private @Nullable AnimatorContext animatorContext;
     private @Nullable PicassoListener picassoListener;
+    private @IdRes int loadingViewId = View.NO_ID;
+    private @Nullable View loadingView;
 
     private @Nullable ValueAnimator drawableFadeIn;
     private @Nullable Animator parallaxPercentAnimator;
@@ -81,6 +89,8 @@ public class ParallaxImageView extends View implements Target {
     public ParallaxImageView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        setWillNotDraw(false);
+
         final Resources resources = getResources();
         final int defaultClip = resources.getDimensionPixelSize(R.dimen.view_parallax_image_clip);
         if (attrs != null) {
@@ -101,10 +111,25 @@ public class ParallaxImageView extends View implements Target {
                 this.aspectRatioScale = ASPECT_RATIO_SCALE_DEFAULT;
             }
 
+            if (values.hasValue(R.styleable.ParallaxImageView_senseLoadingView)) {
+                this.loadingViewId =
+                        values.getResourceId(R.styleable.ParallaxImageView_senseLoadingView,
+                                             View.NO_ID);
+            }
+
             values.recycle();
         } else {
             this.clip = defaultClip;
             this.aspectRatioScale = ASPECT_RATIO_SCALE_DEFAULT;
+        }
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+        if (loadingViewId != View.NO_ID) {
+            this.loadingView = findViewById(loadingViewId);
         }
     }
 
@@ -121,7 +146,10 @@ public class ParallaxImageView extends View implements Target {
 
         this.drawableWidth = width;
         this.drawableHeight = height + totalClipHeight;
-        setMeasuredDimension(width, height);
+
+        // Have to call super, otherwise the FrameLayout will fail.
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -150,10 +178,17 @@ public class ParallaxImageView extends View implements Target {
         if (parallaxPercentAnimator != null) {
             parallaxPercentAnimator.cancel();
         }
+
+        if (loadingView != null) {
+            Anime.cancelAll(loadingView);
+        }
     }
 
     private void fadeIn() {
         if (drawable == null) {
+            if (loadingView != null) {
+                loadingView.setVisibility(VISIBLE);
+            }
             invalidate();
             return;
         }
@@ -180,6 +215,14 @@ public class ParallaxImageView extends View implements Target {
             animatorContext.bind(drawableFadeIn, "ParallaxImageView#drawableFadeIn");
         }
         drawableFadeIn.start();
+
+        if (loadingView != null) {
+            Log.d(getClass().getSimpleName(), hashCode() + " fading out loading view");
+
+            animatorFor(loadingView, animatorContext)
+                    .fadeOut(INVISIBLE)
+                    .start();
+        }
     }
 
     //endregion
@@ -208,6 +251,14 @@ public class ParallaxImageView extends View implements Target {
         if (wantsFadeIn) {
             fadeIn();
         } else {
+            if (loadingView != null) {
+                if (drawable != null) {
+                    loadingView.setVisibility(INVISIBLE);
+                } else {
+                    loadingView.setVisibility(VISIBLE);
+                }
+            }
+
             invalidate();
         }
     }
@@ -244,6 +295,13 @@ public class ParallaxImageView extends View implements Target {
 
     public void setPicassoListener(@Nullable PicassoListener picassoListener) {
         this.picassoListener = picassoListener;
+    }
+
+    public void showLoadingView() {
+        if (loadingView != null) {
+            loadingView.setAlpha(1f);
+            loadingView.setVisibility(VISIBLE);
+        }
     }
 
     @NonNull

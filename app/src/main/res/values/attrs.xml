@@ -54,5 +54,6 @@
         <attr name="senseParallaxClip" format="integer" />
         <attr name="senseParallaxPercent" format="float" />
         <attr name="senseAspectRatio" format="string" />
+        <attr name="senseLoadingView" format="reference" />
     </declare-styleable>
 </resources>
