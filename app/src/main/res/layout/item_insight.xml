@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <is.hello.sense.ui.widget.RoundedRelativeLayout
-    style="@style/AppTheme.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_insight_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    style="@style/AppTheme.Card.Clickable">
 
     <is.hello.sense.ui.widget.ParallaxImageView
         android:id="@+id/item_insight_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/insight_card_background"/>
+        android:background="@color/insight_card_background"
+        app:senseLoadingView="@+id/item_insight_image_loading">
+
+        <ProgressBar
+            android:id="@+id/item_insight_image_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@style/AppTheme.ProgressBar.White" />
+
+    </is.hello.sense.ui.widget.ParallaxImageView>
 
     <TextView
         android:id="@+id/item_insight_body"

@@ -310,6 +310,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
             if (isFinal) {
                 image.setDrawable(null, false);
+            } else {
+                image.showLoadingView();
             }
         }
 
