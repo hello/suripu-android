@@ -41,7 +41,7 @@ OptionParser.new do |opts|
 end.parse!
 
 flavor_names = ARGV
-flavor_names << "beta" if flavor_names.empty?
+abort "!! You must specify one or more build flavors".red.bold if flavor_names.empty?
 
 flavors_path = File::join(File::dirname($0), "res", "deploy_conf.json")
 flavors = JSON::parse(File::read(flavors_path))
