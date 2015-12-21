@@ -43,6 +43,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     private @Nullable Drawable gridDrawable;
     private @Nullable HeaderFooterProvider headerFooterProvider;
     private @Nullable HighlightListener highlightListener;
+    private @Nullable OnDrawListener onDrawListener;
 
     private final Paint headerTextPaint = new Paint();
     private final Paint footerTextPaint = new Paint();
@@ -259,6 +260,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                             pointBounds.centerX() + 1f, getDrawingHeight(),
                             highlightPaint);
         }
+
+        if (onDrawListener != null) {
+            post(onDrawListener::onGraphDrawCompleted);
+        }
     }
 
     @Override
@@ -406,6 +411,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
     public void setHighlightListener(@Nullable HighlightListener highlightListener) {
         this.highlightListener = highlightListener;
+    }
+
+    public void setOnDrawListener(@Nullable OnDrawListener onDrawListener) {
+        this.onDrawListener = onDrawListener;
     }
 
     //endregion
@@ -612,4 +621,11 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         void onGraphHighlightEnd();
     }
 
+    public interface OnDrawListener {
+        /**
+         * Informs the listener that the graph view has completed
+         * rendering its contents. Runs on the next looper cycle.
+         */
+        void onGraphDrawCompleted();
+    }
 }

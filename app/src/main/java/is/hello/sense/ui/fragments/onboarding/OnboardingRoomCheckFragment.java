@@ -48,7 +48,6 @@ import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import rx.Scheduler;
 
 import static is.hello.go99.Anime.cancelAll;
@@ -59,7 +58,6 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
 
     @Inject RoomConditionsPresenter presenter;
     @Inject UnitFormatter unitFormatter;
-    @Inject Markdown markdown;
 
     private ImageView sense;
     private LinearLayout sensorViewContainer;
@@ -181,7 +179,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                             status.setText(null);
                             status.setTransformationMethod(null);
                             Drawing.setLetterSpacing(status, 0f);
-                            markdown.renderInto(status, sensor.getMessage());
+                            status.setText(sensor.getMessage());
 
                             animateSenseCondition(sensor.getCondition(), false);
                             sensorView.transitionToIcon(getFinalIconForSensor(sensorName), () -> {

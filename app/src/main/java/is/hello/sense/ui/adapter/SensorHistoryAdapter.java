@@ -10,6 +10,7 @@ import java.util.List;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SensorGraphSample;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.Extremes;
 import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import rx.Observable;
@@ -25,31 +26,23 @@ public class SensorHistoryAdapter implements GraphAdapter {
     private float peakMagnitude = 0f;
 
     public void update(@NonNull Update update) {
-        setBaseMagnitude(update.base);
-        setPeakMagnitude(update.peak);
-        setSections(update.sections);
-    }
-
-    public void setSections(@NonNull List<List<SensorGraphSample>> sections) {
-        this.sections = sections;
+        this.baseMagnitude = update.base;
+        this.peakMagnitude = update.peak;
+        this.sections = update.sections;
         notifyDataChanged();
-    }
-
-    public @NonNull List<SensorGraphSample> getSection(int position) {
-        return sections.get(position);
-    }
-
-    public void setBaseMagnitude(float baseMagnitude) {
-        this.baseMagnitude = baseMagnitude;
-    }
-
-    public void setPeakMagnitude(float peakMagnitude) {
-        this.peakMagnitude = peakMagnitude;
     }
 
     public void clear() {
         sections.clear();
         notifyDataChanged();
+    }
+
+    public boolean isEmpty() {
+        return Lists.isEmpty(sections);
+    }
+
+    public @NonNull List<SensorGraphSample> getSection(int position) {
+        return sections.get(position);
     }
 
 
@@ -89,7 +82,7 @@ public class SensorHistoryAdapter implements GraphAdapter {
     }
 
     public void notifyDataChanged() {
-        for (ChangeObserver observer : observers) {
+        for (final ChangeObserver observer : observers) {
             observer.onGraphAdapterChanged();
         }
     }
@@ -116,13 +109,13 @@ public class SensorHistoryAdapter implements GraphAdapter {
          */
         public static List<SensorGraphSample> normalizeDataSeries(@NonNull List<SensorGraphSample> history) {
             if (history.size() > 3) {
-                SensorGraphSample firstSample = history.get(0);
+                final SensorGraphSample firstSample = history.get(0);
                 int start = 0;
                 if (firstSample.getValue() == 0f || firstSample.getValue() == ApiService.PLACEHOLDER_VALUE) {
                     start++;
                 }
 
-                SensorGraphSample lastSample = history.get(history.size() - 1);
+                final SensorGraphSample lastSample = history.get(history.size() - 1);
                 int end = history.size();
                 if (lastSample.getValue() == 0f || lastSample.getValue() == ApiService.PLACEHOLDER_VALUE) {
                     end--;
@@ -134,38 +127,44 @@ public class SensorHistoryAdapter implements GraphAdapter {
             return history;
         }
 
-        public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history, boolean normalize) {
-            Observable<Update> operation = Observable.create(s -> {
+        public static Observable<Update> forHistorySeries(@Nullable List<SensorGraphSample> history,
+                                                          boolean normalize) {
+            final Observable<Update> operation = Observable.create(subscriber -> {
                 if (history == null || history.isEmpty()) {
-                    s.onNext(Update.empty());
-                    s.onCompleted();
+                    subscriber.onNext(Update.empty());
+                    subscriber.onCompleted();
                 } else {
-                    List<SensorGraphSample> normalizedHistory = normalize ? normalizeDataSeries(history) : history;
-                    int numberOfSections = Math.min(MAX_SECTIONS_COUNT, normalizedHistory.size());
-                    int sampleCount = normalizedHistory.size();
-                    int sectionSize = sampleCount / numberOfSections;
+                    final List<SensorGraphSample> normalizedHistory = normalize
+                            ? normalizeDataSeries(history)
+                            : history;
+                    final int numberOfSections = Math.min(MAX_SECTIONS_COUNT, normalizedHistory.size());
+                    final int sampleCount = normalizedHistory.size();
+                    final int sectionSize = sampleCount / numberOfSections;
 
-                    List<List<SensorGraphSample>> sections = new ArrayList<>(numberOfSections);
+                    final List<List<SensorGraphSample>> sections = new ArrayList<>(numberOfSections);
                     for (int i = 0; i < numberOfSections; i++) {
-                        int start = sectionSize * i;
-                        int end;
+                        final int start = sectionSize * i;
+                        final int end;
                         if (i == (numberOfSections - 1)) {
                             end = sampleCount;
                         } else {
                             end = start + sectionSize;
                         }
 
-                        List<SensorGraphSample> sectionSamples = normalizedHistory.subList(start, end);
+                        final List<SensorGraphSample> sectionSamples =
+                                normalizedHistory.subList(start, end);
                         sections.add(sectionSamples);
                     }
 
-                    Comparator<SensorGraphSample> comparator = (l, r) -> Float.compare(l.getNormalizedValue(), r.getNormalizedValue());
-                    Extremes<SensorGraphSample> extremes = Extremes.of(normalizedHistory, comparator);
-                    float peak = extremes.maxValue.getNormalizedValue();
-                    float base = extremes.minValue.getNormalizedValue();
+                    final Comparator<SensorGraphSample> comparator =
+                            (l, r) -> Float.compare(l.getNormalizedValue(), r.getNormalizedValue());
+                    final Extremes<SensorGraphSample> extremes =
+                            Extremes.of(normalizedHistory, comparator);
+                    final float peak = extremes.maxValue.getNormalizedValue();
+                    final float base = extremes.minValue.getNormalizedValue();
 
-                    s.onNext(new Update(sections, peak, base));
-                    s.onCompleted();
+                    subscriber.onNext(new Update(sections, peak, base));
+                    subscriber.onCompleted();
                 }
             });
             return operation.subscribeOn(Schedulers.computation());
