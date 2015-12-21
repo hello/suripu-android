@@ -45,7 +45,6 @@ import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.Markdown;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -53,7 +52,6 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener {
     @Inject RoomConditionsPresenter conditionsPresenter;
     @Inject SensorHistoryPresenter sensorHistoryPresenter;
-    @Inject Markdown markdown;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
     @Inject PreferencesPresenter preferences;
@@ -162,14 +160,6 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onResume() {
         super.onResume();
 
-        final SensorHistoryActivity activity = (SensorHistoryActivity) getActivity();
-        final boolean welcomeDialogShown = activity.showWelcomeDialog(false);
-        if (!welcomeDialogShown && tutorialOverlayView == null &&
-                Tutorial.SCRUB_SENSOR_HISTORY.shouldShow(getActivity())) {
-            this.tutorialOverlayView = new TutorialOverlayView(activity, Tutorial.SCRUB_SENSOR_HISTORY);
-            tutorialOverlayView.show(R.id.activity_sensor_history_root);
-        }
-
         updateTimer.schedule();
     }
 
@@ -205,14 +195,23 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
                 final @ColorInt int sensorColor = resources.getColor(condition.getCondition().colorRes);
                 readingText.setTextColor(resources.getColor(condition.getCondition().colorRes));
 
-                markdown.renderInto(messageText, condition.getMessage());
-                markdown.renderInto(insightText, condition.getIdealConditions());
+                messageText.setText(condition.getMessage());
+                insightText.setText(condition.getIdealConditions());
 
                 graphView.setTintColor(sensorColor);
             } else {
                 readingText.setText(R.string.missing_data_placeholder);
                 messageText.setText(null);
                 insightText.setText(null);
+            }
+
+            final SensorHistoryActivity activity = (SensorHistoryActivity) getActivity();
+            final boolean welcomeDialogShown = activity.showWelcomeDialog(false);
+            if (!welcomeDialogShown && tutorialOverlayView == null &&
+                    Tutorial.SCRUB_SENSOR_HISTORY.shouldShow(activity)) {
+                this.tutorialOverlayView = new TutorialOverlayView(activity,
+                                                                   Tutorial.SCRUB_SENSOR_HISTORY);
+                tutorialOverlayView.show(R.id.activity_sensor_history_root);
             }
         }
     }
