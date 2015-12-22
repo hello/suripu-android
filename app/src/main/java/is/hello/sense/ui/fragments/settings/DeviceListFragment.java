@@ -68,7 +68,6 @@ public class DeviceListFragment extends InjectionFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        devicesPresenter.update();
         addPresenter(devicesPresenter);
 
         setRetainInstance(true);
@@ -117,6 +116,13 @@ public class DeviceListFragment extends InjectionFragment
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::devicesUnavailable);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        devicesPresenter.update();
     }
 
     @Override

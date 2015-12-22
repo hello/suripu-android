@@ -478,4 +478,12 @@
         <item name="android:maxHeight">20dp</item>
     </style>
 
+    <style name="AppTheme.ProgressBar.White">
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_white</item>
+        <item name="android:minWidth">28dp</item>
+        <item name="android:maxWidth">28dp</item>
+        <item name="android:minHeight">28dp</item>
+        <item name="android:maxHeight">28dp</item>
+    </style>
+
 </resources>

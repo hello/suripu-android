@@ -55,7 +55,7 @@ public class SenseApplication extends Application {
         if (!isRunningInRobolectric) {
             Bugsnag.init(this);
             Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);
-            Bugsnag.setNotifyReleaseStages("beta", "store");
+            Bugsnag.setNotifyReleaseStages("release");
         }
 
 
