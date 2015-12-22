@@ -286,6 +286,10 @@ public class ParallaxImageView extends FrameLayout implements Target {
         invalidate();
     }
 
+    public float getAspectRatioScale() {
+        return aspectRatioScale;
+    }
+
     public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
     }
