@@ -165,7 +165,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         if (existingImage != null) {
             illustrationImage.setDrawable(existingImage, false);
         } else if (!TextUtils.isEmpty(imageUrl)) {
+            final int maxWidth = getResources().getDisplayMetrics().widthPixels;
+            final int maxHeight = Math.round(maxWidth * illustrationImage.getAspectRatioScale());
             picasso.load(imageUrl)
+                   .resize(maxWidth, maxHeight)
                    .placeholder(R.drawable.empty_illustration)
                    .into(illustrationImage);
         }

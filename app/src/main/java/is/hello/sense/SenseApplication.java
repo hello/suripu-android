@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.bugsnag.android.Bugsnag;
+import com.squareup.picasso.LruCache;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -31,6 +32,7 @@ public class SenseApplication extends Application {
     public static final String ACTION_BUILT_GRAPH = SenseApplication.class.getName() + ".ACTION_BUILT_GRAPH";
 
     @Inject LocalUsageTracker localUsageTracker;
+    @Inject LruCache picassoMemoryCache;
 
     private static SenseApplication instance = null;
     public static SenseApplication getInstance() {
@@ -85,6 +87,16 @@ public class SenseApplication extends Application {
 
                     localUsageTracker.resetAsync();
                 }, Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        if (level >= TRIM_MEMORY_MODERATE) {
+            Logger.debug(getClass().getSimpleName(), "Clearing picasso memory cache");
+            picassoMemoryCache.clear();
+        }
     }
 
     public void buildGraph() {

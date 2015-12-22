@@ -284,7 +284,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 date.setText(insightDate);
                 final String url = insight.getImageUrl(context.getResources());
                 if (url != null) {
-                    picasso.load(url).into(image);
+                    final int maxWidth = resources.getDisplayMetrics().widthPixels;
+                    final int maxHeight = Math.round(maxWidth * image.getAspectRatioScale());
+                    picasso.load(url)
+                           .resize(maxWidth, maxHeight)
+                           .into(image);
                 } else {
                     picasso.cancelRequest(image);
                     image.setDrawable(null, true);
