@@ -39,4 +39,25 @@ public class ApiEndpoint implements Endpoint {
     public String getClientSecret() {
         return clientSecret;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final ApiEndpoint that = (ApiEndpoint) o;
+
+        return clientId.equals(that.clientId) &&
+                clientSecret.equals(that.clientSecret) &&
+                url.equals(that.url);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = clientId.hashCode();
+        result = 31 * result + clientSecret.hashCode();
+        result = 31 * result + url.hashCode();
+        return result;
+    }
 }

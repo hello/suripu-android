@@ -7,13 +7,17 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -21,9 +25,11 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.DynamicApiEndpoint;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.NonsensePresenter;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Logger;
 
 public class EnvironmentActivity extends InjectionActivity
         implements AdapterView.OnItemClickListener {
@@ -32,6 +38,7 @@ public class EnvironmentActivity extends InjectionActivity
     @Inject NonsensePresenter nonsensePresenter;
 
     private SharedPreferences preferences;
+    private EndpointAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +57,26 @@ public class EnvironmentActivity extends InjectionActivity
         other.setText(R.string.label_environment_other);
         listView.addFooterView(other, OTHER_ITEM, true);
 
-        final Adapter adapter = new Adapter(this,
-            new NamedApiEndpoint("android_dev", "99999secret",
-                                 "https://dev-api.hello.is", "Dev"),
-            new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4",
-                                 "4f771f6f-5c10-4104-bbc6-3333f5b11bf9",
-                                 "https://canary-api.hello.is", "Canary"),
-            new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4",
-                                 "4f771f6f-5c10-4104-bbc6-3333f5b11bf9",
-                                 "https://api.hello.is", "Production")
-        );
+        final List<ApiEndpoint> endpoints =
+                Lists.newArrayList(new NamedApiEndpoint("android_dev", "99999secret",
+                                                        "https://dev-api.hello.is", "Dev"),
+                                   new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4",
+                                                        "4f771f6f-5c10-4104-bbc6-3333f5b11bf9",
+                                                        "https://canary-api.hello.is", "Canary"),
+                                   new NamedApiEndpoint("8d3c1664-05ae-47e4-bcdb-477489590aa4",
+                                                        "4f771f6f-5c10-4104-bbc6-3333f5b11bf9",
+                                                        "https://api.hello.is", "Production"));
+        this.adapter = new EndpointAdapter(this, endpoints);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        bindAndSubscribe(nonsensePresenter.events,
+                         this::bindEvent,
+                         this::scanFailure);
     }
 
     @Override
@@ -140,38 +156,80 @@ public class EnvironmentActivity extends InjectionActivity
         endpointDialog.show();
     }
 
+    public void bindEvent(@NonNull NonsensePresenter.Event event) {
+        switch (event.type) {
+            case FOUND:
+                adapter.addDynamicEndpoint(event.endpoint);
+                break;
+            case LOST:
+                adapter.removeDynamicEndpoint(event.endpoint);
+                break;
+        }
+    }
 
-    private static class Adapter extends ArrayAdapter<ApiEndpoint> {
-        public Adapter(@NonNull Context context, @NonNull ApiEndpoint... endpoints) {
-            super(context, R.layout.item_simple_text, endpoints);
+    public void scanFailure(Throwable e) {
+        Logger.error(getClass().getSimpleName(), "Could not scan for nonsense servers " + e);
+        adapter.clearDynamicEndpoints();
+    }
+
+
+    static class EndpointAdapter extends BaseAdapter {
+        private final LayoutInflater inflater;
+        private final List<ApiEndpoint> staticEndpoints;
+        private final List<ApiEndpoint> dynamicEndpoints = new ArrayList<>();
+
+        EndpointAdapter(@NonNull Context context, @NonNull List<ApiEndpoint> staticEndpoints) {
+            this.inflater = LayoutInflater.from(context);
+            this.staticEndpoints = staticEndpoints;
+        }
+
+        void addDynamicEndpoint(@NonNull ApiEndpoint endpoint) {
+            dynamicEndpoints.add(endpoint);
+            notifyDataSetChanged();
+        }
+
+        void removeDynamicEndpoint(@NonNull ApiEndpoint endpoint) {
+            if (dynamicEndpoints.remove(endpoint)) {
+                notifyDataSetChanged();
+            }
+        }
+
+        void clearDynamicEndpoints() {
+            dynamicEndpoints.clear();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return staticEndpoints.size() + dynamicEndpoints.size();
+        }
+
+        @Override
+        public ApiEndpoint getItem(int position) {
+            if (position < staticEndpoints.size()) {
+                return staticEndpoints.get(position);
+            } else {
+                return dynamicEndpoints.get(position - staticEndpoints.size());
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            TextView text = (TextView) super.getView(position, convertView, parent);
+            View view = convertView;
+            if (view == null) {
+                view = inflater.inflate(R.layout.item_simple_text, parent, false);
+            }
 
-            ApiEndpoint endpoint = getItem(position);
+            final TextView text = (TextView) view;
+            final ApiEndpoint endpoint = getItem(position);
             text.setText(endpoint.getName());
 
-            return text;
-        }
-    }
-
-    static class NamedApiEndpoint extends ApiEndpoint {
-        private final String name;
-
-        public NamedApiEndpoint(@NonNull String clientId,
-                                @NonNull String clientSecret,
-                                @NonNull String url,
-                                @NonNull String name) {
-            super(clientId, clientSecret, url);
-
-            this.name = name;
-        }
-
-        @Override
-        public String getName() {
-            return name;
+            return view;
         }
     }
 }

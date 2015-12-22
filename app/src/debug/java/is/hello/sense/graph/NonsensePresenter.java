@@ -4,10 +4,13 @@ import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import java.net.InetAddress;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
+import is.hello.sense.debug.NamedApiEndpoint;
 import is.hello.sense.graph.presenters.Presenter;
 import is.hello.sense.util.Logger;
 
@@ -38,13 +41,13 @@ public class NonsensePresenter extends Presenter implements NsdManager.Discovery
     @Override
     public void onStartDiscoveryFailed(String serviceType, int errorCode) {
         logEvent("onStartDiscoveryFailed(" + serviceType + ", " + errorCode + ")");
-        events.onNext(new Event(Event.Type.FAILED, null));
+        events.onError(new RuntimeException("Could not start nonsense discovery: " + errorCode));
     }
 
     @Override
     public void onStopDiscoveryFailed(String serviceType, int errorCode) {
         logEvent("onStopDiscoveryFailed(" + serviceType + ", " + errorCode + ")");
-        events.onNext(new Event(Event.Type.FAILED, null));
+        events.onError(new RuntimeException("Could not stop nonsense discovery: " + errorCode));
     }
 
     @Override
@@ -70,7 +73,7 @@ public class NonsensePresenter extends Presenter implements NsdManager.Discovery
 
                 @Override
                 public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                    events.onNext(new Event(Event.Type.FOUND, serviceInfo));
+                    events.onNext(new Event(Event.Type.FOUND, endpointFromServiceInfo(serviceInfo)));
                 }
             });
         }
@@ -79,9 +82,16 @@ public class NonsensePresenter extends Presenter implements NsdManager.Discovery
     @Override
     public void onServiceLost(NsdServiceInfo serviceInfo) {
         final String serviceName = serviceInfo.getServiceName();
-        if (serviceName.contains(NET_SERVICE_NAME)) {
-            events.onNext(new Event(Event.Type.LOST, serviceInfo));
+        if (serviceName.contains(NET_SERVICE_NAME) && serviceInfo.getHost() != null) {
+            events.onNext(new Event(Event.Type.LOST, endpointFromServiceInfo(serviceInfo)));
         }
+    }
+
+    private static NamedApiEndpoint endpointFromServiceInfo(@NonNull NsdServiceInfo serviceInfo) {
+        final InetAddress host = serviceInfo.getHost();
+        return new NamedApiEndpoint(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET,
+                                    "http://" + host.getHostAddress() + ":" + serviceInfo.getPort(),
+                                    serviceInfo.getServiceName());
     }
 
 
@@ -89,24 +99,23 @@ public class NonsensePresenter extends Presenter implements NsdManager.Discovery
         @NonNull
         public final Type type;
 
-        @Nullable
-        public final NsdServiceInfo serviceInfo;
+        @NonNull
+        public final NamedApiEndpoint endpoint;
 
-        Event(@NonNull Type type, @Nullable NsdServiceInfo serviceInfo) {
+        Event(@NonNull Type type, @NonNull NamedApiEndpoint endpoint) {
             this.type = type;
-            this.serviceInfo = serviceInfo;
+            this.endpoint = endpoint;
         }
 
         @Override
         public String toString() {
             return "Event{" +
                     "type=" + type +
-                    ", serviceInfo=" + serviceInfo +
+                    ", endpoint=" + endpoint +
                     '}';
         }
 
         public enum Type {
-            FAILED,
             FOUND,
             LOST,
         }
