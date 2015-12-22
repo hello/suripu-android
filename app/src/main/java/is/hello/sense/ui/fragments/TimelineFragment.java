@@ -33,7 +33,6 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
@@ -185,20 +184,6 @@ public class TimelineFragment extends InjectionFragment
             }
             homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
         });
-        if (BuildConfig.DEBUG) {
-            toolbar.setTitleOnLongClickListener(ignored -> {
-                try {
-                    final Class<?> TimelineSourceActivity =
-                            Class.forName("is.hello.sense.debug.TimelineSourceActivity");
-                    startActivityForResult(new Intent(getActivity(), TimelineSourceActivity),
-                                           REQUEST_CODE_CHANGE_SRC);
-                    return true;
-                } catch (ClassNotFoundException e) {
-                    ErrorDialogFragment.presentError(getActivity(), e);
-                    return false;
-                }
-            });
-        }
 
         toolbar.setTitleDimmed(overflowOpen);
         updateTitle();

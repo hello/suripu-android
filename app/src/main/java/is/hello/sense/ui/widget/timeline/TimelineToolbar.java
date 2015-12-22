@@ -202,10 +202,6 @@ public class TimelineToolbar extends RelativeLayout {
         Views.setSafeOnClickListener(title, onClickListener);
     }
 
-    public void setTitleOnLongClickListener(@Nullable OnLongClickListener onLongClickListener) {
-        title.setOnLongClickListener(onLongClickListener);
-    }
-
     public void setTitle(@Nullable CharSequence text) {
         title.setText(text);
     }

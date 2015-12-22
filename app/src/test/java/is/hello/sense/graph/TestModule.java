@@ -17,8 +17,6 @@ import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
-import is.hello.sense.api.TestTimelineService;
-import is.hello.sense.api.TimelineService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -133,10 +131,6 @@ public final class TestModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull Gson gson) {
         return new TestApiService(context, gson);
-    }
-
-    @Singleton @Provides TimelineService provideTimelineService() {
-        return new TestTimelineService();
     }
 
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
