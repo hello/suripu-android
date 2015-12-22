@@ -74,9 +74,9 @@ public class EnvironmentActivity extends InjectionActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        bindAndSubscribe(nonsensePresenter.events,
-                         this::bindEvent,
-                         this::scanFailure);
+        bindAndSubscribe(nonsensePresenter.endpoints,
+                         adapter::bindDynamicEndpoints,
+                         adapter::dynamicEndpointsUnavailable);
     }
 
     @Override
@@ -95,11 +95,11 @@ public class EnvironmentActivity extends InjectionActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Object item = parent.getItemAtPosition(position);
+        final Object item = parent.getItemAtPosition(position);
         if (item == OTHER_ITEM) {
             createCustomApiEndpoint();
         } else {
-            ApiEndpoint endpoint = (ApiEndpoint) item;
+            final ApiEndpoint endpoint = (ApiEndpoint) item;
             selectEndpoint(endpoint);
             finish();
         }
@@ -138,8 +138,8 @@ public class EnvironmentActivity extends InjectionActivity
         endpointDialog.setNegativeButton(android.R.string.cancel, null);
         endpointDialog.setPositiveButton(android.R.string.ok, (ignored, which) -> {
             final String url = urlText.getText().toString(),
-                         id = idText.getText().toString(),
-                         secret = secretText.getText().toString();
+                    id = idText.getText().toString(),
+                    secret = secretText.getText().toString();
 
             if (TextUtils.isEmpty(url) ||
                     TextUtils.isEmpty(id) ||
@@ -156,22 +156,6 @@ public class EnvironmentActivity extends InjectionActivity
         endpointDialog.show();
     }
 
-    public void bindEvent(@NonNull NonsensePresenter.Event event) {
-        switch (event.type) {
-            case FOUND:
-                adapter.addDynamicEndpoint(event.endpoint);
-                break;
-            case LOST:
-                adapter.removeDynamicEndpoint(event.endpoint);
-                break;
-        }
-    }
-
-    public void scanFailure(Throwable e) {
-        Logger.error(getClass().getSimpleName(), "Could not scan for nonsense servers " + e);
-        adapter.clearDynamicEndpoints();
-    }
-
 
     static class EndpointAdapter extends BaseAdapter {
         private final LayoutInflater inflater;
@@ -183,18 +167,14 @@ public class EnvironmentActivity extends InjectionActivity
             this.staticEndpoints = staticEndpoints;
         }
 
-        void addDynamicEndpoint(@NonNull ApiEndpoint endpoint) {
-            dynamicEndpoints.add(endpoint);
+        void bindDynamicEndpoints(@NonNull List<? extends ApiEndpoint> endpoints) {
+            dynamicEndpoints.clear();
+            dynamicEndpoints.addAll(endpoints);
             notifyDataSetChanged();
         }
 
-        void removeDynamicEndpoint(@NonNull ApiEndpoint endpoint) {
-            if (dynamicEndpoints.remove(endpoint)) {
-                notifyDataSetChanged();
-            }
-        }
-
-        void clearDynamicEndpoints() {
+        void dynamicEndpointsUnavailable(Throwable e) {
+            Logger.error(getClass().getSimpleName(), "Could not scan for nonsense servers " + e);
             dynamicEndpoints.clear();
             notifyDataSetChanged();
         }
