@@ -69,6 +69,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Inject InsightInfoPresenter presenter;
 
     private String imageUrl;
+    private String category;
     private CharSequence summary;
 
     @UsedInTransition private View rootView;
@@ -80,6 +81,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @UsedInTransition private View[] contentViews;
     private TextView titleText;
     private TextView messageText;
+    private TextView summaryHeaderText;
+    private TextView summaryText;
+
     @UsedInTransition private Button doneButton;
 
     private @ColorInt int defaultStatusBarColor;
@@ -110,7 +114,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         super.onCreate(savedInstanceState);
 
         final Bundle arguments = getArguments();
-        final String category = arguments.getString(ARG_CATEGORY);
+        category = arguments.getString(ARG_CATEGORY);
         if (category != null) {
             presenter.setCategory(category);
         }
@@ -142,8 +146,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
 
         this.messageText = (TextView) rootView.findViewById(R.id.fragment_insight_info_message);
-        final TextView summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
-        final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
+        summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
+        summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
         summaryText.setText(summary);
 
         this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText };
@@ -172,7 +176,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                    .placeholder(R.drawable.empty_illustration)
                    .into(illustrationImage);
         }
-
+        hideSummaryIfNeeded();
         return rootView;
     }
 
@@ -248,6 +252,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             contentView.setAlpha(1f);
         }
 
+        hideSummaryIfNeeded();
         scrollView.setOnScrollListener(this);
     }
 
@@ -320,6 +325,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                     contentView.setVisibility(View.VISIBLE);
                     contentView.setAlpha(0f);
                 }
+                hideSummaryIfNeeded();
             }
         });
 
@@ -329,6 +335,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             contentView.setAlpha(0f);
             animators[i] = animatorFor(contentView).alpha(1f);
         }
+        hideSummaryIfNeeded();
         subscene.playTogether(animators);
         return subscene;
     }
@@ -465,6 +472,20 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             return (Parent) targetFragment;
         } else {
             return null;
+        }
+    }
+
+    private void hideSummaryIfNeeded() {
+        if (summaryText == null || summaryHeaderText == null){
+            return;
+        }
+        String[] hiddenCategories = getResources().getStringArray(R.array.hidden_categories);
+        for (int i = 0; i < hiddenCategories.length; i++) {
+            if (hiddenCategories[i].equals(category)) {
+                summaryHeaderText.setVisibility(View.GONE);
+                summaryText.setVisibility(View.GONE);
+                return;
+            }
         }
     }
 
