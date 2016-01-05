@@ -34,6 +34,7 @@ import is.hello.sense.util.Logger;
 public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseViewHolder> {
     @VisibleForTesting static final int TYPE_QUESTION = 0;
     @VisibleForTesting static final int TYPE_INSIGHT = 1;
+    @VisibleForTesting static final int TYPE_ERROR = 2;
 
     private final Context context;
     private final Resources resources;
@@ -41,6 +42,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     private final DateFormatter dateFormatter;
     private final InteractionListener interactionListener;
     private final Picasso picasso;
+
+    private OnRetry onRetry;
 
     private @Nullable List<Insight> insights;
     private Question currentQuestion;
@@ -90,14 +93,14 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(@Nullable Throwable e) {
+    public void insightsUnavailable(@Nullable Throwable e, @NonNull InsightsAdapter.OnRetry onRetry) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
-
         interactionListener.onDismissLoadingIndicator();
         this.insights = new ArrayList<>();
         this.loadingInsightPosition = RecyclerView.NO_POSITION;
         this.currentQuestion = null;
+        this.onRetry = onRetry;
 
         final StringRef messageRef = Errors.getDisplayMessage(e);
         final String message = messageRef != null
@@ -165,6 +168,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         if (position == 0 && currentQuestion != null) {
             return TYPE_QUESTION;
         } else {
+            if (position == 0 && getInsightItem(0).isError()){
+                return TYPE_ERROR;
+            }
             return TYPE_INSIGHT;
         }
     }
@@ -193,6 +199,10 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             case TYPE_INSIGHT: {
                 final View view = inflater.inflate(R.layout.item_insight, parent, false);
                 return new InsightViewHolder(view);
+            }
+            case TYPE_ERROR:{
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                return new ErrorViewHolder(view);
             }
             default: {
                 throw new IllegalArgumentException();
@@ -254,7 +264,33 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             title.setText(currentQuestion.getText());
         }
     }
+    public class ErrorViewHolder extends BaseViewHolder {
+        final TextView title;
+        final TextView message;
+        final Button action;
 
+        ErrorViewHolder(@NonNull View view){
+            super(view);
+            title = (TextView) view.findViewById(R.id.item_message_card_title);
+            message = (TextView) view.findViewById(R.id.item_message_card_message);
+            action = (Button) view.findViewById(R.id.item_message_card_action);
+            action.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onRetry != null){
+                        onRetry.getInsights();
+                    }
+                }
+            });
+        }
+
+        @Override
+        void bind(int position) {
+            title.setText(R.string.dialog_error_title);
+            action.setText(R.string.action_retry);
+            message.setText(getInsightItem(position).getMessage());
+        }
+    }
     public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
@@ -263,7 +299,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         InsightViewHolder(@NonNull View view) {
             super(view);
-
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
@@ -342,7 +377,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     }
 
     //endregion
-
+    public interface OnRetry {
+        void getInsights();
+    }
 
     public interface InteractionListener {
         void onDismissLoadingIndicator();

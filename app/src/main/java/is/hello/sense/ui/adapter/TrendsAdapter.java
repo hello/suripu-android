@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,6 +32,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
     private final int VIEW_NO_TRENDS = 1;
     private final int VIEW_TRENDS = 2;
     private int viewType;
+    private OnRetry onRetry;
 
     private @Nullable OnTrendOptionSelected onTrendOptionSelected;
 
@@ -49,11 +50,13 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         this.onTrendOptionSelected = onTrendOptionSelected;
     }
 
-    public void displayNoDataMessage(boolean networkError){
-        if (networkError){
-            viewType = VIEW_ERROR;
-        } else {
+    public void displayNoDataMessage(OnRetry networkError){
+        if (networkError == null){
             viewType = VIEW_NO_TRENDS;
+            this.onRetry = null;
+        } else {
+            viewType = VIEW_ERROR;
+            this.onRetry = networkError;
         }
         notifyDataSetChanged();
     }
@@ -86,12 +89,24 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
             case VIEW_ERROR: {
                 final View view = inflater.inflate(R.layout.item_message_card, parent, false);
                 view.findViewById(R.id.item_message_card_image).setVisibility(View.GONE);
-                view.findViewById(R.id.item_message_card_title).setVisibility(View.GONE);
-                view.findViewById(R.id.item_message_card_action).setVisibility(View.GONE);
-                TextView message = (TextView)view.findViewById(R.id.item_message_card_message);
+
+                final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+                title.setText(R.string.dialog_error_title);
+
+                final Button  action = (Button) view.findViewById(R.id.item_message_card_action);
+                action.setText(R.string.action_retry);
+                action.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (onRetry != null) {
+                            onRetry.getTrends();
+                        }
+                    }
+                });
+
+
+                final TextView message = (TextView)view.findViewById(R.id.item_message_card_message);
                 message.setText(R.string.trends_message_error);
-                message.setGravity(Gravity.CENTER_HORIZONTAL);
-                view.setBackground(null);
 
                 return new TrendsAdapter.ViewHolder(view);
             }
@@ -206,6 +221,9 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         }
     }
 
+    public interface OnRetry{
+        void getTrends();
+    }
 
     public interface OnTrendOptionSelected {
         void onTrendOptionSelected(int trendIndex, @NonNull String option);
