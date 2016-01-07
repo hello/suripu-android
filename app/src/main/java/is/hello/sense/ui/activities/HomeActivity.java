@@ -239,7 +239,7 @@ public class HomeActivity extends ScopedInjectionActivity
                                                                   loggedOutIntent);
         bindAndSubscribe(onLogOut,
                          ignored -> {
-                             startActivity(new Intent(this, OnboardingActivity.class));
+                             startActivity(new Intent(this, LaunchActivity.class));
                              finish();
                          },
                          Functions.LOG_ERROR);
