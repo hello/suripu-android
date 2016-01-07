@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 
+import com.segment.analytics.Properties;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -38,8 +40,15 @@ public class LaunchActivity extends InjectionActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
-            Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            apiService.getAccount()
+                      .doOnNext((account -> {
+                          com.segment.analytics.Properties properties = new Properties();
+                          properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_EMAIL, account.getEmail());
+                          properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_NAME, account.getName());
+                          localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
+                          Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
+                      })).
+                              subscribe();
         }
 
         if (sessionManager.getSession() != null) {
