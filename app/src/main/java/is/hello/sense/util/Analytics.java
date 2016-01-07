@@ -50,6 +50,11 @@ public class Analytics {
         String GLOBAL_PROP_ACCOUNT_EMAIL = "email";
 
         /**
+         * The account email of the user
+         */
+        String GLOBAL_PROP_ACCOUNT_NAME = "name";
+
+        /**
          * The id of the user's Sense.
          */
         String GLOBAL_PROP_SENSE_ID = "Sense Id";
