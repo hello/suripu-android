@@ -336,7 +336,6 @@ public class InsightsFragment extends UndersideTabFragment
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
-        infoFragment.setTargetFragment(this, 0x0);
         infoFragment.show(fragmentManager,
                           R.id.activity_home_container,
                           InsightInfoFragment.TAG);
