@@ -267,9 +267,11 @@ public class InsightsFragment extends UndersideTabFragment
                 .addOnAnimationCompleted(finished -> {
                     // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
                     // return a subtly broken value, and the exit transition will be broken.
-                    recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
-                    recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
-                    recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                    if (recyclerView != null) {
+                        recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                        recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                        recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                    }
                 });
     }
 
@@ -277,9 +279,11 @@ public class InsightsFragment extends UndersideTabFragment
         return animatorFor(recyclerView)
                 .addOnAnimationWillStart(() -> {
                     // Ensure visual consistency.
-                    recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
-                    recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
-                    recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                    if (recyclerView != null) {
+                        recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                        recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                        recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                    }
                 })
                 .scale(FOCUSED_CONTENT_SCALE)
                 .alpha(FOCUSED_CONTENT_ALPHA);
@@ -288,7 +292,7 @@ public class InsightsFragment extends UndersideTabFragment
     @Override
     @Nullable
     public InsightInfoFragment.SharedState provideSharedState(boolean isEnter) {
-        if (selectedInsightHolder != null) {
+        if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
             Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
