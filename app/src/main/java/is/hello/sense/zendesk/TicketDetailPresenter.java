@@ -29,7 +29,7 @@ public class TicketDetailPresenter extends Presenter {
     @Inject Context context;
     @Inject ApiService apiService;
 
-    private final RequestProvider requestProvider = new ZendeskRequestProvider();
+    private @Nullable RequestProvider requestProvider; // Cannot be initialized ahead of time.
     private @Nullable Subscription updateSubscription;
     private String ticketId;
 
@@ -59,8 +59,13 @@ public class TicketDetailPresenter extends Presenter {
         }
 
         if (ticketId != null) {
-            Observable<CommentsResponse> updateObservable = ZendeskHelper.doAction(context, apiService.getAccount(),
-                    callback -> requestProvider.getComments(ticketId, callback));
+            final Observable<CommentsResponse> updateObservable =
+                    ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+                        if (requestProvider == null) {
+                            this.requestProvider = new ZendeskRequestProvider();
+                        }
+                        requestProvider.getComments(ticketId, callback);
+                    });
             this.updateSubscription = updateObservable.subscribe(new SafeObserverWrapper<>(comments));
         }
     }
@@ -79,7 +84,11 @@ public class TicketDetailPresenter extends Presenter {
         logEvent("submitComment()");
 
         return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
-            EndUserComment comment = new EndUserComment();
+            if (requestProvider == null) {
+                this.requestProvider = new ZendeskRequestProvider();
+            }
+
+            final EndUserComment comment = new EndUserComment();
             comment.setValue(text);
             comment.setAttachments(attachmentTokens);
             requestProvider.addComment(ticketId, comment, callback);
