@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 
+import com.segment.analytics.Properties;
+
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -18,6 +20,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 
 
 public class LaunchActivity extends InjectionActivity {
@@ -39,7 +42,16 @@ public class LaunchActivity extends InjectionActivity {
 
         if (savedInstanceState == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
-            Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            apiService.getAccount().subscribe(account -> {
+                final com.segment.analytics.Properties properties = new Properties();
+                properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_EMAIL, account.getEmail());
+                properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_NAME, account.getName());
+                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
+            }, e -> {
+                Logger.error(getClass().getSimpleName(), "Could not load user info", e);
+                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            });
+
         }
 
         if (sessionManager.getSession() != null) {
@@ -51,7 +63,6 @@ public class LaunchActivity extends InjectionActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             unsupported();
