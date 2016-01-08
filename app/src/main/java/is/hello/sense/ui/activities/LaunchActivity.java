@@ -20,6 +20,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 
 
 public class LaunchActivity extends InjectionActivity {
@@ -40,15 +41,17 @@ public class LaunchActivity extends InjectionActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            apiService.getAccount()
-                      .doOnNext((account -> {
-                          com.segment.analytics.Properties properties = new Properties();
-                          properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_EMAIL, account.getEmail());
-                          properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_NAME, account.getName());
-                          localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
-                          Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
-                      }))
-                      .subscribe();
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
+            apiService.getAccount().subscribe(account -> {
+                final com.segment.analytics.Properties properties = new Properties();
+                properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_EMAIL, account.getEmail());
+                properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_NAME, account.getName());
+                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
+            }, e -> {
+                Logger.error(getClass().getSimpleName(), "Could not load user info", e);
+                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            });
+
         }
 
         if (sessionManager.getSession() != null) {
