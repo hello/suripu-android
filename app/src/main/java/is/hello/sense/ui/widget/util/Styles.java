@@ -134,30 +134,46 @@ public final class Styles {
 
 
     public static @NonNull CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
-        SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+        final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
         if (UnitFormatter.UNIT_SUFFIX_TEMPERATURE.equals(suffix)) {
-            spannableSuffix.setSpan(new RelativeSizeSpan(0.6f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.45f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
+                                    0, spannableSuffix.length(),
+                                    Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.45f),
+                                    0, spannableSuffix.length(),
+                                    Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         } else {
-            spannableSuffix.setSpan(new RelativeSizeSpan(0.4f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.95f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannableSuffix.setSpan(new RelativeSizeSpan(0.4f),
+                                    0, spannableSuffix.length(),
+                                    Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            spannableSuffix.setSpan(new SuperscriptSpanAdjuster(0.95f),
+                                    0, spannableSuffix.length(),
+                                    Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         }
-        spannableSuffix.setSpan(new TypefaceSpan("sans-serif-light"), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableSuffix.setSpan(new TypefaceSpan("sans-serif-light"),
+                                0, spannableSuffix.length(),
+                                Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         return spannableSuffix;
     }
 
     public static @NonNull CharSequence createUnitSubscriptSpan(@NonNull String suffix) {
-        SpannableString spannableSuffix = new SpannableString(' ' + suffix);
-        spannableSuffix.setSpan(new RelativeSizeSpan(0.6f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        spannableSuffix.setSpan(new SuperscriptSpanAdjuster(-0.05f), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        spannableSuffix.setSpan(new TypefaceSpan("sans-serif-light"), 0, spannableSuffix.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+        spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
+                                0, spannableSuffix.length(),
+                                Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableSuffix.setSpan(new SuperscriptSpanAdjuster(-0.05f),
+                                0, spannableSuffix.length(),
+                                Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannableSuffix.setSpan(new TypefaceSpan("sans-serif-light"),
+                                0, spannableSuffix.length(),
+                                Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         return spannableSuffix;
     }
 
     public static @NonNull CharSequence assembleReadingAndUnit(@NonNull CharSequence value,
                                                                @NonNull String suffix,
                                                                @UnitStyle int unitStyle) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(value);
 
         switch (unitStyle) {
@@ -193,7 +209,9 @@ public final class Styles {
     }
 
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
-        refreshLayout.setColorSchemeResources(R.color.sensor_alert, R.color.sensor_warning, R.color.sensor_ideal);
+        refreshLayout.setColorSchemeResources(R.color.sensor_alert,
+                                              R.color.sensor_warning,
+                                              R.color.sensor_ideal);
     }
 
     public static void applyGraphLineParameters(@NonNull Paint paint) {
@@ -234,12 +252,12 @@ public final class Styles {
 
     public static SpannableStringBuilder resolveSupportLinks(@NonNull Activity activity,
                                                              @NonNull CharSequence source) {
-        SpannableStringBuilder contents = new SpannableStringBuilder(source);
-        URLSpan[] urlSpans = contents.getSpans(0, contents.length(), URLSpan.class);
-        for (URLSpan urlSpan : urlSpans) {
-            String url = urlSpan.getURL();
+        final SpannableStringBuilder contents = new SpannableStringBuilder(source);
+        final URLSpan[] urlSpans = contents.getSpans(0, contents.length(), URLSpan.class);
+        for (final URLSpan urlSpan : urlSpans) {
+            final String url = urlSpan.getURL();
 
-            SimpleClickableSpan clickableSpan;
+            final SimpleClickableSpan clickableSpan;
             switch (url) {
                 case "#user-guide": {
                     clickableSpan = new SimpleClickableSpan(v -> UserSupport.showUserGuide(activity));
@@ -266,8 +284,8 @@ public final class Styles {
                 }
             }
 
-            int spanStart = contents.getSpanStart(urlSpan);
-            int spanEnd = contents.getSpanEnd(urlSpan);
+            final int spanStart = contents.getSpanStart(urlSpan);
+            final int spanEnd = contents.getSpanEnd(urlSpan);
             contents.setSpan(clickableSpan, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             contents.removeSpan(urlSpan);
         }
@@ -283,14 +301,14 @@ public final class Styles {
     //region Dividers
 
     public static View createHorizontalDivider(@NonNull Context context, int width) {
-        View view = new View(context);
+        final View view = new View(context);
         view.setBackgroundResource(R.color.border);
         view.setLayoutParams(new ViewGroup.LayoutParams(width, context.getResources().getDimensionPixelSize(R.dimen.divider_size)));
         return view;
     }
 
     public static View createVerticalDivider(@NonNull Context context, int height) {
-        View view = new View(context);
+        final View view = new View(context);
         view.setBackgroundResource(R.color.border);
         view.setLayoutParams(new ViewGroup.LayoutParams(context.getResources().getDimensionPixelSize(R.dimen.divider_size), height));
         return view;
@@ -310,24 +328,24 @@ public final class Styles {
      */
     public static Drawable newRoundedBorderlessButtonBackground(float topRadius,
                                                                 float bottomRadius,
-                                                                int normalColor,
-                                                                int selectedColor) {
-        float[] cornerRadii = {
+                                                                @ColorInt int normalColor,
+                                                                @ColorInt int selectedColor) {
+        final float[] cornerRadii = {
             topRadius, topRadius, topRadius, topRadius,
             bottomRadius, bottomRadius, bottomRadius, bottomRadius,
         };
-        RoundRectShape roundedRect = new RoundRectShape(cornerRadii, null, null);
-        ShapeDrawable normal = new ShapeDrawable(roundedRect);
+        final RoundRectShape roundedRect = new RoundRectShape(cornerRadii, null, null);
+        final ShapeDrawable normal = new ShapeDrawable(roundedRect);
         normal.getPaint().setColor(normalColor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return new RippleDrawable(ColorStateList.valueOf(selectedColor), normal, normal);
         } else {
-            ShapeDrawable pressed = new ShapeDrawable(roundedRect);
+            final ShapeDrawable pressed = new ShapeDrawable(roundedRect);
             pressed.getPaint().setColor(selectedColor);
 
-            StateListDrawable selector = new StateListDrawable();
-            selector.addState(new int[]{android.R.attr.state_pressed}, pressed);
-            selector.addState(new int[]{}, normal);
+            final StateListDrawable selector = new StateListDrawable();
+            selector.addState(new int[] { android.R.attr.state_pressed }, pressed);
+            selector.addState(new int[] {}, normal);
             return selector;
         }
     }
