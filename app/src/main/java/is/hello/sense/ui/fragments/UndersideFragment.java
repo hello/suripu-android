@@ -190,11 +190,15 @@ public class UndersideFragment extends InjectionFragment
 
 
     public @Nullable UndersideTabFragment getCurrentTabFragment() {
-        // This depends on semi-undefined behavior. It may break in a future update
-        // of the Android support library, but won't break if the host OS changes.
-        final long itemId = adapter.getItemId(pager.getCurrentItem());
-        final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-        return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+        if (adapter != null) {
+            // This depends on semi-undefined behavior. It may break in a future update
+            // of the Android support library, but won't break if the host OS changes.
+            final long itemId = adapter.getItemId(pager.getCurrentItem());
+            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+            return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+        } else {
+            return null;
+        }
     }
 
     public void setCurrentItem(int currentItem, int options) {

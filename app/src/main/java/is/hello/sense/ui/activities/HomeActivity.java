@@ -46,9 +46,11 @@ import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
+import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.UndersideFragment;
+import is.hello.sense.ui.fragments.UndersideTabFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
@@ -68,7 +70,8 @@ public class HomeActivity extends ScopedInjectionActivity
         ZoomedOutTimelineFragment.OnTimelineDateSelectedListener,
         AnimatorContext.Scene,
         ViewPager.OnPageChangeListener,
-        TimelineInfoFragment.AnchorProvider {
+        TimelineInfoFragment.AnchorProvider,
+        InsightInfoFragment.ParentProvider {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     /**
      * Whether or not the <code>HomeActivity</code> was started in response
@@ -236,7 +239,7 @@ public class HomeActivity extends ScopedInjectionActivity
                                                                   loggedOutIntent);
         bindAndSubscribe(onLogOut,
                          ignored -> {
-                             startActivity(new Intent(this, OnboardingActivity.class));
+                             startActivity(new Intent(this, LaunchActivity.class));
                              finish();
                          },
                          Functions.LOG_ERROR);
@@ -466,13 +469,26 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Shared Chrome
 
-
     @Nullable
     @Override
     public View findAnimationAnchorView(@IdRes int viewId) {
         final Fragment currentFragment = viewPagerAdapter.getCurrentFragment();
         if (currentFragment != null && currentFragment.getView() != null) {
             return currentFragment.getView().findViewById(viewId);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public InsightInfoFragment.Parent provideInsightInfoParent() {
+        final UndersideFragment undersideFragment = getUndersideFragment();
+        if (undersideFragment != null) {
+            final UndersideTabFragment currentTabFragment = undersideFragment.getCurrentTabFragment();
+            if (currentTabFragment instanceof InsightInfoFragment.Parent) {
+                return (InsightInfoFragment.Parent) currentTabFragment;
+            }
         }
 
         return null;
