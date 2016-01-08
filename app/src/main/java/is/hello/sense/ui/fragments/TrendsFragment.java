@@ -130,7 +130,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
     }
 
     @Override
-    public void getTrends() {
+    public void fetchTrends() {
         trendsPresenter.update();
     }
 }

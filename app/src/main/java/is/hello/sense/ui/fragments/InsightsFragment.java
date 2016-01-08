@@ -193,7 +193,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onRefresh() {
-        getInsights();
+        fetchInsights();
     }
 
     /**
@@ -388,7 +388,7 @@ public class InsightsFragment extends UndersideTabFragment
     //endregion
 
     @Override
-    public void getInsights() {
+    public void fetchInsights() {
         this.insights = Collections.emptyList();
         this.insightsLoaded = false;
         this.currentQuestion = null;

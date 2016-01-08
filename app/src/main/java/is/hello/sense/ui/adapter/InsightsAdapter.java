@@ -264,24 +264,18 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             title.setText(currentQuestion.getText());
         }
     }
-    public class ErrorViewHolder extends BaseViewHolder {
+
+    public class ErrorViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView title;
         final TextView message;
         final Button action;
 
-        ErrorViewHolder(@NonNull View view){
+        ErrorViewHolder(@NonNull View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.item_message_card_title);
             message = (TextView) view.findViewById(R.id.item_message_card_message);
             action = (Button) view.findViewById(R.id.item_message_card_action);
-            action.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onRetry != null){
-                        onRetry.getInsights();
-                    }
-                }
-            });
+            action.setOnClickListener(this);
         }
 
         @Override
@@ -290,6 +284,14 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             action.setText(R.string.action_retry);
             message.setText(getInsightItem(position).getMessage());
         }
+
+        @Override
+        public void onClick(View v) {
+            if (onRetry != null) {
+                onRetry.fetchInsights();
+            }
+        }
+
     }
     public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
@@ -378,7 +380,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     //endregion
     public interface OnRetry {
-        void getInsights();
+        void fetchInsights();
     }
 
     public interface InteractionListener {

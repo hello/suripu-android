@@ -95,17 +95,14 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
 
                 final Button  action = (Button) view.findViewById(R.id.item_message_card_action);
                 action.setText(R.string.action_retry);
-                action.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (onRetry != null) {
-                            onRetry.getTrends();
-                        }
+                action.setOnClickListener(v -> {
+                    if (onRetry != null) {
+                        onRetry.fetchTrends();
                     }
                 });
 
 
-                final TextView message = (TextView)view.findViewById(R.id.item_message_card_message);
+                final TextView message = (TextView) view.findViewById(R.id.item_message_card_message);
                 message.setText(R.string.trends_message_error);
 
                 return new TrendsAdapter.ViewHolder(view);
@@ -222,7 +219,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
     }
 
     public interface OnRetry{
-        void getTrends();
+        void fetchTrends();
     }
 
     public interface OnTrendOptionSelected {
