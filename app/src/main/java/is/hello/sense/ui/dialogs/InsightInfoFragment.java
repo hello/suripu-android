@@ -69,7 +69,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Inject InsightInfoPresenter presenter;
 
     private String imageUrl;
-    private String category;
     private CharSequence summary;
 
     @UsedInTransition private View rootView;
@@ -114,7 +113,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         super.onCreate(savedInstanceState);
 
         final Bundle arguments = getArguments();
-        category = arguments.getString(ARG_CATEGORY);
+        final String category = arguments.getString(ARG_CATEGORY);
         if (category != null) {
             presenter.setCategory(category);
         }
@@ -150,7 +149,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
         summaryText.setText(summary);
 
-        this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText };
+        this.contentViews = new View[] {titleText, messageText};
 
         this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
         Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {
@@ -176,7 +175,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                    .placeholder(R.drawable.empty_illustration)
                    .into(illustrationImage);
         }
-        hideSummaryIfNeeded();
         return rootView;
     }
 
@@ -252,7 +250,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             contentView.setAlpha(1f);
         }
 
-        hideSummaryIfNeeded();
         scrollView.setOnScrollListener(this);
     }
 
@@ -325,7 +322,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                     contentView.setVisibility(View.VISIBLE);
                     contentView.setAlpha(0f);
                 }
-                hideSummaryIfNeeded();
             }
         });
 
@@ -335,7 +331,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             contentView.setAlpha(0f);
             animators[i] = animatorFor(contentView).alpha(1f);
         }
-        hideSummaryIfNeeded();
         subscene.playTogether(animators);
         return subscene;
     }
@@ -475,20 +470,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
     }
 
-    private void hideSummaryIfNeeded() {
-        if (summaryText == null || summaryHeaderText == null){
-            return;
-        }
-        String[] hiddenCategories = getResources().getStringArray(R.array.hidden_categories);
-        for (int i = 0; i < hiddenCategories.length; i++) {
-            if (hiddenCategories[i].equals(category)) {
-                summaryHeaderText.setVisibility(View.GONE);
-                summaryText.setVisibility(View.GONE);
-                return;
-            }
-        }
-    }
-
     //endregion
 
 
@@ -497,6 +478,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public void bindInsightInfo(@NonNull InsightInfo info) {
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
+        if (!info.isGeneric()){
+            summaryHeaderText.setVisibility(View.VISIBLE);
+            summaryText.setVisibility(View.VISIBLE);
+        }
     }
 
     public void insightInfoUnavailable(Throwable e) {

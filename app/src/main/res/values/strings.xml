@@ -510,10 +510,4 @@
         <item quantity="other">%1$s – %2$d attachments</item>
     </plurals>
 
-    <string-array name="hidden_categories">
-        <item>GENERIC</item>
-        <item>SLEEP_DURATION</item>
-        <item>SLEEP_HYGIENE</item>
-    </string-array>
-
 </resources>
