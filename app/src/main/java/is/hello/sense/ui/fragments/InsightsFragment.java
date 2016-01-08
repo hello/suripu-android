@@ -59,7 +59,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class InsightsFragment extends UndersideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
-        InsightInfoFragment.Parent {
+        InsightInfoFragment.Parent, InsightsAdapter.OnRetry {
     private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
     private static final float FOCUSED_CONTENT_SCALE = 1f;
     private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
@@ -193,14 +193,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onRefresh() {
-        this.insights = Collections.emptyList();
-        this.insightsLoaded = false;
-        this.currentQuestion = null;
-        this.questionLoaded = false;
-
-        swipeRefreshLayout.setRefreshing(true);
-        insightsPresenter.update();
-        updateQuestion();
+        fetchInsights();
     }
 
     /**
@@ -241,7 +234,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     private void insightsUnavailable(@Nullable Throwable e) {
         progressBar.setVisibility(View.GONE);
-        insightsAdapter.insightsUnavailable(e);
+        insightsAdapter.insightsUnavailable(e, this);
     }
 
     private void bindQuestion(@Nullable Question question) {
@@ -397,6 +390,17 @@ public class InsightsFragment extends UndersideTabFragment
 
     //endregion
 
+    @Override
+    public void fetchInsights() {
+        this.insights = Collections.emptyList();
+        this.insightsLoaded = false;
+        this.currentQuestion = null;
+        this.questionLoaded = false;
+
+        swipeRefreshLayout.setRefreshing(true);
+        insightsPresenter.update();
+        updateQuestion();
+    }
 
     private final BroadcastReceiver REVIEW_ACTION_RECEIVER = new BroadcastReceiver() {
         @Override
@@ -434,4 +438,5 @@ public class InsightsFragment extends UndersideTabFragment
             }
         }
     };
+
 }

@@ -27,7 +27,7 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected {
+public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -110,7 +110,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         trendsAdapter.replaceAll(trends);
         initialActivityIndicator.setVisibility(View.GONE);
         if (Lists.isEmpty(trends)) {
-            trendsAdapter.displayNoDataMessage(false);
+            trendsAdapter.displayNoDataMessage(null);
         }
     }
 
@@ -118,9 +118,8 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.clear();
         initialActivityIndicator.setVisibility(View.GONE);
-        trendsAdapter.displayNoDataMessage(true);
+        trendsAdapter.displayNoDataMessage(this);
     }
-
 
     @Override
     public void onTrendOptionSelected(int trendIndex, @NonNull String option) {
@@ -128,5 +127,10 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option),
                          Functions.NO_OP,
                          this::presentError);
+    }
+
+    @Override
+    public void fetchTrends() {
+        trendsPresenter.update();
     }
 }
