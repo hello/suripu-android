@@ -6,11 +6,6 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class InsightInfo extends ApiResponse {
-    private  static enum GenericCategories{
-        GENERIC,
-        SLEEP_DURATION,
-        SLEEP_HYGIENE
-    }
     @SerializedName("id")
     private long id;
 
@@ -50,16 +45,6 @@ public class InsightInfo extends ApiResponse {
     @Deprecated
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    public boolean isGeneric(){
-        GenericCategories[] genericCategories = GenericCategories.values();
-        for (GenericCategories genericCategory : genericCategories){
-            if (genericCategory.toString().equals(category)){
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
