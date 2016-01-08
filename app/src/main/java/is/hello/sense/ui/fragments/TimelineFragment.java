@@ -517,7 +517,7 @@ public class TimelineFragment extends InjectionFragment
             WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
         } else if (!homeActivity.isUndersideVisible()) {
             if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
-                WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline);
+                WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline, false);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
                 showTutorial(Tutorial.SWIPE_TIMELINE);
             } else if (showZoomOutTutorial) {

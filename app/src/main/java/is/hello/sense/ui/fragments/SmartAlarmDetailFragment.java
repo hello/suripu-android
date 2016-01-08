@@ -209,7 +209,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.DEFAULTS);
         } else {
-            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
+            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm, false);
         }
     }
 
@@ -287,7 +287,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {
-        WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm);
+        WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm, false);
     }
 
 

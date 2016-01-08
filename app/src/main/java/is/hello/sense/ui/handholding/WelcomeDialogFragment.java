@@ -51,7 +51,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     public static final String TAG = WelcomeDialogFragment.class.getSimpleName();
 
     private static final String ARG_WELCOME_RES = WelcomeDialogFragment.class.getName() + ".ARG_WELCOME_RES";
+    private static final String ARG_M_FLICKER_WORKAROUND = WelcomeDialogFragment.class.getName() + ".ARG_M_FLICKER_WORKAROUND";
 
+    private boolean marshmallowFlickerWorkaround;
     private @XmlRes int welcomeRes;
     private List<Item> items;
 
@@ -97,25 +99,30 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         return (activity.getFragmentManager().findFragmentByTag(WelcomeDialogFragment.TAG) != null);
     }
 
-    public static void show(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        final WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(welcomeRes);
+    public static void show(@NonNull Activity activity, @XmlRes int welcomeRes,
+                            boolean marshmallowFlickerWorkaround) {
+        final WelcomeDialogFragment welcomeDialog =
+                WelcomeDialogFragment.newInstance(welcomeRes, marshmallowFlickerWorkaround);
         welcomeDialog.showAllowingStateLoss(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
     }
 
-    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
+    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes,
+                                       boolean marshmallowFlickerWorkaround) {
         if (shouldShow(activity, welcomeRes)) {
-            show(activity, welcomeRes);
+            show(activity, welcomeRes, marshmallowFlickerWorkaround);
             return true;
         } else {
             return false;
         }
     }
 
-    public static WelcomeDialogFragment newInstance(@XmlRes int welcomeRes) {
+    public static WelcomeDialogFragment newInstance(@XmlRes int welcomeRes,
+                                                    boolean marshmallowFlickerWorkaround) {
         final WelcomeDialogFragment fragment = new WelcomeDialogFragment();
 
         final Bundle arguments = new Bundle();
         arguments.putInt(ARG_WELCOME_RES, welcomeRes);
+        arguments.putBoolean(ARG_M_FLICKER_WORKAROUND, marshmallowFlickerWorkaround);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -127,7 +134,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         super.onCreate(savedInstanceState);
 
         try {
-            this.welcomeRes = getArguments().getInt(ARG_WELCOME_RES);
+            final Bundle arguments = getArguments();
+            this.welcomeRes = arguments.getInt(ARG_WELCOME_RES);
+            this.marshmallowFlickerWorkaround = arguments.getBoolean(ARG_M_FLICKER_WORKAROUND);
 
             final WelcomeDialogParser parser = new WelcomeDialogParser(getResources(), welcomeRes);
             this.items = parser.parse();
@@ -151,6 +160,15 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
             final @ColorInt int myStatusBarColor =
                     Drawing.darkenColorBy(activityStatusBarColor, 0.5f);
             Windows.setStatusBarColor(dialog.getWindow(), myStatusBarColor);
+        }
+
+        // We aren't targeting SDK level 23 yet, so we can't use the SDK level constant.
+        if (marshmallowFlickerWorkaround && Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // In Android Marshmallow, there is a bug in the compositor that results in text
+            // bleeding through transparent windows at the end of transitions. The work-around
+            // is to disable hardware acceleration on the root view in the window.
+            final View rootView = dialog.findViewById(R.id.fragment_dialog_welcome_root);
+            rootView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
