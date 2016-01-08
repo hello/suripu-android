@@ -33,9 +33,6 @@ public class FixedViewPager extends ViewPager {
         } catch (IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
             return false;
-        } catch (IndexOutOfBoundsException e) {
-            Logger.warn(getClass().getSimpleName(), "Swallowing index out of bounds exception", e);
-            return false;
         }
     }
 
@@ -45,9 +42,6 @@ public class FixedViewPager extends ViewPager {
             return super.onTouchEvent(event);
         } catch (IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
-            return false;
-        } catch (IndexOutOfBoundsException e) {
-            Logger.warn(getClass().getSimpleName(), "Swallowing index out of bounds exception", e);
             return false;
         }
     }
