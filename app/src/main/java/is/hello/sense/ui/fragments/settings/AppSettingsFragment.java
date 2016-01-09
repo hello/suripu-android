@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Fragment;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,30 +35,40 @@ public class AppSettingsFragment extends UndersideTabFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
+        final View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
 
-        View accountItem = view.findViewById(R.id.fragment_app_settings_account);
-        Views.setSafeOnClickListener(accountItem, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account));
+        final View accountItem = view.findViewById(R.id.fragment_app_settings_account);
+        Views.setSafeOnClickListener(accountItem, ignored -> {
+            showFragment(AccountSettingsFragment.class, R.string.label_account, true);
+        });
 
-        View devicesItem = view.findViewById(R.id.fragment_app_settings_devices);
+        final View devicesItem = view.findViewById(R.id.fragment_app_settings_devices);
         Views.setSafeOnClickListener(devicesItem, this::showDeviceList);
 
-        View notificationsItem = view.findViewById(R.id.fragment_app_settings_notifications);
-        Views.setSafeOnClickListener(notificationsItem, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications));
+        final View notificationsItem = view.findViewById(R.id.fragment_app_settings_notifications);
+        Views.setSafeOnClickListener(notificationsItem, ignored -> {
+            showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, false);
+        });
 
-        View unitsItem = view.findViewById(R.id.fragment_app_settings_units);
-        Views.setSafeOnClickListener(unitsItem, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time));
+        final View unitsItem = view.findViewById(R.id.fragment_app_settings_units);
+        Views.setSafeOnClickListener(unitsItem, ignored -> {
+            showFragment(UnitSettingsFragment.class, R.string.label_units_and_time, false);
+        });
 
-        View supportItem = view.findViewById(R.id.fragment_app_settings_support);
-        Views.setSafeOnClickListener(supportItem, ignored -> showFragment(SupportFragment.class, R.string.action_support));
+        final View supportItem = view.findViewById(R.id.fragment_app_settings_support);
+        Views.setSafeOnClickListener(supportItem, ignored -> {
+            showFragment(SupportFragment.class, R.string.action_support, false);
+        });
 
-        View tellAFriendItem = view.findViewById(R.id.fragment_app_settings_tell_a_friend);
+        final View tellAFriendItem = view.findViewById(R.id.fragment_app_settings_tell_a_friend);
         Views.setSafeOnClickListener(tellAFriendItem, ignored -> tellAFriend());
 
-        TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
+        final TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            Views.setSafeOnClickListener(version, ignored -> Distribution.startDebugActivity(getActivity()));
+            Views.setSafeOnClickListener(version, ignored -> {
+                Distribution.startDebugActivity(getActivity());
+            });
         }
 
         return view;
@@ -65,12 +76,10 @@ public class AppSettingsFragment extends UndersideTabFragment {
 
     @Override
     public void onSwipeInteractionDidFinish() {
-
     }
 
     @Override
     public void onUpdate() {
-
     }
 
     private void showDeviceList(@NonNull View ignored) {
@@ -81,11 +90,16 @@ public class AppSettingsFragment extends UndersideTabFragment {
         startActivity(builder.toIntent());
     }
 
-    private void showFragment(@NonNull Class<? extends Fragment> fragmentClass, @StringRes int titleRes) {
+    private void showFragment(@NonNull Class<? extends Fragment> fragmentClass,
+                              @StringRes int titleRes,
+                              boolean lockOrientation) {
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
         builder.setDefaultTitle(titleRes);
         builder.setFragmentClass(fragmentClass);
+        if (lockOrientation) {
+            builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        }
         startActivity(builder.toIntent());
     }
 
