@@ -81,7 +81,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @UsedInTransition private View[] contentViews;
     private TextView titleText;
     private TextView messageText;
-
     @UsedInTransition private Button doneButton;
 
     private @ColorInt int defaultStatusBarColor;
@@ -184,6 +183,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                    .placeholder(R.drawable.empty_illustration)
                    .into(illustrationImage);
         }
+
         return rootView;
     }
 
@@ -329,7 +329,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             public void onAnimationStart(Animator animation) {
                 for (final View contentView : contentViews) {
                     contentView.setVisibility(View.VISIBLE);
-                    contentView.setAlpha(1f);
+                    contentView.setAlpha(0f);
                 }
             }
         });
@@ -487,7 +487,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public void bindInsightInfo(@NonNull InsightInfo info) {
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
-
     }
 
     public void insightInfoUnavailable(Throwable e) {
