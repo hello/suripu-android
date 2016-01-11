@@ -255,6 +255,16 @@ public class Analytics {
         String EVENT_PAIR_SENSE_IN_APP = "Pair Sense";
 
         /**
+         * When the user successfully pairs a sense
+         */
+        String EVENT_SENSE_PAIRED = "Onboarding Sense Paired";
+
+        /**
+         * When the user successfully pairs a sense in the app
+         */
+        String EVENT_SENSE_PAIRED_IN_APP = "Sense Paired";
+
+        /**
          * When user lands on the screen to scan for wifi
          */
         String EVENT_WIFI = "Onboarding WiFi";
@@ -342,6 +352,16 @@ public class Analytics {
          * When user lands on the "Pairing your Sleep Pill" screen inside the app
          */
         String EVENT_PAIR_PILL_IN_APP = "Pair Pill";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen
+         */
+        String EVENT_PILL_PAIRED = "Onboarding Pill Paired";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PILL_PAIRED_IN_APP = "Pill Paired";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow

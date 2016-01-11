@@ -127,9 +127,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             stateSafeExecutor.execute(() -> {
                 if (isPairOnlySession()) {
+                    Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED_IN_APP, null);
                     getOnboardingActivity().finish();
                 } else {
                     if (success) {
+                        Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED, null);
                         getOnboardingActivity().showPillInstructions();
                     } else {
                         getOnboardingActivity().showSenseColorsInfo();
