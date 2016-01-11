@@ -81,8 +81,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @UsedInTransition private View[] contentViews;
     private TextView titleText;
     private TextView messageText;
-    private TextView summaryHeaderText;
-    private TextView summaryText;
 
     @UsedInTransition private Button doneButton;
 
@@ -150,11 +148,17 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
 
         this.messageText = (TextView) rootView.findViewById(R.id.fragment_insight_info_message);
-        summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
-        summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
+        final TextView summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
+        final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
         summaryText.setText(summary);
 
-        this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText};
+        if (isGenericCategory){
+            this.contentViews = new View[] {titleText, messageText};
+            summaryHeaderText.setVisibility(View.GONE);
+            summaryText.setVisibility(View.GONE);
+        }else{
+            this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText};
+        }
 
         this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
         Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {
@@ -250,7 +254,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             Windows.setStatusBarColor(window, getTargetStatusBarColor());
         }
 
-        displayContentViews();
+        for (final View contentView : contentViews) {
+            contentView.setVisibility(View.VISIBLE);
+            contentView.setAlpha(1f);
+        }
 
         scrollView.setOnScrollListener(this);
     }
@@ -320,7 +327,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         subscene.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                displayContentViews();
+                for (final View contentView : contentViews) {
+                    contentView.setVisibility(View.VISIBLE);
+                    contentView.setAlpha(1f);
+                }
             }
         });
 
@@ -407,19 +417,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return subscene;
     }
 
-    private void displayContentViews() {
-
-        for (final View contentView : contentViews) {
-            contentView.setVisibility(View.VISIBLE);
-            contentView.setAlpha(1f);
-        }
-
-        if (isGenericCategory){
-            summaryHeaderText.setVisibility(View.GONE);
-            summaryText.setVisibility(View.GONE);
-        }
-    }
-
     private Animator createParallaxExit(float targetPercent) {
         illustrationImage.setParallaxPercent(0f);
         return illustrationImage.createParallaxPercentAnimator(targetPercent);
@@ -490,7 +487,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public void bindInsightInfo(@NonNull InsightInfo info) {
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
-        displayContentViews();
+
     }
 
     public void insightInfoUnavailable(Throwable e) {
