@@ -573,7 +573,10 @@ public class Analytics {
         if (!SenseApplication.isRunningInRobolectric()) {
             Bugsnag.setUserId(accountId);
             if (includeSegment) {
-                com.segment.analytics.Analytics.with(context).identify(accountId);
+                final com.segment.analytics.Analytics segment =
+                        com.segment.analytics.Analytics.with(context);
+                segment.identify(accountId);
+                segment.flush();
             }
         }
     }
@@ -589,15 +592,19 @@ public class Analytics {
         }
 
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
-        com.segment.analytics.Analytics.with(context).alias(accountId);
+
+        final com.segment.analytics.Analytics segment =
+                com.segment.analytics.Analytics.with(context);
+        segment.alias(accountId);
 
         final Traits traits = createBaseTraits();
         traits.putCreatedAt(created.toString());
-        traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
         traits.putName(name);
+        traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
         traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
+        segment.identify(traits);
+        segment.flush();
 
-        com.segment.analytics.Analytics.with(context).identify(traits);
         trackUserIdentifier(context, accountId, false);
     }
 
@@ -622,7 +629,10 @@ public class Analytics {
             traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
-        com.segment.analytics.Analytics.with(context).identify(traits);
+        final com.segment.analytics.Analytics segment =
+                com.segment.analytics.Analytics.with(context);
+        segment.identify(traits);
+        segment.flush();
     }
 
     public static void signOut() {
