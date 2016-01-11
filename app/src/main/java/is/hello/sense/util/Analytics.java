@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import com.segment.analytics.Traits;
 
 import org.joda.time.DateTime;
 
+import java.util.Locale;
 import java.util.Set;
 
 import is.hello.commonsense.util.Errors;
@@ -38,6 +40,13 @@ public class Analytics {
          * iOS | android
          */
         String GLOBAL_PROP_PLATFORM = "Platform";
+
+        String GLOBAL_PROP_APP_RELEASE = "Android App Release";
+        String GLOBAL_PROP_APP_VERSION = "Android App Version";
+        String GLOBAL_PROP_DEVICE_MODEL = "Android Device Model";
+        String GLOBAL_PROP_DEVICE_MANUFACTURER = "Android Device Manufacturer";
+        String GLOBAL_PROP_LIB_VERSION = "Android Lib Version";
+        String GLOBAL_PROP_COUNTRY_CODE = "Country Code";
 
         /**
          * The account id of the user
@@ -496,6 +505,18 @@ public class Analytics {
 
     //region User Identity
 
+    private static Traits createBaseTraits() {
+        final Traits traits = new Traits();
+        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        traits.put(Global.GLOBAL_PROP_APP_RELEASE, Integer.toString(BuildConfig.VERSION_CODE, 10));
+        traits.put(Global.GLOBAL_PROP_APP_VERSION, BuildConfig.VERSION_NAME);
+        traits.put(Global.GLOBAL_PROP_DEVICE_MODEL, Build.MODEL);
+        traits.put(Global.GLOBAL_PROP_DEVICE_MANUFACTURER, Build.MANUFACTURER);
+        traits.put(Global.GLOBAL_PROP_LIB_VERSION, com.segment.analytics.core.BuildConfig.VERSION_NAME);
+        traits.put(Global.GLOBAL_PROP_COUNTRY_CODE, Locale.getDefault().getCountry());
+        return traits;
+    }
+
     public static void trackUserIdentifier(@NonNull Context context,
                                            @NonNull String accountId,
                                            boolean includeSegment) {
@@ -522,11 +543,9 @@ public class Analytics {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
         com.segment.analytics.Analytics.with(context).alias(accountId);
 
-
-        final Traits traits = new Traits();
+        final Traits traits = createBaseTraits();
         traits.putCreatedAt(created.toString());
         traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
         traits.putName(name);
         traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
 
@@ -544,9 +563,8 @@ public class Analytics {
         trackUserIdentifier(context, accountId, true);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        final Traits traits = new Traits();
+        final Traits traits = createBaseTraits();
         traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
 
         if (name != null) {
             traits.putName(name);
