@@ -4,8 +4,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:shrinkColumns="0"
-    android:stretchColumns="1"
     android:background="@drawable/selectable_dark_bounded">
 
     <TextView
@@ -62,18 +60,11 @@
         android:layout_alignBaseline="@id/item_device_status_label"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/gap_outer"
+        android:drawablePadding="@dimen/gap_small"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="end|center_vertical"
         android:text="@string/device_unknown"
         android:singleLine="true"/>
-
-    <ImageView
-        android:id="@+id/item_device_wifi_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/gap_small"
-        android:layout_above="@+id/item_device_status2_label"
-        android:layout_toStartOf="@+id/item_device_status"/>
 
     <TextView
         android:id="@+id/item_device_status2_label"

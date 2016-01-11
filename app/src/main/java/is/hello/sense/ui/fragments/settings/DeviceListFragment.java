@@ -156,7 +156,7 @@ public class DeviceListFragment extends InjectionFragment
         loadingIndicator.setVisibility(View.GONE);
         supportInfoFooter.setVisibility(View.VISIBLE);
 
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_pill_color);
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_pill_color, true);
     }
 
     public void devicesUnavailable(Throwable e) {
