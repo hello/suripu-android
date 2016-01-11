@@ -45,8 +45,8 @@ public class LaunchActivity extends InjectionActivity {
             if (sessionManager.hasSession()) {
                 apiService.getAccount().subscribe(account -> {
                     final com.segment.analytics.Properties properties = new Properties();
-                    properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_EMAIL, account.getEmail());
-                    properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_NAME, account.getName());
+                    properties.put(Analytics.Global.TRAIT_ACCOUNT_EMAIL, account.getEmail());
+                    properties.put(Analytics.Global.TRAIT_ACCOUNT_NAME, account.getName());
                     Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
                 }, e -> {
                     Logger.error(getClass().getSimpleName(), "Could not load user info", e);

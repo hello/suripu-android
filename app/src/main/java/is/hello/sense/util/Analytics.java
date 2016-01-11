@@ -39,34 +39,62 @@ public class Analytics {
         /**
          * iOS | android
          */
-        String GLOBAL_PROP_PLATFORM = "Platform";
+        String TRAIT_PLATFORM = "Platform";
 
-        String GLOBAL_PROP_APP_RELEASE = "Android App Release";
-        String GLOBAL_PROP_APP_VERSION = "Android App Version";
-        String GLOBAL_PROP_DEVICE_MODEL = "Android Device Model";
-        String GLOBAL_PROP_DEVICE_MANUFACTURER = "Android Device Manufacturer";
-        String GLOBAL_PROP_LIB_VERSION = "Android Lib Version";
-        String GLOBAL_PROP_COUNTRY_CODE = "Country Code";
+        /**
+         * The version code for the current build. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_APP_RELEASE = "Android App Release";
+
+        /**
+         * The version name for the current build. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_APP_VERSION = "Android App Version";
+
+        /**
+         * The model of the device the app is running on. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_DEVICE_MODEL = "Android Device Model";
+
+        /**
+         * The manufacturer of the device the app is running on.
+         * Was provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_DEVICE_MANUFACTURER = "Android Device Manufacturer";
+
+        /**
+         * The version of the analytics library in use. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_LIB_VERSION = "Android Lib Version";
+
+        /**
+         * The user's preferred country code. Was provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_COUNTRY_CODE = "Country Code";
 
         /**
          * The account id of the user
          */
-        String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
+        String TRAIT_ACCOUNT_ID = "Account Id";
 
         /**
          * The account email of the user
          */
-        String GLOBAL_PROP_ACCOUNT_EMAIL = "email";
+        String TRAIT_ACCOUNT_EMAIL = "email";
 
         /**
          * The account email of the user
          */
-        String GLOBAL_PROP_ACCOUNT_NAME = "name";
+        String TRAIT_ACCOUNT_NAME = "name";
 
         /**
          * The id of the user's Sense.
          */
-        String GLOBAL_PROP_SENSE_ID = "Sense Id";
+        String TRAIT_SENSE_ID = "Sense Id";
 
 
         /**
@@ -507,13 +535,13 @@ public class Analytics {
 
     private static Traits createBaseTraits() {
         final Traits traits = new Traits();
-        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
-        traits.put(Global.GLOBAL_PROP_APP_RELEASE, Integer.toString(BuildConfig.VERSION_CODE, 10));
-        traits.put(Global.GLOBAL_PROP_APP_VERSION, BuildConfig.VERSION_NAME);
-        traits.put(Global.GLOBAL_PROP_DEVICE_MODEL, Build.MODEL);
-        traits.put(Global.GLOBAL_PROP_DEVICE_MANUFACTURER, Build.MANUFACTURER);
-        traits.put(Global.GLOBAL_PROP_LIB_VERSION, com.segment.analytics.core.BuildConfig.VERSION_NAME);
-        traits.put(Global.GLOBAL_PROP_COUNTRY_CODE, Locale.getDefault().getCountry());
+        traits.put(Global.TRAIT_PLATFORM, PLATFORM);
+        traits.put(Global.TRAIT_APP_RELEASE, Integer.toString(BuildConfig.VERSION_CODE, 10));
+        traits.put(Global.TRAIT_APP_VERSION, BuildConfig.VERSION_NAME);
+        traits.put(Global.TRAIT_DEVICE_MODEL, Build.MODEL);
+        traits.put(Global.TRAIT_DEVICE_MANUFACTURER, Build.MANUFACTURER);
+        traits.put(Global.TRAIT_LIB_VERSION, com.segment.analytics.core.BuildConfig.VERSION_NAME);
+        traits.put(Global.TRAIT_COUNTRY_CODE, Locale.getDefault().getCountry());
         return traits;
     }
 
@@ -545,9 +573,9 @@ public class Analytics {
 
         final Traits traits = createBaseTraits();
         traits.putCreatedAt(created.toString());
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+        traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
         traits.putName(name);
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
+        traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
 
         com.segment.analytics.Analytics.with(context).identify(traits);
         trackUserIdentifier(context, accountId, false);
@@ -564,14 +592,14 @@ public class Analytics {
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         final Traits traits = createBaseTraits();
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
+        traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
 
         if (name != null) {
             traits.putName(name);
         }
 
         if (email != null) {
-            traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
+            traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
         com.segment.analytics.Analytics.with(context).identify(traits);
@@ -592,7 +620,7 @@ public class Analytics {
         }
 
         final Traits traits = new Traits();
-        traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
+        traits.put(Global.TRAIT_SENSE_ID, senseId);
         com.segment.analytics.Analytics.with(context).identify(traits);
 
         final Context context = SenseApplication.getInstance();
