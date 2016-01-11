@@ -2,6 +2,9 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.joda.time.DateTime;
 
@@ -298,6 +302,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView date;
         final TextView category;
         public final ParallaxImageView image;
+        final Target target;
 
         InsightViewHolder(@NonNull View view) {
             super(view);
@@ -305,6 +310,22 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
+            this.target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    image.setDrawable(new BitmapDrawable(context.getResources(), bitmap), false);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    image.setDrawable(placeHolderDrawable, true);
+                }
+            };
+            image.setTag(target);
 
             view.setOnClickListener(this);
         }
@@ -325,7 +346,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     final int maxHeight = Math.round(maxWidth * image.getAspectRatioScale());
                     picasso.load(url)
                            .resize(maxWidth, maxHeight)
-                           .into(image);
+                           .into(target);
+
                 } else {
                     picasso.cancelRequest(image);
                     image.setDrawable(null, true);
