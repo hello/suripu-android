@@ -47,7 +47,6 @@ public class InsightInfo extends ApiResponse {
         return imageUrl;
     }
 
-
     @Override
     public String toString() {
         return "InsightInfo{" +

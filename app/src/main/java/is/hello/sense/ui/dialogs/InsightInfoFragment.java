@@ -64,6 +64,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_SUMMARY = InsightInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_IMAGE_URL = InsightInfoFragment.class.getName() + ".ARG_IMAGE_URL";
+    private static final String ARG_GENERIC_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_GENERIC_CATEGORY";
 
     @Inject Picasso picasso;
     @Inject InsightInfoPresenter presenter;
@@ -84,6 +85,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     private @ColorInt int defaultStatusBarColor;
 
+    private boolean isGenericCategory;
+
     /**
      * The one-off status bar animator used for Picasso image loads.
      */
@@ -100,6 +103,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         arguments.putString(ARG_CATEGORY, insight.getCategory());
         arguments.putParcelable(ARG_SUMMARY, insight.getMessage());
         arguments.putString(ARG_IMAGE_URL, insight.getImageUrl(resources));
+        arguments.putBoolean(ARG_GENERIC_CATEGORY, insight.isGeneric());
         fragment.setArguments(arguments);
 
         return fragment;
@@ -110,6 +114,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         super.onCreate(savedInstanceState);
 
         final Bundle arguments = getArguments();
+        isGenericCategory = arguments.getBoolean(ARG_GENERIC_CATEGORY);
         final String category = arguments.getString(ARG_CATEGORY);
         if (category != null) {
             presenter.setCategory(category);
@@ -146,7 +151,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
         summaryText.setText(summary);
 
-        this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText };
+        if (isGenericCategory){
+            this.contentViews = new View[] {titleText, messageText};
+            summaryHeaderText.setVisibility(View.GONE);
+            summaryText.setVisibility(View.GONE);
+        }else{
+            this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText};
+        }
 
         this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
         Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {

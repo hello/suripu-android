@@ -509,4 +509,5 @@
         <item quantity="one">%1$s – %2$d attachment</item>
         <item quantity="other">%1$s – %2$d attachments</item>
     </plurals>
+
 </resources>
