@@ -339,7 +339,7 @@ public class ParallaxImageView extends FrameLayout implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        setDrawable(new BitmapDrawable(getResources(), bitmap), true);
+        setDrawable(new BitmapDrawable(getResources(), bitmap), false);
 
         if (picassoListener != null) {
             picassoListener.onBitmapLoaded(bitmap);
