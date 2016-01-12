@@ -32,7 +32,7 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
-    private static @Nullable Context context;
+    private static @Nullable com.segment.analytics.Analytics segment;
 
     public interface Global {
 
@@ -525,22 +525,26 @@ public class Analytics {
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
-        Analytics.context = context;
-
         final com.segment.analytics.Analytics.Builder builder =
                 new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
         if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
-        com.segment.analytics.Analytics.setSingletonInstance(builder.build());
+        Analytics.segment = builder.build();
+        com.segment.analytics.Analytics.setSingletonInstance(segment);
     }
 
     @SuppressWarnings("UnusedParameters")
     public static void onResume(@NonNull Activity activity) {
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        com.segment.analytics.Analytics.with(activity).flush();
+        if (segment == null) {
+            return;
+        }
+
+        segment.flush();
     }
 
     //endregion
@@ -560,16 +564,14 @@ public class Analytics {
         return traits;
     }
 
-    public static void trackUserIdentifier(@NonNull Context context,
-                                           @NonNull String accountId,
+    public static void trackUserIdentifier(@NonNull String accountId,
                                            boolean includeSegment) {
         Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
 
         if (!SenseApplication.isRunningInRobolectric()) {
             Bugsnag.setUserId(accountId);
-            if (includeSegment) {
-                final com.segment.analytics.Analytics segment =
-                        com.segment.analytics.Analytics.with(context);
+
+            if (includeSegment && segment != null) {
                 segment.identify(accountId);
                 segment.flush();
             }
@@ -582,14 +584,12 @@ public class Analytics {
                                          @NonNull final DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId +
                 "', name: '" + name + "', email: '" + email + "', created: '" + created + "' }");
-        if (context == null) {
+        if (segment == null) {
             return;
         }
 
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        final com.segment.analytics.Analytics segment =
-                com.segment.analytics.Analytics.with(context);
         segment.alias(accountId);
 
         final Traits traits = createBaseTraits();
@@ -600,17 +600,17 @@ public class Analytics {
         segment.identify(traits);
         segment.flush();
 
-        trackUserIdentifier(context, accountId, false);
+        trackUserIdentifier(accountId, false);
     }
 
     public static void trackSignIn(@NonNull final String accountId,
-                                   @Nullable String name,
-                                   @Nullable String email) {
-        if (context == null) {
+                                   @Nullable final String name,
+                                   @Nullable final String email) {
+        if (segment == null) {
             return;
         }
 
-        trackUserIdentifier(context, accountId, true);
+        trackUserIdentifier(accountId, true);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
         final Traits traits = createBaseTraits();
@@ -624,13 +624,15 @@ public class Analytics {
             traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
-        final com.segment.analytics.Analytics segment =
-                com.segment.analytics.Analytics.with(context);
         segment.identify(traits);
         segment.flush();
     }
 
     public static void backFillUserInfo(@Nullable String name, @Nullable String email) {
+        if (segment == null) {
+            return;
+        }
+
         final Traits traits = createBaseTraits();
         if (name != null) {
             traits.putName(name);
@@ -640,29 +642,27 @@ public class Analytics {
             traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
-        final com.segment.analytics.Analytics segment =
-                com.segment.analytics.Analytics.with(context);
         segment.identify(traits);
         segment.flush();
     }
 
     public static void signOut() {
-        if (context == null) {
+        if (segment == null) {
             return;
         }
 
-        com.segment.analytics.Analytics.with(context).reset();
+        segment.reset();
     }
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-        if (context == null) {
+        if (segment == null) {
             return;
         }
 
         final Traits traits = new Traits();
         traits.put(Global.TRAIT_SENSE_ID, senseId);
-        com.segment.analytics.Analytics.with(context).identify(traits);
+        segment.identify(traits);
 
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -737,10 +737,11 @@ public class Analytics {
     }
 
     public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
-        if (context == null) {
+        if (segment == null) {
             return;
         }
-        com.segment.analytics.Analytics.with(context).track(event, properties);
+
+        segment.track(event, properties);
 
         Logger.analytic(event, properties);
     }
