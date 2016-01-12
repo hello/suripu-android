@@ -39,6 +39,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -398,6 +399,12 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     private void finished() {
+        if (getFragmentNavigation() instanceof OnboardingActivity) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
+        } else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
+        }
+
         hideAllActivityForSuccess(() -> {
             getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
         }, e -> {

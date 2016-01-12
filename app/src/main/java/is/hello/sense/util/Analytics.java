@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import com.segment.analytics.Traits;
 
 import org.joda.time.DateTime;
 
+import java.util.Locale;
 import java.util.Set;
 
 import is.hello.commonsense.util.Errors;
@@ -30,34 +32,64 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
-    private static @Nullable Context context;
+    private static @Nullable com.segment.analytics.Analytics segment;
 
     public interface Global {
 
         /**
          * iOS | android
          */
-        String GLOBAL_PROP_PLATFORM = "Platform";
+        String TRAIT_PLATFORM = "Platform";
+
+        /**
+         * The version code for the current build. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_APP_RELEASE = "Android App Release";
+
+        /**
+         * The version name for the current build. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_APP_VERSION = "Android App Version";
+
+        /**
+         * The model of the device the app is running on. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_DEVICE_MODEL = "Android Device Model";
+
+        /**
+         * The manufacturer of the device the app is running on.
+         * Was provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_DEVICE_MANUFACTURER = "Android Device Manufacturer";
+
+        /**
+         * The version of the analytics library in use. Was
+         * provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_LIB_VERSION = "Android Lib Version";
+
+        /**
+         * The user's preferred country code. Was provided by Mixpanel before switching to Segment.
+         */
+        String TRAIT_COUNTRY_CODE = "Country Code";
 
         /**
          * The account id of the user
          */
-        String GLOBAL_PROP_ACCOUNT_ID = "Account Id";
+        String TRAIT_ACCOUNT_ID = "Account Id";
 
         /**
          * The account email of the user
          */
-        String GLOBAL_PROP_ACCOUNT_EMAIL = "email";
-
-        /**
-         * The account email of the user
-         */
-        String GLOBAL_PROP_ACCOUNT_NAME = "name";
+        String TRAIT_ACCOUNT_EMAIL = "email";
 
         /**
          * The id of the user's Sense.
          */
-        String GLOBAL_PROP_SENSE_ID = "Sense Id";
+        String TRAIT_SENSE_ID = "Sense Id";
 
 
         /**
@@ -218,6 +250,16 @@ public class Analytics {
         String EVENT_PAIR_SENSE_IN_APP = "Pair Sense";
 
         /**
+         * When the user successfully pairs a sense
+         */
+        String EVENT_SENSE_PAIRED = "Onboarding Sense Paired";
+
+        /**
+         * When the user successfully pairs a sense in the app
+         */
+        String EVENT_SENSE_PAIRED_IN_APP = "Sense Paired";
+
+        /**
          * When user lands on the screen to scan for wifi
          */
         String EVENT_WIFI = "Onboarding WiFi";
@@ -305,6 +347,16 @@ public class Analytics {
          * When user lands on the "Pairing your Sleep Pill" screen inside the app
          */
         String EVENT_PAIR_PILL_IN_APP = "Pair Pill";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen
+         */
+        String EVENT_PILL_PAIRED = "Onboarding Pill Paired";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PILL_PAIRED_IN_APP = "Pill Paired";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow
@@ -473,22 +525,26 @@ public class Analytics {
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
-        Analytics.context = context;
-
         final com.segment.analytics.Analytics.Builder builder =
                 new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
         if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
-        com.segment.analytics.Analytics.setSingletonInstance(builder.build());
+        Analytics.segment = builder.build();
+        com.segment.analytics.Analytics.setSingletonInstance(segment);
     }
 
     @SuppressWarnings("UnusedParameters")
     public static void onResume(@NonNull Activity activity) {
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        com.segment.analytics.Analytics.with(activity).flush();
+        if (segment == null) {
+            return;
+        }
+
+        segment.flush();
     }
 
     //endregion
@@ -496,15 +552,28 @@ public class Analytics {
 
     //region User Identity
 
-    public static void trackUserIdentifier(@NonNull Context context,
-                                           @NonNull String accountId,
+    private static Traits createBaseTraits() {
+        final Traits traits = new Traits();
+        traits.put(Global.TRAIT_PLATFORM, PLATFORM);
+        traits.put(Global.TRAIT_APP_RELEASE, Integer.toString(BuildConfig.VERSION_CODE, 10));
+        traits.put(Global.TRAIT_APP_VERSION, BuildConfig.VERSION_NAME);
+        traits.put(Global.TRAIT_DEVICE_MODEL, Build.MODEL);
+        traits.put(Global.TRAIT_DEVICE_MANUFACTURER, Build.MANUFACTURER);
+        traits.put(Global.TRAIT_LIB_VERSION, com.segment.analytics.core.BuildConfig.VERSION_NAME);
+        traits.put(Global.TRAIT_COUNTRY_CODE, Locale.getDefault().getCountry());
+        return traits;
+    }
+
+    public static void trackUserIdentifier(@NonNull String accountId,
                                            boolean includeSegment) {
         Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
 
         if (!SenseApplication.isRunningInRobolectric()) {
             Bugsnag.setUserId(accountId);
-            if (includeSegment) {
-                com.segment.analytics.Analytics.with(context).identify(accountId);
+
+            if (includeSegment && segment != null) {
+                segment.identify(accountId);
+                segment.flush();
             }
         }
     }
@@ -515,67 +584,85 @@ public class Analytics {
                                          @NonNull final DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId +
                 "', name: '" + name + "', email: '" + email + "', created: '" + created + "' }");
-        if (context == null) {
+        if (segment == null) {
             return;
         }
 
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
-        com.segment.analytics.Analytics.with(context).alias(accountId);
 
+        segment.alias(accountId);
 
-        final Traits traits = new Traits();
+        final Traits traits = createBaseTraits();
         traits.putCreatedAt(created.toString());
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
         traits.putName(name);
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
+        traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
+        traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
+        segment.identify(traits);
+        segment.flush();
 
-        com.segment.analytics.Analytics.with(context).identify(traits);
-        trackUserIdentifier(context, accountId, false);
+        trackUserIdentifier(accountId, false);
     }
 
     public static void trackSignIn(@NonNull final String accountId,
-                                   @Nullable String name,
-                                   @Nullable String email) {
-        if (context == null) {
+                                   @Nullable final String name,
+                                   @Nullable final String email) {
+        if (segment == null) {
             return;
         }
 
-        trackUserIdentifier(context, accountId, true);
+        trackUserIdentifier(accountId, true);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        final Traits traits = new Traits();
-        traits.put(Global.GLOBAL_PROP_ACCOUNT_ID, accountId);
-        traits.put(Global.GLOBAL_PROP_PLATFORM, PLATFORM);
+        final Traits traits = createBaseTraits();
+        traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
 
         if (name != null) {
             traits.putName(name);
         }
 
         if (email != null) {
-            traits.put(Global.GLOBAL_PROP_ACCOUNT_EMAIL, email);
+            traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
-        com.segment.analytics.Analytics.with(context).identify(traits);
+        segment.identify(traits);
+        segment.flush();
     }
 
-    public static void signOut() {
-        if (context == null) {
+    public static void backFillUserInfo(@Nullable String name, @Nullable String email) {
+        if (segment == null) {
             return;
         }
 
-        com.segment.analytics.Analytics.with(context).reset();
+        final Traits traits = createBaseTraits();
+        if (name != null) {
+            traits.putName(name);
+        }
+
+        if (email != null) {
+            traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
+        }
+
+        segment.identify(traits);
+        segment.flush();
+    }
+
+    public static void signOut() {
+        if (segment == null) {
+            return;
+        }
+
+        segment.reset();
     }
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-        if (context == null) {
+        if (segment == null) {
             return;
         }
 
         final Traits traits = new Traits();
-        traits.put(Global.GLOBAL_PROP_SENSE_ID, senseId);
-        com.segment.analytics.Analytics.with(context).identify(traits);
+        traits.put(Global.TRAIT_SENSE_ID, senseId);
+        segment.identify(traits);
 
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -650,10 +737,11 @@ public class Analytics {
     }
 
     public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
-        if (context == null) {
+        if (segment == null) {
             return;
         }
-        com.segment.analytics.Analytics.with(context).track(event, properties);
+
+        segment.track(event, properties);
 
         Logger.analytic(event, properties);
     }

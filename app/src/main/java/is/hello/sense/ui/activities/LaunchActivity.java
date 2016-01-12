@@ -6,8 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 
-import com.segment.analytics.Properties;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -42,21 +40,22 @@ public class LaunchActivity extends InjectionActivity {
 
         if (savedInstanceState == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
-            apiService.getAccount().subscribe(account -> {
-                final com.segment.analytics.Properties properties = new Properties();
-                properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_EMAIL, account.getEmail());
-                properties.put(Analytics.Global.GLOBAL_PROP_ACCOUNT_NAME, account.getName());
-                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
-            }, e -> {
-                Logger.error(getClass().getSimpleName(), "Could not load user info", e);
+            if (sessionManager.hasSession()) {
+                apiService.getAccount().subscribe(account -> {
+                    Analytics.backFillUserInfo(account.getName(), account.getEmail());
+                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+                }, e -> {
+                    Logger.error(getClass().getSimpleName(), "Could not load user info", e);
+                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+                });
+            } else {
                 Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
-            });
-
+            }
         }
 
         if (sessionManager.getSession() != null) {
             String accountId = sessionManager.getSession().getAccountId();
-            Analytics.trackUserIdentifier(this, accountId, true);
+            Analytics.trackUserIdentifier(accountId, true);
         }
     }
 
