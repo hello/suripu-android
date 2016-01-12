@@ -23,7 +23,7 @@ import is.hello.sense.util.Analytics;
 import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class OnboardingDoneFragment extends Fragment {
+public class RegisterCompleteFragment extends Fragment {
     private final StepHandler stepHandler = new StepHandler(this);
 
     private TextView message;
@@ -33,7 +33,7 @@ public class OnboardingDoneFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
+            final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
             Analytics.trackEvent(Analytics.Onboarding.EVENT_END, properties);
         }
     }
@@ -41,7 +41,7 @@ public class OnboardingDoneFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_done, container, false);
+        final View view = inflater.inflate(R.layout.fragment_register_complete, container, false);
 
         this.message = (TextView) view.findViewById(R.id.fragment_onboarding_done_message);
 
@@ -85,7 +85,7 @@ public class OnboardingDoneFragment extends Fragment {
     }
 
     public void complete() {
-        ((OnboardingActivity) getActivity()).showHomeActivity();
+        ((OnboardingActivity) getActivity()).showHomeActivity(OnboardingActivity.FLOW_REGISTER);
     }
 
 
@@ -94,9 +94,9 @@ public class OnboardingDoneFragment extends Fragment {
         static final int SHOW_COMPLETE_MESSAGE = 3;
         static final int DELAY = 2 * 1000;
 
-        private final WeakReference<OnboardingDoneFragment> fragment;
+        private final WeakReference<RegisterCompleteFragment> fragment;
 
-        public StepHandler(@NonNull OnboardingDoneFragment fragment) {
+        public StepHandler(@NonNull RegisterCompleteFragment fragment) {
             super(Looper.getMainLooper());
             this.fragment = new WeakReference<>(fragment);
         }
@@ -118,7 +118,7 @@ public class OnboardingDoneFragment extends Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_SHOW_SECOND: {
-                    OnboardingDoneFragment fragment = this.fragment.get();
+                    final RegisterCompleteFragment fragment = this.fragment.get();
                     if (fragment != null) {
                         fragment.showSecondMessage();
                     }
@@ -126,7 +126,7 @@ public class OnboardingDoneFragment extends Fragment {
                 }
 
                 case SHOW_COMPLETE_MESSAGE: {
-                    OnboardingDoneFragment fragment = this.fragment.get();
+                    final RegisterCompleteFragment fragment = this.fragment.get();
                     if (fragment != null) {
                         fragment.complete();
                     }

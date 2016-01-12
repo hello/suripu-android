@@ -37,6 +37,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
@@ -214,8 +215,8 @@ public class InsightsFragment extends UndersideTabFragment
         insightsAdapter.bindInsights(insights);
 
         final Activity activity = getActivity();
-        if (!isPostOnboarding() && tutorialOverlayView == null &&
-                Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
+        if (getOnboardingFlow() != OnboardingActivity.FLOW_SIGN_IN &&
+                tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
             tutorialOverlayView.setOnDismiss(() -> {

@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import is.hello.sense.graph.Scope;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 
 public abstract class UndersideTabFragment extends InjectionFragment {
@@ -12,12 +13,11 @@ public abstract class UndersideTabFragment extends InjectionFragment {
         return (Scope) getActivity();
     }
 
-    /**
-     * Returns whether or not we're in the post-on-boarding UI state.
-     */
-    protected boolean isPostOnboarding() {
+    protected @OnboardingActivity.Flow int getOnboardingFlow() {
         final HomeActivity activity = (HomeActivity) getActivity();
-        return (activity != null && activity.isPostOnboarding());
+        return activity != null
+                ? activity.getOnboardingFlow()
+                : OnboardingActivity.FLOW_NONE;
     }
 
     @Override
