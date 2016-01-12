@@ -180,12 +180,13 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onUpdate() {
-        if (!insightsPresenter.bindScope(getScope())) {
+        if (insightsPresenter.updateIfEmpty()) {
             swipeRefreshLayout.setRefreshing(true);
-            insightsPresenter.update();
         }
 
-        updateQuestion();
+        if (!questionsPresenter.hasQuestion()) {
+            updateQuestion();
+        }
     }
 
 

@@ -137,6 +137,10 @@ import rx.Scheduler;
                         .subscribe(question);
     }
 
+    public boolean hasQuestion() {
+        return (question.hasValue() && question.getValue() != null);
+    }
+
     //endregion
 
 
