@@ -6,8 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 
-import com.segment.analytics.Properties;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -44,10 +42,8 @@ public class LaunchActivity extends InjectionActivity {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
             if (sessionManager.hasSession()) {
                 apiService.getAccount().subscribe(account -> {
-                    final com.segment.analytics.Properties properties = new Properties();
-                    properties.put(Analytics.Global.TRAIT_ACCOUNT_EMAIL, account.getEmail());
-                    properties.put(Analytics.Global.TRAIT_ACCOUNT_NAME, account.getName());
-                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, properties);
+                    Analytics.backFillUserInfo(account.getName(), account.getEmail());
+                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
                 }, e -> {
                     Logger.error(getClass().getSimpleName(), "Could not load user info", e);
                     Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);

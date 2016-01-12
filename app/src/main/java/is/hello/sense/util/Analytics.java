@@ -87,11 +87,6 @@ public class Analytics {
         String TRAIT_ACCOUNT_EMAIL = "email";
 
         /**
-         * The account email of the user
-         */
-        String TRAIT_ACCOUNT_NAME = "name";
-
-        /**
          * The id of the user's Sense.
          */
         String TRAIT_SENSE_ID = "Sense Id";
@@ -621,6 +616,22 @@ public class Analytics {
         final Traits traits = createBaseTraits();
         traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
 
+        if (name != null) {
+            traits.putName(name);
+        }
+
+        if (email != null) {
+            traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
+        }
+
+        final com.segment.analytics.Analytics segment =
+                com.segment.analytics.Analytics.with(context);
+        segment.identify(traits);
+        segment.flush();
+    }
+
+    public static void backFillUserInfo(@Nullable String name, @Nullable String email) {
+        final Traits traits = createBaseTraits();
         if (name != null) {
             traits.putName(name);
         }
