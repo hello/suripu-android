@@ -277,7 +277,6 @@ public class TimelineFragment extends InjectionFragment
                 homeActivity.hideAlarmShortcut();
             }
         }
-
     }
 
     @Override
@@ -367,6 +366,8 @@ public class TimelineFragment extends InjectionFragment
             toolbar.setTitleDimmed(true);
             toolbar.setShareVisible(false);
         }
+
+        Tutorial.TAP_HAMBURGER.markShown(getActivity());
     }
 
     @Override
@@ -638,6 +639,12 @@ public class TimelineFragment extends InjectionFragment
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
+
+                    final Activity activity = getActivity();
+                    if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
+                            !WelcomeDialogFragment.isAnyVisible(activity)) {
+                        showTutorial(Tutorial.TAP_HAMBURGER);
+                    }
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);

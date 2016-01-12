@@ -215,7 +215,7 @@ public class InsightsFragment extends UndersideTabFragment
         insightsAdapter.bindInsights(insights);
 
         final Activity activity = getActivity();
-        if (getOnboardingFlow() != OnboardingActivity.FLOW_SIGN_IN &&
+        if (getOnboardingFlow() == OnboardingActivity.FLOW_NONE &&
                 tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
