@@ -223,7 +223,7 @@ public class InsightsFragment extends UndersideTabFragment
                 this.tutorialOverlayView = null;
             });
             tutorialOverlayView.setAnchorContainer(getView());
-            tutorialOverlayView.postShow(R.id.activity_home_container);
+            getAnimatorContext().runWhenIdle(() -> tutorialOverlayView.postShow(R.id.activity_home_container));
         }
     }
 
