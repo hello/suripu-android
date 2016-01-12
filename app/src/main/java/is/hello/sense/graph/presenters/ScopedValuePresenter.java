@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.io.Serializable;
 
-import is.hello.buruberi.util.Rx;
 import is.hello.sense.graph.Scope;
 import rx.Subscriber;
 import rx.Subscription;
@@ -18,43 +17,51 @@ public abstract class ScopedValuePresenter<T extends Serializable> extends Value
         return getClass().getName();
     }
 
-    public boolean bindScope(@NonNull Scope scope) {
+    public BindResult bindScope(@NonNull Scope scope) {
         if (this.scope == scope) {
-            return false;
+            return BindResult.UNCHANGED;
         }
 
-        Object value = scope.retrieveValue(getScopeValueKey());
-        boolean hasValue = (value != null && !subject.hasValue());
-        if (hasValue) {
-            logEvent("bindScope(" + scope + ")");
+        logEvent("bindScope(" + scope + ")");
 
+        this.scope = scope;
+
+        final Object value = scope.retrieveValue(getScopeValueKey());
+        final boolean tookValue = (value != null && !subject.hasValue());
+        if (tookValue) {
             //noinspection unchecked
             subject.onNext((T) value);
         }
 
+        if (scopeUpdateSubscription != null) {
+            scopeUpdateSubscription.unsubscribe();
+        }
+
         // A normal subscribe call would drop the subscription onError, that's not what we want.
-        this.scopeUpdateSubscription = subject.observeOn(Rx.mainThreadScheduler()).unsafeSubscribe(new Subscriber<T>() {
-            @Override
-            public void onCompleted() {
+        this.scopeUpdateSubscription =
+                subject.observeOn(scope.getScopeScheduler())
+                       .unsafeSubscribe(new Subscriber<T>() {
+                           @Override
+                           public void onCompleted() {
+                               // Do nothing.
+                           }
 
-            }
+                           @Override
+                           public void onError(Throwable e) {
+                               // Do nothing.
+                           }
 
-            @Override
-            public void onError(Throwable e) {
-                // Do nothing
-            }
+                           @Override
+                           public void onNext(T newValue) {
+                               if (isUnsubscribed()) {
+                                   return;
+                               }
 
-            @Override
-            public void onNext(T newValue) {
-                if (isUnsubscribed()) {
-                    return;
-                }
+                               scope.storeValue(getScopeValueKey(), newValue);
+                           }
+                       });
 
-                scope.storeValue(getScopeValueKey(), newValue);
-            }
-        });
-
-        return hasValue;
+        return tookValue ? BindResult.TOOK_VALUE : BindResult.WAITING_FOR_VALUE;
     }
 
     public void unbindScope() {
@@ -66,5 +73,11 @@ public abstract class ScopedValuePresenter<T extends Serializable> extends Value
         }
 
         this.scope = null;
+    }
+
+    public enum BindResult {
+        UNCHANGED,
+        TOOK_VALUE,
+        WAITING_FOR_VALUE,
     }
 }
