@@ -341,7 +341,8 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
+        boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(pairOnly), null, true);
     }
 
     public void showPairPill(boolean showIntroduction) {
@@ -362,7 +363,11 @@ public class OnboardingActivity extends InjectionActivity
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
             builder.setHideToolbar(true);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
+            if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
+            }else{
+                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
+            }
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);
         } else {
