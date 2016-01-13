@@ -63,7 +63,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
     private int touchSlop;
     private float startEventX = 0f, startEventY = 0f;
     private boolean trackingTouchEvents = false;
-    int offscreenInset = getResources().getDimensionPixelSize(R.dimen.series_graph_offscreen_inset); // Extra spacing so graph doesn't fall below visible portion of the screen.
+    private int offscreenInset = getResources().getDimensionPixelSize(R.dimen.series_graph_offscreen_inset); // Extra spacing so graph doesn't fall below visible portion of the screen.
 
     private final Drawable.Callback DRAWABLE_CALLBACK = new Drawable.Callback() {
         @Override
