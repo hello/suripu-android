@@ -200,7 +200,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 final View view = inflater.inflate(R.layout.item_insight, parent, false);
                 return new InsightViewHolder(view);
             }
-            case TYPE_ERROR:{
+            case TYPE_ERROR: {
                 final View view = inflater.inflate(R.layout.item_message_card, parent, false);
                 return new ErrorViewHolder(view);
             }
@@ -266,21 +266,22 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     }
 
     public class ErrorViewHolder extends BaseViewHolder implements View.OnClickListener {
-        final TextView title;
         final TextView message;
         final Button action;
 
         ErrorViewHolder(@NonNull View view) {
             super(view);
-            title = (TextView) view.findViewById(R.id.item_message_card_title);
-            message = (TextView) view.findViewById(R.id.item_message_card_message);
-            action = (Button) view.findViewById(R.id.item_message_card_action);
+
+            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            title.setVisibility(View.GONE);
+
+            this.message = (TextView) view.findViewById(R.id.item_message_card_message);
+            this.action = (Button) view.findViewById(R.id.item_message_card_action);
             action.setOnClickListener(this);
         }
 
         @Override
         void bind(int position) {
-            title.setText(R.string.dialog_error_title);
             action.setText(R.string.action_retry);
             message.setText(getInsightItem(position).getMessage());
         }

@@ -91,7 +91,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
                 view.findViewById(R.id.item_message_card_image).setVisibility(View.GONE);
 
                 final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
-                title.setText(R.string.dialog_error_title);
+                title.setVisibility(View.GONE);
 
                 final Button  action = (Button) view.findViewById(R.id.item_message_card_action);
                 action.setText(R.string.action_retry);

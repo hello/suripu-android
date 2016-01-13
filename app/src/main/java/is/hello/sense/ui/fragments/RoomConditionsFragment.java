@@ -198,9 +198,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
             final String message = messageRef != null
                     ? messageRef.resolve(getActivity())
                     : e.getMessage();
-            adapter.displayMessage(false,
-                                   R.string.dialog_error_title,
-                                   message,
+            adapter.displayMessage(false, 0, message,
                                    R.string.action_retry,
                                    ignored -> presenter.update());
         }
