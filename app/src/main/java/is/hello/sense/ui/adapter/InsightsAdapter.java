@@ -22,6 +22,7 @@ import java.util.List;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.ui.widget.ParallaxImageView;
@@ -102,10 +103,17 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         this.currentQuestion = null;
         this.onRetry = onRetry;
 
-        final StringRef messageRef = Errors.getDisplayMessage(e);
-        final String message = messageRef != null
-                ? messageRef.resolve(context)
-                : context.getString(R.string.dialog_error_generic_message);
+        final String message;
+        if (ApiException.isNetworkError(e)) {
+            message = context.getString(R.string.error_insights_unavailable);
+        } else {
+            final StringRef messageRef = Errors.getDisplayMessage(e);
+            if (messageRef != null) {
+                message = messageRef.resolve(context);
+            } else {
+                message = context.getString(R.string.dialog_error_generic_message);
+            }
+        }
         final Insight errorInsight = Insight.createError(message);
         insights.add(errorInsight);
 

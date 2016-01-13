@@ -185,7 +185,11 @@ public class RoomConditionsFragment extends UndersideTabFragment
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
 
         adapter.clear();
-        if (ApiException.statusEquals(e, 404)) {
+        if (ApiException.isNetworkError(e)) {
+            adapter.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
+                                   R.string.action_retry,
+                                   ignored -> presenter.update());
+        } else if (ApiException.statusEquals(e, 404)) {
             adapter.displayMessage(true,
                                    0,
                                    getString(R.string.error_room_conditions_no_sense),

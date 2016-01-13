@@ -103,7 +103,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
 
 
                 final TextView message = (TextView) view.findViewById(R.id.item_message_card_message);
-                message.setText(R.string.trends_message_error);
+                message.setText(R.string.error_trends_unavailable);
 
                 return new TrendsAdapter.ViewHolder(view);
             }

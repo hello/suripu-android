@@ -177,7 +177,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         final SmartAlarmAdapter.Message message;
         if (ApiException.isNetworkError(e)) {
             message = new SmartAlarmAdapter.Message(0,
-                    StringRef.from(R.string.error_network_unavailable));
+                    StringRef.from(R.string.error_smart_alarms_unavailable));
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 400)) {
