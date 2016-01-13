@@ -148,6 +148,7 @@ public class Analytics {
          * Whenever user taps on a "skip" button within the onboarding flow
          */
         String EVENT_SKIP = "Onboarding Skip";
+        String EVENT_SKIP_IN_APP = "Skip";
         String PROP_SKIP_SCREEN = "Screen";
 
         /**
@@ -337,6 +338,7 @@ public class Analytics {
          * When the user lands on the "Sleep Pill" intro screen.
          */
         String EVENT_PILL_INTRO = "Onboarding Sleep Pill";
+        String EVENT_PILL_INTRO_IN_APP = "Sleep Pill";
 
         /**
          * When user lands on the "Pairing your Sleep Pill" screen

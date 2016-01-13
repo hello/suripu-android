@@ -399,7 +399,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     private void finished() {
-        if (getFragmentNavigation() instanceof OnboardingActivity) {
+        if (getFragmentNavigation() instanceof OnboardingActivity && !isPairOnlySession()) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
         } else {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);

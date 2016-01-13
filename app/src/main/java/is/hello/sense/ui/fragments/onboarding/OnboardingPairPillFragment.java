@@ -145,7 +145,11 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void skipPairingPill() {
         final Properties properties =
                 Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "pill_pairing");
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, properties);
+        if (isPairOnlySession()){
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP_IN_APP, properties);
+        }else {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, properties);
+        }
 
         final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
