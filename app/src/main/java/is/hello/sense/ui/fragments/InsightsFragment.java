@@ -239,6 +239,11 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
     private void bindQuestion(@Nullable Question question) {
+        // Prevent consecutive null question binds from causing redundant reloads.
+        if (question == this.currentQuestion && questionLoaded) {
+            return;
+        }
+
         this.currentQuestion = question;
         this.questionLoaded = true;
         bindPendingIfReady();
