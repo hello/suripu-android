@@ -95,6 +95,14 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                    .apply();
     }
 
+    public static void markUnshown(@NonNull Context context, @XmlRes int welcomeRes) {
+        final String key = getPreferenceKey(context, welcomeRes);
+        final SharedPreferences preferences = context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        preferences.edit()
+                   .putBoolean(key, false)
+                   .apply();
+    }
+
     public static boolean isAnyVisible(@NonNull Activity activity) {
         return (activity.getFragmentManager().findFragmentByTag(WelcomeDialogFragment.TAG) != null);
     }

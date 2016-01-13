@@ -27,6 +27,9 @@
             android:screenOrientation="portrait"
             android:label="Piru-Pea" />
 
+        <activity
+            android:name="is.hello.sense.debug.WelcomeDialogsActivity" />
+
         <receiver
             android:name="is.hello.sense.notifications.NotificationReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
