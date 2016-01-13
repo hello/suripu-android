@@ -95,6 +95,15 @@ public final class PresenterSubject<T> extends Subject<T, T> {
         return (subscriptionManager.state == SubscriptionManager.STATE_VALUE);
     }
 
+    @Override
+    public T getValue() {
+        return subscriptionManager.value;
+    }
+
+    @Override
+    public Throwable getThrowable() {
+        return subscriptionManager.error;
+    }
 
     /**
      * Serialize the current value of the presenter subject into a Bundle.

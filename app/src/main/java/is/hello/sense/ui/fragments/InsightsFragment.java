@@ -180,12 +180,13 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onUpdate() {
-        if (!insightsPresenter.bindScope(getScope())) {
+        if (insightsPresenter.updateIfEmpty()) {
             swipeRefreshLayout.setRefreshing(true);
-            insightsPresenter.update();
         }
 
-        updateQuestion();
+        if (!questionsPresenter.hasQuestion()) {
+            updateQuestion();
+        }
     }
 
 
@@ -238,6 +239,11 @@ public class InsightsFragment extends UndersideTabFragment
     }
 
     private void bindQuestion(@Nullable Question question) {
+        // Prevent consecutive null question binds from causing redundant reloads.
+        if (question == this.currentQuestion && questionLoaded) {
+            return;
+        }
+
         this.currentQuestion = question;
         this.questionLoaded = true;
         bindPendingIfReady();

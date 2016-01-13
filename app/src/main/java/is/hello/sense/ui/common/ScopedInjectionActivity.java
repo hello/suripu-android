@@ -6,8 +6,10 @@ import android.support.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.util.Logger;
+import rx.Scheduler;
 
 public abstract class ScopedInjectionActivity extends InjectionActivity implements Scope {
     private @Nullable Map<String, Object> scopedValues;
@@ -26,6 +28,12 @@ public abstract class ScopedInjectionActivity extends InjectionActivity implemen
         if (level >= TRIM_MEMORY_RUNNING_MODERATE) {
             clearValues();
         }
+    }
+
+    @NonNull
+    @Override
+    public Scheduler getScopeScheduler() {
+        return Rx.mainThreadScheduler();
     }
 
     @Override

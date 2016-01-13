@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -100,7 +101,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     @Override
     public void onUpdate() {
-        if (!trendsPresenter.bindScope(getScope())) {
+        if (trendsPresenter.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
             trendsPresenter.update();
         }
     }
