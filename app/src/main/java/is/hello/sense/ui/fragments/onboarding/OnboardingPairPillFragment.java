@@ -207,7 +207,9 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
 
-            skipButton.setVisibility(View.VISIBLE);
+            if (!isPairOnlySession()) {
+                skipButton.setVisibility(View.VISIBLE);
+            }
             retryButton.setVisibility(View.VISIBLE);
 
             final ErrorDialogFragment.Builder errorDialogBuilder =
