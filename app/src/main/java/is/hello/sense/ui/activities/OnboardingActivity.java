@@ -39,7 +39,6 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
-import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
@@ -51,7 +50,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
@@ -435,18 +433,6 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showSmartAlarmInfo() {
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
-    }
-
-    public void show2ndPillIntroduction() {
-        if (devicesInfo != null && devicesInfo.getNumberPairedAccounts() > 1) {
-            showDone();
-        } else {
-            pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
-        }
-    }
-
-    public void show2ndPillPairing() {
-        pushFragment(new Onboarding2ndPillInfoFragment(), null, true);
     }
 
     public void showDone() {
