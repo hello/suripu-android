@@ -31,4 +31,17 @@ public enum WiFiSignalStrength {
             return GOOD;
         }
     }
+
+    public static WiFiSignalStrength fromCondition(String condition) {
+        switch (condition) {
+            case "NONE":
+                return NONE;
+            case "BAD":
+                return BAD;
+            case "FAIR":
+                return FAIR;
+            default:
+                return GOOD;
+        }
+    }
 }
