@@ -8,9 +8,9 @@ import is.hello.sense.R;
 
 public enum WiFiSignalStrength {
     NONE(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_none),
-    BAD(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_bad),
-    FAIR(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_fair),
-    GOOD(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_good);
+    BAD(R.string.accessibility_wifi_signal_strength_bad, R.drawable.icon_wifi_bad),
+    FAIR(R.string.accessibility_wifi_signal_strength_fair, R.drawable.icon_wifi_fair),
+    GOOD(R.string.accessibility_wifi_signal_strength_good, R.drawable.icon_wifi_good);
 
     public final @StringRes int accessibilityString;
     public final @DrawableRes int icon;
