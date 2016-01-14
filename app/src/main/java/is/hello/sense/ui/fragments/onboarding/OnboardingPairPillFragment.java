@@ -130,6 +130,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                     Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED_IN_APP, null);
                     getOnboardingActivity().finish();
                 } else {
+                    hardwarePresenter.clearPeripheral();
                     if (success) {
                         Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED, null);
                         getOnboardingActivity().showPillInstructions();

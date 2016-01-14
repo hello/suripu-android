@@ -366,16 +366,6 @@ public class Analytics {
         String EVENT_PILL_PLACEMENT = "Onboarding Pill Placement";
 
         /**
-         * User lands on screen which asks whether they want to pair another pill.
-         */
-        String EVENT_ANOTHER_PILL = "Onboarding Another Pill";
-
-        /**
-         * When user lands on screen that tells partner to get app from hello.is/app
-         */
-        String EVENT_GET_APP = "Onboarding Get App";
-
-        /**
          * When user lands on the screen that explains what the colors of Sense mean.  also known as 'before you sleep"
          */
         String EVENT_SENSE_COLORS = "Onboarding Sense Colors";
