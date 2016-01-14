@@ -17,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.debug.WelcomeDialogsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -74,6 +75,7 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
+        adapter.add(new DetailItem("View welcome dialogs", this::viewWelcomeDialogs));
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
 
@@ -90,7 +92,6 @@ public class DebugActivity extends InjectionActivity {
             actionBar.setSubtitle(apiEndpoint.getName());
         }
     }
-
 
     public void showRoomCheck() {
         Intent onboarding = new Intent(this, OnboardingActivity.class);
@@ -126,6 +127,10 @@ public class DebugActivity extends InjectionActivity {
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 
+    public void viewWelcomeDialogs() {
+        startActivity(new Intent(this, WelcomeDialogsActivity.class));
+    }
+
     public void reEnableReviewPrompt() {
         preferences.edit()
                    .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)
@@ -148,4 +153,6 @@ public class DebugActivity extends InjectionActivity {
         sessionManager.logOut();
         finish();
     }
+
+
 }
