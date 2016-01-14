@@ -152,7 +152,7 @@ public class TimelineEvent extends ApiResponse {
         GENERIC_MOTION(R.drawable.timeline_generic_motion, R.string.accessibility_event_name_generic_motion),
         PARTNER_MOTION(R.drawable.timeline_partner, R.string.accessibility_event_name_partner_moved),
         GENERIC_SOUND(R.drawable.timeline_sound, R.string.accessibility_event_name_noise),
-        SNORED(R.drawable.timeline_sound, R.string.accessibility_event_name_snoring),
+        SNORED(R.drawable.timeline_snored, R.string.accessibility_event_name_snoring),
         SLEEP_TALKED(R.drawable.timeline_sound, R.string.accessibility_event_name_talk),
         LIGHT(R.drawable.timeline_light, R.string.accessibility_event_name_light),
         LIGHTS_OUT(R.drawable.timeline_lights_out, R.string.accessibility_event_name_lights_out),

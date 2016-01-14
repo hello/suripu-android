@@ -1,6 +1,5 @@
 package is.hello.sense.ui.handholding;
 
-import android.animation.FloatEvaluator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -50,9 +51,12 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
     public static final String TAG = WelcomeDialogFragment.class.getSimpleName();
 
     private static final String ARG_WELCOME_RES = WelcomeDialogFragment.class.getName() + ".ARG_WELCOME_RES";
+    private static final String ARG_M_FLICKER_WORKAROUND = WelcomeDialogFragment.class.getName() + ".ARG_M_FLICKER_WORKAROUND";
 
-    private int welcomeRes;
+    private boolean marshmallowFlickerWorkaround;
+    private @XmlRes int welcomeRes;
     private List<Item> items;
+
     private ItemAdapter adapter;
     private ViewPager viewPager;
     private PageDots pageDots;
@@ -95,25 +99,30 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         return (activity.getFragmentManager().findFragmentByTag(WelcomeDialogFragment.TAG) != null);
     }
 
-    public static void show(@NonNull Activity activity, @XmlRes int welcomeRes) {
-        final WelcomeDialogFragment welcomeDialog = WelcomeDialogFragment.newInstance(welcomeRes);
+    public static void show(@NonNull Activity activity, @XmlRes int welcomeRes,
+                            boolean marshmallowFlickerWorkaround) {
+        final WelcomeDialogFragment welcomeDialog =
+                WelcomeDialogFragment.newInstance(welcomeRes, marshmallowFlickerWorkaround);
         welcomeDialog.showAllowingStateLoss(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
     }
 
-    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes) {
+    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes,
+                                       boolean marshmallowFlickerWorkaround) {
         if (shouldShow(activity, welcomeRes)) {
-            show(activity, welcomeRes);
+            show(activity, welcomeRes, marshmallowFlickerWorkaround);
             return true;
         } else {
             return false;
         }
     }
 
-    public static WelcomeDialogFragment newInstance(@XmlRes int welcomeRes) {
-        WelcomeDialogFragment fragment = new WelcomeDialogFragment();
+    public static WelcomeDialogFragment newInstance(@XmlRes int welcomeRes,
+                                                    boolean marshmallowFlickerWorkaround) {
+        final WelcomeDialogFragment fragment = new WelcomeDialogFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putInt(ARG_WELCOME_RES, welcomeRes);
+        arguments.putBoolean(ARG_M_FLICKER_WORKAROUND, marshmallowFlickerWorkaround);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -125,7 +134,9 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         super.onCreate(savedInstanceState);
 
         try {
-            this.welcomeRes = getArguments().getInt(ARG_WELCOME_RES);
+            final Bundle arguments = getArguments();
+            this.welcomeRes = arguments.getInt(ARG_WELCOME_RES);
+            this.marshmallowFlickerWorkaround = arguments.getBoolean(ARG_M_FLICKER_WORKAROUND);
 
             final WelcomeDialogParser parser = new WelcomeDialogParser(getResources(), welcomeRes);
             this.items = parser.parse();
@@ -138,15 +149,26 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
+        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
         dialog.setContentView(R.layout.fragment_dialog_welcome);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final int activityStatusBarColor = Windows.getStatusBarColor(getActivity().getWindow());
-            final int myStatusBarColor = Drawing.darkenColorBy(activityStatusBarColor, 0.5f);
+            final @ColorInt int activityStatusBarColor =
+                    Windows.getStatusBarColor(getActivity().getWindow());
+            final @ColorInt int myStatusBarColor =
+                    Drawing.darkenColorBy(activityStatusBarColor, 0.5f);
             Windows.setStatusBarColor(dialog.getWindow(), myStatusBarColor);
+        }
+
+        // We aren't targeting SDK level 23 yet, so we can't use the SDK level constant.
+        if (marshmallowFlickerWorkaround && Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // In Android Marshmallow, there is a bug in the compositor that results in text
+            // bleeding through transparent windows at the end of transitions. The work-around
+            // is to disable hardware acceleration on the root view in the window.
+            final View rootView = dialog.findViewById(R.id.fragment_dialog_welcome_root);
+            rootView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
         this.viewPager = (ViewPager) dialog.findViewById(R.id.fragment_dialog_welcome_view_pager);
@@ -155,23 +177,23 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         if (items.size() < 2) {
             pageDots.setVisibility(View.GONE);
 
-            MarginLayoutParams layoutParams = (MarginLayoutParams) viewPager.getLayoutParams();
+            final MarginLayoutParams layoutParams = (MarginLayoutParams) viewPager.getLayoutParams();
             layoutParams.bottomMargin = layoutParams.topMargin;
         }
 
         this.adapter = new ItemAdapter();
 
-        int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
 
-        int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
-        int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
+        final int maxWidth = getResources().getDimensionPixelSize(R.dimen.dialog_max_width);
+        final int maxHeight = getResources().getDimensionPixelSize(R.dimen.dialog_max_height);
         Views.runWhenLaidOut(dialog.getWindow().getDecorView(), () -> {
             boolean isFloating = false;
 
-            int height = viewPager.getMeasuredHeight();
+            final int height = viewPager.getMeasuredHeight();
             if (height > maxHeight) {
                 viewPager.getLayoutParams().height = maxHeight;
                 viewPager.invalidate();
@@ -179,7 +201,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                 isFloating = true;
             }
 
-            int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
+            final int width = viewPager.getMeasuredWidth() - (pageMargin * 2);
             if (width > maxWidth) {
                 int newPageMargin = (viewPager.getMeasuredWidth() - maxWidth) / 2;
                 viewPager.setPadding(newPageMargin, 0, newPageMargin, 0);
@@ -226,7 +248,6 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         private static final float SMALL_ALPHA = 0.7f;
         private static final float BIG_ALPHA = 1f;
 
-        private final FloatEvaluator evaluator = new FloatEvaluator();
         private final ViewPager parent;
 
         public ParallaxTransformer(@NonNull ViewPager parent) {
@@ -236,12 +257,12 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         @Override
         public void transformPage(View page, float position) {
             // https://code.google.com/p/android/issues/detail?id=64046
-            float fixedUpPosition = (position - parent.getPaddingRight() / (float) page.getWidth());
-            float lockedPosition = Math.max(0f, fixedUpPosition);
+            final float fixedUpPosition = (position - parent.getPaddingRight() / (float) page.getWidth());
+            final float lockedPosition = Math.max(0f, fixedUpPosition);
 
-            float scale = evaluator.evaluate(lockedPosition, BIG_SCALE, SMALL_SCALE);
-            float alpha = evaluator.evaluate(lockedPosition, BIG_ALPHA, SMALL_ALPHA);
-            float translationX = evaluator.evaluate(lockedPosition, 0f, -(parent.getWidth() / 5f));
+            final float scale = Anime.interpolateFloats(lockedPosition, BIG_SCALE, SMALL_SCALE);
+            final float alpha = Anime.interpolateFloats(lockedPosition, BIG_ALPHA, SMALL_ALPHA);
+            final float translationX = Anime.interpolateFloats(lockedPosition, 0f, -(parent.getWidth() / 5f));
 
             page.setScaleX(scale);
             page.setScaleY(scale);
@@ -314,11 +335,12 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                 this.dismissButton = (Button) itemView.findViewById(R.id.fragment_dialog_welcome_item_dismiss);
                 Views.setSafeOnClickListener(dismissButton, ignored -> dismissAllowingStateLoss());
 
-                Resources resources = getResources();
-                float bottomCornerRadius = resources.getDimension(R.dimen.button_corner_radius);
-                int normal = resources.getColor(R.color.background_light);
-                int pressed = resources.getColor(R.color.light_accent_extra_dimmed);
-                dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius, normal, pressed));
+                final Resources resources = getResources();
+                final float bottomCornerRadius = resources.getDimension(R.dimen.button_corner_radius);
+                final int normal = resources.getColor(R.color.background_light);
+                final int pressed = resources.getColor(R.color.light_accent_extra_dimmed);
+                dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius,
+                                                                                        normal, pressed));
             }
 
             protected abstract THeader onProvideHeader(@NonNull LinearLayout parent);
@@ -416,7 +438,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                     header.setPlaceholder(null);
                 }
 
-                Uri diagramUri = Uri.parse(item.diagramVideo);
+               final  Uri diagramUri = Uri.parse(item.diagramVideo);
                 header.setDataSource(diagramUri);
 
                 final int radius = getResources().getDimensionPixelSize(R.dimen.raised_item_corner_radius);
@@ -424,7 +446,8 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                         radius, radius, radius, radius,
                         0f, 0f, 0f, 0f,
                 };
-                ShapeDrawable background = new ShapeDrawable(new RoundRectShape(cornerRadii, null, null));
+                final ShapeDrawable background = new ShapeDrawable(new RoundRectShape(cornerRadii,
+                                                                                      null, null));
                 background.getPaint().setColor(item.diagramFillColor);
                 header.setPadding(radius, 0, radius, 0);
                 header.setBackground(background);
@@ -445,14 +468,14 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         public final @StringRes int messageRes;
         public final boolean scaleDiagram;
         public final @Nullable String diagramVideo;
-        public final int diagramFillColor;
+        public final @ColorInt int diagramFillColor;
 
         public Item(@DrawableRes int diagramRes,
                     @StringRes int titleRes,
                     @StringRes int messageRes,
                     boolean scaleDiagram,
                     @Nullable String diagramVideo,
-                    int diagramFillColor) {
+                    @ColorInt int diagramFillColor) {
             this.diagramRes = diagramRes;
             this.titleRes = titleRes;
             this.messageRes = messageRes;

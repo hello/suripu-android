@@ -146,9 +146,12 @@ public abstract class ValuePresenter<T extends Serializable> extends Presenter {
      * Updates the subject of the presenter
      * if it does not currently have a value.
      */
-    public final void updateIfEmpty() {
+    public final boolean updateIfEmpty() {
         if (!subject.hasValue()) {
             update();
+            return true;
+        } else {
+            return false;
         }
     }
 

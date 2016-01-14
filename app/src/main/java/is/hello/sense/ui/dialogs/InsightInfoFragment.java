@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Fragment;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -64,6 +64,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_SUMMARY = InsightInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_IMAGE_URL = InsightInfoFragment.class.getName() + ".ARG_IMAGE_URL";
+    private static final String ARG_GENERIC_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_GENERIC_CATEGORY";
 
     @Inject Picasso picasso;
     @Inject InsightInfoPresenter presenter;
@@ -84,6 +85,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     private @ColorInt int defaultStatusBarColor;
 
+    private boolean isGenericCategory;
+
     /**
      * The one-off status bar animator used for Picasso image loads.
      */
@@ -100,6 +103,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         arguments.putString(ARG_CATEGORY, insight.getCategory());
         arguments.putParcelable(ARG_SUMMARY, insight.getMessage());
         arguments.putString(ARG_IMAGE_URL, insight.getImageUrl(resources));
+        arguments.putBoolean(ARG_GENERIC_CATEGORY, insight.isGeneric());
         fragment.setArguments(arguments);
 
         return fragment;
@@ -110,6 +114,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         super.onCreate(savedInstanceState);
 
         final Bundle arguments = getArguments();
+        isGenericCategory = arguments.getBoolean(ARG_GENERIC_CATEGORY);
         final String category = arguments.getString(ARG_CATEGORY);
         if (category != null) {
             presenter.setCategory(category);
@@ -146,7 +151,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final TextView summaryText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary);
         summaryText.setText(summary);
 
-        this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText };
+        if (isGenericCategory){
+            this.contentViews = new View[] {titleText, messageText};
+            summaryHeaderText.setVisibility(View.GONE);
+            summaryText.setVisibility(View.GONE);
+        }else{
+            this.contentViews = new View[] {titleText, messageText, summaryHeaderText, summaryText};
+        }
 
         this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
         Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> {
@@ -165,7 +176,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         if (existingImage != null) {
             illustrationImage.setDrawable(existingImage, false);
         } else if (!TextUtils.isEmpty(imageUrl)) {
+            final int maxWidth = getResources().getDisplayMetrics().widthPixels;
+            final int maxHeight = Math.round(maxWidth * illustrationImage.getAspectRatioScale());
             picasso.load(imageUrl)
+                   .resize(maxWidth, maxHeight)
                    .placeholder(R.drawable.empty_illustration)
                    .into(illustrationImage);
         }
@@ -455,11 +469,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @Nullable
     private Parent getParent() {
-        // The target fragment does not correctly survive state changes because the
-        // target fragment and this fragment do not share the same fragment manager.
-        final Fragment targetFragment = getTargetFragment();
-        if (targetFragment instanceof Parent) {
-            return (Parent) targetFragment;
+        final Activity activity = getActivity();
+        if (activity instanceof ParentProvider) {
+            return ((ParentProvider) activity).provideInsightInfoParent();
         } else {
             return null;
         }
@@ -523,6 +535,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public interface Parent {
         @Nullable SharedState provideSharedState(boolean isEnter);
         @Nullable Drawable getInsightImage();
+    }
+
+    public interface ParentProvider {
+        @Nullable Parent provideInsightInfoParent();
     }
 
     public static class SharedState {

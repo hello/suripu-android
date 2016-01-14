@@ -190,11 +190,15 @@ public class UndersideFragment extends InjectionFragment
 
 
     public @Nullable UndersideTabFragment getCurrentTabFragment() {
-        // This depends on semi-undefined behavior. It may break in a future update
-        // of the Android support library, but won't break if the host OS changes.
-        final long itemId = adapter.getItemId(pager.getCurrentItem());
-        final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-        return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+        if (adapter != null) {
+            // This depends on semi-undefined behavior. It may break in a future update
+            // of the Android support library, but won't break if the host OS changes.
+            final long itemId = adapter.getItemId(pager.getCurrentItem());
+            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+            return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+        } else {
+            return null;
+        }
     }
 
     public void setCurrentItem(int currentItem, int options) {
@@ -225,13 +229,17 @@ public class UndersideFragment extends InjectionFragment
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        if (lastState != ViewPager.SCROLL_STATE_IDLE &&
+        if (lastState == ViewPager.SCROLL_STATE_IDLE &&
+                state != ViewPager.SCROLL_STATE_IDLE) {
+            getAnimatorContext().beginAnimation("Underside swipe");
+        } else if (lastState != ViewPager.SCROLL_STATE_IDLE &&
                 state == ViewPager.SCROLL_STATE_IDLE) {
             if (suppressNextSwipeEvent) {
                 this.suppressNextSwipeEvent = false;
             } else {
                 Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
             }
+            getAnimatorContext().endAnimation("Underside swipe");
         }
 
         this.lastState = state;

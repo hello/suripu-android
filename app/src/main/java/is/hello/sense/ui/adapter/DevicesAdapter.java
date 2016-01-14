@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
@@ -11,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -71,7 +71,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     public void devicesUnavailable(@SuppressWarnings("UnusedParameters") Throwable e) {
         clear();
     }
-
 
     @Override
     public int getItemViewType(int position) {
@@ -136,6 +135,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         @Override
         public void bind(int position) {
             if (wantsChevron()) {
+                @SuppressWarnings("ConstantConditions")
                 final Drawable chevron = ResourcesCompat.getDrawable(resources,
                                                                      R.drawable.disclosure_chevron,
                                                                      null).mutate();
@@ -153,7 +153,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status1Label;
         final TextView status2;
         final TextView status2Label;
-        final ImageView wifiIcon;
 
         SenseViewHolder(@NonNull View view) {
             super(view);
@@ -163,7 +162,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status1Label = (TextView) view.findViewById(R.id.item_device_status_label);
             this.status2 = (TextView) view.findViewById(R.id.item_device_status2);
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
-            this.wifiIcon = (ImageView) view.findViewById(R.id.item_device_wifi_icon);
 
             view.setOnClickListener(this);
         }
@@ -198,11 +196,11 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 } else {
                     status1.setText(networkName);
                 }
-                if (wiFiInfo.getSignalStrength() != null){
-                    int iconRes = wiFiInfo.getSignalStrength().icon;
-                    if (iconRes != 0){
-                        wifiIcon.setImageResource(iconRes);
-                    }
+                if (wiFiInfo.getSignalStrength() != null) {
+                    @DrawableRes int iconRes = wiFiInfo.getSignalStrength().icon;
+                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+                } else {
+                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }
 

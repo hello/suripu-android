@@ -22,6 +22,7 @@ import java.util.List;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.ui.widget.ParallaxImageView;
@@ -34,6 +35,7 @@ import is.hello.sense.util.Logger;
 public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseViewHolder> {
     @VisibleForTesting static final int TYPE_QUESTION = 0;
     @VisibleForTesting static final int TYPE_INSIGHT = 1;
+    @VisibleForTesting static final int TYPE_ERROR = 2;
 
     private final Context context;
     private final Resources resources;
@@ -41,6 +43,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     private final DateFormatter dateFormatter;
     private final InteractionListener interactionListener;
     private final Picasso picasso;
+
+    private OnRetry onRetry;
 
     private @Nullable List<Insight> insights;
     private Question currentQuestion;
@@ -90,19 +94,26 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(@Nullable Throwable e) {
+    public void insightsUnavailable(@Nullable Throwable e, @NonNull InsightsAdapter.OnRetry onRetry) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
-
         interactionListener.onDismissLoadingIndicator();
         this.insights = new ArrayList<>();
         this.loadingInsightPosition = RecyclerView.NO_POSITION;
         this.currentQuestion = null;
+        this.onRetry = onRetry;
 
-        final StringRef messageRef = Errors.getDisplayMessage(e);
-        final String message = messageRef != null
-                ? messageRef.resolve(context)
-                : context.getString(R.string.dialog_error_generic_message);
+        final String message;
+        if (ApiException.isNetworkError(e)) {
+            message = context.getString(R.string.error_insights_unavailable);
+        } else {
+            final StringRef messageRef = Errors.getDisplayMessage(e);
+            if (messageRef != null) {
+                message = messageRef.resolve(context);
+            } else {
+                message = context.getString(R.string.dialog_error_generic_message);
+            }
+        }
         final Insight errorInsight = Insight.createError(message);
         insights.add(errorInsight);
 
@@ -165,6 +176,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         if (position == 0 && currentQuestion != null) {
             return TYPE_QUESTION;
         } else {
+            if (position == 0 && getInsightItem(0).isError()){
+                return TYPE_ERROR;
+            }
             return TYPE_INSIGHT;
         }
     }
@@ -193,6 +207,10 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             case TYPE_INSIGHT: {
                 final View view = inflater.inflate(R.layout.item_insight, parent, false);
                 return new InsightViewHolder(view);
+            }
+            case TYPE_ERROR: {
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                return new ErrorViewHolder(view);
             }
             default: {
                 throw new IllegalArgumentException();
@@ -255,6 +273,35 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
     }
 
+    public class ErrorViewHolder extends BaseViewHolder implements View.OnClickListener {
+        final TextView message;
+        final Button action;
+
+        ErrorViewHolder(@NonNull View view) {
+            super(view);
+
+            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            title.setVisibility(View.GONE);
+
+            this.message = (TextView) view.findViewById(R.id.item_message_card_message);
+            this.action = (Button) view.findViewById(R.id.item_message_card_action);
+            action.setOnClickListener(this);
+        }
+
+        @Override
+        void bind(int position) {
+            action.setText(R.string.action_retry);
+            message.setText(getInsightItem(position).getMessage());
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (onRetry != null) {
+                onRetry.fetchInsights();
+            }
+        }
+
+    }
     public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
@@ -263,7 +310,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         InsightViewHolder(@NonNull View view) {
             super(view);
-
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
@@ -284,7 +330,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 date.setText(insightDate);
                 final String url = insight.getImageUrl(context.getResources());
                 if (url != null) {
-                    picasso.load(url).into(image);
+                    final int maxWidth = resources.getDisplayMetrics().widthPixels;
+                    final int maxHeight = Math.round(maxWidth * image.getAspectRatioScale());
+                    picasso.load(url)
+                           .resize(maxWidth, maxHeight)
+                           .into(image);
                 } else {
                     picasso.cancelRequest(image);
                     image.setDrawable(null, true);
@@ -338,7 +388,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     }
 
     //endregion
-
+    public interface OnRetry {
+        void fetchInsights();
+    }
 
     public interface InteractionListener {
         void onDismissLoadingIndicator();

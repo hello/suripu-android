@@ -14,6 +14,11 @@ import is.hello.sense.util.markup.text.MarkupString;
 public class Insight extends ApiResponse {
     public static final String CATEGORY_GENERIC = "GENERIC";
     public static final String CATEGORY_IN_APP_ERROR = Insight.class.getName() + ".CATEGORY_IN_APP_ERROR";
+    private enum GenericCategories{
+        GENERIC,
+        SLEEP_DURATION,
+        SLEEP_HYGIENE
+    }
 
     @SerializedName("account_id")
     private long accountId;
@@ -93,6 +98,16 @@ public class Insight extends ApiResponse {
         } else {
             return image.getUrl(resources);
         }
+    }
+
+    public boolean isGeneric(){
+        GenericCategories[] genericCategories = GenericCategories.values();
+        for (GenericCategories genericCategory : genericCategories){
+            if (genericCategory.toString().equals(category)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isError() {

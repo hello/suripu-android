@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.adapter.TrendsAdapter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -27,7 +28,7 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected {
+public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -95,12 +96,12 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends);
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends, false);
     }
 
     @Override
     public void onUpdate() {
-        if (!trendsPresenter.bindScope(getScope())) {
+        if (trendsPresenter.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
             trendsPresenter.update();
         }
     }
@@ -110,7 +111,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         trendsAdapter.replaceAll(trends);
         initialActivityIndicator.setVisibility(View.GONE);
         if (Lists.isEmpty(trends)) {
-            trendsAdapter.displayNoDataMessage(false);
+            trendsAdapter.displayNoDataMessage(null);
         }
     }
 
@@ -118,9 +119,8 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         swipeRefreshLayout.setRefreshing(false);
         trendsAdapter.clear();
         initialActivityIndicator.setVisibility(View.GONE);
-        trendsAdapter.displayNoDataMessage(true);
+        trendsAdapter.displayNoDataMessage(this);
     }
-
 
     @Override
     public void onTrendOptionSelected(int trendIndex, @NonNull String option) {
@@ -128,5 +128,10 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option),
                          Functions.NO_OP,
                          this::presentError);
+    }
+
+    @Override
+    public void fetchTrends() {
+        trendsPresenter.update();
     }
 }

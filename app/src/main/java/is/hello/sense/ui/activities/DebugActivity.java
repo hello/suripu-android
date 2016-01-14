@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -73,6 +74,7 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
+        adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
 
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
@@ -130,6 +132,11 @@ public class DebugActivity extends InjectionActivity {
                    .apply();
         localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         Toast.makeText(getApplicationContext(), "Review prompt re-enabled", Toast.LENGTH_SHORT).show();
+    }
+
+    public void simulatePicassoLowMemory() {
+        SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);
+        Toast.makeText(getApplicationContext(), "Simulated", Toast.LENGTH_SHORT).show();
     }
 
     public void resetAppUsage() {

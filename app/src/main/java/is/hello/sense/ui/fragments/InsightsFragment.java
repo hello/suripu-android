@@ -37,6 +37,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
@@ -59,7 +60,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class InsightsFragment extends UndersideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
-        InsightInfoFragment.Parent {
+        InsightInfoFragment.Parent, InsightsAdapter.OnRetry {
     private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
     private static final float FOCUSED_CONTENT_SCALE = 1f;
     private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
@@ -180,12 +181,13 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onUpdate() {
-        if (!insightsPresenter.bindScope(getScope())) {
+        if (insightsPresenter.updateIfEmpty()) {
             swipeRefreshLayout.setRefreshing(true);
-            insightsPresenter.update();
         }
 
-        updateQuestion();
+        if (!questionsPresenter.hasQuestion()) {
+            updateQuestion();
+        }
     }
 
 
@@ -193,14 +195,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     @Override
     public void onRefresh() {
-        this.insights = Collections.emptyList();
-        this.insightsLoaded = false;
-        this.currentQuestion = null;
-        this.questionLoaded = false;
-
-        swipeRefreshLayout.setRefreshing(true);
-        insightsPresenter.update();
-        updateQuestion();
+        fetchInsights();
     }
 
     /**
@@ -221,15 +216,19 @@ public class InsightsFragment extends UndersideTabFragment
         insightsAdapter.bindInsights(insights);
 
         final Activity activity = getActivity();
-        if (!isPostOnboarding() && tutorialOverlayView == null &&
-                Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
+        if (getOnboardingFlow() == OnboardingActivity.FLOW_NONE &&
+                tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
             tutorialOverlayView.setOnDismiss(() -> {
                 this.tutorialOverlayView = null;
             });
             tutorialOverlayView.setAnchorContainer(getView());
-            tutorialOverlayView.postShow(R.id.activity_home_container);
+            getAnimatorContext().runWhenIdle(() -> {
+                if (tutorialOverlayView != null && getUserVisibleHint()) {
+                    tutorialOverlayView.postShow(R.id.activity_home_container);
+                }
+            });
         }
     }
 
@@ -241,10 +240,15 @@ public class InsightsFragment extends UndersideTabFragment
 
     private void insightsUnavailable(@Nullable Throwable e) {
         progressBar.setVisibility(View.GONE);
-        insightsAdapter.insightsUnavailable(e);
+        insightsAdapter.insightsUnavailable(e, this);
     }
 
     private void bindQuestion(@Nullable Question question) {
+        // Prevent consecutive null question binds from causing redundant reloads.
+        if (question == this.currentQuestion && questionLoaded) {
+            return;
+        }
+
         this.currentQuestion = question;
         this.questionLoaded = true;
         bindPendingIfReady();
@@ -267,9 +271,11 @@ public class InsightsFragment extends UndersideTabFragment
                 .addOnAnimationCompleted(finished -> {
                     // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
                     // return a subtly broken value, and the exit transition will be broken.
-                    recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
-                    recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
-                    recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                    if (recyclerView != null) {
+                        recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                        recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                        recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+                    }
                 });
     }
 
@@ -277,9 +283,11 @@ public class InsightsFragment extends UndersideTabFragment
         return animatorFor(recyclerView)
                 .addOnAnimationWillStart(() -> {
                     // Ensure visual consistency.
-                    recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
-                    recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
-                    recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                    if (recyclerView != null) {
+                        recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                        recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                        recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+                    }
                 })
                 .scale(FOCUSED_CONTENT_SCALE)
                 .alpha(FOCUSED_CONTENT_ALPHA);
@@ -288,7 +296,7 @@ public class InsightsFragment extends UndersideTabFragment
     @Override
     @Nullable
     public InsightInfoFragment.SharedState provideSharedState(boolean isEnter) {
-        if (selectedInsightHolder != null) {
+        if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
             Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
@@ -332,7 +340,6 @@ public class InsightsFragment extends UndersideTabFragment
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
-        infoFragment.setTargetFragment(this, 0x0);
         infoFragment.show(fragmentManager,
                           R.id.activity_home_container,
                           InsightInfoFragment.TAG);
@@ -394,6 +401,17 @@ public class InsightsFragment extends UndersideTabFragment
 
     //endregion
 
+    @Override
+    public void fetchInsights() {
+        this.insights = Collections.emptyList();
+        this.insightsLoaded = false;
+        this.currentQuestion = null;
+        this.questionLoaded = false;
+
+        swipeRefreshLayout.setRefreshing(true);
+        insightsPresenter.update();
+        updateQuestion();
+    }
 
     private final BroadcastReceiver REVIEW_ACTION_RECEIVER = new BroadcastReceiver() {
         @Override
@@ -431,4 +449,5 @@ public class InsightsFragment extends UndersideTabFragment
             }
         }
     };
+
 }

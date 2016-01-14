@@ -18,6 +18,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.Logger;
 
 
 public class LaunchActivity extends InjectionActivity {
@@ -39,19 +40,28 @@ public class LaunchActivity extends InjectionActivity {
 
         if (savedInstanceState == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
-            Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            if (sessionManager.hasSession()) {
+                apiService.getAccount().subscribe(account -> {
+                    Analytics.backFillUserInfo(account.getName(), account.getEmail());
+                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+                }, e -> {
+                    Logger.error(getClass().getSimpleName(), "Could not load user info", e);
+                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+                });
+            } else {
+                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            }
         }
 
         if (sessionManager.getSession() != null) {
             String accountId = sessionManager.getSession().getAccountId();
-            Analytics.trackUserIdentifier(this, accountId, true);
+            Analytics.trackUserIdentifier(accountId, true);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             unsupported();

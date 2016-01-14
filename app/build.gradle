@@ -34,7 +34,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 22
         versionCode generateVersionCode()
-        versionName "1.2.0"
+        versionName "1.2.1"
     }
     signingConfigs {
         debug {
@@ -179,7 +179,7 @@ dependencies {
 
     compile 'me.grantland:autofittextview:0.2.1'
 
-    compile 'is.hello.commonsense:ble:2015.12.17.2'
+    compile 'is.hello.commonsense:ble:2016.1.13.1'
     compile 'is.hello:anime-android-go-99:0.4.1'
 
     // !! If you remove this, remove the above workaround.

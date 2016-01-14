@@ -176,8 +176,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     private void finishedLinking() {
         hideAllActivityForSuccess(() -> {
             if (isPairOnlySession()) {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
                 getOnboardingActivity().finish();
             } else {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
                 getOnboardingActivity().showPairPill(true);
             }
         }, e -> presentError(e, "Turning off LEDs"));

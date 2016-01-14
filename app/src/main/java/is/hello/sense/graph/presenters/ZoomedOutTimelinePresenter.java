@@ -17,7 +17,6 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.TimelineService;
 import is.hello.sense.api.model.v2.Timeline;
 import rx.Observable;
 import rx.Scheduler;
@@ -31,14 +30,14 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     private final List<DataView> dataViews = new ArrayList<>();
     private Scheduler updateScheduler = Rx.mainThreadScheduler();
 
-    private final TimelineService timelineService;
+    private final ApiService apiService;
     private final LruCache<LocalDate, Timeline> cachedTimelines = new LruCache<>(CACHE_LIMIT);
 
 
     //region Lifecycle
 
-    @Inject public ZoomedOutTimelinePresenter(@NonNull TimelineService timelineService) {
-        this.timelineService = timelineService;
+    @Inject public ZoomedOutTimelinePresenter(@NonNull ApiService apiService) {
+        this.apiService = apiService;
     }
 
     @Override
@@ -104,7 +103,7 @@ public class ZoomedOutTimelinePresenter extends Presenter {
     }
 
     public Observable<Timeline> retrieveTimeline(@NonNull LocalDate date) {
-        return timelineService.timelineForDate(date.toString(ApiService.DATE_FORMAT))
+        return apiService.timelineForDate(date.toString(ApiService.DATE_FORMAT))
                          .observeOn(updateScheduler);
     }
 

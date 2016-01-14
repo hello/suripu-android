@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.picasso.LruCache;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
@@ -132,10 +133,16 @@ public class ApiModule {
         return client;
     }
 
+    @Singleton @Provides LruCache providePicassoCache(@NonNull @ApiAppContext Context context) {
+        return new LruCache(context);
+    }
+
     @Singleton @Provides Picasso providePicasso(@NonNull @ApiAppContext Context context,
-                                                @NonNull OkHttpClient client){
+                                                @NonNull OkHttpClient client,
+                                                @NonNull LruCache cache) {
         final Picasso.Builder builder = new Picasso.Builder(context);
         builder.downloader(new OkHttpDownloader(client));
+        builder.memoryCache(cache);
         return builder.build();
     }
 
@@ -178,9 +185,5 @@ public class ApiModule {
 
     @Singleton @Provides ApiService provideApiService(@NonNull RestAdapter adapter) {
         return adapter.create(ApiService.class);
-    }
-
-    @Singleton @Provides TimelineService provideTimelineService(@NonNull RestAdapter adapter) {
-        return adapter.create(TimelineService.class);
     }
 }

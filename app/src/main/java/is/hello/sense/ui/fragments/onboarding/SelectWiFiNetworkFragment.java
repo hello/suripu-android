@@ -47,10 +47,10 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
 
     //region Lifecycle
 
-    public static SelectWiFiNetworkFragment newOnboardingInstance() {
+    public static SelectWiFiNetworkFragment newOnboardingInstance(boolean useInAppEvents) {
         final SelectWiFiNetworkFragment fragment = new SelectWiFiNetworkFragment();
         final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_USE_IN_APP_EVENTS, false);
+        arguments.putBoolean(ARG_USE_IN_APP_EVENTS, useInAppEvents);
         arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, true);
         fragment.setArguments(arguments);
         return fragment;

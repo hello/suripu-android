@@ -44,7 +44,11 @@ public enum Tutorial {
     TAP_INSIGHT_CARD(R.string.tutorial_tap_insight_card,
                      Gravity.BOTTOM,
                      R.id.item_insight_card,
-                     Interaction.TAP);
+                     Interaction.TAP),
+    TAP_HAMBURGER(R.string.tutorial_tap_hamburger,
+                  Gravity.BOTTOM,
+                  R.id.view_timeline_toolbar_overflow,
+                  Interaction.TAP);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;

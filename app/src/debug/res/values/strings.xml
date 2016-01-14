@@ -5,23 +5,15 @@
     <string name="error_invalid_account_id">Your account could not be linked with Sense. Do the environments on your app and Sense match?</string>
 
     <string name="title_select_environment">Select Environment</string>
-    <string name="title_timeline_source">Select timeline source</string>
 
     <string name="label_environment_other">Other…</string>
     <string name="label_custom_endpoint_url">URL</string>
     <string name="label_custom_endpoint_client_id">Client ID</string>
     <string name="label_custom_endpoint_client_secret">Client Secret</string>
-    <string name="label_nonsense_host">Nonsense host</string>
 
     <string name="title_connecting_network_wlan_connected">WLAN Connected</string>
     <string name="title_connecting_network_ip_retrieved">Got IP Address</string>
     <string name="title_connecting_network_dns_resolved">DNS Resolved</string>
     <string name="title_connecting_network_socket_connected">Socket Connected</string>
     <string name="title_connecting_network_request_sent">Request Sent</string>
-
-    <string name="action_use_nonsense">Use nonsense</string>
-    <string name="action_use_default_host">Use real API</string>
-
-    <string name="default_nonsense_host">http://0.0.0.0:3000</string>
-    <string name="info_timeline_source">Nonsense does not support timeline amendments. Settings do not persist after app restart.</string>
 </resources>

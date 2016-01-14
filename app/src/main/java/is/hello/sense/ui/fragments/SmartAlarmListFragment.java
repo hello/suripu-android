@@ -176,12 +176,12 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
         final SmartAlarmAdapter.Message message;
         if (ApiException.isNetworkError(e)) {
-            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
-                    StringRef.from(R.string.error_network_unavailable));
+            message = new SmartAlarmAdapter.Message(0,
+                    StringRef.from(R.string.error_smart_alarms_unavailable));
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 400)) {
-            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title,
+            message = new SmartAlarmAdapter.Message(0,
                     StringRef.from(R.string.error_smart_alarm_clock_drift));
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
@@ -198,7 +198,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             if (errorMessage == null) {
                 errorMessage = StringRef.from(R.string.dialog_error_generic_message);
             }
-            message = new SmartAlarmAdapter.Message(R.string.dialog_error_title, errorMessage);
+            message = new SmartAlarmAdapter.Message(0, errorMessage);
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         }

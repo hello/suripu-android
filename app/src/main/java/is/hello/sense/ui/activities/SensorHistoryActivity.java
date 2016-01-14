@@ -105,10 +105,10 @@ public class SensorHistoryActivity extends SenseActivity {
         }
 
         if (overrideCheck) {
-            WelcomeDialogFragment.show(this, welcomeDialogRes);
+            WelcomeDialogFragment.show(this, welcomeDialogRes, false);
             return true;
         } else {
-            return WelcomeDialogFragment.showIfNeeded(this, welcomeDialogRes);
+            return WelcomeDialogFragment.showIfNeeded(this, welcomeDialogRes, false);
         }
     }
 }

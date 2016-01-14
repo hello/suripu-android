@@ -100,7 +100,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         updateTime();
 
         final View timeContainer = view.findViewById(R.id.fragment_smart_alarm_detail_time_container);
-        Views.setSafeOnClickListener(timeContainer, this::selectNewTime);
+        Views.setSafeOnClickListener(timeContainer, stateSafeExecutor, this::selectNewTime);
 
 
         this.enabled = (TextView) view.findViewById(R.id.fragment_smart_alarm_detail_enabled_text);
@@ -143,11 +143,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
         Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
         smartHelp.setImageDrawable(smartHelpDrawable);
-        Views.setSafeOnClickListener(smartHelp, this::showSmartAlarmIntro);
+        Views.setSafeOnClickListener(smartHelp, stateSafeExecutor, this::showSmartAlarmIntro);
 
 
         final View soundRow = view.findViewById(R.id.fragment_smart_alarm_detail_tone);
-        Views.setSafeOnClickListener(soundRow, this::selectSound);
+        Views.setSafeOnClickListener(soundRow, stateSafeExecutor, this::selectSound);
 
         this.toneName = (TextView) soundRow.findViewById(R.id.fragment_smart_alarm_detail_tone_name);
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
@@ -158,13 +158,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
 
         final View repeatRow = view.findViewById(R.id.fragment_smart_alarm_detail_repeat);
-        Views.setSafeOnClickListener(repeatRow, this::selectRepeatDays);
+        Views.setSafeOnClickListener(repeatRow, stateSafeExecutor, this::selectRepeatDays);
 
         this.repeatDays = (TextView) repeatRow.findViewById(R.id.fragment_smart_alarm_detail_repeat_days);
         repeatDays.setText(alarm.getRepeatSummary(getActivity()));
 
         final View deleteRow = view.findViewById(R.id.fragment_smart_alarm_detail_delete);
-        Views.setSafeOnClickListener(deleteRow, this::deleteAlarm);
+        Views.setSafeOnClickListener(deleteRow, stateSafeExecutor, this::deleteAlarm);
 
         if (this.index == SmartAlarmDetailActivity.INDEX_NEW) {
             final View deleteRowDivider = view.findViewById(R.id.fragment_smart_alarm_detail_delete_divider);
@@ -209,7 +209,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.DEFAULTS);
         } else {
-            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm);
+            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm, false);
         }
     }
 
@@ -287,7 +287,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {
-        WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm);
+        WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm, false);
     }
 
 
@@ -312,36 +312,39 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             return;
         }
 
-        if (alarm.getSound() == null) {
-            LoadingDialogFragment.close(getFragmentManager());
+        // This is the only callback that does not have an outside state guard.
+        stateSafeExecutor.execute(() -> {
+            if (alarm.getSound() == null) {
+                LoadingDialogFragment.close(getFragmentManager());
 
-            final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                    .withMessage(StringRef.from(R.string.error_no_smart_alarm_tone))
-                    .build();
-            dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else if (smartAlarmPresenter.isAlarmTooSoon(alarm)) {
-            LoadingDialogFragment.close(getFragmentManager());
+                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                        .withMessage(StringRef.from(R.string.error_no_smart_alarm_tone))
+                        .build();
+                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+            } else if (smartAlarmPresenter.isAlarmTooSoon(alarm)) {
+                LoadingDialogFragment.close(getFragmentManager());
 
-            ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                    .withMessage(StringRef.from(R.string.error_alarm_too_soon))
-                    .build();
-            dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        } else {
-            if (alarm.getDaysOfWeek().isEmpty()) {
-                alarm.setRingOnce();
-            }
-
-            final Observable<VoidResponse> saveOperation;
-            if (index == SmartAlarmDetailActivity.INDEX_NEW) {
-                saveOperation = smartAlarmPresenter.addSmartAlarm(alarm);
+                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                        .withMessage(StringRef.from(R.string.error_alarm_too_soon))
+                        .build();
+                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
             } else {
-                saveOperation = smartAlarmPresenter.saveSmartAlarm(index, alarm);
-            }
+                if (alarm.getDaysOfWeek().isEmpty()) {
+                    alarm.setRingOnce();
+                }
 
-            LoadingDialogFragment.show(getFragmentManager(),
-                    null, LoadingDialogFragment.DEFAULTS);
-            bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
-        }
+                final Observable<VoidResponse> saveOperation;
+                if (index == SmartAlarmDetailActivity.INDEX_NEW) {
+                    saveOperation = smartAlarmPresenter.addSmartAlarm(alarm);
+                } else {
+                    saveOperation = smartAlarmPresenter.saveSmartAlarm(index, alarm);
+                }
+
+                LoadingDialogFragment.show(getFragmentManager(),
+                                           null, LoadingDialogFragment.DEFAULTS);
+                bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
+            }
+        });
     }
 
     private void markDirty() {

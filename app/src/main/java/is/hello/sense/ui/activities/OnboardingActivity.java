@@ -6,8 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import javax.inject.Inject;
 
@@ -33,9 +39,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
-import is.hello.sense.ui.fragments.onboarding.Onboarding2ndPillInfoFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingDoneFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -46,10 +50,10 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSetup2ndPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -64,6 +68,15 @@ public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation, AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
+
+    public static final int FLOW_NONE = -1;
+    public static final int FLOW_REGISTER = 0;
+    public static final int FLOW_SIGN_IN = 1;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FLOW_NONE, FLOW_REGISTER, FLOW_SIGN_IN})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    public @interface Flow {}
 
     @Inject ApiService apiService;
     @Inject HardwarePresenter hardwarePresenter;
@@ -129,13 +142,16 @@ public class OnboardingActivity extends InjectionActivity
             }
         }
 
-        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
-        subscribe(onLogOut, ignored -> {
-            // #recreate() doesn't work. This does.
-            Intent intent = getIntent();
-            finish();
-            startActivity(intent);
-        }, Functions.LOG_ERROR);
+        final Observable<Intent> onLogOut =
+                Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        subscribe(onLogOut,
+                  ignored -> {
+                      // #recreate() doesn't work. This does.
+                      final Intent intent = getIntent();
+                      finish();
+                      startActivity(intent);
+                  },
+                  Functions.LOG_ERROR);
     }
 
     @Override
@@ -323,7 +339,8 @@ public class OnboardingActivity extends InjectionActivity
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
         if (bluetoothStack.isEnabled()) {
-            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+            final OnboardingSimpleStepFragment.Builder builder =
+                    new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.title_setup_sense);
             builder.setSubheadingText(R.string.info_setup_sense);
             builder.setDiagramImage(R.drawable.onboarding_sense_intro);
@@ -341,7 +358,8 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
+        boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(pairOnly), null, true);
     }
 
     public void showPairPill(boolean showIntroduction) {
@@ -357,12 +375,17 @@ public class OnboardingActivity extends InjectionActivity
                                  Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
                              });
 
-            OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+            final OnboardingSimpleStepFragment.Builder builder =
+                    new OnboardingSimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
             builder.setHideToolbar(true);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
+            if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
+            }else{
+                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
+            }
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);
         } else {
@@ -373,7 +396,8 @@ public class OnboardingActivity extends InjectionActivity
     public void showPillInstructions() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        OnboardingSimpleStepFragment.Builder builder = new OnboardingSimpleStepFragment.Builder(this);
+        final OnboardingSimpleStepFragment.Builder builder =
+                new OnboardingSimpleStepFragment.Builder(this);
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
         builder.setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)));
@@ -394,7 +418,8 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showRoomCheckIntro() {
-        OnboardingSimpleStepFragment.Builder introBuilder = new OnboardingSimpleStepFragment.Builder(this);
+        final OnboardingSimpleStepFragment.Builder introBuilder =
+                new OnboardingSimpleStepFragment.Builder(this);
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
@@ -410,35 +435,22 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
-    public void show2ndPillIntroduction() {
-        if (devicesInfo != null && devicesInfo.getNumberPairedAccounts() > 1) {
-            showDone();
-        } else {
-            pushFragment(new OnboardingSetup2ndPillFragment(), null, false);
-        }
-    }
-
-    public void show2ndPillPairing() {
-        pushFragment(new Onboarding2ndPillInfoFragment(), null, true);
-    }
-
     public void showDone() {
-        pushFragment(new OnboardingDoneFragment(), null, false);
+        pushFragment(new RegisterCompleteFragment(), null, false);
     }
 
     //endregion
 
 
-    public void showHomeActivity() {
-        preferences
-                .edit()
-                .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
-                .apply();
+    public void showHomeActivity(@Flow int fromFlow) {
+        preferences.edit()
+                   .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
+                   .apply();
 
         hardwarePresenter.clearPeripheral();
 
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.putExtra(HomeActivity.EXTRA_POST_ONBOARDING, true);
+        final Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
         startActivity(intent);
         finish();
     }

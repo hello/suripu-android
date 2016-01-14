@@ -59,6 +59,6 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
 
     public void complete() {
         LoadingDialogFragment.close(getFragmentManager());
-        ((OnboardingActivity) getActivity()).show2ndPillIntroduction();
+        ((OnboardingActivity) getActivity()).showDone();
     }
 }
