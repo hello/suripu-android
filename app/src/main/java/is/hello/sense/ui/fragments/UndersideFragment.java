@@ -229,13 +229,17 @@ public class UndersideFragment extends InjectionFragment
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        if (lastState != ViewPager.SCROLL_STATE_IDLE &&
+        if (lastState == ViewPager.SCROLL_STATE_IDLE &&
+                state != ViewPager.SCROLL_STATE_IDLE) {
+            getAnimatorContext().beginAnimation("Underside swipe");
+        } else if (lastState != ViewPager.SCROLL_STATE_IDLE &&
                 state == ViewPager.SCROLL_STATE_IDLE) {
             if (suppressNextSwipeEvent) {
                 this.suppressNextSwipeEvent = false;
             } else {
                 Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
             }
+            getAnimatorContext().endAnimation("Underside swipe");
         }
 
         this.lastState = state;

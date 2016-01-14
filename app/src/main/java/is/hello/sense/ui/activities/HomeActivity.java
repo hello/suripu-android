@@ -73,14 +73,7 @@ public class HomeActivity extends ScopedInjectionActivity
         TimelineInfoFragment.AnchorProvider,
         InsightInfoFragment.ParentProvider {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
-    /**
-     * Whether or not the <code>HomeActivity</code> was started in response
-     * to the user finishing on-boarding.
-     * <p>
-     * Literal value is <code>is.hello.sense.ui.activities.HomeActivity.EXTRA_SHOW_UNDERSIDE</code>
-     * and cannot be changed for backwards compatibility.
-     */
-    public static final String EXTRA_POST_ONBOARDING = HomeActivity.class.getName() + ".EXTRA_SHOW_UNDERSIDE";
+    public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
 
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
@@ -147,8 +140,7 @@ public class HomeActivity extends ScopedInjectionActivity
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
-            final boolean postOnboarding = isPostOnboarding();
-            this.showUnderside = postOnboarding;
+            this.showUnderside = (getOnboardingFlow() == OnboardingActivity.FLOW_SIGN_IN);
 
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
@@ -158,7 +150,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), false);
             }
 
-            if (!postOnboarding) {
+            if (!showUnderside) {
                 unreadStatePresenter.update();
             }
         }
@@ -244,7 +236,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          },
                          Functions.LOG_ERROR);
 
-        if (isFirstActivityRun && !isPostOnboarding()) {
+        if (isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE) {
             bindAndSubscribe(deviceIssuesPresenter.latest(),
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
@@ -395,9 +387,11 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onBackPressed();
     }
 
-
-    public boolean isPostOnboarding() {
-        return getIntent().getBooleanExtra(EXTRA_POST_ONBOARDING, false);
+    public @OnboardingActivity.Flow int getOnboardingFlow() {
+        final @OnboardingActivity.Flow int flow =
+                getIntent().getIntExtra(EXTRA_ONBOARDING_FLOW,
+                                        OnboardingActivity.FLOW_NONE);
+        return flow;
     }
 
     public boolean isUndersideVisible() {

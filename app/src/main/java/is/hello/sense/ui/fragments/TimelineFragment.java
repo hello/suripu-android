@@ -44,6 +44,7 @@ import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -170,7 +171,7 @@ public class TimelineFragment extends InjectionFragment
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        this.animationEnabled = !hasCreatedView && !(firstTimeline && homeActivity.isPostOnboarding());
+        this.animationEnabled = (!hasCreatedView && !homeActivity.isUndersideVisible());
 
         final boolean overflowOpen = getUserVisibleHint() && homeActivity.isUndersideVisible();
         this.toolbar = new TimelineToolbar(getActivity());
@@ -276,7 +277,6 @@ public class TimelineFragment extends InjectionFragment
                 homeActivity.hideAlarmShortcut();
             }
         }
-
     }
 
     @Override
@@ -366,6 +366,8 @@ public class TimelineFragment extends InjectionFragment
             toolbar.setTitleDimmed(true);
             toolbar.setShareVisible(false);
         }
+
+        Tutorial.TAP_HAMBURGER.markShown(getActivity());
     }
 
     @Override
@@ -513,9 +515,7 @@ public class TimelineFragment extends InjectionFragment
             }
         }
 
-        if (homeActivity.isPostOnboarding()) {
-            WelcomeDialogFragment.markShown(homeActivity, R.xml.welcome_dialog_timeline);
-        } else if (!homeActivity.isUndersideVisible()) {
+        if (!homeActivity.isUndersideVisible()) {
             if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                 WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline, false);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
@@ -634,10 +634,17 @@ public class TimelineFragment extends InjectionFragment
                         preferences.getLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE);
                 final boolean isAccountNew = (creationDate == null ||
                         creationDate.equals(LocalDate.now()));
-                if (homeActivity.isPostOnboarding() && isAccountNew) {
+                if (homeActivity.getOnboardingFlow() == OnboardingActivity.FLOW_REGISTER
+                        && isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
+
+                    final Activity activity = getActivity();
+                    if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
+                            !WelcomeDialogFragment.isAnyVisible(activity)) {
+                        showTutorial(Tutorial.TAP_HAMBURGER);
+                    }
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);

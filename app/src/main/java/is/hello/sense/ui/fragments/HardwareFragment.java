@@ -141,6 +141,12 @@ public abstract class HardwareFragment extends InjectionFragment {
                                       .setTitle("Debug")
                                       .setTitleColor(getResources().getColor(R.color.light_accent))
                                       .setDescription("If you're adventurous, but here there be dragons."));
+            if (!isPairOnlySession()) {
+                options.addOption(new SenseBottomSheet.Option(2)
+                                          .setTitle("Skip to End")
+                                          .setTitleColor(getResources().getColor(R.color.light_accent))
+                                          .setDescription("If you're in a hurry."));
+            }
         }
         options.setOnOptionSelectedListener(option -> {
             switch (option.getOptionId()) {
@@ -150,6 +156,10 @@ public abstract class HardwareFragment extends InjectionFragment {
                 }
                 case 1: {
                     Distribution.startDebugActivity(getActivity());
+                    break;
+                }
+                case 2: {
+                    getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_REGISTER);
                     break;
                 }
                 default: {
