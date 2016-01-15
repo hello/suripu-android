@@ -54,13 +54,13 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
 
         if (sense == null) {
             return Issue.NO_SENSE_PAIRED;
-        } else if (sense.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
+        } else if (sense.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportSenseMissing()) {
             return Issue.SENSE_MISSING;
-        } else if (pill == null) {
+        } else if (pill == null && shouldReportPillMissing()) {
             return Issue.NO_SLEEP_PILL_PAIRED;
-        } else if (pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
+        } else if (pill != null && pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
             return Issue.SLEEP_PILL_LOW_BATTERY;
-        } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
+        } else if (pill != null && pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
             return Issue.SLEEP_PILL_MISSING;
         }
 
@@ -75,9 +75,35 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         }
     }
 
+    private @Nullable DateTime getSenseMissingAlertLastShown() {
+        if (preferences.contains(PreferencesPresenter.SENSE_ALERT_LAST_SHOWN)) {
+            return new DateTime(preferences.getLong(PreferencesPresenter.SENSE_ALERT_LAST_SHOWN, 0));
+        } else {
+            return null;
+        }
+    }
+
+    private @Nullable DateTime getPillMissingAlertLastShown() {
+        if (preferences.contains(PreferencesPresenter.PILL_ALERT_LAST_SHOWN)) {
+            return new DateTime(preferences.getLong(PreferencesPresenter.PILL_ALERT_LAST_SHOWN, 0));
+        } else {
+            return null;
+        }
+    }
+
     @VisibleForTesting
     boolean shouldReportLowBattery() {
         final DateTime lastShown = getSystemAlertLastShown();
+        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
+    }
+
+    boolean shouldReportSenseMissing() {
+        final DateTime lastShown = getSenseMissingAlertLastShown();
+        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
+    }
+
+    boolean shouldReportPillMissing() {
+        final DateTime lastShown = getPillMissingAlertLastShown();
         return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
     }
 
