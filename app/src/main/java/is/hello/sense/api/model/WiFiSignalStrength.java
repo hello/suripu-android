@@ -5,8 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
+import is.hello.sense.api.gson.Enums;
 
-public enum WiFiSignalStrength {
+public enum WiFiSignalStrength implements Enums.FromString{
+
     NONE(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_none),
     BAD(R.string.accessibility_wifi_signal_strength_bad, R.drawable.icon_wifi_bad),
     FAIR(R.string.accessibility_wifi_signal_strength_fair, R.drawable.icon_wifi_fair),
@@ -34,15 +36,7 @@ public enum WiFiSignalStrength {
     }
 
     public static WiFiSignalStrength fromCondition(@NonNull String condition) {
-        switch (condition) {
-            case "NONE":
-                return NONE;
-            case "BAD":
-                return BAD;
-            case "FAIR":
-                return FAIR;
-            default:
-                return GOOD;
-        }
+        return Enums.fromString(condition, values(), NONE);
     }
+
 }
