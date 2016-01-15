@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.SearchEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -430,8 +431,19 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         @Override
+        public boolean onSearchRequested(SearchEvent searchEvent) {
+            return false;
+        }
+
+        @Override
         public ActionMode onWindowStartingActionMode(ActionMode.Callback callback) {
             return target.onWindowStartingActionMode(callback);
+        }
+
+        @Nullable
+        @Override
+        public ActionMode onWindowStartingActionMode(ActionMode.Callback callback, int type) {
+            return null;
         }
 
         @Override
