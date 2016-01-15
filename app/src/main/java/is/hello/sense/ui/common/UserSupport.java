@@ -125,6 +125,16 @@ public class UserSupport {
         openUri(from, issueUri);
     }
 
+    public static void showLocationPermissionMoreInfoPage(@NonNull Activity from) {
+        Analytics.trackEvent(Analytics.TopView.EVENT_LOCATION_PERMISSION_MORE_INFO, null);
+
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/207716923");
+        openUri(from, supportUrl);
+    }
+
+    public static void showAppSettings(@NonNull Activity from) {
+        from.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:is.hello.sense")));
+    }
 
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),

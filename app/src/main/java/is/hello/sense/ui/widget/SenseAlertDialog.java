@@ -8,8 +8,11 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,6 +125,22 @@ public class SenseAlertDialog extends Dialog {
         }
 
         messageText.setText(message);
+        updatePaddingAndDividers();
+    }
+
+    public void setMessage(@Nullable SpannableStringBuilder clickableSpan) {
+        String message = "";
+        if (clickableSpan != null) {
+            message = clickableSpan.toString();
+        }
+        if (TextUtils.isEmpty(message)) {
+            messageText.setVisibility(View.GONE);
+        } else {
+            messageText.setVisibility(View.VISIBLE);
+        }
+
+        messageText.setText(clickableSpan);
+        messageText.setMovementMethod(LinkMovementMethod.getInstance());
         updatePaddingAndDividers();
     }
 

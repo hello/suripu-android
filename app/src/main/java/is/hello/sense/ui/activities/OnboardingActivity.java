@@ -46,7 +46,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
@@ -316,10 +315,6 @@ public class OnboardingActivity extends InjectionActivity
         } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
             pushFragment(new OnboardingRegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
-            pushFragment(new OnboardingRegisterLocationFragment(), null, true);
-        } else if (updatedBy instanceof OnboardingRegisterLocationFragment) {
-            // The OnboardingRegisterLocationFragment shows the
-            // loading dialog, we close it when we wrap up here.
             Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());

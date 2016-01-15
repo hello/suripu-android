@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.permissions.PermissionChecker;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -41,6 +43,7 @@ import rx.Observable;
 public class OnboardingPairSenseFragment extends HardwareFragment {
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
+    private static final int REQUEST_CODE_SHOW_RATIONALE_DIALOG = 0xb2;
 
     private static final int RESULT_EDIT_WIFI = 0x99;
 
@@ -107,6 +110,17 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
             next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
             getOnboardingActivity().showSelectWifiNetwork();
+        }else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK){
+            PermissionChecker.requestLocationPermission(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (PermissionChecker.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
+            next();
+        }else{
+            PermissionChecker.showEnableInstructionsDialog(this);
         }
     }
 
@@ -154,12 +168,12 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
         SenseTimeZone timeZone = SenseTimeZone.fromDefault();
         bindAndSubscribe(apiService.updateTimeZone(timeZone),
-                ignored -> {
-                    Logger.info(ConnectToWiFiFragment.class.getSimpleName(), "Time zone updated.");
+                         ignored -> {
+                             Logger.info(ConnectToWiFiFragment.class.getSimpleName(), "Time zone updated.");
 
-                    pushDeviceData();
-                },
-                e -> presentError(e, "Updating time zone"));
+                             pushDeviceData();
+                         },
+                         e -> presentError(e, "Updating time zone"));
     }
 
     private void pushDeviceData() {
@@ -199,6 +213,12 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void next() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (PermissionChecker.needsLocationPermission(this)) {
+                PermissionChecker.requestLocationPermission(this);
+                return;
+            }
+        }
         showBlockingActivity(R.string.title_scanning_for_sense);
 
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
