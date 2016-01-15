@@ -26,6 +26,7 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 public class Analytics {
@@ -100,6 +101,7 @@ public class Analytics {
         String PROP_ERROR_TYPE = "type";
         String PROP_ERROR_CONTEXT = "context";
         String PROP_ERROR_OPERATION = "operation";
+        String EVENT_WARNING = "Warning";
 
         /**
          * When the user signs in
@@ -750,6 +752,10 @@ public class Analytics {
     }
 
     public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
+        if (ApiException.isNetworkError(e)) {
+            trackEvent(Global.EVENT_WARNING, null);
+            return;
+        }
         final StringRef message = Errors.getDisplayMessage(e);
         final String messageString;
         if (message != null && SenseApplication.getInstance() != null) {
