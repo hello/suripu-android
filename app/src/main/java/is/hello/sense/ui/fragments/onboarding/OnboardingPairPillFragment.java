@@ -72,7 +72,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
 
 
         OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(false)
+                         .setWantsBackButton(isPairOnlySession())
                          .setOnHelpClickListener(this::help);
 
         if (BuildConfig.DEBUG) {
