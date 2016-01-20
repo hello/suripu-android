@@ -16,4 +16,9 @@
     <string name="error_wifi_ssl_failure">Sense could not establish a secure connection with SSL to the server.</string>
     <string name="error_wifi_hello_key_failure">Sense is not provisioned correctly. Please contact support for directions.</string>
     <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
+
+    <string name="error_trends_unavailable">There was a problem displaying your trends. Please try again.</string>
+    <string name="error_insights_unavailable">There was a problem displaying your insights. Please try again.</string>
+    <string name="error_smart_alarms_unavailable">There was a problem displaying your alarms. Please try again.</string>
+    <string name="error_room_conditions_unavailable">There was a problem displaying your sensor data. Please try again.</string>
 </resources>
