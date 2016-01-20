@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.errors.GattException;
+import is.hello.buruberi.util.Operation;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.api.model.BaseDevice;
@@ -43,7 +44,7 @@ public class HardwarePresenterTests extends InjectionTestCase {
         final SensePeripheral peripheral = mock(SensePeripheral.class);
         //noinspection ResourceType
         doReturn(Observable.error(new GattException(GattException.GATT_STACK_ERROR,
-                                                    GattException.Operation.ENABLE_NOTIFICATION)))
+                                                    Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral)
                 .getWifiNetwork();
         presenter.peripheral = peripheral;

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.robolectric.Robolectric;
 
 import is.hello.buruberi.bluetooth.errors.GattException;
+import is.hello.buruberi.util.Operation;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
@@ -124,7 +125,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void fatalBluetoothError() throws Exception {
         final GattException e = new GattException(GattException.GATT_STACK_ERROR,
-                                                  GattException.Operation.CONNECT);
+                                                  Operation.CONNECT);
         final ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
                 .withOperation("Testing")
                 .build();

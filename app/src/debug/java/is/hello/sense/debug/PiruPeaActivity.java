@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -289,7 +289,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
             hardwarePresenter.setPeripheral(selectedPeripheral);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
-                                 if (status == Operation.CONNECTED) {
+                                 if (status == ConnectProgress.CONNECTED) {
                                      hideLoadingIndicator();
                                      recyclerView.swapAdapter(peripheralActions, true);
                                  }
