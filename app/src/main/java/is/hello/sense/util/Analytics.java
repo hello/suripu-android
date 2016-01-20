@@ -648,7 +648,7 @@ public class Analytics {
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-        if (segment == null) {
+        if (segment == null || senseId == null) {
             return;
         }
 
