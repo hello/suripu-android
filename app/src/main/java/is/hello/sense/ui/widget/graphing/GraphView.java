@@ -171,7 +171,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         int minY = getDrawingMinY();
 
         int width = getDrawingWidth(),
-            height = getDrawingHeight();
+            height = getDrawingHeight() - offscreenInset;
 
         if (gridDrawable != null && numberOfLines > 0) {
             final int lineDistance = width / numberOfLines;
@@ -253,7 +253,6 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
                                                                   highlightedSection,
                                                                   highlightedSegment);
 
-            minY -= offscreenInset;
             pointBounds.set(segmentX - markerPointHalf, minY + (segmentY - markerPointHalf),
                             segmentX + markerPointHalf, minY + (segmentY + markerPointHalf));
             canvas.drawOval(pointBounds, highlightPaint);

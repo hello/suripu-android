@@ -98,7 +98,7 @@ public class AppSettingsFragment extends UndersideTabFragment {
         builder.setDefaultTitle(titleRes);
         builder.setFragmentClass(fragmentClass);
         if (lockOrientation) {
-            builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         startActivity(builder.toIntent());
     }
