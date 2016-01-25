@@ -114,6 +114,14 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
                    .putLong(PreferencesPresenter.SYSTEM_ALERT_LAST_SHOWN,
                             DateTimeUtils.currentTimeMillis())
                    .apply();
+        preferences.edit()
+                   .putLong(PreferencesPresenter.SENSE_ALERT_LAST_SHOWN,
+                            DateTimeUtils.currentTimeMillis())
+                   .apply();
+        preferences.edit()
+                   .putLong(PreferencesPresenter.PILL_ALERT_LAST_SHOWN,
+                            DateTimeUtils.currentTimeMillis())
+                   .apply();
     }
 
 
