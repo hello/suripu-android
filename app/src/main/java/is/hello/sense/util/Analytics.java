@@ -26,6 +26,7 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 
 public class Analytics {
@@ -100,6 +101,7 @@ public class Analytics {
         String PROP_ERROR_TYPE = "type";
         String PROP_ERROR_CONTEXT = "context";
         String PROP_ERROR_OPERATION = "operation";
+        String EVENT_WARNING = "Warning";
 
         /**
          * When the user signs in
@@ -741,12 +743,18 @@ public class Analytics {
     public static void trackError(@NonNull String message,
                                   @Nullable String errorType,
                                   @Nullable String errorContext,
-                                  @Nullable String errorOperation) {
+                                  @Nullable String errorOperation,
+                                  boolean isWarning) {
+
         final Properties properties = createProperties(Global.PROP_ERROR_MESSAGE, message,
                                                        Global.PROP_ERROR_TYPE, errorType,
                                                        Global.PROP_ERROR_CONTEXT, errorContext,
                                                        Global.PROP_ERROR_OPERATION, errorOperation);
-        trackEvent(Global.EVENT_ERROR, properties);
+        String event = Global.EVENT_ERROR;
+        if (isWarning){
+            event = Global.EVENT_WARNING;
+        }
+        trackEvent(event, properties);
     }
 
     public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
@@ -757,7 +765,7 @@ public class Analytics {
         } else {
             messageString = "Unknown";
         }
-        trackError(messageString, Errors.getType(e), Errors.getContextInfo(e), errorOperation);
+        trackError(messageString, Errors.getType(e), Errors.getContextInfo(e), errorOperation, ApiException.isNetworkError(e));
     }
 
     public static void trackUnexpectedError(@Nullable Throwable e) {
