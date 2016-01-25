@@ -254,7 +254,7 @@ public class TicketDetailFragment extends InjectionFragment
     public void imageUploadError(ErrorResponse errorResponse, File file) {
         stateSafeExecutor.execute(() -> {
             Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
-                                 errorResponse.getResponseBody(), "Zendesk Attachment Upload");
+                                 errorResponse.getResponseBody(), "Zendesk Attachment Upload", false);
 
             AttachmentHelper.showAttachmentTryAgainDialog(getActivity(), file, errorResponse,
                                                           imageUploadHelper, attachmentHost);

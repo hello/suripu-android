@@ -46,15 +46,22 @@ public class SenseDevice extends BaseDevice {
         @SerializedName("last_updated")
         public final DateTime lastUpdated;
 
+        @SerializedName("condition")
+        public final String condition;
 
-        public WiFiInfo(String ssid, int rssi, DateTime lastUpdated) {
+
+        public WiFiInfo(String ssid, int rssi, DateTime lastUpdated, String condition) {
             this.ssid = ssid;
             this.rssi = rssi;
             this.lastUpdated = lastUpdated;
+            this.condition = condition;
         }
 
         public WiFiSignalStrength getSignalStrength() {
-            return WiFiSignalStrength.fromRssi(rssi);
+            if (rssi != 0){
+                return WiFiSignalStrength.fromRssi(rssi);
+            }
+            return WiFiSignalStrength.fromCondition(condition);
         }
 
 
@@ -64,6 +71,7 @@ public class SenseDevice extends BaseDevice {
                     "ssid='" + ssid + '\'' +
                     ", rssi=" + rssi +
                     ", lastUpdated=" + lastUpdated +
+                    ", condition=" + condition +
                     '}';
         }
     }

@@ -46,7 +46,7 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now()));
+                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -116,7 +116,7 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo(null, 50, DateTime.now()));
+                                                  new SenseDevice.WiFiInfo(null, 50, DateTime.now(), "GOOD"));
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -139,7 +139,7 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now()));
+                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
 
         final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.NORMAL,
                                                               SleepPillDevice.Color.BLUE,
@@ -168,7 +168,7 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now()));
+                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
 
         final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.LOW_BATTERY,
                                                               SleepPillDevice.Color.BLUE,
@@ -197,7 +197,7 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now()));
+                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
 
         final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.UNKNOWN,
                                                               SleepPillDevice.Color.BLUE,

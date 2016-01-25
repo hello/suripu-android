@@ -55,7 +55,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
         if (sense == null) {
             sense = new PlaceholderDevice(PlaceholderDevice.Type.SENSE);
-            sleepPill = null;
         } else if (sleepPill == null) {
             sleepPill = new PlaceholderDevice(PlaceholderDevice.Type.SLEEP_PILL);
         }
