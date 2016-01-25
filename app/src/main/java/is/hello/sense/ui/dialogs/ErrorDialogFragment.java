@@ -107,7 +107,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
                                        @Nullable String errorType,
                                        @Nullable String errorContext,
                                        @Nullable String errorOperation) {
-        Analytics.trackError(message, errorType, errorContext, errorOperation);
+        Analytics.trackError(message, errorType, errorContext, errorOperation, false);
     }
 
     @VisibleForTesting CharSequence generateDisplayMessage() {
