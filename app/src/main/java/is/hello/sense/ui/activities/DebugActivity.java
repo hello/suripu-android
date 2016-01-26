@@ -17,7 +17,6 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.debug.WelcomeDialogsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -75,7 +74,15 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
-        adapter.add(new DetailItem("View welcome dialogs", this::viewWelcomeDialogs));
+
+        try {
+            final Class<?> activityClass = Class.forName("is.hello.sense.debug.WelcomeDialogsActivity");
+            decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
+            adapter.add(new DetailItem("View welcome dialogs",
+                                       () -> startActivity(new Intent(this, activityClass))));
+        } catch (ClassNotFoundException ignored) {
+            // Do nothing.
+        }
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
 
@@ -125,10 +132,6 @@ public class DebugActivity extends InjectionActivity {
     public void clearHandholdingSettings() {
         WelcomeDialogFragment.clearShownStates(this);
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
-    }
-
-    public void viewWelcomeDialogs() {
-        startActivity(new Intent(this, WelcomeDialogsActivity.class));
     }
 
     public void reEnableReviewPrompt() {
