@@ -18,6 +18,7 @@ import android.widget.ToggleButton;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
@@ -47,6 +48,7 @@ public class BacksideFragment extends InjectionFragment
     @Inject UnreadStatePresenter unreadStatePresenter;
     private SharedPreferences internalPreferences;
 
+    private int tabSelectorHeight;
     private SelectorView tabSelector;
     private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
@@ -108,6 +110,7 @@ public class BacksideFragment extends InjectionFragment
 
         pager.addOnPageChangeListener(this);
 
+        this.tabSelectorHeight = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         this.tabSelector = (SelectorView) view.findViewById(R.id.fragment_backside_tabs);
         tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
         final @DrawableRes int[] inactiveIcons = {
@@ -207,6 +210,16 @@ public class BacksideFragment extends InjectionFragment
                            .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED,
                                     System.currentTimeMillis())
                            .apply();
+    }
+
+    public void setTabsHiddenAmount(float amount) {
+        final float tabsTranslationY = Anime.interpolateFloats(amount, 0f, -tabSelectorHeight);
+        tabSelector.setTranslationY(tabsTranslationY);
+
+        final float buttonAlpha = Anime.interpolateFloats(amount, 1f, 0f);
+        for (int i = 0, count = tabSelector.getButtonCount(); i < count; i++) {
+            tabSelector.getButtonAt(i).setAlpha(buttonAlpha);
+        }
     }
 
 

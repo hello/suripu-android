@@ -72,6 +72,8 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
 
+        insetRecyclerSwipeRefreshSet(recyclerView, swipeRefreshLayout);
+
         return view;
     }
 
@@ -92,6 +94,11 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
 
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
+    }
+
+    @Override
+    protected boolean automaticallyApplyContentInsets() {
+        return false;
     }
 
     @Override

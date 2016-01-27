@@ -3,6 +3,9 @@ package is.hello.sense.ui.fragments;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import is.hello.sense.R;
@@ -10,6 +13,7 @@ import is.hello.sense.graph.Scope;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.recycler.ContentInsetItemDecoration;
 
 public abstract class BacksideTabFragment extends InjectionFragment {
     /**
@@ -73,6 +77,24 @@ public abstract class BacksideTabFragment extends InjectionFragment {
      */
     protected boolean automaticallyApplyContentInsets() {
         return true;
+    }
+
+    /**
+     * Applies content insets to a recycler view and swipe refresh layout that are in a non-inset container.
+     * @param recyclerView  The recycler view to inset. Uses {@link ContentInsetItemDecoration}.
+     * @param refreshLayout The swipe refresh layout to inset. Uses the distance to trigger sync.
+     * @throws IllegalStateException if {@link #automaticallyApplyContentInsets()} returns true.
+     */
+    protected void insetRecyclerSwipeRefreshSet(@NonNull RecyclerView recyclerView,
+                                                @NonNull SwipeRefreshLayout refreshLayout) {
+        if (automaticallyApplyContentInsets()) {
+            throw new IllegalStateException("insetRecyclerSwipeRefreshSet not allowed with" +
+                                                    "automaticallyApplyContentInsets returning true");
+        }
+
+        final Rect insets = getContentInsets();
+        recyclerView.addItemDecoration(new ContentInsetItemDecoration(insets), 0);
+        refreshLayout.setDistanceToTriggerSync(insets.top);
     }
 
     @Override
