@@ -47,7 +47,7 @@ public class BacksideFragment extends InjectionFragment
     @Inject UnreadStatePresenter unreadStatePresenter;
     private SharedPreferences internalPreferences;
 
-    private SelectorView tabs;
+    private SelectorView tabSelector;
     private TabsBackgroundDrawable tabLine;
     private ViewPager pager;
     private StaticFragmentAdapter adapter;
@@ -108,7 +108,8 @@ public class BacksideFragment extends InjectionFragment
 
         pager.addOnPageChangeListener(this);
 
-        this.tabs = (SelectorView) view.findViewById(R.id.fragment_backside_tabs);
+        this.tabSelector = (SelectorView) view.findViewById(R.id.fragment_backside_tabs);
+        tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
         final @DrawableRes int[] inactiveIcons = {
                 R.drawable.backside_icon_currently,
                 R.drawable.backside_icon_trends,
@@ -123,25 +124,19 @@ public class BacksideFragment extends InjectionFragment
                 R.drawable.backside_icon_alarm_active,
                 R.drawable.backside_icon_settings_active,
         };
-        for (int i = 0; i < tabs.getButtonCount(); i++) {
-            final ToggleButton button = tabs.getButtonAt(i);
-
+        for (int i = 0, count = adapter.getCount(); i < count; i++) {
             final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),
                                                                    inactiveIcons[i]);
-            button.setText(inactiveContent);
-            button.setTextOff(inactiveContent);
-
             final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i),
                                                                  activeIcons[i]);
-            button.setTextOn(activeContent);
-
+            final ToggleButton button = tabSelector.addOption(activeContent, inactiveContent, false);
             button.setPadding(0, 0, 0, 0);
         }
-        tabs.setSelectedIndex(pager.getCurrentItem());
-        tabs.setOnSelectionChangedListener(this);
+        tabSelector.setSelectedIndex(pager.getCurrentItem());
+        tabSelector.setOnSelectionChangedListener(this);
 
         this.tabLine = new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.BACKSIDE);
-        tabs.setBackground(tabLine);
+        tabSelector.setBackground(tabLine);
 
         return view;
     }
@@ -189,8 +184,7 @@ public class BacksideFragment extends InjectionFragment
     }
 
 
-    public @Nullable
-    BacksideTabFragment getCurrentTabFragment() {
+    public @Nullable BacksideTabFragment getCurrentTabFragment() {
         if (adapter != null) {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
@@ -224,7 +218,7 @@ public class BacksideFragment extends InjectionFragment
 
     @Override
     public void onPageSelected(int position) {
-        tabs.setSelectedIndex(position);
+        tabSelector.setSelectedIndex(position);
         saveCurrentItem(position);
     }
 
@@ -260,7 +254,7 @@ public class BacksideFragment extends InjectionFragment
                 ? R.drawable.backside_icon_insights_unread
                 : R.drawable.backside_icon_insights;
 
-        final ToggleButton button = tabs.getButtonAt(ITEM_INSIGHTS);
+        final ToggleButton button = tabSelector.getButtonAt(ITEM_INSIGHTS);
         final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_INSIGHTS),
                                                                iconRes);
         button.setTextOff(inactiveContent);

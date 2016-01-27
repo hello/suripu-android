@@ -14,44 +14,6 @@
         android:id="@+id/fragment_backside_tabs"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
-        android:paddingTop="@dimen/bottom_line">
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/title_current_conditions"
-            android:checked="true"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/title_trends"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/action_insights"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/action_alarm"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-        <ToggleButton
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/action_settings"
-            style="@style/AppTheme.Button.ModeSelector"/>
-
-    </is.hello.sense.ui.widget.SelectorView>
+        android:paddingTop="@dimen/bottom_line" />
 
 </FrameLayout>

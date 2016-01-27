@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -188,9 +189,10 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
             }
 
             for (final String option : options) {
-                final int optionIndex = optionSelector.addOptionButton(option, option);
+                final ToggleButton button = optionSelector.addOption(option, option, true);
+                optionSelector.setButtonTag(button, option);
                 if (option.equals(selectedOption)) {
-                    optionSelector.setSelectedIndex(optionIndex);
+                    optionSelector.setSelectedButton(button);
                 }
             }
 

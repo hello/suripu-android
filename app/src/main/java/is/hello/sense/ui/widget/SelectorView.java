@@ -23,6 +23,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
 
     private final List<ToggleButton> buttons = new ArrayList<>();
+    private @NonNull LayoutParams buttonLayoutParams;
     private int selectedIndex = EMPTY_SELECTION;
 
     private @Nullable SelectionAwareDrawable selectionAwareBackground;
@@ -41,6 +42,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        this.buttonLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+                                                   LayoutParams.WRAP_CONTENT, 1);
     }
 
     //endregion
@@ -136,6 +140,23 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return buttons.get(index);
     }
 
+    public int indexOfButton(@NonNull ToggleButton button) {
+        final Integer index = (Integer) button.getTag(R.id.view_selector_tag_key_index);
+        if (index == null) {
+            return -1;
+        } else {
+            return index;
+        }
+    }
+
+    public void setSelectedButton(@NonNull ToggleButton button) {
+        final int index = indexOfButton(button);
+        if (index == -1) {
+            throw new IllegalArgumentException("Button " + button + " not in selector view");
+        }
+        setSelectedIndex(index);
+    }
+
     public void setSelectedIndex(int selectedIndex) {
         this.selectedIndex = selectedIndex;
         synchronize();
@@ -149,6 +170,10 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         this.onSelectionChangedListener = onSelectionChangedListener;
     }
 
+    public void setButtonLayoutParams(@NonNull LayoutParams buttonLayoutParams) {
+        this.buttonLayoutParams = buttonLayoutParams;
+    }
+
     //endregion
 
 
@@ -156,7 +181,8 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     public void setButtonTags(Object... tags) {
         if (tags.length != buttons.size()) {
-            throw new IllegalArgumentException("Expected " + buttons.size() + " tags, got " + tags.length);
+            throw new IllegalArgumentException("Expected " + buttons.size() +
+                                                       " tags, got " + tags.length);
         }
 
         for (int i = 0, count = tags.length; i < count; i++) {
@@ -164,8 +190,23 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         }
     }
 
+    public void setButtonTagAt(int index, Object tag) {
+        buttons.get(index).setTag(R.id.view_selector_tag_key_user, tag);
+    }
+
+    public void setButtonTag(@NonNull ToggleButton button, Object tag) {
+        if (indexOfButton(button) == -1) {
+            throw new IllegalArgumentException("Button " + button + " not in selector view");
+        }
+        button.setTag(R.id.view_selector_tag_key_user, tag);
+    }
+
     public Object getButtonTagAt(int index) {
         return buttons.get(index).getTag(R.id.view_selector_tag_key_user);
+    }
+
+    public Object getButtonTag(@NonNull ToggleButton button) {
+        return button.getTag(R.id.view_selector_tag_key_user);
     }
 
     //endregion
@@ -173,38 +214,38 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     //region Options
 
-    public int addOptionButton(@NonNull String title, @Nullable Object tag) {
+    public ToggleButton addOption(@NonNull CharSequence titleOn,
+                                  @NonNull CharSequence titleOff,
+                                  boolean wantsDivider) {
         final Resources resources = getResources();
         final Context context = getContext();
 
         // Creating the button with a style does not actually style it,
         // but on Lollipop it removes the intrusive elevation added to
         // all buttons by default.
-        final ToggleButton optionButton = new ToggleButton(context, null, R.style.AppTheme_Button_ModeSelector);
+        final ToggleButton optionButton = new ToggleButton(context, null,
+                                                           R.style.AppTheme_Button_ModeSelector);
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
         optionButton.setTextAppearance(context, R.style.AppTheme_Text_Body);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
         optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
-        optionButton.setTextOn(title);
-        optionButton.setTextOff(title);
-        optionButton.setText(title);
+        optionButton.setTextOn(titleOn);
+        optionButton.setTextOff(titleOff);
+        optionButton.setText(titleOff);
         optionButton.setGravity(Gravity.CENTER);
-        optionButton.setTag(R.id.view_selector_tag_key_user, tag);
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
 
-        if (getChildCount() > 0) {
-            final View divider = Styles.createVerticalDivider(context, ViewGroup.LayoutParams.MATCH_PARENT);
+        if (getChildCount() > 0 && wantsDivider) {
+            final View divider = Styles.createVerticalDivider(context,
+                                                              ViewGroup.LayoutParams.MATCH_PARENT);
             final LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
             final int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }
 
-        final int index = buttons.size();
-        final LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                           ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-        addView(optionButton, layoutParams);
-        return index;
+        addView(optionButton, buttonLayoutParams);
+        return optionButton;
     }
 
     public void removeAllButtons() {
