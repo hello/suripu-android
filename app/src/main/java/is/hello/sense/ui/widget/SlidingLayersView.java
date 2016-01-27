@@ -198,16 +198,7 @@ public class SlidingLayersView extends FrameLayout {
             throw new IllegalStateException("too many children for " + getClass().getSimpleName());
         }
 
-        if (normalizedIndex == 0) {
-            final MarginLayoutParams marginLayoutParams;
-            if (params instanceof MarginLayoutParams) {
-                marginLayoutParams = (MarginLayoutParams) params;
-            } else {
-                marginLayoutParams = new MarginLayoutParams(params);
-            }
-            marginLayoutParams.bottomMargin = topViewOpenHeight - topViewDividerHeight;
-            params = marginLayoutParams;
-        } else if (normalizedIndex == 1) {
+        if (normalizedIndex == 1) {
             final LayoutParams updatedParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                 LayoutParams.MATCH_PARENT);
             updatedParams.topMargin = -topViewDividerHeight;

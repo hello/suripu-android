@@ -90,7 +90,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             int buttonIndex = buttons.size();
             button.setEnabled(isEnabled());
             button.setOnClickListener(this);
-            button.setTag(R.id.layout_linear_selector_tag_key_index, buttonIndex);
+            button.setTag(R.id.view_selector_tag_key_index, buttonIndex);
             if (button.isChecked()) {
                 this.selectedIndex = buttonIndex;
             }
@@ -102,7 +102,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     @Override
     public void onClick(@NonNull View view) {
-        this.selectedIndex = (Integer) view.getTag(R.id.layout_linear_selector_tag_key_index);
+        this.selectedIndex = (Integer) view.getTag(R.id.view_selector_tag_key_index);
         synchronize();
         if (getOnSelectionChangedListener() != null) {
             getOnSelectionChangedListener().onSelectionChanged(selectedIndex);
@@ -111,7 +111,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     public void synchronize() {
         for (ToggleButton button : buttons) {
-            int index = (Integer) button.getTag(R.id.layout_linear_selector_tag_key_index);
+            int index = (Integer) button.getTag(R.id.view_selector_tag_key_index);
             boolean isSelected = (index == selectedIndex);
             button.setChecked(isSelected);
         }
@@ -160,12 +160,12 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         }
 
         for (int i = 0, count = tags.length; i < count; i++) {
-            buttons.get(i).setTag(R.id.layout_linear_selector_tag_key_user, tags[i]);
+            buttons.get(i).setTag(R.id.view_selector_tag_key_user, tags[i]);
         }
     }
 
     public Object getButtonTagAt(int index) {
-        return buttons.get(index).getTag(R.id.layout_linear_selector_tag_key_user);
+        return buttons.get(index).getTag(R.id.view_selector_tag_key_user);
     }
 
     //endregion
@@ -189,7 +189,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setTextOff(title);
         optionButton.setText(title);
         optionButton.setGravity(Gravity.CENTER);
-        optionButton.setTag(R.id.layout_linear_selector_tag_key_user, tag);
+        optionButton.setTag(R.id.view_selector_tag_key_user, tag);
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
 
         if (getChildCount() > 0) {
