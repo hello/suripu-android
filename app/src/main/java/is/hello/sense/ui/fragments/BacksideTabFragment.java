@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -13,9 +14,11 @@ import is.hello.sense.graph.Scope;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.recycler.ContentInsetItemDecoration;
+import is.hello.sense.ui.recycler.PaddingItemDecoration;
 
 public abstract class BacksideTabFragment extends InjectionFragment {
+    private @Nullable Rect contentInsets;
+
     /**
      * Returns the scope associated with the backside tab.
      */
@@ -63,10 +66,15 @@ public abstract class BacksideTabFragment extends InjectionFragment {
      * @return  A {@code Rect} containing the insets.
      */
     protected Rect getContentInsets() {
-        final Resources resources = getResources();
-        final int topInset = resources.getDimensionPixelSize(R.dimen.action_bar_height);
-        final int bottomInset = resources.getDimensionPixelSize(R.dimen.sliding_layers_open_height);
-        return new Rect(0, topInset, 0, bottomInset);
+        if (contentInsets == null) {
+            final Resources resources = getResources();
+            final int topInset = resources.getDimensionPixelSize(R.dimen.action_bar_height);
+            final int bottomInset = resources.getDimensionPixelSize(R.dimen.sliding_layers_open_height);
+
+            this.contentInsets = new Rect(0, topInset, 0, bottomInset);
+        }
+
+        return contentInsets;
     }
 
     /**
@@ -80,21 +88,28 @@ public abstract class BacksideTabFragment extends InjectionFragment {
     }
 
     /**
-     * Applies content insets to a recycler view and swipe refresh layout that are in a non-inset container.
-     * @param recyclerView  The recycler view to inset. Uses {@link ContentInsetItemDecoration}.
-     * @param refreshLayout The swipe refresh layout to inset. Uses the distance to trigger sync.
+     * Applies content insets to a recycler view that is in a non-inset container.
+     * @param recyclerView  The recycler view to inset. Uses {@link PaddingItemDecoration}.
      * @throws IllegalStateException if {@link #automaticallyApplyContentInsets()} returns true.
      */
-    protected void insetRecyclerSwipeRefreshSet(@NonNull RecyclerView recyclerView,
-                                                @NonNull SwipeRefreshLayout refreshLayout) {
+    protected void insetRecyclerView(@NonNull RecyclerView recyclerView) {
         if (automaticallyApplyContentInsets()) {
-            throw new IllegalStateException("insetRecyclerSwipeRefreshSet not allowed with" +
+            throw new IllegalStateException("insetRecyclerView not allowed with" +
                                                     "automaticallyApplyContentInsets returning true");
         }
 
         final Rect insets = getContentInsets();
-        recyclerView.addItemDecoration(new ContentInsetItemDecoration(insets), 0);
-        refreshLayout.setDistanceToTriggerSync(insets.top);
+        recyclerView.addItemDecoration(new PaddingItemDecoration(insets), 0);
+    }
+
+    protected void insetSwipeRefreshLayout(@NonNull SwipeRefreshLayout swipeRefreshLayout) {
+        if (automaticallyApplyContentInsets()) {
+            throw new IllegalStateException("insetSwipeRefreshLayout not allowed with" +
+                                                    "automaticallyApplyContentInsets returning true");
+        }
+
+        final Rect insets = getContentInsets();
+        swipeRefreshLayout.setDistanceToTriggerSync(insets.top);
     }
 
     @Override

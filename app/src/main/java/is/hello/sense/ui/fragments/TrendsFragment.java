@@ -63,8 +63,12 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new CardItemDecoration(resources));
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+
+        final FadingEdgesItemDecoration fadingEdges =
+                new FadingEdgesItemDecoration(layoutManager, resources,
+                                              FadingEdgesItemDecoration.Style.ROUNDED_EDGES);
+        fadingEdges.setInsets(getContentInsets());
+        recyclerView.addItemDecoration(fadingEdges);
 
         this.trendsAdapter = new TrendsAdapter(getActivity());
         trendsAdapter.setOnTrendOptionSelected(this);
@@ -72,7 +76,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
 
-        insetRecyclerSwipeRefreshSet(recyclerView, swipeRefreshLayout);
+        insetSwipeRefreshLayout(swipeRefreshLayout);
 
         return view;
     }

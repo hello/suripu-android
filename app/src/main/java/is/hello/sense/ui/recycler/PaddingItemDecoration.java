@@ -5,17 +5,21 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-public class ContentInsetItemDecoration extends RecyclerView.ItemDecoration {
-    private final Rect insets;
+public class PaddingItemDecoration extends RecyclerView.ItemDecoration {
+    protected final Rect insets;
 
-    public ContentInsetItemDecoration(@NonNull Rect insets) {
+    public PaddingItemDecoration(@NonNull Rect insets) {
         this.insets = insets;
+    }
+
+    public void setInsets(@NonNull Rect inRect) {
+        insets.set(inRect);
     }
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        int lastPosition = (parent.getAdapter().getItemCount() - 1);
-        int position = parent.getChildAdapterPosition(view);
+        final int lastPosition = (parent.getAdapter().getItemCount() - 1);
+        final int position = parent.getChildAdapterPosition(view);
 
         if (position == 0) {
             outRect.top += insets.top;
