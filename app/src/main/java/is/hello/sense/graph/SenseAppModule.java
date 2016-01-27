@@ -36,6 +36,7 @@ import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
+import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
@@ -44,7 +45,6 @@ import is.hello.sense.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
-import is.hello.sense.ui.fragments.UndersideFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
@@ -91,7 +91,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         QuestionsPresenter.class,
         QuestionsDialogFragment.class,
 
-        UndersideFragment.class,
+        BacksideFragment.class,
         InsightsPresenter.class,
         InsightsFragment.class,
         InsightInfoPresenter.class,

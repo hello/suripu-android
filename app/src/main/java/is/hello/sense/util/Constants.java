@@ -6,8 +6,8 @@ public final class Constants {
     public static final String UPDATE_URL = "https://hello.is/app";
 
     public static final String INTERNAL_PREFS = "internal_prefs";
-    public static final String INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM = "underside_current_item";
-    public static final String INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
+    public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM = "underside_current_item";
+    public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
 
     public static final String NOTIFICATION_PREFS = "notification_prefs";
     public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";

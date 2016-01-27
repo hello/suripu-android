@@ -84,8 +84,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         if (savedInstanceState == null) {
             final Properties properties =
-                    Analytics.createProperties(Analytics.TopView.PROP_SENSOR_NAME, sensor);
-            Analytics.trackEvent(Analytics.TopView.EVENT_SENSOR_HISTORY, properties);
+                    Analytics.createProperties(Analytics.Backside.PROP_SENSOR_NAME, sensor);
+            Analytics.trackEvent(Analytics.Backside.EVENT_SENSOR_HISTORY, properties);
         }
 
         updateTimer.setOnUpdate(() -> {

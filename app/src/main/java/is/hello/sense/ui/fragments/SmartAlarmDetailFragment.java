@@ -113,7 +113,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         final CompoundButton enabledToggle = (CompoundButton) view.findViewById(R.id.fragment_smart_alarm_detail_enabled_toggle);
         enabledToggle.setChecked(alarm.isEnabled());
         enabledToggle.setOnCheckedChangeListener((button, isEnabled) -> {
-            Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_ON_OFF, null);
             alarm.setEnabled(isEnabled);
             if (isEnabled) {
                 enabled.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.icon_alarm_enabled, 0, 0, 0);
@@ -358,10 +358,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void finish() {
         final String daysRepeated = TextUtils.join(", ", alarm.getSortedDaysOfWeek());
         final Properties properties =
-                Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED, alarm.isEnabled(),
-                                           Analytics.TopView.PROP_ALARM_IS_SMART, alarm.isSmart(),
-                                           Analytics.TopView.PROP_ALARM_DAYS_REPEATED, daysRepeated);
-        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_SAVED, properties);
+                Analytics.createProperties(Analytics.Backside.PROP_ALARM_ENABLED, alarm.isEnabled(),
+                                           Analytics.Backside.PROP_ALARM_IS_SMART, alarm.isSmart(),
+                                           Analytics.Backside.PROP_ALARM_DAYS_REPEATED, daysRepeated);
+        Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_SAVED, properties);
 
         LoadingDialogFragment.close(getFragmentManager());
         getActivity().setResult(Activity.RESULT_OK);

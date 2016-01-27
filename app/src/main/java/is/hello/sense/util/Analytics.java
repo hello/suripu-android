@@ -442,8 +442,8 @@ public class Analytics {
         String PROP_EVENT_SYSTEM_ALERT_ACTION_LATER = "later";
     }
 
-    public interface TopView {
-        String EVENT_TOP_VIEW = "Top View";
+    public interface Backside {
+        String EVENT_SHOWN = "Top View";
         String EVENT_TAB_TAPPED = "Top view tab tapped";
         String EVENT_TAB_SWIPED = "Top view tab swiped";
 

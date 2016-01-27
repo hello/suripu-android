@@ -51,7 +51,7 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
         accountPresenter.update();
         addPresenter(accountPresenter);
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TIME_ZONE, null);
 
         setRetainInstance(true);
     }
@@ -126,9 +126,9 @@ public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZon
                              Logger.info(getClass().getSimpleName(), "Updated time zone");
 
                              final Properties properties =
-                                     Analytics.createProperties(Analytics.TopView.PROP_TIME_ZONE,
+                                     Analytics.createProperties(Analytics.Backside.PROP_TIME_ZONE,
                                                                 senseTimeZone.timeZoneId);
-                             Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
+                             Analytics.trackEvent(Analytics.Backside.EVENT_TIME_ZONE_CHANGED, properties);
 
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
 

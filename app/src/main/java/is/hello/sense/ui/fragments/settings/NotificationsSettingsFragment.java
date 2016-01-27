@@ -55,7 +55,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_NOTIFICATIONS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_NOTIFICATIONS, null);
         }
     }
 

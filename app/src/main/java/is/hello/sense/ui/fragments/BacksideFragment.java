@@ -31,7 +31,7 @@ import is.hello.sense.util.Constants;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
-public class UndersideFragment extends InjectionFragment
+public class BacksideFragment extends InjectionFragment
         implements ViewPager.OnPageChangeListener, SelectorView.OnSelectionChangedListener {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
@@ -61,10 +61,10 @@ public class UndersideFragment extends InjectionFragment
     }
 
     public static void saveCurrentItem(@NonNull Context context, int currentItem) {
-        SharedPreferences preferences = getInternalPreferences(context);
+        final SharedPreferences preferences = getInternalPreferences(context);
         preferences.edit()
-                   .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
-                   .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                   .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
+                   .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
                    .apply();
     }
 
@@ -76,18 +76,18 @@ public class UndersideFragment extends InjectionFragment
         this.internalPreferences = getInternalPreferences(getActivity());
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_TOP_VIEW, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_SHOWN, null);
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_underside, container, false);
+        final View view = inflater.inflate(R.layout.fragment_backside, container, false);
 
         final Resources resources = getResources();
 
-        this.pager = (ViewPager) view.findViewById(R.id.fragment_underside_pager);
+        this.pager = (ViewPager) view.findViewById(R.id.fragment_backside_pager);
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new Item(TrendsFragment.class, getString(R.string.title_trends)),
@@ -97,10 +97,10 @@ public class UndersideFragment extends InjectionFragment
         pager.setAdapter(adapter);
 
         final long itemLastUpdated =
-                internalPreferences.getLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
+                internalPreferences.getLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED, 0);
         if ((System.currentTimeMillis() - itemLastUpdated) <= Constants.STALE_INTERVAL_MS) {
             final int currentItem =
-                    internalPreferences.getInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, 0);
+                    internalPreferences.getInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, 0);
             setCurrentItem(currentItem, OPTION_NONE);
         } else {
             setCurrentItem(DEFAULT_START_ITEM, OPTION_NONE);
@@ -108,20 +108,20 @@ public class UndersideFragment extends InjectionFragment
 
         pager.addOnPageChangeListener(this);
 
-        this.tabs = (SelectorView) view.findViewById(R.id.fragment_underside_tabs);
+        this.tabs = (SelectorView) view.findViewById(R.id.fragment_backside_tabs);
         final @DrawableRes int[] inactiveIcons = {
-                R.drawable.underside_icon_currently,
-                R.drawable.underside_icon_trends,
-                R.drawable.underside_icon_insights,
-                R.drawable.underside_icon_alarm,
-                R.drawable.underside_icon_settings,
+                R.drawable.backside_icon_currently,
+                R.drawable.backside_icon_trends,
+                R.drawable.backside_icon_insights,
+                R.drawable.backside_icon_alarm,
+                R.drawable.backside_icon_settings,
         };
         final @DrawableRes int[] activeIcons = {
-                R.drawable.underside_icon_currently_active,
-                R.drawable.underside_icon_trends_active,
-                R.drawable.underside_icon_insights_active,
-                R.drawable.underside_icon_alarm_active,
-                R.drawable.underside_icon_settings_active,
+                R.drawable.backside_icon_currently_active,
+                R.drawable.backside_icon_trends_active,
+                R.drawable.backside_icon_insights_active,
+                R.drawable.backside_icon_alarm_active,
+                R.drawable.backside_icon_settings_active,
         };
         for (int i = 0; i < tabs.getButtonCount(); i++) {
             final ToggleButton button = tabs.getButtonAt(i);
@@ -140,7 +140,7 @@ public class UndersideFragment extends InjectionFragment
         tabs.setSelectedIndex(pager.getCurrentItem());
         tabs.setOnSelectionChangedListener(this);
 
-        this.tabLine = new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.UNDERSIDE);
+        this.tabLine = new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.BACKSIDE);
         tabs.setBackground(tabLine);
 
         return view;
@@ -166,7 +166,7 @@ public class UndersideFragment extends InjectionFragment
     public void onResume() {
         super.onResume();
 
-        final UndersideTabFragment fragment = getCurrentTabFragment();
+        final BacksideTabFragment fragment = getCurrentTabFragment();
         if (fragment != null) {
             fragment.onUpdate();
         }
@@ -189,13 +189,14 @@ public class UndersideFragment extends InjectionFragment
     }
 
 
-    public @Nullable UndersideTabFragment getCurrentTabFragment() {
+    public @Nullable
+    BacksideTabFragment getCurrentTabFragment() {
         if (adapter != null) {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
             final long itemId = adapter.getItemId(pager.getCurrentItem());
             final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            return (UndersideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
         } else {
             return null;
         }
@@ -208,8 +209,8 @@ public class UndersideFragment extends InjectionFragment
 
     public void saveCurrentItem(int currentItem) {
         internalPreferences.edit()
-                           .putInt(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM, currentItem)
-                           .putLong(Constants.INTERNAL_PREF_UNDERSIDE_CURRENT_ITEM_LAST_UPDATED,
+                           .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
+                           .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED,
                                     System.currentTimeMillis())
                            .apply();
     }
@@ -231,15 +232,15 @@ public class UndersideFragment extends InjectionFragment
     public void onPageScrollStateChanged(int state) {
         if (lastState == ViewPager.SCROLL_STATE_IDLE &&
                 state != ViewPager.SCROLL_STATE_IDLE) {
-            getAnimatorContext().beginAnimation("Underside swipe");
+            getAnimatorContext().beginAnimation("Backside swipe");
         } else if (lastState != ViewPager.SCROLL_STATE_IDLE &&
                 state == ViewPager.SCROLL_STATE_IDLE) {
             if (suppressNextSwipeEvent) {
                 this.suppressNextSwipeEvent = false;
             } else {
-                Analytics.trackEvent(Analytics.TopView.EVENT_TAB_SWIPED, null);
+                Analytics.trackEvent(Analytics.Backside.EVENT_TAB_SWIPED, null);
             }
-            getAnimatorContext().endAnimation("Underside swipe");
+            getAnimatorContext().endAnimation("Backside swipe");
         }
 
         this.lastState = state;
@@ -247,7 +248,7 @@ public class UndersideFragment extends InjectionFragment
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TAB_TAPPED, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TAB_TAPPED, null);
         this.suppressNextSwipeEvent = true;
 
         setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
@@ -256,8 +257,8 @@ public class UndersideFragment extends InjectionFragment
 
     public void setHasUnreadInsightItems(boolean hasUnreadInsightItems) {
         final @DrawableRes int iconRes = hasUnreadInsightItems
-                ? R.drawable.underside_icon_insights_unread
-                : R.drawable.underside_icon_insights;
+                ? R.drawable.backside_icon_insights_unread
+                : R.drawable.backside_icon_insights;
 
         final ToggleButton button = tabs.getButtonAt(ITEM_INSIGHTS);
         final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_INSIGHTS),

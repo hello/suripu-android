@@ -171,11 +171,11 @@ public class TimelineFragment extends InjectionFragment
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        this.animationEnabled = (!hasCreatedView && !homeActivity.isUndersideVisible());
+        this.animationEnabled = (!hasCreatedView && !homeActivity.isBacksideOpen());
 
-        final boolean overflowOpen = getUserVisibleHint() && homeActivity.isUndersideVisible();
+        final boolean overflowOpen = getUserVisibleHint() && homeActivity.isBacksideOpen();
         this.toolbar = new TimelineToolbar(getActivity());
-        toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleUndersideVisible());
+        toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleBacksideOpen());
         toolbar.setOverflowOpen(overflowOpen);
 
         toolbar.setTitleOnClickListener(ignored -> {
@@ -491,7 +491,7 @@ public class TimelineFragment extends InjectionFragment
 
     private void showHandholdingIfAppropriate() {
         if (homeActivity == null ||
-                homeActivity.isUndersideVisible() ||
+                homeActivity.isBacksideOpen() ||
                 WelcomeDialogFragment.isAnyVisible(homeActivity)) {
             return;
         }
@@ -515,7 +515,7 @@ public class TimelineFragment extends InjectionFragment
             }
         }
 
-        if (!homeActivity.isUndersideVisible()) {
+        if (!homeActivity.isBacksideOpen()) {
             if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
                 WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline, false);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
@@ -611,7 +611,7 @@ public class TimelineFragment extends InjectionFragment
                 Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
 
-                toolbar.setShareVisible(!homeActivity.isUndersideVisible());
+                toolbar.setShareVisible(!homeActivity.isBacksideOpen());
             });
             final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {

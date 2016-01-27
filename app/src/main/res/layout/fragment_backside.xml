@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <is.hello.sense.ui.widget.SelectorView
-        android:id="@+id/fragment_underside_tabs"
+        android:id="@+id/fragment_backside_tabs"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
         android:paddingTop="@dimen/bottom_line">
@@ -51,7 +51,7 @@
     </is.hello.sense.ui.widget.SelectorView>
 
     <is.hello.sense.ui.widget.FixedViewPager
-        android:id="@+id/fragment_underside_pager"
+        android:id="@+id/fragment_backside_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

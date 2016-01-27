@@ -5,9 +5,9 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 
-public abstract class UndersideTabFragment extends InjectionFragment {
+public abstract class BacksideTabFragment extends InjectionFragment {
     /**
-     * Returns the scope associated with the underside tab.
+     * Returns the scope associated with the backside tab.
      */
     protected Scope getScope() {
         return (Scope) getActivity();

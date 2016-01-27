@@ -102,7 +102,7 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
 
     public enum Style {
-        UNDERSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_underside_tabs, R.color.background_light),
+        BACKSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_backside_tabs, R.color.background_light),
         INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border, R.color.background_light);
 
         public final @DimenRes int selectionHeightRes;

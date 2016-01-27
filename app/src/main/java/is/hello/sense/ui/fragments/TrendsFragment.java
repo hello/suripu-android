@@ -28,7 +28,7 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
+public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -42,7 +42,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         addPresenter(trendsPresenter);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_TRENDS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
         }
     }
 

@@ -46,7 +46,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_PILL_DETAIL, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_PILL_DETAIL, null);
         }
     }
 
@@ -102,7 +102,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     //region Pill Actions
 
     public void replaceDevice() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_PILL, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_REPLACE_PILL, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -129,13 +129,13 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     }
 
     public void replaceBattery() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_BATTERY, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_REPLACE_BATTERY, null);
 
         UserSupport.showReplaceBattery(getActivity());
     }
 
     public void showAdvancedOptions() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_PILL_ADVANCED, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_PILL_ADVANCED, null);
 
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(

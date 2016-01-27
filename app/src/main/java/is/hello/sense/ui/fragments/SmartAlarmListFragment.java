@@ -45,7 +45,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SmartAlarmListFragment extends UndersideTabFragment implements SmartAlarmAdapter.InteractionListener {
+public class SmartAlarmListFragment extends BacksideTabFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
@@ -64,7 +64,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_ALARMS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
         }
 
         addPresenter(smartAlarmPresenter);
@@ -230,7 +230,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
 
     @Override
     public void onAlarmClicked(int position, @NonNull Alarm alarm) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_ALARM, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_EDIT_ALARM, null);
         editAlarm(alarm, position);
     }
 
@@ -250,9 +250,9 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
             smartAlarm.setRingOnce();
         }
 
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_ALARM_ENABLED,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_ALARM_ENABLED,
                                                                  enabled);
-        Analytics.trackEvent(Analytics.TopView.EVENT_ALARM_ON_OFF, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_ON_OFF, properties);
 
         activityIndicator.setVisibility(View.VISIBLE);
         bindAndSubscribe(smartAlarmPresenter.saveSmartAlarm(position, smartAlarm),
@@ -267,7 +267,7 @@ public class SmartAlarmListFragment extends UndersideTabFragment implements Smar
     }
 
     public void newAlarm(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_NEW_ALARM, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_NEW_ALARM, null);
         editAlarm(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW);
     }
 
