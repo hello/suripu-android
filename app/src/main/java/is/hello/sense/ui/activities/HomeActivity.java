@@ -399,6 +399,10 @@ public class HomeActivity extends ScopedInjectionActivity
                 slidingLayersView.isInMotion());
     }
 
+    public void setChromeTranslationAmount(float translationAmount) {
+        slidingLayersView.setTopExtraTranslationAmount(translationAmount);
+    }
+
     public boolean isCurrentFragmentLastNight() {
         final TimelineFragment currentFragment =
                 (TimelineFragment) viewPagerAdapter.getCurrentFragment();
