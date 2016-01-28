@@ -17,6 +17,13 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.recycler.PaddingItemDecoration;
 
 public abstract class BacksideTabFragment extends InjectionFragment {
+    /**
+     * Taken from {@code SwipeRefreshLayout} private constant. The default amount of space
+     * a {@code SwipeRefreshLayout} places before the refresh indicator when indicator comes
+     * to rest after the user finishes swiping.
+     */
+    private static final int DEFAULT_REFRESH_CIRCLE_TARGET = 64;
+
     private @Nullable Rect contentInsets;
 
     /**
@@ -59,6 +66,11 @@ public abstract class BacksideTabFragment extends InjectionFragment {
 
 
     //region Content Insets
+
+    protected void setChromeTranslationAmount(float value) {
+        ((HomeActivity) getActivity()).setChromeTranslationAmount(value);
+        ((BacksideFragment) getParentFragment()).setChromeTranslationAmount(value);
+    }
 
     /**
      * Calculates the insets that should be applied to fragment's
@@ -108,8 +120,12 @@ public abstract class BacksideTabFragment extends InjectionFragment {
                                                     "automaticallyApplyContentInsets returning true");
         }
 
-        final Rect insets = getContentInsets();
-        swipeRefreshLayout.setDistanceToTriggerSync(insets.top);
+        final Rect contentInsets = getContentInsets();
+        swipeRefreshLayout.setDistanceToTriggerSync(contentInsets.top);
+
+        final float density = getResources().getDisplayMetrics().density;
+        final int defaultEnd = Math.round(DEFAULT_REFRESH_CIRCLE_TARGET * density);
+        swipeRefreshLayout.setProgressViewEndTarget(false, defaultEnd + contentInsets.top);
     }
 
     @Override

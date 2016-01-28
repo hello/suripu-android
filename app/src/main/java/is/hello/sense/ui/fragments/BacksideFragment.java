@@ -212,7 +212,7 @@ public class BacksideFragment extends InjectionFragment
                            .apply();
     }
 
-    public void setTabsHiddenAmount(float amount) {
+    public void setChromeTranslationAmount(float amount) {
         final float tabsTranslationY = Anime.interpolateFloats(amount, 0f, -tabSelectorHeight);
         tabSelector.setTranslationY(tabsTranslationY);
 
