@@ -118,7 +118,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             this.blockConnection = savedInstanceState.getBoolean("blockConnection", false);
         } else {
             Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
-            Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, properties);
+            Analytics.trackEvent(Analytics.Backside.EVENT_SENSE_DETAIL, properties);
         }
 
         devicesPresenter.update();
@@ -395,7 +395,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_WIFI, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_EDIT_WIFI, null);
 
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(getActivity());
@@ -412,7 +412,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_PUT_INTO_PAIRING_MODE, null);
 
         final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.dialog_title_put_into_pairing_mode);
@@ -461,9 +461,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                  Logger.info(getClass().getSimpleName(), "Updated time zone");
 
                                  Properties properties = Analytics.createProperties(
-                                         Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
+                                         Analytics.Backside.PROP_TIME_ZONE, senseTimeZone.timeZoneId
                                                                                    );
-                                 Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
+                                 Analytics.trackEvent(Analytics.Backside.EVENT_TIME_ZONE_CHANGED, properties);
 
                                  LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                              },
@@ -480,7 +480,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     public void showAdvancedOptions() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_ADVANCED, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_SENSE_ADVANCED, null);
 
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
@@ -509,7 +509,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_FACTORY_RESET, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -553,7 +553,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     public void replaceDevice() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_REPLACE_SENSE, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);

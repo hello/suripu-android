@@ -79,7 +79,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         if (savedInstanceState != null) {
             this.currentAccount = (Account) savedInstanceState.getSerializable("currentAccount");
         } else {
-            Analytics.trackEvent(Analytics.TopView.EVENT_ACCOUNT, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_ACCOUNT, null);
         }
 
         accountPresenter.update();
@@ -366,7 +366,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     //region Actions
 
     public void signOut() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SIGN_OUT, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_SIGN_OUT, null);
 
         final SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());
         signOutDialog.setTitle(R.string.dialog_title_log_out);

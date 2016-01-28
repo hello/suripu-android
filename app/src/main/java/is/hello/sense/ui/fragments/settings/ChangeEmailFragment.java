@@ -42,7 +42,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         setRetainInstance(true);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_CHANGE_EMAIL, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_EMAIL, null);
         }
     }
 

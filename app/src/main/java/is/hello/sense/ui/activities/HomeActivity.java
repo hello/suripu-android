@@ -47,10 +47,10 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
+import is.hello.sense.ui.fragments.BacksideFragment;
+import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
-import is.hello.sense.ui.fragments.UndersideFragment;
-import is.hello.sense.ui.fragments.UndersideTabFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
@@ -86,7 +86,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private long lastUpdated = System.currentTimeMillis();
 
     private RelativeLayout rootContainer;
-    private FrameLayout undersideContainer;
+    private FrameLayout backsideContainer;
     private SlidingLayersView slidingLayersView;
 
     private ViewPager viewPager;
@@ -95,7 +95,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private ImageButton smartAlarmButton;
 
     private boolean isFirstActivityRun;
-    private boolean showUnderside;
+    private boolean showBackside;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
@@ -136,11 +136,11 @@ public class HomeActivity extends ScopedInjectionActivity
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
-            this.showUnderside = false;
+            this.showBackside = false;
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
             presenterContainer.onRestoreState(savedInstanceState);
         } else {
-            this.showUnderside = (getOnboardingFlow() == OnboardingActivity.FLOW_SIGN_IN);
+            this.showBackside = (getOnboardingFlow() == OnboardingActivity.FLOW_SIGN_IN);
 
             if (NotificationRegistration.shouldRegister(this)) {
                 new NotificationRegistration(this).register();
@@ -150,7 +150,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 dispatchNotification(getIntent().getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), false);
             }
 
-            if (!showUnderside) {
+            if (!showBackside) {
                 unreadStatePresenter.update();
             }
         }
@@ -160,7 +160,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            stateSafeExecutor.execute(() -> showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false));
+            stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, false));
         }
 
         deviceIssuesPresenter.update();
@@ -171,7 +171,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, true);
+            showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, true);
         });
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
@@ -186,11 +186,11 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
 
-        this.undersideContainer = (FrameLayout) findViewById(R.id.activity_home_underside_container);
+        this.backsideContainer = (FrameLayout) findViewById(R.id.activity_home_backside_container);
 
         this.slidingLayersView = (SlidingLayersView) findViewById(R.id.activity_home_sliding_layers);
         slidingLayersView.setListener(this);
-        slidingLayersView.setInteractiveAnimator(new UndersideAnimator());
+        slidingLayersView.setInteractiveAnimator(new BacksideAnimator());
         slidingLayersView.setAnimatorContext(getAnimatorContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slidingLayersView.setBackgroundColor(getResources().getColor(R.color.status_bar_grey));
@@ -216,7 +216,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, false);
+            showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);
         }
@@ -259,9 +259,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
         Distribution.checkForUpdates(this);
 
-        if (showUnderside) {
+        if (showBackside) {
             slidingLayersView.openWithoutAnimation();
-            this.showUnderside = false;
+            this.showBackside = false;
         }
 
         if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
@@ -333,7 +333,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case SENSOR: {
-                    showUndersideWithItem(UndersideFragment.ITEM_ROOM_CONDITIONS, animate);
+                    showBacksideWithItem(BacksideFragment.ITEM_ROOM_CONDITIONS, animate);
 
                     final Intent sensorHistory = new Intent(this, SensorHistoryActivity.class);
                     final String sensorName = Notification.getSensorName(notification);
@@ -343,19 +343,19 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case TRENDS: {
-                    showUndersideWithItem(UndersideFragment.ITEM_TRENDS, animate);
+                    showBacksideWithItem(BacksideFragment.ITEM_TRENDS, animate);
                     break;
                 }
                 case ALARM: {
-                    showUndersideWithItem(UndersideFragment.ITEM_SMART_ALARM_LIST, animate);
+                    showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, animate);
                     break;
                 }
                 case SETTINGS: {
-                    showUndersideWithItem(UndersideFragment.ITEM_APP_SETTINGS, animate);
+                    showBacksideWithItem(BacksideFragment.ITEM_APP_SETTINGS, animate);
                     break;
                 }
                 case INSIGHTS: {
-                    showUndersideWithItem(UndersideFragment.ITEM_INSIGHTS, animate);
+                    showBacksideWithItem(BacksideFragment.ITEM_INSIGHTS, animate);
                     break;
                 }
             }
@@ -370,8 +370,8 @@ public class HomeActivity extends ScopedInjectionActivity
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             if (slidingLayersView.isOpen()) {
                 if (!slidingLayersView.isInMotion()) {
-                    final UndersideFragment undersideFragment = getUndersideFragment();
-                    if (undersideFragment == null || !undersideFragment.onBackPressed()) {
+                    final BacksideFragment backsideFragment = getBacksideFragment();
+                    if (backsideFragment == null || !backsideFragment.onBackPressed()) {
                         slidingLayersView.close();
                     }
                 }
@@ -394,9 +394,13 @@ public class HomeActivity extends ScopedInjectionActivity
         return flow;
     }
 
-    public boolean isUndersideVisible() {
+    public boolean isBacksideOpen() {
         return (slidingLayersView.isOpen() ||
                 slidingLayersView.isInMotion());
+    }
+
+    public void setChromeTranslationAmount(float translationAmount) {
+        slidingLayersView.setTopExtraTranslationAmount(translationAmount);
     }
 
     public boolean isCurrentFragmentLastNight() {
@@ -477,9 +481,9 @@ public class HomeActivity extends ScopedInjectionActivity
     @Nullable
     @Override
     public InsightInfoFragment.Parent provideInsightInfoParent() {
-        final UndersideFragment undersideFragment = getUndersideFragment();
-        if (undersideFragment != null) {
-            final UndersideTabFragment currentTabFragment = undersideFragment.getCurrentTabFragment();
+        final BacksideFragment backsideFragment = getBacksideFragment();
+        if (backsideFragment != null) {
+            final BacksideTabFragment currentTabFragment = backsideFragment.getCurrentTabFragment();
             if (currentTabFragment instanceof InsightInfoFragment.Parent) {
                 return (InsightInfoFragment.Parent) currentTabFragment;
             }
@@ -539,18 +543,18 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Sliding Layers
 
-    private @Nullable UndersideFragment getUndersideFragment() {
-        return (UndersideFragment) getFragmentManager().findFragmentById(R.id.activity_home_underside_container);
+    private @Nullable BacksideFragment getBacksideFragment() {
+        return (BacksideFragment) getFragmentManager().findFragmentById(R.id.activity_home_backside_container);
     }
 
     @Override
     public void onTopViewWillSlideDown() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_OPENED, null);
 
-        if (isResumed && getFragmentManager().findFragmentById(R.id.activity_home_underside_container) == null) {
+        if (isResumed && getFragmentManager().findFragmentById(R.id.activity_home_backside_container) == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.activity_home_underside_container, new UndersideFragment())
+                    .add(R.id.activity_home_backside_container, new BacksideFragment())
                     .commit();
         }
 
@@ -567,12 +571,12 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onTopViewDidSlideUp() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_CLOSED, null);
 
-        final UndersideFragment underside = getUndersideFragment();
-        if (underside != null) {
+        final BacksideFragment backside = getBacksideFragment();
+        if (backside != null) {
             stateSafeExecutor.execute(() -> {
                 getFragmentManager()
                         .beginTransaction()
-                        .remove(underside)
+                        .remove(backside)
                         .commit();
             });
         }
@@ -584,14 +588,14 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void showUndersideWithItem(int item, boolean animate) {
+    public void showBacksideWithItem(int item, boolean animate) {
         if (slidingLayersView.isOpen()) {
-            final UndersideFragment underside = getUndersideFragment();
-            if (underside != null) {
-                underside.setCurrentItem(item, UndersideFragment.OPTION_ANIMATE);
+            final BacksideFragment backside = getBacksideFragment();
+            if (backside != null) {
+                backside.setCurrentItem(item, BacksideFragment.OPTION_ANIMATE);
             }
         } else {
-            UndersideFragment.saveCurrentItem(this, item);
+            BacksideFragment.saveCurrentItem(this, item);
             if (animate) {
                 slidingLayersView.open();
             } else {
@@ -600,11 +604,11 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void toggleUndersideVisible() {
+    public void toggleBacksideOpen() {
         slidingLayersView.toggle();
     }
 
-    private class UndersideAnimator implements InteractiveAnimator {
+    private class BacksideAnimator implements InteractiveAnimator {
         private final float MIN_SCALE = 0.85f;
         private final float MAX_SCALE = 1.0f;
 
@@ -614,24 +618,24 @@ public class HomeActivity extends ScopedInjectionActivity
         @Override
         public void prepare() {
             if (slidingLayersView.isOpen()) {
-                undersideContainer.setScaleX(MAX_SCALE);
-                undersideContainer.setScaleY(MAX_SCALE);
-                undersideContainer.setAlpha(MAX_ALPHA);
+                backsideContainer.setScaleX(MAX_SCALE);
+                backsideContainer.setScaleY(MAX_SCALE);
+                backsideContainer.setAlpha(MAX_ALPHA);
             } else {
-                undersideContainer.setScaleX(MIN_SCALE);
-                undersideContainer.setScaleY(MIN_SCALE);
-                undersideContainer.setAlpha(MIN_ALPHA);
+                backsideContainer.setScaleX(MIN_SCALE);
+                backsideContainer.setScaleY(MIN_SCALE);
+                backsideContainer.setAlpha(MIN_ALPHA);
             }
         }
 
         @Override
         public void frame(float frameValue) {
             final float scale = Anime.interpolateFloats(frameValue, MIN_SCALE, MAX_SCALE);
-            undersideContainer.setScaleX(scale);
-            undersideContainer.setScaleY(scale);
+            backsideContainer.setScaleX(scale);
+            backsideContainer.setScaleY(scale);
 
             final float alpha = Anime.interpolateFloats(frameValue, MIN_ALPHA, MAX_ALPHA);
-            undersideContainer.setAlpha(alpha);
+            backsideContainer.setAlpha(alpha);
         }
 
         @Override
@@ -641,7 +645,7 @@ public class HomeActivity extends ScopedInjectionActivity
                            @Nullable AnimatorContext animatorContext) {
             final float finalScale = Anime.interpolateFloats(finalFrameValue, MIN_SCALE, MAX_SCALE);
             final float finalAlpha = Anime.interpolateFloats(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
-            animatorFor(undersideContainer, animatorContext)
+            animatorFor(backsideContainer, animatorContext)
                     .withDuration(duration)
                     .withInterpolator(interpolator)
                     .scale(finalScale)
@@ -651,11 +655,11 @@ public class HomeActivity extends ScopedInjectionActivity
 
         @Override
         public void cancel() {
-            Anime.cancelAll(undersideContainer);
+            Anime.cancelAll(backsideContainer);
 
-            undersideContainer.setScaleX(MAX_SCALE);
-            undersideContainer.setScaleY(MAX_SCALE);
-            undersideContainer.setAlpha(MAX_ALPHA);
+            backsideContainer.setScaleX(MAX_SCALE);
+            backsideContainer.setScaleY(MAX_SCALE);
+            backsideContainer.setAlpha(MAX_ALPHA);
         }
     }
 

@@ -11,7 +11,6 @@ import android.support.customtabs.CustomTabsIntent;
 
 import com.segment.analytics.Properties;
 
-
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -77,14 +76,14 @@ public class UserSupport {
     }
 
     public static void showUserGuide(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_HELP, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is");
         openUri(from, supportUrl);
     }
 
     public static void showContactForm(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_CONTACT_SUPPORT, null);
 
         final FragmentNavigationActivity.Builder builder = new FragmentNavigationActivity.Builder(from);
         builder.setDefaultTitle(R.string.title_select_a_topic);
@@ -101,26 +100,26 @@ public class UserSupport {
     }
 
     public static void showForDeviceIssue(@NonNull Activity from, @NonNull DeviceIssue issue) {
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  issue.toProperty());
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         openUri(from, issue.getUri());
     }
 
     public static void showReplaceBattery(@NonNull Activity from) {
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "replace-battery");
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         final Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/204496999");
         openUri(from, issueUri);
     }
 
     public static void showSupportedDevices(@NonNull Activity from) {
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "supported-devices");
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         final Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/205152535");
         openUri(from, issueUri);

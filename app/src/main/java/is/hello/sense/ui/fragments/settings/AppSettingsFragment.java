@@ -15,20 +15,20 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.fragments.UndersideTabFragment;
+import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Share;
 
-public class AppSettingsFragment extends UndersideTabFragment {
+public class AppSettingsFragment extends BacksideTabFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_SETTINGS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_SETTINGS, null);
         }
     }
 
@@ -104,7 +104,7 @@ public class AppSettingsFragment extends UndersideTabFragment {
     }
 
     private void tellAFriend() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_TELL_A_FRIEND_TAPPED, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TELL_A_FRIEND_TAPPED, null);
         Share.text(getString(R.string.tell_a_friend_body))
              .withSubject(getString(R.string.tell_a_friend_subject))
              .send(getActivity());

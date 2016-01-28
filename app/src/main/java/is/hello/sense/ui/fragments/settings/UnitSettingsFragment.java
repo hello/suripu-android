@@ -50,7 +50,7 @@ public class UnitSettingsFragment extends InjectionFragment
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_UNITS_TIME, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_UNITS_TIME, null);
         }
     }
 

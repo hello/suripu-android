@@ -172,7 +172,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void promptForRecoveryFactoryReset() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_FACTORY_RESET, null);
 
         SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.dialog_title_factory_reset);

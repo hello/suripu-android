@@ -28,7 +28,7 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
+public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
     @Inject TrendsPresenter trendsPresenter;
 
     private TrendsAdapter trendsAdapter;
@@ -42,7 +42,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         addPresenter(trendsPresenter);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_TRENDS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
         }
     }
 
@@ -54,6 +54,7 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(trendsPresenter::update);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
+        insetSwipeRefreshLayout(swipeRefreshLayout);
 
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_trends_recycler);
         recyclerView.setHasFixedSize(true);
@@ -63,8 +64,11 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new CardItemDecoration(resources));
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+        final FadingEdgesItemDecoration fadingEdges =
+                new FadingEdgesItemDecoration(layoutManager, resources,
+                                              FadingEdgesItemDecoration.Style.ROUNDED_EDGES);
+        fadingEdges.setInsets(getContentInsets());
+        recyclerView.addItemDecoration(fadingEdges);
 
         this.trendsAdapter = new TrendsAdapter(getActivity());
         trendsAdapter.setOnTrendOptionSelected(this);
@@ -92,6 +96,11 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
+    }
+
+    @Override
+    protected boolean automaticallyApplyContentInsets() {
+        return false;
     }
 
     @Override

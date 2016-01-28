@@ -2,6 +2,7 @@ package is.hello.sense.ui.recycler;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.res.ResourcesCompat;
@@ -13,7 +14,7 @@ import java.util.EnumSet;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.ScrollEdge;
 
-public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
+public class FadingEdgesItemDecoration extends PaddingItemDecoration {
     private final LinearLayoutManager layoutManager;
     private final Drawable topEdge, bottomEdge;
     private final EnumSet<ScrollEdge> edges;
@@ -22,6 +23,8 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
                                      @NonNull Resources resources,
                                      @NonNull EnumSet<ScrollEdge> edges,
                                      @NonNull Style style) {
+        super(new Rect());
+
         this.layoutManager = layoutManager;
         this.edges = edges;
 
@@ -52,14 +55,19 @@ public class FadingEdgesItemDecoration extends RecyclerView.ItemDecoration {
             final int width = c.getWidth();
 
             if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
-                topEdge.setBounds(0, 0, width, topEdge.getIntrinsicHeight());
+                topEdge.setBounds(insets.left, insets.top,
+                                  width - insets.right,
+                                  insets.top + topEdge.getIntrinsicHeight());
                 topEdge.draw(c);
             }
 
             final int lastItem = itemCount - 1;
             if (wantsBottomEdge && layoutManager.findLastCompletelyVisibleItemPosition() < lastItem) {
                 final int height = c.getHeight();
-                bottomEdge.setBounds(0, height - bottomEdge.getIntrinsicHeight(), width, height);
+                bottomEdge.setBounds(insets.left,
+                                     height - bottomEdge.getIntrinsicHeight() - insets.bottom,
+                                     width - insets.right,
+                                     height - insets.bottom);
                 bottomEdge.draw(c);
             }
         }

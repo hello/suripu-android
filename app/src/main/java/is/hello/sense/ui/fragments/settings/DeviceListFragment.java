@@ -73,7 +73,7 @@ public class DeviceListFragment extends InjectionFragment
         setRetainInstance(true);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_DEVICES, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_DEVICES, null);
         }
     }
 

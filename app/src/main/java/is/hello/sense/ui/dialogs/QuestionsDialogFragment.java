@@ -61,7 +61,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
         if (savedInstanceState != null) {
             this.hasClearedAllViews = savedInstanceState.getBoolean("hasClearedAllViews", false);
         } else {
-            Analytics.trackEvent(Analytics.TopView.EVENT_QUESTION, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_QUESTION, null);
             questionsPresenter.userEnteredFlow();
         }
 
@@ -353,18 +353,18 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
     //region Button Callbacks
 
     public void nextQuestion(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_ANSWER_QUESTION, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_ANSWER_QUESTION, null);
 
         clearQuestions(true, questionsPresenter::answerQuestion);
     }
 
     public void skipQuestion(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SKIP_QUESTION, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_SKIP_QUESTION, null);
         questionsPresenter.skipQuestion(true).subscribe();
     }
 
     public void singleChoiceSelected(@NonNull View sender) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_ANSWER_QUESTION, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_ANSWER_QUESTION, null);
 
         Question.Choice choice = (Question.Choice) sender.getTag(R.id.fragment_questions_tag_choice);
         questionsPresenter.addChoice(choice);
