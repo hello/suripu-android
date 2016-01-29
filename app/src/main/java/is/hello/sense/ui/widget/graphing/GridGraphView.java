@@ -27,6 +27,10 @@ import java.util.ArrayList;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.Graph;
+import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.ui.adapter.TrendMonthAdapter;
+import is.hello.sense.ui.adapter.TrendWeekAdapter;
 
 public class GridGraphView extends LinearLayout
         implements GridRecycler.Adapter<LinearLayout, GridGraphCellView> {
@@ -220,6 +224,21 @@ public class GridGraphView extends LinearLayout
             parent.setClipChildren(false);
             parent.setClipToPadding(false);
         }
+    }
+
+    public void setGraphAdapter(@NonNull Graph graph) {
+        Trends.TimeScale timeScale = graph.getTimeScale();
+        if (timeScale == Trends.TimeScale.LAST_3_MONTHS) {
+            setCellSize(GridGraphCellView.Size.SMALL);
+            TrendMonthAdapter monthAdapter = new TrendMonthAdapter(getContext());
+            monthAdapter.bind(graph, graph.getSections().get(0));
+            setAdapter(monthAdapter);
+            return;
+        }
+        setCellSize(GridGraphCellView.Size.REGULAR);
+        TrendWeekAdapter weekAdapter = new TrendWeekAdapter(getContext());
+        weekAdapter.bind(graph);
+        setAdapter(weekAdapter);
     }
 
     //endregion

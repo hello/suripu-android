@@ -75,10 +75,22 @@
     <color name="graph_fill_gradient_top">#22000000</color>
     <color name="graph_fill_gradient_bottom">#11000000</color>
     <color name="graph_fill_solid">#22D6D6D6</color>
+    <color name="graph_fill_empty">#00d6d6d6</color>
 
     <color name="graph_grid_empty_cell">@color/white</color>
     <color name="graph_grid_empty_missing">#e5e9ec</color>
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
+
+    <color name="trends_title">#b2596980</color>
+    <color name="trends_bargraph">#66596980</color>
+    <color name="trends_bargraph_bar_color">#BFE6FF</color>
+    <color name="trends_bargraph_hightlight_bar_color">#66C4FF</color>
+    <color name="trends_bargraph_highlight_text_color">@color/white</color>
+    <color name="trends_bubblegraph_light_bubble_color">#80CEFF</color>
+    <color name="trends_bubblegraph_medium_bubble_color">#40B6FF</color>
+    <color name="trends_bubblegraph_deep_bubble_color">#009CFF</color>
+    <color name="trends_bubblegraph_text_title_color">@color/text_dim_light</color>
+    <color name="trends_bubblegraph_text_value_color">@color/white</color>
 </resources>

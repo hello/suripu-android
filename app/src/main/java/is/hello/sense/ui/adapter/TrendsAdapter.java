@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
 
         this.inflater = LayoutInflater.from(context);
         this.resources = context.getResources();
-        this.graphTintColor = resources.getColor(R.color.light_accent);
+        this.graphTintColor = ContextCompat.getColor(context, R.color.light_accent);
         this.viewType = VIEW_TRENDS;
     }
 
@@ -137,19 +138,12 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
         holder.title.setText(graph.getTitle());
 
         final GraphDrawable graphDrawable = graph.getGraphType().createDrawable(resources);
-        holder.graphView.setGraphDrawable(graphDrawable);
-        holder.graphView.setTintColor(graphTintColor);
-        holder.graphView.setAdapter(holder.graphAdapter);
-        holder.graphView.setHeaderFooterProvider(holder.graphAdapter);
 
         if (graph.getOptions() == null || graph.getOptions().size() < 2) {
             holder.removeOptionSelector();
         } else {
             holder.addOptionSelector(position, graph.getOptions(), graph.getTimePeriod());
         }
-
-        holder.graphView.setNumberOfLines(TrendGraphAdapter.getNumberOfLines(graph));
-        holder.graphView.setGridDrawable(graph.getGraphType().getGridDrawable());
         holder.graphAdapter.bind(rendered);
         if (graphDrawable instanceof LineGraphDrawable) {
             final LineGraphDrawable lineGraph = (LineGraphDrawable) graphDrawable;
@@ -162,7 +156,6 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
             implements SelectorView.OnSelectionChangedListener {
         final ViewGroup itemView;
         final TextView title;
-        final GraphView graphView;
         final TrendGraphAdapter graphAdapter;
         @Nullable SelectorView optionSelector;
 
@@ -171,7 +164,6 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<TrendsPresenter.Rendered
 
             this.itemView = (ViewGroup) view;
             this.title = (TextView) view.findViewById(R.id.item_trend_title);
-            this.graphView = (GraphView) view.findViewById(R.id.item_trend_graph);
             this.graphAdapter = new TrendGraphAdapter(resources);
         }
 

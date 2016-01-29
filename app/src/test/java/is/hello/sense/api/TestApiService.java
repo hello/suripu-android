@@ -215,7 +215,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
-        return loadResponse("current_conditions", new TypeToken<RoomConditions>(){}.getType());
+        return loadResponse("current_conditions", new TypeToken<RoomConditions>() {
+        }.getType());
     }
 
     @Override
@@ -232,7 +233,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
-        return loadResponse("questions", new TypeToken<ArrayList<Question>>(){}.getType());
+        return loadResponse("questions", new TypeToken<ArrayList<Question>>() {
+        }.getType());
     }
 
     @Override
@@ -275,7 +277,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Alarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>(){}.getType());
+        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>() {
+        }.getType());
     }
 
     @Override
@@ -303,12 +306,13 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
                                                         @NonNull @Query("time_period") String timePeriod) {
-        return loadResponse("single_trend", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
+        return loadResponse("single_trend", new TypeToken<ArrayList<TrendGraph>>() {
+        }.getType());
     }
 
     @Override
     public Observable<Trends> trends(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
-        return unimplemented();
+        return null;
     }
 
     @Override

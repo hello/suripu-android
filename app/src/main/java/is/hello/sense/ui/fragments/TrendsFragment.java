@@ -1,45 +1,47 @@
 package is.hello.sense.ui.fragments;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
+import java.util.Random;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.functional.Functions;
-import is.hello.sense.functional.Lists;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
-import is.hello.sense.graph.presenters.TrendsPresenter;
-import is.hello.sense.ui.adapter.TrendsAdapter;
+import is.hello.sense.graph.presenters.TrendsV2Presenter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.CardItemDecoration;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
+import is.hello.sense.ui.widget.TrendLayout;
+import is.hello.sense.ui.widget.graphing.TrendGraphLinearLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
-    @Inject TrendsPresenter trendsPresenter;
+public class TrendsFragment extends BacksideTabFragment implements TrendLayout.OnRetry {
+    @Inject
+    TrendsV2Presenter trendsPresenter;
 
-    private TrendsAdapter trendsAdapter;
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    private TrendGraphLinearLayout trendGraphLinearLayout;
+    boolean randomize = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPresenter(trendsPresenter);
+        setHasOptionsMenu(true);
 
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
@@ -52,30 +54,11 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
         final View view = inflater.inflate(R.layout.fragment_trends, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
-        swipeRefreshLayout.setOnRefreshListener(trendsPresenter::update);
+        swipeRefreshLayout.setOnRefreshListener(this::fetchTrends);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
-        insetSwipeRefreshLayout(swipeRefreshLayout);
-
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_trends_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
-
-        final Resources resources = getResources();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new CardItemDecoration(resources));
-        final FadingEdgesItemDecoration fadingEdges =
-                new FadingEdgesItemDecoration(layoutManager, resources,
-                                              FadingEdgesItemDecoration.Style.ROUNDED_EDGES);
-        fadingEdges.setInsets(getContentInsets());
-        recyclerView.addItemDecoration(fadingEdges);
-
-        this.trendsAdapter = new TrendsAdapter(getActivity());
-        trendsAdapter.setOnTrendOptionSelected(this);
-        recyclerView.setAdapter(trendsAdapter);
-
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
-
+        this.trendGraphLinearLayout = (TrendGraphLinearLayout) view.findViewById(R.id.fragment_trends_trendgraph);
+        this.trendGraphLinearLayout.setAnimatorContext(getAnimatorContext());
         return view;
     }
 
@@ -88,20 +71,43 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_trends, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        randomize = false;
+        if (item.getItemId() == R.id.action_last_3_months) {
+            trendsPresenter.updateTrend(Trends.TimeScale.LAST_3_MONTHS);
+            fetchTrends();
+            return true;
+        }
+        if (item.getItemId() == R.id.action_last_month) {
+            trendsPresenter.updateTrend(Trends.TimeScale.LAST_MONTH);
+            fetchTrends();
+            return true;
+        }
+        if (item.getItemId() == R.id.action_last_week) {
+            trendsPresenter.updateTrend(Trends.TimeScale.LAST_WEEK);
+            fetchTrends();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         trendsPresenter.unbindScope();
-        this.trendsAdapter = null;
 
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
     }
 
-    @Override
-    protected boolean automaticallyApplyContentInsets() {
-        return false;
-    }
 
     @Override
     public void onSwipeInteractionDidFinish() {
@@ -111,36 +117,40 @@ public class TrendsFragment extends BacksideTabFragment implements TrendsAdapter
     @Override
     public void onUpdate() {
         if (trendsPresenter.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
-            trendsPresenter.update();
+            fetchTrends();
         }
     }
 
-    public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
+    public void bindTrends(@NonNull Trends trends) {
+        trendGraphLinearLayout.update(trends);
         swipeRefreshLayout.setRefreshing(false);
-        trendsAdapter.replaceAll(trends);
         initialActivityIndicator.setVisibility(View.GONE);
-        if (Lists.isEmpty(trends)) {
-            trendsAdapter.displayNoDataMessage(null);
-        }
     }
 
     public void presentError(Throwable e) {
+        trendGraphLinearLayout.presentError(this);
         swipeRefreshLayout.setRefreshing(false);
-        trendsAdapter.clear();
         initialActivityIndicator.setVisibility(View.GONE);
-        trendsAdapter.displayNoDataMessage(this);
-    }
-
-    @Override
-    public void onTrendOptionSelected(int trendIndex, @NonNull String option) {
-        swipeRefreshLayout.setRefreshing(true);
-        bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option),
-                         Functions.NO_OP,
-                         this::presentError);
     }
 
     @Override
     public void fetchTrends() {
+        if (randomize) {
+            Random random = new Random();
+            switch (random.nextInt(3)) {
+                case 0:
+                    trendsPresenter.updateTrend(Trends.TimeScale.LAST_3_MONTHS);
+                    break;
+                case 1:
+                    trendsPresenter.updateTrend(Trends.TimeScale.LAST_MONTH);
+                    break;
+                default:
+                    trendsPresenter.updateTrend(Trends.TimeScale.LAST_WEEK);
+
+            }
+        }
+        swipeRefreshLayout.setRefreshing(true);
         trendsPresenter.update();
+        randomize = true;
     }
 }

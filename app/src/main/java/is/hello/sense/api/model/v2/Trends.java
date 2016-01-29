@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
@@ -30,6 +32,12 @@ public class Trends extends ApiResponse {
             "availableTimeScales=" + availableTimeScales.toString() +
             ", graphs='" + graphs.toString() + '\'' +
             '}';
+    }
+
+    public static Trends createErrorTrend(){
+        Trends trend  = new Trends();
+        trend.graphs = Graph.createErrorGraphs();
+        return trend;
     }
 
     public enum TimeScale implements Enums.FromString {
