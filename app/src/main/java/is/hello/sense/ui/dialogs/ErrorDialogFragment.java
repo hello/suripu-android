@@ -16,6 +16,7 @@ import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -27,6 +28,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     private static final String ARG_MESSAGE = ErrorDialogFragment.class.getName() + ".ARG_MESSAGE";
     private static final String ARG_ERROR_TYPE = ErrorDialogFragment.class.getName() + ".ARG_ERROR_TYPE";
+    private static final String ARG_IS_WARNING = ErrorDialogFragment.class.getName() + ".ARG_IS_WARNING";
     private static final String ARG_CONTEXT_INFO = ErrorDialogFragment.class.getName() + ".ARG_CONTEXT_INFO";
     private static final String ARG_OPERATION = ErrorDialogFragment.class.getName() + ".ARG_OPERATION";
 
@@ -65,7 +67,8 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         String errorType = arguments.getString(ARG_ERROR_TYPE);
         String contextInfo = arguments.getString(ARG_CONTEXT_INFO);
         String operation = arguments.getString(ARG_OPERATION);
-        trackError(message.toString(), errorType, contextInfo, operation);
+        boolean isWarning  = arguments.getBoolean(ARG_IS_WARNING);
+        trackError(message.toString(), errorType, contextInfo, operation, isWarning);
 
         if (getTargetFragment() != null) {
             dialog.setPositiveButton(android.R.string.ok, (ignored, which) -> {
@@ -106,8 +109,10 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     @VisibleForTesting void trackError(@NonNull String message,
                                        @Nullable String errorType,
                                        @Nullable String errorContext,
-                                       @Nullable String errorOperation) {
-        Analytics.trackError(message, errorType, errorContext, errorOperation, false);
+                                       @Nullable String errorOperation,
+                                       boolean isWarning) {
+
+        Analytics.trackError(message, errorType, errorContext, errorOperation, isWarning);
     }
 
     @VisibleForTesting CharSequence generateDisplayMessage() {
@@ -151,6 +156,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             withMessage(Errors.getDisplayMessage(e));
             withErrorType(Errors.getType(e));
             withContextInfo(Errors.getContextInfo(e));
+            withWarning(ApiException.isNetworkError(e));
 
             if (BuruberiException.isInstabilityLikely(e)) {
                 withUnstableBluetoothHelp(resources);
@@ -164,6 +170,10 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         public Builder withErrorType(@Nullable String type) {
             arguments.putString(ARG_ERROR_TYPE, type);
+            return this;
+        }
+        public Builder withWarning(@Nullable boolean isWarning) {
+            arguments.putBoolean(ARG_IS_WARNING, isWarning);
             return this;
         }
 

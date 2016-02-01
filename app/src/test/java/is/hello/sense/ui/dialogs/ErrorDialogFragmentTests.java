@@ -206,7 +206,8 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
         void trackError(@NonNull String message,
                         @Nullable String errorType,
                         @Nullable String errorContext,
-                        @Nullable String errorOperation) {
+                        @Nullable String errorOperation,
+                        boolean isWarning) {
             this.trackedError = new String[] { message, errorType, errorContext, errorOperation };
         }
 
