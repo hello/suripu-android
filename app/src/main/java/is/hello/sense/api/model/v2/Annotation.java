@@ -10,19 +10,15 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.TrendGraph;
 
 public class Annotation extends ApiResponse {
-    @VisibleForTesting
     @SerializedName("title")
     private String title;
 
-    @VisibleForTesting
     @SerializedName("value")
     private float value;
 
-    @VisibleForTesting
     @SerializedName("data_type")
     private TrendGraph.DataType dataType;
 
-    @VisibleForTesting
     @SerializedName("condition")
     @Nullable
     private String condition;
