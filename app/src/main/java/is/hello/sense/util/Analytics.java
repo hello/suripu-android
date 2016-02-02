@@ -500,6 +500,7 @@ public class Analytics {
         String EVENT_HELP = "Settings Help";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
         String EVENT_TELL_A_FRIEND_TAPPED = "Tell a friend tapped";
+        String EVENT_LOCATION_PERMISSION_MORE_INFO = "Location Permission More Info";
     }
 
     public interface StoreReview {

@@ -280,6 +280,11 @@ public final class Styles {
                     break;
                 }
 
+                case "#settings":{
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showAppSettings(activity));
+                    break;
+                }
+
                 default: {
                     throw new IllegalArgumentException("Unknown deep link url " + url);
                 }

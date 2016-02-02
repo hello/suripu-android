@@ -125,6 +125,24 @@ public class UserSupport {
         openUri(from, issueUri);
     }
 
+    public static void showLocationPermissionMoreInfoPage(@NonNull Activity from) {
+        Analytics.trackEvent(Analytics.Backside.EVENT_LOCATION_PERMISSION_MORE_INFO, null);
+
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/207716923");
+        openUri(from, supportUrl);
+    }
+
+    public static void showAppSettings(@NonNull Activity from) {
+        try {
+            from.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:is.hello.sense")));
+        } catch (ActivityNotFoundException e) {
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            alertDialog.setTitle(R.string.dialog_error_title);
+            alertDialog.setMessage(R.string.error_no_web_browser);
+            alertDialog.setPositiveButton(android.R.string.ok, null);
+            alertDialog.show();
+        }
+    }
 
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
