@@ -9,15 +9,12 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
 
 public class ConditionRange extends ApiResponse {
-    @VisibleForTesting
     @SerializedName("min_value")
     private int minValue;
 
-    @VisibleForTesting
     @SerializedName("max_value")
     private int maxValue;
 
-    @VisibleForTesting
     @SerializedName("condition")
     private Condition condition;
 

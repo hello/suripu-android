@@ -6,43 +6,42 @@ import android.support.annotation.VisibleForTesting;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 
 public class Trend extends ApiResponse {
-    @VisibleForTesting
     @SerializedName("available_time_scales")
-    private TimeScale[] availableTimeScales;
+    private  List<TimeScale> availableTimeScales;
 
-    @VisibleForTesting
     @SerializedName("graphs")
-    private Graph[] graphs;
+    private List<Graph> graphs;
 
-    public TimeScale[] getAvailableTimeScales() {
+    public List<TimeScale> getAvailableTimeScales() {
         return availableTimeScales;
     }
 
-    public Graph[] getGraphs() {
+    public List<Graph> getGraphs() {
         return graphs;
     }
 
     @Override
     public String toString() {
         return "Trend{" +
-            "availableTimeScales=" + Arrays.toString(availableTimeScales) +
-            ", graphs='" + Arrays.toString(graphs) + '\'' +
+            "availableTimeScales=" + availableTimeScales.toString() +
+            ", graphs='" + graphs.toString() + '\'' +
             '}';
     }
 
     public enum TimeScale implements Enums.FromString {
-        none,
-        last_week,
-        last_month,
-        last_3_months;
+        NONE,
+        LAST_WEEK,
+        LAST_MONTH,
+        LAST_3_WEEKS;
 
         public static TimeScale fromString(@NonNull String string){
-            return Enums.fromString(string, values(), none);
+            return Enums.fromString(string, values(), NONE);
         }
     }
 }

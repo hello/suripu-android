@@ -33,15 +33,6 @@ public class Enums {
 
         return unknown;
     }
-    public static <T extends Enum<T>> T fromHash(int hashCode, @NonNull T[] values, @NonNull T unknown) {
-        for (T possibleMatch : values) {
-            if (possibleMatch.name().hashCode() == hashCode) {
-                return possibleMatch;
-            }
-        }
-
-        return unknown;
-    }
 
     /**
      * Marks an enum as being deserializable using {@link Serialization}.

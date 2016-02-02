@@ -7,40 +7,32 @@ import android.support.annotation.VisibleForTesting;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.List;
 
 import is.hello.sense.api.model.ApiResponse;
 
 public class GraphSection extends ApiResponse {
-    @VisibleForTesting
     @SerializedName("values")
-    private Float[] values;
+    private List<Float> values;
 
-    @VisibleForTesting
     @SerializedName("titles")
-    @Nullable
-    private String[] titles;
+    private List<String> titles;
 
-    @VisibleForTesting
     @SerializedName("highlighted_values")
-    private int[] highlightedValues;
+    private List<Integer> highlightedValues;
 
-    @VisibleForTesting
     @SerializedName("highlighted_title")
     private int highlightedTitle;
 
-    public Float[] getValues() {
+    public List<Float> getValues() {
         return values;
     }
-    public float getValue(int i){
-        return values[i];
-    }
 
-    @Nullable
-    public String[] getTitles() {
+    public List<String> getTitles() {
         return titles;
     }
 
-    public int[] getHighlightedValues() {
+    public List<Integer> getHighlightedValues() {
         return highlightedValues;
     }
 
@@ -51,9 +43,9 @@ public class GraphSection extends ApiResponse {
     @Override
     public String toString() {
         return "GraphSection{" +
-                ", values='" + Arrays.toString(values) + '\'' +
-                ", titles='" + Arrays.toString(titles) + '\'' +
-                ", highlightedValues='" + Arrays.toString(highlightedValues) + '\'' +
+                ", values='" + values.toString() + '\'' +
+                ", titles='" + titles.toString() + '\'' +
+                ", highlightedValues='" +highlightedValues.toString() + '\'' +
                 ", highlightedTitle='" + highlightedTitle + '\'' +
                 '}';
     }

@@ -7,49 +7,38 @@ import android.support.annotation.VisibleForTesting;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 
 public class Graph extends ApiResponse {
-    @VisibleForTesting
     @SerializedName("time_scale")
     private Trend.TimeScale timeScale;
 
-    @VisibleForTesting
     @SerializedName("title")
     private String title;
 
-    @VisibleForTesting
     @SerializedName("data_type")
     private DataType dataType;
 
-    @VisibleForTesting
     @SerializedName("graph_type")
     private GraphType graphType;
 
-    @VisibleForTesting
     @SerializedName("min_value")
     private int minValue;
 
-    @VisibleForTesting
     @SerializedName("max_value")
     private int maxValue;
 
-    @VisibleForTesting
     @SerializedName("sections")
-    @NonNull
-    private GraphSection[] sections;
+    private List<GraphSection> sections;
 
-    @VisibleForTesting
     @SerializedName("condition_ranges")
-    @Nullable
-    private ConditionRange[] conditionRanges;
+    private List<ConditionRange> conditionRanges;
 
-    @VisibleForTesting
     @SerializedName("annotations")
-    @Nullable
-    private Annotation[] annotations;
+    private List<Annotation> annotations;
 
     public Trend.TimeScale getTimeScale() {
         return timeScale;
@@ -75,17 +64,15 @@ public class Graph extends ApiResponse {
         return maxValue;
     }
 
-    public GraphSection[] getSections() {
+    public List<GraphSection> getSections() {
         return sections;
     }
 
-    @Nullable
-    public ConditionRange[] getConditionRanges() {
+    public List<ConditionRange> getConditionRanges() {
         return conditionRanges;
     }
 
-    @Nullable
-    public Annotation[] getAnnotations() {
+    public List<Annotation> getAnnotations() {
         return annotations;
     }
 
@@ -98,33 +85,11 @@ public class Graph extends ApiResponse {
                 ", graphType='" + graphType.toString() + '\'' +
                 ", minValue='" + minValue + '\'' +
                 ", maxValue='" + maxValue + '\'' +
-                ", sections='" + Arrays.toString(sections) + '\'' +
-                ", conditionRanges='" + Arrays.toString(conditionRanges) + '\'' +
-                ", annotations='" + Arrays.toString(annotations) + '\'' +
+                ", sections='" + sections.toString() + '\'' +
+                ", conditionRanges='" + conditionRanges.toString() + '\'' +
+                ", annotations='" + annotations.toString() + '\'' +
                 '}';
     }
-
-
-    public float getColumnWidthPercent() {
-        if (timeScale == Trend.TimeScale.last_week) {
-            return .1276f;
-        } else if (timeScale == Trend.TimeScale.last_month) {
-            return .0257f;
-        } else {
-            return .0111f;
-        }
-    }
-
-    public float getColumnSpacePercent() {
-        if (timeScale == Trend.TimeScale.last_week) {
-            return .0176f;
-        } else if (timeScale == Trend.TimeScale.last_month) {
-            return .007f;
-        } else {
-            return 0;
-        }
-    }
-
 
     public enum GraphType implements Enums.FromString {
         NO_DATA,
@@ -136,11 +101,7 @@ public class Graph extends ApiResponse {
 
         public static GraphType fromString(@Nullable String string) {
             return Enums.fromString(string, values(), EMPTY);
-        }
-
-        public static GraphType fromHash(int hashCode) {
-            return Enums.fromHash(hashCode, values(), EMPTY);
-        }
+         }
     }
 
     public enum DataType implements Enums.FromString {
