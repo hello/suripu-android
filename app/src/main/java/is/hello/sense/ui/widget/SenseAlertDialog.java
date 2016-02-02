@@ -128,22 +128,6 @@ public class SenseAlertDialog extends Dialog {
         updatePaddingAndDividers();
     }
 
-    public void setMessage(@Nullable SpannableStringBuilder clickableSpan) {
-        String message = "";
-        if (clickableSpan != null) {
-            message = clickableSpan.toString();
-        }
-        if (TextUtils.isEmpty(message)) {
-            messageText.setVisibility(View.GONE);
-        } else {
-            messageText.setVisibility(View.VISIBLE);
-        }
-
-        messageText.setText(clickableSpan);
-        messageText.setMovementMethod(LinkMovementMethod.getInstance());
-        updatePaddingAndDividers();
-    }
-
     public void setMessage(@StringRes int messageId) {
         if (messageId == 0) {
             messageText.setVisibility(View.GONE);

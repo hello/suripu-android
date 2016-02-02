@@ -133,7 +133,15 @@ public class UserSupport {
     }
 
     public static void showAppSettings(@NonNull Activity from) {
-        from.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:is.hello.sense")));
+        try {
+            from.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:is.hello.sense")));
+        } catch (ActivityNotFoundException e) {
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            alertDialog.setTitle(R.string.dialog_error_title);
+            alertDialog.setMessage(R.string.error_no_web_browser);
+            alertDialog.setPositiveButton(android.R.string.ok, null);
+            alertDialog.show();
+        }
     }
 
     public enum DeviceIssue {

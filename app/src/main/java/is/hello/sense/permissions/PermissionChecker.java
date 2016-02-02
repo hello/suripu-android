@@ -24,15 +24,8 @@ public class PermissionChecker {
     }
 
     public static boolean isLocationPermissionGranted(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PermissionChecker.LOCATION_PERMISSION_REQUEST_CODE) {
-            // unnecessary checking
-            if (permissions.length == 1 && permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return (permissions.length == 1 && permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED);
     }
 
     public static void requestLocationPermission(@NonNull Fragment fragment) {
