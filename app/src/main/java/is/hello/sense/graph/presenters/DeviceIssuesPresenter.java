@@ -60,7 +60,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.NO_SLEEP_PILL_PAIRED;
         } else if (pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
             return Issue.SLEEP_PILL_LOW_BATTERY;
-        } else if (shouldReportPillMissing()) {
+        } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
             return Issue.SLEEP_PILL_MISSING;
         }
 
