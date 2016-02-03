@@ -145,6 +145,9 @@
     <dimen name="timeline_event_text_top_inset">7dp</dimen>
     <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
 
+    <dimen name="view_grid_data_point_width">32dp</dimen>
+    <dimen name="view_grid_data_point_height">32dp</dimen>
+
 
     <!-- Buttons -->
 
