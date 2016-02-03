@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -164,19 +162,16 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
             wrappedAnimator.end();
         }
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public void pause() {
             wrappedAnimator.pause();
         }
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public void resume() {
             wrappedAnimator.resume();
         }
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public boolean isPaused() {
             return wrappedAnimator.isPaused();
@@ -237,13 +232,11 @@ public abstract class AnimatedInjectionFragment extends InjectionFragment {
             return wrappedAnimator.getListeners();
         }
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public void addPauseListener(AnimatorPauseListener listener) {
             wrappedAnimator.addPauseListener(listener);
         }
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         public void removePauseListener(AnimatorPauseListener listener) {
             wrappedAnimator.removePauseListener(listener);
