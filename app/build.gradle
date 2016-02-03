@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         applicationId "is.hello.sense"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode generateVersionCode()
         versionName "1.2.2"
