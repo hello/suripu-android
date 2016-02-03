@@ -54,7 +54,7 @@ public class LaunchActivity extends InjectionActivity {
         }
 
         if (sessionManager.getSession() != null) {
-            String accountId = sessionManager.getSession().getAccountId();
+            final String accountId = sessionManager.getSession().getAccountId();
             Analytics.trackUserIdentifier(accountId, true);
         }
     }
@@ -63,7 +63,7 @@ public class LaunchActivity extends InjectionActivity {
     protected void onStart() {
         super.onStart();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             unsupported();
         } else {
             bounce();
@@ -72,11 +72,9 @@ public class LaunchActivity extends InjectionActivity {
 
 
     private void showHomeActivity() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
-                intent.setAction(AlarmClock.ACTION_SHOW_ALARMS);
-            }
+        final Intent intent = new Intent(this, HomeActivity.class);
+        if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
+            intent.setAction(AlarmClock.ACTION_SHOW_ALARMS);
         }
         startActivity(intent);
     }
@@ -93,7 +91,8 @@ public class LaunchActivity extends InjectionActivity {
                 preferences
                         .edit()
                         .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
-                        .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE)
+                        .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT,
+                                Constants.ONBOARDING_CHECKPOINT_NONE)
                         .apply();
             }
 

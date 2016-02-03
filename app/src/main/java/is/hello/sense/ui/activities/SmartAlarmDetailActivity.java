@@ -2,7 +2,6 @@ package is.hello.sense.ui.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
@@ -12,9 +11,7 @@ import android.view.MenuItem;
 import com.segment.analytics.Properties;
 
 import org.joda.time.LocalTime;
-import org.json.JSONObject;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -158,21 +155,16 @@ public class SmartAlarmDetailActivity extends SenseActivity {
     //region Set Alarm Intents
 
     private void processSetAlarmIntent() {
-        Intent intent = getIntent();
-        int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 6) + 1;
-        int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
-        List<Integer> calendarDays;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
-        } else {
-            calendarDays = Collections.emptyList();
-        }
+        final Intent intent = getIntent();
+        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 6) + 1;
+        final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
+        final List<Integer> calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
 
         this.alarm = new Alarm();
         alarm.setTime(new LocalTime(hour, minute));
         if (!Lists.isEmpty(calendarDays)) {
-            Set<Integer> days = alarm.getDaysOfWeek();
-            for (Integer calendarDay : calendarDays) {
+            final Set<Integer> days = alarm.getDaysOfWeek();
+            for (final Integer calendarDay : calendarDays) {
                 days.add(DateFormatter.calendarDayToJodaTimeDay(calendarDay));
             }
         }
