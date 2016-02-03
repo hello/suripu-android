@@ -56,11 +56,11 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.NO_SENSE_PAIRED;
         } else if (sense.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportSenseMissing()) {
             return Issue.SENSE_MISSING;
-        } else if (pill == null && shouldReportPillMissing()) {
+        } else if (pill == null) {
             return Issue.NO_SLEEP_PILL_PAIRED;
-        } else if (pill != null && pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
+        } else if (pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
             return Issue.SLEEP_PILL_LOW_BATTERY;
-        } else if (pill != null && pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS) {
+        } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
             return Issue.SLEEP_PILL_MISSING;
         }
 
@@ -84,8 +84,8 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     }
 
     private @Nullable DateTime getPillMissingAlertLastShown() {
-        if (preferences.contains(PreferencesPresenter.PILL_ALERT_LAST_SHOWN)) {
-            return new DateTime(preferences.getLong(PreferencesPresenter.PILL_ALERT_LAST_SHOWN, 0));
+        if (preferences.contains(PreferencesPresenter.PILL_MISSING_ALERT_LAST_SHOWN)) {
+            return new DateTime(preferences.getLong(PreferencesPresenter.PILL_MISSING_ALERT_LAST_SHOWN, 0));
         } else {
             return null;
         }
@@ -119,7 +119,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
                             DateTimeUtils.currentTimeMillis())
                    .apply();
         preferences.edit()
-                   .putLong(PreferencesPresenter.PILL_ALERT_LAST_SHOWN,
+                   .putLong(PreferencesPresenter.PILL_MISSING_ALERT_LAST_SHOWN,
                             DateTimeUtils.currentTimeMillis())
                    .apply();
     }
