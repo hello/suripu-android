@@ -522,6 +522,7 @@ public class Analytics {
     public static void initialize(@NonNull Context context) {
         final com.segment.analytics.Analytics.Builder builder =
                 new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
+        builder.flushQueueSize(1);
         if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
