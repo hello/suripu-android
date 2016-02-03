@@ -56,4 +56,13 @@
         <attr name="senseAspectRatio" format="string" />
         <attr name="senseLoadingView" format="reference" />
     </declare-styleable>
+    
+    <declare-styleable name="ExtendedScrollView">
+        <attr name="senseFadingEdgeStyle" format="enum">
+            <enum name="none" value="0" />
+            <enum name="rounded" value="1" />
+            <enum name="straight" value="2" />
+        </attr>
+        <attr name="senseScrollingEnabled" format="boolean" />
+    </declare-styleable>
 </resources>
