@@ -30,6 +30,7 @@ import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.util.Compatibility;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.VoidResponse;
@@ -184,8 +185,8 @@ import rx.functions.Action1;
         }
     }
 
-    public BluetoothStack.SupportLevel getDeviceSupportLevel() {
-        return BluetoothStack.SupportLevel.TESTED;
+    public boolean isDeviceSupported() {
+        return Compatibility.generateReport(context).isSupported();
     }
 
     private @NonNull <T> Observable<T> noDeviceError() {
