@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget.graphing;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
@@ -10,7 +11,9 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 import is.hello.sense.R;
 
@@ -21,6 +24,7 @@ public class GridGraphView extends LinearLayout {
 
     private final Deque<LinearLayout> rowScrap = new ArrayDeque<>();
     private final Deque<GridDataPointView> cellScrap = new ArrayDeque<>();
+    private final List<LinearLayout> rows = new ArrayList<>();
 
     private Adapter adapter;
 
@@ -39,6 +43,7 @@ public class GridGraphView extends LinearLayout {
 
         setOrientation(VERTICAL);
         setShowDividers(SHOW_DIVIDER_MIDDLE);
+        setLayoutTransition(new LayoutTransition());
 
         this.rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         this.cellLayoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
@@ -62,20 +67,27 @@ public class GridGraphView extends LinearLayout {
     }
 
     private LinearLayout dequeueRow(@NonNull Context context) {
-        final LinearLayout scrap = rowScrap.poll();
-        if (scrap != null) {
-            return scrap;
-        } else {
-            return createRow(context);
+        LinearLayout row = rowScrap.poll();
+        if (row == null) {
+            row = createRow(context);
         }
+        return row;
     }
 
     private GridDataPointView dequeueCell(@NonNull Context context) {
-        final GridDataPointView scrap = cellScrap.poll();
-        if (scrap != null) {
-            return scrap;
-        } else {
-            return createCell(context);
+        GridDataPointView cell = cellScrap.poll();
+        if (cell == null) {
+            cell = createCell(context);
+        }
+        return cell;
+    }
+
+    private void recycleUnusedRowCells(@NonNull LinearLayout row, int targetCount) {
+        while (row.getChildCount() > targetCount) {
+            final int lastView = row.getChildCount() - 1;
+            final GridDataPointView cell = (GridDataPointView) row.getChildAt(lastView);
+            cellScrap.offer(cell);
+            row.removeViewAt(lastView);
         }
     }
 
@@ -84,6 +96,7 @@ public class GridGraphView extends LinearLayout {
             cellScrap.offer((GridDataPointView) row.getChildAt(i));
         }
         removeView(row);
+        rows.remove(row);
         rowScrap.offer(row);
     }
 
@@ -94,34 +107,46 @@ public class GridGraphView extends LinearLayout {
     private void displayDataPoint(GridDataPointView itemView, int row, int item) {
         itemView.setValue(adapter.getValueReading(row, item));
         itemView.setFillColor(adapter.getValueColor(row, item));
+        itemView.setBorder(adapter.getValueBorder(row, item));
     }
 
     private void populate(int oldRowCount, int newRowCount) {
+        final Context context = getContext();
         if (newRowCount < oldRowCount) {
-            final int toRemove = oldRowCount - newRowCount;
+            final int toRemove = (oldRowCount - newRowCount);
             for (int i = 0; i < toRemove; i++) {
-                recycleRow((LinearLayout) getChildAt(0));
+                recycleRow(rows.get(0));
+            }
+        } else if (newRowCount > oldRowCount) {
+            final int toAdd = (newRowCount - oldRowCount);
+            for (int i = 0; i < toAdd; i++) {
+                final LinearLayout row = dequeueRow(context);
+                rows.add(0, row);
+                addView(row, 0);
             }
         }
 
-        final Context context = getContext();
         final int lastRow = newRowCount - 1;
         for (int row = 0; row < newRowCount; row++) {
-            final LinearLayout rowView = dequeueRow(context);
+            final LinearLayout rowView = rows.get(row);
             final int itemCount = adapter.getSectionItemCount(row);
             for (int item = 0; item < itemCount; item++) {
-                final GridDataPointView itemView = dequeueCell(context);
+                GridDataPointView itemView = (GridDataPointView) rowView.getChildAt(item);
+                if (itemView == null) {
+                    itemView = dequeueCell(context);
+                    rowView.addView(itemView);
+                }
+
                 displayDataPoint(itemView, row, item);
-                rowView.addView(itemView, cellLayoutParams);
             }
+
+            recycleUnusedRowCells(rowView, itemCount);
 
             if (row != lastRow) {
                 rowView.setPadding(0, 0, 0, interRowPadding);
             } else {
                 rowView.setPadding(0, 0, 0, 0);
             }
-
-            addView(rowView, rowLayoutParams);
         }
     }
 
@@ -140,6 +165,6 @@ public class GridGraphView extends LinearLayout {
         int getSectionItemCount(int section);
         String getValueReading(int section, int item);
         @ColorInt int getValueColor(int section, int item);
-        boolean isValueHighlighted(int section, int item);
+        GridDataPointView.Border getValueBorder(int section, int item);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
@@ -21,11 +22,14 @@ public class GridDataPointView extends View {
     private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF fillRect = new RectF();
+    private final Path borderPath = new Path();
+    private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final int estimatedTextHeight;
     private final Point intrinsicSize;
 
     private @Nullable String value;
+    private @Nullable Border border;
 
 
     //region Lifecycle
@@ -50,6 +54,8 @@ public class GridDataPointView extends View {
 
         Drawing.updateTextPaintFromStyle(textPaint, context, R.style.AppTheme_Text_GridDataPoint);
         textPaint.setTextAlign(Paint.Align.CENTER);
+
+        borderPaint.setStyle(Paint.Style.STROKE);
 
         this.estimatedTextHeight = Drawing.getEstimatedTextHeight(textPaint);
         this.intrinsicSize = getIntrinsicSize(resources);
@@ -79,6 +85,14 @@ public class GridDataPointView extends View {
             final float valueY = height - estimatedTextHeight;
             canvas.drawText(value, valueX, valueY, textPaint);
         }
+
+        if (border != null) {
+            fillRect.inset(border.inset, border.inset);
+
+            borderPath.reset();
+            borderPath.addOval(fillRect, Path.Direction.CW);
+            canvas.drawPath(borderPath, borderPaint);
+        }
     }
 
     //endregion
@@ -90,6 +104,7 @@ public class GridDataPointView extends View {
     protected boolean onSetAlpha(int alpha) {
         fillPaint.setAlpha(alpha);
         textPaint.setAlpha(alpha);
+        borderPaint.setAlpha(alpha);
         return true;
     }
 
@@ -103,5 +118,28 @@ public class GridDataPointView extends View {
         invalidate();
     }
 
+    public void setBorder(@Nullable Border border) {
+        if (border != null) {
+            borderPaint.setColor(Drawing.colorWithAlpha(border.color, borderPaint.getAlpha()));
+            borderPaint.setStrokeWidth(border.width);
+        }
+
+        this.border = border;
+        invalidate();
+    }
+
     //endregion
+
+
+    public static class Border {
+        public final @ColorInt int color;
+        public final int inset;
+        public final int width;
+
+        public Border(int color, int inset, int width) {
+            this.color = color;
+            this.inset = inset;
+            this.width = width;
+        }
+    }
 }
