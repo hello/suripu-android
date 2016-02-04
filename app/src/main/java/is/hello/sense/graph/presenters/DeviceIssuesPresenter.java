@@ -107,23 +107,29 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
     }
 
-    public void updateSystemAlertLastShown() {
-        logEvent("updateSystemAlertLastShown()");
+    public void updateLastShown(@NonNull Issue issue){
+        switch (issue) {
+            case SENSE_MISSING:
+                preferences.edit()
+                           .putLong(PreferencesPresenter.SENSE_ALERT_LAST_SHOWN,
+                                    DateTimeUtils.currentTimeMillis())
+                           .apply();
+                break;
+            case SLEEP_PILL_LOW_BATTERY:
+                preferences.edit()
+                           .putLong(PreferencesPresenter.SYSTEM_ALERT_LAST_SHOWN,
+                                    DateTimeUtils.currentTimeMillis())
+                           .apply();
+                break;
+            case SLEEP_PILL_MISSING:
+                preferences.edit()
+                           .putLong(PreferencesPresenter.PILL_MISSING_ALERT_LAST_SHOWN,
+                                    DateTimeUtils.currentTimeMillis())
+                           .apply();
+                break;
 
-        preferences.edit()
-                   .putLong(PreferencesPresenter.SYSTEM_ALERT_LAST_SHOWN,
-                            DateTimeUtils.currentTimeMillis())
-                   .apply();
-        preferences.edit()
-                   .putLong(PreferencesPresenter.SENSE_ALERT_LAST_SHOWN,
-                            DateTimeUtils.currentTimeMillis())
-                   .apply();
-        preferences.edit()
-                   .putLong(PreferencesPresenter.PILL_MISSING_ALERT_LAST_SHOWN,
-                            DateTimeUtils.currentTimeMillis())
-                   .apply();
+        }
     }
-
 
     public enum Issue {
         NONE(0, 0, 0),
