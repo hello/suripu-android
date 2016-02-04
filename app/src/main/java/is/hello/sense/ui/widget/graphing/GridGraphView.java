@@ -1,6 +1,8 @@
 package is.hello.sense.ui.widget.graphing;
 
 import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
@@ -8,6 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.ArrayDeque;
@@ -15,9 +20,12 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 
 public class GridGraphView extends LinearLayout {
+    private static final float TENSION = 0.5f;
+
     private final LayoutParams rowLayoutParams;
     private final LayoutParams cellLayoutParams;
     private final int interRowPadding;
@@ -43,7 +51,35 @@ public class GridGraphView extends LinearLayout {
 
         setOrientation(VERTICAL);
         setShowDividers(SHOW_DIVIDER_MIDDLE);
-        setLayoutTransition(new LayoutTransition());
+
+        final LayoutTransition layoutTransition = new LayoutTransition();
+        final ObjectAnimator appearing =
+                ObjectAnimator.ofPropertyValuesHolder((Object) null,
+                                                      PropertyValuesHolder.ofFloat("alpha", 0.0f, 1.0f),
+                                                      PropertyValuesHolder.ofFloat("scaleX", 0.9f, 1.0f),
+                                                      PropertyValuesHolder.ofFloat("scaleY", 0.9f, 1.0f));
+        layoutTransition.setAnimator(LayoutTransition.APPEARING, appearing);
+
+        final ObjectAnimator disappearing =
+                ObjectAnimator.ofPropertyValuesHolder((Object) null,
+                                                      PropertyValuesHolder.ofFloat("alpha", 1.0f, 0.0f),
+                                                      PropertyValuesHolder.ofFloat("scaleX", 1.0f, 0.9f),
+                                                      PropertyValuesHolder.ofFloat("scaleY", 1.0f, 0.9f));
+        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, disappearing);
+
+        layoutTransition.setInterpolator(LayoutTransition.APPEARING,
+                                         new AnticipateInterpolator(TENSION));
+        layoutTransition.setInterpolator(LayoutTransition.DISAPPEARING,
+                                         new AnticipateOvershootInterpolator(TENSION));
+        layoutTransition.setInterpolator(LayoutTransition.CHANGE_APPEARING,
+                                         new OvershootInterpolator(TENSION));
+        layoutTransition.setInterpolator(LayoutTransition.CHANGE_DISAPPEARING,
+                                         new AnticipateInterpolator(TENSION));
+        layoutTransition.setStartDelay(LayoutTransition.CHANGE_APPEARING,
+                                       Anime.DURATION_SLOW / 2L);
+        layoutTransition.setDuration(Anime.DURATION_SLOW);
+
+        setLayoutTransition(layoutTransition);
 
         this.rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         this.cellLayoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
@@ -92,8 +128,10 @@ public class GridGraphView extends LinearLayout {
     }
 
     private void recycleRow(@NonNull LinearLayout row) {
-        for (int i = 0, count = row.getChildCount(); i < count; i++) {
-            cellScrap.offer((GridDataPointView) row.getChildAt(i));
+        while (row.getChildCount() > 0) {
+            final GridDataPointView cell = (GridDataPointView) row.getChildAt(0);
+            row.removeView(cell);
+            cellScrap.add(cell);
         }
         removeView(row);
         rows.remove(row);
