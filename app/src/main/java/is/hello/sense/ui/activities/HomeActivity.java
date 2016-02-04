@@ -535,7 +535,7 @@ public class HomeActivity extends ScopedInjectionActivity
         deviceIssueDialogFragment.showAllowingStateLoss(getFragmentManager(),
                                                         DeviceIssueDialogFragment.TAG);
 
-        deviceIssuesPresenter.updateSystemAlertLastShown();
+        deviceIssuesPresenter.updateLastShown(issue);
     }
 
     //endregion

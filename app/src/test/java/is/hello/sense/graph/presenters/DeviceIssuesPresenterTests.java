@@ -103,7 +103,8 @@ public class DeviceIssuesPresenterTests extends InjectionTestCase {
         DateTimeUtils.setCurrentMillisFixed(fixedTime.getMillis());
 
         assertThat(presenter.shouldReportLowBattery(), is(true));
-        presenter.updateSystemAlertLastShown();
+        presenter.updateLastShown(DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY);
+
         assertThat(presenter.shouldReportLowBattery(), is(false));
 
         DateTimeUtils.setCurrentMillisFixed(fixedTime.plusDays(1).getMillis());
@@ -126,7 +127,7 @@ public class DeviceIssuesPresenterTests extends InjectionTestCase {
         final DeviceIssuesPresenter.Issue issue1 = presenter.getTopIssue(devices);
         assertThat(issue1, is(equalTo(DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY)));
 
-        presenter.updateSystemAlertLastShown();
+        presenter.updateLastShown(DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY);
         final DeviceIssuesPresenter.Issue issue2 = presenter.getTopIssue(devices);
         assertThat(issue2, is(not(equalTo(DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY))));
 
