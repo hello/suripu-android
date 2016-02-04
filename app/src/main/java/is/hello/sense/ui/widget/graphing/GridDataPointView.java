@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -25,19 +25,15 @@ public class GridDataPointView extends View {
     private final Path borderPath = new Path();
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private final int estimatedTextHeight;
-    private final Point intrinsicSize;
+    private final int intrinsicWidth;
+    private final int intrinsicHeight;
 
+    private int valueHeight;
     private @Nullable String value;
     private @Nullable Border border;
 
 
     //region Lifecycle
-
-    public static Point getIntrinsicSize(@NonNull Resources resources) {
-        return new Point(resources.getDimensionPixelSize(R.dimen.view_grid_data_point_width),
-                         resources.getDimensionPixelSize(R.dimen.view_grid_data_point_height));
-    }
 
     public GridDataPointView(@NonNull Context context) {
         this(context, null);
@@ -57,11 +53,11 @@ public class GridDataPointView extends View {
 
         borderPaint.setStyle(Paint.Style.STROKE);
 
-        this.estimatedTextHeight = Drawing.getEstimatedTextHeight(textPaint);
-        this.intrinsicSize = getIntrinsicSize(resources);
+        this.intrinsicWidth = resources.getDimensionPixelSize(R.dimen.view_grid_data_point_width);
+        setMinimumWidth(intrinsicWidth);
 
-        setMinimumWidth(intrinsicSize.x);
-        setMinimumHeight(intrinsicSize.y);
+        this.intrinsicHeight = resources.getDimensionPixelSize(R.dimen.view_grid_data_point_height);
+        setMinimumHeight(intrinsicHeight);
     }
 
     //endregion
@@ -71,19 +67,19 @@ public class GridDataPointView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        final int width = canvas.getWidth();
-        final int height = canvas.getHeight();
+        final int midX = canvas.getWidth() / 2;
+        final int midY = canvas.getHeight() / 2;
 
-        fillRect.set((width / 2) - (intrinsicSize.x / 2),
-                     (height / 2) - (intrinsicSize.y / 2),
-                     (width / 2) + (intrinsicSize.x / 2),
-                     (height / 2) + (intrinsicSize.y / 2));
+        fillRect.set(midX - (intrinsicWidth / 2),
+                     midY - (intrinsicHeight / 2),
+                     midX + (intrinsicWidth / 2),
+                     midY + (intrinsicHeight / 2));
         canvas.drawOval(fillRect, fillPaint);
 
         if (!TextUtils.isEmpty(value)) {
-            final float valueX = (width / 2f);
-            final float valueY = height - estimatedTextHeight;
-            canvas.drawText(value, valueX, valueY, textPaint);
+            canvas.drawText(value,
+                            fillRect.centerX(), fillRect.centerY() + (valueHeight / 2f),
+                            textPaint);
         }
 
         if (border != null) {
@@ -115,6 +111,13 @@ public class GridDataPointView extends View {
 
     public void setValue(@Nullable String value) {
         this.value = value;
+        if (TextUtils.isEmpty(value)) {
+            this.valueHeight = 0;
+        } else {
+            final Rect textBounds = new Rect();
+            textPaint.getTextBounds(value, 0, value.length(), textBounds);
+            this.valueHeight = textBounds.height();
+        }
         invalidate();
     }
 
