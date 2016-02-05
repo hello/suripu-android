@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -217,7 +217,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
 
         if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != Operation.CONNECTED) {
+                if (status != ConnectProgress.CONNECTED) {
                     return;
                 }
 

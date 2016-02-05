@@ -18,10 +18,10 @@ import com.segment.analytics.Properties;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
@@ -252,10 +252,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         } else {
             showBlockingActivity(R.string.title_connecting);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == Operation.CONNECTED) {
+                if (status == ConnectProgress.CONNECTED) {
                     checkConnectivityAndContinue();
                 } else {
-                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getConnectStatusMessage(status));
                 }
             }, e -> presentError(e, "Connecting to Sense"));
         }

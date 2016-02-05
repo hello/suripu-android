@@ -30,11 +30,11 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
@@ -316,7 +316,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
-                                 if (status == Operation.CONNECTED) {
+                                 if (status == ConnectProgress.CONNECTED) {
                                      checkConnectivityState(false);
                                  }
                              },

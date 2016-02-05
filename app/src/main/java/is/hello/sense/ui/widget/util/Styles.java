@@ -38,8 +38,8 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Trend;
@@ -94,7 +94,7 @@ public final class Styles {
     }
 
 
-    public static @StringRes int getWiFiConnectStatusMessage(@NonNull Operation status) {
+    public static @StringRes int getConnectStatusMessage(@NonNull ConnectProgress status) {
         switch (status) {
             case CONNECTING:
                 return R.string.title_connecting;

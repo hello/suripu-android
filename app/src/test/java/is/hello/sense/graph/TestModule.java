@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import org.mockito.Mockito;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -145,9 +143,6 @@ public final class TestModule {
         doReturn(Observable.just(true))
                 .when(bluetoothStack)
                 .enabled();
-        doReturn(true)
-                .when(bluetoothStack)
-                .errorRequiresReconnect(Mockito.any(Throwable.class));
         return bluetoothStack;
     }
 }

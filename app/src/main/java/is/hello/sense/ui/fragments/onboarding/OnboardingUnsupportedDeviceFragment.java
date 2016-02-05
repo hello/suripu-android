@@ -6,26 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.segment.analytics.Properties;
-
-import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
-    private BluetoothStack.SupportLevel supportLevel;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.supportLevel = hardwarePresenter.getDeviceSupportLevel();
-
-        Properties properties = Analytics.createProperties(
-            Analytics.Onboarding.PROP_DEVICE_SUPPORT_LEVEL, supportLevel.toString()
-        );
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_UNSUPPORTED_DEVICE, properties);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_UNSUPPORTED_DEVICE, null);
 
         setRetainInstance(true);
     }
@@ -33,35 +23,15 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        OnboardingSimpleStepView stepView = new OnboardingSimpleStepView(this, inflater);
-
-        switch (supportLevel) {
-            case UNSUPPORTED: {
-                stepView.setHeadingText(R.string.onboarding_title_unsupported_device);
-                stepView.setSubheadingText(R.string.onboarding_message_unsupported_device);
-                break;
-            }
-
-            case UNTESTED: {
-                stepView.setHeadingText(R.string.onboarding_title_untested_device);
-                stepView.setSubheadingText(R.string.onboarding_message_untested_device);
-                stepView.initializeSupportLinksForSubheading(getActivity());
-                break;
-            }
-
-            default: {
-                continueAnyway();
-                break;
-            }
-        }
-
-        stepView.setPrimaryButtonText(R.string.action_continue_anyway);
-        stepView.setPrimaryOnClickListener(ignored -> continueAnyway());
-        stepView.setToolbarWantsBackButton(true);
-        stepView.setToolbarWantsHelpButton(false);
-        stepView.setWantsSecondaryButton(false);
-
-        return stepView;
+        return new OnboardingSimpleStepView(this, inflater)
+                .setHeadingText(R.string.onboarding_title_unsupported_device)
+                .setSubheadingText(R.string.onboarding_message_unsupported_device)
+                .initializeSupportLinksForSubheading(getActivity())
+                .setPrimaryButtonText(R.string.action_continue_anyway)
+                .setPrimaryOnClickListener(ignored -> continueAnyway())
+                .setToolbarWantsBackButton(true)
+                .setToolbarWantsHelpButton(false)
+                .setWantsSecondaryButton(false);
     }
 
     public void continueAnyway() {
