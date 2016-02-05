@@ -330,13 +330,14 @@ public class GridGraphView extends LinearLayout {
         }
     }
 
-    private void runCellAnimators() {
+    private void runCellAnimators(long startDelay) {
         if (DEBUG) {
             Logger.debug(getClass().getSimpleName(), "runCellAnimators()");
         }
 
         if (!pendingCellAnimators.isEmpty()) {
             final AnimatorSet cellAnimator = AnimatorTemplate.DEFAULT.apply(new AnimatorSet());
+            cellAnimator.setStartDelay(startDelay);
             cellAnimator.playTogether(pendingCellAnimators);
             cellAnimator.start();
 
@@ -344,7 +345,7 @@ public class GridGraphView extends LinearLayout {
         }
     }
 
-    private void shrinkRowCount(int delta) {
+    private long shrinkRowCount(int delta) {
         if (DEBUG) {
             Logger.debug(getClass().getSimpleName(), "shrinkRowCount(" + delta + ")");
         }
@@ -363,9 +364,11 @@ public class GridGraphView extends LinearLayout {
             setAnimationIndex(rowView, delta - i);
             recycleRow(rowView);
         }
+
+        return startDelay;
     }
 
-    private void growRowCount(int delta) {
+    private long growRowCount(int delta) {
         if (DEBUG) {
             Logger.debug(getClass().getSimpleName(), "growRowCount(" + delta + ")");
         }
@@ -385,9 +388,11 @@ public class GridGraphView extends LinearLayout {
             rowViews.add(0, rowView);
             addView(rowView, 0);
         }
+
+        return startDelay;
     }
 
-    private void populateRows(int rowCount) {
+    private void populateRows(int rowCount, long cellStartDelay) {
         if (DEBUG) {
             Logger.debug(getClass().getSimpleName(), "populateRows(" + rowCount + ")");
         }
@@ -417,7 +422,7 @@ public class GridGraphView extends LinearLayout {
             }
         }
 
-        runCellAnimators();
+        runCellAnimators(cellStartDelay);
     }
 
     private void populate() {
@@ -427,12 +432,16 @@ public class GridGraphView extends LinearLayout {
 
         final int oldCount = rowViews.size();
         final int newCount = adapter != null ? adapter.getRowCount() : 0;
+        final long cellStartDelay;
         if (newCount < oldCount) {
-            shrinkRowCount(oldCount - newCount);
+            cellStartDelay = shrinkRowCount(oldCount - newCount);
         } else if (newCount > oldCount) {
-            growRowCount(newCount - oldCount);
+            cellStartDelay = growRowCount(newCount - oldCount);
+        } else {
+            cellStartDelay = 0L;
         }
-        populateRows(newCount);
+
+        populateRows(newCount, cellStartDelay);
     }
 
     private void requestPopulate() {
@@ -460,17 +469,19 @@ public class GridGraphView extends LinearLayout {
     }
 
     public void setAdapter(@Nullable Adapter adapter) {
-        if (this.adapter != null) {
-            this.adapter.unregisterObserver(ADAPTER_OBSERVER);
+        if (adapter != this.adapter) {
+            if (this.adapter != null) {
+                this.adapter.unregisterObserver(ADAPTER_OBSERVER);
+            }
+
+            this.adapter = adapter;
+
+            if (adapter != null) {
+                adapter.registerObserver(ADAPTER_OBSERVER);
+            }
+
+            requestPopulate();
         }
-
-        this.adapter = adapter;
-
-        if (adapter != null) {
-            adapter.registerObserver(ADAPTER_OBSERVER);
-        }
-
-        requestPopulate();
     }
 
     //endregion
