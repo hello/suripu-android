@@ -1,8 +1,6 @@
 package is.hello.sense.ui.widget.graphing;
 
 import android.animation.LayoutTransition;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.ColorInt;
@@ -21,10 +19,18 @@ import java.util.Deque;
 import java.util.List;
 
 import is.hello.go99.Anime;
+import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
+
+import static is.hello.go99.animators.MultiAnimator.empty;
 
 public class GridGraphView extends LinearLayout {
     private static final float TENSION = 0.5f;
+    private static final float SCALE_MIN = 0.9f;
+    private static final float SCALE_MAX = 1.0f;
+    private static final float ALPHA_MIN = 0.0f;
+    private static final float ALPHA_MAX = 1.0f;
+    private static final long TIME_PER_ROW = 50L;
 
     private final LayoutParams rowLayoutParams;
     private final LayoutParams cellLayoutParams;
@@ -53,18 +59,34 @@ public class GridGraphView extends LinearLayout {
         setShowDividers(SHOW_DIVIDER_MIDDLE);
 
         final LayoutTransition layoutTransition = new LayoutTransition();
-        final ObjectAnimator appearing =
-                ObjectAnimator.ofPropertyValuesHolder((Object) null,
-                                                      PropertyValuesHolder.ofFloat("alpha", 0.0f, 1.0f),
-                                                      PropertyValuesHolder.ofFloat("scaleX", 0.9f, 1.0f),
-                                                      PropertyValuesHolder.ofFloat("scaleY", 0.9f, 1.0f));
+        final MultiAnimator appearing = empty()
+                .addOnAnimationWillStart(animator -> {
+                    final LinearLayout rowView = (LinearLayout) animator.getTarget();
+                    rowView.setAlpha(ALPHA_MIN);
+                    rowView.setScaleX(SCALE_MIN);
+                    rowView.setScaleY(SCALE_MIN);
+
+                    final Integer index = (Integer) rowView.getTag(R.id.view_grid_graph_animation_index);
+                    if (index != null) {
+                        animator.setStartDelay(index * TIME_PER_ROW);
+                        rowView.setTag(R.id.view_grid_graph_animation_index, null);
+                    }
+                })
+                .alpha(ALPHA_MAX)
+                .scale(SCALE_MAX);
         layoutTransition.setAnimator(LayoutTransition.APPEARING, appearing);
 
-        final ObjectAnimator disappearing =
-                ObjectAnimator.ofPropertyValuesHolder((Object) null,
-                                                      PropertyValuesHolder.ofFloat("alpha", 1.0f, 0.0f),
-                                                      PropertyValuesHolder.ofFloat("scaleX", 1.0f, 0.9f),
-                                                      PropertyValuesHolder.ofFloat("scaleY", 1.0f, 0.9f));
+        final MultiAnimator disappearing = empty()
+                .addOnAnimationWillStart(animator -> {
+                    final LinearLayout rowView = (LinearLayout) animator.getTarget();
+                    final Integer index = (Integer) rowView.getTag(R.id.view_grid_graph_animation_index);
+                    if (index != null) {
+                        animator.setStartDelay(index * TIME_PER_ROW);
+                        rowView.setTag(R.id.view_grid_graph_animation_index, null);
+                    }
+                })
+                .alpha(ALPHA_MIN)
+                .scale(SCALE_MIN);
         layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, disappearing);
 
         layoutTransition.setInterpolator(LayoutTransition.APPEARING,
@@ -75,16 +97,30 @@ public class GridGraphView extends LinearLayout {
                                          new OvershootInterpolator(TENSION));
         layoutTransition.setInterpolator(LayoutTransition.CHANGE_DISAPPEARING,
                                          new AnticipateInterpolator(TENSION));
+        layoutTransition.setStagger(LayoutTransition.CHANGE_APPEARING, 0L);
         layoutTransition.setStartDelay(LayoutTransition.CHANGE_APPEARING,
-                                       Anime.DURATION_SLOW / 2L);
+                                       TIME_PER_ROW / 2L);
+        layoutTransition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING,
+                                       TIME_PER_ROW / 2L);
         layoutTransition.setDuration(Anime.DURATION_SLOW);
 
         setLayoutTransition(layoutTransition);
 
-        this.rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         this.cellLayoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
+        this.rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         this.interRowPadding = resources.getDimensionPixelSize(R.dimen.gap_small);
     }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+
+        for (final LinearLayout row : rows) {
+            row.setPivotX(row.getMeasuredWidth() / 2f);
+            row.setPivotY(0f);
+        }
+    }
+
 
     //region Vending Views
 
@@ -128,11 +164,6 @@ public class GridGraphView extends LinearLayout {
     }
 
     private void recycleRow(@NonNull LinearLayout row) {
-        while (row.getChildCount() > 0) {
-            final GridDataPointView cell = (GridDataPointView) row.getChildAt(0);
-            row.removeView(cell);
-            cellScrap.add(cell);
-        }
         removeView(row);
         rows.remove(row);
         rowScrap.offer(row);
@@ -153,14 +184,17 @@ public class GridGraphView extends LinearLayout {
         if (newRowCount < oldRowCount) {
             final int toRemove = (oldRowCount - newRowCount);
             for (int i = 0; i < toRemove; i++) {
-                recycleRow(rows.get(0));
+                final LinearLayout rowView = rows.get(0);
+                rowView.setTag(R.id.view_grid_graph_animation_index, toRemove - i);
+                recycleRow(rowView);
             }
         } else if (newRowCount > oldRowCount) {
             final int toAdd = (newRowCount - oldRowCount);
             for (int i = 0; i < toAdd; i++) {
-                final LinearLayout row = dequeueRow(context);
-                rows.add(0, row);
-                addView(row, 0);
+                final LinearLayout rowView = dequeueRow(context);
+                rowView.setTag(R.id.view_grid_graph_animation_index, toAdd - i);
+                rows.add(0, rowView);
+                addView(rowView, 0);
             }
         }
 
