@@ -15,6 +15,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        mavenLocal()
         /*
          * You will need to define the following properties in "$HOME/.gradle/gradle.properties"
          *
