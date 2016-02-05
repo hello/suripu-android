@@ -12,7 +12,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.ArrayDeque;
@@ -32,8 +31,7 @@ public class GridGraphView extends LinearLayout {
     private static final float ALPHA_MIN = 0.0f;
     private static final float ALPHA_MAX = 1.0f;
 
-    private static final long TIME_PER_ROW = 50L;
-    private static final long CHANGE_START_DELAY = (TIME_PER_ROW / 2L);
+    private static final long ROW_STAGGER = 50L;
 
     private final LayoutParams rowLayoutParams;
     private final LayoutParams cellLayoutParams;
@@ -63,24 +61,18 @@ public class GridGraphView extends LinearLayout {
 
         final LayoutTransition layoutTransition = new LayoutTransition();
 
-        layoutTransition.setAnimator(LayoutTransition.APPEARING,
-                                     createAppearingAnimator());
-        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING,
-                                     createDisappearingAnimator());
+        layoutTransition.setAnimator(LayoutTransition.APPEARING, createAppearingAnimator());
+        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, createDisappearingAnimator());
 
-        layoutTransition.setInterpolator(LayoutTransition.APPEARING,
-                                         new AnticipateInterpolator(TENSION));
-        layoutTransition.setInterpolator(LayoutTransition.DISAPPEARING,
-                                         new AnticipateOvershootInterpolator(TENSION));
-        layoutTransition.setInterpolator(LayoutTransition.CHANGE_APPEARING,
-                                         new OvershootInterpolator(TENSION));
-        layoutTransition.setInterpolator(LayoutTransition.CHANGE_DISAPPEARING,
-                                         new AnticipateInterpolator(TENSION));
+        final AnticipateInterpolator anticipate = new AnticipateInterpolator(TENSION);
+        final AnticipateOvershootInterpolator anticipateOvershoot =
+                new AnticipateOvershootInterpolator(TENSION);
+        layoutTransition.setInterpolator(LayoutTransition.APPEARING, anticipate);
+        layoutTransition.setInterpolator(LayoutTransition.DISAPPEARING, anticipateOvershoot);
 
-        layoutTransition.setStartDelay(LayoutTransition.CHANGE_APPEARING,
-                                       CHANGE_START_DELAY);
-        layoutTransition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING,
-                                       CHANGE_START_DELAY);
+        layoutTransition.setInterpolator(LayoutTransition.CHANGE_APPEARING, anticipateOvershoot);
+        layoutTransition.setInterpolator(LayoutTransition.CHANGE_DISAPPEARING, anticipate);
+
         layoutTransition.setDuration(Anime.DURATION_SLOW);
 
         setLayoutTransition(layoutTransition);
@@ -126,7 +118,7 @@ public class GridGraphView extends LinearLayout {
 
                                 final Integer index = getAnimationIndex(rowView);
                                 if (index != -1) {
-                                    animator.setStartDelay(index * TIME_PER_ROW);
+                                    animator.setStartDelay(index * ROW_STAGGER);
                                     clearAnimationIndex(rowView);
                                 }
                             })
@@ -140,7 +132,7 @@ public class GridGraphView extends LinearLayout {
                                 final View rowView = animator.getTarget();
                                 final Integer index = getAnimationIndex(rowView);
                                 if (index != -1) {
-                                    animator.setStartDelay(index * TIME_PER_ROW);
+                                    animator.setStartDelay(index * ROW_STAGGER);
                                     clearAnimationIndex(rowView);
                                 }
                             })
@@ -212,6 +204,10 @@ public class GridGraphView extends LinearLayout {
         final Context context = getContext();
         if (newRowCount < oldRowCount) {
             final int toRemove = (oldRowCount - newRowCount);
+
+            getLayoutTransition().setStartDelay(LayoutTransition.CHANGE_DISAPPEARING,
+                                                (ROW_STAGGER * toRemove) / 2L);
+
             for (int i = 0; i < toRemove; i++) {
                 final LinearLayout rowView = rows.get(0);
                 setAnimationIndex(rowView, toRemove - i);
@@ -219,6 +215,10 @@ public class GridGraphView extends LinearLayout {
             }
         } else if (newRowCount > oldRowCount) {
             final int toAdd = (newRowCount - oldRowCount);
+
+            getLayoutTransition().setStartDelay(LayoutTransition.CHANGE_APPEARING,
+                                                (ROW_STAGGER * toAdd) / 4L);
+
             for (int i = 0; i < toAdd; i++) {
                 final LinearLayout rowView = dequeueRow(context);
                 setAnimationIndex(rowView, toAdd - i);
