@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget.graphing;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -18,7 +19,11 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
+
+import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.widget.util.Drawing;
 
 public class GridGraphCellView extends View {
@@ -35,6 +40,8 @@ public class GridGraphCellView extends View {
     private @Nullable String value;
     private float borderInset;
     private @Nullable Border border;
+
+    private @Nullable WeakReference<ValueAnimator> fillColorAnimator;
 
 
     //region Lifecycle
@@ -103,13 +110,24 @@ public class GridGraphCellView extends View {
 
     @Override
     protected boolean onSetAlpha(int alpha) {
+        final ValueAnimator fillColorAnimator = Functions.extract(this.fillColorAnimator);
+        if (fillColorAnimator != null) {
+            fillColorAnimator.cancel();
+        }
+
         fillPaint.setAlpha(alpha);
         textPaint.setAlpha(alpha);
         borderPaint.setAlpha(alpha);
+
         return true;
     }
 
     public void setFillColor(@ColorInt int fillColor) {
+        final ValueAnimator fillColorAnimator = Functions.extract(this.fillColorAnimator);
+        if (fillColorAnimator != null) {
+            fillColorAnimator.cancel();
+        }
+
         fillPaint.setColor(Drawing.colorWithAlpha(fillColor, fillPaint.getAlpha()));
         invalidate();
     }
@@ -153,6 +171,27 @@ public class GridGraphCellView extends View {
 
         this.border = border;
         invalidate();
+    }
+
+    @Nullable
+    public ValueAnimator createFillColorAnimator(@ColorInt int newColor) {
+        final @ColorInt int startColor = fillPaint.getColor();
+        final @ColorInt int endColor = Drawing.colorWithAlpha(newColor, fillPaint.getAlpha());
+        if (startColor == endColor) {
+            return null;
+        }
+
+        final ValueAnimator fillColorAnimator =
+                AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
+        fillColorAnimator.addUpdateListener(animator -> {
+            final @ColorInt int color = (int) animator.getAnimatedValue();
+            fillPaint.setColor(color);
+            invalidate();
+        });
+
+        this.fillColorAnimator = new WeakReference<>(fillColorAnimator);
+
+        return fillColorAnimator;
     }
 
     //endregion
