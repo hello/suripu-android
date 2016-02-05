@@ -187,9 +187,11 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                                                      CONDITION_VISIBLE_MS,
                                                      TimeUnit.MILLISECONDS);
                             });
+
+                            animatorFor(status, getAnimatorContext())
+                                    .fadeIn()
+                                    .start();
                         })
-                        .andThen()
-                        .fadeIn()
                         .start();
             });
 

@@ -281,7 +281,7 @@ public class InsightsFragment extends BacksideTabFragment
 
     private Animator createRecyclerExit() {
         return animatorFor(recyclerView)
-                .addOnAnimationWillStart(() -> {
+                .addOnAnimationWillStart(animator -> {
                     // Ensure visual consistency.
                     if (recyclerView != null) {
                         recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);

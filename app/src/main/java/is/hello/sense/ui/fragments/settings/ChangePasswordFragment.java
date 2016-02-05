@@ -98,7 +98,16 @@ public class ChangePasswordFragment extends InjectionFragment {
         for (EditText editText : editTexts) {
             if (TextUtils.isEmpty(editText.getText())) {
                 editText.requestFocus();
-                animatorFor(editText).simplePop(1.4f).start();
+                animatorFor(editText)
+                        .scale(1.4f)
+                        .addOnAnimationCompleted(finished -> {
+                            if (finished) {
+                                animatorFor(editText)
+                                        .scale(1.0f)
+                                        .start();
+                            }
+                        })
+                        .start();
                 return true;
             }
         }

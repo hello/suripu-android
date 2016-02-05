@@ -83,7 +83,16 @@ public class ChangeEmailFragment extends InjectionFragment {
         email.setText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
             email.requestFocus();
-            animatorFor(email).simplePop(1.4f).start();
+            animatorFor(email)
+                    .scale(1.4f)
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            animatorFor(email)
+                                    .scale(1.0f)
+                                    .start();
+                        }
+                    })
+                    .start();
 
             return;
         }
