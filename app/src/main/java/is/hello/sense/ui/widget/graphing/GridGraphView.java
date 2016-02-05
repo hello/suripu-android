@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.DataSetObservable;
+import android.database.DataSetObserver;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +26,8 @@ import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 
 public class GridGraphView extends LinearLayout {
+    private static final int MSG_POPULATE = 0x606;
+
     private static final float TENSION = 0.5f;
 
     private static final float SCALE_MIN = 0.9f;
@@ -38,9 +42,10 @@ public class GridGraphView extends LinearLayout {
     private final int interRowPadding;
 
     private final Deque<LinearLayout> rowScrap = new ArrayDeque<>();
-    private final Deque<GridDataPointView> cellScrap = new ArrayDeque<>();
+    private final Deque<GridGraphCellView> cellScrap = new ArrayDeque<>();
     private final List<LinearLayout> rows = new ArrayList<>();
 
+    private final Runnable populateCallback = this::populate;
     private Adapter adapter;
 
     public GridGraphView(@NonNull Context context) {
@@ -145,7 +150,7 @@ public class GridGraphView extends LinearLayout {
 
     //region Vending Views
 
-    private LinearLayout createRow(@NonNull Context context) {
+    private LinearLayout createRowView(@NonNull Context context) {
         final LinearLayout row = new LinearLayout(context);
         row.setOrientation(HORIZONTAL);
         row.setGravity(Gravity.CENTER);
@@ -153,34 +158,35 @@ public class GridGraphView extends LinearLayout {
         return row;
     }
 
-    private GridDataPointView createCell(@NonNull Context context) {
-        final GridDataPointView cell = new GridDataPointView(context);
+    private GridGraphCellView createCellView(@NonNull Context context) {
+        final GridGraphCellView cell = new GridGraphCellView(context);
         cell.setLayoutParams(cellLayoutParams);
         return cell;
     }
 
-    private LinearLayout dequeueRow(@NonNull Context context) {
+    private LinearLayout dequeueRowView(@NonNull Context context) {
         LinearLayout row = rowScrap.poll();
         if (row == null) {
-            row = createRow(context);
+            row = createRowView(context);
         }
         return row;
     }
 
-    private GridDataPointView dequeueCell(@NonNull Context context) {
-        GridDataPointView cell = cellScrap.poll();
+    private GridGraphCellView dequeueCellView(@NonNull Context context) {
+        GridGraphCellView cell = cellScrap.poll();
         if (cell == null) {
-            cell = createCell(context);
+            cell = createCellView(context);
         }
         return cell;
     }
 
-    private void recycleUnusedRowCells(@NonNull LinearLayout row, int targetCount) {
-        while (row.getChildCount() > targetCount) {
-            final int lastView = row.getChildCount() - 1;
-            final GridDataPointView cell = (GridDataPointView) row.getChildAt(lastView);
-            cellScrap.offer(cell);
-            row.removeViewAt(lastView);
+    private void recycleUnusedRowCells(@NonNull LinearLayout rowView,
+                                       int targetCount) {
+        while (rowView.getChildCount() > targetCount) {
+            final int lastChildIndex = rowView.getChildCount() - 1;
+            final GridGraphCellView cellView = (GridGraphCellView) rowView.getChildAt(lastChildIndex);
+            cellScrap.offer(cellView);
+            rowView.removeViewAt(lastChildIndex);
         }
     }
 
@@ -194,14 +200,16 @@ public class GridGraphView extends LinearLayout {
 
     //region Populating
 
-    private void displayDataPoint(GridDataPointView itemView, int row, int item) {
-        itemView.setValue(adapter.getValueReading(row, item));
-        itemView.setFillColor(adapter.getValueColor(row, item));
-        itemView.setBorder(adapter.getValueBorder(row, item));
+    private void displayDataPoint(GridGraphCellView itemView, int row, int item) {
+        itemView.setValue(adapter.getCellReading(row, item));
+        itemView.setFillColor(adapter.getCellColor(row, item));
+        itemView.setBorder(adapter.getCellBorder(row, item));
     }
 
-    private void populate(int oldRowCount, int newRowCount) {
+    private void populate() {
         final Context context = getContext();
+        final int oldRowCount = rows.size();
+        final int newRowCount = adapter != null ? adapter.getRowCount() : 0;
         if (newRowCount < oldRowCount) {
             final int toRemove = (oldRowCount - newRowCount);
 
@@ -220,7 +228,7 @@ public class GridGraphView extends LinearLayout {
                                                 (ROW_STAGGER * toAdd) / 4L);
 
             for (int i = 0; i < toAdd; i++) {
-                final LinearLayout rowView = dequeueRow(context);
+                final LinearLayout rowView = dequeueRowView(context);
                 setAnimationIndex(rowView, toAdd - i);
                 rows.add(0, rowView);
                 addView(rowView, 0);
@@ -230,18 +238,18 @@ public class GridGraphView extends LinearLayout {
         final int lastRow = newRowCount - 1;
         for (int row = 0; row < newRowCount; row++) {
             final LinearLayout rowView = rows.get(row);
-            final int itemCount = adapter.getSectionItemCount(row);
-            for (int item = 0; item < itemCount; item++) {
-                GridDataPointView itemView = (GridDataPointView) rowView.getChildAt(item);
-                if (itemView == null) {
-                    itemView = dequeueCell(context);
-                    rowView.addView(itemView);
+            final int cellCount = adapter.getRowCellCount(row);
+            for (int cell = 0; cell < cellCount; cell++) {
+                GridGraphCellView cellView = (GridGraphCellView) rowView.getChildAt(cell);
+                if (cellView == null) {
+                    cellView = dequeueCellView(context);
+                    rowView.addView(cellView);
                 }
 
-                displayDataPoint(itemView, row, item);
+                displayDataPoint(cellView, row, cell);
             }
 
-            recycleUnusedRowCells(rowView, itemCount);
+            recycleUnusedRowCells(rowView, cellCount);
 
             if (row != lastRow) {
                 rowView.setPadding(0, 0, 0, interRowPadding);
@@ -251,21 +259,62 @@ public class GridGraphView extends LinearLayout {
         }
     }
 
+    private void postPopulate() {
+        removeCallbacks(populateCallback);
+        post(populateCallback);
+    }
+
     //endregion
 
     public void setAdapter(@Nullable Adapter adapter) {
-        final int oldRowCount = this.adapter != null ? this.adapter.getSectionCount() : 0;
-        final int newRowCount = adapter != null ? adapter.getSectionCount() : 0;
+        if (this.adapter != null) {
+            this.adapter.unregisterObserver(ADAPTER_OBSERVER);
+        }
 
         this.adapter = adapter;
-        populate(oldRowCount, newRowCount);
+
+        if (adapter != null) {
+            adapter.registerObserver(ADAPTER_OBSERVER);
+        }
+
+        postPopulate();
     }
 
-    public interface Adapter {
-        int getSectionCount();
-        int getSectionItemCount(int section);
-        String getValueReading(int section, int item);
-        @ColorInt int getValueColor(int section, int item);
-        GridDataPointView.Border getValueBorder(int section, int item);
+    private final DataSetObserver ADAPTER_OBSERVER = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            postPopulate();
+        }
+
+        @Override
+        public void onInvalidated() {
+            setAdapter(null);
+        }
+    };
+
+    public abstract static class Adapter {
+        private final DataSetObservable observable = new DataSetObservable();
+
+        public void registerObserver(DataSetObserver observer) {
+            observable.registerObserver(observer);
+        }
+
+        public void unregisterObserver(DataSetObserver observer) {
+            observable.unregisterObserver(observer);
+        }
+
+        public void unregisterAll() {
+            observable.unregisterAll();
+        }
+
+        public void notifyDataSetChanged() {
+            observable.notifyChanged();
+        }
+
+        public abstract int getRowCount();
+        public abstract int getRowCellCount(int row);
+        public abstract @Nullable String getCellReading(int row, int cell);
+        public abstract @ColorInt int getCellColor(int row, int cell);
+        public abstract @Nullable GridGraphCellView.Border getCellBorder(int row, int cell);
     }
 }

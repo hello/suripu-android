@@ -3,11 +3,14 @@ package is.hello.sense.ui.widget.graphing;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
@@ -18,7 +21,7 @@ import android.view.View;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Drawing;
 
-public class GridDataPointView extends View {
+public class GridGraphCellView extends View {
     private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF fillRect = new RectF();
@@ -30,33 +33,34 @@ public class GridDataPointView extends View {
 
     private int valueHeight;
     private @Nullable String value;
+    private float borderInset;
     private @Nullable Border border;
 
 
     //region Lifecycle
 
-    public GridDataPointView(@NonNull Context context) {
+    public GridGraphCellView(@NonNull Context context) {
         this(context, null);
     }
 
-    public GridDataPointView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public GridGraphCellView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public GridDataPointView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public GridGraphCellView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         final Resources resources = getResources();
 
-        Drawing.updateTextPaintFromStyle(textPaint, context, R.style.AppTheme_Text_GridDataPoint);
+        Drawing.updateTextPaintFromStyle(textPaint, context, R.style.AppTheme_Text_GridGraphCell);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         borderPaint.setStyle(Paint.Style.STROKE);
 
-        this.intrinsicWidth = resources.getDimensionPixelSize(R.dimen.view_grid_data_point_width);
+        this.intrinsicWidth = resources.getDimensionPixelSize(R.dimen.view_grid_graph_cell_width);
         setMinimumWidth(intrinsicWidth);
 
-        this.intrinsicHeight = resources.getDimensionPixelSize(R.dimen.view_grid_data_point_height);
+        this.intrinsicHeight = resources.getDimensionPixelSize(R.dimen.view_grid_graph_cell_height);
         setMinimumHeight(intrinsicHeight);
     }
 
@@ -83,10 +87,11 @@ public class GridDataPointView extends View {
         }
 
         if (border != null) {
-            fillRect.inset(border.inset, border.inset);
+            fillRect.inset(borderInset, borderInset);
 
             borderPath.reset();
             borderPath.addOval(fillRect, Path.Direction.CW);
+
             canvas.drawPath(borderPath, borderPaint);
         }
     }
@@ -123,8 +128,27 @@ public class GridDataPointView extends View {
 
     public void setBorder(@Nullable Border border) {
         if (border != null) {
-            borderPaint.setColor(Drawing.colorWithAlpha(border.color, borderPaint.getAlpha()));
-            borderPaint.setStrokeWidth(border.width);
+            final Resources resources = getResources();
+
+            if (border.color != 0) {
+                final @ColorInt int borderColor = resources.getColor(border.color);
+                borderPaint.setColor(Drawing.colorWithAlpha(borderColor, borderPaint.getAlpha()));
+            } else {
+                borderPaint.setColor(Color.TRANSPARENT);
+            }
+
+            if (border.width != 0) {
+                final float borderWidth = resources.getDimension(border.width);
+                borderPaint.setStrokeWidth(borderWidth);
+            } else {
+                borderPaint.setStrokeWidth(0f);
+            }
+
+            if (border.inset != 0) {
+                this.borderInset = resources.getDimension(border.inset);
+            } else {
+                this.borderInset = 0f;
+            }
         }
 
         this.border = border;
@@ -135,14 +159,23 @@ public class GridDataPointView extends View {
 
 
     public static class Border {
-        public final @ColorInt int color;
-        public final int inset;
-        public final int width;
+        public final @ColorRes int color;
+        public final @DimenRes int inset;
+        public final @DimenRes int width;
 
-        public Border(int color, int inset, int width) {
+        public Border(@ColorRes int color,
+                      @DimenRes int inset,
+                      @DimenRes int width) {
             this.color = color;
             this.inset = inset;
             this.width = width;
         }
     }
+
+    public static final Border BORDER_OUTSIDE = new Border(R.color.border,
+                                                           R.dimen.divider_size,
+                                                           0);
+    public static final Border BORDER_INSIDE = new Border(R.color.white,
+                                                          R.dimen.divider_size,
+                                                          R.dimen.divider_size);
 }
