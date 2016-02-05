@@ -45,6 +45,7 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -303,6 +304,11 @@ public final class TestApiService implements ApiService {
     public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
                                                         @NonNull @Query("time_period") String timePeriod) {
         return loadResponse("single_trend", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
+    }
+
+    @Override
+    public Observable<Trends> trends(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
+        return unimplemented();
     }
 
     @Override

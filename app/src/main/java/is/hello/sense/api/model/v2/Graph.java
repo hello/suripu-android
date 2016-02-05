@@ -1,6 +1,7 @@
 package is.hello.sense.api.model.v2;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -33,7 +34,8 @@ public class Graph extends ApiResponse {
     private List<GraphSection> sections;
 
     @SerializedName("condition_ranges")
-    private List<ConditionRange> conditionRanges;
+    @VisibleForTesting
+    List<ConditionRange> conditionRanges;
 
     @SerializedName("annotations")
     private List<Annotation> annotations;
