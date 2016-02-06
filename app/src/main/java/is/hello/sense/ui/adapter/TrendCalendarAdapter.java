@@ -89,7 +89,7 @@ public class TrendCalendarAdapter extends GridGraphView.Adapter {
         final Float value = section.getValues().get(cell);
         if (value == null) {
             return GridGraphCellView.BORDER_OUTSIDE;
-        } else if (row == getRowCount() - 1 && cell == getRowCellCount(row) - 1) {
+        } else if (section.getHighlightedValues().contains(cell)) {
             return GridGraphCellView.BORDER_INSIDE;
         } else {
             return null;
