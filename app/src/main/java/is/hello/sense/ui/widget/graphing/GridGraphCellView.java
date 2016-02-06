@@ -215,6 +215,6 @@ public class GridGraphCellView extends View {
                                                            R.dimen.divider_size,
                                                            0);
     public static final Border BORDER_INSIDE = new Border(R.color.white,
-                                                          R.dimen.divider_size,
-                                                          R.dimen.divider_size);
+                                                          R.dimen.divider_size_thick,
+                                                          R.dimen.divider_size_thick);
 }

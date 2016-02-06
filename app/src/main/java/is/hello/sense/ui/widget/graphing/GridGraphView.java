@@ -12,6 +12,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.go99.Anime;
-import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.util.Logger;
@@ -313,14 +313,14 @@ public class GridGraphView extends LinearLayout {
     //region Populating
 
     private void displayDataPoint(GridGraphCellView itemView,
-                                  boolean recycledCell,
+                                  boolean includeAnimation,
                                   int row,
                                   int cell) {
         itemView.setValue(adapter.getCellReading(row, cell));
         itemView.setBorder(adapter.getCellBorder(row, cell));
 
         final @ColorInt int cellColor = adapter.getCellColor(row, cell);
-        if (recycledCell) {
+        if (includeAnimation) {
             final ValueAnimator fillColorAnimator = itemView.createFillColorAnimator(cellColor);
             if (fillColorAnimator != null) {
                 pendingCellAnimators.add(fillColorAnimator);
@@ -336,9 +336,10 @@ public class GridGraphView extends LinearLayout {
         }
 
         if (!pendingCellAnimators.isEmpty()) {
-            final AnimatorSet cellAnimator = AnimatorTemplate.DEFAULT.apply(new AnimatorSet());
+            final AnimatorSet cellAnimator = new AnimatorSet();
             cellAnimator.setStartDelay(startDelay);
             cellAnimator.playTogether(pendingCellAnimators);
+            cellAnimator.setDuration(Anime.DURATION_SLOW);
             cellAnimator.start();
 
             pendingCellAnimators.clear();
@@ -392,7 +393,7 @@ public class GridGraphView extends LinearLayout {
         return startDelay;
     }
 
-    private void populateRows(int rowCount, long cellStartDelay) {
+    private void populateRows(int rowCount, long cellStartDelay, boolean includeCellAnimation) {
         if (DEBUG) {
             Logger.debug(getClass().getSimpleName(), "populateRows(" + rowCount + ")");
         }
@@ -410,7 +411,7 @@ public class GridGraphView extends LinearLayout {
                     recycledCell = false;
                 }
 
-                displayDataPoint(cellView, recycledCell, row, cell);
+                displayDataPoint(cellView, includeCellAnimation && recycledCell, row, cell);
             }
 
             recycleUnusedRowCells(rowView, cellCount);
@@ -441,7 +442,8 @@ public class GridGraphView extends LinearLayout {
             cellStartDelay = 0L;
         }
 
-        populateRows(newCount, cellStartDelay);
+        final boolean includeCellAnimation = (oldCount != 0);
+        populateRows(newCount, cellStartDelay, includeCellAnimation);
     }
 
     private void requestPopulate() {
@@ -465,6 +467,20 @@ public class GridGraphView extends LinearLayout {
         this.maxCellScrapCount = maxCellScrapCount;
         while (cellScrap.size() > maxCellScrapCount) {
             cellScrap.remove(0);
+        }
+    }
+
+    public void prime(int rows, int cellsPerRow) {
+        Log.d(getClass().getSimpleName(), "prime(" + rows + ", " + cellsPerRow + ")");
+
+        final Context context = getContext();
+        final int rowCount = rows - rowViews.size();
+        for (int row = 0; row < rowCount; row++) {
+            final LinearLayout rowView = createRowView(context);
+            for (int cell = 0; cell < cellsPerRow; cell++) {
+                rowView.addView(createCellView(context));
+            }
+            rowScrap.add(rowView);
         }
     }
 
