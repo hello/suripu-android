@@ -10,6 +10,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.widget.graphing.GridGraphCellView;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
 
@@ -21,6 +22,17 @@ public class TrendWeekAdapter extends GridGraphView.Adapter {
 
     public TrendWeekAdapter(@NonNull Context context) {
         this.context = context;
+    }
+
+    public int getEstimatedRowCount(@NonNull Trends.TimeScale timeScale) {
+        switch (timeScale) {
+            case LAST_MONTH:
+                return 5;
+            case LAST_WEEK:
+                return 2;
+            default:
+                return 1;
+        }
     }
 
     public void bind(@NonNull Graph graph) {

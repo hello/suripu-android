@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.util.Logger;
-
 public class GridRecycler<Row extends ViewGroup, Cell extends View> {
     private static final boolean DEBUG = false;
 
@@ -41,9 +39,18 @@ public class GridRecycler<Row extends ViewGroup, Cell extends View> {
         }
     }
 
+    /**
+     * Pre-allocates the specified number of row and cell views,
+     * and places them into the recycler scrap lists.
+     *
+     * @param rows  The number of rows to allocate.
+     * @param cellsPerRow   The number of cells to allocate per row.
+     */
     public void prime(int rows, int cellsPerRow) {
-        Log.d(getClass().getSimpleName(), "prime(" + rows + ", " + cellsPerRow + ")");
-
+        if (DEBUG) {
+            Log.d(getClass().getSimpleName(), "prime(" + rows + ", " + cellsPerRow + ")");
+        }
+        
         for (int row = 0; row < rows; row++) {
             final Row rowView = adapter.onCreateRowView();
             for (int cell = 0; cell < cellsPerRow; cell++) {
@@ -53,9 +60,21 @@ public class GridRecycler<Row extends ViewGroup, Cell extends View> {
         }
     }
 
+    /**
+     * Clears all scrap row and cell views from the recycler.
+     */
+    public void emptyScrap() {
+        if (DEBUG) {
+            Log.d(getClass().getSimpleName(), "emptyScrap()");
+        }
+        
+        rowScrap.clear();
+        cellScrap.clear();
+    }
+
     public Row dequeueRowView() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "dequeueRowView()");
+            Log.d(getClass().getSimpleName(), "dequeueRowView()");
         }
 
         if (rowScrap.isEmpty()) {
@@ -69,7 +88,7 @@ public class GridRecycler<Row extends ViewGroup, Cell extends View> {
 
     public Cell dequeueCellView() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "dequeueCellView()");
+            Log.d(getClass().getSimpleName(), "dequeueCellView()");
         }
 
         if (cellScrap.isEmpty()) {
@@ -83,7 +102,7 @@ public class GridRecycler<Row extends ViewGroup, Cell extends View> {
 
     public void recycleUnusedRowCells(@NonNull Row rowView, int targetCount) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "recycleUnusedRowCells(" + rowView +
+            Log.d(getClass().getSimpleName(), "recycleUnusedRowCells(" + rowView +
                     ", " + targetCount + ")");
         }
 
@@ -101,7 +120,7 @@ public class GridRecycler<Row extends ViewGroup, Cell extends View> {
 
     public void recycleRow(@NonNull Row rowView) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "recycleRow(" + rowView + ")");
+            Log.d(getClass().getSimpleName(), "recycleRow(" + rowView + ")");
         }
 
         if (rowScrap.size() < maxRowScrapCount) {

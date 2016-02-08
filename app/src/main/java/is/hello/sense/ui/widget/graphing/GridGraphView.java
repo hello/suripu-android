@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
-import is.hello.sense.util.Logger;
 
 public class GridGraphView extends LinearLayout
         implements GridRecycler.Adapter<LinearLayout, GridGraphCellView> {
@@ -195,8 +195,8 @@ public class GridGraphView extends LinearLayout
 
     public void bindParentLayoutTransition(@NonNull LayoutTransition parentLayoutTransition) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(),
-                         "bindParentLayoutTransition(" + parentLayoutTransition + ")");
+            Log.d(getClass().getSimpleName(),
+                  "bindParentLayoutTransition(" + parentLayoutTransition + ")");
         }
 
         final LayoutTransition myLayoutTransition = getLayoutTransition();
@@ -230,7 +230,7 @@ public class GridGraphView extends LinearLayout
     @Override
     public LinearLayout onCreateRowView() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "onCreateRowView()");
+            Log.d(getClass().getSimpleName(), "onCreateRowView()");
         }
 
         final LinearLayout row = new LinearLayout(getContext());
@@ -243,7 +243,7 @@ public class GridGraphView extends LinearLayout
     @Override
     public GridGraphCellView onCreateCellView() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "onCreateCellView()");
+            Log.d(getClass().getSimpleName(), "onCreateCellView()");
         }
 
         final GridGraphCellView cell = new GridGraphCellView(getContext());
@@ -288,7 +288,7 @@ public class GridGraphView extends LinearLayout
 
     private void runCellAnimators(long startDelay) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "runCellAnimators()");
+            Log.d(getClass().getSimpleName(), "runCellAnimators()");
         }
 
         if (!pendingCellAnimators.isEmpty()) {
@@ -304,7 +304,7 @@ public class GridGraphView extends LinearLayout
 
     private long shrinkRowCount(int delta) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "shrinkRowCount(" + delta + ")");
+            Log.d(getClass().getSimpleName(), "shrinkRowCount(" + delta + ")");
         }
 
         final long startDelay = (ROW_STAGGER * delta) / 2L;
@@ -327,7 +327,7 @@ public class GridGraphView extends LinearLayout
 
     private long growRowCount(int delta) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "growRowCount(" + delta + ")");
+            Log.d(getClass().getSimpleName(), "growRowCount(" + delta + ")");
         }
 
         final long startDelay = (ROW_STAGGER * delta) / 4L;
@@ -351,7 +351,7 @@ public class GridGraphView extends LinearLayout
 
     private void populateRows(int rowCount, long cellStartDelay, boolean includeCellAnimation) {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "populateRows(" + rowCount + ")");
+            Log.d(getClass().getSimpleName(), "populateRows(" + rowCount + ")");
         }
 
         final int lastRow = rowCount - 1;
@@ -385,7 +385,7 @@ public class GridGraphView extends LinearLayout
     @VisibleForTesting
     void populate() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "populate()");
+            Log.d(getClass().getSimpleName(), "populate()");
         }
 
         final int oldCount = rowViews.size();
@@ -414,10 +414,27 @@ public class GridGraphView extends LinearLayout
 
     //region Attributes
 
+    /**
+     * Pre-allocates all of the row and cell views necessary to render
+     * the content matching the parameters passed into this method.
+     *
+     * @param rows  The number of rows that will be rendered.
+     * @param cellsPerRow   The number of cells that will be rendered per row.
+     */
     public void prime(int rows, int cellsPerRow) {
         recycler.prime(rows - rowViews.size(), cellsPerRow);
         rowViews.ensureCapacity(rows);
         pendingCellAnimators.ensureCapacity(cellsPerRow);
+    }
+
+    /**
+     * Clears any scrap row and cell views in the {@code GridGraphView}'s {@link GridRecycler}.
+     * <p>
+     * Intended to be called from the trim memory callback in a fragment or activity.
+     * See {@code ComponentCallbacks2#TRIM_MEMORY_RUNNING_LOW}.
+     */
+    public void emptyScrap() {
+        recycler.emptyScrap();
     }
 
     public void setAdapter(@Nullable Adapter adapter) {
