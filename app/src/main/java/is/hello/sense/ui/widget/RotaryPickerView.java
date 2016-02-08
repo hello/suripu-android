@@ -94,7 +94,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         final TextPaint measuringPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         Drawing.updateTextPaintFromStyle(measuringPaint, context, ITEM_TEXT_APPEARANCE_FOCUSED);
         this.glyphWidth = Drawing.getMaximumGlyphWidth(measuringPaint);
-        this.glyphHeight = Drawing.getEstimatedTextHeight(measuringPaint);
+        this.glyphHeight = Drawing.getEstimatedLineHeight(measuringPaint, false);
 
         this.adapter = new ItemAdapter(resources);
 

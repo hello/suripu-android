@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
@@ -35,8 +34,8 @@ public class GridGraphCellView extends View {
 
     private final int intrinsicWidth;
     private final int intrinsicHeight;
+    private final int valueHeight;
 
-    private int valueHeight;
     private @Nullable String value;
     private float borderInset;
     private @Nullable Border border;
@@ -61,6 +60,8 @@ public class GridGraphCellView extends View {
 
         Drawing.updateTextPaintFromStyle(textPaint, context, R.style.AppTheme_Text_GridGraphCell);
         textPaint.setTextAlign(Paint.Align.CENTER);
+
+        this.valueHeight = Drawing.getEstimatedLineHeight(textPaint, true);
 
         borderPaint.setStyle(Paint.Style.STROKE);
 
@@ -134,13 +135,6 @@ public class GridGraphCellView extends View {
 
     public void setValue(@Nullable String value) {
         this.value = value;
-        if (TextUtils.isEmpty(value)) {
-            this.valueHeight = 0;
-        } else {
-            final Rect textBounds = new Rect();
-            textPaint.getTextBounds(value, 0, value.length(), textBounds);
-            this.valueHeight = textBounds.height();
-        }
         invalidate();
     }
 

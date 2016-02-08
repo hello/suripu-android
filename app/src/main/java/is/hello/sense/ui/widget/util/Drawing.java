@@ -25,13 +25,25 @@ public class Drawing {
     }
 
     /**
-     * Returns the estimated height that text rendered with a given paint will have.
+     * Estimates the line height that text rendered with a given {@code TextPaint} will have.
      * <p>
-     * This method allocates.
+     * This method allocates, do not call in {@code #onDraw(Canvas)}.
+     *
+     * @param paint The paint to use to calculate the font metrics.
+     * @param fixUpBaseline Whether or not the line height should be
+     *                      adjusted to include the ascent and descent.
+     * @return The estimated height of a line rendered with {@code paint}.
      */
-    public static int getEstimatedTextHeight(@NonNull Paint paint) {
-        Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
-        return Math.abs(fontMetrics.bottom - fontMetrics.top);
+    public static int getEstimatedLineHeight(@NonNull TextPaint paint, boolean fixUpBaseline) {
+        final Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
+        final int lineHeight = Math.abs(fontMetrics.bottom - fontMetrics.top);
+        if (fixUpBaseline) {
+            return (lineHeight +
+                    fontMetrics.ascent +
+                    fontMetrics.descent);
+        } else {
+            return lineHeight;
+        }
     }
 
     /**
