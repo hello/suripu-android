@@ -68,6 +68,7 @@ public class GridGraphView extends LinearLayout
     //region Attribute Backing
 
     private @Nullable LayoutTransition parentLayoutTransition;
+    private @NonNull GridGraphCellView.Size cellSize = GridGraphCellView.Size.REGULAR;
     private Adapter adapter;
 
     //endregion
@@ -366,6 +367,7 @@ public class GridGraphView extends LinearLayout
                     recycledCell = false;
                 }
 
+                cellView.setSize(cellSize);
                 displayDataPoint(cellView, includeCellAnimation && recycledCell, row, cell);
             }
 
@@ -433,7 +435,13 @@ public class GridGraphView extends LinearLayout
         }
     }
 
+    public void setCellSize(@NonNull GridGraphCellView.Size cellSize) {
+        this.cellSize = cellSize;
 
+        if (!rowViews.isEmpty()) {
+            requestPopulate();
+        }
+    }
 
     //endregion
 
@@ -469,7 +477,6 @@ public class GridGraphView extends LinearLayout
         public abstract int getRowCellCount(int row);
         public abstract @Nullable String getCellReading(int row, int cell);
         public abstract @ColorInt int getCellColor(int row, int cell);
-        public abstract @Nullable GridGraphCellView.Border getCellBorder(int row, int cell);
+        public abstract @NonNull GridGraphCellView.Border getCellBorder(int row, int cell);
     }
-
 }

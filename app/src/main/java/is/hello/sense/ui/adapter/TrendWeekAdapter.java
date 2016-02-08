@@ -12,17 +12,17 @@ import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.ui.widget.graphing.GridGraphCellView;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
 
-public class TrendCalendarAdapter extends GridGraphView.Adapter {
+public class TrendWeekAdapter extends GridGraphView.Adapter {
     private final Context context;
     private Graph graph;
 
     //region Lifecycle
 
-    public TrendCalendarAdapter(@NonNull Context context) {
+    public TrendWeekAdapter(@NonNull Context context) {
         this.context = context;
     }
 
-    public void bindTrendGraph(@NonNull Graph graph) {
+    public void bind(@NonNull Graph graph) {
         this.graph = graph;
         notifyDataSetChanged();
     }
@@ -83,17 +83,17 @@ public class TrendCalendarAdapter extends GridGraphView.Adapter {
         }
     }
 
-    @Nullable
+    @NonNull
     @Override
     public GridGraphCellView.Border getCellBorder(int row, int cell) {
         final GraphSection section = graph.getSections().get(row);
         final Float value = section.getValues().get(cell);
         if (value == null) {
-            return GridGraphCellView.BORDER_OUTSIDE;
+            return GridGraphCellView.Border.OUTSIDE;
         } else if (section.getHighlightedValues().contains(cell)) {
-            return GridGraphCellView.BORDER_INSIDE;
+            return GridGraphCellView.Border.INSIDE;
         } else {
-            return null;
+            return GridGraphCellView.Border.NONE;
         }
     }
 

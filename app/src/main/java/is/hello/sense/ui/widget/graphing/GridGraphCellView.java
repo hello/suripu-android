@@ -33,13 +33,15 @@ public class GridGraphCellView extends View {
     private final Path borderPath = new Path();
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private final int intrinsicWidth;
-    private final int intrinsicHeight;
     private final int valueHeight;
+    private int intrinsicWidth;
+    private int intrinsicHeight;
+    private boolean drawValue;
 
     private @Nullable String value;
     private float borderInset;
-    private @Nullable Border border;
+    private @NonNull Border border = Border.NONE;
+    private Size size;
 
     private @Nullable WeakReference<ValueAnimator> fillColorAnimator;
 
@@ -57,8 +59,6 @@ public class GridGraphCellView extends View {
     public GridGraphCellView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        final Resources resources = getResources();
-
         Drawing.updateTextPaintFromStyle(textPaint, context, R.style.AppTheme_Text_GridGraphCell);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -66,11 +66,7 @@ public class GridGraphCellView extends View {
 
         borderPaint.setStyle(Paint.Style.STROKE);
 
-        this.intrinsicWidth = resources.getDimensionPixelSize(R.dimen.view_grid_graph_cell_width);
-        setMinimumWidth(intrinsicWidth);
-
-        this.intrinsicHeight = resources.getDimensionPixelSize(R.dimen.view_grid_graph_cell_height);
-        setMinimumHeight(intrinsicHeight);
+        setSize(Size.REGULAR);
     }
 
     //endregion
@@ -89,13 +85,13 @@ public class GridGraphCellView extends View {
                      midY + (intrinsicHeight / 2));
         canvas.drawOval(fillRect, fillPaint);
 
-        if (!TextUtils.isEmpty(value)) {
+        if (drawValue && !TextUtils.isEmpty(value)) {
             canvas.drawText(value,
                             fillRect.centerX(), fillRect.centerY() + (valueHeight / 2f),
                             textPaint);
         }
 
-        if (border != null) {
+        if (border != Border.NONE) {
             fillRect.inset(borderInset, borderInset);
 
             borderPath.reset();
@@ -139,32 +135,47 @@ public class GridGraphCellView extends View {
         invalidate();
     }
 
-    public void setBorder(@Nullable Border border) {
-        if (border != null) {
-            if (border.color != 0) {
-                final @ColorInt int borderColor = ContextCompat.getColor(getContext(), border.color);
-                borderPaint.setColor(Drawing.colorWithAlpha(borderColor, borderPaint.getAlpha()));
-            } else {
-                borderPaint.setColor(Color.TRANSPARENT);
-            }
+    public void setBorder(@NonNull Border border) {
+        if (border.color != 0) {
+            final @ColorInt int borderColor = ContextCompat.getColor(getContext(), border.color);
+            borderPaint.setColor(Drawing.colorWithAlpha(borderColor, borderPaint.getAlpha()));
+        } else {
+            borderPaint.setColor(Color.TRANSPARENT);
+        }
 
-            final Resources resources = getResources();
-            if (border.width != 0) {
-                final float borderWidth = resources.getDimension(border.width);
-                borderPaint.setStrokeWidth(borderWidth);
-            } else {
-                borderPaint.setStrokeWidth(0f);
-            }
+        final Resources resources = getResources();
+        if (border.width != 0) {
+            final float borderWidth = resources.getDimension(border.width);
+            borderPaint.setStrokeWidth(borderWidth);
+        } else {
+            borderPaint.setStrokeWidth(0f);
+        }
 
-            if (border.inset != 0) {
-                this.borderInset = resources.getDimension(border.inset);
-            } else {
-                this.borderInset = 0f;
-            }
+        if (border.inset != 0) {
+            this.borderInset = resources.getDimension(border.inset);
+        } else {
+            this.borderInset = 0f;
         }
 
         this.border = border;
         invalidate();
+    }
+
+    public void setSize(@NonNull Size size) {
+        if (size != this.size) {
+            this.size = size;
+
+            final Resources resources = getResources();
+            this.intrinsicWidth = size.getWidth(resources);
+            setMinimumWidth(intrinsicWidth);
+
+            this.intrinsicHeight = size.getHeight(resources);
+            setMinimumHeight(intrinsicHeight);
+
+            this.drawValue = size.drawValue;
+
+            invalidate();
+        }
     }
 
     @Nullable
@@ -191,24 +202,54 @@ public class GridGraphCellView extends View {
     //endregion
 
 
-    public static class Border {
+    public enum Size {
+        REGULAR(R.dimen.view_grid_graph_cell_width,
+                R.dimen.view_grid_graph_cell_height,
+                true),
+        SMALL(R.dimen.view_grid_graph_cell_width_small,
+              R.dimen.view_grid_graph_cell_height_small,
+              false);
+
+        final @DimenRes int width;
+        final @DimenRes int height;
+        final boolean drawValue;
+
+        public int getWidth(@NonNull Resources resources) {
+            return resources.getDimensionPixelSize(width);
+        }
+
+        public int getHeight(@NonNull Resources resources) {
+            return resources.getDimensionPixelSize(height);
+        }
+
+        Size(@DimenRes int width,
+             @DimenRes int height,
+             boolean drawValue) {
+            this.width = width;
+            this.height = height;
+            this.drawValue = drawValue;
+        }
+    }
+
+    public enum Border {
+        NONE(0, 0, 0),
+        OUTSIDE(R.color.border,
+                R.dimen.divider_size,
+                0),
+        INSIDE(R.color.white,
+               R.dimen.divider_size_thick,
+               R.dimen.divider_size_thick);
+
         public final @ColorRes int color;
         public final @DimenRes int inset;
         public final @DimenRes int width;
 
-        public Border(@ColorRes int color,
-                      @DimenRes int inset,
-                      @DimenRes int width) {
+        Border(@ColorRes int color,
+               @DimenRes int inset,
+               @DimenRes int width) {
             this.color = color;
             this.inset = inset;
             this.width = width;
         }
     }
-
-    public static final Border BORDER_OUTSIDE = new Border(R.color.border,
-                                                           R.dimen.divider_size,
-                                                           0);
-    public static final Border BORDER_INSIDE = new Border(R.color.white,
-                                                          R.dimen.divider_size_thick,
-                                                          R.dimen.divider_size_thick);
 }

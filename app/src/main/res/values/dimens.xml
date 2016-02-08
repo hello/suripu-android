@@ -147,6 +147,8 @@
 
     <dimen name="view_grid_graph_cell_width">32dp</dimen>
     <dimen name="view_grid_graph_cell_height">32dp</dimen>
+    <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
+    <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
 
 
     <!-- Buttons -->
