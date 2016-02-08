@@ -19,7 +19,7 @@ public class Drawing {
     public static void updateTextPaintFromStyle(@NonNull TextPaint textPaint,
                                                 @NonNull Context context,
                                                 @StyleRes int styleRes) {
-        TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, styleRes);
+        final TextAppearanceSpan textAppearance = new TextAppearanceSpan(context, styleRes);
         textAppearance.updateDrawState(textPaint);
         textAppearance.updateMeasureState(textPaint);
     }

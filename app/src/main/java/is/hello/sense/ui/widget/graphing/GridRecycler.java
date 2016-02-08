@@ -11,7 +11,7 @@ import java.util.List;
 import is.hello.sense.util.Logger;
 
 public class GridRecycler<Row extends ViewGroup, Cell extends View> {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private final Adapter<Row, Cell> adapter;
 

@@ -22,7 +22,6 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
@@ -33,7 +32,7 @@ public class GridGraphView extends LinearLayout
         implements GridRecycler.Adapter<LinearLayout, GridGraphCellView> {
     //region Constants
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final float TENSION = 0.9f;
 
@@ -57,10 +56,10 @@ public class GridGraphView extends LinearLayout
 
     private final GridRecycler<LinearLayout, GridGraphCellView> recycler;
 
-    private final List<LinearLayout> rowViews = new ArrayList<>();
+    private final ArrayList<LinearLayout> rowViews = new ArrayList<>();
     private final Runnable populateCallback = this::populate;
 
-    private final List<Animator> pendingCellAnimators = new ArrayList<>();
+    private final ArrayList<Animator> pendingCellAnimators = new ArrayList<>();
 
     //endregion
 
@@ -417,6 +416,8 @@ public class GridGraphView extends LinearLayout
 
     public void prime(int rows, int cellsPerRow) {
         recycler.prime(rows - rowViews.size(), cellsPerRow);
+        rowViews.ensureCapacity(rows);
+        pendingCellAnimators.ensureCapacity(cellsPerRow);
     }
 
     public void setAdapter(@Nullable Adapter adapter) {
@@ -449,6 +450,34 @@ public class GridGraphView extends LinearLayout
         if (!rowViews.isEmpty()) {
             requestPopulate();
         }
+    }
+
+    /**
+     * Checks if the {@code GridGraphView} has any rows with content visible.
+     * @return  false if there are no rows with content; true otherwise.
+     */
+    public boolean isEmpty() {
+        return rowViews.isEmpty();
+    }
+
+    /**
+     * Calculates the estimated vertical space a given number of rows requires to be displayed
+     * in the {@code GridGraphView} with its current configuration.
+     * <p>
+     * Transitioning the height of both the {@code GridGraphView} and its parent can be a very
+     * expensive animation. Using this method, combined with {@code #setMinimumHeight(int)}
+     * allows code using {@code GridGraphView} to opportunistically size it before its populated
+     * with content, potentially preventing the height transition entirely.
+     *
+     * @param rowCount  The estimated number of rows.
+     * @return  The estimated height for the {@code GridGraphView}.
+     *
+     * @see #setCellSize(GridGraphCellView.Size)
+     * @see #setInterRowPadding(int)
+     */
+    public int getEstimatedHeight(int rowCount) {
+        final int rowHeight = cellSize.getHeight(getResources());
+        return (rowHeight * rowCount) + (interRowPadding * (rowCount - 1));
     }
 
     //endregion
