@@ -106,27 +106,13 @@ public class GridGraphCellView extends View {
 
     //region Attributes
 
-    @Override
-    protected boolean onSetAlpha(int alpha) {
-        final ValueAnimator fillColorAnimator = Functions.extract(this.fillColorAnimator);
-        if (fillColorAnimator != null) {
-            fillColorAnimator.cancel();
-        }
-
-        fillPaint.setAlpha(alpha);
-        textPaint.setAlpha(alpha);
-        borderPaint.setAlpha(alpha);
-
-        return true;
-    }
-
     public void setFillColor(@ColorInt int fillColor) {
         final ValueAnimator fillColorAnimator = Functions.extract(this.fillColorAnimator);
         if (fillColorAnimator != null) {
             fillColorAnimator.cancel();
         }
 
-        fillPaint.setColor(Drawing.colorWithAlpha(fillColor, fillPaint.getAlpha()));
+        fillPaint.setColor(fillColor);
         invalidate();
     }
 
@@ -136,29 +122,29 @@ public class GridGraphCellView extends View {
     }
 
     public void setBorder(@NonNull Border border) {
-        if (border.color != 0) {
-            final @ColorInt int borderColor = ContextCompat.getColor(getContext(), border.color);
-            borderPaint.setColor(Drawing.colorWithAlpha(borderColor, borderPaint.getAlpha()));
-        } else {
-            borderPaint.setColor(Color.TRANSPARENT);
-        }
+        if (border != this.border) {
+            if (border.color != 0) {
+                borderPaint.setColor(ContextCompat.getColor(getContext(), border.color));
+            } else {
+                borderPaint.setColor(Color.TRANSPARENT);
+            }
 
-        final Resources resources = getResources();
-        if (border.width != 0) {
-            final float borderWidth = resources.getDimension(border.width);
-            borderPaint.setStrokeWidth(borderWidth);
-        } else {
-            borderPaint.setStrokeWidth(0f);
-        }
+            final Resources resources = getResources();
+            if (border.width != 0) {
+                borderPaint.setStrokeWidth(resources.getDimension(border.width));
+            } else {
+                borderPaint.setStrokeWidth(0f);
+            }
 
-        if (border.inset != 0) {
-            this.borderInset = resources.getDimension(border.inset);
-        } else {
-            this.borderInset = 0f;
-        }
+            if (border.inset != 0) {
+                this.borderInset = resources.getDimension(border.inset);
+            } else {
+                this.borderInset = 0f;
+            }
 
-        this.border = border;
-        invalidate();
+            this.border = border;
+            invalidate();
+        }
     }
 
     public void setSize(@NonNull Size size) {

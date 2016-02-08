@@ -186,4 +186,24 @@ public class GridRecyclerTests extends SenseTestCase
         assertThat(createRowCalls, is(equalTo(2)));
         assertThat(createCellCalls, is(equalTo(2 * 7)));
     }
+
+    @Test
+    public void emptyScrap() {
+        recycler.prime(2, 7);
+        assertThat(createRowCalls, is(equalTo(2)));
+        assertThat(createCellCalls, is(equalTo(2 * 7)));
+
+        recycler.emptyScrap();
+        this.createRowCalls = 0;
+        this.createCellCalls = 0;
+
+        final FrameLayout row = recycler.dequeueRowView();
+        assertThat(row, is(notNullValue()));
+
+        final View cell = recycler.dequeueCellView();
+        assertThat(cell, is(notNullValue()));
+
+        assertThat(createRowCalls, is(equalTo(1)));
+        assertThat(createCellCalls, is(equalTo(1)));
+    }
 }

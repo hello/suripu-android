@@ -102,7 +102,7 @@ public class TrendWeekAdapter extends GridGraphView.Adapter {
     public GridGraphCellView.Border getCellBorder(int row, int cell) {
         final GraphSection section = graph.getSections().get(row);
         final Float value = section.getValues().get(cell);
-        if (value == null) {
+        if (value == null || value < 0f) {
             return GridGraphCellView.Border.OUTSIDE;
         } else if (section.getHighlightedValues().contains(cell)) {
             return GridGraphCellView.Border.INSIDE;

@@ -84,7 +84,7 @@ public class TrendMonthAdapter extends GridGraphView.Adapter {
     @Override
     public GridGraphCellView.Border getCellBorder(int row, int cell) {
         final Float value = sections.get(row).get(cell);
-        if (value == null) {
+        if (value == null || value < 0f) {
             return GridGraphCellView.Border.OUTSIDE;
         } else {
             return GridGraphCellView.Border.NONE;
