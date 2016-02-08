@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -68,6 +69,7 @@ public class TrendWeekAdapter extends GridGraphView.Adapter {
     }
 
     @Override
+    @ColorInt
     public int getCellColor(int row, int cell) {
         final GraphSection section = graph.getSections().get(row);
         final Float value = section.getValues().get(cell);

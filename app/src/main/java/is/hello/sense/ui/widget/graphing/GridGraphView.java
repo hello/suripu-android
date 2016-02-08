@@ -50,7 +50,6 @@ public class GridGraphView extends LinearLayout
 
     private final LayoutParams rowLayoutParams;
     private final LayoutParams cellLayoutParams;
-    private final int interRowPadding;
 
     //endregion
 
@@ -68,8 +67,9 @@ public class GridGraphView extends LinearLayout
     //region Attribute Backing
 
     private @Nullable LayoutTransition parentLayoutTransition;
-    private @NonNull GridGraphCellView.Size cellSize = GridGraphCellView.Size.REGULAR;
     private Adapter adapter;
+    private @NonNull GridGraphCellView.Size cellSize = GridGraphCellView.Size.REGULAR;
+    private int interRowPadding;
 
     //endregion
 
@@ -268,21 +268,22 @@ public class GridGraphView extends LinearLayout
 
     //region Populating
 
-    private void displayDataPoint(GridGraphCellView itemView,
+    private void displayDataPoint(GridGraphCellView cellView,
                                   boolean includeAnimation,
                                   int row,
                                   int cell) {
-        itemView.setValue(adapter.getCellReading(row, cell));
-        itemView.setBorder(adapter.getCellBorder(row, cell));
+        cellView.setSize(cellSize);
+        cellView.setValue(adapter.getCellReading(row, cell));
+        cellView.setBorder(adapter.getCellBorder(row, cell));
 
         final @ColorInt int cellColor = adapter.getCellColor(row, cell);
         if (includeAnimation) {
-            final ValueAnimator fillColorAnimator = itemView.createFillColorAnimator(cellColor);
+            final ValueAnimator fillColorAnimator = cellView.createFillColorAnimator(cellColor);
             if (fillColorAnimator != null) {
                 pendingCellAnimators.add(fillColorAnimator);
             }
         } else {
-            itemView.setFillColor(cellColor);
+            cellView.setFillColor(cellColor);
         }
     }
 
@@ -367,7 +368,6 @@ public class GridGraphView extends LinearLayout
                     recycledCell = false;
                 }
 
-                cellView.setSize(cellSize);
                 displayDataPoint(cellView, includeCellAnimation && recycledCell, row, cell);
             }
 
@@ -437,6 +437,14 @@ public class GridGraphView extends LinearLayout
 
     public void setCellSize(@NonNull GridGraphCellView.Size cellSize) {
         this.cellSize = cellSize;
+
+        if (!rowViews.isEmpty()) {
+            requestPopulate();
+        }
+    }
+
+    public void setInterRowPadding(int interRowPadding) {
+        this.interRowPadding = interRowPadding;
 
         if (!rowViews.isEmpty()) {
             requestPopulate();
