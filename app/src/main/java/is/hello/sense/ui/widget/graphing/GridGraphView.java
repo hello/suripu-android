@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +28,9 @@ import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.util.Logger;
-import rx.functions.Func0;
 
-public class GridGraphView extends LinearLayout {
+public class GridGraphView extends LinearLayout
+        implements GridRecycler.Adapter<LinearLayout, GridGraphCellView> {
     //region Constants
 
     private static final boolean DEBUG = true;
@@ -57,7 +56,7 @@ public class GridGraphView extends LinearLayout {
 
     //region Contents
 
-    private final Recycler<LinearLayout, GridGraphCellView> recycler;
+    private final GridRecycler<LinearLayout, GridGraphCellView> recycler;
 
     private final List<LinearLayout> rowViews = new ArrayList<>();
     private final Runnable populateCallback = this::populate;
@@ -114,7 +113,7 @@ public class GridGraphView extends LinearLayout {
         this.rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         this.interRowPadding = resources.getDimensionPixelSize(R.dimen.gap_small);
 
-        this.recycler = new Recycler<>(this::createRowView, this::createCellView);
+        this.recycler = new GridRecycler<>(this);
     }
 
     @Override
@@ -226,11 +225,12 @@ public class GridGraphView extends LinearLayout {
     //endregion
 
 
-    //region Vending Views
+    //region Recycler Adapter
 
-    private LinearLayout createRowView() {
+    @Override
+    public LinearLayout onCreateRowView() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "createRowView()");
+            Logger.debug(getClass().getSimpleName(), "onCreateRowView()");
         }
 
         final LinearLayout row = new LinearLayout(getContext());
@@ -240,14 +240,26 @@ public class GridGraphView extends LinearLayout {
         return row;
     }
 
-    private GridGraphCellView createCellView() {
+    @Override
+    public GridGraphCellView onCreateCellView() {
         if (DEBUG) {
-            Logger.debug(getClass().getSimpleName(), "createCellView()");
+            Logger.debug(getClass().getSimpleName(), "onCreateCellView()");
         }
 
         final GridGraphCellView cell = new GridGraphCellView(getContext());
         cell.setLayoutParams(cellLayoutParams);
         return cell;
+    }
+
+    @Override
+    public void onRowRecycled(@NonNull LinearLayout rowView) {
+        removeView(rowView);
+        rowViews.remove(rowView);
+    }
+
+    @Override
+    public void onCellRecycled(@NonNull GridGraphCellView cellView) {
+        // Do nothing.
     }
 
     //endregion
@@ -306,9 +318,6 @@ public class GridGraphView extends LinearLayout {
         for (int i = 0; i < delta; i++) {
             final LinearLayout rowView = rowViews.get(0);
             setAnimationIndex(rowView, delta - i);
-
-            removeView(rowView);
-            rowViews.remove(rowView);
             recycler.recycleRow(rowView);
         }
 
@@ -463,103 +472,4 @@ public class GridGraphView extends LinearLayout {
         public abstract @Nullable GridGraphCellView.Border getCellBorder(int row, int cell);
     }
 
-    public static class Recycler<Row extends ViewGroup, Cell extends View> {
-        private final Func0<Row> rowFactory;
-        private final Func0<Cell> cellFactory;
-
-        private final List<Row> rowScrap = new ArrayList<>();
-        private final List<Cell> cellScrap = new ArrayList<>();
-
-        private int maxRowScrapCount = 3;
-        private int maxCellScrapCount = 7;
-
-        Recycler(@NonNull Func0<Row> rowFactory,
-                 @NonNull Func0<Cell> cellFactory) {
-            this.rowFactory = rowFactory;
-            this.cellFactory = cellFactory;
-        }
-
-        public void setMaxRowScrapCount(int maxRowScrapCount) {
-            this.maxRowScrapCount = maxRowScrapCount;
-
-            while (rowScrap.size() > maxRowScrapCount) {
-                rowScrap.remove(0);
-            }
-        }
-
-        public void setMaxCellScrapCount(int maxCellScrapCount) {
-            this.maxCellScrapCount = maxCellScrapCount;
-
-            while (cellScrap.size() > maxCellScrapCount) {
-                cellScrap.remove(0);
-            }
-        }
-
-        public void prime(int rows, int cellsPerRow) {
-            Log.d(getClass().getSimpleName(), "prime(" + rows + ", " + cellsPerRow + ")");
-
-            for (int row = 0; row < rows; row++) {
-                final Row rowView = rowFactory.call();
-                for (int cell = 0; cell < cellsPerRow; cell++) {
-                    rowView.addView(cellFactory.call());
-                }
-                rowScrap.add(rowView);
-            }
-        }
-
-        public Row dequeueRowView() {
-            if (DEBUG) {
-                Logger.debug(getClass().getSimpleName(), "dequeueRowView()");
-            }
-
-            if (rowScrap.isEmpty()) {
-                return rowFactory.call();
-            } else {
-                final Row rowView = rowScrap.get(0);
-                rowScrap.remove(0);
-                return rowView;
-            }
-        }
-
-        public Cell dequeueCellView() {
-            if (DEBUG) {
-                Logger.debug(getClass().getSimpleName(), "dequeueCellView()");
-            }
-
-            if (cellScrap.isEmpty()) {
-                return cellFactory.call();
-            } else {
-                final Cell cellView = cellScrap.get(0);
-                cellScrap.remove(0);
-                return cellView;
-            }
-        }
-
-        public void recycleUnusedRowCells(@NonNull Row rowView, int targetCount) {
-            if (DEBUG) {
-                Logger.debug(getClass().getSimpleName(), "recycleUnusedRowCells(" + rowView +
-                        ", " + targetCount + ")");
-            }
-
-            while (rowView.getChildCount() > targetCount) {
-                final int lastChildIndex = rowView.getChildCount() - 1;
-                @SuppressWarnings("unchecked")
-                final Cell cellView = (Cell) rowView.getChildAt(lastChildIndex);
-                if (cellScrap.size() < maxCellScrapCount) {
-                    cellScrap.add(cellView);
-                }
-                rowView.removeViewAt(lastChildIndex);
-            }
-        }
-
-        public void recycleRow(@NonNull Row rowView) {
-            if (DEBUG) {
-                Logger.debug(getClass().getSimpleName(), "recycleRow(" + rowView + ")");
-            }
-
-            if (rowScrap.size() < maxRowScrapCount) {
-                rowScrap.add(rowView);
-            }
-        }
-    }
 }
