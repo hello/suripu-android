@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -27,6 +28,7 @@ public class RoundedRelativeLayout extends RelativeLayout {
     private final RectF clippingRect = new RectF();
 
     private final float[] cornerRadii = new float[8];
+    private boolean clipToPadding;
 
     //endregion
 
@@ -52,6 +54,13 @@ public class RoundedRelativeLayout extends RelativeLayout {
 
             values.recycle();
         }
+
+        //noinspection SimplifiableIfStatement
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.clipToPadding = getClipToPadding();
+        } else {
+            this.clipToPadding = true;
+        }
     }
 
     //endregion
@@ -61,10 +70,10 @@ public class RoundedRelativeLayout extends RelativeLayout {
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
-        canvas.save();
+        final int saveCount = canvas.save();
         canvas.clipPath(clippingPath);
         super.dispatchDraw(canvas);
-        canvas.restore();
+        canvas.restoreToCount(saveCount);
     }
 
     @Override
@@ -72,7 +81,11 @@ public class RoundedRelativeLayout extends RelativeLayout {
         super.onSizeChanged(w, h, oldW, oldH);
 
         clippingPath.reset();
-        clippingRect.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
+        if (clipToPadding) {
+            clippingRect.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
+        } else {
+            clippingRect.set(0, 0, w, h);
+        }
         clippingPath.addRoundRect(clippingRect, cornerRadii, Path.Direction.CW);
     }
 
@@ -81,7 +94,8 @@ public class RoundedRelativeLayout extends RelativeLayout {
 
     //region Properties
 
-    public void setCornerRadii(float topLeft, float topRight, float bottomLeft, float bottomRight) {
+    public void setCornerRadii(float topLeft, float topRight,
+                               float bottomLeft, float bottomRight) {
         cornerRadii[0] = topLeft;
         cornerRadii[1] = topLeft;
 
@@ -99,6 +113,12 @@ public class RoundedRelativeLayout extends RelativeLayout {
 
     public void setCornerRadii(float value) {
         setCornerRadii(value, value, value, value);
+    }
+
+    @Override
+    public void setClipToPadding(boolean clipToPadding) {
+        this.clipToPadding = clipToPadding;
+        super.setClipToPadding(clipToPadding);
     }
 
     //endregion

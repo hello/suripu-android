@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -27,6 +28,7 @@ public class RoundedLinearLayout extends LinearLayout {
     private final RectF clippingRect = new RectF();
 
     private final float[] cornerRadii = new float[8];
+    private boolean clipToPadding;
 
     //endregion
 
@@ -52,6 +54,13 @@ public class RoundedLinearLayout extends LinearLayout {
 
             values.recycle();
         }
+
+        //noinspection SimplifiableIfStatement
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.clipToPadding = getClipToPadding();
+        } else {
+            this.clipToPadding = true;
+        }
     }
 
     //endregion
@@ -61,10 +70,10 @@ public class RoundedLinearLayout extends LinearLayout {
 
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
-        canvas.save();
+        final int saveCount = canvas.save();
         canvas.clipPath(clippingPath);
         super.dispatchDraw(canvas);
-        canvas.restore();
+        canvas.restoreToCount(saveCount);
     }
 
     @Override
@@ -72,7 +81,11 @@ public class RoundedLinearLayout extends LinearLayout {
         super.onSizeChanged(w, h, oldW, oldH);
 
         clippingPath.reset();
-        clippingRect.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
+        if (clipToPadding) {
+            clippingRect.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
+        } else {
+            clippingRect.set(0, 0, w, h);
+        }
         clippingPath.addRoundRect(clippingRect, cornerRadii, Path.Direction.CW);
     }
 
@@ -99,6 +112,12 @@ public class RoundedLinearLayout extends LinearLayout {
 
     public void setCornerRadii(float value) {
         setCornerRadii(value, value, value, value);
+    }
+
+    @Override
+    public void setClipToPadding(boolean clipToPadding) {
+        this.clipToPadding = clipToPadding;
+        super.setClipToPadding(clipToPadding);
     }
 
     //endregion
