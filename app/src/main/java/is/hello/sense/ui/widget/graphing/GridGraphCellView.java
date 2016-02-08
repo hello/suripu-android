@@ -13,6 +13,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -140,15 +141,14 @@ public class GridGraphCellView extends View {
 
     public void setBorder(@Nullable Border border) {
         if (border != null) {
-            final Resources resources = getResources();
-
             if (border.color != 0) {
-                final @ColorInt int borderColor = resources.getColor(border.color);
+                final @ColorInt int borderColor = ContextCompat.getColor(getContext(), border.color);
                 borderPaint.setColor(Drawing.colorWithAlpha(borderColor, borderPaint.getAlpha()));
             } else {
                 borderPaint.setColor(Color.TRANSPARENT);
             }
 
+            final Resources resources = getResources();
             if (border.width != 0) {
                 final float borderWidth = resources.getDimension(border.width);
                 borderPaint.setStrokeWidth(borderWidth);

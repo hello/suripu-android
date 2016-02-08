@@ -1,8 +1,9 @@
 package is.hello.sense.ui.adapter;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
@@ -12,13 +13,13 @@ import is.hello.sense.ui.widget.graphing.GridGraphCellView;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
 
 public class TrendCalendarAdapter extends GridGraphView.Adapter {
-    private final Resources resources;
+    private final Context context;
     private Graph graph;
 
     //region Lifecycle
 
-    public TrendCalendarAdapter(@NonNull Resources resources) {
-        this.resources = resources;
+    public TrendCalendarAdapter(@NonNull Context context) {
+        this.context = context;
     }
 
     public void bindTrendGraph(@NonNull Graph graph) {
@@ -57,9 +58,9 @@ public class TrendCalendarAdapter extends GridGraphView.Adapter {
         final Float value = section.getValues().get(cell);
         if (value != null) {
             if (value < 0f) {
-                return resources.getString(R.string.missing_data_placeholder);
+                return context.getString(R.string.missing_data_placeholder);
             } else {
-                return String.format("%.0f", value);
+                return Integer.toString(value.intValue());
             }
         } else {
             return null;
@@ -72,13 +73,13 @@ public class TrendCalendarAdapter extends GridGraphView.Adapter {
         final Float value = section.getValues().get(cell);
         if (value != null) {
             if (value < 0f) {
-                return resources.getColor(R.color.graph_grid_empty_missing);
+                return ContextCompat.getColor(context, R.color.graph_grid_empty_missing);
             } else {
                 final Condition condition = graph.getConditionForValue(value);
-                return resources.getColor(condition.colorRes);
+                return ContextCompat.getColor(context, condition.colorRes);
             }
         } else {
-            return resources.getColor(R.color.graph_grid_empty_cell);
+            return ContextCompat.getColor(context, R.color.graph_grid_empty_cell);
         }
     }
 
