@@ -15,7 +15,7 @@ import is.hello.sense.ui.widget.ExtendedScrollView;
 import static is.hello.sense.functional.Functions.extract;
 
 public class BarHidingScrollListener implements ExtendedScrollView.OnScrollListener, View.OnTouchListener {
-    private final HideListener hideListener;
+    private final Listener listener;
     private final float barHeight;
     private float hideAmount = 0f;
 
@@ -25,7 +25,7 @@ public class BarHidingScrollListener implements ExtendedScrollView.OnScrollListe
     private @Nullable WeakReference<ValueAnimator> snapAnimator;
 
     public static void attach(@NonNull ExtendedScrollView scrollView,
-                              @NonNull HideListener hideListener,
+                              @NonNull Listener hideListener,
                               float initialHideAmount) {
         final float barHeight = scrollView.getResources().getDimensionPixelSize(R.dimen.action_bar_height);
         final BarHidingScrollListener listener = new BarHidingScrollListener(hideListener,
@@ -35,11 +35,11 @@ public class BarHidingScrollListener implements ExtendedScrollView.OnScrollListe
         scrollView.setOnTouchListener(listener);
     }
 
-    public BarHidingScrollListener(@NonNull HideListener hideListener,
+    public BarHidingScrollListener(@NonNull Listener listener,
                                    float barHeight,
                                    float initialHideAmount) {
         this.barHeight = barHeight;
-        this.hideListener = hideListener;
+        this.listener = listener;
         this.hideAmount = initialHideAmount;
     }
 
@@ -56,7 +56,7 @@ public class BarHidingScrollListener implements ExtendedScrollView.OnScrollListe
                 this.scrollingDown = false;
             }
 
-            hideListener.onHideAmountChanged(hideAmount);
+            listener.onHideAmountChanged(hideAmount);
         }
     }
 
@@ -75,7 +75,7 @@ public class BarHidingScrollListener implements ExtendedScrollView.OnScrollListe
         AnimatorTemplate.DEFAULT.apply(newAnimator);
         newAnimator.addUpdateListener(animator -> {
             this.hideAmount = (float) animator.getAnimatedValue();
-            hideListener.onHideAmountChanged(hideAmount);
+            listener.onHideAmountChanged(hideAmount);
         });
         newAnimator.start();
 
@@ -111,7 +111,7 @@ public class BarHidingScrollListener implements ExtendedScrollView.OnScrollListe
         return false;
     }
 
-    public interface HideListener {
+    public interface Listener {
         void onHideAmountChanged(float hideAmount);
     }
 }
