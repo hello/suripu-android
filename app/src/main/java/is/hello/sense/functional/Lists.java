@@ -41,6 +41,24 @@ public class Lists {
         return result;
     }
 
+    public static <T> List<List<T>> partition(@NonNull List<T> source, int step) {
+        final int sourceSize = source.size();
+        final int partitionCount = sourceSize / step;
+        final List<List<T>> partitions = new ArrayList<>(partitionCount);
+        for (int i = 0; i < partitionCount; i++) {
+            final int start = i * step;
+            final int end = start + step;
+            partitions.add(source.subList(start, end));
+        }
+
+        final int remainder = sourceSize % step;
+        if (remainder > 0) {
+            partitions.add(source.subList(sourceSize - remainder, sourceSize));
+        }
+
+        return partitions;
+    }
+
     public static <T extends Comparable<T>> List<T> sorted(@NonNull Collection<T> toSort, @NonNull Comparator<T> comparator) {
         List<T> sortedCopy = new ArrayList<>(toSort.size());
         sortedCopy.addAll(toSort);

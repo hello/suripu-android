@@ -6,70 +6,89 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class ListsTests {
     @Test
     public void testNewArrayList() {
-        ArrayList<String> empty = Lists.newArrayList();
-        assertNotNull(empty);
-        assertEquals(0, empty.size());
+        final ArrayList<String> empty = Lists.newArrayList();
+        assertThat(empty, is(notNullValue()));
+        assertThat(empty.size(), is(equalTo(0)));
 
-        ArrayList<String> single = Lists.newArrayList("one thing");
-        assertNotNull(single);
-        assertEquals(1, single.size());
-        assertEquals("one thing", single.get(0));
+        final ArrayList<String> single = Lists.newArrayList("one thing");
+        assertThat(single, is(notNullValue()));
+        assertThat(single.size(), is(equalTo(1)));
+        assertThat(single.get(0), is(equalTo("one thing")));
 
-        ArrayList<String> multiple = Lists.newArrayList("one thing", "two things", "three things", "more");
-        assertNotNull(multiple);
-        assertEquals(4, multiple.size());
-        assertEquals("one thing", multiple.get(0));
-        assertEquals("two things", multiple.get(1));
-        assertEquals("three things", multiple.get(2));
-        assertEquals("more", multiple.get(3));
+        final ArrayList<String> multiple = Lists.newArrayList("one thing", "two things", "three things", "more");
+        assertThat(multiple, is(notNullValue()));
+        assertThat(multiple.size(), is(equalTo(4)));
+        assertThat(multiple.get(0), is(equalTo("one thing")));
+        assertThat(multiple.get(1), is(equalTo("two things")));
+        assertThat(multiple.get(2), is(equalTo("three things")));
+        assertThat(multiple.get(3), is(equalTo("more")));
     }
 
     @Test
     public void testIsEmpty() {
-        assertTrue(Lists.isEmpty(null));
-        assertTrue(Lists.isEmpty(Collections.emptyList()));
-        assertFalse(Lists.isEmpty(Lists.newArrayList("not", "empty")));
+        assertThat(Lists.isEmpty(null), is(true));
+        assertThat(Lists.isEmpty(Collections.emptyList()), is(true));
+        assertThat(Lists.isEmpty(Lists.newArrayList("not", "empty")), is(false));
     }
 
     @Test
     public void testMap() {
-        List<String> numberStrings = Lists.newArrayList("1", "2", "3", "4", "5");
-        List<Integer> numbers = Lists.map(numberStrings, Integer::parseInt);
-        assertEquals(Lists.newArrayList(1, 2, 3, 4, 5), numbers);
+        final List<String> numberStrings = Lists.newArrayList("1", "2", "3", "4", "5");
+        final List<Integer> numbers = Lists.map(numberStrings, Integer::parseInt);
+        assertThat(numbers, is(equalTo(Lists.newArrayList(1, 2, 3, 4, 5))));
     }
 
     @Test
     public void testTakeEvery() {
-        List<Integer> ints = Lists.newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-        List<Integer> everyThree = Lists.takeEvery(ints, 3);
-        assertEquals(Lists.newArrayList(0, 3, 6, 9, 12), everyThree);
+        final List<Integer> ints = Lists.newArrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+        final List<Integer> everyThree = Lists.takeEvery(ints, 3);
+        assertThat(everyThree, is(equalTo(Lists.newArrayList(0, 3, 6, 9, 12))));
+    }
+
+    @Test
+    public void partition() {
+        final List<Integer> even = Lists.newArrayList(1, 2, 3,
+                                                      1, 2, 3,
+                                                      1, 2, 3);
+        final List<List<Integer>> evenPartitions = Lists.partition(even, 3);
+        assertThat(evenPartitions.size(), is(equalTo(3)));
+        for (final List<Integer> partition : evenPartitions) {
+            assertThat(partition, is(equalTo(Lists.newArrayList(1, 2, 3))));
+        }
+
+        final List<Integer> odd = Lists.newArrayList(1, 2, 3,
+                                                     1, 2);
+        final List<List<Integer>> oddPartitions = Lists.partition(odd, 3);
+        assertThat(oddPartitions.size(), is(equalTo(2)));
+        assertThat(oddPartitions.get(0), is(equalTo(Lists.newArrayList(1, 2, 3))));
+        assertThat(oddPartitions.get(1), is(equalTo(Lists.newArrayList(1, 2))));
     }
 
     @Test
     public void testSorted() {
-        List<Integer> ints = Lists.newArrayList(9, 5, 6, 88);
-        List<Integer> sorted = Lists.sorted(ints, Functions::compareInts);
-        assertEquals(Lists.newArrayList(5, 6, 9, 88), sorted);
+        final List<Integer> ints = Lists.newArrayList(9, 5, 6, 88);
+        final List<Integer> sorted = Lists.sorted(ints, Functions::compareInts);
+        assertThat(sorted, is(equalTo(Lists.newArrayList(5, 6, 9, 88))));
     }
 
     @Test
     public void testFiltered() {
-        List<Integer> ints = Lists.newArrayList(1, 2, 3, 4, 5);
-        List<Integer> filteredInts = Lists.filtered(ints, i -> (i % 2) == 0);
-        assertEquals(Lists.newArrayList(2, 4), filteredInts);
+        final List<Integer> ints = Lists.newArrayList(1, 2, 3, 4, 5);
+        final List<Integer> filteredInts = Lists.filtered(ints, i -> (i % 2) == 0);
+        assertThat(filteredInts, is(equalTo(Lists.newArrayList(2, 4))));
     }
 
     @Test
     public void testSumInt() {
-        List<Integer> ints = Lists.newArrayList(1, 2, 3, 4, 5);
-        assertEquals(15, Lists.sumInt(ints, i -> i));
+        final List<Integer> ints = Lists.newArrayList(1, 2, 3, 4, 5);
+        assertThat(Lists.sumInt(ints, i -> i), is(equalTo(15)));
     }
 }
