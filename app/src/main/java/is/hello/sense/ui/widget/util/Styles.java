@@ -42,7 +42,7 @@ import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
-import is.hello.sense.api.model.v2.Trend;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
@@ -378,20 +378,20 @@ public final class Styles {
         }
     }
 
-    public static float getColumnWidthPercent(Trend.TimeScale timeScale) {
-        if (timeScale == Trend.TimeScale.LAST_WEEK) {
+    public static float getColumnWidthPercent(Trends.TimeScale timeScale) {
+        if (timeScale == Trends.TimeScale.LAST_WEEK) {
             return .1276f;
-        } else if (timeScale == Trend.TimeScale.LAST_MONTH) {
+        } else if (timeScale == Trends.TimeScale.LAST_MONTH) {
             return .0257f;
         } else {
             return .0111f;
         }
     }
 
-    public static float getColumnSpacePercent(Trend.TimeScale timeScale) {
-        if (timeScale == Trend.TimeScale.LAST_WEEK) {
+    public static float getColumnSpacePercent(Trends.TimeScale timeScale) {
+        if (timeScale == Trends.TimeScale.LAST_WEEK) {
             return .0176f;
-        } else if (timeScale == Trend.TimeScale.LAST_MONTH) {
+        } else if (timeScale == Trends.TimeScale.LAST_MONTH) {
             return .007f;
         } else {
             return 0;

@@ -1,12 +1,8 @@
 package is.hello.sense.api.model.v2;
 
 
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.api.model.ApiResponse;

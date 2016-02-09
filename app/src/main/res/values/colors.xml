@@ -76,6 +76,9 @@
     <color name="graph_fill_gradient_bottom">#11000000</color>
     <color name="graph_fill_solid">#22D6D6D6</color>
 
+    <color name="graph_grid_empty_cell">@color/white</color>
+    <color name="graph_grid_empty_missing">#e5e9ec</color>
+
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
 </resources>

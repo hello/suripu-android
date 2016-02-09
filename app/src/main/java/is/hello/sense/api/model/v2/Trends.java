@@ -1,17 +1,15 @@
 package is.hello.sense.api.model.v2;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 
-public class Trend extends ApiResponse {
+public class Trends extends ApiResponse {
     @SerializedName("available_time_scales")
     private  List<TimeScale> availableTimeScales;
 
@@ -38,7 +36,7 @@ public class Trend extends ApiResponse {
         NONE,
         LAST_WEEK,
         LAST_MONTH,
-        LAST_3_WEEKS;
+        LAST_3_MONTHS;
 
         public static TimeScale fromString(@NonNull String string){
             return Enums.fromString(string, values(), NONE);

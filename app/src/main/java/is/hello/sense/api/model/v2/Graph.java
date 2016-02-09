@@ -1,20 +1,19 @@
 package is.hello.sense.api.model.v2;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.Condition;
 
 public class Graph extends ApiResponse {
     @SerializedName("time_scale")
-    private Trend.TimeScale timeScale;
+    private Trends.TimeScale timeScale;
 
     @SerializedName("title")
     private String title;
@@ -26,21 +25,22 @@ public class Graph extends ApiResponse {
     private GraphType graphType;
 
     @SerializedName("min_value")
-    private int minValue;
+    private float minValue;
 
     @SerializedName("max_value")
-    private int maxValue;
+    private float maxValue;
 
     @SerializedName("sections")
     private List<GraphSection> sections;
 
     @SerializedName("condition_ranges")
-    private List<ConditionRange> conditionRanges;
+    @VisibleForTesting
+    List<ConditionRange> conditionRanges;
 
     @SerializedName("annotations")
     private List<Annotation> annotations;
 
-    public Trend.TimeScale getTimeScale() {
+    public Trends.TimeScale getTimeScale() {
         return timeScale;
     }
 
@@ -56,11 +56,11 @@ public class Graph extends ApiResponse {
         return graphType;
     }
 
-    public int getMinValue() {
+    public float getMinValue() {
         return minValue;
     }
 
-    public int getMaxValue() {
+    public float getMaxValue() {
         return maxValue;
     }
 
@@ -74,6 +74,16 @@ public class Graph extends ApiResponse {
 
     public List<Annotation> getAnnotations() {
         return annotations;
+    }
+
+    public Condition getConditionForValue(float value) {
+        for (final ConditionRange conditionRange : conditionRanges) {
+            if (value >= conditionRange.getMinValue() && value <= conditionRange.getMaxValue()) {
+                return conditionRange.getCondition();
+            }
+        }
+
+        return Condition.UNKNOWN;
     }
 
     @Override

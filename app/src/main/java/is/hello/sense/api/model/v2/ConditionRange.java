@@ -1,9 +1,9 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
-
 
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
@@ -17,6 +17,15 @@ public class ConditionRange extends ApiResponse {
 
     @SerializedName("condition")
     private Condition condition;
+
+    @VisibleForTesting
+    public ConditionRange(int minValue,
+                          int maxValue,
+                          @NonNull Condition condition) {
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.condition = condition;
+    }
 
     public int getMinValue() {
         return minValue;

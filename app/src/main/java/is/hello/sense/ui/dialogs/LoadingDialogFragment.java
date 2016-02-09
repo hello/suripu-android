@@ -205,7 +205,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                             return;
 
                         animatorFor(checkMark)
-                                .addOnAnimationWillStart(() -> {
+                                .addOnAnimationWillStart(animator -> {
                                     checkMark.setAlpha(0f);
                                     checkMark.setScaleX(0f);
                                     checkMark.setScaleY(0f);

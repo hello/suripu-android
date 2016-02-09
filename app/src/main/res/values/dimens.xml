@@ -61,7 +61,7 @@
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
     <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
-    <dimen name="divider_height_edit_text">1dp</dimen>
+    <dimen name="divider_size_thick">1dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>
 
     <dimen name="raised_item_corner_radius">2dp</dimen>
@@ -144,6 +144,11 @@
     <dimen name="timeline_event_end_inset">8dp</dimen>
     <dimen name="timeline_event_text_top_inset">7dp</dimen>
     <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
+
+    <dimen name="view_grid_graph_cell_width">32dp</dimen>
+    <dimen name="view_grid_graph_cell_height">32dp</dimen>
+    <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
+    <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
 
 
     <!-- Buttons -->
