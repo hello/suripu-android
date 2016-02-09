@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
-import com.google.common.collect.Lists;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +13,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.GridGraphCellView;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
 
