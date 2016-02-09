@@ -25,6 +25,7 @@ import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
+import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Analytics;
@@ -51,7 +52,7 @@ public class BacksideFragment extends InjectionFragment
     private int tabSelectorHeight;
     private SelectorView tabSelector;
     private TabsBackgroundDrawable tabLine;
-    private ViewPager pager;
+    private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
 
     private boolean suppressNextSwipeEvent = false;
@@ -89,7 +90,9 @@ public class BacksideFragment extends InjectionFragment
 
         final Resources resources = getResources();
 
-        this.pager = (ViewPager) view.findViewById(R.id.fragment_backside_pager);
+        this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_backside_pager);
+        pager.setScrollingEnabled(false);
+        pager.setOverScrollMode(View.OVER_SCROLL_NEVER);
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new Item(TrendsFragment.class, getString(R.string.title_trends)),
