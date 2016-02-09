@@ -53,6 +53,14 @@ public abstract class BacksideTabFragment extends InjectionFragment {
     }
 
     /**
+     * Retrieves the {@link BacksideFragment} this tab fragment is contained in.
+     * @return  The fragment if the tab is attached; null otherwise.
+     */
+    protected BacksideFragment getBacksideFragment() {
+        return (BacksideFragment) getParentFragment();
+    }
+
+    /**
      * Hook provided for subclasses to perform animations, etc
      * when they're guaranteed to be fully on-screen.
      */
@@ -66,11 +74,6 @@ public abstract class BacksideTabFragment extends InjectionFragment {
 
 
     //region Content Insets
-
-    protected void setChromeTranslationAmount(float value) {
-        ((HomeActivity) getActivity()).setChromeTranslationAmount(value);
-        ((BacksideFragment) getParentFragment()).setChromeTranslationAmount(value);
-    }
 
     /**
      * Calculates the insets that should be applied to fragment's

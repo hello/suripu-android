@@ -222,6 +222,10 @@ public class BacksideFragment extends InjectionFragment
         }
     }
 
+    public float getChromeTranslationAmount() {
+        return (-tabSelector.getTranslationY() / tabSelectorHeight);
+    }
+
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
