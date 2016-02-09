@@ -17,7 +17,7 @@
         android:layout_centerHorizontal="true"
         app:dotStyle="white"/>
 
-    <is.hello.sense.ui.widget.FixedViewPager
+    <is.hello.sense.ui.widget.ExtendedViewPager
         android:id="@+id/fragment_dialog_welcome_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
