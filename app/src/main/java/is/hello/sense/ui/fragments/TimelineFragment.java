@@ -492,7 +492,8 @@ public class TimelineFragment extends InjectionFragment
     private void showHandholdingIfAppropriate() {
         if (homeActivity == null ||
                 homeActivity.isBacksideOpen() ||
-                WelcomeDialogFragment.isAnyVisible(homeActivity)) {
+                WelcomeDialogFragment.isAnyVisible(homeActivity) ||
+                getFragmentManager().findFragmentByTag(TimelineInfoFragment.TAG) != null) {
             return;
         }
 
