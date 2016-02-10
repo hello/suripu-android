@@ -15,7 +15,7 @@ import is.hello.sense.util.Analytics;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class PermissionChecker {
-    public static final int LOCATION_PERMISSION_REQUEST_CODE = Math.abs(Manifest.permission.ACCESS_COARSE_LOCATION.hashCode());
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 0x10C;
 
 
     // Location Permission Start
@@ -23,9 +23,12 @@ public class PermissionChecker {
         return fragment.getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED;
     }
 
-    public static boolean isLocationPermissionGranted(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        return (permissions.length == 1 && permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION) &&
-                grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED);
+    public static boolean isLocationPermissionGranted(int requestCode,
+                                                      @NonNull String[] permissions,
+                                                      @NonNull int[] grantResults) {
+        return (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
+                permissions.length == 1 && permissions[0].equals(Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
     }
 
     public static void requestLocationPermission(@NonNull Fragment fragment) {
