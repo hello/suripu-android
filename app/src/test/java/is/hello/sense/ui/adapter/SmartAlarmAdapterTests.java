@@ -102,7 +102,7 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
         assertThat(holder1.enabled.isChecked(), is(true));
-        assertThat(holder1.repeat.getText().toString(), is(equalTo("Smart Alarm  ―  Sun, Sat")));
+        assertThat(holder1.repeat.getText().toString(), is(equalTo("Smart Alarm  ―  Weekends")));
         assertThat(holder1.time.getText().toString(), is(equalTo("8:30 AM")));
 
         final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -135,7 +135,7 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
         assertThat(holder1.enabled.isChecked(), is(true));
-        assertThat(holder1.repeat.getText().toString(), is(equalTo("Alarm  ―  Sun, Sat")));
+        assertThat(holder1.repeat.getText().toString(), is(equalTo("Alarm  ―  Weekends")));
         assertThat(holder1.time.getText().toString(), is(equalTo("8:30 AM")));
 
         final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,

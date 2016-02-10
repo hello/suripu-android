@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -134,6 +135,44 @@ public class DateFormatterTests extends InjectionTestCase {
 
         assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 19)), is(false));
         assertThat(DateFormatter.isLastNight(new LocalDate(1969, 7, 20)), is(true));
+    }
+
+    //endregion
+
+
+    //region Week Periods
+
+    @Test
+    public void isWeekdays() {
+        assertThat(DateFormatter.isWeekdays(Lists.newArrayList(DateTimeConstants.MONDAY,
+                                                               DateTimeConstants.TUESDAY,
+                                                               DateTimeConstants.WEDNESDAY,
+                                                               DateTimeConstants.THURSDAY,
+                                                               DateTimeConstants.FRIDAY)),
+                   is(true));
+        assertThat(DateFormatter.isWeekdays(Lists.newArrayList(DateTimeConstants.MONDAY,
+                                                               DateTimeConstants.TUESDAY,
+                                                               DateTimeConstants.WEDNESDAY,
+                                                               DateTimeConstants.THURSDAY,
+                                                               DateTimeConstants.FRIDAY,
+                                                               DateTimeConstants.SATURDAY)),
+                   is(false));
+        assertThat(DateFormatter.isWeekdays(Lists.newArrayList(DateTimeConstants.MONDAY,
+                                                               DateTimeConstants.TUESDAY)),
+                   is(false));
+    }
+
+    @Test
+    public void isWeekend() {
+        assertThat(DateFormatter.isWeekend(Lists.newArrayList(DateTimeConstants.SUNDAY,
+                                                              DateTimeConstants.SATURDAY)),
+                   is(true));
+        assertThat(DateFormatter.isWeekend(Lists.newArrayList(DateTimeConstants.SUNDAY)),
+                   is(false));
+        assertThat(DateFormatter.isWeekend(Lists.newArrayList(DateTimeConstants.SUNDAY,
+                                                              DateTimeConstants.SATURDAY,
+                                                              DateTimeConstants.FRIDAY)),
+                   is(false));
     }
 
     //endregion

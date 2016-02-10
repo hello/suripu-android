@@ -160,6 +160,8 @@
         <item quantity="other">%1$d days</item>
     </plurals>
     <string name="alarm_repeat_weekly">Weekly</string>
+    <string name="alarm_repeat_weekends">Weekends</string>
+    <string name="alarm_repeat_weekdays">Weekdays</string>
     <string name="label_time_zone">Your Time Zone</string>
     <string name="label_choose_time_zone">Choose Another Time Zone</string>
     <string name="title_alarm_tone">Tone</string>

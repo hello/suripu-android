@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -138,6 +139,31 @@ import is.hello.sense.ui.widget.util.Styles;
     public static boolean isInLastWeek(@NonNull LocalDate instant) {
         Interval interval = new Interval(Weeks.ONE, nowDateTime().withTimeAtStartOfDay());
         return interval.contains(instant.toDateTimeAtStartOfDay());
+    }
+
+    //endregion
+
+    //region Week Periods
+
+    /**
+     * Checks whether a collection of {@code DateTimeConstants} represents the weekdays.
+     */
+    public static boolean isWeekdays(@NonNull Collection<Integer> days) {
+        return (days.size() == 5 &&
+                days.contains(DateTimeConstants.MONDAY) &&
+                days.contains(DateTimeConstants.TUESDAY) &&
+                days.contains(DateTimeConstants.WEDNESDAY) &&
+                days.contains(DateTimeConstants.THURSDAY) &&
+                days.contains(DateTimeConstants.FRIDAY));
+    }
+
+    /**
+     * Checks whether a collection of {@code DateTimeConstants} represents the weekend.
+     */
+    public static boolean isWeekend(@NonNull Collection<Integer> days) {
+        return (days.size() == 2 &&
+                days.contains(DateTimeConstants.SATURDAY) &&
+                days.contains(DateTimeConstants.SUNDAY));
     }
 
     //endregion

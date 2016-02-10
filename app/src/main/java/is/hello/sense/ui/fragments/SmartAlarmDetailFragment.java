@@ -161,7 +161,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         Views.setSafeOnClickListener(repeatRow, stateSafeExecutor, this::selectRepeatDays);
 
         this.repeatDays = (TextView) repeatRow.findViewById(R.id.fragment_smart_alarm_detail_repeat_days);
-        repeatDays.setText(alarm.getRepeatSummary(getActivity()));
+        repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
 
         final View deleteRow = view.findViewById(R.id.fragment_smart_alarm_detail_delete);
         Views.setSafeOnClickListener(deleteRow, stateSafeExecutor, this::deleteAlarm);
@@ -233,7 +233,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (requestCode == REPEAT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(AlarmRepeatDialogFragment.RESULT_DAYS);
             alarm.setDaysOfWeek(selectedDays);
-            repeatDays.setText(alarm.getRepeatSummary(getActivity()));
+            repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
 
             markDirty();
         }
