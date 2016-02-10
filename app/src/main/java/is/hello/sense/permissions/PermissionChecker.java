@@ -6,12 +6,12 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
-
 import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Analytics;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class PermissionChecker {
@@ -29,6 +29,8 @@ public class PermissionChecker {
     }
 
     public static void requestLocationPermission(@NonNull Fragment fragment) {
+        Analytics.trackEvent(Analytics.Permissions.EVENT_WE_NEED_LOCATION, null);
+
         SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
         dialog.setTitle(R.string.request_permission_location_title);
         dialog.setMessage(R.string.request_permission_location_message);
@@ -47,6 +49,8 @@ public class PermissionChecker {
      * the permission from outside the app.
      */
     public static void showEnableInstructionsDialog(@NonNull Fragment fragment) {
+        Analytics.trackEvent(Analytics.Permissions.EVENT_LOCATION_DISABLED, null);
+
         SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
         CharSequence clickableText = fragment.getResources().getText(R.string.request_permission_required_message);
         dialog.setTitle(R.string.request_permission_required_title);

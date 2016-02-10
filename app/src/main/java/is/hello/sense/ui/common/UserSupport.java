@@ -126,7 +126,7 @@ public class UserSupport {
     }
 
     public static void showLocationPermissionMoreInfoPage(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.Backside.EVENT_LOCATION_PERMISSION_MORE_INFO, null);
+        Analytics.trackEvent(Analytics.Permissions.EVENT_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/207716923");
         openUri(from, supportUrl);

@@ -500,7 +500,6 @@ public class Analytics {
         String EVENT_HELP = "Settings Help";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
         String EVENT_TELL_A_FRIEND_TAPPED = "Tell a friend tapped";
-        String EVENT_LOCATION_PERMISSION_MORE_INFO = "Location Permission More Info";
     }
 
     public interface StoreReview {
@@ -514,6 +513,12 @@ public class Analytics {
         String FEEDBACK_FROM_APP_REVIEW = "Feedback from app review";
         String APP_REVIEW_COMPLETED_WITH_NO_ACTION = "App review completed with no action";
         String APP_REVIEW_SKIP = "App review skip";
+    }
+
+    public interface Permissions {
+        String EVENT_WE_NEED_LOCATION = "Location Permission Explanation";
+        String EVENT_LOCATION_DISABLED = "Location Not Granted";
+        String EVENT_MORE_INFO = "Location Permission More Info";
     }
 
 
