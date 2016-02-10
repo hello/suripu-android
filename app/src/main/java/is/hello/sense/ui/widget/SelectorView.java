@@ -45,6 +45,10 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
         this.buttonLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
                                                    LayoutParams.WRAP_CONTENT, 1);
+
+        // There is no condition where the user should be allowed
+        // to highlight multiple options in a selector at once.
+        setMotionEventSplittingEnabled(false);
     }
 
     //endregion
