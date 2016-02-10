@@ -58,7 +58,7 @@
         android:scaleType="fitXY"
         android:importantForAccessibility="no" />
 
-    <is.hello.sense.ui.widget.FixedViewPager
+    <is.hello.sense.ui.widget.ExtendedViewPager
         android:id="@+id/fragment_onboarding_introduction_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
