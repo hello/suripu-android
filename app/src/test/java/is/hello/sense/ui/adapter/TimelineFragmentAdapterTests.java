@@ -6,8 +6,10 @@ import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +46,11 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         this.adapter = spy(new TimelineFragmentAdapter(fragmentManager, Constants.TIMELINE_EPOCH));
     }
 
+    @After
+    public void tearDown() {
+        DateTimeUtils.setCurrentMillisSystem();
+    }
+
     @Test
     public void saveState() {
         adapter.firstTimeline = false;
@@ -53,6 +60,19 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         adapter.restoreState(savedState, Bundle.class.getClassLoader());
 
         assertThat(adapter.firstTimeline, is(false));
+    }
+
+    @Test
+    public void oldestDateAsToday() {
+        final long currentTime = Constants.TIMELINE_EPOCH.toDateTimeAtCurrentTime().getMillis();
+        DateTimeUtils.setCurrentMillisFixed(currentTime);
+
+        final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
+        final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
+        final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager,
+                                                                            Constants.TIMELINE_EPOCH);
+        assertThat(adapter.getCount(), is(equalTo(1)));
+        assertThat(adapter.getItemDate(0), is(equalTo(Constants.TIMELINE_EPOCH.minusDays(1))));
     }
 
     @SuppressWarnings("ConstantConditions")

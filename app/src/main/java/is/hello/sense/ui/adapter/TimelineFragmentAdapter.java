@@ -28,20 +28,26 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager,
                                    @NonNull LocalDate oldestDate) {
         super(fragmentManager);
-        this.oldestDate = oldestDate;
-        setLatestDate(DateFormatter.todayForTimeline());
+
+        final LocalDate today = DateFormatter.todayForTimeline();
+        if (today.equals(oldestDate)) {
+            this.oldestDate = oldestDate.minusDays(1);
+        } else {
+            this.oldestDate = oldestDate;
+        }
+        setLatestDate(today);
     }
 
     @Override
     public Parcelable saveState() {
-        Bundle savedState = new Bundle();
+        final Bundle savedState = new Bundle();
         savedState.putBoolean("firstTimeline", firstTimeline);
         return savedState;
     }
 
     @Override
     public void restoreState(Parcelable state, ClassLoader loader) {
-        Bundle savedState = (Bundle) state;
+        final Bundle savedState = (Bundle) state;
         this.firstTimeline = savedState.getBoolean("firstTimeline", false);
     }
 
@@ -62,11 +68,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public void setLatestDate(@NonNull LocalDate latestDate) {
-        if (latestDate.equals(oldestDate)) {
-            this.latestDate = oldestDate.plusDays(1);
-        } else {
-            this.latestDate = latestDate;
-        }
+        this.latestDate = latestDate;
         this.count = Days.daysBetween(oldestDate, this.latestDate).getDays();
         notifyDataSetChanged();
     }
