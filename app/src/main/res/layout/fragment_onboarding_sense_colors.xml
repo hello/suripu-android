@@ -76,7 +76,7 @@
         app:senseDiagramVideo="@string/diagram_onboarding_sense_colors"
         app:senseAutoStart="false" />
 
-    <is.hello.sense.ui.widget.FixedViewPager
+    <is.hello.sense.ui.widget.ExtendedViewPager
         android:id="@+id/fragment_onboarding_sense_colors_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
