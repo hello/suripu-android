@@ -14,9 +14,13 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
 @TargetApi(Build.VERSION_CODES.M)
-public class PermissionChecker {
+public class Permissions {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 0x10C;
 
+
+    public static String[] getLocationPermissions() {
+        return new String[] { Manifest.permission.ACCESS_COARSE_LOCATION };
+    }
 
     // Location Permission Start
     public static boolean needsLocationPermission(@NonNull Fragment fragment) {
@@ -38,7 +42,7 @@ public class PermissionChecker {
         dialog.setTitle(R.string.request_permission_location_title);
         dialog.setMessage(R.string.request_permission_location_message);
         dialog.setPositiveButton(R.string.action_continue, (sender, which) -> {
-            fragment.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            fragment.requestPermissions(getLocationPermissions(), LOCATION_PERMISSION_REQUEST_CODE);
         });
         dialog.setNegativeButton(R.string.action_more_info, (sender, which) -> {
             UserSupport.showLocationPermissionMoreInfoPage(fragment.getActivity());

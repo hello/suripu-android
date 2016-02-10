@@ -28,7 +28,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.permissions.PermissionChecker;
+import is.hello.sense.permissions.Permissions;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -111,16 +111,16 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
             getOnboardingActivity().showSelectWifiNetwork();
         }else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK){
-            PermissionChecker.requestLocationPermission(this);
+            Permissions.requestLocationPermission(this);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (PermissionChecker.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
+        if (Permissions.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
             next();
         }else{
-            PermissionChecker.showEnableInstructionsDialog(this);
+            Permissions.showEnableInstructionsDialog(this);
         }
     }
 
@@ -214,8 +214,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
 
     public void next() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (PermissionChecker.needsLocationPermission(this)) {
-                PermissionChecker.requestLocationPermission(this);
+            if (Permissions.needsLocationPermission(this)) {
+                Permissions.requestLocationPermission(this);
                 return;
             }
         }
