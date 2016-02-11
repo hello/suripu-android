@@ -30,7 +30,10 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
         super(fragmentManager);
 
         final LocalDate today = DateFormatter.todayForTimeline();
-        if (today.equals(oldestDate)) {
+        final int dateRelation = today.compareTo(oldestDate);
+        if (dateRelation < 0) {
+            this.oldestDate = today.minusDays(1);
+        } else if (dateRelation == 0) {
             this.oldestDate = oldestDate.minusDays(1);
         } else {
             this.oldestDate = oldestDate;
