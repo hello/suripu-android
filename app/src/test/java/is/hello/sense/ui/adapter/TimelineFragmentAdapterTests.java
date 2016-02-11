@@ -76,6 +76,19 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         assertThat(adapter.getItemDate(0), is(equalTo(Constants.TIMELINE_EPOCH.minusDays(1))));
     }
 
+    @Test
+    public void oldestDateAsTodayAtBoundary() {
+        final long currentTime = Constants.TIMELINE_EPOCH.toDateTime(new LocalTime(2, 30, 0)).getMillis();
+        DateTimeUtils.setCurrentMillisFixed(currentTime);
+
+        final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
+        final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
+        final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager,
+                                                                            Constants.TIMELINE_EPOCH);
+        assertThat(adapter.getCount(), is(equalTo(1)));
+        assertThat(adapter.getItemDate(0), is(equalTo(Constants.TIMELINE_EPOCH.minusDays(2))));
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Test
     public void cachedTimeline() {
