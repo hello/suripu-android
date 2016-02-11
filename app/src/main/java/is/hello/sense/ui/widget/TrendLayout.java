@@ -28,20 +28,12 @@ public class TrendLayout extends FrameLayout {
     protected GraphUpdater graphUpdater;
 
 
-    public static TrendLayout getBarGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendView graphView) {
+    public static TrendLayout getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendView graphView) {
         final GraphUpdater graphUpdater = graphView::updateGraph;
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
         view.checkForAnnotations(graph.getAnnotations());
-        return view;
-    }
-
-    public static TrendLayout getBubbleGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendView graphView) {
-        final GraphUpdater graphUpdater = graphView::updateGraph;
-        TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
-        view.setTag(graph.getGraphType());
-        view.setTitle(graph.getTitle());
         return view;
     }
 

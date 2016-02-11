@@ -20,7 +20,6 @@ public class TrendView extends View {
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         drawable.showGraphAnimation();
-        invalidate();
     }
 
 

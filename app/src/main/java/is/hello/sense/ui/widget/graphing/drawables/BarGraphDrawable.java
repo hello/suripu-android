@@ -134,7 +134,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             List<String> titles = graphSection.getTitles();
             for (int j = 0; j < titles.size(); j++) {
                 RectF textPositionBounds = getTextBounds(j, titles.get(j).toUpperCase());
-                if (textPositionBounds.left + textPositionBounds.width() + 10 < canvas.getWidth()) {
+                if (textPositionBounds.left + textPositionBounds.width() + 5 < canvas.getWidth()) {
                     canvas.drawText(titles.get(j).toUpperCase(), textPositionBounds.left, textPositionBounds.top, textLabelPaint);
                 } else if (i == sections.size() - 1) {
                     hideLastSection = true;

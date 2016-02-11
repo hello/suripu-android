@@ -5,14 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -21,12 +17,13 @@ import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsV2Presenter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TrendLayout;
 import is.hello.sense.ui.widget.graphing.TrendGraphLinearLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends BacksideTabFragment implements TrendLayout.OnRetry {
+public class TrendsFragment extends BacksideTabFragment implements TrendLayout.OnRetry, SelectorView.OnSelectionChangedListener {
     @Inject
     TrendsV2Presenter trendsPresenter;
 
@@ -34,7 +31,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private TrendGraphLinearLayout trendGraphLinearLayout;
-    boolean randomize = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +55,11 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.trendGraphLinearLayout = (TrendGraphLinearLayout) view.findViewById(R.id.fragment_trends_trendgraph);
         this.trendGraphLinearLayout.setAnimatorContext(getAnimatorContext());
+        SelectorView selectorView = (SelectorView) view.findViewById(R.id.fragment_trends_selectorview);
+        selectorView.addOption("Last Week", "Last Week", true);
+        selectorView.addOption("Last Month", "Last Month", true);
+        selectorView.addOption("Last 3 Months", "Last 3 Months", true);
+        selectorView.setOnSelectionChangedListener(this);
         return view;
     }
 
@@ -68,34 +69,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
         swipeRefreshLayout.setRefreshing(true);
         bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_trends, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        randomize = false;
-        if (item.getItemId() == R.id.action_last_3_months) {
-            trendsPresenter.updateTrend(Trends.TimeScale.LAST_3_MONTHS);
-            fetchTrends();
-            return true;
-        }
-        if (item.getItemId() == R.id.action_last_month) {
-            trendsPresenter.updateTrend(Trends.TimeScale.LAST_MONTH);
-            fetchTrends();
-            return true;
-        }
-        if (item.getItemId() == R.id.action_last_week) {
-            trendsPresenter.updateTrend(Trends.TimeScale.LAST_WEEK);
-            fetchTrends();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -135,22 +108,20 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
     @Override
     public void fetchTrends() {
-        if (randomize) {
-            Random random = new Random();
-            switch (random.nextInt(3)) {
-                case 0:
-                    trendsPresenter.updateTrend(Trends.TimeScale.LAST_3_MONTHS);
-                    break;
-                case 1:
-                    trendsPresenter.updateTrend(Trends.TimeScale.LAST_MONTH);
-                    break;
-                default:
-                    trendsPresenter.updateTrend(Trends.TimeScale.LAST_WEEK);
-
-            }
-        }
         swipeRefreshLayout.setRefreshing(true);
         trendsPresenter.update();
-        randomize = true;
+    }
+
+    @Override
+    public void onSelectionChanged(int newSelectionIndex) {
+        if (newSelectionIndex == 2) {
+            trendsPresenter.updateTrend(Trends.TimeScale.LAST_3_MONTHS);
+        } else if (newSelectionIndex == 1) {
+            trendsPresenter.updateTrend(Trends.TimeScale.LAST_MONTH);
+        } else {
+            trendsPresenter.updateTrend(Trends.TimeScale.LAST_WEEK);
+        }
+        fetchTrends();
+
     }
 }

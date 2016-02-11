@@ -5,7 +5,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
@@ -85,14 +84,6 @@ public class Graph extends ApiResponse {
         }
 
         return Condition.UNKNOWN;
-    }
-
-    public static List<Graph> createErrorGraphs(){
-        Graph graph = new Graph();
-        graph.graphType = GraphType.NO_DATA;
-        List<Graph> graphs = new ArrayList<>();
-        graphs.add(graph);
-        return graphs;
     }
 
     @Override

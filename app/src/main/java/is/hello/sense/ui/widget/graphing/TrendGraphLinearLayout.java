@@ -67,12 +67,12 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
                 case BAR:
                     final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(getContext(), graph, animatorContext);
                     final TrendView barGraphView = new TrendView(getContext(), barGraphDrawable);
-                    addView(TrendLayout.getBarGraphItem(getContext(), graph, barGraphView));
+                    addView(TrendLayout.getGraphItem(getContext(), graph, barGraphView));
                     break;
                 case BUBBLES:
                     final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(getContext(), graph, animatorContext);
                     final TrendView bubbleGraphView = new TrendView(getContext(), bubbleGraphDrawable);
-                    addView(TrendLayout.getBubbleGraphItem(getContext(), graph, bubbleGraphView));
+                    addView(TrendLayout.getGraphItem(getContext(), graph, bubbleGraphView));
                     break;
                 case GRID:
                     final GridGraphView gridGraphView = new GridGraphView(getContext());
