@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -101,8 +102,11 @@ public class ChangeEmailFragment extends InjectionFragment {
                 null, LoadingDialogFragment.DEFAULTS);
         bindAndSubscribe(accountPresenter.updateEmail(newEmail),
                          ignored -> {
+                             // After hibernation, finish appears to be synchronous and
+                             // as such the fragment manager is immediately nulled out.
+                             final FragmentManager fragmentManager = getFragmentManager();
                              finishWithResult(Activity.RESULT_OK, null);
-                             LoadingDialogFragment.close(getFragmentManager());
+                             LoadingDialogFragment.close(fragmentManager);
                          },
                          this::presentError);
     }
