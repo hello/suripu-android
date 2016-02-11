@@ -5,10 +5,10 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +40,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class OnboardingPairSenseFragment extends HardwareFragment {
+public class OnboardingPairSenseFragment extends HardwareFragment
+        implements FragmentCompat.OnRequestPermissionsResultCallback {
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
     private static final int REQUEST_CODE_SHOW_RATIONALE_DIALOG = 0xb2;
@@ -213,12 +214,11 @@ public class OnboardingPairSenseFragment extends HardwareFragment {
     }
 
     public void next() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Permissions.needsLocationPermission(this)) {
-                Permissions.requestLocationPermission(this);
-                return;
-            }
+        if (Permissions.needsLocationPermission(this)) {
+            Permissions.requestLocationPermission(this);
+            return;
         }
+
         showBlockingActivity(R.string.title_scanning_for_sense);
 
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
