@@ -104,8 +104,8 @@ public class UnitSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
 
         if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
             handler.removeMessages(MSG_PUSH_PREFERENCES);
