@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -43,6 +44,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.permissions.Permissions;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
@@ -62,7 +64,7 @@ import rx.Observable;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
-        implements OnBackPressedInterceptor {
+        implements OnBackPressedInterceptor, FragmentCompat.OnRequestPermissionsResultCallback {
     private static final int REQUEST_CODE_WIFI = 0x94;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
@@ -149,7 +151,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void onResume() {
         super.onResume();
 
-        if (bluetoothStack.isEnabled() && !blockConnection) {
+        if (Permissions.needsLocationPermission(this)) {
+            showPermissionPrompt();
+        } else if (bluetoothStack.isEnabled() && !blockConnection) {
             connectToPeripheral();
         }
     }
@@ -267,6 +271,46 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             showTroubleshootingAlert(alert);
         } else {
             hideAlert();
+        }
+    }
+
+    //endregion
+
+
+    //region Permissions
+
+    private void showPermissionPrompt() {
+        final TroubleshootingAlert alert = new TroubleshootingAlert()
+                .setMessage(StringRef.from(R.string.request_permission_location_message))
+                .setPrimaryButtonTitle(R.string.action_continue)
+                .setPrimaryButtonOnClick(this::promptForLocationPermission)
+                .setSecondaryButtonTitle(R.string.action_more_info)
+                .setSecondaryButtonOnClick(() -> UserSupport.showLocationPermissionMoreInfoPage(getActivity()));
+        showTroubleshootingAlert(alert);
+        showRestrictedSenseActions();
+    }
+
+    private void promptForLocationPermission() {
+        FragmentCompat.requestPermissions(this,
+                                          Permissions.getLocationPermissions(),
+                                          Permissions.LOCATION_PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (Permissions.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
+            if (bluetoothStack.isEnabled() && !blockConnection) {
+                connectToPeripheral();
+            }
+        } else {
+            showPermissionPrompt();
+            if (FragmentCompat.shouldShowRequestPermissionRationale(this, Permissions.LOCATION_PERMISSION)) {
+                Permissions.showEnableInstructionsDialog(this);
+            }
         }
     }
 
