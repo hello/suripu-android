@@ -379,6 +379,7 @@
     <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
+    <string name="error_no_settings_app">Could not find app settings.</string>
     <string name="error_no_email_client">Could not find an email app.</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
     <string name="timeline_share_last_night_fmt">Last night #mysleepscore was %1$s — http://hello.is</string>

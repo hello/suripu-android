@@ -140,7 +140,7 @@ public class UserSupport {
         } catch (ActivityNotFoundException e) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
-            alertDialog.setMessage(R.string.error_no_web_browser);
+            alertDialog.setMessage(R.string.error_no_settings_app);
             alertDialog.setPositiveButton(android.R.string.ok, null);
             alertDialog.show();
         }
