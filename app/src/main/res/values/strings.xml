@@ -360,7 +360,7 @@
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
     <string name="action_support">Support</string>
     <string name="onboarding_title_unsupported_device">Unsupported Device</string>
-    <string name="onboarding_message_unsupported_device">Your device is known to have issues setting up Sense for the first time. If you have a different phone or tablet available, it is recommended that you use it to perform the next steps.</string>
+    <string name="onboarding_message_unsupported_device">The device you‘re using has been known to have issues setting up Sense for the first time. If you have a different device available that meets the requirements on our <a href="#supported-devices">Supported Devices</a> list, we recommend you use it to perform the following setup steps.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
