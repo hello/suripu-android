@@ -241,7 +241,7 @@ public class Alarm extends ApiResponse {
                                                                     daysCount, daysCount);
                 }
             } else {
-                return context.getString(R.string.alarm_repeat_weekly);
+                return context.getString(R.string.alarm_repeat_everyday);
             }
     }
 

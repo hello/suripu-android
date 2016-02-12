@@ -159,7 +159,7 @@
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
-    <string name="alarm_repeat_weekly">Weekly</string>
+    <string name="alarm_repeat_everyday">Everyday</string>
     <string name="alarm_repeat_weekends">Weekends</string>
     <string name="alarm_repeat_weekdays">Weekdays</string>
     <string name="label_time_zone">Your Time Zone</string>
