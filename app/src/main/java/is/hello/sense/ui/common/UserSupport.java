@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
@@ -134,11 +135,12 @@ public class UserSupport {
 
     public static void showAppSettings(@NonNull Activity from) {
         try {
-            from.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:is.hello.sense")));
+            from.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                          Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)));
         } catch (ActivityNotFoundException e) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
-            alertDialog.setMessage(R.string.error_no_web_browser);
+            alertDialog.setMessage(R.string.error_no_settings_app);
             alertDialog.setPositiveButton(android.R.string.ok, null);
             alertDialog.show();
         }

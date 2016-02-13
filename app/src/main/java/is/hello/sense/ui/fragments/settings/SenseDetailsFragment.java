@@ -282,7 +282,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private void showPermissionPrompt() {
         final TroubleshootingAlert alert = new TroubleshootingAlert()
                 .setMessage(StringRef.from(R.string.request_permission_location_message))
-                .setPrimaryButtonTitle(R.string.action_continue)
+                .setPrimaryButtonTitle(R.string.action_enable_location)
                 .setPrimaryButtonOnClick(this::promptForLocationPermission)
                 .setSecondaryButtonTitle(R.string.action_more_info)
                 .setSecondaryButtonOnClick(() -> UserSupport.showLocationPermissionMoreInfoPage(getActivity()));
@@ -308,9 +308,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             }
         } else {
             showPermissionPrompt();
-            if (FragmentCompat.shouldShowRequestPermissionRationale(this, Permissions.LOCATION_PERMISSION)) {
-                Permissions.showEnableInstructionsDialog(this);
-            }
+            Permissions.showEnableInstructionsDialog(this);
         }
     }
 

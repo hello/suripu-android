@@ -159,7 +159,7 @@
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
-    <string name="alarm_repeat_weekly">Weekly</string>
+    <string name="alarm_repeat_everyday">Everyday</string>
     <string name="alarm_repeat_weekends">Weekends</string>
     <string name="alarm_repeat_weekdays">Weekdays</string>
     <string name="label_time_zone">Your Time Zone</string>
@@ -379,12 +379,14 @@
     <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
+    <string name="error_no_settings_app">Could not find app settings.</string>
     <string name="error_no_email_client">Could not find an email app.</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
     <string name="timeline_share_last_night_fmt">Last night #mysleepscore was %1$s — http://hello.is</string>
     <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
     <string name="action_more_info">More info</string>
     <string name="action_submit">Submit</string>
+    <string name="action_enable_location">Enable Location Services</string>
     <string name="sleep_depth_awake"><b>awake</b>.</string>
     <string name="sleep_depth_sound">in <b>deep sleep</b>.</string>
     <string name="sleep_depth_light">in <b>light sleep</b>.</string>
