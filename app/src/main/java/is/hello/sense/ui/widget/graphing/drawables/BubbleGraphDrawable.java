@@ -1,12 +1,14 @@
 package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
@@ -54,6 +56,8 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     private final Paint mediumPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final Paint deepPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final TextPaint textTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+    private final TextPaint textValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+    private final TextPaint textPercentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 
 
     public BubbleGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
@@ -66,6 +70,8 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
         this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_medium_bubble_color));
         this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_deep_bubble_color));
 
+        Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
+        Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
         Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph_Title);
         textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_trends_bubblegraph_title));
         this.totalGraphHeight = context.getResources().getDimensionPixelSize(R.dimen.trends_bubblegraph_max_height);
@@ -126,32 +132,17 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
         currentBubbleController.get(CENTER_BUBBLE).setTargetBubble(animateTo.get(CENTER_BUBBLE));
         currentBubbleController.get(RIGHT_BUBBLE).setTargetBubble(animateTo.get(RIGHT_BUBBLE));
 
-        ValueAnimator animator = ValueAnimator.ofFloat(animationScaleFactorsForward);
+        ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
         animator.setDuration(Anime.DURATION_NORMAL);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {
             animationScaleFactor = (float) a.getAnimatedValue();
             invalidateSelf();
         });
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 currentBubbleController = animateTo;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
             }
         });
         animatorContext.startWhenIdle(animator);
@@ -259,12 +250,11 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
 
             private final Rect textTitleRect;
             private final Paint paint;
-            private final TextPaint textValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-            private final TextPaint textPercentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 
             /**
              * Give a target bubble that this bubble should animate towards.
              */
+            @Nullable
             public Bubble targetBubble = null;
 
             /**
@@ -282,9 +272,6 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
                 } else {
                     this.paint = deepPaint;
                 }
-
-                Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
-                Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
 
                 textTitleRect = new Rect();
                 textTitlePaint.getTextBounds(textTitle, 0, textTitle.length(), textTitleRect);

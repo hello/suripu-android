@@ -35,6 +35,7 @@
 
     <style name="AppTheme.Text.Question">
         <item name="android:textSize">@dimen/text_size_question</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
         <item name="android:textColor">@color/text_dark</item>
     </style>

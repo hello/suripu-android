@@ -58,20 +58,20 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
     private void inflateTrends() {
         for (Graph graph : trends.getGraphs()) {
             Graph.GraphType graphType = graph.getGraphType();
-            TrendLayout item = getViewForGraph(graphType);
+            TrendLayout item =(TrendLayout)findViewWithTag(graphType);
             if (item != null) {
-                item.updateGraph(graph);
+                item.bindGraph(graph);
                 continue;
             }
             switch (graph.getGraphType()) {
                 case BAR:
                     final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(getContext(), graph, animatorContext);
-                    final TrendView barGraphView = new TrendView(getContext(), barGraphDrawable);
+                    final TrendCardView barGraphView = new TrendCardView(getContext(), barGraphDrawable);
                     addView(TrendLayout.getGraphItem(getContext(), graph, barGraphView));
                     break;
                 case BUBBLES:
                     final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(getContext(), graph, animatorContext);
-                    final TrendView bubbleGraphView = new TrendView(getContext(), bubbleGraphDrawable);
+                    final TrendCardView bubbleGraphView = new TrendCardView(getContext(), bubbleGraphDrawable);
                     addView(TrendLayout.getGraphItem(getContext(), graph, bubbleGraphView));
                     break;
                 case GRID:
@@ -85,16 +85,6 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
         if (getChildCount() > 0) {
             ((LayoutParams) getChildAt(getChildCount() - 1).getLayoutParams()).bottomMargin = 0;
         }
-    }
-
-    private TrendLayout getViewForGraph(Graph.GraphType graphType) {
-        for (int i = 0; i < getChildCount(); i++) {
-            View item = getChildAt(i);
-            if (item.getTag() == graphType) {
-                return (TrendLayout) item;
-            }
-        }
-        return null;
     }
 
 

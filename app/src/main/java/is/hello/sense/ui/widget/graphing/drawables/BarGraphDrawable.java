@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget.graphing.drawables;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -88,7 +89,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
 
         final int dashedLineLength = resources.getDimensionPixelSize(R.dimen.trends_bargraph_dashed_line_length);
-        this.dashedLinePaint.setARGB(255, 0, 0, 0);
+        this.dashedLinePaint.setColor(ContextCompat.getColor(context, R.color.black));
         this.dashedLinePaint.setStyle(Paint.Style.STROKE);
         this.dashedLinePaint.setStrokeWidth(1);
         this.dashedLinePaint.setPathEffect(new DashPathEffect(new float[]{dashedLineLength, dashedLineLength * 2}, 0));
@@ -101,8 +102,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
 
         final Rect bounds = new Rect();
-        textLabelPaint.getTextBounds("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0, 26, bounds);
-        final int textHeight = bounds.height();
+        final int textHeight =Drawing.getEstimatedLineHeight(textLabelPaint, false);
 
         this.graphTopSpace = textHeight + highlightTopMargin + highlightBottomMargin + highlightValueHeight;
 
@@ -119,6 +119,11 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     @Override
     public int getIntrinsicHeight() {
         return totalGraphHeight;
+    }
+
+    @Override
+    protected void onBoundsChange(Rect bounds) {
+        super.onBoundsChange(bounds);
     }
 
     @Override
@@ -196,32 +201,17 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         if (graph.getTimeScale() == this.graph.getTimeScale()) {
             //        return; //todo uncomment when done testing.
         }
-        ValueAnimator animator = ValueAnimator.ofFloat(scaleFactorBackward);
+        ValueAnimator animator = ValueAnimator.ofFloat(maxScaleFactor, minScaleFactor);
         animator.setDuration(Anime.DURATION_NORMAL);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {
             setScaleFactor((float) a.getAnimatedValue());
         });
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 BarGraphDrawable.this.graph = graph;
                 showGraphAnimation();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
             }
         });
         animatorContext.startWhenIdle(animator);

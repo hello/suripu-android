@@ -55,6 +55,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.trendGraphLinearLayout = (TrendGraphLinearLayout) view.findViewById(R.id.fragment_trends_trendgraph);
         this.trendGraphLinearLayout.setAnimatorContext(getAnimatorContext());
+        //todo erase after design
         SelectorView selectorView = (SelectorView) view.findViewById(R.id.fragment_trends_selectorview);
         selectorView.addOption("Last Week", "Last Week", true);
         selectorView.addOption("Last Month", "Last Month", true);
@@ -114,14 +115,15 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
+        // todo erase after design
+        swipeRefreshLayout.setRefreshing(true);
         if (newSelectionIndex == 2) {
-            trendsPresenter.updateTrend(Trends.TimeScale.LAST_3_MONTHS);
+            trendsPresenter.setTimeScale(Trends.TimeScale.LAST_3_MONTHS);
         } else if (newSelectionIndex == 1) {
-            trendsPresenter.updateTrend(Trends.TimeScale.LAST_MONTH);
+            trendsPresenter.setTimeScale(Trends.TimeScale.LAST_MONTH);
         } else {
-            trendsPresenter.updateTrend(Trends.TimeScale.LAST_WEEK);
+            trendsPresenter.setTimeScale(Trends.TimeScale.LAST_WEEK);
         }
-        fetchTrends();
 
     }
 }

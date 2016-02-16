@@ -10,24 +10,23 @@ import android.widget.LinearLayout;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 
-public class TrendView extends View {
+public class TrendCardView extends View {
     private TrendGraphDrawable drawable;
 
-    public TrendView(@NonNull Context context, @NonNull TrendGraphDrawable graphDrawable) {
+    public TrendCardView(@NonNull Context context, @NonNull TrendGraphDrawable graphDrawable) {
         super(context, null);
         this.drawable = graphDrawable;
-        drawable.setBounds(0, 0, getWidth(), drawable.getIntrinsicHeight());
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         drawable.showGraphAnimation();
     }
 
 
-    public TrendView(Context context, AttributeSet attrs) {
+    public TrendCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TrendView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TrendCardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

@@ -1,10 +1,11 @@
 package is.hello.sense.ui.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -16,20 +17,22 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
-import is.hello.sense.ui.widget.graphing.TrendView;
+import is.hello.sense.ui.widget.graphing.TrendCardView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
+import rx.functions.Action1;
 
+@SuppressLint("ViewConstructor")
 public class TrendLayout extends FrameLayout {
 
     protected LinearLayout annotationsLayout;
     protected TextView title;
     protected FrameLayout view;
-    protected GraphUpdater graphUpdater;
+    protected Action1<Graph> graphUpdater;
 
 
-    public static TrendLayout getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendView graphView) {
-        final GraphUpdater graphUpdater = graphView::updateGraph;
+    public static TrendLayout getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendCardView graphView) {
+        final Action1<Graph> graphUpdater = graphView::updateGraph;
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
@@ -38,7 +41,7 @@ public class TrendLayout extends FrameLayout {
     }
 
     public static TrendLayout getGridGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull GridGraphView graphView) {
-        final GraphUpdater graphUpdater;
+        final Action1<Graph> graphUpdater;
         graphView.setGraphAdapter(graph);
         graphUpdater = graphView::setGraphAdapter;
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
@@ -53,23 +56,14 @@ public class TrendLayout extends FrameLayout {
     }
 
 
-    public TrendLayout(Context context, @NonNull View graphView, @NonNull GraphUpdater graphUpdate) {
+    public TrendLayout(Context context, @NonNull View graphView, @NonNull Action1<Graph> graphUpdate) {
         super(context);
-
         View inflatedView = LayoutInflater.from(context).inflate(R.layout.item_trend, this);
         title = (TextView) inflatedView.findViewById(R.id.item_trend_title);
         annotationsLayout = (LinearLayout) inflatedView.findViewById(R.id.item_trend_annotations);
         view = (FrameLayout) inflatedView.findViewById(R.id.item_trend_view);
         view.addView(graphView);
         graphUpdater = graphUpdate;
-    }
-
-    public TrendLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public TrendLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
     }
 
     public TrendLayout(@NonNull Context context, @NonNull OnRetry onRetry) {
@@ -90,17 +84,13 @@ public class TrendLayout extends FrameLayout {
         view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
     }
 
-    private interface GraphUpdater {
-        void updateGraph(@NonNull Graph graph);
-    }
-
 
     private void setTitle(String titleText) {
         title.setText(titleText);
     }
 
-    public void updateGraph(@NonNull Graph graph) {
-        graphUpdater.updateGraph(graph);
+    public void bindGraph(@NonNull Graph graph) {
+        graphUpdater.call(graph);
         checkForAnnotations(graph.getAnnotations());
     }
 
@@ -108,9 +98,10 @@ public class TrendLayout extends FrameLayout {
         if (annotations != null) {
             annotationsLayout.removeAllViews();
             annotationsLayout.setVisibility(VISIBLE);
+            final LayoutInflater inflater = LayoutInflater.from(getContext());
             for (Annotation annotation : annotations) {
                 //todo handle conditions
-                LayoutInflater.from(getContext()).inflate(R.layout.item_bargraph_annotation, annotationsLayout);
+                inflater.inflate(R.layout.item_bargraph_annotation, annotationsLayout);
                 View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
                 ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title)).setText(annotation.getTitle().toUpperCase());
                 CharSequence value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),

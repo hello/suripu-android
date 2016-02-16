@@ -30,8 +30,9 @@ public class TrendsV2Presenter extends ScopedValuePresenter<Trends> {
         return apiService.trends(timeScale);
     }
 
-    public void updateTrend(Trends.TimeScale timeScale) {
-       this.timeScale = timeScale;
+    public void setTimeScale(Trends.TimeScale timeScale) {
+        this.timeScale = timeScale;
+        update();
     }
 
 }
