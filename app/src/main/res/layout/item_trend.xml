@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<is.hello.sense.ui.widget.RoundedLinearLayout
+    style="@style/AppTheme.Card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/AppTheme.Card"
-    android:orientation="vertical">
+    android:layout_marginBottom="@dimen/gap_card_vertical"
+    android:layout_marginTop="@dimen/gap_card_vertical"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/gap_card_content"
+    android:paddingLeft="@dimen/gap_card_content"
+    android:paddingRight="@dimen/gap_card_content"
+    >
 
     <TextView
         android:id="@+id/item_trend_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_height="@dimen/trends_title_height"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
+        android:singleLine="true"
+        android:textAppearance="@style/AppTheme.Text.Trends.Title"/>
 
-    <is.hello.sense.ui.widget.graphing.GraphView
-        android:id="@+id/item_trend_graph"
+    <View
+        android:id="@+id/item_trend_divider"
+        style="@style/Divider.Horizontal"
+        android:layout_marginBottom="@dimen/gap_small"/>
+
+    <FrameLayout
+        android:id="@+id/item_trend_view"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/series_graph_min_height"
-        app:senseGridDrawable="@drawable/graph_grid_fill_bottom_up" />
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/item_trend_annotations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_card_content"
+        android:orientation="horizontal">
+    </LinearLayout>
 
 </is.hello.sense.ui.widget.RoundedLinearLayout>

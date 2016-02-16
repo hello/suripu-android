@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.text.DecimalFormat;
 
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.util.ConnectProgress;
@@ -378,7 +379,7 @@ public final class Styles {
         }
     }
 
-    public static float getColumnWidthPercent(Trends.TimeScale timeScale) {
+    public static float getBarWidthPercent(Trends.TimeScale timeScale) {
         if (timeScale == Trends.TimeScale.LAST_WEEK) {
             return .1276f;
         } else if (timeScale == Trends.TimeScale.LAST_MONTH) {
@@ -388,7 +389,7 @@ public final class Styles {
         }
     }
 
-    public static float getColumnSpacePercent(Trends.TimeScale timeScale) {
+    public static float getBarSpacePercent(Trends.TimeScale timeScale) {
         if (timeScale == Trends.TimeScale.LAST_WEEK) {
             return .0176f;
         } else if (timeScale == Trends.TimeScale.LAST_MONTH) {
@@ -397,5 +398,15 @@ public final class Styles {
             return 0;
         }
     }
+
+    public static String createTextValue(float value){
+        String textValue = new DecimalFormat("#00").format(value);
+        if (textValue.charAt(0) == '0'){
+            textValue = textValue.substring(1, textValue.length());
+        }
+        return textValue;
+    }
+
+
 
 }
