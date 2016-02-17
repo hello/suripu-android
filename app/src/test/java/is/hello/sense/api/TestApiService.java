@@ -35,7 +35,6 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
-import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
@@ -299,19 +298,7 @@ public final class TestApiService implements ApiService {
 
 
     @Override
-    public Observable<ArrayList<TrendGraph>> allTrends() {
-        return loadResponse("all_trends", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
-    }
-
-    @Override
-    public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
-                                                        @NonNull @Query("time_period") String timePeriod) {
-        return loadResponse("single_trend", new TypeToken<ArrayList<TrendGraph>>() {
-        }.getType());
-    }
-
-    @Override
-    public Observable<Trends> trends(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
+    public Observable<Trends> trendsForTimeScale(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
         return null;
     }
 

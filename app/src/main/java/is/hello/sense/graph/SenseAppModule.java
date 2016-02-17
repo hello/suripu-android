@@ -23,7 +23,6 @@ import is.hello.sense.graph.presenters.SensorHistoryPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
-import is.hello.sense.graph.presenters.TrendsV2Presenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.notifications.NotificationReceiver;
@@ -101,8 +100,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         RoomConditionsPresenter.class,
         SensorHistoryFragment.class,
         SensorHistoryPresenter.class,
-            TrendsPresenter.class,
-            TrendsV2Presenter.class,
+        TrendsPresenter.class,
         TrendsFragment.class,
 
         SmartAlarmListFragment.class,

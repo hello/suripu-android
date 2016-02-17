@@ -1,13 +1,10 @@
 package is.hello.sense.api.model.v2;
 
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
-
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.api.model.TrendGraph;
 
 public class Annotation extends ApiResponse {
     @SerializedName("title")
@@ -17,7 +14,7 @@ public class Annotation extends ApiResponse {
     private float value;
 
     @SerializedName("data_type")
-    private TrendGraph.DataType dataType;
+    private Graph.DataType dataType;
 
     @SerializedName("condition")
     @Nullable
@@ -31,7 +28,7 @@ public class Annotation extends ApiResponse {
         return value;
     }
 
-    public TrendGraph.DataType getDataType() {
+    public Graph.DataType getDataType() {
         return dataType;
     }
 

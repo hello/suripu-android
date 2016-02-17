@@ -9,13 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
-import is.hello.sense.graph.presenters.TrendsV2Presenter;
+import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TrendLayout;
@@ -25,7 +24,7 @@ import is.hello.sense.util.Analytics;
 
 public class TrendsFragment extends BacksideTabFragment implements TrendLayout.OnRetry, SelectorView.OnSelectionChangedListener {
     @Inject
-    TrendsV2Presenter trendsPresenter;
+    TrendsPresenter trendsPresenter;
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;

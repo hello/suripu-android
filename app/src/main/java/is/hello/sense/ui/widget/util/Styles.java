@@ -14,7 +14,6 @@ import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -66,16 +65,6 @@ public final class Styles {
     @Retention(RetentionPolicy.SOURCE)
     public @interface UnitStyle {}
 
-
-    public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
-        if (sleepScore >= 80) {
-            return R.color.sensor_ideal;
-        } else if (sleepScore >= 50) {
-            return R.color.sensor_warning;
-        } else {
-            return R.color.sensor_alert;
-        }
-    }
 
     public static @StyleRes @DrawableRes int getScoreConditionTintThemeRes(@NonNull ScoreCondition condition) {
         switch (condition) {
