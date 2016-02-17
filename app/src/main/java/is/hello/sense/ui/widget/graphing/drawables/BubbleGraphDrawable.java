@@ -332,10 +332,6 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
                 return textPercentPaint;
             }
 
-            public void calculateTextValueRect(@NonNull String textValue, @NonNull Rect outRect) {
-                getTextValuePaint().getTextBounds(textValue, 0, textValue.length(), outRect);
-            }
-
             public void getTextPercentRect(@NonNull Rect outRect) {
                 // todo erase if design okays current build
                 getTextPercentPaint().getTextBounds(PERCENT_SYMBOL, 0, 1, outRect);
