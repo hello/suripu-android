@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -15,6 +16,7 @@ import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
@@ -213,6 +215,16 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return button.getTag(R.id.view_selector_tag_key_user);
     }
 
+    public ToggleButton getButtonForTag(Object tag) {
+        for (final ToggleButton button : buttons) {
+            if (Objects.equals(getButtonTag(button), tag)) {
+                return button;
+            }
+        }
+
+        return null;
+    }
+
     //endregion
 
 
@@ -250,6 +262,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
         addView(optionButton, buttonLayoutParams);
         return optionButton;
+    }
+
+    public ToggleButton addOption(@StringRes int titleRes, boolean wantsDivider) {
+        final String title = getResources().getString(titleRes);
+        return addOption(title, title, wantsDivider);
     }
 
     public void removeAllButtons() {

@@ -502,6 +502,10 @@
     <string name="ticket_list_empty">No tickets currently open</string>
     <string name="title_about_you">About you</string>
 
+    <string name="trend_time_scale_week">WEEK</string>
+    <string name="trend_time_scale_month">MONTH</string>
+    <string name="trend_time_scale_quarter">QUARTER</string>
+
     <string name="request_permission_location_title">We need to ask for your location</string>
     <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue."</string>
     <string name="request_permission_required_title">Location Services not enabled</string>

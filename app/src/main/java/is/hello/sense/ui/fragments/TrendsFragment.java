@@ -8,28 +8,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.ToggleButton;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.Trends.TimeScale;
 import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.TrendLayout;
 import is.hello.sense.ui.widget.graphing.TrendGraphLinearLayout;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
 public class TrendsFragment extends BacksideTabFragment implements TrendLayout.OnRetry, SelectorView.OnSelectionChangedListener {
-    @Inject
-    TrendsPresenter trendsPresenter;
+    @Inject TrendsPresenter trendsPresenter;
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private TrendGraphLinearLayout trendGraphLinearLayout;
+    private SelectorView timeScaleSelector;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,15 +59,24 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
         swipeRefreshLayout.setOnRefreshListener(this::fetchTrends);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
+
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.trendGraphLinearLayout = (TrendGraphLinearLayout) view.findViewById(R.id.fragment_trends_trendgraph);
         this.trendGraphLinearLayout.setAnimatorContext(getAnimatorContext());
-        //todo erase after design
-        SelectorView selectorView = (SelectorView) view.findViewById(R.id.fragment_trends_selectorview);
-        selectorView.addOption("Last Week", "Last Week", true);
-        selectorView.addOption("Last Month", "Last Month", true);
-        selectorView.addOption("Last 3 Months", "Last 3 Months", true);
-        selectorView.setOnSelectionChangedListener(this);
+
+        this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
+        timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        timeScaleSelector.setVisibility(View.INVISIBLE);
+        timeScaleSelector.addOption(R.string.trend_time_scale_week, false);
+        timeScaleSelector.addOption(R.string.trend_time_scale_month, false);
+        timeScaleSelector.addOption(R.string.trend_time_scale_quarter, false);
+        timeScaleSelector.setButtonTags(TimeScale.LAST_WEEK,
+                                        TimeScale.LAST_MONTH,
+                                        TimeScale.LAST_3_MONTHS);
+        timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
+                                                                   TabsBackgroundDrawable.Style.INLINE));
+        timeScaleSelector.setOnSelectionChangedListener(this);
+
         return view;
     }
 
@@ -69,6 +86,14 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
         swipeRefreshLayout.setRefreshing(true);
         bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
+
+        final ToggleButton buttonToSelect =
+                timeScaleSelector.getButtonForTag(trendsPresenter.getTimeScale());
+        if (buttonToSelect != null) {
+            timeScaleSelector.setSelectedButton(buttonToSelect);
+        } else {
+            timeScaleSelector.setSelectedIndex(0);
+        }
     }
 
     @Override
@@ -79,6 +104,8 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
+        this.timeScaleSelector = null;
+        this.trendGraphLinearLayout = null;
     }
 
 
@@ -94,16 +121,61 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         }
     }
 
+    private void transitionInTimeScaleSelector() {
+        timeScaleSelector.setVisibility(View.INVISIBLE);
+        Views.runWhenLaidOut(timeScaleSelector, stateSafeExecutor.bind(() -> {
+            timeScaleSelector.setTranslationY(-timeScaleSelector.getMeasuredHeight());
+            timeScaleSelector.setVisibility(View.VISIBLE);
+            animatorFor(timeScaleSelector, getAnimatorContext())
+                    .translationY(0f)
+                    .start();
+        }));
+    }
+
+    private void transitionOutTimeScaleSelector() {
+        animatorFor(timeScaleSelector, getAnimatorContext())
+                .translationY(-timeScaleSelector.getMeasuredHeight())
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        timeScaleSelector.setVisibility(View.GONE);
+                    }
+                })
+                .start();
+    }
+
     public void bindTrends(@NonNull Trends trends) {
         trendGraphLinearLayout.update(trends);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
+
+        final List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
+        if (availableTimeScales.size() > 1) {
+            for (int i = 0, count = timeScaleSelector.getButtonCount(); i < count; i++) {
+                final ToggleButton button = timeScaleSelector.getButtonAt(i);
+                final TimeScale buttonTimeScale = (TimeScale) timeScaleSelector.getButtonTag(button);
+                if (availableTimeScales.contains(buttonTimeScale)) {
+                    button.setVisibility(View.VISIBLE);
+                } else {
+                    button.setVisibility(View.GONE);
+                }
+            }
+
+            if (timeScaleSelector.getVisibility() != View.VISIBLE) {
+                transitionInTimeScaleSelector();
+            }
+        } else {
+            timeScaleSelector.setVisibility(View.GONE);
+        }
     }
 
     public void presentError(Throwable e) {
         trendGraphLinearLayout.presentError(this);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
+
+        if (timeScaleSelector.getVisibility() == View.VISIBLE) {
+            transitionOutTimeScaleSelector();
+        }
     }
 
     @Override
@@ -114,15 +186,9 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        // todo erase after design
         swipeRefreshLayout.setRefreshing(true);
-        if (newSelectionIndex == 2) {
-            trendsPresenter.setTimeScale(Trends.TimeScale.LAST_3_MONTHS);
-        } else if (newSelectionIndex == 1) {
-            trendsPresenter.setTimeScale(Trends.TimeScale.LAST_MONTH);
-        } else {
-            trendsPresenter.setTimeScale(Trends.TimeScale.LAST_WEEK);
-        }
-
+        final TimeScale newTimeScale =
+                (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
+        trendsPresenter.setTimeScale(newTimeScale);
     }
 }
