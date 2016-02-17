@@ -2,7 +2,9 @@ package is.hello.sense.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
@@ -36,7 +39,7 @@ public class TrendLayout extends FrameLayout {
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
-        view.checkForAnnotations(graph.getAnnotations());
+        view.checkForAnnotations(graph.getAnnotations(), false);
         return view;
     }
 
@@ -47,7 +50,7 @@ public class TrendLayout extends FrameLayout {
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
-        view.checkForAnnotations(graph.getAnnotations());
+        view.checkForAnnotations(graph.getAnnotations(), true);
         return view;
     }
 
@@ -91,23 +94,33 @@ public class TrendLayout extends FrameLayout {
 
     public void bindGraph(@NonNull Graph graph) {
         graphUpdater.call(graph);
-        checkForAnnotations(graph.getAnnotations());
+        checkForAnnotations(graph.getAnnotations(), graph.getGraphType() == Graph.GraphType.GRID);
     }
 
-    private void checkForAnnotations(List<Annotation> annotations) {
+    private void checkForAnnotations(List<Annotation> annotations, boolean isGrid) {
         if (annotations != null) {
             annotationsLayout.removeAllViews();
             annotationsLayout.setVisibility(VISIBLE);
             final LayoutInflater inflater = LayoutInflater.from(getContext());
             for (Annotation annotation : annotations) {
-                //todo handle conditions
+
                 inflater.inflate(R.layout.item_bargraph_annotation, annotationsLayout);
                 View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
                 ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title)).setText(annotation.getTitle().toUpperCase());
                 CharSequence value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),
                                                                    BarGraphDrawable.HOUR_SYMBOL,
                                                                    Styles.UNIT_STYLE_SUBSCRIPT);
-                ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value)).setText(value);
+                TextView valueTextView = ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
+                if (isGrid) {
+                    String condition = annotation.getCondition();
+                    if (condition == null) {
+                        condition = "";
+                    }
+                    valueTextView.setTextColor(ContextCompat.getColor(getContext(), Condition.fromString(condition).colorRes));
+                }else{
+                    valueTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
+                }
+                valueTextView.setText(value);
             }
         } else {
             annotationsLayout.setVisibility(GONE);

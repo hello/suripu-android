@@ -242,24 +242,24 @@
     <style name="AppTheme.Text.Trends.BubbleGraph">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/trends_bubblegraph_text_value_color</item>
+        <item name="android:textColor">@color/trends_bubblegraph_text_value</item>
         <item name="android:textStyle">normal</item>
     </style>
     <style name="AppTheme.Text.Trends.BubbleGraph.Title">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_trends_bubblegraph_title</item>
-        <item name="android:textColor">@color/trends_bubblegraph_text_title_color</item>
+        <item name="android:textColor">@color/trends_bubblegraph_text_title</item>
         <item name="android:textStyle">normal</item>
         </style>
 
     <style name="AppTheme.Text.Trends.BarGraph.HighLight">
-        <item name="android:textColor">@color/trends_bargraph_highlight_text_color</item>
+        <item name="android:textColor">@color/trends_bargraph_highlight_text</item>
     </style>
 
     <style name="AppTheme.Text.Trends.BarGraph.Hours">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textSize">@dimen/text_size_tiny_score</item>
-        <item name="android:textColor">@color/trends_bargraph_hightlight_bar_color</item>
+        <item name="android:textColor">@color/trends_bargraph_hightlight_bar</item>
     </style>
 
 
