@@ -1,10 +1,10 @@
 package is.hello.sense.ui.widget.graphing;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.View;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
@@ -23,15 +23,17 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
     private AnimatorContext animatorContext;
 
     public TrendGraphLinearLayout(@NonNull Context context) {
-        super(context);
+        this(context, null);
     }
 
     public TrendGraphLinearLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public TrendGraphLinearLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        setLayoutTransition(new LayoutTransition());
     }
 
 
@@ -76,6 +78,7 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
                     break;
                 case GRID:
                     final GridGraphView gridGraphView = new GridGraphView(getContext());
+                    gridGraphView.bindParentLayoutTransition(getLayoutTransition());
                     addView(TrendLayout.getGridGraphItem(getContext(), graph, gridGraphView));
                     break;
                 case OVERVIEW:
