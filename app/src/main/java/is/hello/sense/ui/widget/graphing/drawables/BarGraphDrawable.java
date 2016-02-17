@@ -63,12 +63,15 @@ public class BarGraphDrawable extends TrendGraphDrawable {
      * Will determine the width and space each bar should consume based on the canvas and graph type.
      */
 
-    private CanvasValues canvasValues;
-    /**
-     * Track how far from the left we should draw from.
-     */
-    private float leftSpace;
+    private final CanvasValues canvasValues = new CanvasValues();
 
+    private final RectF barBoundsRect = new RectF();
+    private final RectF highlightBounds = new RectF();
+    private final RectF highlightTextBounds = new RectF();
+    private final Rect textBounds = new Rect();
+
+
+    private final Path drawingPath = new Path();
 
     private final TextPaint highlightTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
@@ -101,8 +104,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         final int highlightTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_top_margin);
 
 
-        final Rect bounds = new Rect();
-        final int textHeight =Drawing.getEstimatedLineHeight(textLabelPaint, false);
+        final int textHeight = Drawing.getEstimatedLineHeight(textLabelPaint, false);
 
         this.graphTopSpace = textHeight + highlightTopMargin + highlightBottomMargin + highlightValueHeight;
 
@@ -123,14 +125,12 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
     @Override
     protected void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
+        canvasValues.updateValues(bounds);
     }
 
     @Override
     public void draw(Canvas canvas) {
-
-        canvasValues = new CanvasValues(canvas);
-        leftSpace = 0;
+        int leftSpace = 0;
         List<GraphSection> sections = graph.getSections();
         for (int i = 0; i < sections.size(); i++) {
             boolean hideLastSection = false;
@@ -138,9 +138,10 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             // Draw Text Labels
             List<String> titles = graphSection.getTitles();
             for (int j = 0; j < titles.size(); j++) {
-                RectF textPositionBounds = getTextBounds(j, titles.get(j).toUpperCase());
-                if (textPositionBounds.left + textPositionBounds.width() + 5 < canvas.getWidth()) {
-                    canvas.drawText(titles.get(j).toUpperCase(), textPositionBounds.left, textPositionBounds.top, textLabelPaint);
+                String title = titles.get(j).toUpperCase();
+                calculateTitleTextBounds(j, leftSpace, title, textBounds);
+                if (textBounds.left + textBounds.width() + 5 < canvas.getWidth()) {
+                    canvas.drawText(title, textBounds.left, textBounds.top, textLabelPaint);
                 } else if (i == sections.size() - 1) {
                     hideLastSection = true;
                 }
@@ -153,13 +154,15 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                     continue;
                 }
                 final float scaledRatio = (values.get(j) - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
-                canvas.drawRect(getBarBounds(j, scaledRatio), barPaint);
+                calculateBarBounds(j, scaledRatio, leftSpace, barBoundsRect);
+                canvas.drawRect(barBoundsRect, barPaint);
             }
             // Draw Dashed Line
             if (leftSpace > 0 && !hideLastSection) {
-                canvas.drawPath(getDashedLinePath(), dashedLinePaint);
+                calculateDashedLinePath(leftSpace, drawingPath);
+                canvas.drawPath(drawingPath, dashedLinePaint);
             }
-            leftSpace += values.size() * canvasValues.barSpace + values.size() * canvasValues.barWidth;
+            leftSpace += values.size() * (canvasValues.barSpace + canvasValues.barWidth);
         }
         leftSpace = 0;
         // Go through each section again for highlighted bars. If we draw these in the first run and one of the last bars is highlighted,
@@ -174,25 +177,23 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 final float scaledRatio = (value - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
 
                 final String textValue = Styles.createTextValue(value) + HOUR_SYMBOL;
-                final Rect textBounds = new Rect();
                 highlightTextPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
 
-                final RectF barBounds = getBarBounds(highlightedIndex, scaledRatio);
-                final RectF highlightBounds = getHighlightBounds(textBounds, barBounds); // This is the min / max bubble's position above the bar.
-                final RectF highlightTextBounds = getHighlightTextBounds(textBounds, highlightBounds);
-                Path highlightBoundsPath = new Path();
-                highlightBoundsPath.addRoundRect(highlightBounds, 15f, 15f,
-                                                 Path.Direction.CW);
+                calculateBarBounds(highlightedIndex, scaledRatio, leftSpace, barBoundsRect);
+                calculateHighlightBounds(textBounds.centerX(), barBoundsRect, highlightBounds); // This is the min / max bubble's position above the bar.
+                calculateHighlightTextBounds(textBounds, highlightBounds, highlightTextBounds);
+                drawingPath.reset();
+                drawingPath.addRoundRect(highlightBounds, 15f, 15f,
+                                         Path.Direction.CW);
                 // highlight the bar
-                canvas.drawRect(barBounds, barHighlightPaint);
+                canvas.drawRect(barBoundsRect, barHighlightPaint);
                 // draw the min/max bubble above it.
-                canvas.drawPath(highlightBoundsPath, barHighlightPaint);
+                canvas.drawPath(drawingPath, barHighlightPaint);
                 // draw the text in that min/max bubble.
                 canvas.drawText(textValue, highlightTextBounds.left, highlightTextBounds.top, highlightTextPaint);
             }
 
-
-            leftSpace += values.size() * canvasValues.barSpace + values.size() * canvasValues.barWidth;
+            leftSpace += values.size() * (canvasValues.barSpace + canvasValues.barWidth);
         }
     }
 
@@ -211,104 +212,99 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             @Override
             public void onAnimationEnd(Animator animation) {
                 BarGraphDrawable.this.graph = graph;
+                canvasValues.updateValues(getBounds());
                 showGraphAnimation();
             }
         });
         animatorContext.startWhenIdle(animator);
     }
 
-    private float getLeftPosition(float index) {
-        return leftSpace + index * canvasValues.barSpace + index * canvasValues.barWidth;
+    private float getLeftPosition(float index, int leftSpace) {
+        return leftSpace + index * (canvasValues.barSpace + canvasValues.barWidth);
     }
 
     /**
-     * @param barIndex index position of the bar value from the list of values.
-     * @param ratio    value of the bar compared to the maximum value contained.
-     * @return Boundary to draw for the given bar.
+     * @param barIndex  index position of the bar value from the list of values.
+     * @param ratio     value of the bar compared to the maximum value contained.
+     * @param leftSpace space to offset from left.
+     * @param outRect   Position of bar.
      */
-    public RectF getBarBounds(int barIndex, float ratio) {
-        final float left = getLeftPosition(barIndex);
+    public void calculateBarBounds(int barIndex, float ratio, int leftSpace, @NonNull RectF outRect) {
+        final float left = getLeftPosition(barIndex, leftSpace);
         final float top = canvasValues.bottom - (canvasValues.bottom - (graphTopSpace + barHeightDifference - (barHeightDifference * ratio))) * valueScaleFactor;
-        return new RectF(left,
-                         top,
-                         left + canvasValues.barWidth,
-                         canvasValues.bottom
-        );
+        outRect.left = left;
+        outRect.top = top;
+        outRect.right = left + canvasValues.barWidth;
+        outRect.bottom = canvasValues.bottom;
     }
 
     /**
      * @param titleIndex index position of the title from the list of title.
+     * @param leftSpace  space to offset from left.
      * @param text       text to display.
-     * @return Boundary of space the given text will take.
+     * @param outRect    Boundry of space the given text will take.
      */
-    private RectF getTextBounds(int titleIndex, String text) {
-        Rect textBounds = new Rect();
-        textLabelPaint.getTextBounds(text, 0, text.length(), textBounds);
-        float left = getLeftPosition(titleIndex);
-        if (canvasValues.barWidth > textBounds.width()) {
-            left += (canvasValues.barWidth - textBounds.width()) / 2;
+    private void calculateTitleTextBounds(int titleIndex, int leftSpace, String text, @NonNull Rect outRect) {
+        textLabelPaint.getTextBounds(text, 0, text.length(), outRect);
+        float left = getLeftPosition(titleIndex, leftSpace);
+        if (canvasValues.barWidth > outRect.width()) {
+            left += (canvasValues.barWidth - outRect.width()) / 2;
         } else {
             left += canvasValues.barWidth;
         }
-        RectF rectF = new RectF();
-        rectF.left = left;
-        rectF.right = left + textBounds.width();
-        rectF.top = textBounds.height();
-        rectF.inset(Math.abs(textBounds.width() - rectF.width()) / 2, 0);
-        return rectF;
+        outRect.left = (int) left;
+        outRect.right = (int) left + outRect.width();
+        outRect.top = outRect.height();
     }
 
     /**
-     * @return Path from top to bottom of canvas. Will take into account leftSpace.
+     * @param leftSpace space to offset from left.
+     * @param outPath   Path to apply position of dashed line to.
      */
-    private Path getDashedLinePath() {
-        Path path = new Path();
-        path.moveTo(leftSpace - canvasValues.barSpace / 2, 0);
-        path.lineTo(leftSpace - canvasValues.barSpace / 2, canvasValues.bottom);
-        return path;
+    private void calculateDashedLinePath(int leftSpace, @NonNull Path outPath) {
+        outPath.reset();
+        outPath.moveTo(leftSpace - canvasValues.barSpace / 2, 0);
+        outPath.lineTo(leftSpace - canvasValues.barSpace / 2, canvasValues.bottom);
     }
 
     /**
-     * @param textBounds text bounds of the min/max text values
-     * @param barBounds  bounds of bar being highlighted.
-     * @return bounds centered above the bar being highlighted for min/max bubble.
+     * @param textCenterX center of text x position.
+     * @param barBounds   bounds of bar being highlighted.
+     * @param outRect     Min/max bubbles position above given barBounds.
      */
-    private RectF getHighlightBounds(@NonNull Rect textBounds, @NonNull RectF barBounds) {
-        RectF highlightBounds = new RectF();
-        highlightBounds.left = barBounds.centerX() - textBounds.width() / 2 - highlightValueSidePadding;
-        highlightBounds.right = barBounds.centerX() + textBounds.width() / 2 + highlightValueSidePadding;
-        highlightBounds.top = barBounds.top - highlightValueHeight - highlightBottomMargin;
-        highlightBounds.bottom = highlightBounds.top + highlightValueHeight;
+    private void calculateHighlightBounds(int textCenterX, @NonNull RectF barBounds, @NonNull RectF outRect) {
+        outRect.left = barBounds.centerX() - textCenterX - highlightValueSidePadding;
+        outRect.right = barBounds.centerX() + textCenterX + highlightValueSidePadding;
+        outRect.top = barBounds.top - highlightValueHeight - highlightBottomMargin;
+        outRect.bottom = outRect.top + highlightValueHeight;
 
-        if (highlightBounds.left < 0) {
-            highlightBounds.offset(Math.abs(highlightBounds.left), 0);
+        if (outRect.left < 0) {
+            outRect.offset(Math.abs(outRect.left), 0);
         }
-        return highlightBounds;
     }
 
     /**
      * @param textBounds      text bounds of the min/max text values.
      * @param highlightBounds bounds to center text inside of.
-     * @return bounds with positions to draw the text at.
+     * @param outRect         Position to draw min/max text at.
      */
-    private RectF getHighlightTextBounds(@NonNull Rect textBounds, @NonNull RectF highlightBounds) {
-        RectF highlightTextBounds = new RectF(highlightBounds);
+    private void calculateHighlightTextBounds(@NonNull Rect textBounds, @NonNull RectF highlightBounds, @NonNull RectF outRect) {
+        outRect.set(highlightBounds);
         float offset = (highlightBounds.width() - textBounds.width()) / 2;
-        highlightTextBounds.offset(offset, 0);
-        highlightTextBounds.top = highlightBounds.centerY() + textBounds.height() / 2;
-        return highlightTextBounds;
+        outRect.offset(offset, 0);
+        outRect.top = highlightBounds.centerY() + textBounds.height() / 2;
     }
 
     private class CanvasValues {
 
-        public final float barSpace;
-        public final float barWidth;
-        public final float bottom;
+        public float barSpace;
+        public float barWidth;
+        public float bottom;
 
-        public CanvasValues(Canvas canvas) {
-            this.barSpace = canvas.getWidth() * Styles.getBarSpacePercent(graph.getTimeScale());
-            this.barWidth = canvas.getWidth() * Styles.getBarWidthPercent(graph.getTimeScale());
-            this.bottom = canvas.getHeight();
+        public void updateValues(Rect rect) {
+            this.barSpace = rect.width() * Styles.getBarSpacePercent(graph.getTimeScale());
+            this.barWidth = rect.width() * Styles.getBarWidthPercent(graph.getTimeScale());
+            this.bottom = rect.height();
         }
 
     }
