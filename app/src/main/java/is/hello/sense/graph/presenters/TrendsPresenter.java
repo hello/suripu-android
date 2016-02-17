@@ -37,4 +37,7 @@ public class TrendsPresenter extends ScopedValuePresenter<Trends> {
         update();
     }
 
+    public Trends.TimeScale getTimeScale() {
+        return timeScale;
+    }
 }

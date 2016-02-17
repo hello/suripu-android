@@ -27,7 +27,6 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
-import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
@@ -51,7 +50,6 @@ public class BacksideFragment extends InjectionFragment
 
     private int tabSelectorHeight;
     private SelectorView tabSelector;
-    private TabsBackgroundDrawable tabLine;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
 
@@ -141,9 +139,6 @@ public class BacksideFragment extends InjectionFragment
         tabSelector.setSelectedIndex(pager.getCurrentItem());
         tabSelector.setOnSelectionChangedListener(this);
 
-        this.tabLine = new TabsBackgroundDrawable(resources, TabsBackgroundDrawable.Style.BACKSIDE);
-        tabSelector.setBackground(tabLine);
-
         return view;
     }
 
@@ -232,8 +227,6 @@ public class BacksideFragment extends InjectionFragment
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        tabLine.setPositionOffset(positionOffset);
-        tabLine.setSelectedIndex(position);
     }
 
     @Override
