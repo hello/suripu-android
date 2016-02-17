@@ -224,11 +224,12 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     }
 
     /**
-     * @param barIndex index position of the bar value from the list of values.
-     * @param ratio    value of the bar compared to the maximum value contained.
-     * @return Boundary to draw for the given bar.
+     * @param barIndex  index position of the bar value from the list of values.
+     * @param ratio     value of the bar compared to the maximum value contained.
+     * @param leftSpace space to offset from left.
+     * @param outRect   Position of bar.
      */
-    public void calculateBarBounds(int barIndex, float ratio, int leftSpace, @NonNull  RectF outRect) {
+    public void calculateBarBounds(int barIndex, float ratio, int leftSpace, @NonNull RectF outRect) {
         final float left = getLeftPosition(barIndex, leftSpace);
         final float top = canvasValues.bottom - (canvasValues.bottom - (graphTopSpace + barHeightDifference - (barHeightDifference * ratio))) * valueScaleFactor;
         outRect.left = left;
@@ -239,8 +240,9 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
     /**
      * @param titleIndex index position of the title from the list of title.
+     * @param leftSpace  space to offset from left.
      * @param text       text to display.
-     * @return Boundary of space the given text will take.
+     * @param outRect    Boundry of space the given text will take.
      */
     private void calculateTitleTextBounds(int titleIndex, int leftSpace, String text, @NonNull Rect outRect) {
         textLabelPaint.getTextBounds(text, 0, text.length(), outRect);
@@ -256,7 +258,8 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     }
 
     /**
-     * @return Path from top to bottom of canvas. Will take into account leftSpace.
+     * @param leftSpace space to offset from left.
+     * @param outPath   Path to apply position of dashed line to.
      */
     private void calculateDashedLinePath(int leftSpace, @NonNull Path outPath) {
         outPath.reset();
@@ -265,8 +268,9 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     }
 
     /**
-     * @param barBounds bounds of bar being highlighted.
-     * @return bounds centered above the bar being highlighted for min/max bubble.
+     * @param textCenterX center of text x position.
+     * @param barBounds   bounds of bar being highlighted.
+     * @param outRect     Min/max bubbles position above given barBounds.
      */
     private void calculateHighlightBounds(int textCenterX, @NonNull RectF barBounds, @NonNull RectF outRect) {
         outRect.left = barBounds.centerX() - textCenterX - highlightValueSidePadding;
@@ -282,7 +286,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     /**
      * @param textBounds      text bounds of the min/max text values.
      * @param highlightBounds bounds to center text inside of.
-     * @return bounds with positions to draw the text at.
+     * @param outRect         Position to draw min/max text at.
      */
     private void calculateHighlightTextBounds(@NonNull Rect textBounds, @NonNull RectF highlightBounds, @NonNull RectF outRect) {
         outRect.set(highlightBounds);
