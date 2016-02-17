@@ -55,7 +55,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         this.trendGraphLinearLayout = (TrendGraphLinearLayout) view.findViewById(R.id.fragment_trends_trendgraph);
         this.trendGraphLinearLayout.setAnimatorContext(getAnimatorContext());
         //todo erase after design
-        SelectorView selectorView = (SelectorView) view.findViewById(R.id.fragment_trends_selectorview);
+        SelectorView selectorView = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
         selectorView.addOption("Last Week", "Last Week", true);
         selectorView.addOption("Last Month", "Last Month", true);
         selectorView.addOption("Last 3 Months", "Last 3 Months", true);
