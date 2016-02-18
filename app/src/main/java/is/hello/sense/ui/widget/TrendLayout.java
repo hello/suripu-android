@@ -2,14 +2,16 @@ package is.hello.sense.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.ColorRes;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,7 +36,7 @@ public class TrendLayout extends FrameLayout {
     protected Action1<Graph> graphUpdater;
 
 
-    public static TrendLayout getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendCardView graphView) {
+    public static View getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendCardView graphView) {
         final Action1<Graph> graphUpdater = graphView::updateGraph;
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
         view.setTag(graph.getGraphType());
@@ -43,7 +45,7 @@ public class TrendLayout extends FrameLayout {
         return view;
     }
 
-    public static TrendLayout getGridGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull GridGraphView graphView) {
+    public static View getGridGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull GridGraphView graphView) {
         final Action1<Graph> graphUpdater;
         graphView.setGraphAdapter(graph);
         graphUpdater = graphView::setGraphAdapter;
@@ -54,39 +56,32 @@ public class TrendLayout extends FrameLayout {
         return view;
     }
 
-    public static TrendLayout getErrorItem(@NonNull Context context, @NonNull OnRetry onRetry) {
-        return new TrendLayout(context, onRetry);
+    public static View getErrorItem(@NonNull Context context, @NonNull OnRetry onRetry) {
+        return new TrendError(context, onRetry);
+    }
+
+    public static View getWelcomeItem(@NonNull Context context) {
+        View view = new TrendWelcome(context);
+        view.setTag(TrendWelcome.class);
+        return view;
+    }
+
+    public static View getComingSoonItem(@NonNull Context context, int days) {
+        View view = new TrendComingSoon(context, days);
+        view.setTag(TrendComingSoon.class);
+        return view;
     }
 
 
-    public TrendLayout(Context context, @NonNull View graphView, @NonNull Action1<Graph> graphUpdate) {
+    private TrendLayout(Context context, @NonNull View graphView, @NonNull Action1<Graph> graphUpdate) {
         super(context);
-        View inflatedView = LayoutInflater.from(context).inflate(R.layout.item_trend, this);
+        final View inflatedView = LayoutInflater.from(context).inflate(R.layout.item_trend, this);
         title = (TextView) inflatedView.findViewById(R.id.item_trend_title);
         annotationsLayout = (LinearLayout) inflatedView.findViewById(R.id.item_trend_annotations);
         view = (FrameLayout) inflatedView.findViewById(R.id.item_trend_view);
         view.addView(graphView);
         graphUpdater = graphUpdate;
     }
-
-    public TrendLayout(@NonNull Context context, @NonNull OnRetry onRetry) {
-        super(context);
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
-        view.findViewById(R.id.item_message_card_image).setVisibility(View.GONE);
-
-        final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
-        title.setVisibility(View.GONE);
-
-        final Button action = (Button) view.findViewById(R.id.item_message_card_action);
-        action.setText(R.string.action_retry);
-        action.setOnClickListener(v -> {
-            onRetry.fetchTrends();
-        });
-        final TextView message = (TextView) view.findViewById(R.id.item_message_card_message);
-        message.setText(R.string.error_trends_unavailable);
-        view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
-    }
-
 
     private void setTitle(String titleText) {
         title.setText(titleText);
@@ -129,5 +124,68 @@ public class TrendLayout extends FrameLayout {
 
     public interface OnRetry {
         void fetchTrends();
+    }
+
+    public static class TrendMiscLayout extends FrameLayout {
+        protected final ImageView image;
+        protected final TextView title;
+        protected final TextView message;
+        protected final Button action;
+
+        public TrendMiscLayout(@NonNull Context context) {
+            super(context);
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            image = (ImageView) findViewById(R.id.item_message_card_image);
+            title = (TextView) findViewById(R.id.item_message_card_title);
+            message = (TextView) findViewById(R.id.item_message_card_message);
+            action = (Button) findViewById(R.id.item_message_card_action);
+            view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
+        }
+    }
+
+    public static class TrendError extends TrendMiscLayout {
+        public TrendError(@NonNull Context context, @NonNull OnRetry onRetry) {
+            super(context);
+            title.setVisibility(View.GONE);
+
+            action.setText(R.string.action_retry);
+            action.setOnClickListener(v -> {
+                onRetry.fetchTrends();
+            });
+            message.setText(R.string.error_trends_unavailable);
+        }
+    }
+
+    public static class TrendWelcome extends TrendMiscLayout {
+
+        public TrendWelcome(@NonNull Context context) {
+            super(context);
+            title.setGravity(Gravity.CENTER_HORIZONTAL);
+            title.setPadding(0, 0, 0, 0);
+            title.getTotalPaddingTop();
+            title.setText(getResources().getString(R.string.title_trends_welcome));
+            image.setImageResource(R.drawable.trends_first_day);
+            ((LinearLayout.LayoutParams) message.getLayoutParams()).topMargin = 0;
+            message.setText(getResources().getString(R.string.message_trends_welcome));
+            if (Build.VERSION.SDK_INT < 23) {
+                message.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Small_New);
+            } else {
+                message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
+            }
+            message.setLineSpacing(0, 1);
+            action.setVisibility(GONE);
+        }
+    }
+
+    public static class TrendComingSoon extends TrendWelcome {
+
+        public TrendComingSoon(@NonNull Context context, int days) {
+            super(context);
+            title.setText(getResources().getString(R.string.title_trends_coming_soon));
+            String daysText = days == 1 ? "" : "s";
+            String messageText = getResources().getString(R.string.message_trends_coming_soon, days + "", daysText);
+            CharSequence styledText = Html.fromHtml(messageText);
+            message.setText(styledText);
+        }
     }
 }
