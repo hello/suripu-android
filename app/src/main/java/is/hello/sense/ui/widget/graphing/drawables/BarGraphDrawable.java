@@ -92,7 +92,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
 
         final int dashedLineLength = resources.getDimensionPixelSize(R.dimen.trends_bargraph_dashed_line_length);
-        this.dashedLinePaint.setColor(ContextCompat.getColor(context, R.color.black));
+        this.dashedLinePaint.setColor(ContextCompat.getColor(context, R.color.grey));
         this.dashedLinePaint.setStyle(Paint.Style.STROKE);
         this.dashedLinePaint.setStrokeWidth(1);
         this.dashedLinePaint.setPathEffect(new DashPathEffect(new float[]{dashedLineLength, dashedLineLength * 2}, 0));

@@ -240,7 +240,7 @@
     </style>
 
     <style name="AppTheme.Text.Trends.BubbleGraph">
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/trends_bubblegraph_text_value_color</item>
         <item name="android:textStyle">normal</item>
