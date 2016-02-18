@@ -73,11 +73,11 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
     private final Path drawingPath = new Path();
 
-    private final TextPaint highlightTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final Paint barHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final Paint barPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final Paint dashedLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+    private final TextPaint highlightTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint barHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint barPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint dashedLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 
     public BarGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
