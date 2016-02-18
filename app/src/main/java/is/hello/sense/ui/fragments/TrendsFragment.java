@@ -111,7 +111,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends, false);
     }
 
     @Override
