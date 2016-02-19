@@ -32,8 +32,6 @@ import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.adapter.TrendMonthAdapter;
 import is.hello.sense.ui.adapter.TrendWeekAdapter;
 
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
-
 public class GridGraphView extends LinearLayout
         implements GridRecycler.Adapter<LinearLayout, GridGraphCellView> {
     //region Constants
@@ -72,7 +70,6 @@ public class GridGraphView extends LinearLayout
     //region Attribute Backing
 
     private @Nullable LayoutTransition rootLayoutTransition;
-    private @Nullable View annotationView;
     private Adapter adapter;
     private @NonNull GridGraphCellView.Size cellSize = GridGraphCellView.Size.REGULAR;
     private int interRowPadding;
@@ -229,10 +226,6 @@ public class GridGraphView extends LinearLayout
         }
     }
 
-    public void setAnnotationView(@Nullable View annotationView) {
-        this.annotationView = annotationView;
-    }
-
     public void setGraphAdapter(@NonNull Graph graph) {
         Trends.TimeScale timeScale = graph.getTimeScale();
         if (timeScale == Trends.TimeScale.LAST_3_MONTHS) {
@@ -340,16 +333,6 @@ public class GridGraphView extends LinearLayout
                                                  getLayoutTransition().getInterpolator(LayoutTransition.CHANGE_DISAPPEARING));
             rootLayoutTransition.setStartDelay(LayoutTransition.CHANGING, startDelay);
             rootLayoutTransition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, startDelay);
-        }
-
-        if (annotationView != null) {
-            animatorFor(annotationView)
-                    .fadeOut(INVISIBLE)
-                    .start();
-
-            animatorFor(annotationView)
-                    .fadeIn()
-                    .postStart();
         }
 
         for (int i = 0; i < delta; i++) {
