@@ -84,6 +84,7 @@
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
 
     <color name="trends_title">#b2596980</color>
+    <color name="trends_line_divider">#19596980</color>
     <color name="trends_bargraph_dashedline">#000000</color>
     <color name="trends_bargraph">#66596980</color>
     <color name="trends_bargraph_bar">#BFE6FF</color>
