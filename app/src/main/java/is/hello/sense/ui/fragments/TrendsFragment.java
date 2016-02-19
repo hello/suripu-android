@@ -19,7 +19,6 @@ import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
 import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.TrendLayout;

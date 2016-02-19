@@ -7,7 +7,7 @@
     <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/fragment_trends_time_scale"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_height" />
+        android:layout_height="@dimen/trends_title_height" />
 
     <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
         android:id="@+id/fragment_trends_refresh_container"
