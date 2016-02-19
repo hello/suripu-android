@@ -90,7 +90,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     @Override
     public void draw(Canvas canvas) {
         for (BubbleController.Bubble bubble : currentBubbleController.getDrawOrder()) {
-            String textValue = bubble.getTextValue();
+            final String textValue = bubble.getTextValue();
             bubble.getTextValuePaint().getTextBounds(textValue, 0, textValue.length(), textValueRect);
             // Bubble
             canvas.drawCircle(bubble.getMidX(),
