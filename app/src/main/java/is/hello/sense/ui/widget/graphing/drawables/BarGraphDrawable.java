@@ -87,8 +87,8 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.AppTheme_Text_Trends_BarGraph_HighLight);
 
 
-        this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight_bar_color));
-        this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_bar_color));
+        this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight_bar));
+        this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_bar));
 
 
         final int dashedLineLength = resources.getDimensionPixelSize(R.dimen.trends_bargraph_dashed_line_length);

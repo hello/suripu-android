@@ -61,16 +61,15 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
 
     private Rect textValueRect = new Rect();
 
-
     public BubbleGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
         super(graph, context, animatorContext);
 
         this.minBubbleHeight = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_min_height);
         this.titleTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_title_top_margin);
 
-        this.lightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_light_bubble_color));
-        this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_medium_bubble_color));
-        this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_deep_bubble_color));
+        this.lightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_light_bubble));
+        this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_medium_bubble));
+        this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_deep_bubble));
 
         Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
         Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
@@ -254,7 +253,6 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
 
             private final Rect textTitleRect;
             private final Paint paint;
-
 
             /**
              * Give a target bubble that this bubble should animate towards.
