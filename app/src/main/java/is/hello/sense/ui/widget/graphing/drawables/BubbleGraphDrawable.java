@@ -72,6 +72,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
 
         Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
         Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
+        textPercentPaint.setAlpha(178);
         Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph_Title);
         textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_trends_bubblegraph_title));
         this.totalGraphHeight = context.getResources().getDimensionPixelSize(R.dimen.trends_bubblegraph_max_height);
