@@ -52,12 +52,12 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     private int midY;
     private float animationScaleFactor;
 
-    private final Paint lightPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final Paint mediumPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final Paint deepPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final TextPaint textTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final TextPaint textValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final TextPaint textPercentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+    private final Paint lightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mediumPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint deepPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final TextPaint textTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final TextPaint textValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final TextPaint textPercentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
 
     public BubbleGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
