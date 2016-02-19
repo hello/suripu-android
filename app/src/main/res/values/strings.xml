@@ -366,7 +366,10 @@
     <string name="title_trends_welcome">Welcome to Trends</string>
     <string name="message_trends_welcome">Sense will collect your trends overtime and will live here when there\'s more data.</string>
     <string name="title_trends_coming_soon">Trends Coming Soon</string>
-    <string name="message_trends_coming_soon">You\'re almost done tracking your first week, in  &lt;b> %1$s day%2$s &lt;/b>you will see new trends.</string>
+    <plurals name="message_trends_coming_soon">
+        <item quantity="one">You\'re almost done tracking your first week, in  &lt;b> %1$s day &lt;/b>you will see new trends.</item>
+        <item quantity="other">You\'re almost done tracking your first week, in  &lt;b> %1$s days &lt;/b>you will see new trends.</item>
+    </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>

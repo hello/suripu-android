@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import java.util.ArrayList;
 import java.util.List;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
@@ -61,21 +62,32 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
 
     private void inflateTrends() {
         List<Graph> graphList = trends.getGraphs();
+        List<Graph> tempList = new ArrayList<>();
+        for(Graph graph: graphList){
+            if (graph.getGraphType() == Graph.GraphType.GRID){
+                tempList.add(graph);
+            }
+        }
+        graphList = tempList;
+
         if (graphList.size() == 0) {
-            if (findViewWithTag(TrendLayout.TrendWelcome.class) == null) {
+            if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
                 addView(TrendLayout.getWelcomeItem(getContext()));
             }
         } else if (graphList.size() == 1) {
             Graph graph = graphList.get(0);
             if (graph.getGraphType() == Graph.GraphType.GRID) {
-                if (findViewWithTag(TrendLayout.TrendComingSoon.class) == null) {
+                if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
                     int numberOfDaysWithValues = 0;
+                    for (int i = 1; i < graph.getSections().size(); i++) {
+                        graph.getSections().remove(i);
+                    }
                     for (int i = 0; i < graph.getSections().size(); i++) {
                         List<Float> values = graph.getSections().get(i).getValues();
                         for (int j = 0; j < values.size(); j++) {
                             if (values.get(j) != null) {
                                 numberOfDaysWithValues++;
-                                if (numberOfDaysWithValues == 7) {
+                                if (numberOfDaysWithValues == DAYS_IN_WEEK) {
                                     break;
                                 }
                             }

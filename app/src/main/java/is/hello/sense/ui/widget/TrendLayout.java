@@ -46,9 +46,8 @@ public class TrendLayout extends FrameLayout {
     }
 
     public static View getGridGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull GridGraphView graphView) {
-        final Action1<Graph> graphUpdater;
+        final Action1<Graph> graphUpdater = graphView::setGraphAdapter;
         graphView.setGraphAdapter(graph);
-        graphUpdater = graphView::setGraphAdapter;
         TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
@@ -62,13 +61,13 @@ public class TrendLayout extends FrameLayout {
 
     public static View getWelcomeItem(@NonNull Context context) {
         View view = new TrendWelcome(context);
-        view.setTag(TrendWelcome.class);
+        view.setTag(TrendMiscLayout.class);
         return view;
     }
 
     public static View getComingSoonItem(@NonNull Context context, int days) {
         View view = new TrendComingSoon(context, days);
-        view.setTag(TrendComingSoon.class);
+        view.setTag(TrendMiscLayout.class);
         return view;
     }
 
@@ -112,7 +111,7 @@ public class TrendLayout extends FrameLayout {
                         condition = "";
                     }
                     valueTextView.setTextColor(ContextCompat.getColor(getContext(), Condition.fromString(condition).colorRes));
-                }else{
+                } else {
                     valueTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
                 }
                 valueTextView.setText(value);
@@ -167,7 +166,7 @@ public class TrendLayout extends FrameLayout {
             image.setImageResource(R.drawable.trends_first_day);
             ((LinearLayout.LayoutParams) message.getLayoutParams()).topMargin = 0;
             message.setText(getResources().getString(R.string.message_trends_welcome));
-            if (Build.VERSION.SDK_INT < 23) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 message.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Small_New);
             } else {
                 message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
@@ -182,9 +181,7 @@ public class TrendLayout extends FrameLayout {
         public TrendComingSoon(@NonNull Context context, int days) {
             super(context);
             title.setText(getResources().getString(R.string.title_trends_coming_soon));
-            String daysText = days == 1 ? "" : "s";
-            String messageText = getResources().getString(R.string.message_trends_coming_soon, days + "", daysText);
-            CharSequence styledText = Html.fromHtml(messageText);
+            CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
             message.setText(styledText);
         }
     }
