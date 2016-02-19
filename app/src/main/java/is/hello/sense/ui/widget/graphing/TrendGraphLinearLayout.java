@@ -62,14 +62,6 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
 
     private void inflateTrends() {
         List<Graph> graphList = trends.getGraphs();
-        List<Graph> tempList = new ArrayList<>();
-        for(Graph graph: graphList){
-            if (graph.getGraphType() == Graph.GraphType.GRID){
-                tempList.add(graph);
-            }
-        }
-        graphList = tempList;
-
         if (graphList.size() == 0) {
             if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
                 addView(TrendLayout.getWelcomeItem(getContext()));
@@ -79,9 +71,6 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
             if (graph.getGraphType() == Graph.GraphType.GRID) {
                 if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
                     int numberOfDaysWithValues = 0;
-                    for (int i = 1; i < graph.getSections().size(); i++) {
-                        graph.getSections().remove(i);
-                    }
                     for (int i = 0; i < graph.getSections().size(); i++) {
                         List<Float> values = graph.getSections().get(i).getValues();
                         for (int j = 0; j < values.size(); j++) {
