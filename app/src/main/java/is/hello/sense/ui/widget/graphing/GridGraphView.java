@@ -69,7 +69,7 @@ public class GridGraphView extends LinearLayout
 
     //region Attribute Backing
 
-    private @Nullable LayoutTransition parentLayoutTransition;
+    private @Nullable LayoutTransition rootLayoutTransition;
     private Adapter adapter;
     private @NonNull GridGraphCellView.Size cellSize = GridGraphCellView.Size.REGULAR;
     private int interRowPadding;
@@ -137,7 +137,7 @@ public class GridGraphView extends LinearLayout
         // When a GridGraphView is contained in an outer ViewGroup which is animated
         // independently of its own LayoutAnimator, both its parent and itself must
         // disable child clipping for the animated layout changes to render correctly.
-        final boolean clipChildren = (parentLayoutTransition == null);
+        final boolean clipChildren = (rootLayoutTransition == null);
         final ViewGroup parent = (ViewGroup) getParent();
 
         setClipChildren(clipChildren);
@@ -197,24 +197,24 @@ public class GridGraphView extends LinearLayout
                             .scale(SCALE_MIN);
     }
 
-    public void bindParentLayoutTransition(@NonNull LayoutTransition parentLayoutTransition) {
+    public void bindRootLayoutTransition(@NonNull LayoutTransition rootLayoutTransition) {
         if (DEBUG) {
             Log.d(getClass().getSimpleName(),
-                  "bindParentLayoutTransition(" + parentLayoutTransition + ")");
+                  "bindRootLayoutTransition(" + rootLayoutTransition + ")");
         }
 
         final LayoutTransition myLayoutTransition = getLayoutTransition();
         myLayoutTransition.setAnimateParentHierarchy(false);
 
-        this.parentLayoutTransition = parentLayoutTransition;
+        this.rootLayoutTransition = rootLayoutTransition;
 
-        parentLayoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-        parentLayoutTransition.setInterpolator(LayoutTransition.CHANGE_APPEARING,
-                                               myLayoutTransition.getInterpolator(LayoutTransition.CHANGE_APPEARING));
-        parentLayoutTransition.setInterpolator(LayoutTransition.CHANGE_DISAPPEARING,
-                                               myLayoutTransition.getInterpolator(LayoutTransition.CHANGE_DISAPPEARING));
+        rootLayoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        rootLayoutTransition.setInterpolator(LayoutTransition.CHANGE_APPEARING,
+                                             myLayoutTransition.getInterpolator(LayoutTransition.CHANGE_APPEARING));
+        rootLayoutTransition.setInterpolator(LayoutTransition.CHANGE_DISAPPEARING,
+                                             myLayoutTransition.getInterpolator(LayoutTransition.CHANGE_DISAPPEARING));
 
-        parentLayoutTransition.setDuration(parentLayoutTransition.getDuration(LayoutTransition.CHANGING));
+        rootLayoutTransition.setDuration(rootLayoutTransition.getDuration(LayoutTransition.CHANGING));
 
         // See #onAttachedToWindow() for explanation on these lines
         setClipChildren(false);
@@ -328,11 +328,11 @@ public class GridGraphView extends LinearLayout
 
         final long startDelay = (ROW_STAGGER * delta) / 2L;
         getLayoutTransition().setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, startDelay);
-        if (parentLayoutTransition != null) {
-            parentLayoutTransition.setInterpolator(LayoutTransition.CHANGING,
-                                                   getLayoutTransition().getInterpolator(LayoutTransition.CHANGE_DISAPPEARING));
-            parentLayoutTransition.setStartDelay(LayoutTransition.CHANGING, startDelay);
-            parentLayoutTransition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, startDelay);
+        if (rootLayoutTransition != null) {
+            rootLayoutTransition.setInterpolator(LayoutTransition.CHANGING,
+                                                 getLayoutTransition().getInterpolator(LayoutTransition.CHANGE_DISAPPEARING));
+            rootLayoutTransition.setStartDelay(LayoutTransition.CHANGING, startDelay);
+            rootLayoutTransition.setStartDelay(LayoutTransition.CHANGE_DISAPPEARING, startDelay);
         }
 
         for (int i = 0; i < delta; i++) {
@@ -351,11 +351,11 @@ public class GridGraphView extends LinearLayout
 
         final long startDelay = (ROW_STAGGER * delta) / 4L;
         getLayoutTransition().setStartDelay(LayoutTransition.CHANGE_APPEARING, startDelay);
-        if (parentLayoutTransition != null) {
-            parentLayoutTransition.setInterpolator(LayoutTransition.CHANGING,
-                                                   getLayoutTransition().getInterpolator(LayoutTransition.CHANGE_APPEARING));
-            parentLayoutTransition.setStartDelay(LayoutTransition.CHANGING, startDelay);
-            parentLayoutTransition.setStartDelay(LayoutTransition.CHANGE_APPEARING, startDelay);
+        if (rootLayoutTransition != null) {
+            rootLayoutTransition.setInterpolator(LayoutTransition.CHANGING,
+                                                 getLayoutTransition().getInterpolator(LayoutTransition.CHANGE_APPEARING));
+            rootLayoutTransition.setStartDelay(LayoutTransition.CHANGING, startDelay);
+            rootLayoutTransition.setStartDelay(LayoutTransition.CHANGE_APPEARING, startDelay);
         }
 
         for (int i = 0; i < delta; i++) {

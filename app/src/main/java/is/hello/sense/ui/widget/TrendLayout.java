@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -28,17 +29,14 @@ import is.hello.sense.ui.widget.util.Styles;
 import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")
-public class TrendLayout extends FrameLayout {
-
-    protected LinearLayout annotationsLayout;
-    protected TextView title;
-    protected FrameLayout view;
-    protected Action1<Graph> graphUpdater;
+public class TrendLayout extends RoundedLinearLayout {
+    private final LinearLayout annotationsLayout;
+    private final TextView title;
+    private final Action1<Graph> graphUpdater;
 
 
     public static View getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendCardView graphView) {
-        final Action1<Graph> graphUpdater = graphView::updateGraph;
-        TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
+        final TrendLayout view = new TrendLayout(context, graphView, graphView::updateGraph);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
         view.checkForAnnotations(graph.getAnnotations(), false);
@@ -46,9 +44,8 @@ public class TrendLayout extends FrameLayout {
     }
 
     public static View getGridGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull GridGraphView graphView) {
-        final Action1<Graph> graphUpdater = graphView::setGraphAdapter;
         graphView.setGraphAdapter(graph);
-        TrendLayout view = new TrendLayout(context, graphView, graphUpdater);
+        final TrendLayout view = new TrendLayout(context, graphView, graphView::setGraphAdapter);
         view.setTag(graph.getGraphType());
         view.setTitle(graph.getTitle());
         view.checkForAnnotations(graph.getAnnotations(), true);
@@ -60,26 +57,58 @@ public class TrendLayout extends FrameLayout {
     }
 
     public static View getWelcomeItem(@NonNull Context context) {
-        View view = new TrendWelcome(context);
+        final View view = new TrendWelcome(context);
         view.setTag(TrendMiscLayout.class);
         return view;
     }
 
     public static View getComingSoonItem(@NonNull Context context, int days) {
-        View view = new TrendComingSoon(context, days);
+        final View view = new TrendComingSoon(context, days);
         view.setTag(TrendMiscLayout.class);
         return view;
     }
 
 
-    private TrendLayout(Context context, @NonNull View graphView, @NonNull Action1<Graph> graphUpdate) {
+    private TrendLayout(@NonNull Context context,
+                        @NonNull View graphView,
+                        @NonNull Action1<Graph> graphUpdate) {
         super(context);
-        final View inflatedView = LayoutInflater.from(context).inflate(R.layout.item_trend, this);
-        title = (TextView) inflatedView.findViewById(R.id.item_trend_title);
-        annotationsLayout = (LinearLayout) inflatedView.findViewById(R.id.item_trend_annotations);
-        view = (FrameLayout) inflatedView.findViewById(R.id.item_trend_view);
-        view.addView(graphView);
-        graphUpdater = graphUpdate;
+
+        LayoutInflater.from(context).inflate(R.layout.item_trend, this);
+
+        setOrientation(VERTICAL);
+        setBackgroundResource(R.drawable.raised_item_normal);
+
+        final Resources resources = getResources();
+        final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        setPadding(padding, 0, padding, padding);
+
+        final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                             LayoutParams.WRAP_CONTENT);
+        myLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
+        setLayoutParams(myLayoutParams);
+
+        final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
+        setCornerRadii(cornerRadius);
+
+        this.title = (TextView) findViewById(R.id.item_trend_title);
+        this.graphUpdater = graphUpdate;
+        this.annotationsLayout = new LinearLayout(context);
+
+        final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                      LayoutParams.WRAP_CONTENT);
+        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+
+        final LayoutParams graphLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                LayoutParams.WRAP_CONTENT);
+        if (graphView instanceof GridGraphView) {
+            final GridGraphView gridGraphView = (GridGraphView) graphView;
+            gridGraphView.addView(annotationsLayout, annotationsLayoutParams);
+            addView(gridGraphView);
+        } else {
+            addView(graphView, graphLayoutParams);
+            addView(annotationsLayout, annotationsLayoutParams);
+        }
     }
 
     private void setTitle(String titleText) {
@@ -167,6 +196,7 @@ public class TrendLayout extends FrameLayout {
             ((LinearLayout.LayoutParams) message.getLayoutParams()).topMargin = 0;
             message.setText(getResources().getString(R.string.message_trends_welcome));
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                //noinspection deprecation
                 message.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Small_New);
             } else {
                 message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
