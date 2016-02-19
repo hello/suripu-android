@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import java.util.ArrayList;
+import java.util.List;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.Trends;
@@ -21,6 +23,7 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
     private Trends trends;
     private boolean isError;
     private AnimatorContext animatorContext;
+    private static final int DAYS_IN_WEEK = 7;
 
     public TrendGraphLinearLayout(@NonNull Context context) {
         this(context, null);
@@ -58,9 +61,37 @@ public class TrendGraphLinearLayout extends RoundedLinearLayout {
     }
 
     private void inflateTrends() {
-        for (Graph graph : trends.getGraphs()) {
+        List<Graph> graphList = trends.getGraphs();
+        if (graphList.size() == 0) {
+            if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
+                addView(TrendLayout.getWelcomeItem(getContext()));
+            }
+        } else if (graphList.size() == 1) {
+            Graph graph = graphList.get(0);
+            if (graph.getGraphType() == Graph.GraphType.GRID) {
+                if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
+                    int numberOfDaysWithValues = 0;
+                    for (int i = 0; i < graph.getSections().size(); i++) {
+                        List<Float> values = graph.getSections().get(i).getValues();
+                        for (int j = 0; j < values.size(); j++) {
+                            if (values.get(j) != null) {
+                                numberOfDaysWithValues++;
+                                if (numberOfDaysWithValues == DAYS_IN_WEEK) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    int days = DAYS_IN_WEEK - numberOfDaysWithValues;
+                    if (days > 0) {
+                        addView(TrendLayout.getComingSoonItem(getContext(), days));
+                    }
+                }
+            }
+        }
+        for (Graph graph : graphList) {
             Graph.GraphType graphType = graph.getGraphType();
-            TrendLayout item =(TrendLayout)findViewWithTag(graphType);
+            TrendLayout item = (TrendLayout) findViewWithTag(graphType);
             if (item != null) {
                 item.bindGraph(graph);
                 continue;

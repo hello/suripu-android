@@ -363,6 +363,13 @@
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
     <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
+    <string name="title_trends_welcome">Welcome to Trends</string>
+    <string name="message_trends_welcome">Sense will collect your trends overtime and will live here when there\'s more data.</string>
+    <string name="title_trends_coming_soon">Trends Coming Soon</string>
+    <plurals name="message_trends_coming_soon">
+        <item quantity="one"><![CDATA[You\'re almost done tracking your first week, in  <b> %1$s day </b>you will see new trends.]]></item>
+        <item quantity="other"><![CDATA[You\'re almost done tracking your first week, in  <b> %1$s days </b>you will see new trends.]]></item>
+    </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
