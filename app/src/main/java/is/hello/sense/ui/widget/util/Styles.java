@@ -388,14 +388,33 @@ public final class Styles {
         }
     }
 
-    public static String createTextValue(float value){
-        String textValue = new DecimalFormat("#00").format(value);
-        if (textValue.charAt(0) == '0'){
+    public static String createTextValue(float value, int numberOfDecimalPlaces) {
+        String format = "#00";
+        if (numberOfDecimalPlaces > 0) {
+            format += ".";
+            for (int i = 0; i < numberOfDecimalPlaces; i++) {
+                format += "0";
+            }
+        }
+        String textValue = new DecimalFormat(format).format(value);
+        if (textValue.charAt(0) == '0') {
             textValue = textValue.substring(1, textValue.length());
         }
+        String[] textValues = textValue.split("\\.");
+        if (textValues.length == 2) {
+            String decimals = textValues[1];
+            while (decimals.length() > 0 && decimals.charAt(decimals.length() - 1) == '0') {
+                decimals = decimals.substring(0, decimals.length() - 1);
+            }
+            if (decimals.length() > 0) {
+                textValue = textValues[0] + "." + decimals;
+            } else {
+                textValue = textValues[0];
+            }
+        }
+
         return textValue;
     }
-
 
 
 }
