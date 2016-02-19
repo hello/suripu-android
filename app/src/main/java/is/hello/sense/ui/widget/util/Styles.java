@@ -60,18 +60,14 @@ public final class Styles {
     public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
 
     @IntDef({
-            UNIT_STYLE_SUPERSCRIPT,
-            UNIT_STYLE_SUBSCRIPT,
+        UNIT_STYLE_SUPERSCRIPT,
+        UNIT_STYLE_SUBSCRIPT,
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface UnitStyle {
-    }
+    public @interface UnitStyle {}
 
 
-    public static
-    @StyleRes
-    @DrawableRes
-    int getScoreConditionTintThemeRes(@NonNull ScoreCondition condition) {
+    public static @StyleRes @DrawableRes int getScoreConditionTintThemeRes(@NonNull ScoreCondition condition) {
         switch (condition) {
             default:
             case UNAVAILABLE:
@@ -89,9 +85,7 @@ public final class Styles {
     }
 
 
-    public static
-    @StringRes
-    int getConnectStatusMessage(@NonNull ConnectProgress status) {
+    public static @StringRes int getConnectStatusMessage(@NonNull ConnectProgress status) {
         switch (status) {
             case CONNECTING:
                 return R.string.title_connecting;
@@ -108,9 +102,7 @@ public final class Styles {
         }
     }
 
-    public static
-    @StringRes
-    int getWiFiConnectStatusMessage(@NonNull SenseConnectToWiFiUpdate status) {
+    public static @StringRes int getWiFiConnectStatusMessage(@NonNull SenseConnectToWiFiUpdate status) {
         switch (status.state) {
             case WLAN_CONNECTED:
                 return R.string.title_connecting_network_wlan_connected;
@@ -133,9 +125,7 @@ public final class Styles {
     }
 
 
-    public static
-    @NonNull
-    CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
+    public static @NonNull CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
         final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
         if (UnitFormatter.UNIT_SUFFIX_TEMPERATURE.equals(suffix)) {
             spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
@@ -158,9 +148,7 @@ public final class Styles {
         return spannableSuffix;
     }
 
-    public static
-    @NonNull
-    CharSequence createUnitSubscriptSpan(@NonNull String suffix) {
+    public static @NonNull CharSequence createUnitSubscriptSpan(@NonNull String suffix) {
         final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
         spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
                                 0, spannableSuffix.length(),
@@ -174,11 +162,9 @@ public final class Styles {
         return spannableSuffix;
     }
 
-    public static
-    @NonNull
-    CharSequence assembleReadingAndUnit(@NonNull CharSequence value,
-                                        @NonNull String suffix,
-                                        @UnitStyle int unitStyle) {
+    public static @NonNull CharSequence assembleReadingAndUnit(@NonNull CharSequence value,
+                                                               @NonNull String suffix,
+                                                               @UnitStyle int unitStyle) {
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(value);
 
@@ -195,30 +181,22 @@ public final class Styles {
         return builder;
     }
 
-    public static
-    @NonNull
-    CharSequence assembleReadingAndUnit(double value, @NonNull String suffix) {
+    public static @NonNull CharSequence assembleReadingAndUnit(double value, @NonNull String suffix) {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
-    public static
-    @NonNull
-    CharSequence assembleReadingAndUnit(String value, @NonNull String suffix) {
+    public static @NonNull CharSequence assembleReadingAndUnit(String value, @NonNull String suffix) {
         return assembleReadingAndUnit(String.format("%1$2s", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
-    public static
-    @NonNull
-    GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
+    public static @NonNull GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
+        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
                 resources.getColor(R.color.graph_fill_gradient_top),
                 resources.getColor(R.color.graph_fill_gradient_bottom),
         });
     }
 
-    public static
-    @NonNull
-    ColorDrawableCompat createGraphFillSolidDrawable(@NonNull Resources resources) {
+    public static @NonNull ColorDrawableCompat createGraphFillSolidDrawable(@NonNull Resources resources) {
         return new ColorDrawableCompat(resources.getColor(R.color.graph_fill_solid));
     }
 
@@ -293,7 +271,7 @@ public final class Styles {
                     break;
                 }
 
-                case "#settings": {
+                case "#settings":{
                     clickableSpan = new SimpleClickableSpan(v -> UserSupport.showAppSettings(activity));
                     break;
                 }
@@ -340,7 +318,7 @@ public final class Styles {
 
     /**
      * Creates a new drawable for use as a borderless button background.
-     * <p>
+     * <p />
      * Intended for use in places where a {@link is.hello.sense.ui.widget.RoundedLinearLayout}
      * or {@link is.hello.sense.ui.widget.RoundedRelativeLayout} cannot be used due to
      * performance or rendering compatibility issues.
@@ -350,8 +328,8 @@ public final class Styles {
                                                                 @ColorInt int normalColor,
                                                                 @ColorInt int selectedColor) {
         final float[] cornerRadii = {
-                topRadius, topRadius, topRadius, topRadius,
-                bottomRadius, bottomRadius, bottomRadius, bottomRadius,
+            topRadius, topRadius, topRadius, topRadius,
+            bottomRadius, bottomRadius, bottomRadius, bottomRadius,
         };
         final RoundRectShape roundedRect = new RoundRectShape(cornerRadii, null, null);
         final ShapeDrawable normal = new ShapeDrawable(roundedRect);
@@ -363,8 +341,8 @@ public final class Styles {
             pressed.getPaint().setColor(selectedColor);
 
             final StateListDrawable selector = new StateListDrawable();
-            selector.addState(new int[]{android.R.attr.state_pressed}, pressed);
-            selector.addState(new int[]{}, normal);
+            selector.addState(new int[] { android.R.attr.state_pressed }, pressed);
+            selector.addState(new int[] {}, normal);
             return selector;
         }
     }
@@ -421,7 +399,7 @@ public final class Styles {
         }
         DecimalFormat decimalFormat = new DecimalFormat(format);
         decimalFormat.setRoundingMode(RoundingMode.DOWN);
-        String textValue = decimalFormat.format(value);
+        String textValue = new DecimalFormat(format).format(value);
         if (textValue.charAt(0) == '0') {
             textValue = textValue.substring(1, textValue.length());
         }
