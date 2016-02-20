@@ -5,13 +5,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.widget.RoundedLinearLayout;
 import is.hello.sense.ui.widget.TrendLayout;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
@@ -19,7 +19,7 @@ import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 /**
  * Temporary class for quickly displaying trends.
  */
-public class TrendFeedView extends RoundedLinearLayout {
+public class TrendFeedView extends LinearLayout {
     private Trends trends;
     private boolean isError;
     private AnimatorContext animatorContext;
