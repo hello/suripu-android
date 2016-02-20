@@ -19,21 +19,21 @@ import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 /**
  * Temporary class for quickly displaying trends.
  */
-public class TrendGraphLinearLayout extends RoundedLinearLayout {
+public class TrendFeedView extends RoundedLinearLayout {
     private Trends trends;
     private boolean isError;
     private AnimatorContext animatorContext;
     private static final int DAYS_IN_WEEK = 7;
 
-    public TrendGraphLinearLayout(@NonNull Context context) {
+    public TrendFeedView(@NonNull Context context) {
         this(context, null);
     }
 
-    public TrendGraphLinearLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TrendFeedView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TrendGraphLinearLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TrendFeedView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setLayoutTransition(new LayoutTransition());

@@ -22,7 +22,7 @@ import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.TrendLayout;
-import is.hello.sense.ui.widget.graphing.TrendGraphLinearLayout;
+import is.hello.sense.ui.widget.graphing.TrendFeedView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -35,7 +35,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    private TrendGraphLinearLayout trendGraphLinearLayout;
+    private TrendFeedView trendFeedView;
     private SelectorView timeScaleSelector;
 
     @Override
@@ -60,8 +60,8 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
-        this.trendGraphLinearLayout = (TrendGraphLinearLayout) view.findViewById(R.id.fragment_trends_trendgraph);
-        this.trendGraphLinearLayout.setAnimatorContext(getAnimatorContext());
+        this.trendFeedView = (TrendFeedView) view.findViewById(R.id.fragment_trends_trendgraph);
+        this.trendFeedView.setAnimatorContext(getAnimatorContext());
 
         this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
@@ -104,7 +104,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
         this.timeScaleSelector = null;
-        this.trendGraphLinearLayout = null;
+        this.trendFeedView = null;
     }
 
 
@@ -142,7 +142,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
     }
 
     public void bindTrends(@NonNull Trends trends) {
-        trendGraphLinearLayout.update(trends);
+        trendFeedView.update(trends);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
@@ -167,7 +167,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendLayout.O
     }
 
     public void presentError(Throwable e) {
-        trendGraphLinearLayout.presentError(this);
+        trendFeedView.presentError(this);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
