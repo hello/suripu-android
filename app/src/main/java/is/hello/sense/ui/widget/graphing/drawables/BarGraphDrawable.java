@@ -185,7 +185,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 calculateHighlightBounds(textBounds.centerX(), barBoundsRect, highlightBounds); // This is the min / max bubble's position above the bar.
                 calculateHighlightTextBounds(textBounds, highlightBounds, highlightTextBounds);
                 drawingPath.reset();
-                drawingPath.addRoundRect(highlightBounds, 8f, 8f,
+                drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius), resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius),
                                          Path.Direction.CW);
                 // highlight the bar
                 canvas.drawRect(barBoundsRect, barHighlightPaint);
