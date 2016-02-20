@@ -21,7 +21,7 @@ import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.ui.widget.TrendLayout;
+import is.hello.sense.ui.widget.TrendCardView;
 import is.hello.sense.ui.widget.graphing.TrendFeedView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -29,7 +29,7 @@ import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class TrendsFragment extends BacksideTabFragment implements TrendLayout.OnRetry, SelectorView.OnSelectionChangedListener {
+public class TrendsFragment extends BacksideTabFragment implements TrendCardView.OnRetry, SelectorView.OnSelectionChangedListener {
     @Inject TrendsPresenter trendsPresenter;
 
     private ProgressBar initialActivityIndicator;

@@ -12,7 +12,7 @@ import java.util.List;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.widget.TrendLayout;
+import is.hello.sense.ui.widget.TrendCardView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 
@@ -53,23 +53,23 @@ public class TrendFeedView extends LinearLayout {
         inflateTrends();
     }
 
-    public void presentError(TrendLayout.OnRetry onRetry) {
+    public void presentError(TrendCardView.OnRetry onRetry) {
         isError = true;
         removeAllViews();
-        addView(TrendLayout.getErrorItem(getContext(), onRetry));
+        addView(TrendCardView.createErrorCard(getContext(), onRetry));
 
     }
 
     private void inflateTrends() {
         List<Graph> graphList = trends.getGraphs();
         if (graphList.size() == 0) {
-            if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
-                addView(TrendLayout.getWelcomeItem(getContext()));
+            if (findViewWithTag(TrendCardView.StaticCardLayout.class) == null) {
+                addView(TrendCardView.createWelcomeCard(getContext()));
             }
         } else if (graphList.size() == 1) {
             Graph graph = graphList.get(0);
             if (graph.getGraphType() == Graph.GraphType.GRID) {
-                if (findViewWithTag(TrendLayout.TrendMiscLayout.class) == null) {
+                if (findViewWithTag(TrendCardView.StaticCardLayout.class) == null) {
                     int numberOfDaysWithValues = 0;
                     for (int i = 0; i < graph.getSections().size(); i++) {
                         List<Float> values = graph.getSections().get(i).getValues();
@@ -84,14 +84,14 @@ public class TrendFeedView extends LinearLayout {
                     }
                     int days = DAYS_IN_WEEK - numberOfDaysWithValues;
                     if (days > 0) {
-                        addView(TrendLayout.getComingSoonItem(getContext(), days));
+                        addView(TrendCardView.createComingSoonCard(getContext(), days));
                     }
                 }
             }
         }
         for (Graph graph : graphList) {
             Graph.GraphType graphType = graph.getGraphType();
-            TrendLayout item = (TrendLayout) findViewWithTag(graphType);
+            TrendCardView item = (TrendCardView) findViewWithTag(graphType);
             if (item != null) {
                 item.bindGraph(graph);
                 continue;
@@ -99,18 +99,18 @@ public class TrendFeedView extends LinearLayout {
             switch (graph.getGraphType()) {
                 case BAR:
                     final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(getContext(), graph, animatorContext);
-                    final TrendCardView barGraphView = new TrendCardView(getContext(), barGraphDrawable);
-                    addView(TrendLayout.getGraphItem(getContext(), graph, barGraphView));
+                    final TrendGraphView barGraphView = new TrendGraphView(getContext(), barGraphDrawable);
+                    addView(TrendCardView.createGraphCard(getContext(), graph, barGraphView));
                     break;
                 case BUBBLES:
                     final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(getContext(), graph, animatorContext);
-                    final TrendCardView bubbleGraphView = new TrendCardView(getContext(), bubbleGraphDrawable);
-                    addView(TrendLayout.getGraphItem(getContext(), graph, bubbleGraphView));
+                    final TrendGraphView bubbleGraphView = new TrendGraphView(getContext(), bubbleGraphDrawable);
+                    addView(TrendCardView.createGraphCard(getContext(), graph, bubbleGraphView));
                     break;
                 case GRID:
                     final GridGraphView gridGraphView = new GridGraphView(getContext());
                     gridGraphView.bindRootLayoutTransition(getLayoutTransition());
-                    addView(TrendLayout.getGridGraphItem(getContext(), graph, gridGraphView));
+                    addView(TrendCardView.createGridCard(getContext(), graph, gridGraphView));
                     break;
                 case OVERVIEW:
                     break;
