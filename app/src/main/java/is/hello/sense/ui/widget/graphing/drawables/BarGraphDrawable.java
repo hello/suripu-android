@@ -147,7 +147,9 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             for (int j = 0; j < titles.size(); j++) {
                 String title = titles.get(j).toUpperCase();
                 calculateTitleTextBounds(j, leftSpace, title, textBounds);
-                if (textBounds.left + textBounds.width() + 5 < canvas.getWidth()) {
+                if ( textBounds.left + textBounds.width() + 10 > graphSection.getValues().size() * (canvasValues.barWidth + canvasValues.barSpace)){
+                    continue;
+                }else if (textBounds.left + textBounds.width() + 10 < canvas.getWidth()) {
                     canvas.drawText(title, textBounds.left, textBounds.top, textLabelPaint);
                 } else if (i == sections.size() - 1) {
                     hideLastSection = true;
@@ -165,7 +167,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 canvas.drawRect(barBoundsRect, barPaint);
             }
             // Draw Dashed Line
-            if (leftSpace > 0 && !hideLastSection) {
+            if (leftSpace > 0 && !hideLastSection ) {
                 calculateDashedLinePath(leftSpace, drawingPath);
                 canvas.drawPath(drawingPath, dashedLinePaint);
             }
