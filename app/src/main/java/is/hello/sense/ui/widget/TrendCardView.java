@@ -118,28 +118,33 @@ public class TrendCardView extends RoundedLinearLayout {
     }
 
     private void populateAnnotations(List<Annotation> annotations, boolean isGrid) {
+        annotationsLayout.removeAllViews();
+
         if (!Lists.isEmpty(annotations)) {
-            annotationsLayout.removeAllViews();
             annotationsLayout.setVisibility(VISIBLE);
+
             final LayoutInflater inflater = LayoutInflater.from(getContext());
             for (Annotation annotation : annotations) {
                 inflater.inflate(R.layout.item_bargraph_annotation, annotationsLayout);
-                View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
-                ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title)).setText(annotation.getTitle().toUpperCase());
-                CharSequence value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),
-                                                                   BarGraphDrawable.HOUR_SYMBOL,
-                                                                   Styles.UNIT_STYLE_SUBSCRIPT);
-                TextView valueTextView = ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
+                final View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
+
+                final TextView titleText =
+                        (TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title);
+                titleText.setText(annotation.getTitle().toUpperCase());
+
+                final CharSequence value =
+                        Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),
+                                                      BarGraphDrawable.HOUR_SYMBOL,
+                                                      Styles.UNIT_STYLE_SUBSCRIPT);
+                final TextView valueText =
+                        ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
                 if (isGrid) {
-                    String condition = annotation.getCondition();
-                    if (condition == null) {
-                        condition = "";
-                    }
-                    valueTextView.setTextColor(ContextCompat.getColor(getContext(), Condition.fromString(condition).colorRes));
+                    final Condition condition = annotation.getCondition();
+                    valueText.setTextColor(ContextCompat.getColor(getContext(), condition.colorRes));
                 } else {
-                    valueTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
+                    valueText.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
                 }
-                valueTextView.setText(value);
+                valueText.setText(value);
             }
         } else {
             annotationsLayout.setVisibility(GONE);

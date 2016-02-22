@@ -1,10 +1,9 @@
 package is.hello.sense.api.model.v2;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.api.model.Condition;
 
 public class Annotation extends ApiResponse {
     @SerializedName("title")
@@ -17,8 +16,7 @@ public class Annotation extends ApiResponse {
     private Graph.DataType dataType;
 
     @SerializedName("condition")
-    @Nullable
-    private String condition;
+    private Condition condition;
 
     public String getTitle() {
         return title;
@@ -32,8 +30,7 @@ public class Annotation extends ApiResponse {
         return dataType;
     }
 
-    @Nullable
-    public String getCondition() {
+    public Condition getCondition() {
         return condition;
     }
 
