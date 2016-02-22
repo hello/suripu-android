@@ -28,8 +28,6 @@ import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
-import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.adapter.TrendMonthAdapter;
 import is.hello.sense.ui.adapter.TrendWeekAdapter;
 import is.hello.sense.ui.widget.TrendCardView;
 
@@ -95,7 +93,8 @@ public class GridGraphView extends LinearLayout
 
         setOrientation(VERTICAL);
 
-        final LayoutTransition layoutTransition = new LayoutTransition();
+        final LayoutTransition layoutTransition = new AttachedLayoutTransition();
+        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
 
         layoutTransition.setAnimator(LayoutTransition.APPEARING, createAppearingAnimator());
         layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, createDisappearingAnimator());
@@ -227,22 +226,31 @@ public class GridGraphView extends LinearLayout
         }
     }
 
+    public void setAnimationsEnabled(boolean animationsEnabled) {
+        final LayoutTransition myLayoutTransition = getLayoutTransition();
+        if (animationsEnabled) {
+            myLayoutTransition.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.APPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.DISAPPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        } else {
+            myLayoutTransition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.APPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.DISAPPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.CHANGING);
+        }
+    }
+
     @Override
     public void bindGraph(@NonNull Graph graph) {
-        final Trends.TimeScale timeScale = graph.getTimeScale();
-        if (timeScale == Trends.TimeScale.LAST_3_MONTHS) {
-            setCellSize(GridGraphCellView.Size.SMALL);
-
-            final TrendMonthAdapter monthAdapter = new TrendMonthAdapter(getContext());
-            monthAdapter.bind(graph, graph.getSections().get(0));
-            setAdapter(monthAdapter);
-        } else {
-            setCellSize(GridGraphCellView.Size.REGULAR);
-
-            final TrendWeekAdapter weekAdapter = new TrendWeekAdapter(getContext());
-            weekAdapter.bind(graph);
-            setAdapter(weekAdapter);
+        if (!(getAdapter() instanceof TrendWeekAdapter)) {
+            setAdapter(new TrendWeekAdapter(getContext()));
         }
+
+        final TrendWeekAdapter adapter = (TrendWeekAdapter) getAdapter();
+        adapter.bind(graph);
     }
 
     //endregion
@@ -411,6 +419,8 @@ public class GridGraphView extends LinearLayout
             Log.d(getClass().getSimpleName(), "populate()");
         }
 
+        removeCallbacks(populateCallback);
+
         final int oldCount = rowViews.size();
         final int newCount = adapter != null ? adapter.getRowCount() : 0;
         final long cellStartDelay;
@@ -472,8 +482,12 @@ public class GridGraphView extends LinearLayout
                 adapter.registerObserver(ADAPTER_OBSERVER);
             }
 
-            requestPopulate();
+            populate();
         }
+    }
+
+    public Adapter getAdapter() {
+        return adapter;
     }
 
     public void setCellSize(@NonNull GridGraphCellView.Size cellSize) {
@@ -526,7 +540,7 @@ public class GridGraphView extends LinearLayout
     private final DataSetObserver ADAPTER_OBSERVER = new DataSetObserver() {
         @Override
         public void onChanged() {
-            requestPopulate();
+            populate();
         }
 
         @Override
@@ -534,6 +548,13 @@ public class GridGraphView extends LinearLayout
             setAdapter(null);
         }
     };
+
+    private class AttachedLayoutTransition extends LayoutTransition {
+        @Override
+        public boolean isTransitionTypeEnabled(int transitionType) {
+            return isAttachedToWindow() && super.isTransitionTypeEnabled(transitionType);
+        }
+    }
 
     public abstract static class Adapter {
         private final DataSetObservable observable = new DataSetObservable();
