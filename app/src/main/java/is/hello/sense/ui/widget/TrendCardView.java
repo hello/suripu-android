@@ -22,56 +22,53 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
-import is.hello.sense.ui.widget.graphing.TrendCardView;
+import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")
-public class TrendLayout extends RoundedLinearLayout {
+public class TrendCardView extends RoundedLinearLayout {
     private final LinearLayout annotationsLayout;
     private final TextView title;
-    private final Action1<Graph> graphUpdater;
+    private final OnBindGraph graphBinder;
 
 
-    public static View getGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull TrendCardView graphView) {
-        final TrendLayout view = new TrendLayout(context, graphView, graphView::updateGraph);
-        view.setTag(graph.getGraphType());
-        view.setTitle(graph.getTitle());
-        view.checkForAnnotations(graph.getAnnotations(), false);
-        return view;
+    public static TrendCardView createGraphCard(@NonNull TrendGraphView graphView,
+                                                @NonNull Graph graph) {
+        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        cardView.setTitle(graph.getTitle());
+        cardView.populateAnnotations(graph.getAnnotations(), false);
+        return cardView;
     }
 
-    public static View getGridGraphItem(@NonNull Context context, @NonNull Graph graph, @NonNull GridGraphView graphView) {
-        graphView.setGraphAdapter(graph);
-        final TrendLayout view = new TrendLayout(context, graphView, graphView::setGraphAdapter);
-        view.setTag(graph.getGraphType());
-        view.setTitle(graph.getTitle());
-        view.checkForAnnotations(graph.getAnnotations(), true);
-        return view;
+    public static TrendCardView createGridCard(@NonNull GridGraphView graphView,
+                                               @NonNull Graph graph) {
+        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        cardView.setTitle(graph.getTitle());
+        cardView.populateAnnotations(graph.getAnnotations(), true);
+        graphView.bindGraph(graph);
+        return cardView;
     }
 
-    public static View getErrorItem(@NonNull Context context, @NonNull OnRetry onRetry) {
-        return new TrendError(context, onRetry);
+    public static ErrorCardView createErrorCard(@NonNull Context context,
+                                                @NonNull OnRetry onRetry) {
+        return new ErrorCardView(context, onRetry);
     }
 
-    public static View getWelcomeItem(@NonNull Context context) {
-        final View view = new TrendWelcome(context);
-        view.setTag(TrendMiscLayout.class);
-        return view;
+    public static WelcomeCardView createWelcomeCard(@NonNull Context context) {
+        return new WelcomeCardView(context);
     }
 
-    public static View getComingSoonItem(@NonNull Context context, int days) {
-        final View view = new TrendComingSoon(context, days);
-        view.setTag(TrendMiscLayout.class);
-        return view;
+    public static ComingSoonCardView createComingSoonCard(@NonNull Context context, int days) {
+        return new ComingSoonCardView(context, days);
     }
 
 
-    private TrendLayout(@NonNull Context context,
-                        @NonNull View graphView,
-                        @NonNull Action1<Graph> graphUpdate) {
+    private TrendCardView(@NonNull Context context,
+                          @NonNull View graphView,
+                          @NonNull OnBindGraph graphBinder) {
         super(context);
 
         LayoutInflater.from(context).inflate(R.layout.item_trend, this);
@@ -92,7 +89,7 @@ public class TrendLayout extends RoundedLinearLayout {
         setCornerRadii(cornerRadius);
 
         this.title = (TextView) findViewById(R.id.item_trend_title);
-        this.graphUpdater = graphUpdate;
+        this.graphBinder = graphBinder;
         this.annotationsLayout = new LinearLayout(context);
 
         final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
@@ -111,39 +108,43 @@ public class TrendLayout extends RoundedLinearLayout {
         }
     }
 
-    private void setTitle(String titleText) {
+    public void setTitle(String titleText) {
         title.setText(titleText);
     }
 
     public void bindGraph(@NonNull Graph graph) {
-        graphUpdater.call(graph);
-        checkForAnnotations(graph.getAnnotations(), graph.getGraphType() == Graph.GraphType.GRID);
+        populateAnnotations(graph.getAnnotations(), graph.getGraphType() == Graph.GraphType.GRID);
+        graphBinder.bindGraph(graph);
     }
 
-    private void checkForAnnotations(List<Annotation> annotations, boolean isGrid) {
-        if (annotations != null) {
-            annotationsLayout.removeAllViews();
+    private void populateAnnotations(List<Annotation> annotations, boolean isGrid) {
+        annotationsLayout.removeAllViews();
+
+        if (!Lists.isEmpty(annotations)) {
             annotationsLayout.setVisibility(VISIBLE);
+
             final LayoutInflater inflater = LayoutInflater.from(getContext());
             for (Annotation annotation : annotations) {
-
                 inflater.inflate(R.layout.item_bargraph_annotation, annotationsLayout);
-                View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
-                ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title)).setText(annotation.getTitle().toUpperCase());
-                CharSequence value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),
-                                                                   BarGraphDrawable.HOUR_SYMBOL,
-                                                                   Styles.UNIT_STYLE_SUBSCRIPT);
-                TextView valueTextView = ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
+                final View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
+
+                final TextView titleText =
+                        (TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title);
+                titleText.setText(annotation.getTitle().toUpperCase());
+
+                final CharSequence value =
+                        Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),
+                                                      BarGraphDrawable.HOUR_SYMBOL,
+                                                      Styles.UNIT_STYLE_SUBSCRIPT);
+                final TextView valueText =
+                        ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
                 if (isGrid) {
-                    String condition = annotation.getCondition();
-                    if (condition == null) {
-                        condition = "";
-                    }
-                    valueTextView.setTextColor(ContextCompat.getColor(getContext(), Condition.fromString(condition).colorRes));
+                    final Condition condition = annotation.getCondition();
+                    valueText.setTextColor(ContextCompat.getColor(getContext(), condition.colorRes));
                 } else {
-                    valueTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
+                    valueText.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
                 }
-                valueTextView.setText(value);
+                valueText.setText(value);
             }
         } else {
             annotationsLayout.setVisibility(GONE);
@@ -154,26 +155,28 @@ public class TrendLayout extends RoundedLinearLayout {
         void fetchTrends();
     }
 
-    public static class TrendMiscLayout extends FrameLayout {
+    abstract static class StaticCardLayout extends FrameLayout {
         protected final ImageView image;
         protected final TextView title;
         protected final TextView message;
         protected final Button action;
 
-        public TrendMiscLayout(@NonNull Context context) {
+        StaticCardLayout(@NonNull Context context) {
             super(context);
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
-            image = (ImageView) findViewById(R.id.item_message_card_image);
-            title = (TextView) findViewById(R.id.item_message_card_title);
-            message = (TextView) findViewById(R.id.item_message_card_message);
-            action = (Button) findViewById(R.id.item_message_card_action);
+
+            final View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            this.image = (ImageView) findViewById(R.id.item_message_card_image);
+            this.title = (TextView) findViewById(R.id.item_message_card_title);
+            this.message = (TextView) findViewById(R.id.item_message_card_message);
+            this.action = (Button) findViewById(R.id.item_message_card_action);
             view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
         }
     }
 
-    public static class TrendError extends TrendMiscLayout {
-        public TrendError(@NonNull Context context, @NonNull OnRetry onRetry) {
+    static class ErrorCardView extends StaticCardLayout {
+        ErrorCardView(@NonNull Context context, @NonNull OnRetry onRetry) {
             super(context);
+
             title.setVisibility(View.GONE);
 
             action.setText(R.string.action_retry);
@@ -184,16 +187,17 @@ public class TrendLayout extends RoundedLinearLayout {
         }
     }
 
-    public static class TrendWelcome extends TrendMiscLayout {
-
-        public TrendWelcome(@NonNull Context context) {
+    static class WelcomeCardView extends StaticCardLayout {
+        WelcomeCardView(@NonNull Context context) {
             super(context);
+
             title.setGravity(Gravity.CENTER_HORIZONTAL);
             title.setPadding(0, 0, 0, 0);
             title.getTotalPaddingTop();
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
-            ((LinearLayout.LayoutParams) message.getLayoutParams()).topMargin = 0;
+
+            ((MarginLayoutParams) message.getLayoutParams()).topMargin = 0;
             message.setText(getResources().getString(R.string.message_trends_welcome));
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 //noinspection deprecation
@@ -206,13 +210,16 @@ public class TrendLayout extends RoundedLinearLayout {
         }
     }
 
-    public static class TrendComingSoon extends TrendWelcome {
-
-        public TrendComingSoon(@NonNull Context context, int days) {
+    static class ComingSoonCardView extends WelcomeCardView {
+        ComingSoonCardView(@NonNull Context context, int days) {
             super(context);
             title.setText(getResources().getString(R.string.title_trends_coming_soon));
-            CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
+            final CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
             message.setText(styledText);
         }
+    }
+
+    public interface OnBindGraph {
+        void bindGraph(@NonNull Graph graph);
     }
 }

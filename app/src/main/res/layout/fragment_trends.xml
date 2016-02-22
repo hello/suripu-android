@@ -24,14 +24,14 @@
             android:scrollbars="none"
             app:senseFadingEdgeStyle="rounded">
 
-            <is.hello.sense.ui.widget.graphing.TrendGraphLinearLayout
+            <is.hello.sense.ui.widget.graphing.TrendFeedView
                 android:id="@+id/fragment_trends_trendgraph"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:dividerPadding="@dimen/gap_card_vertical"
                 android:orientation="vertical">
 
-            </is.hello.sense.ui.widget.graphing.TrendGraphLinearLayout>
+            </is.hello.sense.ui.widget.graphing.TrendFeedView>
 
         </is.hello.sense.ui.widget.ExtendedScrollView>
 

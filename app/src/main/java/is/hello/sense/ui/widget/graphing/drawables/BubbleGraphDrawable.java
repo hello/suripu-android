@@ -62,7 +62,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     private Rect textValueRect = new Rect();
 
     public BubbleGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-        super(graph, context, animatorContext);
+        super(context, graph, animatorContext);
 
         this.minBubbleHeight = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_min_height);
         this.titleTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_title_top_margin);

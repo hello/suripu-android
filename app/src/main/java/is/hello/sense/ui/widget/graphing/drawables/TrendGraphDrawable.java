@@ -24,7 +24,7 @@ public abstract class TrendGraphDrawable extends Drawable {
     protected final AnimatorContext animatorContext;
     protected final Context context;
 
-    public TrendGraphDrawable(@NonNull Graph graph, @NonNull Context context, @NonNull AnimatorContext animatorContext) {
+    public TrendGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
         this.context = context;
         this.resources = context.getResources();
         this.graph = graph;
