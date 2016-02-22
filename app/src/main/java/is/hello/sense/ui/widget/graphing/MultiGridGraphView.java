@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.ui.adapter.TrendMonthAdapter;
@@ -33,16 +34,26 @@ public class MultiGridGraphView extends LinearLayout implements TrendCardView.On
 
         setOrientation(VERTICAL);
 
-        final LayoutParams rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-                                                              LayoutParams.WRAP_CONTENT);
-        final LayoutParams columnLayoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1);
+        final int margin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
         for (int row = 0; row < ROW_COUNT; row++) {
             final LinearLayout rowLayout = new LinearLayout(context);
             rowLayout.setOrientation(HORIZONTAL);
             for (int column = 0; column < COLUMN_COUNT; column++) {
                 final GridGraphView graphView = createGridGraphView(context);
                 graphViews.add(graphView);
+
+                final LayoutParams columnLayoutParams =
+                        new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1);
+                if (column < COLUMN_COUNT - 1) {
+                    columnLayoutParams.setMarginEnd(margin);
+                }
                 rowLayout.addView(graphView, columnLayoutParams);
+            }
+
+            final LayoutParams rowLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                  LayoutParams.WRAP_CONTENT);
+            if (row < ROW_COUNT - 1) {
+                rowLayoutParams.bottomMargin = margin;
             }
             addView(rowLayout, rowLayoutParams);
         }
@@ -57,7 +68,9 @@ public class MultiGridGraphView extends LinearLayout implements TrendCardView.On
             final TrendMonthAdapter adapter = (TrendMonthAdapter) graphView.getAdapter();
             if (i < sectionCount) {
                 graphView.setVisibility(VISIBLE);
-                adapter.bind(graph, sections.get(i));
+                final GraphSection section = sections.get(i);
+                graphView.setTitles(section.getHighlightedTitle(), section.getTitles());
+                adapter.bind(graph, section);
             } else {
                 graphView.setVisibility(GONE);
                 adapter.clear();

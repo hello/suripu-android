@@ -57,6 +57,11 @@ public class TrendMonthAdapter extends GridGraphView.Adapter {
         return sections.get(row).size();
     }
 
+    @Override
+    public int getMaximumRowCellCount() {
+        return 7;
+    }
+
     @Nullable
     @Override
     public String getCellReading(int row, int cell) {
