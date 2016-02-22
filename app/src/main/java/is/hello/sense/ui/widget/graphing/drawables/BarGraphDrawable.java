@@ -81,7 +81,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
 
     public BarGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-        super(graph, context, animatorContext);
+        super(context, graph, animatorContext);
 
         Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
         Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.AppTheme_Text_Trends_BarGraph_HighLight);

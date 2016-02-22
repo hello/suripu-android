@@ -5,25 +5,34 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
+import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.widget.TrendCardView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 
-/**
- * Temporary class for quickly displaying trends.
- */
 public class TrendFeedView extends LinearLayout {
-    private Trends trends;
-    private boolean isError;
-    private AnimatorContext animatorContext;
     private static final int DAYS_IN_WEEK = 7;
+
+    private Trends trends;
+    private AnimatorContext animatorContext;
+
+    private final Map<Graph.GraphType, TrendCardView> cardViews = new HashMap<>(3);
+    private @Nullable View welcomeCard;
+    private @Nullable View errorCard;
+
 
     public TrendFeedView(@NonNull Context context) {
         this(context, null);
@@ -44,82 +53,110 @@ public class TrendFeedView extends LinearLayout {
         this.animatorContext = animatorContext;
     }
 
-    public void update(Trends trends) {
-        if (isError) {
-            isError = false;
-            removeAllViews();
+    public void bindTrends(@NonNull Trends trends) {
+        if (errorCard != null) {
+            removeView(errorCard);
+            this.errorCard = null;
         }
+
         this.trends = trends;
-        inflateTrends();
+        populate();
     }
 
-    public void presentError(TrendCardView.OnRetry onRetry) {
-        isError = true;
+    public void presentError(@NonNull TrendCardView.OnRetry onRetry) {
+        this.trends = null;
+
         removeAllViews();
-        addView(TrendCardView.createErrorCard(getContext(), onRetry));
+        cardViews.clear();
+
+        if (errorCard != null) {
+            removeView(errorCard);
+        }
+
+        this.errorCard = TrendCardView.createErrorCard(getContext(), onRetry);
+        addView(errorCard);
 
     }
 
-    private void inflateTrends() {
-        List<Graph> graphList = trends.getGraphs();
-        if (graphList.size() == 0) {
-            if (findViewWithTag(TrendCardView.StaticCardLayout.class) == null) {
-                addView(TrendCardView.createWelcomeCard(getContext()));
+    private void populate() {
+        final List<Graph> graphs = trends.getGraphs();
+        if (graphs.isEmpty()) {
+            if (welcomeCard == null) {
+                this.welcomeCard = TrendCardView.createWelcomeCard(getContext());
+                addView(welcomeCard);
             }
-        } else if (graphList.size() == 1) {
-            Graph graph = graphList.get(0);
-            if (graph.getGraphType() == Graph.GraphType.GRID) {
-                if (findViewWithTag(TrendCardView.StaticCardLayout.class) == null) {
-                    int numberOfDaysWithValues = 0;
-                    for (int i = 0; i < graph.getSections().size(); i++) {
-                        List<Float> values = graph.getSections().get(i).getValues();
-                        for (int j = 0; j < values.size(); j++) {
-                            if (values.get(j) != null) {
-                                numberOfDaysWithValues++;
-                                if (numberOfDaysWithValues == DAYS_IN_WEEK) {
-                                    break;
-                                }
+        } else if (graphs.size() == 1) {
+            final Graph graph = graphs.get(0);
+            if (graph.getGraphType() == Graph.GraphType.GRID && welcomeCard == null) {
+                int numberOfDaysWithValues = 0;
+                outer: for (final GraphSection section : graph.getSections()) {
+                    for (final Float value : section.getValues()) {
+                        if (value != null) {
+                            numberOfDaysWithValues++;
+                            if (numberOfDaysWithValues == DAYS_IN_WEEK) {
+                                break outer;
                             }
                         }
                     }
-                    int days = DAYS_IN_WEEK - numberOfDaysWithValues;
-                    if (days > 0) {
-                        addView(TrendCardView.createComingSoonCard(getContext(), days));
-                    }
+                }
+
+                final int days = DAYS_IN_WEEK - numberOfDaysWithValues;
+                if (days > 0) {
+                    this.welcomeCard = TrendCardView.createComingSoonCard(getContext(), days);
+                    addView(welcomeCard);
                 }
             }
+        } else if (welcomeCard != null) {
+            removeView(welcomeCard);
         }
-        for (Graph graph : graphList) {
-            Graph.GraphType graphType = graph.getGraphType();
-            TrendCardView item = (TrendCardView) findViewWithTag(graphType);
-            if (item != null) {
-                item.bindGraph(graph);
-                continue;
+
+        final Set<Graph.GraphType> includedTypes = new HashSet<>();
+        for (final Graph graph : graphs) {
+            final Graph.GraphType graphType = graph.getGraphType();
+            TrendCardView trendCardView = cardViews.get(graphType);
+            if (trendCardView == null) {
+                trendCardView = createTrendCard(graph);
+                cardViews.put(graphType, trendCardView);
+                addView(trendCardView);
+            } else {
+                trendCardView.bindGraph(graph);
             }
-            switch (graph.getGraphType()) {
-                case BAR:
-                    final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(getContext(), graph, animatorContext);
-                    final TrendGraphView barGraphView = new TrendGraphView(getContext(), barGraphDrawable);
-                    addView(TrendCardView.createGraphCard(getContext(), graph, barGraphView));
-                    break;
-                case BUBBLES:
-                    final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(getContext(), graph, animatorContext);
-                    final TrendGraphView bubbleGraphView = new TrendGraphView(getContext(), bubbleGraphDrawable);
-                    addView(TrendCardView.createGraphCard(getContext(), graph, bubbleGraphView));
-                    break;
-                case GRID:
-                    final GridGraphView gridGraphView = new GridGraphView(getContext());
-                    gridGraphView.bindRootLayoutTransition(getLayoutTransition());
-                    addView(TrendCardView.createGridCard(getContext(), graph, gridGraphView));
-                    break;
-                case OVERVIEW:
-                    break;
-            }
+
+            includedTypes.add(graphType);
         }
-        if (getChildCount() > 0) {
-            ((LayoutParams) getChildAt(getChildCount() - 1).getLayoutParams()).bottomMargin = 0;
+
+        final Iterator<Map.Entry<Graph.GraphType, TrendCardView>> cardViewsIterator =
+                cardViews.entrySet().iterator();
+        while (cardViewsIterator.hasNext()) {
+            final Map.Entry<Graph.GraphType, TrendCardView> entry = cardViewsIterator.next();
+            if (!includedTypes.contains(entry.getKey())) {
+                removeView(entry.getValue());
+                cardViewsIterator.remove();
+            }
         }
     }
 
+    private TrendCardView createTrendCard(@NonNull Graph graph) {
+        final Context context = getContext();
+        switch (graph.getGraphType()) {
+            case BAR:
+                final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(context, graph, animatorContext);
+                final TrendGraphView barGraphView = new TrendGraphView(context, barGraphDrawable);
+                return TrendCardView.createGraphCard(barGraphView, graph);
 
+            case BUBBLES:
+                final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(context, graph, animatorContext);
+                final TrendGraphView bubbleGraphView = new TrendGraphView(context, bubbleGraphDrawable);
+                return TrendCardView.createGraphCard(bubbleGraphView, graph);
+
+            case GRID:
+            case OVERVIEW:
+                final GridGraphView gridGraphView = new GridGraphView(context);
+                gridGraphView.bindRootLayoutTransition(getLayoutTransition());
+                return TrendCardView.createGridCard(gridGraphView, graph);
+
+            default:
+                throw new IllegalArgumentException("Unknown graph type " + graph.getGraphType());
+        }
+    }
 }

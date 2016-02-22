@@ -22,62 +22,53 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
 import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")
 public class TrendCardView extends RoundedLinearLayout {
     private final LinearLayout annotationsLayout;
     private final TextView title;
-    private final Action1<Graph> graphUpdater;
+    private final OnBindGraph graphBinder;
 
 
-    public static TrendCardView createGraphCard(@NonNull Context context,
-                                       @NonNull Graph graph,
-                                       @NonNull TrendGraphView graphView) {
-        final TrendCardView view = new TrendCardView(context, graphView, graphView::updateGraph);
-        view.setTag(graph.getGraphType());
-        view.setTitle(graph.getTitle());
-        view.checkForAnnotations(graph.getAnnotations(), false);
-        return view;
+    public static TrendCardView createGraphCard(@NonNull TrendGraphView graphView,
+                                                @NonNull Graph graph) {
+        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        cardView.setTitle(graph.getTitle());
+        cardView.populateAnnotations(graph.getAnnotations(), false);
+        return cardView;
     }
 
-    public static TrendCardView createGridCard(@NonNull Context context,
-                                               @NonNull Graph graph,
-                                               @NonNull GridGraphView graphView) {
-        graphView.setGraphAdapter(graph);
-
-        final TrendCardView view = new TrendCardView(context, graphView, graphView::setGraphAdapter);
-        view.setTag(graph.getGraphType());
-        view.setTitle(graph.getTitle());
-        view.checkForAnnotations(graph.getAnnotations(), true);
-        return view;
+    public static TrendCardView createGridCard(@NonNull GridGraphView graphView,
+                                               @NonNull Graph graph) {
+        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        cardView.setTitle(graph.getTitle());
+        cardView.populateAnnotations(graph.getAnnotations(), true);
+        graphView.bindGraph(graph);
+        return cardView;
     }
 
     public static ErrorCardView createErrorCard(@NonNull Context context,
-                                       @NonNull OnRetry onRetry) {
+                                                @NonNull OnRetry onRetry) {
         return new ErrorCardView(context, onRetry);
     }
 
     public static WelcomeCardView createWelcomeCard(@NonNull Context context) {
-        final WelcomeCardView view = new WelcomeCardView(context);
-        view.setTag(StaticCardLayout.class);
-        return view;
+        return new WelcomeCardView(context);
     }
 
     public static ComingSoonCardView createComingSoonCard(@NonNull Context context, int days) {
-        final ComingSoonCardView view = new ComingSoonCardView(context, days);
-        view.setTag(StaticCardLayout.class);
-        return view;
+        return new ComingSoonCardView(context, days);
     }
 
 
     private TrendCardView(@NonNull Context context,
                           @NonNull View graphView,
-                          @NonNull Action1<Graph> graphUpdate) {
+                          @NonNull OnBindGraph graphBinder) {
         super(context);
 
         LayoutInflater.from(context).inflate(R.layout.item_trend, this);
@@ -98,7 +89,7 @@ public class TrendCardView extends RoundedLinearLayout {
         setCornerRadii(cornerRadius);
 
         this.title = (TextView) findViewById(R.id.item_trend_title);
-        this.graphUpdater = graphUpdate;
+        this.graphBinder = graphBinder;
         this.annotationsLayout = new LinearLayout(context);
 
         final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
@@ -117,22 +108,21 @@ public class TrendCardView extends RoundedLinearLayout {
         }
     }
 
-    private void setTitle(String titleText) {
+    public void setTitle(String titleText) {
         title.setText(titleText);
     }
 
     public void bindGraph(@NonNull Graph graph) {
-        graphUpdater.call(graph);
-        checkForAnnotations(graph.getAnnotations(), graph.getGraphType() == Graph.GraphType.GRID);
+        populateAnnotations(graph.getAnnotations(), graph.getGraphType() == Graph.GraphType.GRID);
+        graphBinder.bindGraph(graph);
     }
 
-    private void checkForAnnotations(List<Annotation> annotations, boolean isGrid) {
-        if (annotations != null) {
+    private void populateAnnotations(List<Annotation> annotations, boolean isGrid) {
+        if (!Lists.isEmpty(annotations)) {
             annotationsLayout.removeAllViews();
             annotationsLayout.setVisibility(VISIBLE);
             final LayoutInflater inflater = LayoutInflater.from(getContext());
             for (Annotation annotation : annotations) {
-
                 inflater.inflate(R.layout.item_bargraph_annotation, annotationsLayout);
                 View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
                 ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title)).setText(annotation.getTitle().toUpperCase());
@@ -160,7 +150,7 @@ public class TrendCardView extends RoundedLinearLayout {
         void fetchTrends();
     }
 
-    public abstract static class StaticCardLayout extends FrameLayout {
+    abstract static class StaticCardLayout extends FrameLayout {
         protected final ImageView image;
         protected final TextView title;
         protected final TextView message;
@@ -222,5 +212,9 @@ public class TrendCardView extends RoundedLinearLayout {
             final CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
             message.setText(styledText);
         }
+    }
+
+    public interface OnBindGraph {
+        void bindGraph(@NonNull Graph graph);
     }
 }

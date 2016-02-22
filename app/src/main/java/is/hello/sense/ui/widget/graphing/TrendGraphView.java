@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import is.hello.sense.api.model.v2.Graph;
+import is.hello.sense.ui.widget.TrendCardView;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 
 @SuppressLint("ViewConstructor")
-public class TrendGraphView extends View {
+public class TrendGraphView extends View implements TrendCardView.OnBindGraph {
     private final TrendGraphDrawable drawable;
 
     public TrendGraphView(@NonNull Context context,
@@ -27,7 +28,8 @@ public class TrendGraphView extends View {
         drawable.showGraphAnimation();
     }
 
-    public void updateGraph(@NonNull Graph graph) {
+    @Override
+    public void bindGraph(@NonNull Graph graph) {
         drawable.updateGraph(graph);
     }
 }

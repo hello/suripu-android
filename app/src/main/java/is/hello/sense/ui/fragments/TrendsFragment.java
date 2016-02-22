@@ -142,7 +142,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
     }
 
     public void bindTrends(@NonNull Trends trends) {
-        trendFeedView.update(trends);
+        trendFeedView.bindTrends(trends);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
