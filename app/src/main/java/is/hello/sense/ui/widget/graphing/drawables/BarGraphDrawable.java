@@ -178,7 +178,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 final float value = values.get(highlightedIndex);
                 final float scaledRatio = (value - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
 
-                final String textValue = Styles.createTextValue(value) + HOUR_SYMBOL;
+                final String textValue = Styles.createTextValue(value, 1) + HOUR_SYMBOL;
                 highlightTextPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
 
                 calculateBarBounds(highlightedIndex, scaledRatio, leftSpace, barBoundsRect);

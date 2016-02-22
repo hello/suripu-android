@@ -132,16 +132,19 @@ public class TrendCardView extends RoundedLinearLayout {
                         (TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title);
                 titleText.setText(annotation.getTitle().toUpperCase());
 
-                final CharSequence value =
-                        Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue()),
-                                                      BarGraphDrawable.HOUR_SYMBOL,
-                                                      Styles.UNIT_STYLE_SUBSCRIPT);
+                final CharSequence value;
                 final TextView valueText =
                         ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
                 if (isGrid) {
+                    value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 0),
+                                                          BarGraphDrawable.HOUR_SYMBOL,
+                                                          Styles.UNIT_STYLE_SUBSCRIPT);
                     final Condition condition = annotation.getCondition();
                     valueText.setTextColor(ContextCompat.getColor(getContext(), condition.colorRes));
                 } else {
+                    value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 2),
+                                                          BarGraphDrawable.HOUR_SYMBOL,
+                                                          Styles.UNIT_STYLE_SUBSCRIPT);
                     valueText.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
                 }
                 valueText.setText(value);
