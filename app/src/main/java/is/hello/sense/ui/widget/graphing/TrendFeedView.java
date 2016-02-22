@@ -110,7 +110,7 @@ public class TrendFeedView extends LinearLayout {
             removeView(welcomeCard);
         }
 
-        final Set<Graph.GraphType> includedTypes = new HashSet<>();
+        final Set<Graph.GraphType> includedTypes = new HashSet<>(graphs.size());
         for (final Graph graph : graphs) {
             final Graph.GraphType graphType = graph.getGraphType();
             TrendCardView trendCardView = cardViews.get(graphType);

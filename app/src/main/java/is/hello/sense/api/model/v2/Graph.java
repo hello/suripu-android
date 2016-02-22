@@ -1,5 +1,6 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
@@ -39,6 +40,15 @@ public class Graph extends ApiResponse {
 
     @SerializedName("annotations")
     private List<Annotation> annotations;
+
+    @VisibleForTesting
+    public Graph(@NonNull String title,
+                 @NonNull DataType dataType,
+                 @NonNull GraphType graphType) {
+        this.title = title;
+        this.dataType = dataType;
+        this.graphType = graphType;
+    }
 
     public Trends.TimeScale getTimeScale() {
         return timeScale;
