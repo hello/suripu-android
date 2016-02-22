@@ -235,6 +235,7 @@
 
     <style name="AppTheme.Text.Trends.BarGraph">
         <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/text_size_trends_bargraph</item>
         <item name="android:textColor">@color/trends_bargraph</item>
     </style>

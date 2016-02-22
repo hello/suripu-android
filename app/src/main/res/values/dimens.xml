@@ -46,8 +46,8 @@
     <dimen name="text_size_smart_alarm_time_big">72sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
-    <dimen name="text_size_trends_bargraph">12sp</dimen>
-    <dimen name="text_size_trends_bubblegraph_title">12sp</dimen>
+    <dimen name="text_size_trends_bargraph">10sp</dimen>
+    <dimen name="text_size_trends_bubblegraph_title">10sp</dimen>
 
     <item name="line_multiple_none" format="float" type="dimen">0</item>
     <item name="line_multiple_normal" format="float" type="dimen">1</item>
@@ -134,9 +134,9 @@
     <dimen name="series_graph_offscreen_inset">8dp</dimen>
     <dimen name="trends_bargraph_highlight_top_margin">16dp</dimen>
     <dimen name="trends_bargraph_highlight_bottom_margin">4dp</dimen>
-    <dimen name="trends_bargraph_highlight_value_height">28dp</dimen>
-    <dimen name="trends_bargraph_max_height">162dp</dimen>
-    <dimen name="trends_bargraph_min_height">60dp</dimen>
+    <dimen name="trends_bargraph_highlight_value_height">24dp</dimen>
+    <dimen name="trends_bargraph_max_height">112dp</dimen>
+    <dimen name="trends_bargraph_min_height">40dp</dimen>
     <dimen name="trends_bargraph_dashed_line_length">2dp</dimen>
     <dimen name="trends_bubblegraph_max_height">198dp</dimen>
     <dimen name="trends_bubblegraph_min_height">80dp</dimen>

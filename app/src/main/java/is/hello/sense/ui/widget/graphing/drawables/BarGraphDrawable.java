@@ -75,6 +75,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
 
     private final TextPaint highlightTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint highlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint barHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint barPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint dashedLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -87,6 +88,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.AppTheme_Text_Trends_BarGraph_HighLight);
 
 
+        this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight));
         this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight_bar));
         this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_bar));
 
@@ -176,19 +178,19 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 final float value = values.get(highlightedIndex);
                 final float scaledRatio = (value - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
 
-                final String textValue = Styles.createTextValue(value) + HOUR_SYMBOL;
+                final String textValue = Styles.createTextValue(value, 1) + HOUR_SYMBOL;
                 highlightTextPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
 
                 calculateBarBounds(highlightedIndex, scaledRatio, leftSpace, barBoundsRect);
                 calculateHighlightBounds(textBounds.centerX(), barBoundsRect, highlightBounds); // This is the min / max bubble's position above the bar.
                 calculateHighlightTextBounds(textBounds, highlightBounds, highlightTextBounds);
                 drawingPath.reset();
-                drawingPath.addRoundRect(highlightBounds, 15f, 15f,
+                drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius), resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius),
                                          Path.Direction.CW);
                 // highlight the bar
                 canvas.drawRect(barBoundsRect, barHighlightPaint);
                 // draw the min/max bubble above it.
-                canvas.drawPath(drawingPath, barHighlightPaint);
+                canvas.drawPath(drawingPath, highlightPaint);
                 // draw the text in that min/max bubble.
                 canvas.drawText(textValue, highlightTextBounds.left, highlightTextBounds.top, highlightTextPaint);
             }

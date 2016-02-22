@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
@@ -388,14 +389,10 @@ public final class Styles {
         }
     }
 
-    public static String createTextValue(float value){
-        String textValue = new DecimalFormat("#00").format(value);
-        if (textValue.charAt(0) == '0'){
-            textValue = textValue.substring(1, textValue.length());
-        }
-        return textValue;
-    }
+    public static String createTextValue(float value, int numberOfDecimalPlaces) {
+        return String.format("%." + numberOfDecimalPlaces + "f", value);
 
+    }
 
 
 }

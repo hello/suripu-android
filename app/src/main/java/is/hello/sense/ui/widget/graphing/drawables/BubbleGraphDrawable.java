@@ -337,7 +337,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
             }
 
             public String getTextValue() {
-                return Styles.createTextValue(getValue() * 100);
+                return Styles.createTextValue(getValue() * 100, 0);
             }
 
 
