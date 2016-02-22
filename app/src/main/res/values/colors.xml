@@ -89,6 +89,7 @@
     <color name="trends_bargraph">#66596980</color>
     <color name="trends_bargraph_bar">#BFE6FF</color>
     <color name="trends_bargraph_annotation_text">#009cff</color>
+    <color name="trends_bargraph_hightlight">#009CFF</color>
     <color name="trends_bargraph_hightlight_bar">#66C4FF</color>
     <color name="trends_bargraph_highlight_text">@color/white</color>
     <color name="trends_bubblegraph_light_bubble">#80CEFF</color>
