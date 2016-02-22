@@ -60,7 +60,7 @@
     <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 
-    <color name="sensor_alert">#FF974C</color>
+    <color name="sensor_alert">#FF8066</color>
     <color name="sensor_warning">#FFAA00</color>
     <color name="sensor_ideal">#41D7AC</color>
     <color name="sensor_unknown">#565961</color>
