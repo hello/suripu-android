@@ -64,6 +64,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
      * Will determine the width and space each bar should consume based on the canvas and graph type.
      */
 
+    private final int bottomLineHeight;
     private final CanvasValues canvasValues = new CanvasValues();
 
     private final RectF barBoundsRect = new RectF();
@@ -80,6 +81,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     private final Paint barHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint barPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint dashedLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint bottomLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 
     public BarGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
@@ -100,11 +102,14 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         this.dashedLinePaint.setStrokeWidth(1);
         this.dashedLinePaint.setPathEffect(new DashPathEffect(new float[]{dashedLineLength, dashedLineLength * 2}, 0));
 
+        this.bottomLinePaint.setColor(ContextCompat.getColor(context, R.color.trends_line_divider));
+
 
         this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
         this.highlightValueHeight = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_value_height);
         this.highlightBottomMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_bottom_margin);
         final int highlightTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_top_margin);
+        this.bottomLineHeight = resources.getDimensionPixelSize(R.dimen.bottom_line);
 
 
         final int textHeight = Drawing.getEstimatedLineHeight(textLabelPaint, false);
@@ -117,7 +122,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         this.barHeightDifference = maxHeight - minHeight;
 
 
-        this.totalGraphHeight = maxHeight + textHeight + highlightBottomMargin + highlightTopMargin + highlightValueHeight;
+        this.totalGraphHeight = maxHeight + textHeight + highlightBottomMargin + highlightTopMargin + highlightValueHeight + bottomLineHeight;
 
     }
 
@@ -213,6 +218,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         for (DrawingText drawingText : highlightedTexts) {
             canvas.drawText(drawingText.text, drawingText.bounds.left, drawingText.bounds.top, highlightTextPaint);
         }
+        canvas.drawRect(0, canvasValues.bottom,canvas.getWidth(), canvasValues.bottom+bottomLineHeight, bottomLinePaint);
     }
 
     class DrawingText {
@@ -334,7 +340,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
         public void updateValues(Rect rect) {
             this.barSpace = rect.width() * Styles.getBarSpacePercent(graph.getTimeScale());
             this.barWidth = rect.width() * Styles.getBarWidthPercent(graph.getTimeScale());
-            this.bottom = rect.height();
+            this.bottom = rect.height() - bottomLineHeight;
         }
 
     }
