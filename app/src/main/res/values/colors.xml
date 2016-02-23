@@ -85,6 +85,7 @@
 
     <color name="trends_title">#b2596980</color>
     <color name="trends_line_divider">#19596980</color>
+    <color name="trends_line_divider_shimmer">#33596980</color>
     <color name="trends_bargraph_dashedline">#000000</color>
     <color name="trends_bargraph">#66596980</color>
     <color name="trends_bargraph_bar">#BFE6FF</color>
