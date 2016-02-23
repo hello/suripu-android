@@ -71,6 +71,8 @@ public class ShimmerDividerDrawable extends Drawable implements Animatable {
         canvas.drawRect(bounds, backgroundPaint);
 
         if (running) {
+            // The view the drawable is hosted in may not have canvas clipping turned on,
+            // this ensures the shimmer is confined to the drawable visible bounds.
             final int saveCount = canvas.save();
             canvas.clipRect(bounds);
 
@@ -124,6 +126,7 @@ public class ShimmerDividerDrawable extends Drawable implements Animatable {
         this.running = false;
         this.offset = 0f;
         unscheduleSelf(nextFrame);
+        invalidateSelf();
     }
 
     @Override

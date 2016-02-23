@@ -143,6 +143,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
 
     public void bindTrends(@NonNull Trends trends) {
         trendFeedView.bindTrends(trends);
+        timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
@@ -168,6 +169,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
 
     public void presentError(Throwable e) {
         trendFeedView.presentError(this);
+        timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
@@ -184,7 +186,9 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        swipeRefreshLayout.setRefreshing(true);
+        trendFeedView.setLoading(true);
+        timeScaleSelector.setEnabled(false);
+
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
         trendsPresenter.setTimeScale(newTimeScale);
