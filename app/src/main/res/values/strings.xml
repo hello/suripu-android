@@ -363,6 +363,8 @@
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
     <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
+    <string name="title_trends_welcome_back">Welcome Back</string>
+    <string name="message_trends_welcome_back">We\’re collecting the data needed to show your Trends. Check back soon for more.</string>
     <string name="title_trends_welcome">Welcome to Trends</string>
     <string name="message_trends_welcome">Sense will collect your trends overtime and will live here when there\'s more data.</string>
     <string name="title_trends_coming_soon">Trends Coming Soon</string>

@@ -71,6 +71,10 @@ public class TrendCardView extends RoundedLinearLayout {
         return new WelcomeCardView(context);
     }
 
+    public static WelcomeBackCardView createWelcomeBackCard(@NonNull Context context) {
+        return new WelcomeBackCardView(context);
+    }
+
     public static ComingSoonCardView createComingSoonCard(@NonNull Context context, int days) {
         return new ComingSoonCardView(context, days);
     }
@@ -221,6 +225,13 @@ public class TrendCardView extends RoundedLinearLayout {
             }
             message.setLineSpacing(0, 1);
             action.setVisibility(GONE);
+        }
+    }
+    static class WelcomeBackCardView extends WelcomeCardView {
+        WelcomeBackCardView(@NonNull Context context) {
+            super(context);
+            title.setText(getResources().getString(R.string.title_trends_welcome_back));
+            message.setText(getResources().getString(R.string.message_trends_welcome_back));
         }
     }
 
