@@ -8,10 +8,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -23,14 +26,17 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
+import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.adapter.TrendWeekAdapter;
 import is.hello.sense.ui.widget.TrendCardView;
+import is.hello.sense.ui.widget.util.Drawing;
 
 public class GridGraphView extends LinearLayout
         implements GridRecycler.Adapter<LinearLayout, GridGraphCellView>, TrendCardView.OnBindGraph {
@@ -54,6 +60,9 @@ public class GridGraphView extends LinearLayout
     private final LayoutParams rowLayoutParams;
     private final LayoutParams cellLayoutParams;
 
+    private final TextPaint titlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final int estimatedTextHeight;
+
     //endregion
 
     //region Contents
@@ -73,6 +82,8 @@ public class GridGraphView extends LinearLayout
     private Adapter adapter;
     private @NonNull GridGraphCellView.Size cellSize = GridGraphCellView.Size.REGULAR;
     private int interRowPadding;
+    private @Nullable Integer highlightedTitle;
+    private @Nullable List<String> titles;
 
     //endregion
 
@@ -91,6 +102,10 @@ public class GridGraphView extends LinearLayout
         super(context, attrs, defStyle);
 
         final Resources resources = getResources();
+
+        Drawing.updateTextPaintFromStyle(titlePaint, context,
+                                         R.style.AppTheme_Text_Trends_BarGraph);
+        this.estimatedTextHeight = Drawing.getEstimatedLineHeight(titlePaint, false);
 
         setOrientation(VERTICAL);
 
@@ -146,6 +161,40 @@ public class GridGraphView extends LinearLayout
 
         setClipToPadding(clipChildren);
         parent.setClipToPadding(clipChildren);
+    }
+
+    //endregion
+
+
+    //region Drawing Titles
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        if (!Lists.isEmpty(titles)) {
+            final int titlesCount = titles.size();
+            if (titlesCount == 1) {
+                canvas.drawText(titles.get(0),
+                                0,
+                                estimatedTextHeight,
+                                titlePaint);
+            } else {
+                final int labelWidth = canvas.getWidth() / titlesCount;
+                for (int i = 0; i < titlesCount; i++) {
+                    if (Objects.equals(i, highlightedTitle)) {
+                        titlePaint.setAlpha(0xDD);
+                    } else {
+                        titlePaint.setAlpha(0x66);
+                    }
+
+                    canvas.drawText(titles.get(i),
+                                    (labelWidth * i) + (labelWidth / 2f),
+                                    estimatedTextHeight,
+                                    titlePaint);
+                }
+            }
+        }
     }
 
     //endregion
@@ -517,7 +566,30 @@ public class GridGraphView extends LinearLayout
      * Sets the titles to display above the data in the grid view.
      */
     public void setTitles(@Nullable Integer highlightedTitle, @Nullable List<String> titles) {
-        // TODO: implement
+        if (DEBUG) {
+            Log.d(getClass().getSimpleName(), "setTitles(" + highlightedTitle + ", " + titles + ")");
+        }
+
+        this.highlightedTitle = highlightedTitle;
+
+        final boolean titlesEmpty = Lists.isEmpty(titles);
+        if (titlesEmpty) {
+            this.titles = null;
+            setPadding(0, 0, 0, 0);
+        } else {
+            this.titles = Lists.map(titles, String::toUpperCase);
+
+            final int estimatedLineHeight = Drawing.getEstimatedLineHeight(titlePaint, false);
+            final int extra = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            setPadding(0, estimatedLineHeight + extra, 0, 0);
+
+            if (titles.size() == 1) {
+                titlePaint.setTextAlign(Paint.Align.LEFT);
+            } else {
+                titlePaint.setTextAlign(Paint.Align.CENTER);
+            }
+        }
+        setWillNotDraw(titlesEmpty);
     }
 
     /**
