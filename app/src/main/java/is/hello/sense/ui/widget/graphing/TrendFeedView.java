@@ -30,8 +30,12 @@ public class TrendFeedView extends LinearLayout {
     private AnimatorContext animatorContext;
 
     private final Map<Graph.GraphType, TrendCardView> cardViews = new HashMap<>(3);
-    private @Nullable View welcomeCard;
-    private @Nullable View errorCard;
+    private
+    @Nullable
+    View welcomeCard;
+    private
+    @Nullable
+    View errorCard;
 
 
     public TrendFeedView(@NonNull Context context) {
@@ -81,7 +85,10 @@ public class TrendFeedView extends LinearLayout {
     private void populate() {
         final List<Graph> graphs = trends.getGraphs();
         if (graphs.isEmpty()) {
-            if (welcomeCard == null) {
+            if (trends.getAvailableTimeScales().isEmpty()) {
+                this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
+                addView(welcomeCard);
+            } else if (welcomeCard == null) {
                 this.welcomeCard = TrendCardView.createWelcomeCard(getContext());
                 addView(welcomeCard);
             }
@@ -89,7 +96,8 @@ public class TrendFeedView extends LinearLayout {
             final Graph graph = graphs.get(0);
             if (graph.isGrid() && welcomeCard == null) {
                 int numberOfDaysWithValues = 0;
-                outer: for (final GraphSection section : graph.getSections()) {
+                outer:
+                for (final GraphSection section : graph.getSections()) {
                     for (final Float value : section.getValues()) {
                         if (value != null) {
                             numberOfDaysWithValues++;
