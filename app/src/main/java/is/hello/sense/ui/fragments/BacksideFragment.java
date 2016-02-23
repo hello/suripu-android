@@ -89,8 +89,6 @@ public class BacksideFragment extends InjectionFragment
         final Resources resources = getResources();
 
         this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_backside_pager);
-        pager.setScrollingEnabled(false);
-        pager.setOverScrollMode(View.OVER_SCROLL_NEVER);
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new Item(TrendsFragment.class, getString(R.string.title_trends)),
