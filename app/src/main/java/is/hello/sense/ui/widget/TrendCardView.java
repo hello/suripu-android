@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.Gravity;
@@ -26,8 +28,6 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
 import is.hello.sense.ui.widget.graphing.MultiGridGraphView;
 import is.hello.sense.ui.widget.graphing.TrendGraphView;
-import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 
 @SuppressLint("ViewConstructor")
 public class TrendCardView extends RoundedLinearLayout {
@@ -40,7 +40,7 @@ public class TrendCardView extends RoundedLinearLayout {
                                                 @NonNull Graph graph) {
         final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
-        cardView.populateAnnotations(graph.getAnnotations(), false);
+        cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
     }
 
@@ -49,7 +49,7 @@ public class TrendCardView extends RoundedLinearLayout {
         graphView.bindGraph(graph);
         final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
-        cardView.populateAnnotations(graph.getAnnotations(), true);
+        cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
     }
 
@@ -58,7 +58,7 @@ public class TrendCardView extends RoundedLinearLayout {
         graphView.bindGraph(graph);
         final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
-        cardView.populateAnnotations(graph.getAnnotations(), true);
+        cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
     }
 
@@ -124,10 +124,12 @@ public class TrendCardView extends RoundedLinearLayout {
 
     public void bindGraph(@NonNull Graph graph) {
         graphBinder.bindGraph(graph);
-        populateAnnotations(graph.getAnnotations(), graph.isGrid());
+        populateAnnotations(graph.getDataType(),
+                            graph.getAnnotations());
     }
 
-    private void populateAnnotations(List<Annotation> annotations, boolean isGrid) {
+    private void populateAnnotations(@NonNull Graph.DataType dataType,
+                                     @Nullable List<Annotation> annotations) {
         if (!Lists.isEmpty(annotations)) {
             annotationsLayout.removeAllViews();
 
@@ -140,25 +142,21 @@ public class TrendCardView extends RoundedLinearLayout {
                         (TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title);
                 titleText.setText(annotation.getTitle().toUpperCase());
 
-                final CharSequence value;
+                final @ColorRes int textColor;
+                if (dataType.wantsConditionTinting()) {
+                    final Condition condition = annotation.getCondition();
+                    if (condition == null) {
+                        textColor = Condition.UNKNOWN.colorRes;
+                    } else {
+                        textColor = condition.colorRes;
+                    }
+                } else {
+                    textColor = R.color.trends_bargraph_annotation_text;
+                }
                 final TextView valueText =
                         ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
-                if (isGrid) {
-                    value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 0),
-                                                          BarGraphDrawable.HOUR_SYMBOL,
-                                                          Styles.UNIT_STYLE_SUBSCRIPT);
-                    Condition condition = annotation.getCondition();
-                    if (condition == null) {
-                        condition = Condition.UNKNOWN;
-                    }
-                    valueText.setTextColor(ContextCompat.getColor(getContext(), condition.colorRes));
-                } else {
-                    value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 2),
-                                                          BarGraphDrawable.HOUR_SYMBOL,
-                                                          Styles.UNIT_STYLE_SUBSCRIPT);
-                    valueText.setTextColor(ContextCompat.getColor(getContext(), R.color.trends_bargraph_annotation_text));
-                }
-                valueText.setText(value);
+                valueText.setTextColor(ContextCompat.getColor(getContext(), textColor));
+                valueText.setText(dataType.renderAnnotation(annotation));
             }
 
             annotationsLayout.setVisibility(VISIBLE);
