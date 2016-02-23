@@ -181,8 +181,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             List<Float> values = graphSection.getValues();
 
             // Draw Highlighted Bars
-            for (int j = 0; j < graphSection.getHighlightedValues().size(); j++) {
-                int highlightedIndex = graphSection.getHighlightedValues().get(j);
+            for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 final float value = values.get(highlightedIndex);
                 final float scaledRatio = (value - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
 
