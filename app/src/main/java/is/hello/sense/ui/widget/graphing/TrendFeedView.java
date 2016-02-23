@@ -85,12 +85,14 @@ public class TrendFeedView extends LinearLayout {
     private void populate() {
         final List<Graph> graphs = trends.getGraphs();
         if (graphs.isEmpty()) {
-            if (trends.getAvailableTimeScales().isEmpty()) {
-                this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
-                addView(welcomeCard);
-            } else if (welcomeCard == null) {
-                this.welcomeCard = TrendCardView.createWelcomeCard(getContext());
-                addView(welcomeCard);
+            if (welcomeCard == null) {
+                if (trends.getAvailableTimeScales().isEmpty()) {
+                    this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
+                    addView(welcomeCard);
+                } else {
+                    this.welcomeCard = TrendCardView.createWelcomeCard(getContext());
+                    addView(welcomeCard);
+                }
             }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
