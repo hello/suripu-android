@@ -5,12 +5,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 
 import com.segment.analytics.Properties;
-
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
@@ -77,14 +77,14 @@ public class UserSupport {
     }
 
     public static void showUserGuide(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_HELP, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_HELP, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is");
         openUri(from, supportUrl);
     }
 
     public static void showContactForm(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.TopView.EVENT_CONTACT_SUPPORT, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_CONTACT_SUPPORT, null);
 
         final FragmentNavigationActivity.Builder builder = new FragmentNavigationActivity.Builder(from);
         builder.setDefaultTitle(R.string.title_select_a_topic);
@@ -101,31 +101,50 @@ public class UserSupport {
     }
 
     public static void showForDeviceIssue(@NonNull Activity from, @NonNull DeviceIssue issue) {
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  issue.toProperty());
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         openUri(from, issue.getUri());
     }
 
     public static void showReplaceBattery(@NonNull Activity from) {
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "replace-battery");
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         final Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/204496999");
         openUri(from, issueUri);
     }
 
     public static void showSupportedDevices(@NonNull Activity from) {
-        final Properties properties = Analytics.createProperties(Analytics.TopView.PROP_TROUBLESHOOTING_ISSUE,
+        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "supported-devices");
-        Analytics.trackEvent(Analytics.TopView.EVENT_TROUBLESHOOTING_LINK, properties);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         final Uri issueUri = Uri.parse("https://support.hello.is/hc/en-us/articles/205152535");
         openUri(from, issueUri);
     }
 
+    public static void showLocationPermissionMoreInfoPage(@NonNull Activity from) {
+        Analytics.trackEvent(Analytics.Permissions.EVENT_MORE_INFO, null);
+
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/207716923");
+        openUri(from, supportUrl);
+    }
+
+    public static void showAppSettings(@NonNull Activity from) {
+        try {
+            from.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                          Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)));
+        } catch (ActivityNotFoundException e) {
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            alertDialog.setTitle(R.string.dialog_error_title);
+            alertDialog.setMessage(R.string.error_no_settings_app);
+            alertDialog.setPositiveButton(android.R.string.ok, null);
+            alertDialog.show();
+        }
+    }
 
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),

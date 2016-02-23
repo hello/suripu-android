@@ -159,7 +159,9 @@
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>
     </plurals>
-    <string name="alarm_repeat_weekly">Weekly</string>
+    <string name="alarm_repeat_everyday">Everyday</string>
+    <string name="alarm_repeat_weekends">Weekends</string>
+    <string name="alarm_repeat_weekdays">Weekdays</string>
     <string name="label_time_zone">Your Time Zone</string>
     <string name="label_choose_time_zone">Choose Another Time Zone</string>
     <string name="title_alarm_tone">Tone</string>
@@ -335,8 +337,6 @@
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
     <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: temperature, humidity, air quality, light, and noise.\n
 \nThese values update as Sense uploads new data. So as the conditions in your room change, it may take a few moments for them to be reflected here.\n\nTap a card to see more details.</string>
-    <string name="welcome_dialog_trends_title">Trends</string>
-    <string name="welcome_dialog_trends">To see how your sleep is changing over time, sometimes it’s helpful to take a step back. After a week using Sense, this view will show you historical data on your sleep patterns. If you don\'t see any data yet, check back later.</string>
     <string name="welcome_dialog_alarm_title">Set An Alarm</string>
     <string name="welcome_dialog_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle - in a 30 minute window before the time you set. When it\'s time to wake up, Sense will glow and play your selected tone. Just wave your hand over Sense to dismiss the alarm.</string>
     <string name="welcome_dialog_sensor_temperature_title">Temperature</string>
@@ -358,13 +358,20 @@
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
     <string name="action_support">Support</string>
     <string name="onboarding_title_unsupported_device">Unsupported Device</string>
-    <string name="onboarding_message_unsupported_device">Your device is known to have issues setting up Sense for the first time. If you have a different phone or tablet available, it is recommended that you use it to perform the next steps.</string>
-    <string name="onboarding_title_untested_device">Your device has not been tested with Sense</string>
-    <string name="onboarding_message_untested_device">Your device does meet the basic hardware and operating system requirements for use with Sense, but it has not been put through thorough compatibility testing, and may not work as expected. If your device is not compatible, you may need to use a device from our <a href="#supported-devices">Supported Devices</a> list.</string>
+    <string name="onboarding_message_unsupported_device">The device you‘re using has been known to have issues setting up Sense for the first time. If you have a different device available that meets the requirements on our <a href="#supported-devices">Supported Devices</a> list, we recommend you use it to perform the following setup steps.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
     <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
+    <string name="title_trends_welcome_back">Welcome Back</string>
+    <string name="message_trends_welcome_back">We\’re collecting the data needed to show your Trends. Check back soon for more.</string>
+    <string name="title_trends_welcome">Welcome to Trends</string>
+    <string name="message_trends_welcome">Sense will collect your trends overtime and will live here when there\'s more data.</string>
+    <string name="title_trends_coming_soon">Trends Coming Soon</string>
+    <plurals name="message_trends_coming_soon">
+        <item quantity="one"><![CDATA[You\'re almost done tracking your first week, in  <b> %1$s day </b>you will see new trends.]]></item>
+        <item quantity="other"><![CDATA[You\'re almost done tracking your first week, in  <b> %1$s days </b>you will see new trends.]]></item>
+    </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
@@ -379,12 +386,14 @@
     <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
     <string name="action_reconnect">Reconnect</string>
     <string name="error_no_web_browser">Could not find a web browser.</string>
+    <string name="error_no_settings_app">Could not find app settings.</string>
     <string name="error_no_email_client">Could not find an email app.</string>
     <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
     <string name="timeline_share_last_night_fmt">Last night #mysleepscore was %1$s — http://hello.is</string>
     <string name="timeline_share_other_days_fmt">#mysleepscore was %1$s on %2$s — http://hello.is</string>
     <string name="action_more_info">More info</string>
     <string name="action_submit">Submit</string>
+    <string name="action_enable_location">Enable Location Services</string>
     <string name="sleep_depth_awake"><b>awake</b>.</string>
     <string name="sleep_depth_sound">in <b>deep sleep</b>.</string>
     <string name="sleep_depth_light">in <b>light sleep</b>.</string>
@@ -499,6 +508,16 @@
     <string name="action_close">Close</string>
     <string name="ticket_list_empty">No tickets currently open</string>
     <string name="title_about_you">About you</string>
+
+    <string name="trend_time_scale_week">WEEK</string>
+    <string name="trend_time_scale_month">MONTH</string>
+    <string name="trend_time_scale_quarter">QUARTER</string>
+
+    <string name="request_permission_location_title">We need to ask for your location</string>
+    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue."</string>
+    <string name="request_permission_required_title">Location Services not enabled</string>
+    <string name="request_permission_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
+
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

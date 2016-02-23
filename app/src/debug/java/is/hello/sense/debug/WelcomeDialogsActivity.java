@@ -23,7 +23,6 @@ public class WelcomeDialogsActivity extends InjectionActivity {
             new WelcomeDialogStringResource("Sound", R.xml.welcome_dialog_sensor_noise),
             new WelcomeDialogStringResource("Light", R.xml.welcome_dialog_sensor_light),
             new WelcomeDialogStringResource("Smart Alarm", R.xml.welcome_dialog_alarm),
-            new WelcomeDialogStringResource("Trends", R.xml.welcome_dialog_trends)
     };
 
     @Override

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.ExtendedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    app:senseFadingEdgeStyle="rounded">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,7 +81,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/gap_card_horizontal"
             android:layout_marginRight="@dimen/gap_card_horizontal"
-            android:layout_marginBottom="@dimen/gap_large"
             android:orientation="vertical"
             style="@style/AppTheme.Card">
 
@@ -102,4 +104,4 @@
 
     </LinearLayout>
 
-</ScrollView>
+</is.hello.sense.ui.widget.ExtendedScrollView>

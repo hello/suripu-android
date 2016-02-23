@@ -3,8 +3,10 @@
     <item name="fragment_questions_tag_question" type="id" />
     <item name="fragment_questions_tag_choice" type="id" />
 
-    <item name="layout_linear_selector_tag_key_index" type="id" />
-    <item name="layout_linear_selector_tag_key_user" type="id" />
+    <item name="view_selector_tag_key_index" type="id" />
+    <item name="view_selector_tag_key_user" type="id" />
+
+    <item name="view_grid_graph_animation_index" type="id" />
 
     <item name="fragment_timeline_before_sleep_item_tag_insight" type="id" />
 </resources>

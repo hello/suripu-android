@@ -55,7 +55,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_NOTIFICATIONS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_NOTIFICATIONS, null);
         }
     }
 
@@ -126,6 +126,16 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
+            handler.removeMessages(MSG_PUSH_PREFERENCES);
+            accountPresenter.pushAccountPreferences();
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
@@ -134,16 +144,6 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
         this.loadingIndicator = null;
         this.recyclerView = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (handler.hasMessages(MSG_PUSH_PREFERENCES)) {
-            handler.removeMessages(MSG_PUSH_PREFERENCES);
-            accountPresenter.pushAccountPreferences();
-        }
     }
 
     @Override

@@ -29,24 +29,25 @@ public class SlidingLayersView extends FrameLayout {
     private static final String ANIMATOR_NAME = SlidingLayersView.class.getSimpleName() + "#onTouchEvent";
 
     private final int touchSlop;
-    private final int topViewOpenHeight;
-    private final int topViewDividerHeight;
+    private final int baseTopOpenHeight;
+    private final int topDividerHeight;
     private float totalMovementHeight;
     private float startEventX, startEventY;
     private float lastEventX, lastEventY;
 
     private View topView;
-    private float topViewY;
+    private float topTranslationY;
     private RecyclerView recyclerView;
 
     private @Nullable VelocityTracker velocityTracker;
     private boolean trackingTouchEvents = false;
     private boolean animating = false;
 
-    private boolean isOpen = false;
+    private boolean open = false;
     private @Nullable Listener listener;
     private @Nullable InteractiveAnimator interactiveAnimator;
     private @Nullable AnimatorContext animatorContext;
+    private float topExtraTranslationAmount = 0.0f;
 
 
     //region Lifecycle
@@ -72,21 +73,21 @@ public class SlidingLayersView extends FrameLayout {
         // ListView eats some vertical motion events, so our touch slop has
         // to be lower than standard in order for the swipe gesture to work.
         this.touchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop() / 2;
-        this.topViewOpenHeight = resources.getDimensionPixelSize(R.dimen.sliding_layers_open_height);
-        this.topViewDividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+        this.baseTopOpenHeight = resources.getDimensionPixelSize(R.dimen.sliding_layers_open_height);
+        this.topDividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         if (state instanceof Bundle) {
             final Bundle savedState = (Bundle) state;
-            this.isOpen = savedState.getBoolean("isOpen");
+            this.open = savedState.getBoolean("open");
             state = savedState.getParcelable("savedState");
 
             requestLayout();
 
             post(() -> {
-                if (isOpen && listener != null) {
+                if (open && listener != null) {
                     listener.onTopViewWillSlideDown();
                 }
             });
@@ -97,7 +98,7 @@ public class SlidingLayersView extends FrameLayout {
     @Override
     protected Parcelable onSaveInstanceState() {
         final Bundle savedState = new Bundle();
-        savedState.putBoolean("isOpen", isOpen());
+        savedState.putBoolean("open", isOpen());
         savedState.putParcelable("savedState", super.onSaveInstanceState());
         return savedState;
     }
@@ -108,12 +109,12 @@ public class SlidingLayersView extends FrameLayout {
     //region Properties
 
     public boolean isOpen() {
-        return isOpen;
+        return open;
     }
 
     public void openWithoutAnimation() {
         this.topView = getChildAt(1);
-        this.topViewY = topView.getY();
+        this.topTranslationY = topView.getTranslationY();
 
         stopAnimations();
 
@@ -123,17 +124,17 @@ public class SlidingLayersView extends FrameLayout {
 
         requestLayout();
 
-        this.isOpen = true;
+        this.open = true;
         this.recyclerView = null;
     }
 
     public void open() {
-        if (isOpen) {
+        if (open) {
             return;
         }
 
         this.topView = getChildAt(1);
-        this.topViewY = topView.getY();
+        this.topTranslationY = topView.getTranslationY();
 
         stopAnimations();
 
@@ -154,7 +155,7 @@ public class SlidingLayersView extends FrameLayout {
         }
 
         this.topView = getChildAt(1);
-        this.topViewY = topView.getY();
+        this.topTranslationY = topView.getTranslationY();
 
         stopAnimations();
 
@@ -185,10 +186,25 @@ public class SlidingLayersView extends FrameLayout {
         return (animating || trackingTouchEvents);
     }
 
+    public void setTopExtraTranslationAmount(float topExtraTranslationAmount) {
+        this.topExtraTranslationAmount = topExtraTranslationAmount;
+
+        if (open && !animating) {
+            final int newTranslationY = getMeasuredHeight() - getTopOpenHeight();
+            topView.setTranslationY(newTranslationY);
+        }
+
+        this.totalMovementHeight = getMeasuredHeight() - getTopOpenHeight();
+    }
+
     //endregion
 
 
     //region Layout & Drawing
+
+    private int getTopOpenHeight() {
+        return Math.round(baseTopOpenHeight * (1f - topExtraTranslationAmount));
+    }
 
     @Override
     public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
@@ -198,19 +214,10 @@ public class SlidingLayersView extends FrameLayout {
             throw new IllegalStateException("too many children for " + getClass().getSimpleName());
         }
 
-        if (normalizedIndex == 0) {
-            final MarginLayoutParams marginLayoutParams;
-            if (params instanceof MarginLayoutParams) {
-                marginLayoutParams = (MarginLayoutParams) params;
-            } else {
-                marginLayoutParams = new MarginLayoutParams(params);
-            }
-            marginLayoutParams.bottomMargin = topViewOpenHeight - topViewDividerHeight;
-            params = marginLayoutParams;
-        } else if (normalizedIndex == 1) {
+        if (normalizedIndex == 1) {
             final LayoutParams updatedParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                 LayoutParams.MATCH_PARENT);
-            updatedParams.topMargin = -topViewDividerHeight;
+            updatedParams.topMargin = -topDividerHeight;
             params = updatedParams;
         }
 
@@ -231,9 +238,9 @@ public class SlidingLayersView extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        final int intendedY = MeasureSpec.getSize(heightMeasureSpec) - topViewOpenHeight;
-        if (!animating && isOpen && getChildAt(1).getY() != intendedY) {
-            getChildAt(1).setY(intendedY);
+        final int intendedY = MeasureSpec.getSize(heightMeasureSpec) - getTopOpenHeight();
+        if (!animating && open && getChildAt(1).getTranslationY() != intendedY) {
+            getChildAt(1).setTranslationY(intendedY);
         }
     }
 
@@ -266,7 +273,7 @@ public class SlidingLayersView extends FrameLayout {
     }
 
     protected boolean isRecyclerViewAtTop(@Nullable RecyclerView recyclerView) {
-        if ((topViewY > 0f) || (recyclerView == null)) {
+        if ((topTranslationY > 0f) || (recyclerView == null)) {
             return true;
         }
 
@@ -281,11 +288,11 @@ public class SlidingLayersView extends FrameLayout {
     //region Event Handling
 
     private boolean shouldSnapOpen(float velocity) {
-        if (isOpen) {
+        if (open) {
             return (velocity > Constants.OPEN_VELOCITY_THRESHOLD ||
-                    topViewY > (getMeasuredHeight() - topViewOpenHeight * 2));
+                    topTranslationY > (getMeasuredHeight() - baseTopOpenHeight * 2));
         } else {
-            return (topViewY > 0f && (topViewY > topViewOpenHeight ||
+            return (topTranslationY > 0f && (topTranslationY > baseTopOpenHeight ||
                     velocity > Constants.OPEN_VELOCITY_THRESHOLD));
         }
     }
@@ -301,12 +308,12 @@ public class SlidingLayersView extends FrameLayout {
     private void animateOpen(long duration) {
         this.animating = true;
         animatorFor(topView, animatorContext)
-                .y(getMeasuredHeight() - topViewOpenHeight)
+                .translationY(getMeasuredHeight() - getTopOpenHeight())
                 .withDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.animating = false;
-                        this.isOpen = true;
+                        this.open = true;
                         this.recyclerView = null;
                     }
                 })
@@ -320,12 +327,12 @@ public class SlidingLayersView extends FrameLayout {
     private void animateClosed(long duration) {
         this.animating = true;
         animatorFor(topView, animatorContext)
-                .y(-topViewDividerHeight)
+                .translationY(0f)
                 .withDuration(duration)
                 .addOnAnimationCompleted(finished -> {
                     if (finished) {
                         this.animating = false;
-                        this.isOpen = false;
+                        this.open = false;
                         this.recyclerView = null;
 
                         if (listener != null) {
@@ -358,15 +365,15 @@ public class SlidingLayersView extends FrameLayout {
 
                     final float y = Views.getNormalizedY(event);
                     final float deltaY = y - lastEventY;
-                    final float newY = Math.max(0f, Math.min(totalMovementHeight, topViewY + deltaY));
+                    final float newY = Math.max(0f, Math.min(totalMovementHeight, topTranslationY + deltaY));
 
                     if (interactiveAnimator != null) {
                         float amount = newY / totalMovementHeight;
                         interactiveAnimator.frame(amount);
                     }
 
-                    topView.setY(topViewY);
-                    topViewY = newY;
+                    topView.setTranslationY(topTranslationY);
+                    topTranslationY = newY;
                 }
 
                 this.lastEventX = Views.getNormalizedX(event);
@@ -379,7 +386,7 @@ public class SlidingLayersView extends FrameLayout {
             case MotionEvent.ACTION_UP: {
                 final float travelX = Math.abs(startEventX - event.getX()),
                             travelY = Math.abs(startEventY - event.getY());
-                if (velocityTracker == null || isOpen && travelX < touchSlop && travelY < touchSlop) {
+                if (velocityTracker == null || open && travelX < touchSlop && travelY < touchSlop) {
                     animateClosed(Anime.DURATION_NORMAL);
                 } else {
                     velocityTracker.computeCurrentVelocity(1000);
@@ -427,13 +434,13 @@ public class SlidingLayersView extends FrameLayout {
                 this.recyclerView = findFirstViewIn(RecyclerView.class, this, event);
 
                 this.topView = getChildAt(1);
-                this.topViewY = topView.getY();
+                this.topTranslationY = topView.getTranslationY();
 
-                this.totalMovementHeight = getMeasuredHeight() - topViewOpenHeight;
+                this.totalMovementHeight = getMeasuredHeight() - getTopOpenHeight();
 
                 stopAnimations();
 
-                if (isOpen && lastEventY >= topViewY) {
+                if (open && lastEventY >= topTranslationY) {
                     if (animatorContext != null) {
                         animatorContext.beginAnimation(ANIMATOR_NAME);
                     }
@@ -450,7 +457,7 @@ public class SlidingLayersView extends FrameLayout {
                 final float deltaX = x - lastEventX;
                 final float deltaY = y - lastEventY;
                 if (Math.abs(deltaY) >= touchSlop && Math.abs(deltaY) > Math.abs(deltaX) &&
-                        (!isOpen && deltaY > 0.0) && isRecyclerViewAtTop(recyclerView)) {
+                        (!open && deltaY > 0.0) && isRecyclerViewAtTop(recyclerView)) {
                     this.trackingTouchEvents = true;
 
                     if (animatorContext != null) {

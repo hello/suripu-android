@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import org.mockito.Mockito;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -38,8 +36,6 @@ import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
-import is.hello.sense.graph.presenters.TrendsPresenter;
-import is.hello.sense.graph.presenters.TrendsPresenterTests;
 import is.hello.sense.graph.presenters.UnreadStatePresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
@@ -89,9 +85,6 @@ import static org.mockito.Mockito.mock;
 
         ZoomedOutTimelinePresenterTests.class,
         ZoomedOutTimelinePresenter.class,
-
-        TrendsPresenterTests.class,
-        TrendsPresenter.class,
 
         DeviceIssuesPresenter.class,
         DeviceIssuesPresenterTests.class,
@@ -145,9 +138,6 @@ public final class TestModule {
         doReturn(Observable.just(true))
                 .when(bluetoothStack)
                 .enabled();
-        doReturn(true)
-                .when(bluetoothStack)
-                .errorRequiresReconnect(Mockito.any(Throwable.class));
         return bluetoothStack;
     }
 }

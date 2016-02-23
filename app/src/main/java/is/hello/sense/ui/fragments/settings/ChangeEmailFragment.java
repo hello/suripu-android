@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,7 +43,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         setRetainInstance(true);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_CHANGE_EMAIL, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_EMAIL, null);
         }
     }
 
@@ -83,7 +84,16 @@ public class ChangeEmailFragment extends InjectionFragment {
         email.setText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
             email.requestFocus();
-            animatorFor(email).simplePop(1.4f).start();
+            animatorFor(email)
+                    .scale(1.4f)
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            animatorFor(email)
+                                    .scale(1.0f)
+                                    .start();
+                        }
+                    })
+                    .start();
 
             return;
         }
@@ -92,8 +102,11 @@ public class ChangeEmailFragment extends InjectionFragment {
                 null, LoadingDialogFragment.DEFAULTS);
         bindAndSubscribe(accountPresenter.updateEmail(newEmail),
                          ignored -> {
+                             // After hibernation, finish appears to be synchronous and
+                             // as such the fragment manager is immediately nulled out.
+                             final FragmentManager fragmentManager = getFragmentManager();
                              finishWithResult(Activity.RESULT_OK, null);
-                             LoadingDialogFragment.close(getFragmentManager());
+                             LoadingDialogFragment.close(fragmentManager);
                          },
                          this::presentError);
     }

@@ -9,7 +9,7 @@
     <color name="light_accent_extra_dimmed">#ebf9ff</color>
     <color name="light_accent_darkened">#007DCD</color>
     <color name="destructive_accent">#ff0000</color>
-    <color name="status_bar_grey">#b5b5b5</color>
+    <color name="status_bar_grey">#ADB5C0</color>
     <color name="status_bar_illustration">#a9b6c0</color>
 
     <color name="background">#EBEDF0</color>
@@ -24,7 +24,7 @@
     <color name="background_dark_item_clicked">#EBF7FF</color>
 
     <color name="border">#d9d9d9</color>
-    <color name="border_underside_tabs">#d0d0d0</color>
+    <color name="border_backside_tabs">#d0d0d0</color>
     <color name="shadow_end">#19000000</color>
     <color name="view_time_picker_shadow_end">#10000000</color>
 
@@ -60,7 +60,7 @@
     <color name="background_button_white_pressed">#28d5d5d5</color>
     <color name="background_button_dark_pressed">#EEdff2fe</color>
 
-    <color name="sensor_alert">#FF974C</color>
+    <color name="sensor_alert">#FF8066</color>
     <color name="sensor_warning">#FFAA00</color>
     <color name="sensor_ideal">#41D7AC</color>
     <color name="sensor_unknown">#565961</color>
@@ -75,7 +75,27 @@
     <color name="graph_fill_gradient_top">#22000000</color>
     <color name="graph_fill_gradient_bottom">#11000000</color>
     <color name="graph_fill_solid">#22D6D6D6</color>
+    <color name="graph_fill_empty">#00d6d6d6</color>
+
+    <color name="graph_grid_empty_cell">@color/white</color>
+    <color name="graph_grid_empty_missing">#e5e9ec</color>
 
     <color name="view_scale_tick_normal">#dfdfdf</color>
     <color name="view_scale_tick_emphasized">#c1c1c1</color>
+
+    <color name="trends_title">#b2596980</color>
+    <color name="trends_line_divider">#19596980</color>
+    <color name="trends_line_divider_shimmer">#33596980</color>
+    <color name="trends_bargraph_dashedline">#000000</color>
+    <color name="trends_bargraph">#66596980</color>
+    <color name="trends_bargraph_bar">#BFE6FF</color>
+    <color name="trends_bargraph_annotation_text">#009cff</color>
+    <color name="trends_bargraph_hightlight">#009CFF</color>
+    <color name="trends_bargraph_hightlight_bar">#66C4FF</color>
+    <color name="trends_bargraph_highlight_text">@color/white</color>
+    <color name="trends_bubblegraph_light_bubble">#80CEFF</color>
+    <color name="trends_bubblegraph_medium_bubble">#40B6FF</color>
+    <color name="trends_bubblegraph_deep_bubble">#009CFF</color>
+    <color name="trends_bubblegraph_text_title">@color/text_dim_light</color>
+    <color name="trends_bubblegraph_text_value">@color/white</color>
 </resources>

@@ -20,13 +20,13 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
-import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -225,12 +225,8 @@ public interface ApiService {
 
     //region Trends
 
-    @GET("/v1/insights/trends/all")
-    Observable<ArrayList<TrendGraph>> allTrends();
-
-    @GET("/v1/insights/trends/graph")
-    Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
-                                                 @NonNull @Query("time_period") String timePeriod);
+    @GET("/v2/trends/{time_scale}")
+    Observable<Trends> trendsForTimeScale(@NonNull @Path("time_scale") Trends.TimeScale timeScale);
 
     //endregion
 

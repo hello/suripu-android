@@ -70,16 +70,22 @@ public class RegisterCompleteFragment extends Fragment {
     public void showSecondMessage() {
         animatorFor(message)
                 .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished -> {
+                .addOnAnimationCompleted(finished1 -> {
+                    if (!finished1) {
+                        return;
+                    }
+
                     message.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.onboarding_done_moon, 0, 0);
                     message.setText(R.string.onboarding_done_message_2);
-                })
-                .andThen()
-                .fadeIn()
-                .addOnAnimationCompleted(finished -> {
-                    if (finished) {
-                        stepHandler.postShowComplete();
-                    }
+
+                    animatorFor(message)
+                            .fadeIn()
+                            .addOnAnimationCompleted(finished2 -> {
+                                if (finished2) {
+                                    stepHandler.postShowComplete();
+                                }
+                            })
+                            .start();
                 })
                 .start();
     }

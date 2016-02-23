@@ -1,48 +1,52 @@
 package is.hello.sense.ui.fragments;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.ToggleButton;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.functional.Functions;
-import is.hello.sense.functional.Lists;
+import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.Trends.TimeScale;
 import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
-import is.hello.sense.ui.adapter.TrendsAdapter;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.CardItemDecoration;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
+import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.TabsBackgroundDrawable;
+import is.hello.sense.ui.widget.TrendCardView;
+import is.hello.sense.ui.widget.graphing.TrendFeedView;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class TrendsFragment extends UndersideTabFragment implements TrendsAdapter.OnTrendOptionSelected, TrendsAdapter.OnRetry {
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
+
+public class TrendsFragment extends BacksideTabFragment implements TrendCardView.OnRetry, SelectorView.OnSelectionChangedListener {
     @Inject TrendsPresenter trendsPresenter;
 
-    private TrendsAdapter trendsAdapter;
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    private TrendFeedView trendFeedView;
+    private SelectorView timeScaleSelector;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPresenter(trendsPresenter);
+        setHasOptionsMenu(true);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_TRENDS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
         }
     }
 
@@ -52,25 +56,25 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         final View view = inflater.inflate(R.layout.fragment_trends, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
-        swipeRefreshLayout.setOnRefreshListener(trendsPresenter::update);
+        swipeRefreshLayout.setOnRefreshListener(this::fetchTrends);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_trends_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
-
-        final Resources resources = getResources();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new CardItemDecoration(resources));
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-
-        this.trendsAdapter = new TrendsAdapter(getActivity());
-        trendsAdapter.setOnTrendOptionSelected(this);
-        recyclerView.setAdapter(trendsAdapter);
-
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
+        this.trendFeedView = (TrendFeedView) view.findViewById(R.id.fragment_trends_trendgraph);
+        this.trendFeedView.setAnimatorContext(getAnimatorContext());
+
+        this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
+        timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        timeScaleSelector.setVisibility(View.INVISIBLE);
+        timeScaleSelector.addOption(R.string.trend_time_scale_week, false);
+        timeScaleSelector.addOption(R.string.trend_time_scale_month, false);
+        timeScaleSelector.addOption(R.string.trend_time_scale_quarter, false);
+        timeScaleSelector.setButtonTags(TimeScale.LAST_WEEK,
+                                        TimeScale.LAST_MONTH,
+                                        TimeScale.LAST_3_MONTHS);
+        timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
+                                                                   TabsBackgroundDrawable.Style.INLINE));
+        timeScaleSelector.setOnSelectionChangedListener(this);
 
         return view;
     }
@@ -81,6 +85,14 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
 
         swipeRefreshLayout.setRefreshing(true);
         bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
+
+        final ToggleButton buttonToSelect =
+                timeScaleSelector.getButtonForTag(trendsPresenter.getTimeScale());
+        if (buttonToSelect != null) {
+            timeScaleSelector.setSelectedButton(buttonToSelect);
+        } else {
+            timeScaleSelector.setSelectedIndex(0);
+        }
     }
 
     @Override
@@ -88,50 +100,97 @@ public class TrendsFragment extends UndersideTabFragment implements TrendsAdapte
         super.onDestroyView();
 
         trendsPresenter.unbindScope();
-        this.trendsAdapter = null;
 
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
+        this.timeScaleSelector = null;
+        this.trendFeedView = null;
     }
+
 
     @Override
     public void onSwipeInteractionDidFinish() {
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_trends, false);
     }
 
     @Override
     public void onUpdate() {
         if (trendsPresenter.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
-            trendsPresenter.update();
+            fetchTrends();
         }
     }
 
-    public void bindTrends(@NonNull ArrayList<TrendsPresenter.Rendered> trends) {
+    private void transitionInTimeScaleSelector() {
+        timeScaleSelector.setVisibility(View.INVISIBLE);
+        Views.runWhenLaidOut(timeScaleSelector, stateSafeExecutor.bind(() -> {
+            timeScaleSelector.setTranslationY(-timeScaleSelector.getMeasuredHeight());
+            timeScaleSelector.setVisibility(View.VISIBLE);
+            animatorFor(timeScaleSelector, getAnimatorContext())
+                    .translationY(0f)
+                    .start();
+        }));
+    }
+
+    private void transitionOutTimeScaleSelector() {
+        animatorFor(timeScaleSelector, getAnimatorContext())
+                .translationY(-timeScaleSelector.getMeasuredHeight())
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        timeScaleSelector.setVisibility(View.GONE);
+                    }
+                })
+                .start();
+    }
+
+    public void bindTrends(@NonNull Trends trends) {
+        trendFeedView.bindTrends(trends);
+        timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
-        trendsAdapter.replaceAll(trends);
         initialActivityIndicator.setVisibility(View.GONE);
-        if (Lists.isEmpty(trends)) {
-            trendsAdapter.displayNoDataMessage(null);
+
+        final List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
+        if (availableTimeScales.size() > 1) {
+            for (int i = 0, count = timeScaleSelector.getButtonCount(); i < count; i++) {
+                final ToggleButton button = timeScaleSelector.getButtonAt(i);
+                final TimeScale buttonTimeScale = (TimeScale) timeScaleSelector.getButtonTag(button);
+                if (availableTimeScales.contains(buttonTimeScale)) {
+                    button.setVisibility(View.VISIBLE);
+                } else {
+                    button.setVisibility(View.GONE);
+                }
+            }
+
+            if (timeScaleSelector.getVisibility() != View.VISIBLE) {
+                transitionInTimeScaleSelector();
+            }
+        } else {
+            timeScaleSelector.setVisibility(View.GONE);
         }
     }
 
     public void presentError(Throwable e) {
+        trendFeedView.presentError(this);
+        timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
-        trendsAdapter.clear();
         initialActivityIndicator.setVisibility(View.GONE);
-        trendsAdapter.displayNoDataMessage(this);
-    }
 
-    @Override
-    public void onTrendOptionSelected(int trendIndex, @NonNull String option) {
-        swipeRefreshLayout.setRefreshing(true);
-        bindAndSubscribe(trendsPresenter.updateTrend(trendIndex, option),
-                         Functions.NO_OP,
-                         this::presentError);
+        if (timeScaleSelector.getVisibility() == View.VISIBLE) {
+            transitionOutTimeScaleSelector();
+        }
     }
 
     @Override
     public void fetchTrends() {
+        swipeRefreshLayout.setRefreshing(true);
         trendsPresenter.update();
+    }
+
+    @Override
+    public void onSelectionChanged(int newSelectionIndex) {
+        trendFeedView.setLoading(true);
+        timeScaleSelector.setEnabled(false);
+
+        final TimeScale newTimeScale =
+                (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
+        trendsPresenter.setTimeScale(newTimeScale);
     }
 }

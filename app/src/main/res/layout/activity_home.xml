@@ -12,7 +12,7 @@
         android:background="@color/black">
 
         <FrameLayout
-            android:id="@+id/activity_home_underside_container"
+            android:id="@+id/activity_home_backside_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/background" />
@@ -23,7 +23,7 @@
             android:layout_height="match_parent"
             android:background="@color/background_timeline">
 
-            <is.hello.sense.ui.widget.FixedViewPager
+            <is.hello.sense.ui.widget.ExtendedViewPager
                 android:id="@+id/activity_home_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

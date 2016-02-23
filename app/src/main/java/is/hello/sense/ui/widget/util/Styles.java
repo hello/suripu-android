@@ -14,7 +14,6 @@ import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -37,11 +36,14 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
@@ -65,16 +67,6 @@ public final class Styles {
     public @interface UnitStyle {}
 
 
-    public static @ColorRes @DrawableRes int getSleepScoreColorRes(int sleepScore) {
-        if (sleepScore >= 80) {
-            return R.color.sensor_ideal;
-        } else if (sleepScore >= 50) {
-            return R.color.sensor_warning;
-        } else {
-            return R.color.sensor_alert;
-        }
-    }
-
     public static @StyleRes @DrawableRes int getScoreConditionTintThemeRes(@NonNull ScoreCondition condition) {
         switch (condition) {
             default:
@@ -93,7 +85,7 @@ public final class Styles {
     }
 
 
-    public static @StringRes int getWiFiConnectStatusMessage(@NonNull Operation status) {
+    public static @StringRes int getConnectStatusMessage(@NonNull ConnectProgress status) {
         switch (status) {
             case CONNECTING:
                 return R.string.title_connecting;
@@ -279,6 +271,11 @@ public final class Styles {
                     break;
                 }
 
+                case "#settings":{
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showAppSettings(activity));
+                    break;
+                }
+
                 default: {
                     throw new IllegalArgumentException("Unknown deep link url " + url);
                 }
@@ -371,4 +368,31 @@ public final class Styles {
             ds.setUnderlineText(UNDERLINE_LINKS);
         }
     }
+
+    public static float getBarWidthPercent(Trends.TimeScale timeScale) {
+        if (timeScale == Trends.TimeScale.LAST_WEEK) {
+            return .1276f;
+        } else if (timeScale == Trends.TimeScale.LAST_MONTH) {
+            return .0257f;
+        } else {
+            return .0111f;
+        }
+    }
+
+    public static float getBarSpacePercent(Trends.TimeScale timeScale) {
+        if (timeScale == Trends.TimeScale.LAST_WEEK) {
+            return .0176f;
+        } else if (timeScale == Trends.TimeScale.LAST_MONTH) {
+            return .007f;
+        } else {
+            return 0;
+        }
+    }
+
+    public static String createTextValue(float value, int numberOfDecimalPlaces) {
+        return String.format("%." + numberOfDecimalPlaces + "f", value);
+
+    }
+
+
 }

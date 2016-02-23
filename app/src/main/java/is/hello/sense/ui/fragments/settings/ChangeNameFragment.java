@@ -47,7 +47,16 @@ public class ChangeNameFragment extends SenseFragment {
         String name = AccountPresenter.normalizeInput(nameText.getText());
         nameText.setText(name);
         if (!AccountPresenter.validateName(name)) {
-            animatorFor(nameText).simplePop(1.4f).start();
+            animatorFor(nameText)
+                    .scale(1.4f)
+                    .addOnAnimationCompleted(finished -> {
+                        if (finished) {
+                            animatorFor(nameText)
+                                    .scale(1.0f)
+                                    .start();
+                        }
+                    })
+                    .start();
             return;
         }
 

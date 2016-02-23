@@ -46,7 +46,11 @@
     <dimen name="text_size_smart_alarm_time_big">72sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
+    <dimen name="text_size_trends_bargraph">10sp</dimen>
+    <dimen name="text_size_trends_bubblegraph_title">10sp</dimen>
 
+    <item name="line_multiple_none" format="float" type="dimen">0</item>
+    <item name="line_multiple_normal" format="float" type="dimen">1</item>
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_paragraph_heading" format="float" type="dimen">1.2</item>
@@ -61,7 +65,7 @@
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
     <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
-    <dimen name="divider_height_edit_text">1dp</dimen>
+    <dimen name="divider_size_thick">1dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>
 
     <dimen name="raised_item_corner_radius">2dp</dimen>
@@ -115,6 +119,8 @@
 
     <dimen name="view_parallax_image_clip">15dp</dimen>
 
+    <dimen name="trends_title_height">48dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>
@@ -126,6 +132,15 @@
     <dimen name="series_graph_line_size">1dp</dimen>
     <dimen name="series_graph_shadow_radius">4dp</dimen>
     <dimen name="series_graph_offscreen_inset">8dp</dimen>
+    <dimen name="trends_bargraph_highlight_top_margin">16dp</dimen>
+    <dimen name="trends_bargraph_highlight_bottom_margin">4dp</dimen>
+    <dimen name="trends_bargraph_highlight_value_height">24dp</dimen>
+    <dimen name="trends_bargraph_max_height">112dp</dimen>
+    <dimen name="trends_bargraph_min_height">40dp</dimen>
+    <dimen name="trends_bargraph_dashed_line_length">2dp</dimen>
+    <dimen name="trends_bubblegraph_max_height">198dp</dimen>
+    <dimen name="trends_bubblegraph_min_height">80dp</dimen>
+    <dimen name="trends_bubblegraph_title_top_margin">20dp</dimen>
 
     <!-- Timeline -->
 
@@ -144,6 +159,11 @@
     <dimen name="timeline_event_end_inset">8dp</dimen>
     <dimen name="timeline_event_text_top_inset">7dp</dimen>
     <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
+
+    <dimen name="view_grid_graph_cell_width">32dp</dimen>
+    <dimen name="view_grid_graph_cell_height">32dp</dimen>
+    <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
+    <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
 
 
     <!-- Buttons -->

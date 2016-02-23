@@ -442,8 +442,8 @@ public class Analytics {
         String PROP_EVENT_SYSTEM_ALERT_ACTION_LATER = "later";
     }
 
-    public interface TopView {
-        String EVENT_TOP_VIEW = "Top View";
+    public interface Backside {
+        String EVENT_SHOWN = "Top View";
         String EVENT_TAB_TAPPED = "Top view tab tapped";
         String EVENT_TAB_SWIPED = "Top view tab swiped";
 
@@ -515,12 +515,19 @@ public class Analytics {
         String APP_REVIEW_SKIP = "App review skip";
     }
 
+    public interface Permissions {
+        String EVENT_WE_NEED_LOCATION = "Location Permission Explanation";
+        String EVENT_LOCATION_DISABLED = "Location Not Granted";
+        String EVENT_MORE_INFO = "Location Permission More Info";
+    }
+
 
     //region Lifecycle
 
     public static void initialize(@NonNull Context context) {
         final com.segment.analytics.Analytics.Builder builder =
                 new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
+        builder.flushQueueSize(1);
         if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }

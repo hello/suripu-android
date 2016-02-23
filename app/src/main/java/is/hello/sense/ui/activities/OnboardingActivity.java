@@ -22,7 +22,6 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -46,7 +45,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
@@ -86,7 +84,6 @@ public class OnboardingActivity extends InjectionActivity
     private FragmentNavigationDelegate navigationDelegate;
 
     private @Nullable Account account;
-    private @Nullable DevicesInfo devicesInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,7 +260,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showGetStarted(boolean overrideDeviceUnsupported) {
-        if (!overrideDeviceUnsupported && hardwarePresenter.getDeviceSupportLevel() != BluetoothStack.SupportLevel.TESTED) {
+        if (!overrideDeviceUnsupported && !hardwarePresenter.isDeviceSupported()) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
         } else {
             pushFragment(new HaveSenseReadyFragment(), null, true);
@@ -316,10 +313,6 @@ public class OnboardingActivity extends InjectionActivity
         } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
             pushFragment(new OnboardingRegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
-            pushFragment(new OnboardingRegisterLocationFragment(), null, true);
-        } else if (updatedBy instanceof OnboardingRegisterLocationFragment) {
-            // The OnboardingRegisterLocationFragment shows the
-            // loading dialog, we close it when we wrap up here.
             Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
@@ -369,7 +362,6 @@ public class OnboardingActivity extends InjectionActivity
             bindAndSubscribe(apiService.devicesInfo(),
                              devicesInfo -> {
                                  Logger.info(getClass().getSimpleName(), "Loaded devices info");
-                                 this.devicesInfo = devicesInfo;
                                  Analytics.setSenseId(devicesInfo.getSenseId());
                              }, e -> {
                                  Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);

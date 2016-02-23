@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <is.hello.sense.ui.widget.SelectorView
+        android:id="@+id/fragment_trends_time_scale"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/trends_title_height" />
 
     <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
         android:id="@+id/fragment_trends_refresh_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/fragment_trends_time_scale">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/fragment_trends_recycler"
+        <is.hello.sense.ui.widget.ExtendedScrollView
+            android:id="@+id/fragment_trends_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/gap_card_horizontal"
+            android:paddingRight="@dimen/gap_card_horizontal"
+            android:scrollbars="none"
+            app:senseFadingEdgeStyle="rounded">
+
+            <is.hello.sense.ui.widget.graphing.TrendFeedView
+                android:id="@+id/fragment_trends_trendgraph"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            </is.hello.sense.ui.widget.graphing.TrendFeedView>
+
+        </is.hello.sense.ui.widget.ExtendedScrollView>
 
     </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
 
@@ -19,6 +40,6 @@
         android:id="@+id/fragment_trends_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_centerInParent="true"/>
 
-</FrameLayout>
+</RelativeLayout>

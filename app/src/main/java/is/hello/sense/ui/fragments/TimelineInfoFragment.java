@@ -83,7 +83,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private RecyclerView recycler;
     private @Nullable ViewGroup.LayoutParams finalRecyclerLayoutParams;
 
-    private @Nullable Window window;
     private int savedStatusBarColor;
     private TextView titleText;
     private TextView summaryText;
@@ -119,13 +118,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         this.summary = arguments.getParcelable(ARG_SUMMARY);
 
         setRetainInstance(true);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        this.window = activity.getWindow();
     }
 
     @Nullable
@@ -187,6 +179,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     @Override
     protected void onSkipEnterAnimator() {
+        final Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
             this.savedStatusBarColor = Windows.getStatusBarColor(window);
             Windows.setStatusBarColor(window, darkenedScoreColor);
@@ -219,11 +212,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
      *  them around for the dismissal animator.
      */
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        this.window = null;
+    private @Nullable Window getWindow() {
+        final Activity activity = getActivity();
+        return (activity != null) ? activity.getWindow() : null;
     }
 
     //endregion
@@ -234,6 +225,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private Animator createFadeIn() {
         final ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
+        final Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
             this.savedStatusBarColor = window.getStatusBarColor();
             fadeIn.addUpdateListener(animator -> {
@@ -299,7 +291,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                setUpRecycler();
+                if (isAdded()) {
+                    setUpRecycler();
+                }
             }
         });
         return animator;
@@ -352,6 +346,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private Animator createFadeOut() {
         final ValueAnimator fadeOut = ValueAnimator.ofFloat(0f, 1f);
 
+        final Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
             final int oldStatusBarColor = window.getStatusBarColor();
             final int newStatusBarColor = this.savedStatusBarColor;

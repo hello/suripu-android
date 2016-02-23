@@ -7,8 +7,8 @@ import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -172,7 +172,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void promptForRecoveryFactoryReset() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_FACTORY_RESET, null);
 
         SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.dialog_title_factory_reset);
@@ -194,7 +194,7 @@ public abstract class HardwareFragment extends InjectionFragment {
         } else if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              state -> {
-                                 if (state != Operation.CONNECTED) {
+                                 if (state != ConnectProgress.CONNECTED) {
                                      return;
                                  }
                                  performRecoveryFactoryReset();

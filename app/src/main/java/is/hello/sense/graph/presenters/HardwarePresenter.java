@@ -22,7 +22,6 @@ import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.bluetooth.SensePeripheral;
@@ -31,6 +30,8 @@ import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.util.Compatibility;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -76,7 +77,7 @@ import rx.functions.Action1;
         this.devicesPresenter = devicesPresenter;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
-            if (bluetoothStack.errorRequiresReconnect(e)) {
+            if (BuruberiException.isInstabilityLikely(e)) {
                 clearPeripheral();
             } else if (e != null && e instanceof ConnectionStateException) {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
@@ -184,8 +185,8 @@ import rx.functions.Action1;
         }
     }
 
-    public BluetoothStack.SupportLevel getDeviceSupportLevel() {
-        return bluetoothStack.getDeviceSupportLevel();
+    public boolean isDeviceSupported() {
+        return Compatibility.generateReport(context).isSupported();
     }
 
     private @NonNull <T> Observable<T> noDeviceError() {
@@ -289,7 +290,7 @@ import rx.functions.Action1;
         });
     }
 
-    public Observable<Operation> connectToPeripheral() {
+    public Observable<ConnectProgress> connectToPeripheral() {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
         if (peripheral == null) {
@@ -299,7 +300,7 @@ import rx.functions.Action1;
         if (peripheral.isConnected()) {
             logEvent("already paired with peripheral " + peripheral);
 
-            return Observable.just(Operation.CONNECTED);
+            return Observable.just(ConnectProgress.CONNECTED);
         }
 
         return pending.bind(TOKEN_CONNECT, () -> {
@@ -346,16 +347,16 @@ import rx.functions.Action1;
         if (peripheral == null) {
             return noDeviceError();
         }
-        SensePeripheral.CountryCodes countryCode = null;
+        SensePeripheral.CountryCode countryCode = null;
         if (sendCountryCode){
             DateTimeZone timeZone = DateTimeZone.getDefault();
             String timeZoneId = timeZone.getID();
             if (timeZoneId.contains("America")) {
-                countryCode = SensePeripheral.CountryCodes.US;
+                countryCode = SensePeripheral.CountryCode.US;
             } else if (timeZoneId.contains("Japan")) {
-                countryCode = SensePeripheral.CountryCodes.JP;
+                countryCode = SensePeripheral.CountryCode.JP;
             } else {
-                countryCode = SensePeripheral.CountryCodes.EU;
+                countryCode = SensePeripheral.CountryCode.EU;
             }
         }
         return peripheral.scanForWifiNetworks(countryCode)

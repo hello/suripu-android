@@ -14,9 +14,9 @@ import android.widget.TextView;
 import com.segment.analytics.Properties;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
@@ -179,10 +179,10 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         if (!hardwarePresenter.isConnected()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == Operation.CONNECTED) {
+                if (status == ConnectProgress.CONNECTED) {
                     pairPill();
                 } else {
-                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
+                    showBlockingActivity(Styles.getConnectStatusMessage(status));
                 }
             }, this::presentError);
             return;

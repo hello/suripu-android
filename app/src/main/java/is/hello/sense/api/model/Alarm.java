@@ -20,6 +20,7 @@ import java.util.UUID;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.DateFormatter.JodaWeekDay;
 
 public class Alarm extends ApiResponse {
@@ -214,9 +215,7 @@ public class Alarm extends ApiResponse {
             }
         }
 
-        final List<Integer> orderedDays = getSortedDaysOfWeek();
-        final List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
-        final String daysString = TextUtils.join(context.getString(R.string.alarm_day_separator), days);
+        final String daysString = getRepeatSummary(context, true);
         if (isSmart()) {
             return context.getString(R.string.smart_alarm_days_repeat_prefix) + daysString;
         } else {
@@ -224,20 +223,26 @@ public class Alarm extends ApiResponse {
         }
     }
 
-    public @NonNull String getRepeatSummary(@NonNull Context context) {
+    public @NonNull String getRepeatSummary(@NonNull Context context, boolean longForm) {
         final int daysCount = daysOfWeek.size();
         if (daysCount == 0) {
             return context.getString(R.string.alarm_repeat_never);
-        } else if (daysCount <= 2) {
-            final List<Integer> orderedDays = getSortedDaysOfWeek();
-            final List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
-            return TextUtils.join(context.getString(R.string.alarm_day_separator), days);
-        } else if (daysCount < 7) {
-            return context.getResources().getQuantityString(R.plurals.alarm_repeat_days_count,
-                                                            daysCount, daysCount);
-        } else {
-            return context.getString(R.string.alarm_repeat_weekly);
-        }
+        } else if (DateFormatter.isWeekend(daysOfWeek)) {
+            return context.getString(R.string.alarm_repeat_weekends);
+        } else if (DateFormatter.isWeekdays(daysOfWeek)) {
+                return context.getString(R.string.alarm_repeat_weekdays);
+            } else if (daysCount < 7) {
+                if (longForm) {
+                    final List<Integer> orderedDays = getSortedDaysOfWeek();
+                    final List<String> days = Lists.map(orderedDays, day -> nameForDayOfWeek(context, day));
+                    return TextUtils.join(context.getString(R.string.alarm_day_separator), days);
+                } else {
+                    return context.getResources().getQuantityString(R.plurals.alarm_repeat_days_count,
+                                                                    daysCount, daysCount);
+                }
+            } else {
+                return context.getString(R.string.alarm_repeat_everyday);
+            }
     }
 
     public Sound getSound() {

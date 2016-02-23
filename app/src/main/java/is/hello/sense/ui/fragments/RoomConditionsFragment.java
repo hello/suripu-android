@@ -55,7 +55,7 @@ import is.hello.sense.util.Logger;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
-public class RoomConditionsFragment extends UndersideTabFragment
+public class RoomConditionsFragment extends BacksideTabFragment
         implements ArrayRecyclerAdapter.OnItemClickedListener<SensorState> {
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
@@ -72,7 +72,7 @@ public class RoomConditionsFragment extends UndersideTabFragment
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_CURRENT_CONDITIONS, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
         }
 
         addPresenter(presenter);

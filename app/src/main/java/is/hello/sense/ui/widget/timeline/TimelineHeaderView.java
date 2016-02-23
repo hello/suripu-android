@@ -33,7 +33,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
-import is.hello.sense.ui.widget.graphing.adapters.GradientDrawableCompat;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.util.SafeOnClickListener;
@@ -84,7 +83,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-        Resources resources = getResources();
+        final Resources resources = getResources();
         this.dividerColor = resources.getColor(R.color.timeline_header_border);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
@@ -94,14 +93,8 @@ public class TimelineHeaderView extends RelativeLayout {
                 solidBackgroundColor,
                 resources.getColor(R.color.timeline_header_gradient_end),
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.gradientBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                           gradientColors);
-        } else {
-            //noinspection deprecation
-            this.gradientBackground = new GradientDrawableCompat(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                                 gradientColors);
-        }
+        this.gradientBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                                                       gradientColors);
         gradientBackground.setAlpha(0);
 
 

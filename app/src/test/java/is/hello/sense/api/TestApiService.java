@@ -35,7 +35,6 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
-import is.hello.sense.api.model.TrendGraph;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
@@ -45,6 +44,7 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
+import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -214,7 +214,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
-        return loadResponse("current_conditions", new TypeToken<RoomConditions>(){}.getType());
+        return loadResponse("current_conditions", new TypeToken<RoomConditions>() {
+        }.getType());
     }
 
     @Override
@@ -231,7 +232,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
-        return loadResponse("questions", new TypeToken<ArrayList<Question>>(){}.getType());
+        return loadResponse("questions", new TypeToken<ArrayList<Question>>() {
+        }.getType());
     }
 
     @Override
@@ -274,7 +276,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Alarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>(){}.getType());
+        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>() {
+        }.getType());
     }
 
     @Override
@@ -295,14 +298,8 @@ public final class TestApiService implements ApiService {
 
 
     @Override
-    public Observable<ArrayList<TrendGraph>> allTrends() {
-        return loadResponse("all_trends", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
-    }
-
-    @Override
-    public Observable<ArrayList<TrendGraph>> trendGraph(@NonNull @Query("data_type") String dataType,
-                                                        @NonNull @Query("time_period") String timePeriod) {
-        return loadResponse("single_trend", new TypeToken<ArrayList<TrendGraph>>(){}.getType());
+    public Observable<Trends> trendsForTimeScale(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
+        return null;
     }
 
     @Override

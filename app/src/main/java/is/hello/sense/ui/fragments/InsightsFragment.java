@@ -58,7 +58,7 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class InsightsFragment extends UndersideTabFragment
+public class InsightsFragment extends BacksideTabFragment
         implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent, InsightsAdapter.OnRetry {
     private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
@@ -100,7 +100,7 @@ public class InsightsFragment extends UndersideTabFragment
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
 
         if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.TopView.EVENT_MAIN_VIEW, null);
+            Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
         }
     }
 
@@ -281,7 +281,7 @@ public class InsightsFragment extends UndersideTabFragment
 
     private Animator createRecyclerExit() {
         return animatorFor(recyclerView)
-                .addOnAnimationWillStart(() -> {
+                .addOnAnimationWillStart(animator -> {
                     // Ensure visual consistency.
                     if (recyclerView != null) {
                         recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
@@ -331,7 +331,7 @@ public class InsightsFragment extends UndersideTabFragment
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_INSIGHT_DETAIL, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
         Tutorial.TAP_INSIGHT_CARD.markShown(getActivity());
 
         // InsightsFragment lives inside of a child fragment manager, whose root view is inset

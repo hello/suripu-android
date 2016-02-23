@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -30,11 +31,11 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
@@ -43,6 +44,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.permissions.Permissions;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
@@ -62,7 +64,7 @@ import rx.Observable;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
 public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
-        implements OnBackPressedInterceptor {
+        implements OnBackPressedInterceptor, FragmentCompat.OnRequestPermissionsResultCallback {
     private static final int REQUEST_CODE_WIFI = 0x94;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
@@ -118,7 +120,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             this.blockConnection = savedInstanceState.getBoolean("blockConnection", false);
         } else {
             Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
-            Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_DETAIL, properties);
+            Analytics.trackEvent(Analytics.Backside.EVENT_SENSE_DETAIL, properties);
         }
 
         devicesPresenter.update();
@@ -149,7 +151,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void onResume() {
         super.onResume();
 
-        if (bluetoothStack.isEnabled() && !blockConnection) {
+        if (Permissions.needsLocationPermission(this)) {
+            showPermissionPrompt();
+        } else if (bluetoothStack.isEnabled() && !blockConnection) {
             connectToPeripheral();
         }
     }
@@ -273,6 +277,44 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     //endregion
 
 
+    //region Permissions
+
+    private void showPermissionPrompt() {
+        final TroubleshootingAlert alert = new TroubleshootingAlert()
+                .setMessage(StringRef.from(R.string.request_permission_location_message))
+                .setPrimaryButtonTitle(R.string.action_enable_location)
+                .setPrimaryButtonOnClick(this::promptForLocationPermission)
+                .setSecondaryButtonTitle(R.string.action_more_info)
+                .setSecondaryButtonOnClick(() -> UserSupport.showLocationPermissionMoreInfoPage(getActivity()));
+        showTroubleshootingAlert(alert);
+        showRestrictedSenseActions();
+    }
+
+    private void promptForLocationPermission() {
+        FragmentCompat.requestPermissions(this,
+                                          Permissions.getLocationPermissions(),
+                                          Permissions.LOCATION_PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (Permissions.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
+            if (bluetoothStack.isEnabled() && !blockConnection) {
+                connectToPeripheral();
+            }
+        } else {
+            showPermissionPrompt();
+            Permissions.showEnableInstructionsDialog(this);
+        }
+    }
+
+    //endregion
+
+
     //region Connectivity
 
     public void onBluetoothStateChanged(boolean isEnabled) {
@@ -316,7 +358,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         } else {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
                              status -> {
-                                 if (status == Operation.CONNECTED) {
+                                 if (status == ConnectProgress.CONNECTED) {
                                      checkConnectivityState(false);
                                  }
                              },
@@ -395,7 +437,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_EDIT_WIFI, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_EDIT_WIFI, null);
 
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(getActivity());
@@ -412,7 +454,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_PUT_INTO_PAIRING_MODE, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_PUT_INTO_PAIRING_MODE, null);
 
         final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.dialog_title_put_into_pairing_mode);
@@ -461,9 +503,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                  Logger.info(getClass().getSimpleName(), "Updated time zone");
 
                                  Properties properties = Analytics.createProperties(
-                                         Analytics.TopView.PROP_TIME_ZONE, senseTimeZone.timeZoneId
+                                         Analytics.Backside.PROP_TIME_ZONE, senseTimeZone.timeZoneId
                                                                                    );
-                                 Analytics.trackEvent(Analytics.TopView.EVENT_TIME_ZONE_CHANGED, properties);
+                                 Analytics.trackEvent(Analytics.Backside.EVENT_TIME_ZONE_CHANGED, properties);
 
                                  LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                              },
@@ -480,7 +522,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     public void showAdvancedOptions() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_SENSE_ADVANCED, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_SENSE_ADVANCED, null);
 
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
@@ -509,7 +551,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             return;
         }
 
-        Analytics.trackEvent(Analytics.TopView.EVENT_FACTORY_RESET, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_FACTORY_RESET, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -553,7 +595,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     public void replaceDevice() {
-        Analytics.trackEvent(Analytics.TopView.EVENT_REPLACE_SENSE, null);
+        Analytics.trackEvent(Analytics.Backside.EVENT_REPLACE_SENSE, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
