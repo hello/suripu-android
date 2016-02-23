@@ -28,6 +28,7 @@ public class TrendFeedView extends LinearLayout {
 
     private Trends trends;
     private AnimatorContext animatorContext;
+    private boolean loading = false;
 
     private final Map<Graph.GraphType, TrendCardView> cardViews = new HashMap<>(3);
     private
@@ -52,12 +53,23 @@ public class TrendFeedView extends LinearLayout {
         setLayoutTransition(new LayoutTransition());
     }
 
-
     public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
     }
 
+    public void setLoading(boolean loading) {
+        if (loading != this.loading) {
+            this.loading = loading;
+
+            for (final TrendCardView cardView : cardViews.values()) {
+                cardView.setLoading(loading);
+            }
+        }
+    }
+
     public void bindTrends(@NonNull Trends trends) {
+        setLoading(false);
+
         if (errorCard != null) {
             removeView(errorCard);
             this.errorCard = null;
@@ -68,6 +80,8 @@ public class TrendFeedView extends LinearLayout {
     }
 
     public void presentError(@NonNull TrendCardView.OnRetry onRetry) {
+        setLoading(false);
+
         this.trends = null;
 
         removeAllViews();
@@ -130,6 +144,7 @@ public class TrendFeedView extends LinearLayout {
             } else {
                 trendCardView.bindGraph(graph);
             }
+            trendCardView.setLoading(loading);
 
             includedTypes.add(graphType);
         }
