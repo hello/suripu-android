@@ -1,6 +1,8 @@
 package is.hello.sense.api.model.v2;
 
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -18,7 +20,8 @@ public class GraphSection extends ApiResponse {
     private List<Integer> highlightedValues;
 
     @SerializedName("highlighted_title")
-    private int highlightedTitle;
+    @Nullable
+    private Integer highlightedTitle;
 
     public List<Float> getValues() {
         return values;
@@ -32,7 +35,8 @@ public class GraphSection extends ApiResponse {
         return highlightedValues;
     }
 
-    public int getHighlightedTitle() {
+    @Nullable
+    public Integer getHighlightedTitle() {
         return highlightedTitle;
     }
 

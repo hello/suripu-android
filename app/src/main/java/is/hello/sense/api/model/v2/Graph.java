@@ -66,6 +66,20 @@ public class Graph extends ApiResponse {
         return graphType;
     }
 
+    public GraphType getSpecConformingGraphType() {
+        if (timeScale == Trends.TimeScale.LAST_3_MONTHS && graphType == GraphType.GRID) {
+            return GraphType.OVERVIEW;
+        } else {
+            return graphType;
+        }
+    }
+
+    public boolean isGrid() {
+        final GraphType graphType = getSpecConformingGraphType();
+        return (graphType == GraphType.GRID ||
+                graphType == GraphType.OVERVIEW);
+    }
+
     public float getMinValue() {
         return minValue;
     }

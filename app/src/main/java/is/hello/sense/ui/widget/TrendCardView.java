@@ -24,6 +24,7 @@ import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.graphing.GridGraphView;
+import is.hello.sense.ui.widget.graphing.MultiGridGraphView;
 import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
@@ -45,10 +46,19 @@ public class TrendCardView extends RoundedLinearLayout {
 
     public static TrendCardView createGridCard(@NonNull GridGraphView graphView,
                                                @NonNull Graph graph) {
+        graphView.bindGraph(graph);
         final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
         cardView.populateAnnotations(graph.getAnnotations(), true);
+        return cardView;
+    }
+
+    public static TrendCardView createMultiGridCard(@NonNull MultiGridGraphView graphView,
+                                                    @NonNull Graph graph) {
         graphView.bindGraph(graph);
+        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        cardView.setTitle(graph.getTitle());
+        cardView.populateAnnotations(graph.getAnnotations(), true);
         return cardView;
     }
 
@@ -113,15 +123,13 @@ public class TrendCardView extends RoundedLinearLayout {
     }
 
     public void bindGraph(@NonNull Graph graph) {
-        populateAnnotations(graph.getAnnotations(), graph.getGraphType() == Graph.GraphType.GRID);
         graphBinder.bindGraph(graph);
+        populateAnnotations(graph.getAnnotations(), graph.isGrid());
     }
 
     private void populateAnnotations(List<Annotation> annotations, boolean isGrid) {
-        annotationsLayout.removeAllViews();
-
         if (!Lists.isEmpty(annotations)) {
-            annotationsLayout.setVisibility(VISIBLE);
+            annotationsLayout.removeAllViews();
 
             final LayoutInflater inflater = LayoutInflater.from(getContext());
             for (Annotation annotation : annotations) {
@@ -139,7 +147,10 @@ public class TrendCardView extends RoundedLinearLayout {
                     value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 0),
                                                           BarGraphDrawable.HOUR_SYMBOL,
                                                           Styles.UNIT_STYLE_SUBSCRIPT);
-                    final Condition condition = annotation.getCondition();
+                    Condition condition = annotation.getCondition();
+                    if (condition == null) {
+                        condition = Condition.UNKNOWN;
+                    }
                     valueText.setTextColor(ContextCompat.getColor(getContext(), condition.colorRes));
                 } else {
                     value = Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 2),
@@ -149,6 +160,8 @@ public class TrendCardView extends RoundedLinearLayout {
                 }
                 valueText.setText(value);
             }
+
+            annotationsLayout.setVisibility(VISIBLE);
         } else {
             annotationsLayout.setVisibility(GONE);
         }

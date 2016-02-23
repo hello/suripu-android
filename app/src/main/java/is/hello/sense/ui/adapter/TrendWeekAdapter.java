@@ -64,6 +64,11 @@ public class TrendWeekAdapter extends GridGraphView.Adapter {
         return graph.getSections().get(row).getValues().size();
     }
 
+    @Override
+    public int getMaximumRowCellCount() {
+        return 7;
+    }
+
     @Nullable
     @Override
     public String getCellReading(int row, int cell) {

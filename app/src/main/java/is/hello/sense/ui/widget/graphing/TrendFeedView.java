@@ -87,7 +87,7 @@ public class TrendFeedView extends LinearLayout {
             }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
-            if (graph.getGraphType() == Graph.GraphType.GRID && welcomeCard == null) {
+            if (graph.isGrid() && welcomeCard == null) {
                 int numberOfDaysWithValues = 0;
                 outer: for (final GraphSection section : graph.getSections()) {
                     for (final Float value : section.getValues()) {
@@ -112,12 +112,12 @@ public class TrendFeedView extends LinearLayout {
 
         final Set<Graph.GraphType> includedTypes = new HashSet<>(graphs.size());
         for (final Graph graph : graphs) {
-            final Graph.GraphType graphType = graph.getGraphType();
+            final Graph.GraphType graphType = graph.getSpecConformingGraphType();
             TrendCardView trendCardView = cardViews.get(graphType);
             if (trendCardView == null) {
                 trendCardView = createTrendCard(graph);
                 cardViews.put(graphType, trendCardView);
-                addView(trendCardView);
+                addView(trendCardView, getPositionAffinity(graph));
             } else {
                 trendCardView.bindGraph(graph);
             }
@@ -136,9 +136,20 @@ public class TrendFeedView extends LinearLayout {
         }
     }
 
+    private static int getPositionAffinity(@NonNull Graph graph) {
+        switch (graph.getSpecConformingGraphType()) {
+            case GRID:
+            case OVERVIEW:
+                return 0;
+
+            default:
+                return -1; // end
+        }
+    }
+
     private TrendCardView createTrendCard(@NonNull Graph graph) {
         final Context context = getContext();
-        switch (graph.getGraphType()) {
+        switch (graph.getSpecConformingGraphType()) {
             case BAR:
                 final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(context, graph, animatorContext);
                 final TrendGraphView barGraphView = new TrendGraphView(context, barGraphDrawable);
@@ -150,13 +161,16 @@ public class TrendFeedView extends LinearLayout {
                 return TrendCardView.createGraphCard(bubbleGraphView, graph);
 
             case GRID:
-            case OVERVIEW:
                 final GridGraphView gridGraphView = new GridGraphView(context);
                 gridGraphView.bindRootLayoutTransition(getLayoutTransition());
                 return TrendCardView.createGridCard(gridGraphView, graph);
 
+            case OVERVIEW:
+                final MultiGridGraphView multiGridGraphView = new MultiGridGraphView(context);
+                return TrendCardView.createMultiGridCard(multiGridGraphView, graph);
+
             default:
-                throw new IllegalArgumentException("Unknown graph type " + graph.getGraphType());
+                throw new IllegalArgumentException("Unknown graph type " + graph.getSpecConformingGraphType());
         }
     }
 }

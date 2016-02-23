@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnticipateInterpolator;
@@ -23,13 +22,13 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
-import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.adapter.TrendMonthAdapter;
+import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.ui.adapter.TrendWeekAdapter;
 import is.hello.sense.ui.widget.TrendCardView;
 
@@ -95,7 +94,8 @@ public class GridGraphView extends LinearLayout
 
         setOrientation(VERTICAL);
 
-        final LayoutTransition layoutTransition = new LayoutTransition();
+        final LayoutTransition layoutTransition = new AttachedLayoutTransition();
+        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
 
         layoutTransition.setAnimator(LayoutTransition.APPEARING, createAppearingAnimator());
         layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, createDisappearingAnimator());
@@ -227,21 +227,36 @@ public class GridGraphView extends LinearLayout
         }
     }
 
+    public void setAnimationsEnabled(boolean animationsEnabled) {
+        final LayoutTransition myLayoutTransition = getLayoutTransition();
+        if (animationsEnabled) {
+            myLayoutTransition.enableTransitionType(LayoutTransition.CHANGE_APPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.APPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.DISAPPEARING);
+            myLayoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        } else {
+            myLayoutTransition.disableTransitionType(LayoutTransition.CHANGE_APPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.APPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.DISAPPEARING);
+            myLayoutTransition.disableTransitionType(LayoutTransition.CHANGING);
+        }
+    }
+
     @Override
     public void bindGraph(@NonNull Graph graph) {
-        final Trends.TimeScale timeScale = graph.getTimeScale();
-        if (timeScale == Trends.TimeScale.LAST_3_MONTHS) {
-            setCellSize(GridGraphCellView.Size.SMALL);
+        if (!(getAdapter() instanceof TrendWeekAdapter)) {
+            setAdapter(new TrendWeekAdapter(getContext()));
+        }
 
-            final TrendMonthAdapter monthAdapter = new TrendMonthAdapter(getContext());
-            monthAdapter.bind(graph, graph.getSections().get(0));
-            setAdapter(monthAdapter);
-        } else {
-            setCellSize(GridGraphCellView.Size.REGULAR);
+        final TrendWeekAdapter adapter = (TrendWeekAdapter) getAdapter();
+        adapter.bind(graph);
 
-            final TrendWeekAdapter weekAdapter = new TrendWeekAdapter(getContext());
-            weekAdapter.bind(graph);
-            setAdapter(weekAdapter);
+        // Weekly / monthly graphs always place the titles in the first section
+        if (!graph.getSections().isEmpty()) {
+            final GraphSection firstSection = graph.getSections().get(0);
+            setTitles(firstSection.getHighlightedTitle(), firstSection.getTitles());
         }
     }
 
@@ -258,7 +273,6 @@ public class GridGraphView extends LinearLayout
 
         final LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(HORIZONTAL);
-        row.setGravity(Gravity.CENTER);
         row.setLayoutParams(rowLayoutParams);
         return row;
     }
@@ -364,6 +378,7 @@ public class GridGraphView extends LinearLayout
 
         for (int i = 0; i < delta; i++) {
             final LinearLayout rowView = recycler.dequeueRowView();
+            rowView.setWeightSum(adapter.getMaximumRowCellCount());
             setAnimationIndex(rowView, delta - i);
             rowViews.add(0, rowView);
             addView(rowView, 0);
@@ -410,6 +425,8 @@ public class GridGraphView extends LinearLayout
         if (DEBUG) {
             Log.d(getClass().getSimpleName(), "populate()");
         }
+
+        removeCallbacks(populateCallback);
 
         final int oldCount = rowViews.size();
         final int newCount = adapter != null ? adapter.getRowCount() : 0;
@@ -472,8 +489,12 @@ public class GridGraphView extends LinearLayout
                 adapter.registerObserver(ADAPTER_OBSERVER);
             }
 
-            requestPopulate();
+            populate();
         }
+    }
+
+    public Adapter getAdapter() {
+        return adapter;
     }
 
     public void setCellSize(@NonNull GridGraphCellView.Size cellSize) {
@@ -490,6 +511,13 @@ public class GridGraphView extends LinearLayout
         if (!rowViews.isEmpty()) {
             requestPopulate();
         }
+    }
+
+    /**
+     * Sets the titles to display above the data in the grid view.
+     */
+    public void setTitles(@Nullable Integer highlightedTitle, @Nullable List<String> titles) {
+        // TODO: implement
     }
 
     /**
@@ -526,7 +554,7 @@ public class GridGraphView extends LinearLayout
     private final DataSetObserver ADAPTER_OBSERVER = new DataSetObserver() {
         @Override
         public void onChanged() {
-            requestPopulate();
+            populate();
         }
 
         @Override
@@ -534,6 +562,13 @@ public class GridGraphView extends LinearLayout
             setAdapter(null);
         }
     };
+
+    private class AttachedLayoutTransition extends LayoutTransition {
+        @Override
+        public boolean isTransitionTypeEnabled(int transitionType) {
+            return isAttachedToWindow() && super.isTransitionTypeEnabled(transitionType);
+        }
+    }
 
     public abstract static class Adapter {
         private final DataSetObservable observable = new DataSetObservable();
@@ -552,6 +587,7 @@ public class GridGraphView extends LinearLayout
 
         public abstract int getRowCount();
         public abstract int getRowCellCount(int row);
+        public abstract int getMaximumRowCellCount();
         public abstract @Nullable String getCellReading(int row, int cell);
         public abstract @ColorInt int getCellColor(int row, int cell);
         public abstract @NonNull GridGraphCellView.Border getCellBorder(int row, int cell);
