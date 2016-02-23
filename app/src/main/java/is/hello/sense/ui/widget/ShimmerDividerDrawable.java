@@ -18,7 +18,8 @@ import is.hello.go99.Anime;
 import is.hello.sense.R;
 
 public class ShimmerDividerDrawable extends Drawable implements Animatable {
-    private static final float INCREMENT = 0.01f;
+    private static final int FRAME_DURATION = 16;
+    private static final int DURATION_DEFAULT = 1600;
 
     private final Paint backgroundPaint = new Paint();
 
@@ -27,6 +28,7 @@ public class ShimmerDividerDrawable extends Drawable implements Animatable {
 
     private float offset = 0f;
     private boolean running = false;
+    private float increment;
 
     public ShimmerDividerDrawable(@ColorInt int backgroundColor,
                                   @ColorInt int shimmerColor,
@@ -40,6 +42,8 @@ public class ShimmerDividerDrawable extends Drawable implements Animatable {
         };
         this.shimmerGradient = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
         this.intrinsicHeight = intrinsicHeight;
+
+        setDuration(DURATION_DEFAULT);
     }
 
     public static ShimmerDividerDrawable createTrendCardDivider(@NonNull Resources resources) {
@@ -105,6 +109,10 @@ public class ShimmerDividerDrawable extends Drawable implements Animatable {
 
     //region Animation
 
+    public void setDuration(int duration) {
+        this.increment = ((float) FRAME_DURATION / (float) duration);
+    }
+
     @Override
     public void start() {
         this.running = true;
@@ -125,13 +133,13 @@ public class ShimmerDividerDrawable extends Drawable implements Animatable {
 
     private void nextFrame() {
         unscheduleSelf(nextFrame);
-        scheduleSelf(nextFrame, SystemClock.uptimeMillis() + 16L);
+        scheduleSelf(nextFrame, SystemClock.uptimeMillis() + FRAME_DURATION);
     }
 
     private final Runnable nextFrame = () -> {
-        offset += INCREMENT;
+        this.offset += increment;
         if (offset > 1f) {
-            offset = 0f;
+            this.offset = 0f;
         }
 
         invalidateSelf();

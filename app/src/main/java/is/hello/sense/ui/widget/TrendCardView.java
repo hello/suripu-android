@@ -33,6 +33,7 @@ import is.hello.sense.ui.widget.graphing.TrendGraphView;
 public class TrendCardView extends RoundedLinearLayout {
     private final LinearLayout annotationsLayout;
     private final TextView title;
+    private final ShimmerDividerDrawable dividerDrawable;
     private final OnBindGraph graphBinder;
 
 
@@ -98,6 +99,10 @@ public class TrendCardView extends RoundedLinearLayout {
         final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
         setCornerRadii(cornerRadius);
 
+        final View divider = findViewById(R.id.item_trend_divider);
+        this.dividerDrawable = ShimmerDividerDrawable.createTrendCardDivider(resources);
+        divider.setBackground(dividerDrawable);
+
         this.title = (TextView) findViewById(R.id.item_trend_title);
         this.graphBinder = graphBinder;
         this.annotationsLayout = new LinearLayout(context);
@@ -115,6 +120,14 @@ public class TrendCardView extends RoundedLinearLayout {
         } else {
             addView(graphView, graphLayoutParams);
             addView(annotationsLayout, annotationsLayoutParams);
+        }
+    }
+
+    public void setLoading(boolean loading) {
+        if (loading) {
+            dividerDrawable.start();
+        } else {
+            dividerDrawable.stop();
         }
     }
 
