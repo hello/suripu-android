@@ -38,6 +38,7 @@ public class MultiGridGraphView extends LinearLayout implements TrendCardView.On
         for (int row = 0; row < ROW_COUNT; row++) {
             final LinearLayout rowLayout = new LinearLayout(context);
             rowLayout.setOrientation(HORIZONTAL);
+            rowLayout.setWeightSum(COLUMN_COUNT);
             for (int column = 0; column < COLUMN_COUNT; column++) {
                 final GridGraphView graphView = createGridGraphView(context);
                 graphViews.add(graphView);

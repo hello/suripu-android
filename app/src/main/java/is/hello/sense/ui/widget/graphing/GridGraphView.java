@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
@@ -181,6 +182,12 @@ public class GridGraphView extends LinearLayout
             } else {
                 final int labelWidth = canvas.getWidth() / titlesCount;
                 for (int i = 0; i < titlesCount; i++) {
+                    if (Objects.equals(i, highlightedTitle)) {
+                        titlePaint.setAlpha(0xDD);
+                    } else {
+                        titlePaint.setAlpha(0x66);
+                    }
+
                     canvas.drawText(titles.get(i),
                                     (labelWidth * i) + (labelWidth / 2f),
                                     estimatedTextHeight,
@@ -564,12 +571,14 @@ public class GridGraphView extends LinearLayout
         }
 
         this.highlightedTitle = highlightedTitle;
-        this.titles = titles;
 
         final boolean titlesEmpty = Lists.isEmpty(titles);
         if (titlesEmpty) {
+            this.titles = null;
             setPadding(0, 0, 0, 0);
         } else {
+            this.titles = Lists.map(titles, String::toUpperCase);
+
             final int estimatedLineHeight = Drawing.getEstimatedLineHeight(titlePaint, false);
             final int extra = getResources().getDimensionPixelSize(R.dimen.gap_small);
             setPadding(0, estimatedLineHeight + extra, 0, 0);
