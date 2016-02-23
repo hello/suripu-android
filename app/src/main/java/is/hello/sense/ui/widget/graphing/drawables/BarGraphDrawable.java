@@ -236,7 +236,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     @Override
     public void updateGraph(@NonNull Graph graph) {
         if (graph.getTimeScale() == this.graph.getTimeScale()) {
-            //        return; //todo uncomment when done testing.
+            return;
         }
         ValueAnimator animator = ValueAnimator.ofFloat(maxScaleFactor, minScaleFactor);
         animator.setDuration(Anime.DURATION_NORMAL);
