@@ -144,7 +144,7 @@ public class TrendCardView extends RoundedLinearLayout {
 
                 final TextView titleText =
                         (TextView) annotationView.findViewById(R.id.item_bargraph_annotation_title);
-                titleText.setText(annotation.getTitle().toUpperCase());
+                titleText.setText(annotation.getTitle());
 
                 final @ColorRes int textColor;
                 if (dataType.wantsConditionTinting()) {
