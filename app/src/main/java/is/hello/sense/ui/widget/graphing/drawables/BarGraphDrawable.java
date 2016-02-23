@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.go99.Anime;
@@ -133,6 +134,10 @@ public class BarGraphDrawable extends TrendGraphDrawable {
     @Override
     public void draw(Canvas canvas) {
         int leftSpace = 0;
+        final ArrayList<RectF> highlightedColumns = new ArrayList<>();
+        final ArrayList<DrawingText> highlightedTexts = new ArrayList<>();
+        final ArrayList<Path> highlightedBubbles = new ArrayList<>();
+
         List<GraphSection> sections = graph.getSections();
         for (int i = 0; i < sections.size(); i++) {
             boolean hideLastSection = false;
@@ -142,7 +147,9 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             for (int j = 0; j < titles.size(); j++) {
                 String title = titles.get(j).toUpperCase();
                 calculateTitleTextBounds(j, leftSpace, title, textBounds);
-                if (textBounds.left + textBounds.width() + 5 < canvas.getWidth()) {
+                if ( textBounds.left + textBounds.width() + 10 > graphSection.getValues().size() * (canvasValues.barWidth + canvasValues.barSpace)){
+                    continue;
+                }else if (textBounds.left + textBounds.width() + 10 < canvas.getWidth()) {
                     canvas.drawText(title, textBounds.left, textBounds.top, textLabelPaint);
                 } else if (i == sections.size() - 1) {
                     hideLastSection = true;
@@ -160,7 +167,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 canvas.drawRect(barBoundsRect, barPaint);
             }
             // Draw Dashed Line
-            if (leftSpace > 0 && !hideLastSection) {
+            if (leftSpace > 0 && !hideLastSection ) {
                 calculateDashedLinePath(leftSpace, drawingPath);
                 canvas.drawPath(drawingPath, dashedLinePaint);
             }
@@ -187,15 +194,36 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                 drawingPath.reset();
                 drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius), resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius),
                                          Path.Direction.CW);
-                // highlight the bar
-                canvas.drawRect(barBoundsRect, barHighlightPaint);
-                // draw the min/max bubble above it.
-                canvas.drawPath(drawingPath, highlightPaint);
-                // draw the text in that min/max bubble.
-                canvas.drawText(textValue, highlightTextBounds.left, highlightTextBounds.top, highlightTextPaint);
+                highlightedColumns.add(new RectF(barBoundsRect));
+                highlightedBubbles.add(new Path(drawingPath));
+                highlightedTexts.add(new DrawingText(textValue, new RectF(highlightTextBounds)));
             }
 
             leftSpace += values.size() * (canvasValues.barSpace + canvasValues.barWidth);
+        }
+        // highlight the bar
+        for (RectF column : highlightedColumns) {
+            canvas.drawRect(column, barHighlightPaint);
+        }
+        // draw the min/max bubble above it.
+        for (Path path : highlightedBubbles) {
+            canvas.drawPath(path, highlightPaint);
+        }
+        // draw the text in that min/max bubble.
+        for (DrawingText drawingText : highlightedTexts) {
+            canvas.drawText(drawingText.text, drawingText.bounds.left, drawingText.bounds.top, highlightTextPaint);
+        }
+    }
+
+    class DrawingText {
+        @NonNull
+        private final String text;
+        @NonNull
+        private final RectF bounds;
+
+        public DrawingText(@NonNull String text, @NonNull RectF bounds) {
+            this.text = text;
+            this.bounds = bounds;
         }
     }
 
