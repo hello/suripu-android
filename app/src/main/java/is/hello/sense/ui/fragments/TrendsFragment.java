@@ -67,12 +67,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setVisibility(View.INVISIBLE);
-        timeScaleSelector.addOption(R.string.trend_time_scale_week, false);
-        timeScaleSelector.addOption(R.string.trend_time_scale_month, false);
-        timeScaleSelector.addOption(R.string.trend_time_scale_quarter, false);
-        timeScaleSelector.setButtonTags(TimeScale.LAST_WEEK,
-                                        TimeScale.LAST_MONTH,
-                                        TimeScale.LAST_3_MONTHS);
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
                                                                    TabsBackgroundDrawable.Style.INLINE));
         timeScaleSelector.setOnSelectionChangedListener(this);
@@ -148,12 +142,13 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
-        if (trends.getAvailableTimeScales().size() > 0 ) {
-            if ( trends.getAvailableTimeScaleStringResList().size() != timeScaleSelector.getButtonCount()) {
+        List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
+        if (availableTimeScales.size() > 0 ) {
+            if ( availableTimeScales.size() != timeScaleSelector.getButtonCount()) {
                 timeScaleSelector.setOnSelectionChangedListener(null);
                 timeScaleSelector.removeAllButtons();
-                for (int res : trends.getAvailableTimeScaleStringResList()) {
-                    timeScaleSelector.addOption(res, false);
+                for (TimeScale timeScale : availableTimeScales) {
+                    timeScaleSelector.addOption(timeScale.titleRes, false);
                 }
                 timeScaleSelector.setButtonTags(trends.getAvailableTimeScaleTags());
                 timeScaleSelector.setOnSelectionChangedListener(this);
