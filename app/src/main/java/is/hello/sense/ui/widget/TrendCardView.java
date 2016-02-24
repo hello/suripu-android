@@ -228,7 +228,7 @@ public class TrendCardView extends RoundedLinearLayout {
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
 
-            ((MarginLayoutParams) message.getLayoutParams()).topMargin = 0;
+            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);;
             message.setText(getResources().getString(R.string.message_trends_welcome));
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 //noinspection deprecation
@@ -236,7 +236,6 @@ public class TrendCardView extends RoundedLinearLayout {
             } else {
                 message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
             }
-            message.setLineSpacing(0, 1);
             action.setVisibility(GONE);
         }
     }
