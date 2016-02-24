@@ -524,4 +524,6 @@
         <item quantity="other">%1$s – %2$d attachments</item>
     </plurals>
 
+    <string name="empty"> </string>
+
 </resources>
