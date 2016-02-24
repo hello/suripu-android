@@ -48,6 +48,12 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
      * Holds the 3 bubbles.
      */
     private BubbleController currentBubbleController;
+
+    /**
+     * Additional space for percent symbol.
+     */
+    private final int percentOffset;
+
     private int canvasWidth;
     private int midY;
     private float animationScaleFactor;
@@ -60,6 +66,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     private final TextPaint textPercentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
     private Rect textValueRect = new Rect();
+    private Rect textTitleRect = new Rect();
 
     public BubbleGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
         super(context, graph, animatorContext);
@@ -75,6 +82,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
         Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
         textPercentPaint.setAlpha(178);
         Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph_Title);
+        this.percentOffset = resources.getDimensionPixelOffset(R.dimen.trends_bubblegraph_percent_offset);
         textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_trends_bubblegraph_title));
         this.totalGraphHeight = context.getResources().getDimensionPixelSize(R.dimen.trends_bubblegraph_max_height);
     }
@@ -92,6 +100,8 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
         for (BubbleController.Bubble bubble : currentBubbleController.getDrawOrder()) {
             final String textValue = bubble.getTextValue();
             bubble.getTextValuePaint().getTextBounds(textValue, 0, textValue.length(), textValueRect);
+            textTitlePaint.getTextBounds(bubble.textTitle, 0, bubble.textTitle.length(), textTitleRect);
+            final float height = (midY - (textValueRect.height() + titleTopMargin + textTitleRect.height()) / 2) + textValueRect.height();
             // Bubble
             canvas.drawCircle(bubble.getMidX(),
                               midY,
@@ -99,19 +109,19 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
                               bubble.paint);
             // Bubble Value
             canvas.drawText(textValue,
-                            bubble.getTextStartX(textValueRect) - 4,
-                            midY,
+                            bubble.getTextStartX(textValueRect) - percentOffset,
+                            height,
                             bubble.getTextValuePaint());
             // % Symbol
             canvas.drawText(PERCENT_SYMBOL,
                             bubble.getTextPercentStartX(textValueRect),
-                            midY - textValueRect.height() / 2,
+                            height - textValueRect.height() / 2,
                             bubble.getTextPercentPaint());
 
             // Title Of Bubble
             canvas.drawText(bubble.textTitle,
                             bubble.getTextTitleStartX(),
-                            midY + titleTopMargin,
+                            height + textTitleRect.height() + titleTopMargin,
                             textTitlePaint);
         }
     }
@@ -124,7 +134,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     @Override
     public void updateGraph(@NonNull Graph graph) {
         if (graph.getTimeScale() == this.graph.getTimeScale()) {
-            //  return; //todo uncomment when done testing.
+            return;
         }
         final BubbleController animateTo = createBubbleController(graph);
         if (currentBubbleController == null) {
@@ -145,6 +155,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                BubbleGraphDrawable.this.graph = graph;
                 currentBubbleController = animateTo;
             }
         });
@@ -331,11 +342,6 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
                 return textPercentPaint;
             }
 
-            public void getTextPercentRect(@NonNull Rect outRect) {
-                // todo erase if design okays current build
-                getTextPercentPaint().getTextBounds(PERCENT_SYMBOL, 0, 1, outRect);
-            }
-
             public String getTextValue() {
                 return Styles.createTextValue(getValue() * 100, 0);
             }
@@ -346,7 +352,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
             }
 
             public float getTextPercentStartX(@NonNull Rect textRect) {
-                return getMidX() + textRect.width() / 2 + 2;
+                return getMidX() + textRect.width() / 2;
             }
 
             public float getTextTitleStartX() {
