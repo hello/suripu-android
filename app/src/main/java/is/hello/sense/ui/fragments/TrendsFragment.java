@@ -30,7 +30,8 @@ import is.hello.sense.util.Analytics;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class TrendsFragment extends BacksideTabFragment implements TrendCardView.OnRetry, SelectorView.OnSelectionChangedListener {
-    @Inject TrendsPresenter trendsPresenter;
+    @Inject
+    TrendsPresenter trendsPresenter;
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -66,12 +67,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setVisibility(View.INVISIBLE);
-        timeScaleSelector.addOption(R.string.trend_time_scale_week, false);
-        timeScaleSelector.addOption(R.string.trend_time_scale_month, false);
-        timeScaleSelector.addOption(R.string.trend_time_scale_quarter, false);
-        timeScaleSelector.setButtonTags(TimeScale.LAST_WEEK,
-                                        TimeScale.LAST_MONTH,
-                                        TimeScale.LAST_3_MONTHS);
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
                                                                    TabsBackgroundDrawable.Style.INLINE));
         timeScaleSelector.setOnSelectionChangedListener(this);
@@ -147,22 +142,24 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
-        final List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
-        if (availableTimeScales.size() > 1) {
-            for (int i = 0, count = timeScaleSelector.getButtonCount(); i < count; i++) {
-                final ToggleButton button = timeScaleSelector.getButtonAt(i);
-                final TimeScale buttonTimeScale = (TimeScale) timeScaleSelector.getButtonTag(button);
-                if (availableTimeScales.contains(buttonTimeScale)) {
-                    button.setVisibility(View.VISIBLE);
-                } else {
-                    button.setVisibility(View.GONE);
+        List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
+        if (availableTimeScales.size() > 0 ) {
+            if ( availableTimeScales.size() != timeScaleSelector.getButtonCount()) {
+                timeScaleSelector.setOnSelectionChangedListener(null);
+                timeScaleSelector.removeAllButtons();
+                for (TimeScale timeScale : availableTimeScales) {
+                    timeScaleSelector.addOption(timeScale.titleRes, false);
                 }
-            }
+                timeScaleSelector.setButtonTags(trends.getAvailableTimeScaleTags());
+                timeScaleSelector.setOnSelectionChangedListener(this);
 
+            }
             if (timeScaleSelector.getVisibility() != View.VISIBLE) {
                 transitionInTimeScaleSelector();
             }
-        } else {
+        } else if (timeScaleSelector.getVisibility()==View.VISIBLE){
+            transitionOutTimeScaleSelector();
+        }else{
             timeScaleSelector.setVisibility(View.GONE);
         }
     }

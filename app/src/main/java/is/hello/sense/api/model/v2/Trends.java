@@ -1,12 +1,14 @@
 package is.hello.sense.api.model.v2;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 
@@ -28,6 +30,11 @@ public class Trends extends ApiResponse {
         return availableTimeScales;
     }
 
+    public Object[] getAvailableTimeScaleTags() {
+        return availableTimeScales.toArray(new TimeScale[availableTimeScales.size()]);
+    }
+
+
     public List<Graph> getGraphs() {
         return graphs;
     }
@@ -35,18 +42,26 @@ public class Trends extends ApiResponse {
     @Override
     public String toString() {
         return "Trend{" +
-            "availableTimeScales=" + availableTimeScales.toString() +
-            ", graphs='" + graphs.toString() + '\'' +
-            '}';
+                "availableTimeScales=" + availableTimeScales.toString() +
+                ", graphs='" + graphs.toString() + '\'' +
+                '}';
     }
 
     public enum TimeScale implements Enums.FromString {
-        NONE,
-        LAST_WEEK,
-        LAST_MONTH,
-        LAST_3_MONTHS;
+        NONE(R.string.empty),
+        LAST_WEEK(R.string.trend_time_scale_week),
+        LAST_MONTH(R.string.trend_time_scale_month),
+        LAST_3_MONTHS(R.string.trend_time_scale_quarter);
 
-        public static TimeScale fromString(@NonNull String string){
+        public final
+        @StringRes
+        int titleRes;
+
+        TimeScale(@StringRes int titleRes) {
+            this.titleRes = titleRes;
+        }
+
+        public static TimeScale fromString(@NonNull String string) {
             return Enums.fromString(string, values(), NONE);
         }
     }
