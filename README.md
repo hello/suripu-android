@@ -72,39 +72,6 @@ If you have a branch that should not be run on continuous integration before mer
 - `CommonSense`: Near complete coverage.
 - `suripu-android`: Has coverage for most core parts of the application.
 
-# Deploying
+# Deployments
 
-## Prerequisites
-
-- The `colorize` gem.
-- A HockeyApp API key with upload permissions.
-- `HELLO_DEPLOY_HOCKEY_TOKEN` exported in your environment.
-
-## Internal
-
-Internal QA builds can be generated via the `deploy` script checked into the `suripu-android` git repository.
-
-```bash
-suripu-android/ $ ./scripts/deploy -k alpha
-```
-
-## External
-
-We currently have two forms of external releases. A closed beta on the Play Store, and a regular release. APKs should be generated for both via the `:assembleStore` gradle command. This process is currently not automated.
-
-## Deploy script
-
-The `deploy` script is capable of generating multiple builds sequentially in a single invocation. Just specify the build flavors one after another. The builds are generated in the order specified.
-
-### Available flavors
-
-- `alpha`: Uses the internal keystore and has unique package id. Includes extended error reporting, a debug activity, a Bluetooth debugging tool for Sense, and supports runtime API environment selection. Used for QA.
-- `beta`: Legacy beta build. Should not be used anymore.
-- `store`: Uses the release keystore and release package id. No debug interfaces are included. You cannot generate one of these builds without tagging master during the build process. Used for Play Store betas and releases.
-- `feature`: Identical to beta, but deploys to `Sense New Features` on HockeyApp instead of `Sense Beta`. Still occasionally in use.
-
-### Flags
-
-- `-t / --[no-]tests`: Runs the tests on the project before deploying.
-- `-k / --[no-]clean`: Cleans the project before deploying. Should almost always be used.
-- `-sTAG / --save-tag=TAG`: Creates a tag on the current branch. Required for new releases.
+Project deploy procedures are covered in the [project Wiki](https://github.com/hello/suripu-android/wiki)
