@@ -52,7 +52,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
     /**
      * Additional space for percent symbol.
      */
-    private final int percent_offset;
+    private final int percentOffset;
 
     private int canvasWidth;
     private int midY;
@@ -82,7 +82,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
         Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
         textPercentPaint.setAlpha(178);
         Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph_Title);
-        this.percent_offset = resources.getDimensionPixelOffset(R.dimen.trends_bubblegraph_percent_offset);
+        this.percentOffset = resources.getDimensionPixelOffset(R.dimen.trends_bubblegraph_percent_offset);
         textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_trends_bubblegraph_title));
         this.totalGraphHeight = context.getResources().getDimensionPixelSize(R.dimen.trends_bubblegraph_max_height);
     }
@@ -109,7 +109,7 @@ public class BubbleGraphDrawable extends TrendGraphDrawable {
                               bubble.paint);
             // Bubble Value
             canvas.drawText(textValue,
-                            bubble.getTextStartX(textValueRect) - percent_offset,
+                            bubble.getTextStartX(textValueRect) - percentOffset,
                             height,
                             bubble.getTextValuePaint());
             // % Symbol
