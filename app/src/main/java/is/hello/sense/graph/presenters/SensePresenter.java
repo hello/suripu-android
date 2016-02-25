@@ -84,15 +84,20 @@ import rx.Subscription;
     }
 
     public void scanForDevice(@NonNull SenseDevice device) {
-        final PeripheralCriteria criteria = new PeripheralCriteria();
-        SenseService.prepareForScan(criteria, device.deviceId);
-        scan(criteria);
+        scan(SenseService.createSenseCriteria(device.deviceId));
     }
 
     public void scanForClosestSense() {
-        final PeripheralCriteria criteria = new PeripheralCriteria();
-        SenseService.prepareForScan(criteria, null);
-        scan(criteria);
+        scan(SenseService.createSenseCriteria());
+    }
+
+    //endregion
+
+
+    //region Introspection
+
+    public boolean hasPeripheral() {
+        return peripheral.hasValue();
     }
 
     //endregion
