@@ -183,6 +183,18 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+
+        serviceConnection.senseService()
+                         .filter(SenseService::isConnected)
+                         .flatMap(SenseService::fadeOutLEDs)
+                         .subscribe(Functions.NO_OP,
+                                    Functions.LOG_ERROR);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
