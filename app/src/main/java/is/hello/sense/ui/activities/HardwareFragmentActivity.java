@@ -2,8 +2,10 @@ package is.hello.sense.ui.activities;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.service.SenseService;
+import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.sense.SenseApplication;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 
 /**
@@ -12,7 +14,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
  * peripherals when it is destroyed by the user pressing back.
  */
 public class HardwareFragmentActivity extends FragmentNavigationActivity {
-    @Inject HardwarePresenter hardwarePresenter;
+    @Inject SenseServiceConnection serviceConnection;
 
     public HardwareFragmentActivity() {
         SenseApplication.getInstance().inject(this);
@@ -23,7 +25,12 @@ public class HardwareFragmentActivity extends FragmentNavigationActivity {
         super.onDestroy();
 
         if (isFinishing()) {
-            hardwarePresenter.clearPeripheral();
+            serviceConnection.senseService()
+                             .filter(SenseService::isConnected)
+                             .flatMap(SenseService::fadeOutLEDs)
+                             .flatMap(SenseService::disconnect)
+                             .subscribe(Functions.NO_OP,
+                                        Functions.LOG_ERROR);
         }
     }
 }
