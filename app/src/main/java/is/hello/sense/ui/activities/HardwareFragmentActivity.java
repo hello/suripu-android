@@ -27,7 +27,6 @@ public class HardwareFragmentActivity extends FragmentNavigationActivity {
         if (isFinishing()) {
             serviceConnection.senseService()
                              .filter(SenseService::isConnected)
-                             .flatMap(SenseService::fadeOutLEDs)
                              .flatMap(SenseService::disconnect)
                              .subscribe(Functions.NO_OP,
                                         Functions.LOG_ERROR);
