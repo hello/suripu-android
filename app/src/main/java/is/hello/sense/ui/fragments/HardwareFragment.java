@@ -14,7 +14,6 @@ import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -34,8 +33,6 @@ import rx.functions.Action1;
  * in-app and on Sense loading indicators.
  */
 public abstract class HardwareFragment extends InjectionFragment {
-    @Deprecated
-    public @Inject HardwarePresenter hardwarePresenter;
     public @Inject SensePresenter sensePresenter;
     public @Inject SenseServiceConnection serviceConnection;
 
