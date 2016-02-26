@@ -192,6 +192,12 @@ public class OnboardingActivity extends InjectionActivity
             } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
                 showGetStarted(false);
             }
+        } else if (fragment instanceof OnboardingBluetoothFragment) {
+            if (((OnboardingBluetoothFragment) fragment).isBeforeBirthday()) {
+                showBirthday(null, true);
+            } else {
+                showSetupSense();
+            }
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         }

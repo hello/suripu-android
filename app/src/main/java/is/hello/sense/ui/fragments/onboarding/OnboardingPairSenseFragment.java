@@ -15,18 +15,23 @@ import android.view.ViewGroup;
 
 import com.segment.analytics.Properties;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
-import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.permissions.Permissions;
 import is.hello.sense.ui.common.UserSupport;
@@ -52,6 +57,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private static final String OPERATION_LINK_ACCOUNT = "Linking account";
 
     @Inject ApiService apiService;
+    @Inject ApiSessionManager apiSessionManager;
+    @Inject BluetoothStack bluetoothStack;
 
     private int linkAccountFailures = 0;
     private boolean hasLinkedAccount = false;
@@ -92,7 +99,9 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                     showSupportOptions();
                     return true;
                 })
-                .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR));
+                .configure(b -> subscribe(bluetoothStack.enabled(),
+                                          b.primaryButton::setEnabled,
+                                          Functions.LOG_ERROR));
     }
 
     @Override
@@ -107,7 +116,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
-            hardwarePresenter.setWantsHighPowerPreScan(true);
+            sensePresenter.setWantsHighPowerPreScan(true);
             next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
             getOnboardingActivity().showSelectWifiNetwork();
@@ -128,16 +137,20 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private void checkConnectivityAndContinue() {
         showBlockingActivity(R.string.title_checking_connectivity);
         showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
-                if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    linkAccount();
-                } else {
+            serviceConnection.senseService().subscribe(service -> {
+                Analytics.setSenseId(service.getDeviceId());
+
+                bindAndSubscribe(service.currentWifiNetwork(), network -> {
+                    if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
+                        linkAccount(service);
+                    } else {
+                        continueToWifi();
+                    }
+                }, e -> {
+                    Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
                     continueToWifi();
-                }
-            }, e -> {
-                Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
-                continueToWifi();
-            });
+                });
+            }, e -> presentError(e, "Binding service"));
         }, e -> presentError(e, "Turning on LEDs"));
     }
 
@@ -146,16 +159,17 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                                   e -> presentError(e, "Turning off LEDs"));
     }
 
-    private void linkAccount() {
+    private void linkAccount(@NonNull SenseService service) {
         if (hasLinkedAccount) {
-            setDeviceTimeZone();
+            setDeviceTimeZone(service);
         } else {
             showBlockingActivity(R.string.title_linking_account);
 
-            bindAndSubscribe(hardwarePresenter.linkAccount(),
+            //noinspection ConstantConditions
+            bindAndSubscribe(service.linkAccount(apiSessionManager.getAccessToken()),
                              ignored -> {
                                  this.hasLinkedAccount = true;
-                                 setDeviceTimeZone();
+                                 setDeviceTimeZone(service);
                              },
                              error -> {
                                  Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
@@ -164,7 +178,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         }
     }
 
-    private void setDeviceTimeZone() {
+    private void setDeviceTimeZone(@NonNull SenseService service) {
         showBlockingActivity(R.string.title_setting_time_zone);
 
         SenseTimeZone timeZone = SenseTimeZone.fromDefault();
@@ -172,15 +186,15 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                          ignored -> {
                              Logger.info(ConnectToWiFiFragment.class.getSimpleName(), "Time zone updated.");
 
-                             pushDeviceData();
+                             pushDeviceData(service);
                          },
                          e -> presentError(e, "Updating time zone"));
     }
 
-    private void pushDeviceData() {
+    private void pushDeviceData(@NonNull SenseService service) {
         showBlockingActivity(R.string.title_pushing_data);
 
-        bindAndSubscribe(hardwarePresenter.pushData(),
+        bindAndSubscribe(service.pushData(),
                          ignored -> finishedLinking(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
@@ -221,43 +235,52 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
         showBlockingActivity(R.string.title_scanning_for_sense);
 
-        Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
-        bindAndSubscribe(device, this::tryToPairWith, e -> presentError(e, "Discovering Sense"));
+        bindAndSubscribe(sensePresenter.peripheral.take(1),
+                         this::tryToPairWith,
+                         e -> presentError(e, "Discovering Sense"));
+        sensePresenter.scanForClosestSense();
     }
 
-    public void tryToPairWith(@NonNull SensePeripheral device) {
+    public void tryToPairWith(@NonNull GattPeripheral peripheral) {
         if (BuildConfig.DEBUG) {
             SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
-            dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
-            dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
+            dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, peripheral.getName()));
+            dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair(peripheral));
             dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> LoadingDialogFragment.close(getFragmentManager()));
             dialog.setCancelable(false);
             dialog.show();
         } else {
-            completePeripheralPair();
+            completePeripheralPair(peripheral);
         }
     }
 
-    public void completePeripheralPair() {
-        Analytics.setSenseId(hardwarePresenter.getDeviceId());
-
-        if (hardwarePresenter.getBondStatus() == GattPeripheral.BOND_BONDED) {
+    public void completePeripheralPair(@NonNull GattPeripheral peripheral) {
+        if (peripheral.getBondStatus() == GattPeripheral.BOND_BONDED) {
             showBlockingActivity(R.string.title_clearing_bond);
-            bindAndSubscribe(hardwarePresenter.clearBond(),
-                    ignored -> {
-                        completePeripheralPair();
-                    },
-                    e -> presentError(e, "Clearing Bond"));
+            final OperationTimeout removeBondTimeout =
+                    peripheral.createOperationTimeout("Remove Bond", 30, TimeUnit.SECONDS);
+            bindAndSubscribe(peripheral.removeBond(removeBondTimeout),
+                             ignored -> {
+                                 completePeripheralPair(peripheral);
+                             },
+                             e -> presentError(e, "Clearing Bond"));
         } else {
             showBlockingActivity(R.string.title_connecting);
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == ConnectProgress.CONNECTED) {
-                    checkConnectivityAndContinue();
-                } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
-                }
-            }, e -> presentError(e, "Connecting to Sense"));
+            final Observable<ConnectProgress> connectToPeripheral =
+                    serviceConnection.senseService()
+                                     .flatMap(s -> s.connect(peripheral));
+            bindAndSubscribe(connectToPeripheral,
+                             status -> {
+                                 if (status == ConnectProgress.CONNECTED) {
+                                     checkConnectivityAndContinue();
+                                 } else {
+                                     showBlockingActivity(Styles.getConnectStatusMessage(status));
+                                 }
+                             },
+                             e -> {
+                                 presentError(e, "Connecting to Sense");
+                             });
         }
     }
 
@@ -282,9 +305,9 @@ public class OnboardingPairSenseFragment extends HardwareFragment
             }
 
             if (e instanceof SenseNotFoundError) {
-                hardwarePresenter.trackPeripheralNotFound();
+                sensePresenter.trackPeripheralNotFound();
 
-                if (hardwarePresenter.shouldPromptForHighPowerScan()) {
+                if (sensePresenter.shouldPromptForHighPowerScan()) {
                     PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
                     dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
                     dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
