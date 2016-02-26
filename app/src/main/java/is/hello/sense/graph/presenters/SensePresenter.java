@@ -15,6 +15,8 @@ import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.service.SenseService;
+import is.hello.commonsense.service.SenseServiceConnection;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
@@ -26,6 +28,7 @@ import rx.Subscription;
     public static final int FAILS_BEFORE_HIGH_POWER = 2;
 
     private final BluetoothStack bluetoothStack;
+    private final SenseServiceConnection serviceConnection;
 
     private int peripheralNotFoundCount = 0;
     private boolean wantsHighPowerPreScan = false;
@@ -34,8 +37,10 @@ import rx.Subscription;
     private WeakReference<Subscription> scanSubscription;
     public final PresenterSubject<GattPeripheral> peripheral = PresenterSubject.create();
 
-    @Inject public SensePresenter(@NonNull BluetoothStack bluetoothStack) {
+    @Inject public SensePresenter(@NonNull BluetoothStack bluetoothStack,
+                                  @NonNull SenseServiceConnection serviceConnection) {
         this.bluetoothStack = bluetoothStack;
+        this.serviceConnection = serviceConnection;
     }
 
     //region High Power Mode
@@ -91,6 +96,10 @@ import rx.Subscription;
         scan(SenseService.createSenseCriteria());
     }
 
+    public void scanForLastSense() {
+        scanForClosestSense();
+    }
+
     //endregion
 
 
@@ -98,6 +107,12 @@ import rx.Subscription;
 
     public boolean hasPeripheral() {
         return peripheral.hasValue();
+    }
+
+    public Observable<ConnectProgress> connectToPeripheral() {
+        return Observable.merge(Observable.combineLatest(serviceConnection.senseService(),
+                                                         peripheral.take(1),
+                                                         SenseService::connect));
     }
 
     //endregion
