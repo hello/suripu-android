@@ -15,8 +15,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.Collection;
+import org.joda.time.DateTimeZone;
 
+import java.util.Collection;
+import java.util.List;
+
+import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
@@ -27,6 +31,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import rx.Observable;
 
 public class SelectWiFiNetworkFragment extends HardwareFragment
         implements AdapterView.OnItemClickListener {
@@ -68,7 +73,6 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
         super.onCreate(savedInstanceState);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
-        addPresenter(hardwarePresenter);
 
         this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
@@ -208,27 +212,32 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
         rescanButton.setEnabled(false);
         networkAdapter.clear();
 
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+        if (!sensePresenter.hasPeripheral()) {
+            sensePresenter.scanForLastSense();
+            bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> rescan(sendCountryCode),
                              this::peripheralRediscoveryFailed);
             return;
         }
 
-        if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != ConnectProgress.CONNECTED) {
-                    return;
+        if (!serviceConnection.isConnectedToSense()) {
+            bindAndSubscribe(sensePresenter.connectToPeripheral(), status -> {
+                if (status == ConnectProgress.CONNECTED) {
+                    rescan(sendCountryCode);
                 }
-
-                rescan(sendCountryCode);
             }, this::peripheralRediscoveryFailed);
 
             return;
         }
 
         showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(sendCountryCode),
+            final SensePeripheral.CountryCode countryCode = sendCountryCode
+                    ? getCountryCode()
+                    : null;
+            final Observable<List<wifi_endpoint>> scanForNetworks =
+                    serviceConnection.senseService()
+                                     .flatMap(s -> s.scanForWifiNetworks(countryCode));
+            bindAndSubscribe(scanForNetworks,
                              this::bindScanResults,
                              this::scanResultsUnavailable);
         }, this::scanResultsUnavailable);
@@ -286,5 +295,17 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
 
         final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    private SensePeripheral.CountryCode getCountryCode() {
+        final DateTimeZone timeZone = DateTimeZone.getDefault();
+        final String timeZoneId = timeZone.getID();
+        if (timeZoneId.contains("America")) {
+            return SensePeripheral.CountryCode.US;
+        } else if (timeZoneId.contains("Japan")) {
+            return SensePeripheral.CountryCode.JP;
+        } else {
+            return SensePeripheral.CountryCode.EU;
+        }
     }
 }
