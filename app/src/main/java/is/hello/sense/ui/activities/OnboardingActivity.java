@@ -20,13 +20,16 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.util.Rx;
+import is.hello.commonsense.service.SenseService;
+import is.hello.commonsense.service.SenseServiceConnection;
+import is.hello.commonsense.util.Compatibility;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -78,14 +81,12 @@ public class OnboardingActivity extends InjectionActivity
     public @interface Flow {
     }
 
-    @Inject
-    ApiService apiService;
-    @Inject
-    HardwarePresenter hardwarePresenter;
-    @Inject
-    PreferencesPresenter preferences;
-    @Inject
-    BluetoothStack bluetoothStack;
+    @Inject ApiService apiService;
+    @Inject PreferencesPresenter preferences;
+
+    @Inject BluetoothStack bluetoothStack;
+    @Inject SensePresenter sensePresenter;
+    @Inject SenseServiceConnection serviceConnection;
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -295,7 +296,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showGetStarted(boolean overrideDeviceUnsupported) {
-        if (!overrideDeviceUnsupported && !hardwarePresenter.isDeviceSupported()) {
+        if (!overrideDeviceUnsupported && !Compatibility.generateReport(this).isSupported()) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
         } else {
             pushFragment(new HaveSenseReadyFragment(), null, true);
@@ -311,10 +312,7 @@ public class OnboardingActivity extends InjectionActivity
 
         if (bluetoothStack.isEnabled()) {
             Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
-            bindAndSubscribe(hardwarePresenter.closestPeripheral(),
-                             peripheral -> Logger.info(getClass().getSimpleName(),
-                                                       "Found and cached Sense " + peripheral),
-                             Functions.IGNORE_ERROR);
+            sensePresenter.scanForClosestSense();
 
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
@@ -474,7 +472,10 @@ public class OnboardingActivity extends InjectionActivity
                    .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
                    .apply();
 
-        hardwarePresenter.clearPeripheral();
+        serviceConnection.senseService()
+                         .filter(SenseService::isConnected)
+                         .flatMap(SenseService::disconnect)
+                         .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
         final Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
