@@ -31,6 +31,7 @@ import rx.Subscription;
 
     private final BluetoothStack bluetoothStack;
     private final SenseServiceConnection serviceConnection;
+    private final PreferencesPresenter preferences;
 
     private int peripheralNotFoundCount = 0;
     private boolean wantsHighPowerPreScan = false;
@@ -40,9 +41,11 @@ import rx.Subscription;
     public final PresenterSubject<GattPeripheral> peripheral = PresenterSubject.create();
 
     @Inject public SensePresenter(@NonNull BluetoothStack bluetoothStack,
-                                  @NonNull SenseServiceConnection serviceConnection) {
+                                  @NonNull SenseServiceConnection serviceConnection,
+                                  @NonNull PreferencesPresenter preferences) {
         this.bluetoothStack = bluetoothStack;
         this.serviceConnection = serviceConnection;
+        this.preferences = preferences;
     }
 
     //region High Power Mode
@@ -98,14 +101,32 @@ import rx.Subscription;
         scan(SenseService.createSenseCriteria());
     }
 
-    public void scanForLastSense() {
-        scanForClosestSense();
+    public void scanForLastConnectedSense() {
+        final String lastAddress = getLastAddress();
+        if (lastAddress != null) {
+            scan(SenseService.createSenseCriteria()
+                             .addPeripheralAddress(lastAddress)
+                             .setLimit(1));
+        } else {
+            scanForClosestSense();
+        }
     }
 
     //endregion
 
 
     //region Introspection
+
+    public void setLastAddress(@Nullable String address) {
+        preferences.edit()
+                   .putString(PreferencesPresenter.CONNECTED_SENSE_ADDRESS, address)
+                   .apply();
+    }
+
+    @Nullable
+    public String getLastAddress() {
+        return preferences.getString(PreferencesPresenter.CONNECTED_SENSE_ADDRESS, null);
+    }
 
     public boolean hasPeripheral() {
         return peripheral.hasValue();
@@ -120,7 +141,10 @@ import rx.Subscription;
     public Observable<ConnectProgress> connectToPeripheral() {
         return Observable.merge(Observable.combineLatest(serviceConnection.senseService(),
                                                          peripheral.take(1),
-                                                         SenseService::connect));
+                                                         (service, peripheral) -> {
+                                                             setLastAddress(peripheral.getAddress());
+                                                             return service.connect(peripheral);
+                                                         }));
     }
 
     //endregion

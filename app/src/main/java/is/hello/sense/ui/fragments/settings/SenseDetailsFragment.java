@@ -390,6 +390,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                 bindAndSubscribe(service.connect(peripheral),
                                  status -> {
                                      if (status == ConnectProgress.CONNECTED) {
+                                         sensePresenter.setLastAddress(peripheral.getAddress());
                                          checkConnectivityState(service, false);
                                      }
                                  },
