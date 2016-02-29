@@ -28,7 +28,6 @@ import com.segment.analytics.Properties;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -95,8 +94,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String address = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
-            if (blockConnection || !Objects.equals(address, sensePresenter.getAddress())) {
+            if (blockConnection || !sensePresenter.isDisconnectIntentForSense(intent)) {
                 return;
             }
 
