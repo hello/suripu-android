@@ -301,20 +301,18 @@ public class PiruPeaActivity extends InjectionActivity
 
     @Override
     public void onItemClicked(int position, GattPeripheral peripheral) {
-        if (this.selectedSense == null) {
-            this.selectedSense = peripheral;
+        this.selectedSense = peripheral;
 
-            showLoadingIndicator();
-            bindAndSubscribe(serviceConnection.perform(s -> s.connect(peripheral)),
-                             status -> {
-                                 if (status == ConnectProgress.CONNECTED) {
-                                     hideLoadingIndicator();
-                                     sensePresenter.setLastAddress(peripheral.getAddress());
-                                     recyclerView.swapAdapter(peripheralActions, true);
-                                 }
-                             },
-                             this::presentError);
-        }
+        showLoadingIndicator();
+        bindAndSubscribe(serviceConnection.perform(s -> s.connect(peripheral)),
+                         status -> {
+                             if (status == ConnectProgress.CONNECTED) {
+                                 hideLoadingIndicator();
+                                 sensePresenter.setLastAddress(peripheral.getAddress());
+                                 recyclerView.swapAdapter(peripheralActions, true);
+                             }
+                         },
+                         this::presentError);
     }
 
 
