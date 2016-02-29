@@ -28,6 +28,7 @@ import com.segment.analytics.Properties;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -46,7 +47,6 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.permissions.Permissions;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -92,10 +92,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
     private @Nullable SenseNetworkStatus currentWifiNetwork;
 
-    private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
+    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (blockConnection) {
+            final String address = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+            if (blockConnection || !Objects.equals(address, sensePresenter.getAddress())) {
                 return;
             }
 
@@ -146,9 +147,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
-        final IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        final IntentFilter disconnectedIntent = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
         LocalBroadcastManager.getInstance(getActivity())
-                             .registerReceiver(PERIPHERAL_CLEARED, fatalErrors);
+                             .registerReceiver(peripheralDisconnected, disconnectedIntent);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         bindAndSubscribe(bluetoothStack.enabled(),
@@ -178,7 +179,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         this.pairingMode = null;
         this.changeWiFi = null;
 
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(PERIPHERAL_CLEARED);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(peripheralDisconnected);
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -498,7 +499,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             serviceConnection.senseService()
                              .flatMap(SenseService::busyLEDs)
                              .subscribe(service -> {
-                                 bindAndSubscribe(service.putIntoPairingMode(),
+                                 bindAndSubscribe(service.enablePairingMode(),
                                                   ignored -> {
                                                       LoadingDialogFragment.close(getFragmentManager());
                                                       getFragmentManager().popBackStackImmediate();
@@ -565,7 +566,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
                             .setTitle(R.string.action_factory_reset)
-                            .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
                             .setDescription(R.string.description_factory_reset)
                             .setIcon(R.drawable.settings_factory_reset)
                        );

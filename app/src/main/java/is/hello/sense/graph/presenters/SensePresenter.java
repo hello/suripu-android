@@ -109,6 +109,15 @@ import rx.Subscription;
         return peripheral.hasValue();
     }
 
+    @Nullable
+    public String getAddress() {
+        if (peripheral.hasValue()) {
+            return peripheral.getValue().getAddress();
+        } else {
+            return null;
+        }
+    }
+
     public Observable<ConnectProgress> connectToPeripheral() {
         return Observable.merge(Observable.combineLatest(serviceConnection.senseService(),
                                                          peripheral.take(1),
