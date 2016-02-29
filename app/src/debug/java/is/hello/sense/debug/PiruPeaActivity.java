@@ -36,6 +36,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -53,6 +54,7 @@ public class PiruPeaActivity extends InjectionActivity
         implements ArrayRecyclerAdapter.OnItemClickedListener<GattPeripheral> {
     @Inject BluetoothStack stack;
     @Inject SenseServiceConnection serviceConnection;
+    @Inject SensePresenter sensePresenter;
     @Inject ApiSessionManager apiSessionManager;
 
     @Nullable
@@ -307,6 +309,7 @@ public class PiruPeaActivity extends InjectionActivity
                              status -> {
                                  if (status == ConnectProgress.CONNECTED) {
                                      hideLoadingIndicator();
+                                     sensePresenter.setLastAddress(peripheral.getAddress());
                                      recyclerView.swapAdapter(peripheralActions, true);
                                  }
                              },

@@ -186,7 +186,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> pairPill(),
                              this::presentError);
-            sensePresenter.scanForLastSense();
+            sensePresenter.scanForLastConnectedSense();
 
             return;
         }

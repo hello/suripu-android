@@ -50,9 +50,9 @@ import rx.subscriptions.Subscriptions;
 
     public static final String ENHANCED_AUDIO_ENABLED = "enhanced_audio_enabled";
 
-    public static final String PAIRED_DEVICE_ADDRESS = "paired_device_address";
+    // Cannot change literal value of this constant for backwards compatibility reasons.
+    public static final String CONNECTED_SENSE_ADDRESS = "paired_device_address";
     public static final String PAIRED_SENSE_ID = "paired_sense_id";
-    public static final String PAIRED_PILL_ID = "paired_pill_id";
 
     public static final String ACCOUNT_CREATION_DATE = "account_creation_date";
 

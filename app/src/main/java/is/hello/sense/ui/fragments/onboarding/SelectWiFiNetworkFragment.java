@@ -213,7 +213,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
         networkAdapter.clear();
 
         if (!sensePresenter.hasPeripheral()) {
-            sensePresenter.scanForLastSense();
+            sensePresenter.scanForLastConnectedSense();
             bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> rescan(sendCountryCode),
                              this::peripheralRediscoveryFailed);

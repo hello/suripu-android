@@ -274,6 +274,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
             bindAndSubscribe(connectToPeripheral,
                              status -> {
                                  if (status == ConnectProgress.CONNECTED) {
+                                     sensePresenter.setLastAddress(peripheral.getAddress());
                                      checkConnectivityAndContinue();
                                  } else {
                                      showBlockingActivity(Styles.getConnectStatusMessage(status));
