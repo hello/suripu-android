@@ -1,11 +1,13 @@
 package is.hello.sense.graph.presenters;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -109,13 +111,10 @@ import rx.Subscription;
         return peripheral.hasValue();
     }
 
-    @Nullable
-    public String getAddress() {
-        if (peripheral.hasValue()) {
-            return peripheral.getValue().getAddress();
-        } else {
-            return null;
-        }
+    public boolean isDisconnectIntentForSense(@NonNull Intent intent) {
+        return (peripheral.hasValue() &&
+                Objects.equals(intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS),
+                               peripheral.getValue().getAddress()));
     }
 
     public Observable<ConnectProgress> connectToPeripheral() {
