@@ -203,7 +203,7 @@ public abstract class HardwareFragment extends InjectionFragment {
             bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> performRecoveryFactoryReset(),
                              this::presentFactoryResetError);
-            sensePresenter.scanForLastSense();
+            sensePresenter.scanForLastConnectedSense();
         } else if (!serviceConnection.isConnectedToSense()) {
             bindAndSubscribe(sensePresenter.connectToPeripheral(),
                              state -> {

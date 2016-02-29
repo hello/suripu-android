@@ -303,7 +303,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> sendWifiCredentials(),
                              e -> presentError(e, "Discovery"));
-            sensePresenter.scanForLastSense();
+            sensePresenter.scanForLastConnectedSense();
             return;
         }
 
