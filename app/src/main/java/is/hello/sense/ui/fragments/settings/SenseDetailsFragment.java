@@ -28,6 +28,7 @@ import com.segment.analytics.Properties;
 import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -91,10 +92,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private @Nullable SenseNetworkStatus currentWifiNetwork;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
-    private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
+    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (blockConnection) {
+            final String address = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+            if (blockConnection || !Objects.equals(address, sensePresenter.getAddress())) {
                 return;
             }
 
@@ -146,9 +148,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
-        final IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        final IntentFilter disconnectedIntent = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
         LocalBroadcastManager.getInstance(getActivity())
-                             .registerReceiver(PERIPHERAL_CLEARED, fatalErrors);
+                             .registerReceiver(peripheralDisconnected, disconnectedIntent);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         bindAndSubscribe(bluetoothStack.enabled(),
@@ -178,7 +180,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         this.pairingMode = null;
         this.changeWiFi = null;
 
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(PERIPHERAL_CLEARED);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(peripheralDisconnected);
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -497,7 +499,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             serviceConnection.senseService()
                              .flatMap(SenseService::busyLEDs)
                              .subscribe(service -> {
-                                 bindAndSubscribe(service.putIntoPairingMode(),
+                                 bindAndSubscribe(service.enablePairingMode(),
                                                   ignored -> {
                                                       LoadingDialogFragment.close(getFragmentManager());
                                                       getFragmentManager().popBackStackImmediate();

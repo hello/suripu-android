@@ -1,5 +1,6 @@
 package is.hello.sense.debug;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,19 +22,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
+import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
-import is.hello.commonsense.bluetooth.SensePeripheral;
-import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.commonsense.service.SenseService;
+import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -44,12 +48,15 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
+@SuppressLint("SetTextI18n")
+public class PiruPeaActivity extends InjectionActivity
+        implements ArrayRecyclerAdapter.OnItemClickedListener<GattPeripheral> {
     @Inject BluetoothStack stack;
+    @Inject SenseServiceConnection serviceConnection;
     @Inject ApiSessionManager apiSessionManager;
-    @Inject HardwarePresenter hardwarePresenter;
 
-    private SensePeripheral selectedPeripheral;
+    @Nullable
+    private GattPeripheral selectedSense;
 
     private PeripheralAdapter scannedPeripheralsAdapter;
     private SettingsRecyclerAdapter peripheralActions;
@@ -92,10 +99,16 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Fade Out LEDs", this::stopAnimationWithFade));
         peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Turn Off LEDs", this::stopAnimationWithoutFade));
 
-        IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
-        Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);
-        bindAndSubscribe(onConnectionLost,
-                         intent -> disconnect(),
+        final IntentFilter disconnectedIntent = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
+        final Observable<Intent> onDisconnect =
+                Rx.fromLocalBroadcast(this, disconnectedIntent)
+                  .filter(intent -> {
+                      final String selectedAddress = selectedSense != null ? selectedSense.getAddress() : null;
+                      final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+                      return Objects.equals(intentAddress, selectedAddress);
+                  });
+        bindAndSubscribe(onDisconnect,
+                         ignored -> disconnect(),
                          Functions.LOG_ERROR);
     }
 
@@ -103,9 +116,9 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
     protected void onDestroy() {
         super.onDestroy();
 
-        if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
-            hardwarePresenter.setPeripheral(null);
+        if (serviceConnection.isConnectedToSense()) {
+            serviceConnection.perform(SenseService::disconnect)
+                             .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
         }
     }
 
@@ -156,22 +169,21 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         disconnect();
         scannedPeripheralsAdapter.clear();
 
-        SenseAlertDialog includeHighPower = new SenseAlertDialog(this);
+        final SenseAlertDialog includeHighPower = new SenseAlertDialog(this);
         includeHighPower.setTitle("High Power Pre-scan");
-        includeHighPower.setMessage("Do you want to include a high power pre-scan? This will add 12 seconds scan time, and disrupt all other Bluetooth services on your phone.");
+        includeHighPower.setMessage("Do you want to include a high power pre-scan? This will add 12 seconds scan time, " +
+                                            "and disrupt all other Bluetooth services on your phone.");
         includeHighPower.setPositiveButton("No", (dialog, which) -> startScan(false));
         includeHighPower.setNegativeButton("Include", (dialog, which) -> startScan(true));
         includeHighPower.show();
     }
 
     public void startScan(boolean includeHighPowerPreScan) {
-        hardwarePresenter.setWantsHighPowerPreScan(includeHighPowerPreScan);
-
-        PeripheralCriteria criteria = new PeripheralCriteria();
+        final PeripheralCriteria criteria = SenseService.createSenseCriteria();
         criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
 
         showLoadingIndicator();
-        bindAndSubscribe(SensePeripheral.discover(stack, criteria),
+        bindAndSubscribe(stack.discoverPeripherals(criteria),
                          peripherals -> {
                              scannedPeripheralsAdapter.addAll(peripherals);
                              hideLoadingIndicator();
@@ -181,9 +193,10 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
 
     public void presentError(Throwable e) {
         hideLoadingIndicator();
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources())
-                .withSupportLink()
-                .build();
+        final ErrorDialogFragment errorDialogFragment =
+                new ErrorDialogFragment.Builder(e, getResources())
+                        .withSupportLink()
+                        .build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
@@ -200,28 +213,30 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
     }
 
     public void disconnect() {
-        if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
-            hardwarePresenter.setPeripheral(null);
-            this.selectedPeripheral = null;
+        if (serviceConnection.isConnectedToSense()) {
+            serviceConnection.perform(SenseService::disconnect)
+                             .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
         }
 
         recyclerView.swapAdapter(scannedPeripheralsAdapter, true);
     }
 
     public void putIntoPairingMode() {
-        runSimpleCommand(selectedPeripheral.putIntoPairingMode());
+        runSimpleCommand(serviceConnection.perform(SenseService::enablePairingMode));
     }
 
     public void putIntoNormalMode() {
-        runSimpleCommand(selectedPeripheral.putIntoNormalMode());
+        runSimpleCommand(serviceConnection.perform(SenseService::disablePairingMode));
     }
 
     public void factoryReset() {
-        SenseAlertDialog alertDialog = new SenseAlertDialog(this);
+        final SenseAlertDialog alertDialog = new SenseAlertDialog(this);
         alertDialog.setTitle(R.string.dialog_title_factory_reset);
-        alertDialog.setMessage("This is a device only factory reset, all paired accounts in API will persist. Use the ‘Devices’ screen to perform a full factory reset.");
-        alertDialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> runSimpleCommand(selectedPeripheral.factoryReset()));
+        alertDialog.setMessage("This is a device only factory reset, all paired accounts in API will persist. " +
+                                       "Use the ‘Devices’ screen to perform a full factory reset.");
+        alertDialog.setPositiveButton(R.string.action_factory_reset, (d, which) -> {
+            runSimpleCommand(serviceConnection.perform(SenseService::factoryReset));
+        });
         alertDialog.setNegativeButton(android.R.string.cancel, null);
         alertDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         alertDialog.show();
@@ -229,10 +244,12 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
 
     public void getWifiNetwork() {
         showLoadingIndicator();
-        bindAndSubscribe(selectedPeripheral.getWifiNetwork(),
+        bindAndSubscribe(serviceConnection.perform(SenseService::currentWifiNetwork),
                          network -> {
                              hideLoadingIndicator();
-                             MessageDialogFragment dialogFragment = MessageDialogFragment.newInstance("Wifi Network", network.ssid + "\n" + network.connectionState);
+                             final MessageDialogFragment dialogFragment =
+                                     MessageDialogFragment.newInstance("Wifi Network",
+                                                                       network.ssid + "\n" + network.connectionState);
                              dialogFragment.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
                          },
                          this::presentError);
@@ -244,50 +261,49 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWiFiNetworkFragment.class);
         builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
-        builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());
     }
 
     public void pairPillMode() {
-        runSimpleCommand(selectedPeripheral.pairPill(apiSessionManager.getAccessToken()));
+        runSimpleCommand(serviceConnection.perform(s -> s.linkPill(apiSessionManager.getAccessToken())));
     }
 
     public void linkAccount() {
-        runSimpleCommand(selectedPeripheral.linkAccount(apiSessionManager.getAccessToken()));
+        runSimpleCommand(serviceConnection.perform(s -> s.linkAccount(apiSessionManager.getAccessToken())));
     }
 
     public void pushData() {
-        runSimpleCommand(selectedPeripheral.pushData());
+        runSimpleCommand(serviceConnection.perform(SenseService::pushData));
     }
 
     public void busyLedAnimation() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.BUSY));
+        runSimpleCommand(serviceConnection.perform(SenseService::busyLEDs));
     }
 
     public void trippyLedAnimation() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.TRIPPY));
+        runSimpleCommand(serviceConnection.perform(SenseService::trippyLEDs));
     }
 
     public void stopAnimationWithFade() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.FADE_OUT));
+        runSimpleCommand(serviceConnection.perform(SenseService::fadeOutLEDs));
     }
 
     public void stopAnimationWithoutFade() {
-        runSimpleCommand(selectedPeripheral.runLedAnimation(SenseLedAnimation.STOP));
+        runSimpleCommand(serviceConnection.perform(SenseService::stopLEDs));
     }
 
     //endregion
 
 
     @Override
-    public void onItemClicked(int position, SensePeripheral item) {
-        if (selectedPeripheral == null) {
-            this.selectedPeripheral = item;
+    public void onItemClicked(int position, GattPeripheral peripheral) {
+        if (this.selectedSense == null) {
+            this.selectedSense = peripheral;
 
             showLoadingIndicator();
-            hardwarePresenter.setPeripheral(selectedPeripheral);
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
+            bindAndSubscribe(serviceConnection.perform(s -> s.connect(peripheral)),
                              status -> {
                                  if (status == ConnectProgress.CONNECTED) {
                                      hideLoadingIndicator();
@@ -299,7 +315,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
     }
 
 
-    static class PeripheralAdapter extends ArrayRecyclerAdapter<SensePeripheral,
+    static class PeripheralAdapter extends ArrayRecyclerAdapter<GattPeripheral,
             PeripheralAdapter.ViewHolder> {
         private final LayoutInflater inflater;
 
@@ -318,7 +334,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final SensePeripheral peripheral = getItem(position);
+            final GattPeripheral peripheral = getItem(position);
             holder.text.setText(peripheral.getName() + " - " + peripheral.getAddress());
         }
 
