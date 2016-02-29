@@ -22,8 +22,6 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenterTests;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenterTests;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -63,9 +61,6 @@ import static org.mockito.Mockito.mock;
 
         RoomConditionsPresenterTests.class,
         RoomConditionsPresenter.class,
-
-        HardwarePresenter.class,
-        HardwarePresenterTests.class,
 
         InsightsPresenter.class,
         InsightsPresenterTests.class,
