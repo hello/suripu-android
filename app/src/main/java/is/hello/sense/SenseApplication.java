@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import dagger.ObjectGraph;
 import is.hello.buruberi.util.Rx;
+import is.hello.commonsense.bluetooth.errors.BuruberiReportingProvider;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
@@ -68,6 +69,8 @@ public class SenseApplication extends Application {
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             SessionLogger.init(this);
         }
+
+        BuruberiReportingProvider.register();
 
         buildGraph();
 

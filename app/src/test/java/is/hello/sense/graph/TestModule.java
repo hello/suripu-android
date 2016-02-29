@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
+import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.sense.api.ApiAppContext;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
@@ -30,6 +31,8 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
+import is.hello.sense.graph.presenters.SensePresenter;
+import is.hello.sense.graph.presenters.SensePresenterTests;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
@@ -49,47 +52,47 @@ import rx.Observable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-@Module(
-    library = true,
-    injects = {
-        TimelinePresenterTests.class,
-        TimelinePresenter.class,
+@Module(library = true,
+        injects = {
+                TimelinePresenterTests.class,
+                TimelinePresenter.class,
 
-        QuestionsPresenterTests.class,
-        QuestionsPresenter.class,
-        ApiQuestionProviderTests.class,
+                QuestionsPresenterTests.class,
+                QuestionsPresenter.class,
+                ApiQuestionProviderTests.class,
 
-        RoomConditionsPresenterTests.class,
-        RoomConditionsPresenter.class,
+                RoomConditionsPresenterTests.class,
+                RoomConditionsPresenter.class,
 
-        InsightsPresenter.class,
-        InsightsPresenterTests.class,
+                InsightsPresenter.class,
+                InsightsPresenterTests.class,
 
-        PreferencesPresenter.class,
-        PreferencesPresenterTests.class,
+                PreferencesPresenter.class,
+                PreferencesPresenterTests.class,
 
-        AccountPresenter.class,
-        AccountPresenterTests.class,
+                AccountPresenter.class,
+                AccountPresenterTests.class,
 
-        SmartAlarmPresenter.class,
-        SmartAlarmPresenterTests.class,
-        SmartAlarmAdapterTests.class,
+                SmartAlarmPresenter.class,
+                SmartAlarmPresenterTests.class,
+                SmartAlarmAdapterTests.class,
 
-        DateFormatterTests.class,
-        UnitFormatterTests.class,
+                SensePresenter.class,
+                SensePresenterTests.class,
 
-        ZoomedOutTimelinePresenterTests.class,
-        ZoomedOutTimelinePresenter.class,
+                DateFormatterTests.class,
+                UnitFormatterTests.class,
 
-        DeviceIssuesPresenter.class,
-        DeviceIssuesPresenterTests.class,
+                ZoomedOutTimelinePresenterTests.class,
+                ZoomedOutTimelinePresenter.class,
 
-        LocalUsageTrackerTests.class,
-        ReviewQuestionProviderTests.class,
-        UnreadStatePresenterTests.class,
-    }
-)
-@SuppressWarnings("UnusedDeclaration")
+                DeviceIssuesPresenter.class,
+                DeviceIssuesPresenterTests.class,
+
+                LocalUsageTrackerTests.class,
+                ReviewQuestionProviderTests.class,
+                UnreadStatePresenterTests.class,
+        })
 public final class TestModule {
     private final Context applicationContext;
 
@@ -134,5 +137,9 @@ public final class TestModule {
                 .when(bluetoothStack)
                 .enabled();
         return bluetoothStack;
+    }
+
+    @Provides SenseServiceConnection provideSenseServiceConnection() {
+        return mock(SenseServiceConnection.class);
     }
 }
