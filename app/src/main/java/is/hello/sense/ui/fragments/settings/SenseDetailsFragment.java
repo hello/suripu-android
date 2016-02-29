@@ -188,11 +188,14 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         super.onDestroy();
 
 
-        serviceConnection.senseService()
-                         .filter(SenseService::isConnected)
-                         .flatMap(SenseService::fadeOutLEDs)
-                         .subscribe(Functions.NO_OP,
-                                    Functions.LOG_ERROR);
+        final Observable<SenseService> fadeOutLEDs = serviceConnection.perform(service -> {
+            if (service.isConnected()) {
+                return service.fadeOutLEDs();
+            } else {
+                return Observable.just(service);
+            }
+        });
+        fadeOutLEDs.subscribe(Functions.NO_OP, Functions.LOG_ERROR);
     }
 
     @Override
@@ -400,9 +403,13 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void presentError(@NonNull Throwable e) {
         hideAlert();
         LoadingDialogFragment.close(getFragmentManager());
-        final Observable<SenseService> stopSenseLEDs = serviceConnection.senseService()
-                                                                        .filter(SenseService::isConnected)
-                                                                        .flatMap(SenseService::stopLEDs);
+        final Observable<SenseService> stopSenseLEDs = serviceConnection.perform(service -> {
+            if (service.isConnected()) {
+                return service.stopLEDs();
+            } else {
+                return Observable.just(service);
+            }
+        });
         stopSenseLEDs.subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
         if (e instanceof SenseNotFoundError) {
@@ -496,8 +503,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             LoadingDialogFragment.show(getFragmentManager(),
                                        getString(R.string.dialog_loading_message),
                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
-            serviceConnection.senseService()
-                             .flatMap(SenseService::busyLEDs)
+            serviceConnection.perform(SenseService::busyLEDs)
                              .subscribe(service -> {
                                  bindAndSubscribe(service.enablePairingMode(),
                                                   ignored -> {
@@ -606,8 +612,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         // the loading view state. Relevant issue [#97240482].
         loadingDialogFragment.setLockOrientation();
         loadingDialogFragment.showAllowingStateLoss(getFragmentManager(), LoadingDialogFragment.TAG);
-        serviceConnection.senseService()
-                         .flatMap(SenseService::busyLEDs)
+        serviceConnection.perform(SenseService::busyLEDs)
                          .subscribe(service -> {
                                         this.blockConnection = true;
 

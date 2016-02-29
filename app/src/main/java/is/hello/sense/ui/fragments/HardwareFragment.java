@@ -82,7 +82,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showHardwareActivity(@NonNull Runnable onCompletion,
                                         @NonNull Action1<Throwable> onError) {
-        bindAndSubscribe(serviceConnection.senseService().flatMap(SenseService::busyLEDs),
+        bindAndSubscribe(serviceConnection.perform(SenseService::busyLEDs),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
@@ -93,7 +93,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected void hideHardwareActivity(@NonNull Runnable onCompletion,
                                         @Nullable Action1<Throwable> onError) {
         if (serviceConnection.isConnectedToSense()) {
-            bindAndSubscribe(serviceConnection.senseService().flatMap(SenseService::trippyLEDs),
+            bindAndSubscribe(serviceConnection.perform(SenseService::trippyLEDs),
                              ignored -> onCompletion.run(),
                              e -> {
                                  Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity.", e);
@@ -109,7 +109,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(serviceConnection.senseService().flatMap(SenseService::stopLEDs),
+        bindAndSubscribe(serviceConnection.perform(SenseService::stopLEDs),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);
@@ -215,8 +215,7 @@ public abstract class HardwareFragment extends InjectionFragment {
         } else {
             showHardwareActivity(() -> {
                 final Observable<SenseService> factoryReset =
-                        serviceConnection.senseService()
-                                         .flatMap(SenseService::factoryReset);
+                        serviceConnection.perform(SenseService::factoryReset);
                 bindAndSubscribe(factoryReset,
                                  ignored -> {
                                      hideBlockingActivity(true, () -> {

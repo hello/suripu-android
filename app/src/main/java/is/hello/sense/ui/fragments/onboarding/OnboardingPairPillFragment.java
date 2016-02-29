@@ -138,9 +138,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                     Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED_IN_APP, null);
                     getOnboardingActivity().finish();
                 } else {
-                    serviceConnection.senseService()
-                                     .filter(SenseService::isConnected)
-                                     .flatMap(SenseService::disconnect)
+                    serviceConnection.perform(SenseService::disconnect)
                                      .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
                     if (success) {
@@ -209,9 +207,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
             diagram.startPlayback();
             hideBlockingActivity(false, () -> {
                 final String accessToken = apiSessionManager.getAccessToken();
-                //noinspection ConstantConditions
-                final Observable<SenseService> linkPill = serviceConnection.senseService()
-                                                                           .flatMap(s -> s.linkPill(accessToken));
+                final Observable<SenseService> linkPill = serviceConnection.perform(s -> s.linkPill(accessToken));
                 bindAndSubscribe(linkPill,
                                  ignored -> completeHardwareActivity(() -> finishedPairing(true)),
                                  this::presentError);

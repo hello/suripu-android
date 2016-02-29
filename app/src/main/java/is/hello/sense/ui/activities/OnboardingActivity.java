@@ -447,9 +447,7 @@ public class OnboardingActivity extends InjectionActivity
                    .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
                    .apply();
 
-        serviceConnection.senseService()
-                         .filter(SenseService::isConnected)
-                         .flatMap(SenseService::disconnect)
+        serviceConnection.perform(SenseService::disconnect)
                          .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
         final Intent intent = new Intent(this, HomeActivity.class);
