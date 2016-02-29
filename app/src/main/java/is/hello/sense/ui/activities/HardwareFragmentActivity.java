@@ -25,9 +25,7 @@ public class HardwareFragmentActivity extends FragmentNavigationActivity {
         super.onDestroy();
 
         if (isFinishing()) {
-            serviceConnection.senseService()
-                             .filter(SenseService::isConnected)
-                             .flatMap(SenseService::disconnect)
+            serviceConnection.perform(SenseService::disconnect)
                              .subscribe(Functions.NO_OP,
                                         Functions.LOG_ERROR);
         }

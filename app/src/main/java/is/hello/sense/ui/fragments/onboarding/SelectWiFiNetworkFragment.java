@@ -235,8 +235,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
                     ? getCountryCode()
                     : null;
             final Observable<List<wifi_endpoint>> scanForNetworks =
-                    serviceConnection.senseService()
-                                     .flatMap(s -> s.scanForWifiNetworks(countryCode));
+                    serviceConnection.perform(s -> s.scanForWifiNetworks(countryCode));
             bindAndSubscribe(scanForNetworks,
                              this::bindScanResults,
                              this::scanResultsUnavailable);

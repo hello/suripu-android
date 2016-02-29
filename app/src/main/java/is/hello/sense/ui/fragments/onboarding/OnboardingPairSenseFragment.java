@@ -168,7 +168,6 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         } else {
             showBlockingActivity(R.string.title_linking_account);
 
-            //noinspection ConstantConditions
             bindAndSubscribe(service.linkAccount(apiSessionManager.getAccessToken()),
                              ignored -> {
                                  this.hasLinkedAccount = true;
@@ -271,8 +270,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         } else {
             showBlockingActivity(R.string.title_connecting);
             final Observable<ConnectProgress> connectToPeripheral =
-                    serviceConnection.senseService()
-                                     .flatMap(s -> s.connect(peripheral));
+                    serviceConnection.perform(s -> s.connect(peripheral));
             bindAndSubscribe(connectToPeripheral,
                              status -> {
                                  if (status == ConnectProgress.CONNECTED) {

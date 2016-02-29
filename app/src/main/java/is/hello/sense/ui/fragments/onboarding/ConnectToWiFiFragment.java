@@ -338,8 +338,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
             final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
             final Observable<SenseConnectToWiFiUpdate> connectToWiFi =
-                    serviceConnection.senseService()
-                                     .flatMap(s -> s.sendWifiCredentials(networkName,
+                    serviceConnection.perform(s -> s.sendWifiCredentials(networkName,
                                                                          securityType,
                                                                          password));
             bindAndSubscribe(connectToWiFi, status -> {
@@ -378,10 +377,8 @@ public class ConnectToWiFiFragment extends HardwareFragment
                 Logger.error(getClass().getSimpleName(), "Access token should not be null");
             }
 
-            @SuppressWarnings("ConstantConditions")
             final Observable<SenseService> linkAccount =
-                    serviceConnection.senseService()
-                                     .flatMap(s -> s.linkAccount(accessToken));
+                    serviceConnection.perform(s -> s.linkAccount(accessToken));
             bindAndSubscribe(linkAccount,
                              ignored -> {
                                  this.hasSentAccessToken = true;
@@ -407,8 +404,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
 
-        final Observable<SenseService> pushData = serviceConnection.senseService()
-                                                                   .flatMap(SenseService::pushData);
+        final Observable<SenseService> pushData = serviceConnection.perform(SenseService::pushData);
         bindAndSubscribe(pushData,
                          ignored -> finished(),
                          error -> {
