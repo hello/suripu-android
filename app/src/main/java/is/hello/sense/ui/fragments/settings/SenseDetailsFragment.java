@@ -1,8 +1,6 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -33,6 +30,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.service.SenseService;
@@ -90,25 +88,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
     private @Nullable SenseNetworkStatus currentWifiNetwork;
 
-    private final LocationPermission locationPermission = new LocationPermission(this);
-    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (blockConnection || !sensePresenter.isDisconnectIntentForSense(intent)) {
-                return;
-            }
-
-            stateSafeExecutor.execute(() -> LoadingDialogFragment.close(getFragmentManager()));
-            final TroubleshootingAlert alert = new TroubleshootingAlert()
-                    .setTitle(StringRef.from(R.string.error_peripheral_connection_lost_title))
-                    .setMessage(StringRef.from(R.string.error_peripheral_connection_lost))
-                    .setPrimaryButtonTitle(R.string.action_reconnect)
-                    .setPrimaryButtonOnClick(SenseDetailsFragment.this::discoverPeripheralIfNeeded);
-            showTroubleshootingAlert(alert);
-            showRestrictedSenseActions();
-        }
-    };
-
 
     //region Lifecycle
 
@@ -146,10 +125,15 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
-        final IntentFilter disconnectedIntent = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
-        LocalBroadcastManager.getInstance(getActivity())
-                             .registerReceiver(peripheralDisconnected, disconnectedIntent);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        final IntentFilter disconnectedIntent = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
+        final Observable<Intent> onDisconnect =
+                Rx.fromLocalBroadcast(getActivity(), disconnectedIntent)
+                  .filter(i -> !blockConnection && sensePresenter.isDisconnectIntentForSense(i));
+        bindAndSubscribe(onDisconnect,
+                         ignored -> onPeripheralDisconnected(),
+                         Functions.LOG_ERROR);
 
         bindAndSubscribe(bluetoothStack.enabled(),
                          this::onBluetoothStateChanged,
@@ -178,7 +162,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         this.pairingMode = null;
         this.changeWiFi = null;
 
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(peripheralDisconnected);
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -344,6 +327,17 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
 
     //region Connectivity
+
+    public void onPeripheralDisconnected() {
+        LoadingDialogFragment.close(getFragmentManager());
+
+        final TroubleshootingAlert alert = new TroubleshootingAlert()
+                .setMessage(StringRef.from(R.string.error_peripheral_connection_lost))
+                .setPrimaryButtonTitle(R.string.action_reconnect)
+                .setPrimaryButtonOnClick(SenseDetailsFragment.this::discoverPeripheralIfNeeded);
+        showTroubleshootingAlert(alert);
+        showRestrictedSenseActions();
+    }
 
     public void onBluetoothStateChanged(boolean isEnabled) {
         if (!isEnabled) {

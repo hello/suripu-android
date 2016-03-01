@@ -44,7 +44,9 @@ import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -78,7 +80,7 @@ public class PiruPeaActivity extends InjectionActivity
         this.recyclerView = (RecyclerView) findViewById(R.id.static_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
 
         this.scannedPeripheralsAdapter = new PeripheralAdapter(this);
         scannedPeripheralsAdapter.setOnItemClickedListener(this);
@@ -112,6 +114,18 @@ public class PiruPeaActivity extends InjectionActivity
         bindAndSubscribe(onDisconnect,
                          ignored -> disconnect(),
                          Functions.LOG_ERROR);
+
+        final IntentFilter pairingRequestIntent = new IntentFilter(BluetoothStack.ACTION_PAIRING_REQUEST);
+        final Observable<Intent> onPairingRequest =
+                Rx.fromLocalBroadcast(this, pairingRequestIntent)
+                  .filter(intent -> {
+                      final String selectedAddress = selectedSense != null ? selectedSense.getAddress() : null;
+                      final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+                      return Objects.equals(intentAddress, selectedAddress);
+                  });
+        bindAndSubscribe(onPairingRequest,
+                         ignored -> onPairingRequest(),
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -139,6 +153,16 @@ public class PiruPeaActivity extends InjectionActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onPairingRequest() {
+        Logger.debug(getClass().getSimpleName(), "onPairingRequest()");
+
+        final SenseAlertDialog message = new SenseAlertDialog(this);
+        message.setTitle(R.string.title_pairing_request);
+        message.setMessage(R.string.message_pairing_request);
+        message.setPositiveButton(android.R.string.ok, null);
+        message.show();
     }
 
 
