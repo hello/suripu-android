@@ -123,7 +123,8 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         for (ToggleButton button : buttons) {
             int index = (Integer) button.getTag(R.id.view_selector_tag_key_index);
             boolean isSelected = (index == selectedIndex);
-            button.setChecked(isSelected);
+            applyButtonStyles(button, isSelected);
+
         }
 
         if (selectionAwareBackground != null) {
@@ -241,15 +242,13 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         // all buttons by default.
         final ToggleButton optionButton = new ToggleButton(context, null,
                                                            R.style.AppTheme_Button_ModeSelector);
-        optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        optionButton.setTextAppearance(context, R.style.AppTheme_Text_Body);
-        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
-        optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
+
+        optionButton.setGravity(Gravity.CENTER);
+        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
         optionButton.setTextOn(titleOn);
         optionButton.setTextOff(titleOff);
         optionButton.setText(titleOff);
-        optionButton.setGravity(Gravity.CENTER);
-        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
+        applyButtonStyles(optionButton, false);
 
         if (getChildCount() > 0 && wantsDivider) {
             final View divider = Styles.createVerticalDivider(context,
@@ -275,7 +274,20 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         this.selectedIndex = EMPTY_SELECTION;
     }
 
+    private void applyButtonStyles(@NonNull ToggleButton optionButton, boolean isSelected) {
+        final Resources resources = getResources();
+        optionButton.setChecked(isSelected);
+        if (isSelected) {
+            optionButton.setTextAppearance(optionButton.getContext(), R.style.AppTheme_Text_Body_Bold);
+        } else {
+            optionButton.setTextAppearance(optionButton.getContext(), R.style.AppTheme_Text_Body);
+        }
+        optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
+        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
+        optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
+    }
     //endregion
+
 
 
     public interface OnSelectionChangedListener {
