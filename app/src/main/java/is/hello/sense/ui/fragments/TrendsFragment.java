@@ -143,19 +143,16 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         initialActivityIndicator.setVisibility(View.GONE);
 
         List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
-        if (availableTimeScales.size() > 0) {
+        if (availableTimeScales.size() > 1) {
             if (availableTimeScales.size() != timeScaleSelector.getButtonCount()) {
-                timeScaleSelector.setOnSelectionChangedListener(null);
                 timeScaleSelector.removeAllButtons();
                 for (TimeScale timeScale : availableTimeScales) {
-                    ToggleButton toggleButton = timeScaleSelector.addOption(timeScale.titleRes, false);
+                    ToggleButton button = timeScaleSelector.addOption(timeScale.titleRes, false);
                     if (timeScale == trendsPresenter.getTimeScale()) {
-                        timeScaleSelector.setSelectedButton(toggleButton);
+                        timeScaleSelector.setSelectedButton(button);
                     }
                 }
                 timeScaleSelector.setButtonTags(trends.getAvailableTimeScaleTags());
-                timeScaleSelector.setOnSelectionChangedListener(this);
-
             }
             if (timeScaleSelector.getVisibility() != View.VISIBLE) {
                 transitionInTimeScaleSelector();
