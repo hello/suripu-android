@@ -1,6 +1,8 @@
 package is.hello.sense.graph.presenters;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -28,6 +30,7 @@ import rx.Subscription;
 
 @Singleton public class SensePresenter extends Presenter {
     public static final int FAILS_BEFORE_HIGH_POWER = 2;
+    private static final String SAVED_PERIPHERAL = "peripheral";
 
     private final BluetoothStack bluetoothStack;
     private final SenseServiceConnection serviceConnection;
@@ -46,6 +49,31 @@ import rx.Subscription;
         this.bluetoothStack = bluetoothStack;
         this.serviceConnection = serviceConnection;
         this.preferences = preferences;
+    }
+
+    @Override
+    public void onRestoreState(@NonNull Bundle savedState) {
+        super.onRestoreState(savedState);
+
+        final Parcelable senseState = savedState.getParcelable(SAVED_PERIPHERAL);
+        if (senseState != null && !peripheral.hasValue()) {
+            peripheral.onNext(bluetoothStack.restoreState(senseState));
+        }
+    }
+
+    @Nullable
+    @Override
+    public Bundle onSaveState() {
+        final GattPeripheral sense = peripheral.getValue();
+        if (sense != null) {
+            logEvent("onSaveState()");
+
+            final Bundle savedState = new Bundle();
+            savedState.putParcelable(SAVED_PERIPHERAL, sense.saveState());
+            return savedState;
+        } else {
+            return null;
+        }
     }
 
     //region High Power Mode
