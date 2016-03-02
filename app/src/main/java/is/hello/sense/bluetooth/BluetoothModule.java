@@ -1,10 +1,7 @@
 package is.hello.sense.bluetooth;
 
-import android.app.Notification;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 
 import javax.inject.Singleton;
 
@@ -14,8 +11,8 @@ import is.hello.buruberi.bluetooth.Buruberi;
 import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
+import is.hello.commonsense.service.SenseService.ForegroundNotificationProvider;
 import is.hello.commonsense.service.SenseServiceConnection;
-import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.util.Analytics;
@@ -43,6 +40,10 @@ public class BluetoothModule {
         };
     }
 
+    @Provides ForegroundNotificationProvider provideForegroundNotificationProvider(@NonNull Context context) {
+        return new SenseNotificationProvider(context);
+    }
+
     @Provides @Singleton BluetoothStack provideBluetoothStack(@NonNull Context applicationContext,
                                                               @NonNull ErrorListener errorListener) {
         return new Buruberi()
@@ -51,19 +52,16 @@ public class BluetoothModule {
                 .build();
     }
 
-    @Provides @Singleton SenseServiceConnection provideServiceConnection(@NonNull Context context) {
+    @Provides @Singleton SenseServiceConnection provideServiceConnection(@NonNull Context context,
+                                                                         @NonNull ForegroundNotificationProvider provider) {
         final SenseServiceConnection connection = new SenseServiceConnection(context);
+
+        // The connection lives for the duration of the app being alive.
         connection.create();
-        connection.senseService().subscribe(service -> {
-            final Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.ic_stat_notify_msg)
-                    .setColor(ContextCompat.getColor(context, R.color.light_accent))
-                    .setOngoing(true)
-                    .setLocalOnly(true)
-                    .setContentTitle(context.getString(R.string.title_connected_to_sense))
-                    .build();
-            service.setForegroundNotification(-1, notification);
-        }, Functions.LOG_ERROR);
+
+        connection.senseService()
+                  .subscribe(s -> s.setForegroundNotificationProvider(provider),
+                             Functions.LOG_ERROR);
         return connection;
     }
 }
