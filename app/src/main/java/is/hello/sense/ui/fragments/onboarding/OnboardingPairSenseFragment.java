@@ -240,7 +240,9 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         bindAndSubscribe(sensePresenter.peripheral.take(1),
                          this::tryToPairWith,
                          e -> presentError(e, "Discovering Sense"));
-        sensePresenter.scanForClosestSense();
+        if (sensePresenter.shouldScan()) {
+            sensePresenter.scanForClosestSense();
+        }
     }
 
     public void tryToPairWith(@NonNull GattPeripheral peripheral) {

@@ -352,7 +352,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     public void discoverPeripheralIfNeeded() {
-        if (!sensePresenter.hasPeripheral()) {
+        if (sensePresenter.shouldScan()) {
             showBlockingAlert(R.string.info_connecting_to_sense);
             sensePresenter.scanForDevice(device);
         }
