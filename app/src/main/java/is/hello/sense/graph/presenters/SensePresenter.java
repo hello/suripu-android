@@ -160,6 +160,10 @@ import rx.Subscription;
         return peripheral.hasValue();
     }
 
+    public boolean shouldScan() {
+        return (!peripheral.hasValue() && Functions.extract(scanSubscription) == null);
+    }
+
     public boolean isDisconnectIntentForSense(@NonNull Intent intent) {
         return (peripheral.hasValue() &&
                 Objects.equals(intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS),

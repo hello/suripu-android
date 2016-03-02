@@ -180,7 +180,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void pairPill() {
         beginPairing();
 
-        if (!sensePresenter.hasPeripheral()) {
+        if (sensePresenter.shouldScan()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> pairPill(),
