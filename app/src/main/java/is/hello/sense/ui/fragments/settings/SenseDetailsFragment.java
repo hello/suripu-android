@@ -619,6 +619,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                                          device -> {
                                                              loadingDialogFragment.dismissSafely();
                                                              Analytics.setSenseId("unpaired");
+                                                             sensePresenter.clearPeripheral();
 
                                                              final MessageDialogFragment powerCycleDialog =
                                                                      MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,

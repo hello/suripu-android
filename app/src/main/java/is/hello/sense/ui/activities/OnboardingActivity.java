@@ -449,6 +449,7 @@ public class OnboardingActivity extends InjectionActivity
 
         serviceConnection.perform(SenseService::disconnect)
                          .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
+        sensePresenter.clearPeripheral();
 
         final Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
