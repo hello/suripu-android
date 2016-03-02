@@ -6,6 +6,7 @@ import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 
 /**
@@ -15,6 +16,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
  */
 public class HardwareFragmentActivity extends FragmentNavigationActivity {
     @Inject SenseServiceConnection serviceConnection;
+    @Inject SensePresenter sensePresenter;
 
     public HardwareFragmentActivity() {
         SenseApplication.getInstance().inject(this);
@@ -28,6 +30,7 @@ public class HardwareFragmentActivity extends FragmentNavigationActivity {
             serviceConnection.perform(SenseService::disconnect)
                              .subscribe(Functions.NO_OP,
                                         Functions.LOG_ERROR);
+            sensePresenter.clearPeripheral();
         }
     }
 }
