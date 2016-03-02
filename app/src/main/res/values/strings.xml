@@ -580,6 +580,6 @@
     </plurals>
 
     <string name="empty"> </string>
-    <string name="title_connected_to_sense">Connected to Sense</string>
+    <string name="info_connected">Connected</string>
 
 </resources>
