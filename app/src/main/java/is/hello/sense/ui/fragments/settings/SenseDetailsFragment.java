@@ -112,6 +112,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
         devicesPresenter.update();
         addPresenter(devicesPresenter);
+        addPresenter(sensePresenter);
     }
 
     @Override
