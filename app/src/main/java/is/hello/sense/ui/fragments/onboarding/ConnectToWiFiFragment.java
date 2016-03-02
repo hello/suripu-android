@@ -299,7 +299,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
         showBlockingActivity(R.string.title_connecting_network);
 
-        if (!sensePresenter.hasPeripheral()) {
+        if (sensePresenter.shouldScan()) {
             bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> sendWifiCredentials(),
                              e -> presentError(e, "Discovery"));
