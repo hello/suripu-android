@@ -140,6 +140,10 @@ import rx.Subscription;
         }
     }
 
+    public void clearPeripheral() {
+        peripheral.forget();
+    }
+
     //endregion
 
 
