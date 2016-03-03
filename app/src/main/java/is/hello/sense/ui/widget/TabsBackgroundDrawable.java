@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 
@@ -103,7 +104,8 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
     public enum Style {
         BACKSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_backside_tabs, R.color.background_light),
-        INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border, R.color.background_light);
+        INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border, R.color.background_light),
+        TRENDS(R.dimen.bottom_line,R.dimen.gap_large,R.color.background_light, R.color.background_light, R.color.background_light);
 
         public final @DimenRes int selectionHeightRes;
         public final @DimenRes int dividerHeightRes;
