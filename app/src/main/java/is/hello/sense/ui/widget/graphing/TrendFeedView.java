@@ -102,9 +102,9 @@ public class TrendFeedView extends LinearLayout {
         if (graphs.isEmpty()) {
             if (welcomeCard == null) {
                 if (trends.getAvailableTimeScales().isEmpty()) {
-                    this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
-                } else {
                     this.welcomeCard = TrendCardView.createWelcomeCard(getContext());
+                } else {
+                    this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
                 }
                 addView(welcomeCard);
             }
@@ -132,6 +132,7 @@ public class TrendFeedView extends LinearLayout {
             }
         } else if (welcomeCard != null) {
             removeView(welcomeCard);
+            welcomeCard = null;
         }
 
         final Set<Graph.GraphType> includedTypes = new HashSet<>(graphs.size());
