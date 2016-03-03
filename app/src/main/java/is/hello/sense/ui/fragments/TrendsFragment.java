@@ -68,7 +68,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setVisibility(View.INVISIBLE);
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
-                                                                   TabsBackgroundDrawable.Style.INLINE));
+                                                                   TabsBackgroundDrawable.Style.TRENDS));
         timeScaleSelector.setOnSelectionChangedListener(this);
 
         return view;
@@ -143,23 +143,23 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         initialActivityIndicator.setVisibility(View.GONE);
 
         List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
-        if (availableTimeScales.size() > 0 ) {
-            if ( availableTimeScales.size() != timeScaleSelector.getButtonCount()) {
-                timeScaleSelector.setOnSelectionChangedListener(null);
+        if (availableTimeScales.size() > 1) {
+            if (availableTimeScales.size() != timeScaleSelector.getButtonCount()) {
                 timeScaleSelector.removeAllButtons();
                 for (TimeScale timeScale : availableTimeScales) {
-                    timeScaleSelector.addOption(timeScale.titleRes, false);
+                    ToggleButton button = timeScaleSelector.addOption(timeScale.titleRes, false);
+                    if (timeScale == trendsPresenter.getTimeScale()) {
+                        timeScaleSelector.setSelectedButton(button);
+                    }
                 }
                 timeScaleSelector.setButtonTags(trends.getAvailableTimeScaleTags());
-                timeScaleSelector.setOnSelectionChangedListener(this);
-
             }
             if (timeScaleSelector.getVisibility() != View.VISIBLE) {
                 transitionInTimeScaleSelector();
             }
-        } else if (timeScaleSelector.getVisibility()==View.VISIBLE){
+        } else if (timeScaleSelector.getVisibility() == View.VISIBLE) {
             transitionOutTimeScaleSelector();
-        }else{
+        } else {
             timeScaleSelector.setVisibility(View.GONE);
         }
     }
