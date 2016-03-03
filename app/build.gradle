@@ -179,7 +179,7 @@ dependencies {
 
     compile 'me.grantland:autofittextview:0.2.1'
 
-    compile 'is.hello.commonsense:ble:2016.2.12.1'
+    compile 'is.hello.commonsense:ble:2016.3.3.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
 
     // !! If you remove this, remove the above workaround.
