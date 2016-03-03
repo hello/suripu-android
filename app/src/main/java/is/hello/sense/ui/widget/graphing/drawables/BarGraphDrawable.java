@@ -168,7 +168,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
                     continue;
                 }
                 float scaledRatio = (values.get(j) - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
-                if (scaledRatio != scaledRatio || scaledRatio == Float.POSITIVE_INFINITY || scaledRatio == Float.NEGATIVE_INFINITY){
+                if (Float.isNaN(scaledRatio) || Float.isInfinite(scaledRatio)){
                     scaledRatio = 1f;
                 }
                 calculateBarBounds(j, scaledRatio, leftSpace, barBoundsRect);
@@ -192,7 +192,7 @@ public class BarGraphDrawable extends TrendGraphDrawable {
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 final float value = values.get(highlightedIndex);
                 float scaledRatio = (value - graph.getMinValue()) / (graph.getMaxValue() - graph.getMinValue());
-                if (scaledRatio != scaledRatio || scaledRatio == Float.POSITIVE_INFINITY || scaledRatio == Float.NEGATIVE_INFINITY){
+                if (Float.isNaN(scaledRatio) || Float.isInfinite(scaledRatio)){
                     scaledRatio = 1f;
                 }
                 final String textValue = Styles.createTextValue(value, 1) + HOUR_SYMBOL;
