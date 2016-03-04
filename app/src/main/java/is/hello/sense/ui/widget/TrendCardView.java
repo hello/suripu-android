@@ -224,7 +224,6 @@ public class TrendCardView extends RoundedLinearLayout {
 
             title.setGravity(Gravity.CENTER_HORIZONTAL);
             title.setPadding(0, 0, 0, 0);
-            title.getTotalPaddingTop();
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
 
