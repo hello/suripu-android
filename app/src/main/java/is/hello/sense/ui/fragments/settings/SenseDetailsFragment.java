@@ -399,14 +399,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void presentError(@NonNull Throwable e) {
         hideAlert();
         LoadingDialogFragment.close(getFragmentManager());
-        final Observable<SenseService> stopSenseLEDs = serviceConnection.perform(service -> {
-            if (service.isConnected()) {
-                return service.stopLEDs();
-            } else {
-                return Observable.just(service);
-            }
-        });
-        stopSenseLEDs.subscribe(Functions.NO_OP, Functions.LOG_ERROR);
 
         if (e instanceof SenseNotFoundError) {
             sensePresenter.trackPeripheralNotFound();
@@ -435,6 +427,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
             final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
+            if (!serviceConnection.isConnectedToSense()) {
+                sensePresenter.clearPeripheral();
+            }
         }
 
         showRestrictedSenseActions();
