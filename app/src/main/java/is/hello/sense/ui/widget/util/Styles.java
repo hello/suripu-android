@@ -14,6 +14,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -392,6 +393,23 @@ public final class Styles {
     public static String createTextValue(float value, int numberOfDecimalPlaces) {
         return String.format("%." + numberOfDecimalPlaces + "f", value);
 
+    }
+
+
+    public static void setTextAppearance(@NonNull TextView textView, @StyleRes int styleRes) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            textView.setTextAppearance(styleRes);
+        } else {
+            textView.setTextAppearance(textView.getContext(), styleRes);
+        }
+    }
+
+    public static ColorStateList getColorStateList(@NonNull Resources resources, @ColorRes int id, @Nullable Resources.Theme theme) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            return resources.getColorStateList(id, theme);
+        } else {
+            return resources.getColorStateList(id);
+        }
     }
 
 

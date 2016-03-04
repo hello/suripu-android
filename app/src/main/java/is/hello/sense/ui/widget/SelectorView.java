@@ -20,7 +20,6 @@ import java.util.Objects;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.util.Styler;
 
 public class SelectorView extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
@@ -251,7 +250,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
-        optionButton.setTextColor(Styler.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
+        optionButton.setTextColor(Styles.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
         applyButtonStyles(optionButton, false);
 
         if (getChildCount() > 0 && wantsDivider) {
@@ -281,11 +280,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     private void applyButtonStyles(@NonNull ToggleButton optionButton, boolean isSelected) {
         final Resources resources = getResources();
         if (isSelected) {
-            Styler.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
+            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
         } else {
-            Styler.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
         }
-        optionButton.setTextColor(Styler.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
+        optionButton.setTextColor(Styles.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
         optionButton.setChecked(isSelected);
     }
     //endregion
