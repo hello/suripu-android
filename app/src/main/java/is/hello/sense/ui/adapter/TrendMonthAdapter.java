@@ -19,7 +19,8 @@ import is.hello.sense.ui.widget.graphing.GridGraphView;
 
 public class TrendMonthAdapter extends GridGraphView.Adapter {
     public static final int ROW_LIMIT = 7;
-
+    private boolean needsHighlight = false;
+    private int highlightCell = -1;
     private final Context context;
     private Graph graph;
     private @NonNull List<List<Float>> sections = Collections.emptyList();
@@ -39,6 +40,12 @@ public class TrendMonthAdapter extends GridGraphView.Adapter {
     public void clear() {
         this.graph = null;
         this.sections = Collections.emptyList();
+        notifyDataSetChanged();
+    }
+
+    public void setHighlightCell(int highlightCell) {
+        this.highlightCell = highlightCell;
+        needsHighlight = true;
         notifyDataSetChanged();
     }
 
@@ -88,7 +95,9 @@ public class TrendMonthAdapter extends GridGraphView.Adapter {
     @Override
     public GridGraphCellView.Border getCellBorder(int row, int cell) {
         final Float value = sections.get(row).get(cell);
-        if (value == null || value < 0f) {
+        if (needsHighlight && cell == highlightCell) {
+            return GridGraphCellView.Border.INSIDE;
+        } else if (value == null || value < 0f) {
             return GridGraphCellView.Border.OUTSIDE;
         } else {
             return GridGraphCellView.Border.NONE;

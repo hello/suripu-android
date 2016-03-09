@@ -70,6 +70,9 @@ public class MultiGridGraphView extends LinearLayout implements TrendCardView.On
             if (i < sectionCount) {
                 graphView.setVisibility(VISIBLE);
                 final GraphSection section = sections.get(i);
+                if (!section.getHighlightedValues().isEmpty()){
+                    adapter.setHighlightCell(section.getHighlightedValues().get(0));
+                }
                 graphView.setTitles(section.getHighlightedTitle(), section.getTitles());
                 adapter.bind(graph, section);
             } else {
