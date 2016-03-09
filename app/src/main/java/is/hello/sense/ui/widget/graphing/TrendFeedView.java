@@ -140,9 +140,33 @@ public class TrendFeedView extends LinearLayout {
             final Graph.GraphType graphType = graph.getSpecConformingGraphType();
             TrendCardView trendCardView = cardViews.get(graphType);
             if (trendCardView == null) {
+                // todo erase one day start>
+                if (graphType == Graph.GraphType.OVERVIEW) {
+                    TrendCardView temp = cardViews.get(Graph.GraphType.GRID);
+                    if (temp != null) {
+                        setLayoutTransition(null);
+                        temp.setVisibility(INVISIBLE);
+                        removeView(temp);
+                        setLayoutTransition(new LayoutTransition());
+                    }
+                } else if (graphType == Graph.GraphType.GRID) {
+                    TrendCardView temp = cardViews.get(Graph.GraphType.OVERVIEW);
+                    if (temp != null) {
+                        setLayoutTransition(null);
+                        temp.setVisibility(INVISIBLE);
+                        removeView(temp);
+                        setLayoutTransition(new LayoutTransition());
+                    }
+                }
+                // todo erase one day end>
                 trendCardView = createTrendCard(graph);
+                setLayoutTransition(null); // todo erase one day.
+                trendCardView.setVisibility(INVISIBLE);
                 cardViews.put(graphType, trendCardView);
                 addView(trendCardView, getPositionAffinity(graph));
+                trendCardView.setVisibility(VISIBLE);
+                setLayoutTransition(new LayoutTransition()); // todo erase one day.
+
             } else {
                 trendCardView.bindGraph(graph);
             }
@@ -160,8 +184,8 @@ public class TrendFeedView extends LinearLayout {
                 cardViewsIterator.remove();
             }
         }
-        if (getChildCount() > 0){
-            ((LayoutParams)getChildAt(getChildCount()-1).getLayoutParams()).bottomMargin =getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
+        if (getChildCount() > 0) {
+            ((LayoutParams) getChildAt(getChildCount() - 1).getLayoutParams()).bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
         }
     }
 
