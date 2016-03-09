@@ -243,11 +243,14 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         final ToggleButton optionButton = new ToggleButton(context, null,
                                                            R.style.AppTheme_Button_ModeSelector);
 
-        optionButton.setGravity(Gravity.CENTER);
-        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
         optionButton.setTextOn(titleOn);
         optionButton.setTextOff(titleOff);
         optionButton.setText(titleOff);
+        optionButton.setGravity(Gravity.CENTER);
+        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
+        optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
+        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
+        optionButton.setTextColor(Styles.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
         applyButtonStyles(optionButton, false);
 
         if (getChildCount() > 0 && wantsDivider) {
@@ -276,15 +279,13 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     private void applyButtonStyles(@NonNull ToggleButton optionButton, boolean isSelected) {
         final Resources resources = getResources();
-        optionButton.setChecked(isSelected);
         if (isSelected) {
-            optionButton.setTextAppearance(optionButton.getContext(), R.style.AppTheme_Text_Body_Bold);
+            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
         } else {
-            optionButton.setTextAppearance(optionButton.getContext(), R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
         }
-        optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
-        optionButton.setTextColor(resources.getColorStateList(R.color.text_color_selector_toggle_button));
+        optionButton.setTextColor(Styles.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
+        optionButton.setChecked(isSelected);
     }
     //endregion
 
