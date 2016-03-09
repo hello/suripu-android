@@ -106,7 +106,9 @@ public class TrendFeedView extends LinearLayout {
                 } else {
                     this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
                 }
+                setLayoutTransition(null);
                 addView(welcomeCard);
+                setLayoutTransition(new LayoutTransition());
             }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
