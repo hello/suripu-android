@@ -32,12 +32,6 @@ public abstract class TrendGraphDrawable extends Drawable {
         this.animatorContext = animatorContext;
     }
 
-    public TrendGraphDrawable(@NonNull Context context, @NonNull AnimatorContext animatorContext) {
-        this.context = context;
-        this.resources = context.getResources();
-        this.animatorContext = animatorContext;
-    }
-
     public void showGraphAnimation() {
         ValueAnimator animator = ValueAnimator.ofFloat(minScaleFactor, maxScaleFactor);
         animator.setDuration(Anime.DURATION_NORMAL);
