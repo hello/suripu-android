@@ -205,10 +205,14 @@ public class TrendFeedView extends LinearLayout {
         final Context context = getContext();
         switch (graph.getSpecConformingGraphType()) {
             case BAR:
-                return new TrendFeedViewItem(new TrendGraphView.BarTrendGraphView(context, graph, animatorContext));
+                final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(context, graph, animatorContext);
+                final TrendGraphView barGraphView = new TrendGraphView(context, barGraphDrawable);
+                return TrendFeedViewItem.createGraphCard(barGraphView, graph);
 
             case BUBBLES:
-                return new TrendFeedViewItem(new TrendGraphView.BubbleTrendGraphView(context, graph, animatorContext));
+                final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(context, graph, animatorContext);
+                final TrendGraphView bubbleGraphView = new TrendGraphView(context, bubbleGraphDrawable);
+                return TrendFeedViewItem.createGraphCard(bubbleGraphView, graph);
 
             case GRID:
                 final GridGraphView gridGraphView = new GridGraphView(context);
