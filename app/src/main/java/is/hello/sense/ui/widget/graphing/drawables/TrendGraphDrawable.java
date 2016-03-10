@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
+import is.hello.sense.ui.widget.graphing.TrendGraphView;
 
 public abstract class TrendGraphDrawable extends Drawable {
     protected final float maxScaleFactor = 1f;
@@ -28,6 +29,12 @@ public abstract class TrendGraphDrawable extends Drawable {
         this.context = context;
         this.resources = context.getResources();
         this.graph = graph;
+        this.animatorContext = animatorContext;
+    }
+
+    public TrendGraphDrawable(@NonNull Context context, @NonNull AnimatorContext animatorContext) {
+        this.context = context;
+        this.resources = context.getResources();
         this.animatorContext = animatorContext;
     }
 
@@ -59,6 +66,10 @@ public abstract class TrendGraphDrawable extends Drawable {
     public void setScaleFactor(float scale) {
         valueScaleFactor = scale;
         invalidateSelf();
+    }
+
+    public Graph getGraph(){
+        return graph;
     }
 
     public abstract void updateGraph(@NonNull Graph graph);
