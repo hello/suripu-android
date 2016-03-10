@@ -88,7 +88,6 @@ public class RoomConditionsFragment extends BacksideTabFragment
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
-        recyclerView.setVerticalFadingEdgeEnabled(true);
 
         final Resources resources = getResources();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
