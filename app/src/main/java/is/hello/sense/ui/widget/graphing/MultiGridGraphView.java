@@ -13,9 +13,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.ui.adapter.TrendMonthAdapter;
-import is.hello.sense.ui.widget.TrendCardView;
 
-public class MultiGridGraphView extends LinearLayout implements TrendCardView.OnBindGraph {
+public class MultiGridGraphView extends LinearLayout implements TrendFeedViewItem.OnBindGraph {
     private static final int ROW_COUNT = 2;
     private static final int COLUMN_COUNT = 2;
 

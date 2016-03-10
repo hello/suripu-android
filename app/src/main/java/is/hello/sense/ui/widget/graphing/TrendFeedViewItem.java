@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.graphing;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,39 +25,38 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.ui.widget.graphing.GridGraphView;
-import is.hello.sense.ui.widget.graphing.MultiGridGraphView;
-import is.hello.sense.ui.widget.graphing.TrendGraphView;
+import is.hello.sense.ui.widget.RoundedLinearLayout;
+import is.hello.sense.ui.widget.ShimmerDividerDrawable;
 
 @SuppressLint("ViewConstructor")
-public class TrendCardView extends RoundedLinearLayout {
+public class TrendFeedViewItem extends RoundedLinearLayout {
     private final LinearLayout annotationsLayout;
     private final TextView title;
     private final ShimmerDividerDrawable dividerDrawable;
     private final OnBindGraph graphBinder;
 
 
-    public static TrendCardView createGraphCard(@NonNull TrendGraphView graphView,
+    public static TrendFeedViewItem createGraphCard(@NonNull TrendGraphView graphView,
                                                 @NonNull Graph graph) {
-        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        final TrendFeedViewItem cardView = new TrendFeedViewItem(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
         cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
     }
 
-    public static TrendCardView createGridCard(@NonNull GridGraphView graphView,
+    public static TrendFeedViewItem createGridCard(@NonNull GridGraphView graphView,
                                                @NonNull Graph graph) {
         graphView.bindGraph(graph);
-        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        final TrendFeedViewItem cardView = new TrendFeedViewItem(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
         cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
     }
 
-    public static TrendCardView createMultiGridCard(@NonNull MultiGridGraphView graphView,
+    public static TrendFeedViewItem createMultiGridCard(@NonNull MultiGridGraphView graphView,
                                                     @NonNull Graph graph) {
         graphView.bindGraph(graph);
-        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        final TrendFeedViewItem cardView = new TrendFeedViewItem(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
         cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
@@ -81,9 +80,9 @@ public class TrendCardView extends RoundedLinearLayout {
     }
 
 
-    private TrendCardView(@NonNull Context context,
-                          @NonNull View graphView,
-                          @NonNull OnBindGraph graphBinder) {
+    private TrendFeedViewItem(@NonNull Context context,
+                              @NonNull View graphView,
+                              @NonNull OnBindGraph graphBinder) {
         super(context);
 
         LayoutInflater.from(context).inflate(R.layout.item_trend, this);
