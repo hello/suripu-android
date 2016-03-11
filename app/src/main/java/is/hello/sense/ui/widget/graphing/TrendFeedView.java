@@ -20,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.ui.widget.GridTrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 
@@ -211,9 +212,7 @@ public class TrendFeedView extends LinearLayout {
                 return new TrendFeedViewItem(new TrendGraphView.BubbleTrendGraphView(context, graph, animatorContext));
 
             case GRID:
-                final GridGraphView gridGraphView = new GridGraphView(context);
-                gridGraphView.bindRootLayoutTransition(getLayoutTransition());
-                return TrendFeedViewItem.createGridCard(gridGraphView, graph);
+                return new TrendFeedViewItem(new GridTrendGraphView(context, graph, animatorContext));
 
             case OVERVIEW:
                 final MultiGridGraphView multiGridGraphView = new MultiGridGraphView(context);
