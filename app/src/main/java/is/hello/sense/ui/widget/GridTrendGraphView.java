@@ -153,6 +153,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     canvas.drawText(title, leftSpace + offSet, textTitleBounds.height(), textLabelPaint);
                 }
             }
+            final float minTop = minPossibleTop(sections.size());
             for (int h = 0; h < sections.size(); h++) {
                 GraphSection section = sections.get(h);
                 List<Float> values = section.getValues();
@@ -179,8 +180,11 @@ public class GridTrendGraphView extends TrendGraphView {
                         textPaint = textGridNoValuePaint;
                     }
                     final float left = leftSpace + padding + (circleSize - padding - padding) / 2;
-                    final float top = getTopPosition(canvas.getHeight(), h, sections.size());
+                    float top = getTopPosition(canvas.getHeight(), h, sections.size());
 
+                    if (top < reservedTopSpace - radius) {
+                        top = minTop;
+                    }
                     if (top + radius > canvas.getHeight()) {
                         continue;
                     }
@@ -221,16 +225,11 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         private float getTopPosition(int maxSize, int index, int maxIndex) {
-            float min = minPossibleTop(maxIndex);
             float spaceFromBottom = 0;
             for (int i = index + 1; i < maxIndex; i++) {
                 spaceFromBottom += padding + circleSize;
             }
-            final float top = maxSize - spaceFromBottom - radius;
-            if (top < min) {
-                return min;
-            }
-            return top;
+            return maxSize - spaceFromBottom - radius;
         }
 
         private float minPossibleTop(int maxIndex) {
