@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.graphing;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,39 +25,29 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.ui.widget.graphing.GridGraphView;
-import is.hello.sense.ui.widget.graphing.MultiGridGraphView;
-import is.hello.sense.ui.widget.graphing.TrendGraphView;
+import is.hello.sense.ui.widget.RoundedLinearLayout;
+import is.hello.sense.ui.widget.ShimmerDividerDrawable;
 
 @SuppressLint("ViewConstructor")
-public class TrendCardView extends RoundedLinearLayout {
+public class TrendFeedViewItem extends RoundedLinearLayout {
     private final LinearLayout annotationsLayout;
     private final TextView title;
     private final ShimmerDividerDrawable dividerDrawable;
     private final OnBindGraph graphBinder;
 
-
-    public static TrendCardView createGraphCard(@NonNull TrendGraphView graphView,
-                                                @NonNull Graph graph) {
-        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+    public static TrendFeedViewItem createGridCard(@NonNull GridGraphView graphView,
+                                                   @NonNull Graph graph) {
+        graphView.bindGraph(graph);
+        final TrendFeedViewItem cardView = new TrendFeedViewItem(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
         cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
     }
 
-    public static TrendCardView createGridCard(@NonNull GridGraphView graphView,
-                                               @NonNull Graph graph) {
+    public static TrendFeedViewItem createMultiGridCard(@NonNull MultiGridGraphView graphView,
+                                                        @NonNull Graph graph) {
         graphView.bindGraph(graph);
-        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
-        cardView.setTitle(graph.getTitle());
-        cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
-        return cardView;
-    }
-
-    public static TrendCardView createMultiGridCard(@NonNull MultiGridGraphView graphView,
-                                                    @NonNull Graph graph) {
-        graphView.bindGraph(graph);
-        final TrendCardView cardView = new TrendCardView(graphView.getContext(), graphView, graphView);
+        final TrendFeedViewItem cardView = new TrendFeedViewItem(graphView.getContext(), graphView, graphView);
         cardView.setTitle(graph.getTitle());
         cardView.populateAnnotations(graph.getDataType(), graph.getAnnotations());
         return cardView;
@@ -80,10 +70,53 @@ public class TrendCardView extends RoundedLinearLayout {
         return new ComingSoonCardView(context, days);
     }
 
+    public TrendFeedViewItem(@NonNull TrendGraphView trendGraphView) {
+        super(trendGraphView.getContext());
 
-    private TrendCardView(@NonNull Context context,
-                          @NonNull View graphView,
-                          @NonNull OnBindGraph graphBinder) {
+        LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
+
+        setOrientation(VERTICAL);
+        setBackgroundResource(R.drawable.raised_item_normal);
+
+        final Resources resources = getResources();
+        final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        setPadding(padding, 0, padding, padding);
+
+        final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                             LayoutParams.WRAP_CONTENT);
+        myLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
+        setLayoutParams(myLayoutParams);
+
+        final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
+        setCornerRadii(cornerRadius);
+
+        final View divider = findViewById(R.id.item_trend_divider);
+        this.dividerDrawable = ShimmerDividerDrawable.createTrendCardDivider(resources);
+        divider.setBackground(dividerDrawable);
+
+        this.title = (TextView) findViewById(R.id.item_trend_title);
+        this.graphBinder = trendGraphView;
+        this.annotationsLayout = new LinearLayout(getContext());
+
+        final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                      LayoutParams.WRAP_CONTENT);
+        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+
+        final LayoutParams graphLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                LayoutParams.WRAP_CONTENT);
+
+        addView(trendGraphView, graphLayoutParams);
+        addView(annotationsLayout, annotationsLayoutParams);
+        Graph graph = trendGraphView.getGraph();
+        setTitle(graph.getTitle());
+        populateAnnotations(graph.getDataType(), graph.getAnnotations());
+
+    }
+
+
+    private TrendFeedViewItem(@NonNull Context context,
+                              @NonNull View graphView,
+                              @NonNull OnBindGraph graphBinder) {
         super(context);
 
         LayoutInflater.from(context).inflate(R.layout.item_trend, this);
@@ -227,7 +260,8 @@ public class TrendCardView extends RoundedLinearLayout {
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
 
-            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);;
+            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            ;
             message.setText(getResources().getString(R.string.message_trends_welcome));
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 //noinspection deprecation
@@ -238,6 +272,7 @@ public class TrendCardView extends RoundedLinearLayout {
             action.setVisibility(GONE);
         }
     }
+
     static class WelcomeBackCardView extends WelcomeCardView {
         WelcomeBackCardView(@NonNull Context context) {
             super(context);

@@ -35,11 +35,10 @@ import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.adapter.TrendWeekAdapter;
-import is.hello.sense.ui.widget.TrendCardView;
 import is.hello.sense.ui.widget.util.Drawing;
 
 public class GridGraphView extends LinearLayout
-        implements GridRecycler.Adapter<LinearLayout, GridGraphCellView>, TrendCardView.OnBindGraph {
+        implements GridRecycler.Adapter<LinearLayout, GridGraphCellView>, TrendFeedViewItem.OnBindGraph {
     //region Constants
 
     private static final boolean DEBUG = false;
