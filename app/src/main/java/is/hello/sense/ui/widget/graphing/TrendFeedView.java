@@ -21,6 +21,7 @@ import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.widget.BarTrendGraphView;
+import is.hello.sense.ui.widget.BubbleTrendGraphView;
 import is.hello.sense.ui.widget.GridTrendGraphView;
 
 public class TrendFeedView extends LinearLayout {
@@ -208,7 +209,7 @@ public class TrendFeedView extends LinearLayout {
                 return new TrendFeedViewItem(new BarTrendGraphView(context, graph, animatorContext));
 
             case BUBBLES:
-                return new TrendFeedViewItem(new TrendGraphView.BubbleTrendGraphView(context, graph, animatorContext));
+                return new TrendFeedViewItem(new BubbleTrendGraphView(context, graph, animatorContext));
 
             case GRID:
                 return new TrendFeedViewItem(new GridTrendGraphView(context, graph, animatorContext));
