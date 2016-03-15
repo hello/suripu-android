@@ -6,8 +6,10 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
@@ -110,18 +112,20 @@ public class GridTrendGraphView extends TrendGraphView {
         private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final TextPaint textGridPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final TextPaint textGridNoValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private int height = 0;
         private float circleSize = 0;
         private float padding = 0;
         private float reservedTopSpace = 0;
         private float radius = 0;
-        private final Rect textBounds = new Rect();
 
         public GridGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
             Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
             Drawing.updateTextPaintFromStyle(textGridPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
             Drawing.updateTextPaintFromStyle(textGridNoValuePaint, context, R.style.AppTheme_Text_Trends_GridGraph_NoValue);
+            borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
         }
 
         @Override
@@ -138,9 +142,6 @@ public class GridTrendGraphView extends TrendGraphView {
         @Override
         public void draw(Canvas canvas) {
             // Draw Text Labels
-            final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
             List<GraphSection> sections = graph.getSections();
             for (GraphSection section : sections) {
                 List<String> titles = section.getTitles();
@@ -158,28 +159,8 @@ public class GridTrendGraphView extends TrendGraphView {
                 GraphSection section = sections.get(h);
                 List<Float> values = section.getValues();
                 for (int i = 0; i < values.size(); i++) {
-
                     final Float value = values.get(i);
                     final float leftSpace = i * circleSize;
-                    final String textValue;
-                    final Paint textPaint;
-                    if (value != null) {
-                        if (value < 0f) {
-                            textValue = context.getString(R.string.missing_data_placeholder);
-                            paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
-                            textPaint = textGridNoValuePaint;
-                        } else {
-                            textValue = Styles.createTextValue(value, 0);
-                            final Condition condition = graph.getConditionForValue(value);
-                            paint.setColor(ContextCompat.getColor(getContext(), condition.colorRes));
-                            textPaint = textGridPaint;
-                        }
-                    } else {
-                        textValue = "";
-                        paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
-                        textPaint = textGridNoValuePaint;
-                    }
-                    final float left = leftSpace + padding + (circleSize - padding - padding) / 2;
                     float top = getTopPosition(canvas.getHeight(), h, sections.size());
 
                     if (top < reservedTopSpace - radius) {
@@ -188,26 +169,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     if (top + radius > canvas.getHeight()) {
                         continue;
                     }
-
-                    canvas.drawCircle(left, top, radius, borderPaint);
-                    canvas.drawCircle(left, top, radius - padding / 2, paint);
-
-                    textPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
-                    final float hOffset;
-                    if (circleSize - padding > textBounds.width()) {
-                        hOffset = (circleSize - padding - textBounds.width()) / 2;
-                    } else {
-                        hOffset = (textBounds.width() - (circleSize - padding)) / 2;
-                    }
-                    final float vOffset;
-                    if (circleSize - padding > textBounds.height()) {
-                        vOffset = (circleSize - padding - textBounds.height()) / 2;
-                    } else {
-                        vOffset = (textBounds.height() - (circleSize - padding)) / 2;
-
-                    }
-
-                    canvas.drawText(textValue, leftSpace + hOffset + 3, top + vOffset / 4 - 2, textPaint);
+                    new GridCellDrawable(leftSpace, top, value).draw(canvas);
                 }
             }
         }
@@ -238,6 +200,77 @@ public class GridTrendGraphView extends TrendGraphView {
                 spaceFromBottom += padding + circleSize;
             }
             return spaceFromBottom;
+        }
+
+        private class GridCellDrawable extends Drawable {
+            private final float left;
+            private final float top;
+            private final String textValue;
+            private final Paint textPaint;
+            private final float textLeft;
+            private final float textTop;
+            private final Rect textBounds = new Rect();
+
+            public GridCellDrawable(float leftSpace, float top, Float value) {
+                this.left = leftSpace + padding + (circleSize - padding - padding) / 2;
+                this.top = top;
+                if (value != null) {
+                    if (value < 0f) {
+                        textValue = context.getString(R.string.missing_data_placeholder);
+                        paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
+                        textPaint = textGridNoValuePaint;
+                    } else {
+                        textValue = Styles.createTextValue(value, 0);
+                        final Condition condition = graph.getConditionForValue(value);
+                        paint.setColor(ContextCompat.getColor(getContext(), condition.colorRes));
+                        textPaint = textGridPaint;
+                    }
+                } else {
+                    textValue = "";
+                    paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
+                    textPaint = textGridNoValuePaint;
+                }
+
+
+                textPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
+                final float hOffset;
+                if (circleSize - padding > textBounds.width()) {
+                    hOffset = (circleSize - padding - textBounds.width()) / 2;
+                } else {
+                    hOffset = (textBounds.width() - (circleSize - padding)) / 2;
+                }
+                final float vOffset;
+                if (circleSize - padding > textBounds.height()) {
+                    vOffset = (circleSize - padding - textBounds.height()) / 2;
+                } else {
+                    vOffset = (textBounds.height() - (circleSize - padding)) / 2;
+
+                }
+                textLeft = leftSpace + hOffset + 3;
+                textTop = top + vOffset / 4 - 2;
+            }
+
+            @Override
+            public void draw(Canvas canvas) {
+                canvas.drawCircle(left, top, radius, borderPaint);
+                canvas.drawCircle(left, top, radius - padding / 2, paint);
+                canvas.drawText(textValue, textLeft, textTop, textPaint);
+            }
+
+            @Override
+            public void setAlpha(int alpha) {
+
+            }
+
+            @Override
+            public void setColorFilter(ColorFilter colorFilter) {
+
+            }
+
+            @Override
+            public int getOpacity() {
+                return 0;
+            }
         }
     }
 
