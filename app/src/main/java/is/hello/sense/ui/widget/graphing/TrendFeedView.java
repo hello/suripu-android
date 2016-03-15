@@ -21,8 +21,6 @@ import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.widget.GridTrendGraphView;
-import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
-import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 
 public class TrendFeedView extends LinearLayout {
     private static final int DAYS_IN_WEEK = 7;

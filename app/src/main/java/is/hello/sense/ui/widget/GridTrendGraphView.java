@@ -48,14 +48,14 @@ public class GridTrendGraphView extends TrendGraphView {
     public void bindGraph(@NonNull Graph graph) {
         final int currentHeight = getDrawableHeight();
         final int targetHeight = getDrawableHeight(graph);
-        ValueAnimator animator = ValueAnimator.ofFloat(.1f, 1f);
+        ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
         animator.setDuration(Anime.DURATION_SLOW);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {
             if (targetHeight > currentHeight) {
                 setDrawableHeight((int) (currentHeight + (targetHeight - currentHeight) * (float) a.getAnimatedValue()));
             } else {
-                setDrawableHeight((int) (targetHeight + (currentHeight - targetHeight) * (1f - (float) a.getAnimatedValue())));
+                setDrawableHeight((int) (targetHeight + (currentHeight - targetHeight) * (maxAnimationFactor - (float) a.getAnimatedValue())));
             }
             requestLayout();
 
@@ -165,7 +165,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     final Paint textPaint;
                     if (value != null) {
                         if (value < 0f) {
-                            textValue = "- -";
+                            textValue = context.getString(R.string.missing_data_placeholder);
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
                             textPaint = textGridNoValuePaint;
                         } else {
