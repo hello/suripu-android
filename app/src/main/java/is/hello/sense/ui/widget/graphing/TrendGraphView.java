@@ -17,19 +17,9 @@ import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGraph {
     protected TrendGraphDrawable drawable;
     protected AnimatorContext animatorContext;
+    protected static final float maxAnimationFactor = 1f;
+    protected static final float minAnimationFactor = 0;
 
-    public TrendGraphView(@NonNull Context context,
-                          @NonNull TrendGraphDrawable graphDrawable) {
-        super(context);
-
-        this.drawable = graphDrawable;
-
-        setBackground(drawable);
-        setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                      ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        drawable.showGraphAnimation();
-    }
 
     protected TrendGraphView(@NonNull Context context, @NonNull AnimatorContext animatorContext) {
         super(context);
