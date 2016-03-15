@@ -12,7 +12,7 @@ import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.ui.widget.BarTrendGraphView;
-import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
+import is.hello.sense.ui.widget.BubbleTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class Graph extends ApiResponse {
@@ -156,7 +156,7 @@ public class Graph extends ApiResponse {
             @Override
             public CharSequence renderAnnotation(@NonNull Annotation annotation) {
                 return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue() * 100, 0),
-                                                     BubbleGraphDrawable.PERCENT_SYMBOL,
+                                                     BubbleTrendGraphView.BubbleGraphDrawable.PERCENT_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
             }
         };
