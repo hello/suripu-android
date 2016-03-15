@@ -11,7 +11,7 @@ import java.util.List;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
+import is.hello.sense.ui.widget.BarTrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 
@@ -148,7 +148,7 @@ public class Graph extends ApiResponse {
             @Override
             public CharSequence renderAnnotation(@NonNull Annotation annotation) {
                 return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 2),
-                                                     BarGraphDrawable.HOUR_SYMBOL,
+                                                     BarTrendGraphView.BarGraphDrawable.HOUR_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
             }
         },

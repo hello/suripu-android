@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
-import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 
@@ -37,15 +36,6 @@ public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGrap
     }
 
 
-    static class BarTrendGraphView extends TrendGraphView {
-        public BarTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-            super(context, animatorContext);
-            this.drawable = new BarGraphDrawable(context, graph, animatorContext);
-            setBackground(drawable);
-            setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            drawable.showGraphAnimation();
-        }
-    }
 
     static class BubbleTrendGraphView extends TrendGraphView {
         public BubbleTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {

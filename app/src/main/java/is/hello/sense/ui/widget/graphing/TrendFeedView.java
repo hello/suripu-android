@@ -20,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.ui.widget.BarTrendGraphView;
 import is.hello.sense.ui.widget.GridTrendGraphView;
 
 public class TrendFeedView extends LinearLayout {
@@ -204,7 +205,7 @@ public class TrendFeedView extends LinearLayout {
         final Context context = getContext();
         switch (graph.getSpecConformingGraphType()) {
             case BAR:
-                return new TrendFeedViewItem(new TrendGraphView.BarTrendGraphView(context, graph, animatorContext));
+                return new TrendFeedViewItem(new BarTrendGraphView(context, graph, animatorContext));
 
             case BUBBLES:
                 return new TrendFeedViewItem(new TrendGraphView.BubbleTrendGraphView(context, graph, animatorContext));
