@@ -113,6 +113,49 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
     }
 
+    public TrendFeedViewItem(@NonNull TrendGraphLayout layout) {
+        super(layout.getContext());
+
+        LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
+
+        setOrientation(VERTICAL);
+        setBackgroundResource(R.drawable.raised_item_normal);
+
+        final Resources resources = getResources();
+        final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        setPadding(padding, 0, padding, padding);
+
+        final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                             LayoutParams.WRAP_CONTENT);
+        myLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
+        setLayoutParams(myLayoutParams);
+
+        final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
+        setCornerRadii(cornerRadius);
+
+        final View divider = findViewById(R.id.item_trend_divider);
+        this.dividerDrawable = ShimmerDividerDrawable.createTrendCardDivider(resources);
+        divider.setBackground(dividerDrawable);
+
+        this.title = (TextView) findViewById(R.id.item_trend_title);
+        this.graphBinder = layout;
+        this.annotationsLayout = new LinearLayout(getContext());
+
+        final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                      LayoutParams.WRAP_CONTENT);
+        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+
+        final LayoutParams graphLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                                LayoutParams.WRAP_CONTENT);
+
+        addView(layout, graphLayoutParams);
+        addView(annotationsLayout, annotationsLayoutParams);
+        Graph graph = layout.getTrendGraphView().getGraph();
+        setTitle(graph.getTitle());
+        populateAnnotations(graph.getDataType(), graph.getAnnotations());
+
+    }
+
 
     private TrendFeedViewItem(@NonNull Context context,
                               @NonNull View graphView,
@@ -291,6 +334,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     }
 
     public interface OnBindGraph {
+
         void bindGraph(@NonNull Graph graph);
     }
 }
