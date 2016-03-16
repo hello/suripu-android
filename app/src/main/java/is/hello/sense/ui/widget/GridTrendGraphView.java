@@ -26,7 +26,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
-import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -34,11 +33,12 @@ import is.hello.sense.ui.widget.util.Styles;
 
 /**
  * View to show a graphs Grid type.
- */
+ * */
 @SuppressLint("ViewConstructor")
 public class GridTrendGraphView extends TrendGraphView {
 
     private final AnimatorContext animatorContext;
+    private boolean showText = true;
 
     public GridTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
         super(context, animatorContext);
@@ -51,40 +51,39 @@ public class GridTrendGraphView extends TrendGraphView {
 
     @Override
     public void bindGraph(@NonNull Graph graph) {
-        if (this.getGraph().getTimeScale() == graph.getTimeScale()) {
+        if (getAlpha() == 0){
+            setDrawableHeight(getDrawableHeight(graph));
+            requestLayout();
+            super.bindGraph(graph);
             return;
         }
-        if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS || this.getGraph().getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
-            // todo fade
-        } else {
-            final int currentHeight = getDrawableHeight();
-            final int targetHeight = getDrawableHeight(graph);
-            ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
-            animator.setDuration(Anime.DURATION_SLOW);
-            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-            animator.addUpdateListener(a -> {
-                if (targetHeight > currentHeight) {
-                    setDrawableHeight((int) (currentHeight + (targetHeight - currentHeight) * (float) a.getAnimatedValue()));
-                } else {
-                    setDrawableHeight((int) (targetHeight + (currentHeight - targetHeight) * (maxAnimationFactor - (float) a.getAnimatedValue())));
-                }
-                requestLayout();
-
-            });
-            if (targetHeight < currentHeight) {
-                animator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        GridTrendGraphView.super.bindGraph(graph);
-                    }
-                });
+        final int currentHeight = getDrawableHeight();
+        final int targetHeight = getDrawableHeight(graph);
+        ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
+        animator.setDuration(Anime.DURATION_NORMAL);
+        animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+        animator.addUpdateListener(a -> {
+            if (targetHeight > currentHeight) {
+                setDrawableHeight((int) (currentHeight + (targetHeight - currentHeight) * (float) a.getAnimatedValue()));
             } else {
-                super.bindGraph(graph);
+                setDrawableHeight((int) (targetHeight + (currentHeight - targetHeight) * (maxAnimationFactor - (float) a.getAnimatedValue())));
             }
+            requestLayout();
 
-            animatorContext.startWhenIdle(animator);
+        });
+        if (targetHeight < currentHeight) {
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    GridTrendGraphView.super.bindGraph(graph);
+                }
+            });
+        } else {
+            super.bindGraph(graph);
         }
+
+        animatorContext.startWhenIdle(animator);
     }
 
     @Override
@@ -113,6 +112,11 @@ public class GridTrendGraphView extends TrendGraphView {
         ((GridGraphDrawable) drawable).height = height;
     }
 
+    public void showText(boolean show) {
+        this.showText = show;
+    }
+
+
     /**
      * Drawable that represents the Grid of a given Graph Object.
      */
@@ -120,8 +124,8 @@ public class GridTrendGraphView extends TrendGraphView {
 
         private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final TextPaint textGridPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        private final TextPaint textGridNoValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint whitePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final int textHeight;
 
         private GridCellController cellController;
         private int height = 0;
@@ -135,13 +139,15 @@ public class GridTrendGraphView extends TrendGraphView {
             super(context, graph, animatorContext);
             Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
             Drawing.updateTextPaintFromStyle(textGridPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
-            Drawing.updateTextPaintFromStyle(textGridNoValuePaint, context, R.style.AppTheme_Text_Trends_GridGraph_NoValue);
-            borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
+            whitePaint.setARGB(255, 255, 255, 255);
+            Rect bounds = new Rect();
+            textLabelPaint.getTextBounds("A", 0, 1, bounds);
+            textHeight = bounds.height();
         }
 
         @Override
         public int getIntrinsicHeight() {
-            return height;
+            return height + textHeight * 2 + (int) padding;
         }
 
         @Override
@@ -172,13 +178,12 @@ public class GridTrendGraphView extends TrendGraphView {
                 for (GridCellDrawable cell : cells) {
                     cell.draw(canvas);
                 }
-
             }
         }
 
         private void initHeight(float circleSize) {
             this.circleSize = circleSize;
-            this.padding = circleSize * .03f;
+            this.padding = circleSize * .075f;
             this.height = getHeight(this.graph);
             this.reservedTopSpace = circleSize + padding;
             this.radius = circleSize / 2 - padding * 2;
@@ -190,22 +195,27 @@ public class GridTrendGraphView extends TrendGraphView {
             cellController = new GridCellController();
             List<GraphSection> sections = graph.getSections();
             for (int h = 0; h < sections.size(); h++) {
-                GraphSection section = sections.get(h);
                 cellController.createSection();
-                List<Float> values = section.getValues();
+
+                List<Float> values = sections.get(h).getValues();
                 for (int i = 0; i < values.size(); i++) {
                     Float value = values.get(i);
                     GridCellDrawable cellDrawable = new GridCellDrawable(h, i, value);
                     cellController.add(cellDrawable);
                 }
-                for (int indexValue : section.getHighlightedValues()) {
-                    cellController.getCell(indexValue).highlightCell();
+
+                for (int indexValue : sections.get(h).getHighlightedValues()) {
+                    GridCellDrawable highlightCell = cellController.getCell(indexValue);
+                    if (highlightCell != null) {
+                        highlightCell.highlightCell();
+                    }
                 }
+
             }
         }
 
         private int getHeight(@NonNull Graph graph) {
-            return (int) ((graph.getSections().size() + .5f) * circleSize);
+            return (int) ((graph.getSections().size()) * circleSize);
         }
 
         private float minPossibleTop() {
@@ -216,6 +226,9 @@ public class GridTrendGraphView extends TrendGraphView {
             return spaceFromBottom;
         }
 
+        /**
+         *
+         */
         private class GridCellController extends ArrayList<ArrayList<GridCellDrawable>> {
 
             public void createSection() {
@@ -241,18 +254,20 @@ public class GridTrendGraphView extends TrendGraphView {
             }
         }
 
-
+        /**
+         *
+         */
         private class GridCellDrawable extends Drawable {
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            private final float left;
-            private final String textValue;
-            private final Paint textPaint;
-            private final float textLeft;
-            private final Rect textBounds = new Rect();
+            private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private final int sectionIndex;
+            private final float left;
+            private final float textLeft;
             private final float hOffset;
             private final float vOffset;
             private final boolean hasValue;
+            private final String textValue;
+            private final Rect textBounds = new Rect();
 
             private float top;
             private float textTop;
@@ -267,23 +282,23 @@ public class GridTrendGraphView extends TrendGraphView {
                         hasValue = false;
                         textValue = context.getString(R.string.missing_data_placeholder);
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
-                        textPaint = textGridNoValuePaint;
+                        borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
                     } else {
                         hasValue = true;
                         textValue = Styles.createTextValue(value, 0);
                         final Condition condition = graph.getConditionForValue(value);
                         paint.setColor(ContextCompat.getColor(getContext(), condition.colorRes));
-                        textPaint = textGridPaint;
+                        borderPaint.setColor(ContextCompat.getColor(context, condition.colorRes));
                     }
                 } else {
                     hasValue = false;
                     textValue = "";
                     paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
-                    textPaint = textGridNoValuePaint;
+                    borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
                 }
 
 
-                textPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
+                textGridPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
                 if (circleSize - padding > textBounds.width()) {
                     hOffset = (circleSize - padding - textBounds.width()) / 2;
                 } else {
@@ -293,9 +308,8 @@ public class GridTrendGraphView extends TrendGraphView {
                     vOffset = (circleSize - padding - textBounds.height()) / 2;
                 } else {
                     vOffset = (textBounds.height() - (circleSize - padding)) / 2;
-
                 }
-                textLeft = leftSpace + hOffset + 1;
+                textLeft = leftSpace + hOffset + 2;
             }
 
             @Override
@@ -308,16 +322,18 @@ public class GridTrendGraphView extends TrendGraphView {
                     return;
                 }
 
-                textTop = top + vOffset / 4 - 1;
+                textTop = top + vOffset / 4;
                 if (highlight && hasValue) {
+                    int inset = getContext().getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_inset);
                     canvas.drawCircle(left, top, radius, paint);
-                    canvas.drawCircle(left, top, radius - padding / 2, borderPaint);
-                    canvas.drawCircle(left, top, radius - padding, paint);
-                    canvas.drawText(textValue, textLeft, textTop, textPaint);
+                    canvas.drawCircle(left, top, radius - inset, whitePaint);
+                    canvas.drawCircle(left, top, radius - inset * 2, paint);
                 } else {
                     canvas.drawCircle(left, top, radius, borderPaint);
-                    canvas.drawCircle(left, top, radius - padding / 2, paint);
-                    canvas.drawText(textValue, textLeft, textTop, textPaint);
+                    canvas.drawCircle(left, top, radius - padding / 8, paint);
+                }
+                if (showText) {
+                    canvas.drawText(textValue, textLeft, textTop, textGridPaint);
                 }
             }
 

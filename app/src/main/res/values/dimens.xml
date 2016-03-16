@@ -48,7 +48,7 @@
     <dimen name="text_size_scale_reading">64sp</dimen>
     <dimen name="text_size_trends_bargraph">10sp</dimen>
     <dimen name="text_size_trends_bubblegraph_title">10sp</dimen>
-    <dimen name="text_size_trends_gridgraph">12sp</dimen>
+    <dimen name="text_size_trends_gridgraph">11sp</dimen>
 
     <item name="line_multiple_none" format="float" type="dimen">0</item>
     <item name="line_multiple_normal" format="float" type="dimen">1</item>
@@ -143,6 +143,7 @@
     <dimen name="trends_bubblegraph_min_height">80dp</dimen>
     <dimen name="trends_bubblegraph_title_top_margin">10dp</dimen>
     <dimen name="trends_bubblegraph_percent_offset">4dp</dimen>
+    <dimen name="trends_gridgraph_border_inset">1dp</dimen>
 
     <!-- Timeline -->
 

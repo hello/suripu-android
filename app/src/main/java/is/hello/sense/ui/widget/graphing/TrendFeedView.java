@@ -20,9 +20,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.widget.BarTrendGraphView;
-import is.hello.sense.ui.widget.BubbleTrendGraphView;
-import is.hello.sense.ui.widget.GridTrendGraphView;
 
 public class TrendFeedView extends LinearLayout {
     private static final int DAYS_IN_WEEK = 7;
@@ -139,35 +136,12 @@ public class TrendFeedView extends LinearLayout {
 
         final Set<Graph.GraphType> includedTypes = new HashSet<>(graphs.size());
         for (final Graph graph : graphs) {
-            final Graph.GraphType graphType = graph.getSpecConformingGraphType();
+            final Graph.GraphType graphType = graph.getGraphType();
             TrendFeedViewItem trendFeedViewItem = cardViews.get(graphType);
             if (trendFeedViewItem == null) {
-                // todo erase one day start>
-                if (graphType == Graph.GraphType.OVERVIEW) {
-                    TrendFeedViewItem temp = cardViews.get(Graph.GraphType.GRID);
-                    if (temp != null) {
-                        setLayoutTransition(null);
-                        temp.setVisibility(INVISIBLE);
-                        removeView(temp);
-                        setLayoutTransition(new LayoutTransition());
-                    }
-                } else if (graphType == Graph.GraphType.GRID) {
-                    TrendFeedViewItem temp = cardViews.get(Graph.GraphType.OVERVIEW);
-                    if (temp != null) {
-                        setLayoutTransition(null);
-                        temp.setVisibility(INVISIBLE);
-                        removeView(temp);
-                        setLayoutTransition(new LayoutTransition());
-                    }
-                }
-                // todo erase one day end>
                 trendFeedViewItem = createTrendCard(graph);
-                setLayoutTransition(null); // todo erase one day.
-                trendFeedViewItem.setVisibility(INVISIBLE);
                 cardViews.put(graphType, trendFeedViewItem);
-                addView(trendFeedViewItem, getPositionAffinity(graph));
-                trendFeedViewItem.setVisibility(VISIBLE);
-                setLayoutTransition(new LayoutTransition()); // todo erase one day.
+                addView(trendFeedViewItem);
 
             } else {
                 trendFeedViewItem.bindGraph(graph);
@@ -191,35 +165,20 @@ public class TrendFeedView extends LinearLayout {
         }
     }
 
-    private static int getPositionAffinity(@NonNull Graph graph) {
-        switch (graph.getSpecConformingGraphType()) {
-            case GRID:
-            case OVERVIEW:
-                return 0;
-
-            default:
-                return -1; // end
-        }
-    }
-
     private TrendFeedViewItem createTrendCard(@NonNull Graph graph) {
         final Context context = getContext();
-        switch (graph.getSpecConformingGraphType()) {
+        switch (graph.getGraphType()) {
             case BAR:
-                return new TrendFeedViewItem(new BarTrendGraphView(context, graph, animatorContext));
+                return new TrendFeedViewItem(new TrendGraphLayout.BarTrendGraphLayout(context, graph, animatorContext));
 
             case BUBBLES:
-                return new TrendFeedViewItem(new BubbleTrendGraphView(context, graph, animatorContext));
+                return new TrendFeedViewItem(new TrendGraphLayout.BubbleTrendGraphlayout(context, graph, animatorContext));
 
             case GRID:
-                return new TrendFeedViewItem(new GridTrendGraphView(context, graph, animatorContext));
-
-            case OVERVIEW:
-                final MultiGridGraphView multiGridGraphView = new MultiGridGraphView(context);
-                return TrendFeedViewItem.createMultiGridCard(multiGridGraphView, graph);
+                return new TrendFeedViewItem(new TrendGraphLayout.GridTrendGraphLayout(context, graph, animatorContext));
 
             default:
-                throw new IllegalArgumentException("Unknown graph type " + graph.getSpecConformingGraphType());
+                throw new IllegalArgumentException("Unknown graph type " + graph.getGraphType());
         }
     }
 }
