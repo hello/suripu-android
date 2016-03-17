@@ -37,14 +37,14 @@ import is.hello.sense.ui.widget.GridTrendGraphView;
 
 /**
  * Layout for Graphs. Mainly needed for the {@link GridTrendGraphView} Quarter view. A normal view doesn't have the
- * methods to quickly add and remove child views like a {@link LinearLayout}.
+ * methods to quickly add and remove child views like a {@link LinearLayout}. This is essentially a view controller.
  */
 @SuppressLint("ViewConstructor")
 public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.OnBindGraph {
     protected final TrendGraphView trendGraphView;
 
 
-    private TrendGraphLayout(Context context, @NonNull TrendGraphView trendGraphView) {
+    private TrendGraphLayout(@NonNull Context context, @NonNull TrendGraphView trendGraphView) {
         super(context);
         this.trendGraphView = trendGraphView;
         setOrientation(VERTICAL);
@@ -149,9 +149,9 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
 
     }
 
-    public static class BubbleTrendGraphlayout extends TrendGraphLayout {
+    public static class BubbleTrendGraphLayout extends TrendGraphLayout {
 
-        public BubbleTrendGraphlayout(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
+        public BubbleTrendGraphLayout(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, new BubbleTrendGraphView(context, graph, animatorContext));
         }
 
