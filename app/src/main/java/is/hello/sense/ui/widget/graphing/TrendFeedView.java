@@ -172,7 +172,7 @@ public class TrendFeedView extends LinearLayout {
                 return new TrendFeedViewItem(new TrendGraphLayout.BarTrendGraphLayout(context, graph, animatorContext));
 
             case BUBBLES:
-                return new TrendFeedViewItem(new TrendGraphLayout.BubbleTrendGraphlayout(context, graph, animatorContext));
+                return new TrendFeedViewItem(new TrendGraphLayout.BubbleTrendGraphLayout(context, graph, animatorContext));
 
             case GRID:
                 return new TrendFeedViewItem(new TrendGraphLayout.GridTrendGraphLayout(context, graph, animatorContext));

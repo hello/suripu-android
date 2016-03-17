@@ -37,7 +37,7 @@ public class Graph extends ApiResponse {
     private float maxValue;
 
     @SerializedName("sections")
-    private ArrayList<GraphSection> sections;
+    private List<GraphSection> sections;
 
     @SerializedName("condition_ranges")
     @VisibleForTesting
@@ -100,6 +100,11 @@ public class Graph extends ApiResponse {
         return graphs;
     }
 
+
+    public void addSection(GraphSection section) {
+        this.sections.add(section);
+    }
+
     public Trends.TimeScale getTimeScale() {
         return timeScale;
     }
@@ -128,12 +133,8 @@ public class Graph extends ApiResponse {
         return maxValue;
     }
 
-    public ArrayList<GraphSection> getSections() {
+    public List<GraphSection> getSections() {
         return sections;
-    }
-
-    public void addSection(GraphSection section) {
-        this.sections.add(section);
     }
 
     public List<ConditionRange> getConditionRanges() {

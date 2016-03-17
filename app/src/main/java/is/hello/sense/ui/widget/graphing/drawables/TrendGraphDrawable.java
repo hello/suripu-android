@@ -46,7 +46,6 @@ public abstract class TrendGraphDrawable extends Drawable {
     @Override
     public void setAlpha(int alpha) {
 
-
     }
 
     @Override

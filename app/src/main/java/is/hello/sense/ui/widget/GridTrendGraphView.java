@@ -33,7 +33,7 @@ import is.hello.sense.ui.widget.util.Styles;
 
 /**
  * View to show a graphs Grid type.
- * */
+ */
 @SuppressLint("ViewConstructor")
 public class GridTrendGraphView extends TrendGraphView {
 
@@ -51,7 +51,7 @@ public class GridTrendGraphView extends TrendGraphView {
 
     @Override
     public void bindGraph(@NonNull Graph graph) {
-        if (getAlpha() == 0){
+        if (getAlpha() == 0) { // No need to animate, the view isn't visible.
             setDrawableHeight(getDrawableHeight(graph));
             requestLayout();
             super.bindGraph(graph);
@@ -72,6 +72,7 @@ public class GridTrendGraphView extends TrendGraphView {
 
         });
         if (targetHeight < currentHeight) {
+            // The drawable is going to decrease in size, wait for the animation to end before binding a new graph that will remove cells.
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -80,6 +81,7 @@ public class GridTrendGraphView extends TrendGraphView {
                 }
             });
         } else {
+            // The drawable is increasing in size, add cells immediately so they appear as it's height increases.
             super.bindGraph(graph);
         }
 
@@ -90,6 +92,8 @@ public class GridTrendGraphView extends TrendGraphView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (getCircleSize() == 0) {
+            // if circle size is 0, everything will have a height and width of 0.
+            // At this point we have an accurate width measurement of the view. So we can scale the graph to fit inside of the width it consumes.
             ((GridGraphDrawable) drawable).initHeight(View.MeasureSpec.getSize(widthMeasureSpec) / 7);
         }
 
@@ -103,7 +107,6 @@ public class GridTrendGraphView extends TrendGraphView {
         return getDrawableHeight(drawable.getGraph());
     }
 
-
     private int getDrawableHeight(@NonNull Graph graph) {
         return ((GridGraphDrawable) drawable).getHeight(graph);
     }
@@ -112,6 +115,11 @@ public class GridTrendGraphView extends TrendGraphView {
         ((GridGraphDrawable) drawable).height = height;
     }
 
+    /**
+     * Show/Hide the value of each cell.
+     *
+     * @param show
+     */
     public void showText(boolean show) {
         this.showText = show;
     }
@@ -181,6 +189,12 @@ public class GridTrendGraphView extends TrendGraphView {
             }
         }
 
+        /**
+         * Called once to establish the circle size.  Everything in the {@link GridGraphDrawable} is
+         * based on the circleSize.
+         *
+         * @param circleSize width / 7
+         */
         private void initHeight(float circleSize) {
             this.circleSize = circleSize;
             this.padding = circleSize * .075f;
@@ -191,6 +205,9 @@ public class GridTrendGraphView extends TrendGraphView {
 
         }
 
+        /**
+         * Should be called each time the graph changes.
+         */
         private void updateCellController() {
             cellController = new GridCellController();
             List<GraphSection> sections = graph.getSections();
@@ -227,7 +244,8 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         /**
-         *
+         * Class to store CellDrawables in a way that reflects their arrangement in a given Graph.
+         * Has methods to quickly perform actions.
          */
         private class GridCellController extends ArrayList<ArrayList<GridCellDrawable>> {
 
@@ -255,22 +273,41 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         /**
-         *
+         * Each individual cell that needs to be drawn. This object lets us break apart the drawing
+         * and can be used in the future to animate movement from week/month -> quarter view.
          */
         private class GridCellDrawable extends Drawable {
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            /**
+             * Index number of the {@link GraphSection} this cell belongs to in the {@link Graph}.
+             * Used to determine y location of cell.
+             */
             private final int sectionIndex;
             private final float left;
             private final float textLeft;
-            private final float hOffset;
-            private final float vOffset;
-            private final boolean hasValue;
-            private final String textValue;
-            private final Rect textBounds = new Rect();
 
             private float top;
             private float textTop;
+            private final String textValue;
+
+            /**
+             * Horizontal offset position of text.
+             */
+            private final float hOffset;
+
+            /**
+             * Vertical offset position of text.
+             */
+            private final float vOffset;
+
+            /**
+             * True when the cell has a value greater than -1.
+             */
+            private final boolean hasValue;
+            private final Rect textBounds = new Rect();
+
             private boolean highlight = false;
 
             public GridCellDrawable(int sectionIndex, int index, Float value) {
