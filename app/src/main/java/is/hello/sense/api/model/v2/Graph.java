@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
@@ -13,6 +14,7 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.ui.widget.BarTrendGraphView;
 import is.hello.sense.ui.widget.BubbleTrendGraphView;
+import is.hello.sense.ui.widget.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class Graph extends ApiResponse {
@@ -53,6 +55,61 @@ public class Graph extends ApiResponse {
         this.graphType = graphType;
     }
 
+    public Graph(Graph graph) {
+        this.timeScale = graph.timeScale;
+        this.title = graph.title;
+        this.dataType = graph.dataType;
+        this.graphType = graph.graphType;
+        this.minValue = graph.minValue;
+        this.maxValue = graph.maxValue;
+        this.sections = new ArrayList<>();
+        this.conditionRanges = graph.conditionRanges;
+        this.annotations = graph.annotations;
+
+    }
+
+    /**
+     * The quarter graph response from /v2/trends/LAST_3_MONTHS uses each {@link GraphSection} to
+     * represent one month of data, rather than one week. This method will break apart each
+     * {@link GraphSection} by creating a new one for every 7 days of data and then add them to a
+     * new {@link Graph}.
+     *
+     * @return List of Graphs, each to be used with a seperate {@link GridTrendGraphView}
+     */
+    public ArrayList<Graph> convertToQuarterGraphs() {
+        ArrayList<Graph> graphs = new ArrayList<>();
+        for (GraphSection graphSection : sections) {
+            Graph graph = new Graph(this);
+            for (int i = 0; i < graphSection.getValues().size(); i++) {
+                final GraphSection temp;
+                if (i % 7 == 0) {
+                    temp = new GraphSection(graphSection);
+                    graph.addSection(temp);
+                } else {
+                    temp = graph.getSections().get(graph.getSections().size() - 1);
+                }
+                temp.addValue(graphSection.getValues().get(i));
+
+            }
+            for (int i = 0; i < graphSection.getTitles().size(); i++) {
+                String title = graphSection.getTitles().get(i);
+                graph.getSections().get(i).addTitle(title);
+            }
+            for (int highlightedIndex : graphSection.getHighlightedValues()) {
+                int section = highlightedIndex / 6;
+                int cell = highlightedIndex % 7;
+                graph.getSections().get(section).addHighlightedValues(cell);
+            }
+            graphs.add(graph);
+        }
+        return graphs;
+    }
+
+
+    public void addSection(GraphSection section) {
+        this.sections.add(section);
+    }
+
     public Trends.TimeScale getTimeScale() {
         return timeScale;
     }
@@ -69,18 +126,8 @@ public class Graph extends ApiResponse {
         return graphType;
     }
 
-    public GraphType getSpecConformingGraphType() {
-        if (timeScale == Trends.TimeScale.LAST_3_MONTHS && graphType == GraphType.GRID) {
-            return GraphType.OVERVIEW;
-        } else {
-            return graphType;
-        }
-    }
-
     public boolean isGrid() {
-        final GraphType graphType = getSpecConformingGraphType();
-        return (graphType == GraphType.GRID ||
-                graphType == GraphType.OVERVIEW);
+        return getGraphType() == GraphType.GRID;
     }
 
     public float getMinValue() {
@@ -132,13 +179,12 @@ public class Graph extends ApiResponse {
         NO_DATA,
         EMPTY,
         GRID,
-        OVERVIEW,
         BAR,
         BUBBLES;
 
         public static GraphType fromString(@Nullable String string) {
             return Enums.fromString(string, values(), EMPTY);
-         }
+        }
     }
 
     public enum DataType implements Enums.FromString {
