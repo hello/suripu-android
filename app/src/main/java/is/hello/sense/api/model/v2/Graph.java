@@ -89,6 +89,11 @@ public class Graph extends ApiResponse {
                     temp = graph.getSections().get(graph.getSections().size() - 1);
                 }
                 temp.addValue(graphSection.getValues().get(i));
+
+            }
+            for (int i = 0; i < graphSection.getTitles().size(); i++) {
+                String title = graphSection.getTitles().get(i);
+                graph.getSections().get(i).addTitle(title);
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 int section = highlightedIndex / 6;

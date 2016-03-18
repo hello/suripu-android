@@ -91,9 +91,11 @@ public class GridTrendGraphView extends TrendGraphView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        // This is where the magic happens. At this point we have an accurate width measurement of
+        // the view. So we can scale the graph to fit inside of the width it consumes.
         if (getCircleSize() == 0) {
-            // if circle size is 0, everything will have a height and width of 0.
-            // At this point we have an accurate width measurement of the view. So we can scale the graph to fit inside of the width it consumes.
+            // if circle size is 0, then we have not yet taken into account the size of this view and
+            // everything will have a height and width of 0.
             ((GridGraphDrawable) drawable).initHeight(View.MeasureSpec.getSize(widthMeasureSpec) / 7);
         }
 
@@ -131,7 +133,7 @@ public class GridTrendGraphView extends TrendGraphView {
     private class GridGraphDrawable extends TrendGraphDrawable {
 
         private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        private final TextPaint textGridPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        private final TextPaint textCellPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final Paint whitePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final int textHeight;
 
@@ -145,9 +147,9 @@ public class GridTrendGraphView extends TrendGraphView {
 
         public GridGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
-            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
-            Drawing.updateTextPaintFromStyle(textGridPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
-            whitePaint.setARGB(255, 255, 255, 255);
+            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
+            Drawing.updateTextPaintFromStyle(textCellPaint, context, R.style.AppTheme_Text_Trends_GridGraph_Cell);
+            whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
             Rect bounds = new Rect();
             textLabelPaint.getTextBounds("A", 0, 1, bounds);
             textHeight = bounds.height();
@@ -244,8 +246,9 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         /**
-         * Class to store CellDrawables in a way that reflects their arrangement in a given Graph.
-         * Has methods to quickly perform actions.
+         * Class to store {@link is.hello.sense.ui.widget.GridTrendGraphView.GridGraphDrawable.GridCellDrawable}
+         * in a way that reflects their arrangement in a given {@link Graph}.
+         * Has methods to quickly perform repetitive actions.
          */
         private class GridCellController extends ArrayList<ArrayList<GridCellDrawable>> {
 
@@ -335,7 +338,7 @@ public class GridTrendGraphView extends TrendGraphView {
                 }
 
 
-                textGridPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
+                textCellPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
                 if (circleSize - padding > textBounds.width()) {
                     hOffset = (circleSize - padding - textBounds.width()) / 2;
                 } else {
@@ -370,7 +373,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     canvas.drawCircle(left, top, radius - padding / 8, paint);
                 }
                 if (showText) {
-                    canvas.drawText(textValue, textLeft, textTop, textGridPaint);
+                    canvas.drawText(textValue, textLeft, textTop, textCellPaint);
                 }
             }
 
