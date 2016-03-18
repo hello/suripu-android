@@ -69,13 +69,16 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
     public static class GridTrendGraphLayout extends TrendGraphLayout {
         private Trends.TimeScale currentTimescale;
         private ArrayList<GridTrendGraphView> graphViews = new ArrayList<>();
-        private final int verticalMargins;
-        private final int horizontalMargins;
+        private final LinearLayout.LayoutParams horizontalRowLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        private final LinearLayout.LayoutParams quarterGridLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
 
         public GridTrendGraphLayout(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, new GridTrendGraphView(context, graph, animatorContext));
-            this.verticalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_vertical_margins);
-            this.horizontalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_horizontal_margins);
+            final int verticalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_vertical_margins);
+            final int horizontalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_horizontal_margins);
+            horizontalRowLayoutParams.setMargins(0, verticalMargins, 0, verticalMargins);
+            quarterGridLayoutParams.setMargins(horizontalMargins, 0, horizontalMargins, 0);
+
         }
 
         @Override
@@ -96,22 +99,11 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
                         for (int i = 0; i < graphs.size(); i++) {
                             final LinearLayout horizontalLayout;
                             if (i % 2 == 0) {
-                                horizontalLayout = new LinearLayout(getContext());
-                                LinearLayout.LayoutParams horizontalLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                horizontalLayoutParams.setMargins(0, verticalMargins, 0, verticalMargins);
-                                horizontalLayout.setLayoutParams(horizontalLayoutParams);
-                                horizontalLayout.setOrientation(HORIZONTAL);
-                                addView(horizontalLayout);
+                                horizontalLayout = addRow();
                             } else {
-                                horizontalLayout = (LinearLayout) getChildAt(getChildCount() - 1);
+                                horizontalLayout = getLastRow();
                             }
-                            GridTrendGraphView graphView = new GridTrendGraphView(getContext(), graphs.get(i), getTrendGraphView().animatorContext);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-                            layoutParams.setMargins(horizontalMargins, 0, horizontalMargins, 0);
-
-                            graphView.setLayoutParams(layoutParams);
-                            graphView.showText(false);
-                            graphView.setAlpha(0);
+                            GridTrendGraphView graphView = generateQuarterGridGraphView(graphs.get(i));
                             horizontalLayout.addView(graphView);
                             graphView.fadeIn(null);
                             graphViews.add(graphView);
@@ -143,6 +135,29 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
                 trendGraphView.bindGraph(graph);
             }
             this.currentTimescale = graph.getTimeScale();
+        }
+
+        private GridTrendGraphView generateQuarterGridGraphView(@NonNull Graph graph) {
+            GridTrendGraphView graphView = new GridTrendGraphView(getContext(), graph, getTrendGraphView().animatorContext);
+            graphView.setLayoutParams(quarterGridLayoutParams);
+            graphView.showText(false);
+            graphView.setAlpha(0);
+            return graphView;
+        }
+
+        private LinearLayout addRow() {
+            final LinearLayout horizontalLayout = new LinearLayout(getContext());
+            horizontalLayout.setLayoutParams(horizontalRowLayoutParams);
+            horizontalLayout.setOrientation(HORIZONTAL);
+            addView(horizontalLayout);
+            return horizontalLayout;
+        }
+
+        private LinearLayout getLastRow() {
+            if (getChildCount() > 0 && getChildAt(getChildCount() - 1) instanceof LinearLayout) {
+                return (LinearLayout) getChildAt(getChildCount() - 1);
+            }
+            return addRow();
         }
     }
 

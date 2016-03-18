@@ -98,4 +98,5 @@
     <color name="trends_bubblegraph_deep_bubble">#009CFF</color>
     <color name="trends_bubblegraph_text_title">@color/text_dim_light</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
+    <color name="trends_gridgraph">#66596980</color>
 </resources>

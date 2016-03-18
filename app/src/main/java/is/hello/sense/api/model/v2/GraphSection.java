@@ -26,14 +26,21 @@ public class GraphSection extends ApiResponse {
     private Integer highlightedTitle;
 
     public GraphSection(@NonNull GraphSection graphSection) {
-        this.titles = graphSection.titles;
+        this.titles = new ArrayList<>();
         this.values = new ArrayList<>();
         this.highlightedValues = new ArrayList<>();
         this.highlightedTitle = graphSection.highlightedTitle;
     }
 
-    public void addValue(Float value) {
+    public void addValue(@Nullable Float value) {
         this.values.add(value);
+    }
+
+    public void addTitle(@Nullable String title){
+        if(title == null){
+            return;
+        }
+        titles.add(title);
     }
 
     public void addHighlightedValues(int index) {
