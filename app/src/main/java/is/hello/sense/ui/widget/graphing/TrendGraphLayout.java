@@ -14,9 +14,6 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.widget.BarTrendGraphView;
-import is.hello.sense.ui.widget.BubbleTrendGraphView;
-import is.hello.sense.ui.widget.GridTrendGraphView;
 
 /**
  * +----------------------------+

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget;
+package is.hello.sense.ui.widget.graphing;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -22,7 +22,6 @@ import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
-import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;

@@ -12,9 +12,9 @@ import java.util.List;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.ui.widget.BarTrendGraphView;
-import is.hello.sense.ui.widget.BubbleTrendGraphView;
-import is.hello.sense.ui.widget.GridTrendGraphView;
+import is.hello.sense.ui.widget.graphing.BarTrendGraphView;
+import is.hello.sense.ui.widget.graphing.BubbleTrendGraphView;
+import is.hello.sense.ui.widget.graphing.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class Graph extends ApiResponse {
