@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import is.hello.go99.animators.AnimatorContext;
+import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.ui.widget.BarTrendGraphView;
@@ -68,9 +69,13 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
     public static class GridTrendGraphLayout extends TrendGraphLayout {
         private Trends.TimeScale currentTimescale;
         private ArrayList<GridTrendGraphView> graphViews = new ArrayList<>();
+        private final int verticalMargins;
+        private final int horizontalMargins;
 
         public GridTrendGraphLayout(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, new GridTrendGraphView(context, graph, animatorContext));
+            this.verticalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_vertical_margins);
+            this.horizontalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_horizontal_margins);
         }
 
         @Override
@@ -93,7 +98,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
                             if (i % 2 == 0) {
                                 horizontalLayout = new LinearLayout(getContext());
                                 LinearLayout.LayoutParams horizontalLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                horizontalLayoutParams.setMargins(0, 40, 0, 40);
+                                horizontalLayoutParams.setMargins(0, verticalMargins, 0, verticalMargins);
                                 horizontalLayout.setLayoutParams(horizontalLayoutParams);
                                 horizontalLayout.setOrientation(HORIZONTAL);
                                 addView(horizontalLayout);
@@ -102,7 +107,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
                             }
                             GridTrendGraphView graphView = new GridTrendGraphView(getContext(), graphs.get(i), getTrendGraphView().animatorContext);
                             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-                            layoutParams.setMargins(15, 0, 15, 0);
+                            layoutParams.setMargins(horizontalMargins, 0, horizontalMargins, 0);
 
                             graphView.setLayoutParams(layoutParams);
                             graphView.showText(false);
