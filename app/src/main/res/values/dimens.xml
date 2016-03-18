@@ -144,6 +144,8 @@
     <dimen name="trends_bubblegraph_title_top_margin">10dp</dimen>
     <dimen name="trends_bubblegraph_percent_offset">4dp</dimen>
     <dimen name="trends_gridgraph_border_inset">1dp</dimen>
+    <dimen name="trends_gridgraph_border_quarter_vertical_margins">10dp</dimen>
+    <dimen name="trends_gridgraph_border_quarter_horizontal_margins">3dp</dimen>
 
     <!-- Timeline -->
 
