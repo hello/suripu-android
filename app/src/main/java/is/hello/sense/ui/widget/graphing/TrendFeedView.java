@@ -47,8 +47,6 @@ public class TrendFeedView extends LinearLayout {
 
     public TrendFeedView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        setLayoutTransition(new LayoutTransition());
     }
 
     public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
@@ -103,9 +101,7 @@ public class TrendFeedView extends LinearLayout {
                 } else {
                     this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
                 }
-                setLayoutTransition(null);
                 addView(welcomeCard);
-                setLayoutTransition(new LayoutTransition());
             }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
