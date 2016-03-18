@@ -170,9 +170,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
-        if (timeScaleSelector.getVisibility() == View.VISIBLE) {
-            transitionOutTimeScaleSelector();
-        }
     }
 
     @Override
