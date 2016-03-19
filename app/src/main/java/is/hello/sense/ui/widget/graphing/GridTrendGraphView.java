@@ -13,8 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
-import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -46,6 +46,17 @@ public class GridTrendGraphView extends TrendGraphView {
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         drawable.showGraphAnimation();
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                float circleSize = getWidth() / 7;
+                if (getCircleSize() != circleSize) {
+                    ((GridGraphDrawable) drawable).initHeight(getWidth() / 7);
+                    requestLayout();
+                    invalidate();
+                }
+            }
+        });
     }
 
     @Override
@@ -85,19 +96,6 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         animatorContext.startWhenIdle(animator);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        // This is where the magic happens. At this point we have an accurate width measurement of
-        // the view. So we can scale the graph to fit inside of the width it consumes.
-        if (getCircleSize() == 0) {
-            // if circle size is 0, then we have not yet taken into account the size of this view and
-            // everything will have a height and width of 0.
-            ((GridGraphDrawable) drawable).initHeight(View.MeasureSpec.getSize(widthMeasureSpec) / 7);
-        }
-
     }
 
     private float getCircleSize() {
@@ -183,9 +181,11 @@ public class GridTrendGraphView extends TrendGraphView {
                 }
             }
 
-            for (ArrayList<GridCellDrawable> cells : cellController) {
-                for (GridCellDrawable cell : cells) {
-                    cell.draw(canvas);
+            if (cellController != null) {
+                for (ArrayList<GridCellDrawable> cells : cellController) {
+                    for (GridCellDrawable cell : cells) {
+                        cell.draw(canvas);
+                    }
                 }
             }
         }
@@ -197,6 +197,9 @@ public class GridTrendGraphView extends TrendGraphView {
          * @param circleSize width / 7
          */
         private void initHeight(float circleSize) {
+            if (circleSize == this.circleSize || circleSize == 0 || this.circleSize != 0) {
+                return;
+            }
             this.circleSize = circleSize;
             this.padding = circleSize * .075f;
             this.height = getHeight(this.graph);
@@ -288,21 +291,10 @@ public class GridTrendGraphView extends TrendGraphView {
              */
             private final int sectionIndex;
             private final float left;
-            private final float textLeft;
 
             private float top;
-            private float textTop;
             private final String textValue;
 
-            /**
-             * Horizontal offset position of text.
-             */
-            private final float hOffset;
-
-            /**
-             * Vertical offset position of text.
-             */
-            private final float vOffset;
 
             /**
              * True when the cell has a value greater than -1.
@@ -335,33 +327,19 @@ public class GridTrendGraphView extends TrendGraphView {
                     paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
                     borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
                 }
-
-
                 textCellPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
-                if (circleSize - padding > textBounds.width()) {
-                    hOffset = (circleSize - padding - textBounds.width()) / 2;
-                } else {
-                    hOffset = (textBounds.width() - (circleSize - padding)) / 2;
-                }
-                if (circleSize - padding > textBounds.height()) {
-                    vOffset = (circleSize - padding - textBounds.height()) / 2;
-                } else {
-                    vOffset = (textBounds.height() - (circleSize - padding)) / 2;
-                }
-                textLeft = leftSpace + hOffset + 2;
             }
 
             @Override
             public void draw(Canvas canvas) {
                 top = getTopPosition(canvas.getHeight(), graph.getSections().size());
-                if (top < reservedTopSpace - radius) {
+                if (top < reservedTopSpace - circleSize) {
                     top = minTop;
                 }
                 if (top + radius > canvas.getHeight()) {
                     return;
                 }
 
-                textTop = top + vOffset / 4;
                 if (highlight && hasValue) {
                     int inset = getContext().getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_inset);
                     canvas.drawCircle(left, top, radius, paint);
@@ -372,8 +350,9 @@ public class GridTrendGraphView extends TrendGraphView {
                     canvas.drawCircle(left, top, radius - padding / 8, paint);
                 }
                 if (showText) {
-                    canvas.drawText(textValue, textLeft, textTop, textCellPaint);
+                    canvas.drawText(textValue, left - textBounds.width() / 2, top + textBounds.height() / 2, textCellPaint);
                 }
+
             }
 
             @Override
