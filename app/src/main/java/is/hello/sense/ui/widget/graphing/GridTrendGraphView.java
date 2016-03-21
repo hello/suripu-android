@@ -11,8 +11,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
@@ -69,8 +71,8 @@ public class GridTrendGraphView extends TrendGraphView {
         }
         final int currentHeight = getDrawableHeight();
         final int targetHeight = getDrawableHeight(graph);
-        ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
-        animator.setDuration(Anime.DURATION_NORMAL);
+        final ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
+        animator.setDuration(Anime.DURATION_NORMAL  * 2);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {
             if (targetHeight > currentHeight) {
@@ -133,6 +135,7 @@ public class GridTrendGraphView extends TrendGraphView {
         private final TextPaint textCellPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final Paint whitePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final int textHeight;
+        private final int inset = getContext().getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_inset);
 
         private GridCellController cellController;
         private int height = 0;
@@ -140,7 +143,6 @@ public class GridTrendGraphView extends TrendGraphView {
         private float padding = 0;
         private float reservedTopSpace = 0;
         private float radius = 0;
-        private float minTop = 0;
 
         public GridGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
@@ -154,13 +156,12 @@ public class GridTrendGraphView extends TrendGraphView {
 
         @Override
         public int getIntrinsicHeight() {
-            return height + textHeight * 2 + (int) padding;
+            return height + (int)reservedTopSpace;
         }
 
         @Override
         public void updateGraph(@NonNull Graph graph) {
             this.graph = graph;
-            this.minTop = minPossibleTop();
             updateCellController();
             invalidate();
         }
@@ -168,9 +169,9 @@ public class GridTrendGraphView extends TrendGraphView {
         @Override
         public void draw(Canvas canvas) {
             // Draw Text Labels
-            List<GraphSection> sections = graph.getSections();
-            for (GraphSection section : sections) {
-                List<String> titles = section.getTitles();
+            final List<GraphSection> sections = graph.getSections();
+            for (final GraphSection section : sections) {
+                final List<String> titles = section.getTitles();
                 for (int i = 0; i < titles.size(); i++) {
                     final String title = titles.get(i);
                     final float leftSpace = i * circleSize;
@@ -182,8 +183,8 @@ public class GridTrendGraphView extends TrendGraphView {
             }
 
             if (cellController != null) {
-                for (ArrayList<GridCellDrawable> cells : cellController) {
-                    for (GridCellDrawable cell : cells) {
+                for (final ArrayList<GridCellDrawable> cells : cellController) {
+                    for (final GridCellDrawable cell : cells) {
                         cell.draw(canvas);
                     }
                 }
@@ -203,7 +204,7 @@ public class GridTrendGraphView extends TrendGraphView {
             this.circleSize = circleSize;
             this.padding = circleSize * .075f;
             this.height = getHeight(this.graph);
-            this.reservedTopSpace = circleSize + padding;
+            this.reservedTopSpace = textHeight * 2 + padding;
             this.radius = circleSize / 2 - padding * 2;
             updateCellController();
 
@@ -214,19 +215,19 @@ public class GridTrendGraphView extends TrendGraphView {
          */
         private void updateCellController() {
             cellController = new GridCellController();
-            List<GraphSection> sections = graph.getSections();
+            final List<GraphSection> sections = graph.getSections();
             for (int h = 0; h < sections.size(); h++) {
                 cellController.createSection();
 
-                List<Float> values = sections.get(h).getValues();
+                final List<Float> values = sections.get(h).getValues();
                 for (int i = 0; i < values.size(); i++) {
-                    Float value = values.get(i);
-                    GridCellDrawable cellDrawable = new GridCellDrawable(h, i, value);
+                    final Float value = values.get(i);
+                    final GridCellDrawable cellDrawable = new GridCellDrawable(h, i, value);
                     cellController.add(cellDrawable);
                 }
 
-                for (int indexValue : sections.get(h).getHighlightedValues()) {
-                    GridCellDrawable highlightCell = cellController.getCell(indexValue);
+                for (final int indexValue : sections.get(h).getHighlightedValues()) {
+                    final GridCellDrawable highlightCell = cellController.getCell(indexValue);
                     if (highlightCell != null) {
                         highlightCell.highlightCell();
                     }
@@ -236,15 +237,7 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         private int getHeight(@NonNull Graph graph) {
-            return (int) ((graph.getSections().size()) * circleSize);
-        }
-
-        private float minPossibleTop() {
-            float spaceFromBottom = 0;
-            for (int i = 0; i < graph.getSections().size(); i++) {
-                spaceFromBottom += padding + circleSize;
-            }
-            return spaceFromBottom;
+            return (int) (graph.getSections().size() * (circleSize + padding));
         }
 
         /**
@@ -258,18 +251,18 @@ public class GridTrendGraphView extends TrendGraphView {
                 add(new ArrayList<>());
             }
 
-            public void add(int section, GridCellDrawable cell) {
+            public void add(final int section, @NonNull final GridCellDrawable cell) {
                 get(section).add(cell);
             }
 
-            public void add(GridCellDrawable cell) {
+            public void add(@NonNull final GridCellDrawable cell) {
                 if (size() <= 0) {
                     return;
                 }
                 get(size() - 1).add(cell);
             }
 
-            public GridCellDrawable getCell(int i) {
+            public GridCellDrawable getCell(final int i) {
                 if (size() <= 0) {
                     return null;
                 }
@@ -282,29 +275,23 @@ public class GridTrendGraphView extends TrendGraphView {
          * and can be used in the future to animate movement from week/month -> quarter view.
          */
         private class GridCellDrawable extends Drawable {
-            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
             /**
              * Index number of the {@link GraphSection} this cell belongs to in the {@link Graph}.
              * Used to determine y location of cell.
              */
             private final int sectionIndex;
-            private final float left;
-
-            private float top;
-            private final String textValue;
-
-
             /**
              * True when the cell has a value greater than -1.
              */
             private final boolean hasValue;
+            private final float left;
+            private final String textValue;
             private final Rect textBounds = new Rect();
-
+            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private boolean highlight = false;
 
-            public GridCellDrawable(int sectionIndex, int index, Float value) {
+            public GridCellDrawable(final int sectionIndex, final int index, @Nullable final Float value) {
                 this.sectionIndex = sectionIndex;
                 final float leftSpace = index * circleSize;
                 this.left = leftSpace + padding + (circleSize - padding - padding) / 2;
@@ -331,17 +318,16 @@ public class GridTrendGraphView extends TrendGraphView {
             }
 
             @Override
-            public void draw(Canvas canvas) {
-                top = getTopPosition(canvas.getHeight(), graph.getSections().size());
-                if (top < reservedTopSpace - circleSize) {
-                    top = minTop;
+            public void draw(@NonNull final Canvas canvas) {
+                float top = getTopPosition(canvas.getHeight());
+                if (top - radius < reservedTopSpace) {
+                    top = reservedTopSpace + radius;
                 }
                 if (top + radius > canvas.getHeight()) {
                     return;
                 }
 
                 if (highlight && hasValue) {
-                    int inset = getContext().getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_inset);
                     canvas.drawCircle(left, top, radius, paint);
                     canvas.drawCircle(left, top, radius - inset, whitePaint);
                     canvas.drawCircle(left, top, radius - inset * 2, paint);
@@ -374,13 +360,8 @@ public class GridTrendGraphView extends TrendGraphView {
                 highlight = true;
             }
 
-
-            private float getTopPosition(int maxSize, int maxIndex) {
-                float spaceFromBottom = 0;
-                for (int i = sectionIndex + 1; i < maxIndex; i++) {
-                    spaceFromBottom += padding + circleSize;
-                }
-                return maxSize - spaceFromBottom - radius;
+            private float getTopPosition(final int canvasHeight) {
+                return canvasHeight - ((graph.getSections().size() - sectionIndex) * (padding + circleSize)) + radius + padding;
             }
         }
     }
