@@ -107,7 +107,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         addView(trendGraphView, graphLayoutParams);
         addView(annotationsLayout, annotationsLayoutParams);
-        Graph graph = trendGraphView.getGraph();
+        final Graph graph = trendGraphView.getGraph();
         setTitle(graph.getTitle());
         populateAnnotations(graph.getDataType(), graph.getAnnotations());
 
