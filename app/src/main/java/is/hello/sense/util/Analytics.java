@@ -500,6 +500,12 @@ public class Analytics {
         String EVENT_HELP = "Settings Help";
         String EVENT_CONTACT_SUPPORT = "Contact Support";
         String EVENT_TELL_A_FRIEND_TAPPED = "Tell a friend tapped";
+
+        String EVENT_CHANGE_TRENDS_TIMESCALE = "Change trends timescale";
+        String EVENT_TIMESCALE = "timescale";
+        String EVENT_TIMESCALE_WEEK = "week";
+        String EVENT_TIMESCALE_MONTH = "month";
+        String EVENT_TIMESCALE_QUARTER = "quarter";
     }
 
     public interface StoreReview {

@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.ToggleButton;
 
+import com.segment.analytics.Properties;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -185,9 +187,15 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     public void onSelectionChanged(int newSelectionIndex) {
         trendFeedView.setLoading(true);
         timeScaleSelector.setEnabled(false);
-
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
         trendsPresenter.setTimeScale(newTimeScale);
+
+        String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
+                (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);
+        Properties properties = new Properties();
+        properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
+        Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
+
     }
 }
