@@ -16,22 +16,14 @@ import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 @SuppressLint("ViewConstructor")
 public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGraph {
     protected TrendGraphDrawable drawable;
+    protected AnimatorContext animatorContext;
+    protected static final float maxAnimationFactor = 1f;
+    protected static final float minAnimationFactor = 0;
 
-    public TrendGraphView(@NonNull Context context,
-                          @NonNull TrendGraphDrawable graphDrawable) {
+
+    protected TrendGraphView(@NonNull Context context, @NonNull AnimatorContext animatorContext) {
         super(context);
-
-        this.drawable = graphDrawable;
-
-        setBackground(drawable);
-        setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                      ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        drawable.showGraphAnimation();
-    }
-
-    public TrendGraphView(@NonNull Context context) {
-        super(context);
+        this.animatorContext = animatorContext;
 
     }
 
@@ -47,20 +39,22 @@ public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGrap
 
     static class BarTrendGraphView extends TrendGraphView {
         public BarTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-            super(context);
+            super(context, animatorContext);
             this.drawable = new BarGraphDrawable(context, graph, animatorContext);
             setBackground(drawable);
             setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             drawable.showGraphAnimation();
         }
     }
+
     static class BubbleTrendGraphView extends TrendGraphView {
         public BubbleTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-            super(context);
+            super(context, animatorContext);
             this.drawable = new BubbleGraphDrawable(context, graph, animatorContext);
             setBackground(drawable);
             setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             drawable.showGraphAnimation();
         }
     }
+
 }
