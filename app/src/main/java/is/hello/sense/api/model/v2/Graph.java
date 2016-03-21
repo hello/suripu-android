@@ -3,9 +3,11 @@ package is.hello.sense.api.model.v2;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import is.hello.sense.ui.widget.graphing.BarTrendGraphView;
 import is.hello.sense.ui.widget.graphing.BubbleTrendGraphView;
 import is.hello.sense.ui.widget.graphing.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.DateFormatter;
 
 public class Graph extends ApiResponse {
     @SerializedName("time_scale")
@@ -79,8 +82,23 @@ public class Graph extends ApiResponse {
     public ArrayList<Graph> convertToQuarterGraphs() {
         ArrayList<Graph> graphs = new ArrayList<>();
         for (GraphSection graphSection : sections) {
+            String monthTitle = graphSection.getTitles().get(0);
+            int offset = 0;
+            try {
+                final int monthValue = DateFormatter.getMonthInt(monthTitle);
+                offset = DateFormatter.getFirstDayOfMonthValue(monthValue);
+            } catch (ParseException e) {
+                Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+            }
             Graph graph = new Graph(this);
-            for (int i = 0; i < graphSection.getValues().size(); i++) {
+            if (offset > 0) {
+                final GraphSection temp = new GraphSection(graphSection);
+                graph.addSection(temp);
+                for (int i = 0; i < offset; i++) {
+                    temp.addValue(-2f);
+                }
+            }
+            for (int i = offset; i < graphSection.getValues().size() + offset; i++) {
                 final GraphSection temp;
                 if (i % 7 == 0) {
                     temp = new GraphSection(graphSection);
@@ -88,7 +106,7 @@ public class Graph extends ApiResponse {
                 } else {
                     temp = graph.getSections().get(graph.getSections().size() - 1);
                 }
-                temp.addValue(graphSection.getValues().get(i));
+                temp.addValue(graphSection.getValues().get(i - offset));
 
             }
             for (int i = 0; i < graphSection.getTitles().size(); i++) {
@@ -104,7 +122,6 @@ public class Graph extends ApiResponse {
         }
         return graphs;
     }
-
 
     public void addSection(GraphSection section) {
         this.sections.add(section);
