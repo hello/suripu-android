@@ -72,7 +72,7 @@ public class GridTrendGraphView extends TrendGraphView {
         final int currentHeight = getDrawableHeight();
         final int targetHeight = getDrawableHeight(graph);
         final ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
-        animator.setDuration(Anime.DURATION_NORMAL  * 2);
+        animator.setDuration(Anime.DURATION_NORMAL * 2);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {
             if (targetHeight > currentHeight) {
@@ -156,7 +156,7 @@ public class GridTrendGraphView extends TrendGraphView {
 
         @Override
         public int getIntrinsicHeight() {
-            return height + (int)reservedTopSpace;
+            return height + (int) reservedTopSpace;
         }
 
         @Override
@@ -202,7 +202,7 @@ public class GridTrendGraphView extends TrendGraphView {
                 return;
             }
             this.circleSize = circleSize;
-            this.padding = circleSize * .075f;
+            this.padding = circleSize * .08f;
             this.height = getHeight(this.graph);
             this.reservedTopSpace = textHeight * 2 + padding;
             this.radius = circleSize / 2 - padding * 2;
@@ -290,6 +290,7 @@ public class GridTrendGraphView extends TrendGraphView {
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             private boolean highlight = false;
+            private final boolean shouldDraw;
 
             public GridCellDrawable(final int sectionIndex, final int index, @Nullable final Float value) {
                 this.sectionIndex = sectionIndex;
@@ -301,14 +302,18 @@ public class GridTrendGraphView extends TrendGraphView {
                         textValue = context.getString(R.string.missing_data_placeholder);
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
                         borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
+                        shouldDraw = value != -2f;
                     } else {
                         hasValue = true;
+                        shouldDraw = true;
                         textValue = Styles.createTextValue(value, 0);
                         final Condition condition = graph.getConditionForValue(value);
                         paint.setColor(ContextCompat.getColor(getContext(), condition.colorRes));
                         borderPaint.setColor(ContextCompat.getColor(context, condition.colorRes));
+
                     }
                 } else {
+                    shouldDraw = true;
                     hasValue = false;
                     textValue = "";
                     paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
@@ -319,6 +324,9 @@ public class GridTrendGraphView extends TrendGraphView {
 
             @Override
             public void draw(@NonNull final Canvas canvas) {
+                if (!shouldDraw) {
+                    return;
+                }
                 float top = getTopPosition(canvas.getHeight());
                 if (top - radius < reservedTopSpace) {
                     top = reservedTopSpace + radius;
