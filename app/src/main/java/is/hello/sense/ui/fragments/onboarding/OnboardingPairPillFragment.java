@@ -98,8 +98,9 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        diagram.destroy();
+        if (diagram != null) {
+            diagram.destroy();
+        }
 
         this.activityIndicator = null;
         this.activityStatus = null;
