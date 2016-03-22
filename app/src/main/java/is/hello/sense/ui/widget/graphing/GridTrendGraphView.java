@@ -280,10 +280,6 @@ public class GridTrendGraphView extends TrendGraphView {
              * Used to determine y location of cell.
              */
             private final int sectionIndex;
-            /**
-             * True when the cell has a value greater than -1.
-             */
-            private final boolean hasValue;
             private final float left;
             private final String textValue;
             private final Rect textBounds = new Rect();
@@ -298,13 +294,11 @@ public class GridTrendGraphView extends TrendGraphView {
                 this.left = leftSpace + padding + (circleSize - padding - padding) / 2;
                 if (value != null) {
                     if (value < 0f) {
-                        hasValue = false;
                         textValue = context.getString(R.string.missing_data_placeholder);
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
                         borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
                         shouldDraw = value != -2f;
                     } else {
-                        hasValue = true;
                         shouldDraw = true;
                         textValue = Styles.createTextValue(value, 0);
                         final Condition condition = graph.getConditionForValue(value);
@@ -314,7 +308,6 @@ public class GridTrendGraphView extends TrendGraphView {
                     }
                 } else {
                     shouldDraw = true;
-                    hasValue = false;
                     textValue = "";
                     paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
                     borderPaint.setColor(ContextCompat.getColor(context, R.color.border));
@@ -335,7 +328,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     return;
                 }
 
-                if (highlight && hasValue) {
+                if (highlight) {
                     canvas.drawCircle(left, top, radius, paint);
                     canvas.drawCircle(left, top, radius - inset, whitePaint);
                     canvas.drawCircle(left, top, radius - inset * 2, paint);
