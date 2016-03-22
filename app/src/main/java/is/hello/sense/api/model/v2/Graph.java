@@ -86,7 +86,7 @@ public class Graph extends ApiResponse {
             int offset = 0;
             try {
                 final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                offset = DateFormatter.getFirstDayOfMonthValue(monthValue);
+                offset = DateFormatter.getFirstDayOfMonthValue(monthValue)-1;
             } catch (ParseException e) {
                 Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
             }
