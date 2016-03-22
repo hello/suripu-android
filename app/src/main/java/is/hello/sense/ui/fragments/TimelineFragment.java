@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -298,6 +299,13 @@ public class TimelineFragment extends InjectionFragment
         }
 
         adapter.stopSoundPlayer();
+        Timeline timeline = timelinePresenter.timeline.getValue();
+        if (timeline != null) {
+            backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
+            headerView.bindTimeline(timeline);
+            toolbar.setShareVisible(!homeActivity.isBacksideOpen());
+            adapter.bindEvents(timeline.getEvents());
+        }
     }
 
     private void dismissVisibleOverlaysAndDialogs() {
