@@ -468,5 +468,11 @@ public class TimelineHeaderView extends RelativeLayout {
                        fireAdapterAnimations);
     }
 
+    public void bindTimeline(@NonNull Timeline timeline) {
+        cardContents.setText(timeline.getMessage());
+        setScore(timeline.getScore(),
+                 timeline.getScoreCondition());
+    }
+
     //endregion
 }
