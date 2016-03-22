@@ -114,6 +114,7 @@ public class Graph extends ApiResponse {
                 graph.getSections().get(i).addTitle(title);
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
+                highlightedIndex += offset;
                 int section = highlightedIndex / 6;
                 int cell = highlightedIndex % 7;
                 graph.getSections().get(section).addHighlightedValues(cell);
