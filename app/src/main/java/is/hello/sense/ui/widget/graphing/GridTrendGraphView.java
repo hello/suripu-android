@@ -237,7 +237,7 @@ public class GridTrendGraphView extends TrendGraphView {
         }
 
         private int getHeight(@NonNull Graph graph) {
-            return (int) (graph.getSections().size() * (circleSize + padding));
+            return (int) (graph.getSections().size() * (circleSize + padding) - padding);
         }
 
         /**
@@ -321,7 +321,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     return;
                 }
                 float top = getTopPosition(canvas.getHeight());
-                if (top - radius < reservedTopSpace) {
+                if (top < reservedTopSpace+ radius) {
                     top = reservedTopSpace + radius;
                 }
                 if (top + radius > canvas.getHeight()) {
@@ -362,7 +362,7 @@ public class GridTrendGraphView extends TrendGraphView {
             }
 
             private float getTopPosition(final int canvasHeight) {
-                return canvasHeight - ((graph.getSections().size() - sectionIndex) * (padding + circleSize)) + radius + padding;
+                return canvasHeight - ((graph.getSections().size() - sectionIndex) * (padding + circleSize)) + radius;
             }
         }
     }
