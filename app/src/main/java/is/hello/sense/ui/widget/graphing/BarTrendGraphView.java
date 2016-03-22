@@ -261,6 +261,9 @@ public class BarTrendGraphView extends TrendGraphView {
         @Override
         public void updateGraph(@NonNull Graph graph) {
             if (graph.getTimeScale() == this.graph.getTimeScale()) {
+                BarGraphDrawable.this.graph = graph;
+                canvasValues.updateValues(getBounds());
+                requestLayout();
                 return;
             }
             ValueAnimator animator = ValueAnimator.ofFloat(maxScaleFactor, minScaleFactor);
