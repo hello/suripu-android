@@ -465,16 +465,30 @@ import is.hello.sense.ui.widget.util.Styles;
     /**
      * Get the name of the day that the given months first day is on as an integer.
      *
-     * @param month - JAN, FEB, ... , DEC.
-     * @return integer that represents Sun-Sat
+     * @param month - int representing january, february, ... , december.
+     * @return int that represents Sun-Sat
      * @throws ParseException
      */
-    public static int getFirstDayOfMonthName(String month) throws ParseException {
+    public static int getFirstDayOfMonthValue(int month) throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        if (cal.get(Calendar.MONTH) < month) {
+            cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
+        }
+        cal.set(Calendar.MONTH, month);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
+    /**
+     * Convert a 3 char month string into its calendar int value. JAN -> 0
+     *
+     * @param month 3 char month string for a given month. JAN, FEB, ... , DEC
+     * @return int representing month.
+     * @throws ParseException
+     */
+    public static int getMonthInt(@NonNull String month) throws ParseException {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new SimpleDateFormat("MMM", Locale.ENGLISH).parse(month));
-        int monthValue = cal.get(Calendar.MONTH);
-        cal.set(Calendar.DAY_OF_MONTH, monthValue);
-        return cal.get(Calendar.DAY_OF_WEEK);
+        return cal.get(Calendar.MONTH);
     }
 
     @IntDef({
