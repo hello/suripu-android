@@ -51,7 +51,7 @@ public class GridTrendGraphView extends TrendGraphView {
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                float circleSize = getWidth() / 7;
+                final float circleSize = getWidth() / 7;
                 if (getCircleSize() != circleSize) {
                     ((GridGraphDrawable) drawable).initHeight(getWidth() / 7);
                     requestLayout();
@@ -91,7 +91,7 @@ public class GridTrendGraphView extends TrendGraphView {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationStart(animation);
-                if (!GridTrendGraphView.this.getGraph().equals(graph)){
+                if (!GridTrendGraphView.this.getGraph().equals(graph)) {
                     GridTrendGraphView.super.bindGraph(graph);
                 }
             }
@@ -119,7 +119,7 @@ public class GridTrendGraphView extends TrendGraphView {
     /**
      * Show/Hide the value of each cell.
      *
-     * @param show
+     * @param show show text.
      */
     public void showText(boolean show) {
         this.showText = show;
@@ -149,7 +149,7 @@ public class GridTrendGraphView extends TrendGraphView {
             Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
             Drawing.updateTextPaintFromStyle(textCellPaint, context, R.style.AppTheme_Text_Trends_GridGraph_Cell);
             whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
-            Rect bounds = new Rect();
+            final Rect bounds = new Rect();
             textLabelPaint.getTextBounds("A", 0, 1, bounds);
             textHeight = bounds.height();
         }

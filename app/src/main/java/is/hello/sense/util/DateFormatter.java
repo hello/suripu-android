@@ -474,6 +474,7 @@ import is.hello.sense.ui.widget.util.Styles;
         if (cal.get(Calendar.MONTH) < month) {
             cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
         }
+        cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.MONTH, month);
         return cal.get(Calendar.DAY_OF_WEEK);
     }

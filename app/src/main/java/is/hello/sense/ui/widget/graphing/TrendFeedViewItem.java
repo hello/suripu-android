@@ -89,7 +89,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         addView(layout, graphLayoutParams);
         addView(annotationsLayout, annotationsLayoutParams);
-        Graph graph = layout.getTrendGraphView().getGraph();
+        final Graph graph = layout.getTrendGraphView().getGraph();
         setTitle(graph.getTitle());
         populateAnnotations(graph.getDataType(), graph.getAnnotations());
 
@@ -196,7 +196,6 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
             image.setImageResource(R.drawable.trends_first_day);
 
             ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
-            ;
             message.setText(getResources().getString(R.string.message_trends_welcome));
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 //noinspection deprecation
