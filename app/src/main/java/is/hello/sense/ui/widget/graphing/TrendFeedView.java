@@ -20,7 +20,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.widget.TrendCardView;
 import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
 import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
 
@@ -31,7 +30,7 @@ public class TrendFeedView extends LinearLayout {
     private AnimatorContext animatorContext;
     private boolean loading = false;
 
-    private final Map<Graph.GraphType, TrendCardView> cardViews = new HashMap<>(3);
+    private final Map<Graph.GraphType, TrendFeedViewItem> cardViews = new HashMap<>(3);
     private
     @Nullable
     View welcomeCard;
@@ -62,7 +61,7 @@ public class TrendFeedView extends LinearLayout {
         if (loading != this.loading) {
             this.loading = loading;
 
-            for (final TrendCardView cardView : cardViews.values()) {
+            for (final TrendFeedViewItem cardView : cardViews.values()) {
                 cardView.setLoading(loading);
             }
         }
@@ -80,7 +79,7 @@ public class TrendFeedView extends LinearLayout {
         populate();
     }
 
-    public void presentError(@NonNull TrendCardView.OnRetry onRetry) {
+    public void presentError(@NonNull TrendFeedViewItem.OnRetry onRetry) {
         setLoading(false);
 
         this.trends = null;
@@ -92,7 +91,7 @@ public class TrendFeedView extends LinearLayout {
             removeView(errorCard);
         }
 
-        this.errorCard = TrendCardView.createErrorCard(getContext(), onRetry);
+        this.errorCard = TrendFeedViewItem.createErrorCard(getContext(), onRetry);
         addView(errorCard);
 
     }
@@ -102,9 +101,9 @@ public class TrendFeedView extends LinearLayout {
         if (graphs.isEmpty()) {
             if (welcomeCard == null) {
                 if (trends.getAvailableTimeScales().isEmpty()) {
-                    this.welcomeCard = TrendCardView.createWelcomeCard(getContext());
+                    this.welcomeCard = TrendFeedViewItem.createWelcomeCard(getContext());
                 } else {
-                    this.welcomeCard = TrendCardView.createWelcomeBackCard(getContext());
+                    this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
                 }
                 setLayoutTransition(null);
                 addView(welcomeCard);
@@ -128,7 +127,7 @@ public class TrendFeedView extends LinearLayout {
 
                 final int days = DAYS_IN_WEEK - numberOfDaysWithValues;
                 if (days > 0) {
-                    this.welcomeCard = TrendCardView.createComingSoonCard(getContext(), days);
+                    this.welcomeCard = TrendFeedViewItem.createComingSoonCard(getContext(), days);
                     addView(welcomeCard);
                 }
             }
@@ -140,11 +139,11 @@ public class TrendFeedView extends LinearLayout {
         final Set<Graph.GraphType> includedTypes = new HashSet<>(graphs.size());
         for (final Graph graph : graphs) {
             final Graph.GraphType graphType = graph.getSpecConformingGraphType();
-            TrendCardView trendCardView = cardViews.get(graphType);
-            if (trendCardView == null) {
+            TrendFeedViewItem trendFeedViewItem = cardViews.get(graphType);
+            if (trendFeedViewItem == null) {
                 // todo erase one day start>
                 if (graphType == Graph.GraphType.OVERVIEW) {
-                    TrendCardView temp = cardViews.get(Graph.GraphType.GRID);
+                    TrendFeedViewItem temp = cardViews.get(Graph.GraphType.GRID);
                     if (temp != null) {
                         setLayoutTransition(null);
                         temp.setVisibility(INVISIBLE);
@@ -152,7 +151,7 @@ public class TrendFeedView extends LinearLayout {
                         setLayoutTransition(new LayoutTransition());
                     }
                 } else if (graphType == Graph.GraphType.GRID) {
-                    TrendCardView temp = cardViews.get(Graph.GraphType.OVERVIEW);
+                    TrendFeedViewItem temp = cardViews.get(Graph.GraphType.OVERVIEW);
                     if (temp != null) {
                         setLayoutTransition(null);
                         temp.setVisibility(INVISIBLE);
@@ -161,26 +160,26 @@ public class TrendFeedView extends LinearLayout {
                     }
                 }
                 // todo erase one day end>
-                trendCardView = createTrendCard(graph);
+                trendFeedViewItem = createTrendCard(graph);
                 setLayoutTransition(null); // todo erase one day.
-                trendCardView.setVisibility(INVISIBLE);
-                cardViews.put(graphType, trendCardView);
-                addView(trendCardView, getPositionAffinity(graph));
-                trendCardView.setVisibility(VISIBLE);
+                trendFeedViewItem.setVisibility(INVISIBLE);
+                cardViews.put(graphType, trendFeedViewItem);
+                addView(trendFeedViewItem, getPositionAffinity(graph));
+                trendFeedViewItem.setVisibility(VISIBLE);
                 setLayoutTransition(new LayoutTransition()); // todo erase one day.
 
             } else {
-                trendCardView.bindGraph(graph);
+                trendFeedViewItem.bindGraph(graph);
             }
-            trendCardView.setLoading(loading);
+            trendFeedViewItem.setLoading(loading);
 
             includedTypes.add(graphType);
         }
 
-        final Iterator<Map.Entry<Graph.GraphType, TrendCardView>> cardViewsIterator =
+        final Iterator<Map.Entry<Graph.GraphType, TrendFeedViewItem>> cardViewsIterator =
                 cardViews.entrySet().iterator();
         while (cardViewsIterator.hasNext()) {
-            final Map.Entry<Graph.GraphType, TrendCardView> entry = cardViewsIterator.next();
+            final Map.Entry<Graph.GraphType, TrendFeedViewItem> entry = cardViewsIterator.next();
             if (!includedTypes.contains(entry.getKey())) {
                 removeView(entry.getValue());
                 cardViewsIterator.remove();
@@ -202,27 +201,27 @@ public class TrendFeedView extends LinearLayout {
         }
     }
 
-    private TrendCardView createTrendCard(@NonNull Graph graph) {
+    private TrendFeedViewItem createTrendCard(@NonNull Graph graph) {
         final Context context = getContext();
         switch (graph.getSpecConformingGraphType()) {
             case BAR:
                 final BarGraphDrawable barGraphDrawable = new BarGraphDrawable(context, graph, animatorContext);
                 final TrendGraphView barGraphView = new TrendGraphView(context, barGraphDrawable);
-                return TrendCardView.createGraphCard(barGraphView, graph);
+                return TrendFeedViewItem.createGraphCard(barGraphView, graph);
 
             case BUBBLES:
                 final BubbleGraphDrawable bubbleGraphDrawable = new BubbleGraphDrawable(context, graph, animatorContext);
                 final TrendGraphView bubbleGraphView = new TrendGraphView(context, bubbleGraphDrawable);
-                return TrendCardView.createGraphCard(bubbleGraphView, graph);
+                return TrendFeedViewItem.createGraphCard(bubbleGraphView, graph);
 
             case GRID:
                 final GridGraphView gridGraphView = new GridGraphView(context);
                 gridGraphView.bindRootLayoutTransition(getLayoutTransition());
-                return TrendCardView.createGridCard(gridGraphView, graph);
+                return TrendFeedViewItem.createGridCard(gridGraphView, graph);
 
             case OVERVIEW:
                 final MultiGridGraphView multiGridGraphView = new MultiGridGraphView(context);
-                return TrendCardView.createMultiGridCard(multiGridGraphView, graph);
+                return TrendFeedViewItem.createMultiGridCard(multiGridGraphView, graph);
 
             default:
                 throw new IllegalArgumentException("Unknown graph type " + graph.getSpecConformingGraphType());
