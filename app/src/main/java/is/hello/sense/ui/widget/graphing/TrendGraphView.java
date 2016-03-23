@@ -37,20 +37,14 @@ public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGrap
     }
 
     public void fadeOut(@Nullable Animator.AnimatorListener animatorListener) {
-        ValueAnimator animator = ValueAnimator.ofFloat(maxAnimationFactor, minAnimationFactor);
-        animator.setDuration(Anime.DURATION_NORMAL);
-        animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-        animator.addUpdateListener(a -> {
-            setAlpha((float) a.getAnimatedValue());
-        });
-        if (animatorListener != null) {
-            animator.addListener(animatorListener);
-        }
-        animatorContext.startWhenIdle(animator);
+        fade(ValueAnimator.ofFloat(maxAnimationFactor, minAnimationFactor), animatorListener);
     }
 
     public void fadeIn(@Nullable Animator.AnimatorListener animatorListener) {
-        ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
+        fade(ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor), animatorListener);
+    }
+
+    private void fade(@NonNull ValueAnimator animator, @Nullable Animator.AnimatorListener animatorListener) {
         animator.setDuration(Anime.DURATION_NORMAL);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {

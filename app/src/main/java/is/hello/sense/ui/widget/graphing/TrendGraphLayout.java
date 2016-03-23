@@ -88,7 +88,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
 
 
             if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
-                Animator.AnimatorListener animatorListener = new AnimatorListenerAdapter() {
+                final Animator.AnimatorListener animatorListener = new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
@@ -101,7 +101,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
                             } else {
                                 horizontalLayout = getLastRow();
                             }
-                            GridTrendGraphView graphView = generateQuarterGridGraphView(graphs.get(i));
+                            final GridTrendGraphView graphView = generateQuarterGridGraphView(graphs.get(i));
                             horizontalLayout.addView(graphView);
                             graphView.fadeIn(null);
                             graphViews.add(graphView);
@@ -112,7 +112,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
 
             } else if (currentTimescale == Trends.TimeScale.LAST_3_MONTHS) {
                 for (int i = 0; i < graphViews.size(); i++) {
-                    GridTrendGraphView graphView = graphViews.get(i);
+                    final GridTrendGraphView graphView = graphViews.get(i);
                     if (i == graphViews.size() - 1) {
                         Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
                             @Override
@@ -136,7 +136,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
         }
 
         private GridTrendGraphView generateQuarterGridGraphView(@NonNull Graph graph) {
-            GridTrendGraphView graphView = new GridTrendGraphView(getContext(), graph, getTrendGraphView().animatorContext);
+            final GridTrendGraphView graphView = new GridTrendGraphView(getContext(), graph, getTrendGraphView().animatorContext);
             graphView.setLayoutParams(quarterGridLayoutParams);
             graphView.showText(false);
             graphView.setAlpha(0);

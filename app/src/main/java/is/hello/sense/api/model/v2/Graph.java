@@ -80,9 +80,9 @@ public class Graph extends ApiResponse {
      * @return List of Graphs, each to be used with a seperate {@link GridTrendGraphView}
      */
     public ArrayList<Graph> convertToQuarterGraphs() {
-        ArrayList<Graph> graphs = new ArrayList<>();
+        final ArrayList<Graph> graphs = new ArrayList<>();
         for (GraphSection graphSection : sections) {
-            String monthTitle = graphSection.getTitles().get(0);
+            final String monthTitle = graphSection.getTitles().get(0);
             int offset = 0;
             try {
                 final int monthValue = DateFormatter.getMonthInt(monthTitle);
@@ -90,7 +90,7 @@ public class Graph extends ApiResponse {
             } catch (ParseException e) {
                 Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
             }
-            Graph graph = new Graph(this);
+            final Graph graph = new Graph(this);
             if (offset > 0) {
                 final GraphSection temp = new GraphSection(graphSection);
                 graph.addSection(temp);
@@ -110,13 +110,13 @@ public class Graph extends ApiResponse {
 
             }
             for (int i = 0; i < graphSection.getTitles().size(); i++) {
-                String title = graphSection.getTitles().get(i);
+                final String title = graphSection.getTitles().get(i);
                 graph.getSections().get(i).addTitle(title);
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 highlightedIndex += offset;
-                int section = highlightedIndex / 6;
-                int cell = highlightedIndex % 7;
+                final int section = highlightedIndex / 6;
+                final int cell = highlightedIndex % 7;
                 graph.getSections().get(section).addHighlightedValues(cell);
             }
             graphs.add(graph);
