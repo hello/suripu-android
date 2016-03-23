@@ -228,7 +228,6 @@ public class RoomConditionsFragment extends BacksideTabFragment
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_MESSAGE = 1;
 
-        private final Resources resources;
         private final LayoutInflater inflater;
 
         private boolean messageWantsSenseIcon;
@@ -240,7 +239,6 @@ public class RoomConditionsFragment extends BacksideTabFragment
         Adapter(@NonNull Context context) {
             super(new ArrayList<>(5));
 
-            this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
         }
 
