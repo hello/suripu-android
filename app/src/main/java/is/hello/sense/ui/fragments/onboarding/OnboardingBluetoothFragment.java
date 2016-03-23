@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,15 +8,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import javax.inject.Inject;
+
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingBluetoothFragment extends HardwareFragment {
+public class OnboardingBluetoothFragment extends InjectionFragment {
     private static final String ARG_IS_BEFORE_BIRTHDAY = OnboardingBluetoothFragment.class.getName() + ".ARG_IS_BEFORE_BIRTHDAY";
+
+    @Inject BluetoothStack bluetoothStack;
 
     public static OnboardingBluetoothFragment newInstance(boolean isBeforeBirthday) {
         OnboardingBluetoothFragment fragment = new OnboardingBluetoothFragment();
@@ -53,32 +60,37 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(hardwarePresenter.bluetoothEnabled.filter(Functions.IS_TRUE),
+        bindAndSubscribe(bluetoothStack.enabled().filter(Functions.IS_TRUE),
                          ignored -> done(),
                          Functions.LOG_ERROR);
     }
 
     public void done() {
-        hideBlockingActivity(true, () -> {
-            if (getArguments().getBoolean(ARG_IS_BEFORE_BIRTHDAY, false)) {
-                getOnboardingActivity().showBirthday(null, true);
-            } else {
-                getOnboardingActivity().showSetupSense();
-            }
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
         });
     }
 
     public void turnOn(@NonNull View sender) {
-        showBlockingActivity(R.string.title_turning_on);
-        bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {}, this::presentError);
+        LoadingDialogFragment.show(getFragmentManager(),
+                                   getString(R.string.title_turning_on),
+                                   LoadingDialogFragment.OPAQUE_BACKGROUND);
+        bindAndSubscribe(bluetoothStack.turnOn(),
+                         Functions.NO_OP,
+                         this::presentError);
     }
 
     public void presentError(Throwable e) {
-        hideBlockingActivity(false, () -> {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources())
-                    .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+        LoadingDialogFragment.close(getFragmentManager());
+        final ErrorDialogFragment errorDialogFragment =
+                new ErrorDialogFragment.Builder(e, getResources())
+                        .withSupportLink()
+                        .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+
+    public boolean isBeforeBirthday() {
+        return getArguments().getBoolean(ARG_IS_BEFORE_BIRTHDAY, false);
     }
 }

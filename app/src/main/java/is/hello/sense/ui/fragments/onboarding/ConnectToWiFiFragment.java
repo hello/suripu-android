@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -35,10 +36,12 @@ import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
@@ -49,6 +52,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
@@ -61,6 +65,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     private static final int ERROR_REQUEST_CODE = 0x30;
 
     @Inject ApiService apiService;
+    @Inject ApiSessionManager apiSessionManager;
 
     private boolean useInAppEvents;
     private boolean sendAccessToken;
@@ -90,14 +95,11 @@ public class ConnectToWiFiFragment extends HardwareFragment
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
-        Properties properties = Analytics.createProperties(
-                Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
-                                                          );
+        final Properties properties =
+                Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,
+                                           (network == null));
 
-        int rssi = 0;
-        if (network!= null){
-           rssi =  network.getRssi();
-        }
+        final int rssi = (network != null) ? network.getRssi() : 0;
         properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
 
         if (useInAppEvents) {
@@ -134,7 +136,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             final int start = networkInfoBuilder.length();
             networkInfoBuilder.append(network.getSsid());
             networkInfoBuilder.setSpan(
-                    new ForegroundColorSpan(getResources().getColor(R.color.text_dark)),
+                    new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.text_dark)),
                     start, networkInfoBuilder.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             );
@@ -297,15 +299,16 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
         showBlockingActivity(R.string.title_connecting_network);
 
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+        if (sensePresenter.shouldScan()) {
+            bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> sendWifiCredentials(),
                              e -> presentError(e, "Discovery"));
+            sensePresenter.scanForLastConnectedSense();
             return;
         }
 
-        if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+        if (!serviceConnection.isConnectedToSense()) {
+            bindAndSubscribe(sensePresenter.connectToPeripheral(), status -> {
                 if (status != ConnectProgress.CONNECTED)
                     return;
 
@@ -334,12 +337,16 @@ public class ConnectToWiFiFragment extends HardwareFragment
             }
 
             final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
+            final Observable<SenseConnectToWiFiUpdate> connectToWiFi =
+                    serviceConnection.perform(s -> s.sendWifiCredentials(networkName,
+                                                                         securityType,
+                                                                         password));
+            bindAndSubscribe(connectToWiFi, status -> {
                 Properties updateProperties = Analytics.createProperties(
-                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
-                    Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
-                    Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
-                );
+                        Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
+                        Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
+                        Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
+                                                                        );
                 Analytics.trackEvent(updateEvent, updateProperties);
 
                 lastState.set(status);
@@ -365,7 +372,14 @@ public class ConnectToWiFiFragment extends HardwareFragment
         } else {
             showBlockingActivity(R.string.title_linking_account);
 
-            bindAndSubscribe(hardwarePresenter.linkAccount(),
+            final String accessToken = apiSessionManager.getAccessToken();
+            if (accessToken == null) {
+                Logger.error(getClass().getSimpleName(), "Access token should not be null");
+            }
+
+            final Observable<SenseService> linkAccount =
+                    serviceConnection.perform(s -> s.linkAccount(accessToken));
+            bindAndSubscribe(linkAccount,
                              ignored -> {
                                  this.hasSentAccessToken = true;
                                  setDeviceTimeZone();
@@ -390,10 +404,12 @@ public class ConnectToWiFiFragment extends HardwareFragment
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
 
-        bindAndSubscribe(hardwarePresenter.pushData(),
+        final Observable<SenseService> pushData = serviceConnection.perform(SenseService::pushData);
+        bindAndSubscribe(pushData,
                          ignored -> finished(),
                          error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
+                             Logger.error(getClass().getSimpleName(),
+                                          "Could not push Sense data, ignoring.", error);
                              finished();
                          });
     }

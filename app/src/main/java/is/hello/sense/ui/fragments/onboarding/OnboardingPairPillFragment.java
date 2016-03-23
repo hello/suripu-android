@@ -13,13 +13,18 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
+import javax.inject.Inject;
+
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
+import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -30,8 +35,11 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import rx.Observable;
 
 public class OnboardingPairPillFragment extends HardwareFragment {
+    @Inject ApiSessionManager apiSessionManager;
+
     private ProgressBar activityIndicator;
     private TextView activityStatus;
 
@@ -131,7 +139,9 @@ public class OnboardingPairPillFragment extends HardwareFragment {
                     Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED_IN_APP, null);
                     getOnboardingActivity().finish();
                 } else {
-                    hardwarePresenter.clearPeripheral();
+                    serviceConnection.perform(SenseService::disconnect)
+                                     .subscribe(Functions.NO_OP, Functions.LOG_ERROR);
+
                     if (success) {
                         Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED, null);
                         getOnboardingActivity().showPillInstructions();
@@ -171,15 +181,19 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     public void pairPill() {
         beginPairing();
 
-        if (!hardwarePresenter.hasPeripheral()) {
+        if (sensePresenter.shouldScan()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
+            bindAndSubscribe(sensePresenter.peripheral.take(1),
+                             ignored -> pairPill(),
+                             this::presentError);
+            sensePresenter.scanForLastConnectedSense();
+
             return;
         }
 
-        if (!hardwarePresenter.isConnected()) {
+        if (!serviceConnection.isConnectedToSense()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+            bindAndSubscribe(sensePresenter.connectToPeripheral(), status -> {
                 if (status == ConnectProgress.CONNECTED) {
                     pairPill();
                 } else {
@@ -193,7 +207,9 @@ public class OnboardingPairPillFragment extends HardwareFragment {
         showHardwareActivity(() -> {
             diagram.startPlayback();
             hideBlockingActivity(false, () -> {
-                bindAndSubscribe(hardwarePresenter.linkPill(),
+                final String accessToken = apiSessionManager.getAccessToken();
+                final Observable<SenseService> linkPill = serviceConnection.perform(s -> s.linkPill(accessToken));
+                bindAndSubscribe(linkPill,
                                  ignored -> completeHardwareActivity(() -> finishedPairing(true)),
                                  this::presentError);
             });
