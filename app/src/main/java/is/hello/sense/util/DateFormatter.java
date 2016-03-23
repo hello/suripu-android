@@ -488,6 +488,7 @@ import is.hello.sense.ui.widget.util.Styles;
      */
     public static int getMonthInt(@NonNull String month) throws ParseException {
         Calendar cal = Calendar.getInstance();
+        //todo consider additional languages.
         cal.setTime(new SimpleDateFormat("MMM", Locale.ENGLISH).parse(month));
         return cal.get(Calendar.MONTH);
     }
