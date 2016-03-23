@@ -22,6 +22,7 @@
             android:paddingLeft="@dimen/gap_card_horizontal"
             android:paddingRight="@dimen/gap_card_horizontal"
             android:scrollbars="none"
+            android:fillViewport="true"
             app:senseFadingEdgeStyle="rounded">
 
             <is.hello.sense.ui.widget.graphing.TrendFeedView

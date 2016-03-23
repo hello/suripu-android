@@ -263,5 +263,17 @@
         <item name="android:textColor">@color/trends_bargraph_hightlight_bar</item>
     </style>
 
-
+    <style name="AppTheme.Text.Trends.GridGraph">
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/text_size_trends_gridgraph</item>
+        <item name="android:textColor">@color/trends_gridgraph</item>
+    </style>
+    <style name="AppTheme.Text.Trends.GridGraph.Cell">
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/text_size_trends_gridgraph_cell</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>
