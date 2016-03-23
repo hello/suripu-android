@@ -72,7 +72,7 @@ public class GridTrendGraphView extends TrendGraphView {
         final int currentHeight = getDrawableHeight();
         final int targetHeight = getDrawableHeight(graph);
         final ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
-        animator.setDuration(Anime.DURATION_NORMAL * 2);
+        animator.setDuration(Anime.DURATION_NORMAL);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {
             if (targetHeight > currentHeight) {
@@ -83,19 +83,19 @@ public class GridTrendGraphView extends TrendGraphView {
             requestLayout();
 
         });
-        if (targetHeight < currentHeight) {
-            // The drawable is going to decrease in size, wait for the animation to end before binding a new graph that will remove cells.
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    GridTrendGraphView.super.bindGraph(graph);
-                }
-            });
-        } else {
+        if (targetHeight > currentHeight) {
             // The drawable is increasing in size, add cells immediately so they appear as it's height increases.
             super.bindGraph(graph);
         }
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationStart(animation);
+                if (!GridTrendGraphView.this.getGraph().equals(graph)){
+                    GridTrendGraphView.super.bindGraph(graph);
+                }
+            }
+        });
 
         animatorContext.startWhenIdle(animator);
     }
@@ -321,7 +321,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     return;
                 }
                 float top = getTopPosition(canvas.getHeight());
-                if (top < reservedTopSpace+ radius) {
+                if (top < reservedTopSpace + radius) {
                     top = reservedTopSpace + radius;
                 }
                 if (top + radius > canvas.getHeight()) {

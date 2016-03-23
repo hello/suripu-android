@@ -75,6 +75,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
             final int horizontalMargins = context.getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_quarter_horizontal_margins);
             horizontalRowLayoutParams.setMargins(0, verticalMargins, 0, verticalMargins);
             quarterGridLayoutParams.setMargins(horizontalMargins, 0, horizontalMargins, 0);
+            currentTimescale = graph.getTimeScale();
 
         }
 
