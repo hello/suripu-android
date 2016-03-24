@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -85,6 +87,8 @@ public class RoomConditionsFragment extends BacksideTabFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_room_conditions, container, false);
 
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_room_conditions_refresh_container);
+        swipeRefreshLayout.setEnabled(false);
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
@@ -224,7 +228,6 @@ public class RoomConditionsFragment extends BacksideTabFragment
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_MESSAGE = 1;
 
-        private final Resources resources;
         private final LayoutInflater inflater;
 
         private boolean messageWantsSenseIcon;
@@ -236,7 +239,6 @@ public class RoomConditionsFragment extends BacksideTabFragment
         Adapter(@NonNull Context context) {
             super(new ArrayList<>(5));
 
-            this.resources = context.getResources();
             this.inflater = LayoutInflater.from(context);
         }
 
@@ -355,7 +357,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
             public void bind(int position) {
                 final SensorState sensorState = getItem(position);
                 final String sensorName = sensorState.getName();
-                final int sensorColor = resources.getColor(sensorState.getCondition().colorRes);
+                final int sensorColor = ContextCompat.getColor(getContext(), sensorState.getCondition().colorRes);
 
                 final UnitPrinter printer;
                 if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensorName)) {
@@ -369,7 +371,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
                     reading.setTextColor(sensorColor);
                 } else {
                     reading.setText(R.string.missing_data_placeholder);
-                    reading.setTextColor(resources.getColor(R.color.sensor_unknown));
+                    reading.setTextColor(ContextCompat.getColor(getContext(), R.color.sensor_unknown));
                 }
                 message.setText(sensorState.getMessage());
 

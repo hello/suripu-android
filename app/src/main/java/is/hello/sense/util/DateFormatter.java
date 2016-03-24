@@ -30,10 +30,13 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -459,6 +462,36 @@ import is.hello.sense.ui.widget.util.Styles;
 
     //endregion
 
+    /**
+     * Get the name of the day that the given months first day is on as an integer.
+     *
+     * @param month - int representing january, february, ... , december.
+     * @return int that represents Sun-Sat
+     * @throws ParseException
+     */
+    public static int getFirstDayOfMonthValue(int month) throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        if (cal.get(Calendar.MONTH) < month) {
+            cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
+        }
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.MONTH, month);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
+    /**
+     * Convert a 3 char month string into its calendar int value. JAN -> 0
+     *
+     * @param month 3 char month string for a given month. JAN, FEB, ... , DEC
+     * @return int representing month.
+     * @throws ParseException
+     */
+    public static int getMonthInt(@NonNull String month) throws ParseException {
+        Calendar cal = Calendar.getInstance();
+        //todo consider additional languages.
+        cal.setTime(new SimpleDateFormat("MMM", Locale.ENGLISH).parse(month));
+        return cal.get(Calendar.MONTH);
+    }
 
     @IntDef({
             DateTimeConstants.SUNDAY,

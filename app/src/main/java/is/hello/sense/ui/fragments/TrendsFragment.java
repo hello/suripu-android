@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.ToggleButton;
 
+import com.segment.analytics.Properties;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,7 +23,7 @@ import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.ui.widget.TrendCardView;
+import is.hello.sense.ui.widget.graphing.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.TrendFeedView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -29,7 +31,7 @@ import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class TrendsFragment extends BacksideTabFragment implements TrendCardView.OnRetry, SelectorView.OnSelectionChangedListener {
+public class TrendsFragment extends BacksideTabFragment implements TrendFeedViewItem.OnRetry, SelectorView.OnSelectionChangedListener {
     @Inject
     TrendsPresenter trendsPresenter;
 
@@ -170,9 +172,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
-        if (timeScaleSelector.getVisibility() == View.VISIBLE) {
-            transitionOutTimeScaleSelector();
-        }
     }
 
     @Override
@@ -185,9 +184,15 @@ public class TrendsFragment extends BacksideTabFragment implements TrendCardView
     public void onSelectionChanged(int newSelectionIndex) {
         trendFeedView.setLoading(true);
         timeScaleSelector.setEnabled(false);
-
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
         trendsPresenter.setTimeScale(newTimeScale);
+
+        String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
+                (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);
+        Properties properties = new Properties();
+        properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
+        Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
+
     }
 }

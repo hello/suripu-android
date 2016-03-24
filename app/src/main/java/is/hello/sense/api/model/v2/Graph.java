@@ -3,17 +3,22 @@ package is.hello.sense.api.model.v2;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.ui.widget.graphing.drawables.BarGraphDrawable;
-import is.hello.sense.ui.widget.graphing.drawables.BubbleGraphDrawable;
+import is.hello.sense.ui.widget.graphing.BarTrendGraphView;
+import is.hello.sense.ui.widget.graphing.BubbleTrendGraphView;
+import is.hello.sense.ui.widget.graphing.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.DateFormatter;
 
 public class Graph extends ApiResponse {
     @SerializedName("time_scale")
@@ -53,6 +58,76 @@ public class Graph extends ApiResponse {
         this.graphType = graphType;
     }
 
+    public Graph(Graph graph) {
+        this.timeScale = graph.timeScale;
+        this.title = graph.title;
+        this.dataType = graph.dataType;
+        this.graphType = graph.graphType;
+        this.minValue = graph.minValue;
+        this.maxValue = graph.maxValue;
+        this.sections = new ArrayList<>();
+        this.conditionRanges = graph.conditionRanges;
+        this.annotations = graph.annotations;
+
+    }
+
+    /**
+     * The quarter graph response from /v2/trends/LAST_3_MONTHS uses each {@link GraphSection} to
+     * represent one month of data, rather than one week. This method will break apart each
+     * {@link GraphSection} by creating a new one for every 7 days of data and then add them to a
+     * new {@link Graph}.
+     *
+     * @return List of Graphs, each to be used with a seperate {@link GridTrendGraphView}
+     */
+    public ArrayList<Graph> convertToQuarterGraphs() {
+        final ArrayList<Graph> graphs = new ArrayList<>();
+        for (GraphSection graphSection : sections) {
+            final String monthTitle = graphSection.getTitles().get(0);
+            int offset = 0;
+            try {
+                final int monthValue = DateFormatter.getMonthInt(monthTitle);
+                offset = DateFormatter.getFirstDayOfMonthValue(monthValue)-1;
+            } catch (ParseException e) {
+                Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+            }
+            final Graph graph = new Graph(this);
+            if (offset > 0) {
+                final GraphSection temp = new GraphSection(graphSection);
+                graph.addSection(temp);
+                for (int i = 0; i < offset; i++) {
+                    temp.addValue(-2f);
+                }
+            }
+            for (int i = offset; i < graphSection.getValues().size() + offset; i++) {
+                final GraphSection temp;
+                if (i % 7 == 0) {
+                    temp = new GraphSection(graphSection);
+                    graph.addSection(temp);
+                } else {
+                    temp = graph.getSections().get(graph.getSections().size() - 1);
+                }
+                temp.addValue(graphSection.getValues().get(i - offset));
+
+            }
+            for (int i = 0; i < graphSection.getTitles().size(); i++) {
+                final String title = graphSection.getTitles().get(i);
+                graph.getSections().get(i).addTitle(title);
+            }
+            for (int highlightedIndex : graphSection.getHighlightedValues()) {
+                highlightedIndex += offset;
+                final int section = highlightedIndex / 6;
+                final int cell = highlightedIndex % 7;
+                graph.getSections().get(section).addHighlightedValues(cell);
+            }
+            graphs.add(graph);
+        }
+        return graphs;
+    }
+
+    public void addSection(GraphSection section) {
+        this.sections.add(section);
+    }
+
     public Trends.TimeScale getTimeScale() {
         return timeScale;
     }
@@ -69,18 +144,8 @@ public class Graph extends ApiResponse {
         return graphType;
     }
 
-    public GraphType getSpecConformingGraphType() {
-        if (timeScale == Trends.TimeScale.LAST_3_MONTHS && graphType == GraphType.GRID) {
-            return GraphType.OVERVIEW;
-        } else {
-            return graphType;
-        }
-    }
-
     public boolean isGrid() {
-        final GraphType graphType = getSpecConformingGraphType();
-        return (graphType == GraphType.GRID ||
-                graphType == GraphType.OVERVIEW);
+        return getGraphType() == GraphType.GRID;
     }
 
     public float getMinValue() {
@@ -132,13 +197,12 @@ public class Graph extends ApiResponse {
         NO_DATA,
         EMPTY,
         GRID,
-        OVERVIEW,
         BAR,
         BUBBLES;
 
         public static GraphType fromString(@Nullable String string) {
             return Enums.fromString(string, values(), EMPTY);
-         }
+        }
     }
 
     public enum DataType implements Enums.FromString {
@@ -148,7 +212,7 @@ public class Graph extends ApiResponse {
             @Override
             public CharSequence renderAnnotation(@NonNull Annotation annotation) {
                 return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 2),
-                                                     BarGraphDrawable.HOUR_SYMBOL,
+                                                     BarTrendGraphView.BarGraphDrawable.HOUR_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
             }
         },
@@ -156,7 +220,7 @@ public class Graph extends ApiResponse {
             @Override
             public CharSequence renderAnnotation(@NonNull Annotation annotation) {
                 return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue() * 100, 0),
-                                                     BubbleGraphDrawable.PERCENT_SYMBOL,
+                                                     BubbleTrendGraphView.BubbleGraphDrawable.PERCENT_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
             }
         };

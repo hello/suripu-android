@@ -2,22 +2,27 @@ package is.hello.sense.api.model.v2;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class Insight extends ApiResponse {
-    public static final String CATEGORY_GENERIC = "GENERIC";
     public static final String CATEGORY_IN_APP_ERROR = Insight.class.getName() + ".CATEGORY_IN_APP_ERROR";
-    private enum GenericCategories{
-        GENERIC,
-        SLEEP_DURATION,
-        SLEEP_HYGIENE
+
+    private enum Type implements Enums.FromString {
+        DEFAULT,
+        BASIC;
+
+        public static Type fromString(@Nullable String string) {
+            return Enums.fromString(string, values(), DEFAULT);
+        }
     }
 
     @SerializedName("account_id")
@@ -40,6 +45,9 @@ public class Insight extends ApiResponse {
 
     @SerializedName("image")
     private MultiDensityImage image;
+
+    @SerializedName("insight_type")
+    private Type insightType;
 
 
     public static Insight createError(@NonNull String message) {
@@ -100,22 +108,12 @@ public class Insight extends ApiResponse {
         }
     }
 
-    public boolean isGeneric(){
-        GenericCategories[] genericCategories = GenericCategories.values();
-        for (GenericCategories genericCategory : genericCategories){
-            if (genericCategory.toString().equals(category)){
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean isError() {
         return CATEGORY_IN_APP_ERROR.equalsIgnoreCase(category);
     }
 
-    public boolean hasInfo() {
-        return !CATEGORY_GENERIC.equalsIgnoreCase(category);
+    public boolean shouldDisplaySummary() {
+        return (insightType != Type.BASIC);
     }
 
     @Override
