@@ -203,7 +203,7 @@ public class TimelineFragment extends InjectionFragment
         recyclerView.setItemAnimator(itemAnimator);
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources, 2));
 
-        final int backgroundFillColor = resources.getColor(R.color.background_timeline);
+        final int backgroundFillColor = ContextCompat.getColor(getActivity(), R.color.background_timeline);
         this.backgroundFill = new ColorDrawableCompat(backgroundFillColor);
         recyclerView.setBackground(backgroundFill);
 
@@ -300,7 +300,7 @@ public class TimelineFragment extends InjectionFragment
 
         adapter.stopSoundPlayer();
         Timeline timeline = timelinePresenter.timeline.getValue();
-        if (timeline != null) {
+        if (timeline != null && timeline.getScore() != null && timeline.getScore() > 0) {
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
             toolbar.setShareVisible(!homeActivity.isBacksideOpen());
@@ -565,8 +565,7 @@ public class TimelineFragment extends InjectionFragment
             itemAnimator.setTemplate(itemAnimator.getTemplate()
                                                  .withDuration(Anime.DURATION_SLOW));
             itemAnimator.addListener(new ExtendedItemAnimator.Listener() {
-                final Animator crossFade = backgroundFill.colorAnimator(
-                        getResources().getColor(R.color.background_timeline));
+                final Animator crossFade = backgroundFill.colorAnimator(ContextCompat.getColor(getActivity(), R.color.background_timeline));
 
                 @Override
                 public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
@@ -583,7 +582,7 @@ public class TimelineFragment extends InjectionFragment
                 }
             });
         } else {
-            backgroundFill.setColor(getResources().getColor(R.color.background_timeline));
+            backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.background_timeline));
         }
 
         toolbar.setShareVisible(false);
@@ -616,7 +615,7 @@ public class TimelineFragment extends InjectionFragment
         final boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         if (hasEvents) {
             final Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
-                int targetColor = getResources().getColor(R.color.timeline_background_fill);
+                int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
 
