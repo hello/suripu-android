@@ -357,7 +357,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
             public void bind(int position) {
                 final SensorState sensorState = getItem(position);
                 final String sensorName = sensorState.getName();
-                final int sensorColor = ContextCompat.getColor(getContext(), sensorState.getCondition().colorRes);
+                final int sensorColor = ContextCompat.getColor(getActivity(), sensorState.getCondition().colorRes);
 
                 final UnitPrinter printer;
                 if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensorName)) {
