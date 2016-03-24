@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
@@ -62,9 +62,10 @@
 
         <activity
             android:name=".ui.activities.SmartAlarmDetailActivity"
-            android:label="@string/action_alarm">
+            android:label="@string/app_name">
 
             <intent-filter>
+                <action android:name="android.intent.action.SET_ALARM" />
                 <action android:name="android.intent.onClick.SET_ALARM" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

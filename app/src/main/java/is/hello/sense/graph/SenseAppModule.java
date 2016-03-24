@@ -33,6 +33,7 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -102,7 +103,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         SensorHistoryPresenter.class,
         TrendsPresenter.class,
         TrendsFragment.class,
-
+        SmartAlarmDetailActivity.class,
         SmartAlarmListFragment.class,
         SmartAlarmDetailFragment.class,
         SmartAlarmSoundDialogFragment.class,
