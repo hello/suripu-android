@@ -86,7 +86,7 @@ public class Graph extends ApiResponse {
             int offset = 0;
             try {
                 final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                offset = DateFormatter.getFirstDayOfMonthValue(monthValue)-1;
+                offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
             } catch (ParseException e) {
                 Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
             }
@@ -115,7 +115,7 @@ public class Graph extends ApiResponse {
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 highlightedIndex += offset;
-                final int section = highlightedIndex / 6;
+                final int section = highlightedIndex / 7;
                 final int cell = highlightedIndex % 7;
                 graph.getSections().get(section).addHighlightedValues(cell);
             }
