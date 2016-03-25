@@ -152,6 +152,9 @@ public class BubbleTrendGraphView extends TrendGraphView {
         @Override
         public void updateGraph(@NonNull Graph graph) {
             if (graph.getTimeScale() == this.graph.getTimeScale()) {
+                BubbleGraphDrawable.this.graph = graph;
+                currentBubbleController = createBubbleController(graph);
+                requestLayout();
                 return;
             }
             final BubbleController animateTo = createBubbleController(graph);
