@@ -42,6 +42,9 @@
     <dimen name="text_size_tiny_score">28sp</dimen>
     <dimen name="text_size_small_score">40sp</dimen>
     <dimen name="text_size_big_score">68sp</dimen>
+    <dimen name="text_size_score_share_title">100sp</dimen>
+    <dimen name="text_size_score_share_text">22sp</dimen>
+    <dimen name="text_size_score_share_date_text">16sp</dimen>
     <dimen name="text_size_smart_alarm_time">36sp</dimen>
     <dimen name="text_size_smart_alarm_time_big">72sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
@@ -170,6 +173,11 @@
     <dimen name="view_grid_graph_cell_height">32dp</dimen>
     <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
     <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
+
+    <dimen name="timeline_shareable_view_width">480dp</dimen>
+    <dimen name="timeline_shareable_view_height">475dp</dimen>
+    <dimen name="timeline_shareable_sensor_marginTop">40dp</dimen>
+    <dimen name="timeline_shareable_sensor_horizontal_margin">10dp</dimen>
 
 
     <!-- Buttons -->

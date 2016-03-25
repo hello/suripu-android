@@ -518,6 +518,8 @@
     <string name="request_permission_required_title">Location Services not enabled</string>
     <string name="request_permission_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
 
+    <string name="share_timeline_time_to_fall_asleep"><![CDATA[It took you <font color=#596980> %1$d %2$s</font> to fall asleep.]]></string>
+    <string name="share_timeline_time_to_sleeping"><![CDATA[You slept a total <font color=#596980>%1$d %2$s</font> and woke up <font color=#596980>%3$d %4$s</font>  during the night.]]></string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>
