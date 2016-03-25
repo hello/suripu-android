@@ -38,7 +38,7 @@ import is.hello.sense.api.model.v2.Trends;
  * methods to quickly add and remove child views like a {@link LinearLayout}. This is essentially a view controller.
  */
 @SuppressLint("ViewConstructor")
-public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.OnBindGraph {
+public abstract class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.OnBindGraph {
     protected final TrendGraphView trendGraphView;
 
 
@@ -47,7 +47,6 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
         this.trendGraphView = trendGraphView;
         setOrientation(VERTICAL);
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        addView(trendGraphView);
     }
 
     @Override
@@ -76,7 +75,11 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
             horizontalRowLayoutParams.setMargins(0, verticalMargins, 0, verticalMargins);
             quarterGridLayoutParams.setMargins(horizontalMargins, 0, horizontalMargins, 0);
             currentTimescale = graph.getTimeScale();
-
+            if (currentTimescale == Trends.TimeScale.LAST_3_MONTHS) {
+                displayAsQuarterView(graph);
+            } else {
+                addView(trendGraphView);
+            }
         }
 
         @Override
@@ -88,43 +91,33 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
 
 
             if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
-                final Animator.AnimatorListener animatorListener = new AnimatorListenerAdapter() {
+                trendGraphView.fadeOut(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        removeAllViews();
-                        ArrayList<Graph> graphs = graph.convertToQuarterGraphs();
-                        for (int i = 0; i < graphs.size(); i++) {
-                            final LinearLayout horizontalLayout;
-                            if (i % 2 == 0) {
-                                horizontalLayout = addRow();
-                            } else {
-                                horizontalLayout = getLastRow();
-                            }
-                            final GridTrendGraphView graphView = generateQuarterGridGraphView(graphs.get(i));
-                            horizontalLayout.addView(graphView);
-                            graphView.fadeIn(null);
-                            graphViews.add(graphView);
-                        }
+                        displayAsQuarterView(graph);
                     }
-                };
-                trendGraphView.fadeOut(animatorListener);
-
+                });
             } else if (currentTimescale == Trends.TimeScale.LAST_3_MONTHS) {
-                for (int i = 0; i < graphViews.size(); i++) {
+                for (int i = graphViews.size() - 1; i >= 0; i--) {
                     final GridTrendGraphView graphView = graphViews.get(i);
                     if (i == graphViews.size() - 1) {
-                        Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
+                        graphView.fadeOut(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
-                                removeAllViews();
+                                trendGraphView.setAlpha(0);
                                 addView(trendGraphView);
+                                post(() -> {
+                                    for (int i = getChildCount() - 2; i >= 0; i--) {
+                                        removeViewAt(i);
+                                    }
+                                });
                                 trendGraphView.bindGraph(graph);
                                 trendGraphView.fadeIn(null);
+                                requestLayout();
                             }
-                        };
-                        graphView.fadeOut(listener);
+                        });
                     } else {
                         graphView.fadeOut(null);
                     }
@@ -133,6 +126,33 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
                 trendGraphView.bindGraph(graph);
             }
             this.currentTimescale = graph.getTimeScale();
+        }
+
+        private void displayAsQuarterView(@NonNull Graph graph) {
+            graphViews.clear();
+            ArrayList<Graph> graphs = graph.convertToQuarterGraphs();
+            for (int i = 0; i < graphs.size(); i++) {
+                final LinearLayout horizontalLayout;
+                if (i % 2 == 0) {
+                    horizontalLayout = addRow();
+                } else {
+                    horizontalLayout = getLastRow();
+                }
+                final GridTrendGraphView graphView = generateQuarterGridGraphView(graphs.get(i));
+                horizontalLayout.addView(graphView);
+                graphView.fadeIn(null);
+                if (i == graphs.size() - 1) {
+                    graphView.post(() -> {
+                        int viewToClear = indexOfChild(trendGraphView);
+                        if (viewToClear != -1) {
+                            graphView.fadeIn(null);
+                            removeViewAt(viewToClear);
+                        }
+                    });
+                }
+                graphViews.add(graphView);
+
+            }
         }
 
         private GridTrendGraphView generateQuarterGridGraphView(@NonNull Graph graph) {
@@ -163,6 +183,8 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
 
         public BarTrendGraphLayout(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, new BarTrendGraphView(context, graph, animatorContext));
+            addView(trendGraphView);
+
         }
 
     }
@@ -171,6 +193,7 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
 
         public BubbleTrendGraphLayout(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
             super(context, new BubbleTrendGraphView(context, graph, animatorContext));
+            addView(trendGraphView);
         }
 
     }
