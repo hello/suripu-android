@@ -169,20 +169,20 @@
 
     <style name="AppTheme.Text.Score.Share.Title">
         <item name="android:textSize">@dimen/text_size_score_share_title</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textStyle">normal</item>
     </style>
 
     <style name="AppTheme.Text.Score.Share.Text">
         <item name="android:textSize">@dimen/text_size_score_share_text</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/timeline_share_text</item>
     </style>
 
     <style name="AppTheme.Text.Score.Share.Date">
         <item name="android:textSize">@dimen/text_size_score_share_date_text</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/text_black_70</item>
     </style>

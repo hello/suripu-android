@@ -4,6 +4,7 @@ package is.hello.sense.ui.widget.timeline;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -17,9 +18,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -28,7 +26,6 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
-import is.hello.sense.util.DateFormatter;
 
 public class TimelineImageGenerator {
 
@@ -49,7 +46,6 @@ public class TimelineImageGenerator {
         final View cluster = LayoutInflater.from(activity).inflate(R.layout.view_share_timeline, null);
         final View container = cluster.findViewById(R.id.view_share_timeline_container);
         final TextView scoreTextView = (TextView) cluster.findViewById(R.id.view_share_timeline_score_text);
-        final TextView fallAsleepTextView = (TextView) cluster.findViewById(R.id.view_share_timeline_fall_asleep_time);
         final TextView sleptForTextView = (TextView) cluster.findViewById(R.id.view_share_timeline_slept_for_time);
         final TextView dateTextView = (TextView) cluster.findViewById(R.id.view_share_timeline_date);
         final LinearLayout sensorsLayout = (LinearLayout) cluster.findViewById(R.id.view_share_timeline_sensors);
@@ -69,20 +65,19 @@ public class TimelineImageGenerator {
             color = ContextCompat.getColor(activity, timeline.getScoreCondition().colorRes);
         }
         final TimelineMetric timeToFallAsleepMetric = timeline.getMetricWithName(TimelineMetric.Name.TIME_TO_SLEEP);
-        if (timeToFallAsleepMetric != null && timeToFallAsleepMetric.getValue() != null && timeToFallAsleepMetric.getUnit() != null) {
-            fallAsleepTextView.setText(Html.fromHtml(activity.getString(R.string.share_timeline_time_to_fall_asleep, timeToFallAsleepMetric.getValue(), timeToFallAsleepMetric.getUnit().toString().toLowerCase())));
-        }
         final TimelineMetric timeSleptMetric = timeline.getMetricWithName(TimelineMetric.Name.TOTAL_SLEEP);
         final TimelineMetric timesWokenUpMetric = timeline.getMetricWithName(TimelineMetric.Name.TIMES_AWAKE);
 
-        if (timeSleptMetric != null && timeSleptMetric.getValue() != null && timeSleptMetric.getUnit() != null
+        if (timeToFallAsleepMetric != null && timeToFallAsleepMetric.getValue() != null && timeToFallAsleepMetric.getUnit() != null
+                && timeSleptMetric != null && timeSleptMetric.getValue() != null && timeSleptMetric.getUnit() != null
                 && timesWokenUpMetric != null && timesWokenUpMetric.getValue() != null && timesWokenUpMetric.getUnit() != null) {
+            float timeToFallAsleepValue = timeToFallAsleepMetric.getValue();
+
             sleptForTextView.setText(Html.fromHtml(
-                    activity.getString(R.string.share_timeline_time_to_sleeping,
-                                       timeSleptMetric.getValue(),
-                                       timeSleptMetric.getUnit().toString().toLowerCase(),
-                                       timesWokenUpMetric.getValue(),
-                                       timesWokenUpMetric.getUnit().toString().toLowerCase())));
+                    activity.getString(R.string.share_timeline_sleep_time,
+                                       getMetricTimeString(timeToFallAsleepMetric.getValue()),
+                                       getMetricTimeString(timeSleptMetric.getValue()),
+                                       getMetricQuanityString(timesWokenUpMetric.getValue()))));
         }
 
         final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -105,7 +100,7 @@ public class TimelineImageGenerator {
         scoreTextView.setText(scoreText);
         scoreTextView.setTextColor(color);
 
-        dateTextView.setText(timeline.getDate().toString("MMMM dd, yyyy"));
+        dateTextView.setText(timeline.getDate().toString("MMMM dd, yyyy").toUpperCase());
 
 
         // Draw it
@@ -123,19 +118,41 @@ public class TimelineImageGenerator {
 
 
         canvas.drawBitmap(scoreBitmap,
-                          (width - scoreDrawable.getIntrinsicWidth()) / 2 ,
-                          container.getTop() * 2,
+                          (width - scoreDrawable.getIntrinsicWidth()) / 2,
+                          (scoreTextView.getBottom() / 2),
                           null);
 
-        int sensorHorizontalMargin  = activity.getResources().getDimensionPixelSize(R.dimen.timeline_shareable_sensor_horizontal_margin);
+        int sensorHorizontalMargin = activity.getResources().getDimensionPixelSize(R.dimen.timeline_shareable_sensor_horizontal_margin);
         for (int i = 0; i < sensorsLayout.getChildCount(); i++) {
             final View view = sensorsLayout.getChildAt(i);
             canvas.drawBitmap(getBitmap(view),
-                              sensorsLayout.getLeft() + (i * (view.getWidth()+sensorHorizontalMargin) - sensorHorizontalMargin),
-                              sensorsLayout.getTop(),
+                              sensorsLayout.getLeft() + (i * (view.getWidth() + sensorHorizontalMargin) - sensorHorizontalMargin),
+                              sensorsLayout.getBottom(),
                               null);
         }
         return bitmap;
+    }
+
+    private static String getMetricTimeString(float minutes) {
+        String unit = "minutes";
+        if (minutes >= 60) {
+            minutes = minutes / 60;
+            unit = "hour";
+            if (minutes > 1) {
+                unit += "s";
+            }
+        } else if (minutes == 1) {
+            unit = "minute";
+        }
+        return String.format("%.02f ", minutes) + " " + unit;
+    }
+
+    private static String getMetricQuanityString(float times) {
+        String unit = "time";
+        if (times != 1) {
+            unit += "s";
+        }
+        return (int)times + " " + unit;
     }
 
     private static Bitmap getBitmap(View view) {
