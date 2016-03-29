@@ -86,6 +86,18 @@ public abstract class TrendGraphLayout extends LinearLayout implements TrendFeed
         public void bindGraph(@NonNull Graph graph) {
 
             if (this.currentTimescale == graph.getTimeScale()) {
+                if (currentTimescale == Trends.TimeScale.LAST_3_MONTHS){
+                    ArrayList<Graph> graphs = graph.convertToQuarterGraphs();
+                    if (graphViews.size() == graphs.size()) {
+                        for (int i = 0; i < graphs.size(); i++) {
+                            graphViews.get(i).bindGraph(graphs.get(i));
+                        }
+                        requestLayout();
+                    }
+
+                }else {
+                    trendGraphView.bindGraph(graph);
+                }
                 return;
             }
 
