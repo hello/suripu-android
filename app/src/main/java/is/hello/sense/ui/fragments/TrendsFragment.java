@@ -152,6 +152,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
                     ToggleButton button = timeScaleSelector.addOption(timeScale.titleRes, false);
                     if (timeScale == trendsPresenter.getTimeScale()) {
                         timeScaleSelector.setSelectedButton(button);
+                        fetchTrends();
                     }
                 }
                 timeScaleSelector.setButtonTags(trends.getAvailableTimeScaleTags());
