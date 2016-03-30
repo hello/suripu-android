@@ -524,6 +524,8 @@
     <string name="request_permission_required_title">Location Services not enabled</string>
     <string name="request_permission_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
 
+    <string name="alarm_subnavbar_alarm_list">Alarms</string>
+    <string name="alarm_subnavbar_sounds_list">Sounds</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>
