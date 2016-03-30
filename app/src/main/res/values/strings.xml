@@ -515,14 +515,35 @@
 
     <string name="request_permission_location_title">We need to ask for your location</string>
     <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue."</string>
-    <string name="request_permission_required_title">Location Services not enabled</string>
-    <string name="request_permission_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
+    <string name="request_permission_location_required_title">Location Services not enabled</string>
+    <string name="request_permission_location_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
+
+    <string name="request_permission_write_external_storage_title">We need to access your external storage</string>
+    <string name="request_permission_write_external_storage_message">"Android requires that Write External Storage permission is granted to share an image of your Sleep Score. Please enable to continue."</string>
+    <string name="request_permission_write_external_storage_required_title">Write External Storage is not enabled</string>
+    <string name="request_permission_write_external_storage_required_message">Android requires that Write External Storage be enabled to share images. Please enable in <a href="#settings">Settings</a> to continue.</string>
 
     <string name="share_timeline_sleep_time"><![CDATA[It took you <font color=#596980>%1$s</font> to fall asleep. You slept a total <font color=#596980>%2$s</font> and woke up <font color=#596980>%3$s</font> during the night.]]></string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>
         <item quantity="other">%1$s – %2$d attachments</item>
+    </plurals>
+
+
+    <plurals name="hours">
+        <item quantity="one">hour</item>
+        <item quantity="other">hours</item>
+    </plurals>
+
+    <plurals name="minutes">
+        <item quantity="one">minute</item>
+        <item quantity="other">minutes</item>
+    </plurals>
+
+    <plurals name="times">
+        <item quantity="one">time</item>
+        <item quantity="other">times</item>
     </plurals>
 
     <string name="empty"> </string>

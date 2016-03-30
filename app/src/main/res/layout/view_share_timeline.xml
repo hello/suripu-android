@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/timeline_shareable_view_height"
+    android:layout_width="@dimen/timeline_shareable_view_width"
     android:layout_height="@dimen/timeline_shareable_view_height"
     android:background="@color/background_light"
     android:padding="@dimen/gap_medium">
 
 
     <LinearLayout
-        android:background="@drawable/timeline_share_background_gradient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_above="@+id/view_share_timeline_date"
+        android:background="@drawable/timeline_share_background_gradient"
         android:orientation="vertical"
-        android:padding="@dimen/gap_xlarge"
-        android:layout_marginBottom="@dimen/gap_small">
+        android:padding="@dimen/gap_mlarge">
 
         <RelativeLayout
             android:id="@+id/view_share_timeline_container"
@@ -22,23 +22,14 @@
             android:layout_height="@dimen/grand_sleep_summary_height"
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/sleep_score"
+            android:layout_marginTop="@dimen/gap_medium"
             android:importantForAccessibility="yes">
-
-            <TextView
-                android:id="@+id/view_share_timeline_score_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="@dimen/gap_xsmall"
-                android:importantForAccessibility="no"
-                android:textAppearance="@style/AppTheme.Text.Score.Share.Title"/>
         </RelativeLayout>
 
         <TextView
             android:id="@+id/view_share_timeline_slept_for_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_tiny"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:lineSpacingExtra="@dimen/gap_tiny"
@@ -61,7 +52,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:scaleType="fitStart"
-        android:src="@drawable/hello_lockup" />
+        android:src="@drawable/hello_lockup"/>
 
     <TextView
         android:id="@+id/view_share_timeline_date"
@@ -70,5 +61,5 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:letterSpacing=".065"
-        android:textAppearance="@style/AppTheme.Text.Score.Share.Date" />
+        android:textAppearance="@style/AppTheme.Text.Score.Share.Date"/>
 </RelativeLayout>

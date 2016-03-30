@@ -174,10 +174,11 @@
     <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
     <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
 
-    <dimen name="timeline_shareable_view_width">480dp</dimen>
-    <dimen name="timeline_shareable_view_height">475dp</dimen>
+    <dimen name="timeline_shareable_view_width">470dp</dimen>
+    <dimen name="timeline_shareable_view_height">470dp</dimen>
     <dimen name="timeline_shareable_sensor_marginTop">40dp</dimen>
     <dimen name="timeline_shareable_sensor_horizontal_margin">10dp</dimen>
+    <dimen name="timeline_shareable_score_top_margin">@dimen/gap_mlarge</dimen>
 
 
     <!-- Buttons -->
