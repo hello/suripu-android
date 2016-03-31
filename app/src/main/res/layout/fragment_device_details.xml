@@ -33,6 +33,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/icon_warning"
+                    android:layout_gravity="center_vertical"
                     tools:ignore="ContentDescription" />
 
                 <TextView
@@ -41,6 +42,8 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                     android:text="@string/app_name"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/gap_xsmall"
                     android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
             </LinearLayout>
