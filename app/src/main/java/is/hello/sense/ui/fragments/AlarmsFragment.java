@@ -40,23 +40,16 @@ public class AlarmsFragment extends BacksideTabFragment implements OnSelectionCh
 
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_alarms_loading);
         this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_alarms_scrollview);
+        pager.setScrollingEnabled(false);
         this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_alarms_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        timeScaleSelector.setVisibility(View.INVISIBLE);
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
                                                                    TabsBackgroundDrawable.Style.TRENDS));
         timeScaleSelector.addOption(R.string.alarm_subnavbar_alarm_list, false);
         timeScaleSelector.addOption(R.string.alarm_subnavbar_sounds_list, false);
         timeScaleSelector.setOnSelectionChangedListener(this);
-
-        timeScaleSelector.setVisibility(View.INVISIBLE);
-        Views.runWhenLaidOut(timeScaleSelector, stateSafeExecutor.bind(() -> {
-            timeScaleSelector.setTranslationY(-timeScaleSelector.getMeasuredHeight());
-            timeScaleSelector.setVisibility(View.VISIBLE);
-            animatorFor(timeScaleSelector, getAnimatorContext())
-                    .translationY(0f)
-                    .start();
-        }));
+        timeScaleSelector.setTranslationY(0);
+        timeScaleSelector.setVisibility(View.VISIBLE);
 
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
