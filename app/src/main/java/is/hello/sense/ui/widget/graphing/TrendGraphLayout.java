@@ -86,7 +86,7 @@ public abstract class TrendGraphLayout extends LinearLayout implements TrendFeed
         public void bindGraph(@NonNull Graph graph) {
 
             if (this.currentTimescale == graph.getTimeScale()) {
-                if (currentTimescale == Trends.TimeScale.LAST_3_MONTHS){
+                if (currentTimescale == Trends.TimeScale.LAST_3_MONTHS) {
                     ArrayList<Graph> graphs = graph.convertToQuarterGraphs();
                     if (graphViews.size() == graphs.size()) {
                         for (int i = 0; i < graphs.size(); i++) {
@@ -95,7 +95,7 @@ public abstract class TrendGraphLayout extends LinearLayout implements TrendFeed
                         requestLayout();
                     }
 
-                }else {
+                } else {
                     trendGraphView.bindGraph(graph);
                 }
                 return;
@@ -154,6 +154,11 @@ public abstract class TrendGraphLayout extends LinearLayout implements TrendFeed
                 horizontalLayout.addView(graphView);
                 graphView.fadeIn(null);
                 if (i == graphs.size() - 1) {
+                    if (i % 2 == 0) {
+                        LinearLayout placeHolder = new LinearLayout(getContext());
+                        placeHolder.setLayoutParams(new LayoutParams(0, 1, 1));
+                        horizontalLayout.addView(placeHolder);
+                    }
                     graphView.post(() -> {
                         int viewToClear = indexOfChild(trendGraphView);
                         if (viewToClear != -1) {
