@@ -40,6 +40,8 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.SleepDurations;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
@@ -292,6 +294,16 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<SleepSounds> getSounds() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<SleepDurations> getDurations() {
+        return unimplemented();
+    }
+
+    @Override
     public Observable<Account> updateEmailAddress(@NonNull @Body Account account) {
         return safeJust(account);
     }
@@ -299,7 +311,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Trends> trendsForTimeScale(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
-        return null;
+        return unimplemented();
     }
 
     @Override
