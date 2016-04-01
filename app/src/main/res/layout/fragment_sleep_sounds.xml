@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/gap_outer_half"
+        android:background="@color/background_light"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:padding="@dimen/gap_medium"
+            android:text="Play a Sound"/>
+
+        <View style="@style/Divider.Horizontal"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_card_content"
+            android:layout_marginTop="@dimen/gap_card_content"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/fragment_sleep_sounds_sound_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/gap_medium"
+                android:layout_marginRight="@dimen/gap_medium"
+                android:src="@drawable/sounds_sound_icon"/>
+
+            <TextView
+                android:id="@+id/fragment_sleep_sounds_sound_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/fragment_sleep_sounds_sound_image"
+                android:layout_toRightOf="@+id/fragment_sleep_sounds_sound_image"
+                android:text="Sound"/>
+
+            <TextView
+                android:id="@+id/fragment_sleep_sounds_sound_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/fragment_sleep_sounds_sound_arrow_image"
+                android:text="Tone"
+                />
+
+            <ImageView
+                android:id="@+id/fragment_sleep_sounds_sound_arrow_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/gap_medium"
+                android:layout_marginRight="@dimen/gap_medium"
+                android:src="@drawable/disclosure_chevron"
+                />
+        </RelativeLayout>
+
+        <View style="@style/Divider.Horizontal"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_card_content"
+            android:layout_marginTop="@dimen/gap_card_content"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/fragment_sleep_sounds_duration_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/gap_medium"
+                android:layout_marginRight="@dimen/gap_medium"
+                android:src="@drawable/sounds_duration_icon"/>
+
+            <TextView
+                android:id="@+id/fragment_sleep_sounds_duration_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/fragment_sleep_sounds_duration_image"
+                android:layout_toRightOf="@+id/fragment_sleep_sounds_duration_image"
+                android:text="Duration"/>
+
+            <TextView
+                android:id="@+id/fragment_sleep_sounds_duration_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/fragment_sleep_sounds_duration_arrow_image"
+                android:text="Minutes"
+                />
+
+            <ImageView
+                android:id="@+id/fragment_sleep_sounds_duration_arrow_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/gap_medium"
+                android:layout_marginRight="@dimen/gap_medium"
+                android:src="@drawable/disclosure_chevron"
+                />
+        </RelativeLayout>
+
+        <View style="@style/Divider.Horizontal"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_card_content"
+            android:layout_marginTop="@dimen/gap_card_content"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/fragment_sleep_sounds_volume_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/gap_medium"
+                android:layout_marginRight="@dimen/gap_medium"
+                android:src="@drawable/sounds_volume_icon"/>
+
+            <TextView
+                android:id="@+id/fragment_sleep_sounds_volume_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/fragment_sleep_sounds_volume_image"
+                android:layout_toRightOf="@+id/fragment_sleep_sounds_volume_image"
+                android:text="Volume"/>
+
+            <TextView
+                android:id="@+id/fragment_sleep_sounds_volume_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/fragment_sleep_sounds_volume_arrow_image"
+                android:text="Level"
+                />
+
+            <ImageView
+                android:id="@+id/fragment_sleep_sounds_volume_arrow_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:visibility="invisible"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/gap_medium"
+                android:layout_marginRight="@dimen/gap_medium"
+                android:src="@drawable/disclosure_chevron"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/fragment_sounds_list_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <ImageButton
+        android:id="@+id/fragment_sounds_list_add"
+        style="@style/AppTheme.Button.Circular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:contentDescription="@string/action_new_alarm"
+        android:src="@drawable/button_smart_alarm_add"/>
+
+
+</LinearLayout>

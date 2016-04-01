@@ -33,6 +33,8 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
+import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -45,7 +47,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SmartAlarmListFragment extends BacksideTabFragment implements SmartAlarmAdapter.InteractionListener {
+public class SmartAlarmListFragment extends InjectionFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
@@ -105,9 +107,11 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        onUpdate();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
+
     }
 
     @Override
@@ -134,11 +138,6 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
         }
     }
 
-    @Override
-    public void onSwipeInteractionDidFinish() {
-    }
-
-    @Override
     public void onUpdate() {
         smartAlarmPresenter.update();
     }
