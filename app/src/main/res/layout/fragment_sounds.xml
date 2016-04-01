@@ -150,7 +150,6 @@
                 android:id="@+id/fragment_sleep_sounds_volume_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/fragment_sleep_sounds_volume_arrow_image"
                 android:text="Level"
                 />
@@ -161,6 +160,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:visibility="invisible"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/gap_medium"
                 android:layout_marginRight="@dimen/gap_medium"
