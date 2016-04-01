@@ -277,13 +277,13 @@
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
-    <string name="error_no_bluetooth_connectivity_title">Could not connect over Bluetooth.</string>
+    <string name="error_no_bluetooth_connectivity_title">Could not connect over Bluetooth</string>
     <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense.</string>
     <string name="error_sense_no_connectivity_title">Sense not connected</string>
     <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
     <string name="error_sense_missing_title">Sense not seen recently</string>
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
-    <string name="error_sleep_pill_missing_title">Sleep Pill not seen recently.</string>
+    <string name="error_sleep_pill_missing_title">Sleep Pill not seen recently</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
