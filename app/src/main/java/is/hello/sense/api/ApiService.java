@@ -24,6 +24,8 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.SleepDurations;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
@@ -219,6 +221,16 @@ public interface ApiService {
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
+
+    //endregion
+
+    //region Sleep Sounds
+
+    @GET("/v2/sleep_sounds/sounds")
+    Observable<SleepSounds> getSounds();
+
+    @GET("/v2/sleep_sounds/durations")
+    Observable<SleepDurations> getDurations();
 
     //endregion
 
