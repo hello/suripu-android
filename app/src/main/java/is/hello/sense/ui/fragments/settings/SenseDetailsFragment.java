@@ -94,6 +94,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
             stateSafeExecutor.execute(() -> LoadingDialogFragment.close(getFragmentManager()));
             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setTitle(StringRef.from(R.string.error_peripheral_connection_lost_title))
                     .setMessage(StringRef.from(R.string.error_peripheral_connection_lost))
                     .setPrimaryButtonTitle(R.string.action_reconnect)
                     .setPrimaryButtonOnClick(SenseDetailsFragment.this::connectToPeripheral);
@@ -257,6 +258,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                 TextUtils.isEmpty(network.ssid) ||
                 wifi_connection_state.IP_RETRIEVED != network.connectionState) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setTitle(StringRef.from(R.string.error_sense_no_connectivity_title))
                     .setMessage(StringRef.from(R.string.error_sense_no_connectivity))
                     .setPrimaryButtonTitle(R.string.action_troubleshoot)
                     .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SENSE_NO_WIFI));
@@ -265,6 +267,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             final String missingMessage = getString(R.string.error_sense_missing_fmt,
                                                     device.getLastUpdatedDescription(getActivity()));
             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setTitle(StringRef.from(R.string.error_sense_missing_title))
                     .setMessage(StringRef.from(missingMessage))
                     .setPrimaryButtonTitle(R.string.action_troubleshoot)
                     .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SENSE_MISSING));
@@ -281,6 +284,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
     private void showPermissionPrompt() {
         final TroubleshootingAlert alert = new TroubleshootingAlert()
+                .setTitle(StringRef.from(R.string.request_permission_location_title2))
                 .setMessage(StringRef.from(R.string.request_permission_location_message))
                 .setPrimaryButtonTitle(R.string.action_enable_location)
                 .setPrimaryButtonOnClick(this::promptForLocationPermission)
@@ -344,6 +348,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                          },
                          e -> {
                              final TroubleshootingAlert alert = new TroubleshootingAlert()
+                                     .setTitle(StringRef.from(R.string.error_no_bluetooth_connectivity_title))
                                      .setMessage(StringRef.from(R.string.error_no_bluetooth_connectivity))
                                      .setPrimaryButtonTitle(R.string.action_turn_on_ble)
                                      .setPrimaryButtonOnClick(this::enableBluetooth);
@@ -375,6 +380,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             hardwarePresenter.trackPeripheralNotFound();
 
             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setTitle(StringRef.from(R.string.error_sense_not_found_title))
                     .setMessage(StringRef.from(R.string.error_sense_not_found))
                     .setPrimaryButtonTitle(R.string.action_troubleshoot)
                     .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE))
