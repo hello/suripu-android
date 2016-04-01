@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -65,7 +66,8 @@ public class RoomConditionsFragment extends BacksideTabFragment
     @Inject UnitFormatter unitFormatter;
 
     private Map<String, SensorHistoryAdapter> graphAdapters = new HashMap<>(5);
-    private Adapter adapter;
+    @VisibleForTesting
+    public Adapter adapter;
 
     //region Lifecycle
 
@@ -371,7 +373,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
                     reading.setTextColor(sensorColor);
                 } else {
                     reading.setText(R.string.missing_data_placeholder);
-                    reading.setTextColor(ContextCompat.getColor(getContext(), R.color.sensor_unknown));
+                    reading.setTextColor(ContextCompat.getColor(getActivity(), R.color.sensor_unknown));
                 }
                 message.setText(sensorState.getMessage());
 
