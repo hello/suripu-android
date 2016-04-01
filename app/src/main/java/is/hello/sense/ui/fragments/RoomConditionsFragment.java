@@ -371,7 +371,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
                     reading.setTextColor(sensorColor);
                 } else {
                     reading.setText(R.string.missing_data_placeholder);
-                    reading.setTextColor(ContextCompat.getColor(getContext(), R.color.sensor_unknown));
+                    reading.setTextColor(ContextCompat.getColor(getActivity(), R.color.sensor_unknown));
                 }
                 message.setText(sensorState.getMessage());
 
