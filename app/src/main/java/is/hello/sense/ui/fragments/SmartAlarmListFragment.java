@@ -180,11 +180,6 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
                     StringRef.from(R.string.error_smart_alarms_unavailable));
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
-        } else if (ApiException.statusEquals(e, 400)) {
-            message = new SmartAlarmAdapter.Message(0,
-                    StringRef.from(R.string.error_smart_alarm_clock_drift));
-            message.actionRes = R.string.action_retry;
-            message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 412)) {
             message = new SmartAlarmAdapter.Message(0,
                     StringRef.from(R.string.error_smart_alarm_requires_device));
@@ -213,8 +208,6 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
-        } else if (ApiException.statusEquals(e, 400)) {
-            errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
         }
         final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
