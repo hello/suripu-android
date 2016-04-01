@@ -10,14 +10,11 @@ import android.widget.ProgressBar;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
-import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
-import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
@@ -53,7 +50,7 @@ public class AlarmsFragment extends BacksideTabFragment implements OnSelectionCh
 
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
-                                                 new StaticFragmentAdapter.Item(SenseSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
+                                                 new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
         pager.setAdapter(adapter);
         return view;
     }
