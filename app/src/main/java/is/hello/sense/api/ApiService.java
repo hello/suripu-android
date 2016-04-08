@@ -25,6 +25,8 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.SleepDurations;
+import is.hello.sense.api.model.v2.SleepSoundActionPlay;
+import is.hello.sense.api.model.v2.SleepSoundActionStop;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
@@ -236,6 +238,15 @@ public interface ApiService {
 
     @GET("/v2/sleep_sounds/combined_state")
     Observable<SleepSoundsState> getSleepSoundsCurrentState();
+
+    @GET("/v2/sleep_sounds/status")
+    Observable<SleepSoundStatus> getSleepSoundStatus();
+
+    @POST("/v2/sleep_sounds/play")
+    Observable<VoidResponse> playSleepSound(@NonNull @Body SleepSoundActionPlay action);
+
+    @POST("/v2/sleep_sounds/stop")
+    Observable<VoidResponse> stopSleepSound(@NonNull @Body SleepSoundActionStop action);
 
     //endregion
 

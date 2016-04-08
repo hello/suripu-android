@@ -41,6 +41,9 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.SleepDurations;
+import is.hello.sense.api.model.v2.SleepSoundActionPlay;
+import is.hello.sense.api.model.v2.SleepSoundActionStop;
+import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
@@ -212,7 +215,8 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<Insight>> currentInsights() {
-        return loadResponse("insights", new TypeToken<ArrayList<Insight>>(){}.getType());
+        return loadResponse("insights", new TypeToken<ArrayList<Insight>>() {
+        }.getType());
     }
 
     @Override
@@ -308,10 +312,22 @@ public final class TestApiService implements ApiService {
     public Observable<SleepSoundsState> getSleepSoundsCurrentState() { return unimplemented(); }
 
     @Override
+    public Observable<SleepSoundStatus> getSleepSoundStatus() { return unimplemented(); }
+
+    @Override
+    public Observable<VoidResponse> playSleepSound(@NonNull @Body SleepSoundActionPlay action) {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
+    public Observable<VoidResponse> stopSleepSound(@NonNull @Body SleepSoundActionStop action) {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
     public Observable<Account> updateEmailAddress(@NonNull @Body Account account) {
         return safeJust(account);
     }
-
 
     @Override
     public Observable<Trends> trendsForTimeScale(@NonNull @Path("time_scale") Trends.TimeScale timeScale) {
