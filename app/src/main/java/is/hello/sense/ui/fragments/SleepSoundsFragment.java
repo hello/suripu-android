@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,7 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.SleepDurations;
-import is.hello.sense.api.model.v2.SleepSounds;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.presenters.SleepDurationsPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -43,11 +41,11 @@ public class SleepSoundsFragment extends InjectionFragment {
 
     }
 
-    private void bindSounds(@NonNull SleepSounds sounds) {
+    private void bindSounds(@NonNull VoidResponse sounds) {
 
     }
 
-    private void bindDurations(@NonNull SleepDurations durations) {
+    private void bindDurations(@NonNull VoidResponse durations) {
 
     }
 

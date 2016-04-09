@@ -3,15 +3,15 @@ package is.hello.sense.graph.presenters;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.v2.SleepDurations;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
 
-public class SleepDurationsPresenter extends ScopedValuePresenter<SleepDurations> {
+public class SleepDurationsPresenter extends ScopedValuePresenter<VoidResponse> {
     @Inject
     ApiService apiService;
 
-    public final PresenterSubject<SleepDurations> durations = this.subject;
+    public final PresenterSubject<VoidResponse> durations = this.subject;
 
     @Override
     protected boolean isDataDisposable() {
@@ -24,8 +24,8 @@ public class SleepDurationsPresenter extends ScopedValuePresenter<SleepDurations
     }
 
     @Override
-    protected Observable<SleepDurations> provideUpdateObservable() {
-        return apiService.getDurations();
+    protected Observable<VoidResponse> provideUpdateObservable() {
+        return null;
     }
 
 }
