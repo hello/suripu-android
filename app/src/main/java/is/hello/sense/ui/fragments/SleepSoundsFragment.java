@@ -11,6 +11,8 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.SleepDurations;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.graph.presenters.SleepDurationsPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -41,11 +43,11 @@ public class SleepSoundsFragment extends InjectionFragment {
 
     }
 
-    private void bindSounds(@NonNull VoidResponse sounds) {
+    private void bindSounds(@NonNull SleepSounds sounds) {
 
     }
 
-    private void bindDurations(@NonNull VoidResponse durations) {
+    private void bindDurations(@NonNull SleepDurations durations) {
 
     }
 
