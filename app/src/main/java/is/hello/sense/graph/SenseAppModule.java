@@ -20,6 +20,8 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
+import is.hello.sense.graph.presenters.SleepDurationsPresenter;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
@@ -37,7 +39,7 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.ui.fragments.AlarmsFragment;
+import is.hello.sense.ui.fragments.SoundsFragment;
 import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
@@ -108,10 +110,12 @@ import is.hello.sense.zendesk.ZendeskModule;
         SmartAlarmDetailActivity.class,
         SmartAlarmListFragment.class,
         SleepSoundsFragment.class,
-        AlarmsFragment.class,
+        SoundsFragment.class,
         SmartAlarmDetailFragment.class,
         SmartAlarmSoundDialogFragment.class,
         SmartAlarmPresenter.class,
+        SleepSoundsPresenter.class,
+        SleepDurationsPresenter.class
     }
 )
 @SuppressWarnings("UnusedDeclaration")

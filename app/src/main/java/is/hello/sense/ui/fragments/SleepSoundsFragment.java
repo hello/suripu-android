@@ -37,7 +37,7 @@ public class SleepSoundsFragment extends InjectionFragment {
         bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSounds, this::presentError);
         bindAndSubscribe(sleepDurationsPresenter.durations, this::bindDurations, this::presentError);
         sleepDurationsPresenter.update();
-        sleepSoundsPresenter.update();
+        //sleepSoundsPresenter.update();
 
     }
 

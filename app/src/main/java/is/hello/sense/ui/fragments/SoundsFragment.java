@@ -18,7 +18,7 @@ import is.hello.sense.ui.widget.util.Styles;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class AlarmsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
+public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
