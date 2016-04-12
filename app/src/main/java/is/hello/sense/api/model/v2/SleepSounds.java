@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 

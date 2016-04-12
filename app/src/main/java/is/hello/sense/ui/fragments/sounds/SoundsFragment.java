@@ -33,9 +33,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         final View view = inflater.inflate(R.layout.fragment_sounds, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_alarms_refresh_container);
-        // todo change this  swipeRefreshLayout.setOnRefreshListener(this::fetchTrends);
-        Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
-
+        swipeRefreshLayout.setEnabled(false);
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_alarms_loading);
         this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_alarms_scrollview);
         pager.setScrollingEnabled(false);

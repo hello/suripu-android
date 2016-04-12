@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -18,28 +19,29 @@ import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.Sound;
-import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
-    static final int VIEW_VOLUME = 0;
-    static final int VIEW_SOUNDS = 1;
-    static final int VIEW_DURATIONS = 2;
+    static final int VIEW_TITLE = 0;
+    static final int VIEW_VOLUME = 1;
+    static final int VIEW_SOUNDS = 2;
+    static final int VIEW_DURATIONS = 3;
+    protected final static SleepSoundStatus.Volume[] volumes = new SleepSoundStatus.Volume[]{
+            SleepSoundStatus.Volume.Low,
+            SleepSoundStatus.Volume.Medium,
+            SleepSoundStatus.Volume.High};
     private final LayoutInflater inflater;
     private final SharedPreferences preferences;
     private final InteractionListener interactionListener;
-
-    private final static int SOUNDS_REQUEST_CODE = 1234;
-    private final static int DURATION_REQUEST_CODE = 4321;
 
     private SleepSoundStatus sleepSoundStatus;
     private SleepSounds sleepSounds;
     private SleepDurations sleepDurations;
     private int itemCount = 0;
 
-    private SleepSoundsAdapter(@NonNull Context context,
-                               @NonNull SharedPreferences preferences,
-                               @NonNull InteractionListener interactionListener) {
+    public SleepSoundsAdapter(@NonNull Context context,
+                              @NonNull SharedPreferences preferences,
+                              @NonNull InteractionListener interactionListener) {
         this.interactionListener = interactionListener;
         this.inflater = LayoutInflater.from(context);
         this.preferences = preferences;
@@ -49,7 +51,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.sleepSoundStatus = status;
         this.sleepSounds = sleepSounds;
         this.sleepDurations = sleepDurations;
-        this.itemCount = 3;
+        this.itemCount = 4;
         notifyDataSetChanged();
     }
 
@@ -61,12 +63,13 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         return preferences.getString(Constants.SLEEP_SOUNDS_DURATION_NAME, null);
     }
 
-
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
-            return VIEW_SOUNDS;
+            return VIEW_TITLE;
         } else if (position == 1) {
+            return VIEW_SOUNDS;
+        } else if (position == 2) {
             return VIEW_DURATIONS;
         }
         return VIEW_VOLUME;
@@ -74,7 +77,9 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_SOUNDS) {
+        if (viewType == VIEW_TITLE) {
+            return new TitleViewHolder(inflater.inflate(R.layout.item_centered_title, parent, false));
+        } else if (viewType == VIEW_SOUNDS) {
             return new SleepSoundsViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
         } else if (viewType == VIEW_DURATIONS) {
             return new SleepDurationsViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
@@ -84,6 +89,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
+        holder.bind(position);
 
     }
 
@@ -93,13 +99,36 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     abstract static class BaseViewHolder extends RecyclerView.ViewHolder {
+
+
+        BaseViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+        abstract void bind(int position);
+    }
+
+    public class TitleViewHolder extends BaseViewHolder {
+
+        TitleViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ((TextView) itemView.findViewById(R.id.item_centered_title_text)).setText(R.string.sleep_sounds_title);
+        }
+
+        @Override
+        void bind(int position) {
+
+        }
+    }
+
+    public abstract class SleepViewHolder extends BaseViewHolder {
         protected ImageView image;
         protected TextView label;
         protected TextView value;
         protected ImageView chevron;
         protected View holder;
 
-        BaseViewHolder(@NonNull View itemView) {
+        SleepViewHolder(@NonNull View itemView) {
             super(itemView);
             this.holder = itemView;
             this.image = (ImageView) itemView.findViewById(R.id.item_sleep_sounds_image);
@@ -111,10 +140,12 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         abstract void bind(int position);
     }
 
-    class SleepSoundsViewHolder extends BaseViewHolder {
+    class SleepSoundsViewHolder extends SleepViewHolder {
 
         SleepSoundsViewHolder(@NonNull View itemView) {
             super(itemView);
+            image.setImageResource(R.drawable.sounds_sound_icon);
+            label.setText(R.string.sleep_sounds_sound_label);
         }
 
         @Override
@@ -136,20 +167,29 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             });
 
             String savedSound = getSavedSound();
+
             if (sleepSounds.hasSound(savedSound)) {
                 value.setText(savedSound);
-            } else if (sleepSounds.hasSound(sleepSoundStatus.getSound().getName())) {
-                value.setText(sleepSoundStatus.getSound().getName());
             } else {
-                value.setText(sounds.get(0).getName());
+                Sound currentSounds = sleepSoundStatus.getSound();
+                if (currentSounds != null && sleepSounds.hasSound(currentSounds.getName())) {
+                    value.setText(currentSounds.getName());
+                } else {
+                    value.setText(sounds.get(0).getName());
+                }
             }
+
+
         }
     }
 
-    class SleepDurationsViewHolder extends BaseViewHolder {
+    class SleepDurationsViewHolder extends SleepViewHolder {
 
         SleepDurationsViewHolder(@NonNull View itemView) {
             super(itemView);
+            image.setImageResource(R.drawable.sounds_duration_icon);
+            label.setText(R.string.sleep_sounds_duration_label);
+
         }
 
         @Override
@@ -171,34 +211,57 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             });
 
             String savedDuration = getSavedDuration();
+
             if (sleepDurations.hasDuration(savedDuration)) {
                 value.setText(savedDuration);
-            } else if (sleepDurations.hasDuration(sleepSoundStatus.getDuration().getName())) {
-                value.setText(sleepSoundStatus.getDuration().getName());
             } else {
-                value.setText(durations.get(0).getName());
+                Duration currentDuration = sleepSoundStatus.getDuration();
+                if (currentDuration != null && sleepDurations.hasDuration(currentDuration.getName())) {
+                    value.setText(currentDuration.getName());
+                } else {
+                    value.setText(durations.get(0).getName());
+                }
             }
-
-
         }
     }
 
-    class SleepVolumeViewHolder extends BaseViewHolder {
+    class SleepVolumeViewHolder extends SleepViewHolder {
 
         SleepVolumeViewHolder(@NonNull View itemView) {
             super(itemView);
+            image.setImageResource(R.drawable.sounds_volume_icon);
+            label.setText(R.string.sleep_sounds_volume_label);
+            chevron.setVisibility(View.INVISIBLE);
+
         }
 
         @Override
         void bind(int position) {
+            if (sleepSoundStatus == null) {
+                return;
+            }
+
+            List<SleepSoundStatus.Volume> volumes = Arrays.asList(SleepSoundsAdapter.volumes);
+
+            if (volumes.isEmpty()) {
+                value.setText(null);
+                return;
+            }
+
+            if (sleepSoundStatus.getVolume() != SleepSoundStatus.Volume.None) {
+                value.setText(sleepSoundStatus.getVolume().toString());
+            } else {
+                value.setText(volumes.get(0).toString());
+            }
 
         }
     }
 
     public interface InteractionListener {
-        void onSoundClick(@NonNull String currentValue, @NonNull List<?> sounds);
+        void onSoundClick(@NonNull String currentSound, @NonNull List<?> sounds);
 
         void onDurationClick(@NonNull String currentDuration, @NonNull List<?> durations);
+
     }
 
 }

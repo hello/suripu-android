@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/background_light"
     android:gravity="center_vertical"
     android:paddingBottom="@dimen/gap_card_content"
     android:paddingTop="@dimen/gap_card_content">
@@ -15,8 +16,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/gap_medium"
-        android:layout_marginRight="@dimen/gap_medium"
-        android:src="@drawable/sounds_sound_icon"/>
+        android:layout_marginRight="@dimen/gap_medium"/>
 
     <TextView
         android:id="@+id/item_sleep_sounds_label"
@@ -24,8 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/item_sleep_sounds_image"
-        android:layout_toRightOf="@+id/item_sleep_sounds_image"
-        android:text="@string/sleep_sounds_sound_label"/>
+        android:layout_toRightOf="@+id/item_sleep_sounds_image"/>
 
     <TextView
         android:id="@+id/item_sleep_sounds_value"

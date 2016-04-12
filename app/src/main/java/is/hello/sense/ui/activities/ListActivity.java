@@ -5,9 +5,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -34,19 +35,26 @@ public class ListActivity extends InjectionActivity {
 
     private static final String ARG_LIST = ListActivity.class.getName() + ".ARG_LIST";
     private static final String ARG_SELECTED_NAME = ListActivity.class.getName() + ".ARG_SELECTED_NAME";
+    private static final String ARG_TITLE = ListActivity.class.getName() + ".ARG_TITLE";
 
     public static final String VALUE_NAME = ListActivity.class.getName() + ".VALUE_NAME";
 
 
-    public static void startActivityForResult(@NonNull InjectionFragment fragment, int requestCode, @NonNull String selectedName, @NonNull List<?> list) {
+    public static void startActivityForResult(
+            @NonNull InjectionFragment fragment,
+            int requestCode,
+            @StringRes int titleRes,
+            @NonNull String selectedName,
+            @NonNull List<?> list) {
+
         ArrayList<String> newList = new ArrayList<>();
         for (Object object : list) {
-            Log.e("Adding", object.toString());
             newList.add(object.toString());
         }
         Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putStringArrayListExtra(ARG_LIST, newList);
         intent.putExtra(ARG_SELECTED_NAME, selectedName);
+        intent.putExtra(ARG_TITLE, titleRes);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -63,11 +71,14 @@ public class ListActivity extends InjectionActivity {
 
         list = intent.getStringArrayListExtra(ARG_LIST);
         selectedName = intent.getStringExtra(ARG_SELECTED_NAME);
+        final int titleRes = intent.getIntExtra(ARG_TITLE, R.string.empty);
 
         this.itemHorizontalPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
         this.itemVerticalPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
+        final TextView title = (TextView) findViewById(R.id.item_section_title_text);
+        title.setText(titleRes);
+        findViewById(R.id.item_section_title_divider).setVisibility(View.GONE);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
@@ -83,7 +94,7 @@ public class ListActivity extends InjectionActivity {
     }
 
     private void onClick(@NonNull String item) {
-        Intent intent = new Intent();
+        final Intent intent = new Intent();
         intent.putExtra(VALUE_NAME, item);
         setResult(RESULT_OK, intent);
         finish();
@@ -134,7 +145,7 @@ public class ListActivity extends InjectionActivity {
         }
 
         void bind(int position) {
-            String item = list.get(position);
+            final String item = list.get(position);
             title.setText(item);
             if (item.equals(selectedName)) {
                 selectedTextView = title;
