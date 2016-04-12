@@ -526,6 +526,9 @@
 
     <string name="alarm_subnavbar_alarm_list">Alarms</string>
     <string name="alarm_subnavbar_sounds_list">Sounds</string>
+    <string name="sleep_sounds_sound_label">Sound</string>
+    <string name="sleep_sounds_duration_label">Duration</string>
+
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

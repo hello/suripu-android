@@ -25,6 +25,7 @@ import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
+import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;

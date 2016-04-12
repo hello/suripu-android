@@ -29,4 +29,5 @@ public class SleepSoundsState extends ApiResponse {
     public SleepSoundStatus getStatus() {
         return status;
     }
+
 }

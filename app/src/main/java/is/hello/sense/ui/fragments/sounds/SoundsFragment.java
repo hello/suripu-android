@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.ui.fragments.sounds;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
@@ -18,7 +19,7 @@ import is.hello.sense.ui.widget.util.Styles;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class AlarmsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
+public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -29,7 +30,7 @@ public class AlarmsFragment extends BacksideTabFragment implements OnSelectionCh
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_alarms, container, false);
+        final View view = inflater.inflate(R.layout.fragment_sounds, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_alarms_refresh_container);
         // todo change this  swipeRefreshLayout.setOnRefreshListener(this::fetchTrends);
