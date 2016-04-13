@@ -70,7 +70,6 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(sleepSoundsStatePresenter.state, this::bind, this::presentError);
         sleepSoundsStatePresenter.update();
-        //todo restore state
     }
 
     @Override

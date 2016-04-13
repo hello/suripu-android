@@ -71,7 +71,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         super.onViewCreated(view, savedInstanceState);
         swipeRefreshLayout.setRefreshing(true);
         timeScaleSelector.setSelectedIndex(0);
-        onUpdate();// todo erase
+        onUpdate();
+        //todo restore state
     }
 
     @Override
