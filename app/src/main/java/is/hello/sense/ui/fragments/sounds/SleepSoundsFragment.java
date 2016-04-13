@@ -25,6 +25,7 @@ import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.util.Constants;
@@ -104,6 +105,14 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
         }
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            final boolean flickerWorkAround = true;
+            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
+        }
+    }
     private void presentError(final @NonNull Throwable error) {
     }
 
