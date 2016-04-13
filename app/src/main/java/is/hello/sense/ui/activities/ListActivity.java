@@ -41,17 +41,17 @@ public class ListActivity extends InjectionActivity {
 
 
     public static void startActivityForResult(
-            @NonNull InjectionFragment fragment,
-            int requestCode,
-            @StringRes int titleRes,
-            @NonNull String selectedName,
-            @NonNull List<?> list) {
+            final @NonNull InjectionFragment fragment,
+            final int requestCode,
+            final @StringRes int titleRes,
+            final @NonNull String selectedName,
+            final @NonNull List<?> list) {
 
-        ArrayList<String> newList = new ArrayList<>();
+        final ArrayList<String> newList = new ArrayList<>();
         for (Object object : list) {
             newList.add(object.toString());
         }
-        Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
+        final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putStringArrayListExtra(ARG_LIST, newList);
         intent.putExtra(ARG_SELECTED_NAME, selectedName);
         intent.putExtra(ARG_TITLE, titleRes);
@@ -59,11 +59,11 @@ public class ListActivity extends InjectionActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
         if (intent == null) {
             return;
@@ -93,7 +93,7 @@ public class ListActivity extends InjectionActivity {
         recyclerView.setAdapter(new ActivityListAdapter());
     }
 
-    private void onClick(@NonNull String item) {
+    private void onClick(final @NonNull String item) {
         final Intent intent = new Intent();
         intent.putExtra(VALUE_NAME, item);
         setResult(RESULT_OK, intent);
@@ -112,7 +112,7 @@ public class ListActivity extends InjectionActivity {
         }
 
         @Override
-        public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
             final TextView textView = new TextView(ListActivity.this, null, R.style.AppTheme_Text_Body);
             textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_off, 0, 0, 0);
             textView.setCompoundDrawablePadding(drawablePadding);
@@ -122,7 +122,7 @@ public class ListActivity extends InjectionActivity {
         }
 
         @Override
-        public void onBindViewHolder(BaseViewHolder holder, int position) {
+        public void onBindViewHolder(final BaseViewHolder holder, final int position) {
             holder.bind(position);
         }
 
@@ -136,7 +136,7 @@ public class ListActivity extends InjectionActivity {
     private class BaseViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
 
-        BaseViewHolder(@NonNull TextView view) {
+        BaseViewHolder(final @NonNull TextView view) {
             super(view);
 
             this.title = view;
@@ -144,7 +144,7 @@ public class ListActivity extends InjectionActivity {
                              itemHorizontalPadding, itemVerticalPadding);
         }
 
-        void bind(int position) {
+        void bind(final int position) {
             final String item = list.get(position);
             title.setText(item);
             if (item.equals(selectedName)) {

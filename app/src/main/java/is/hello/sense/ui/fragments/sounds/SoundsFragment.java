@@ -55,6 +55,18 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        initialActivityIndicator = null;
+        swipeRefreshLayout = null;
+        timeScaleSelector = null;
+        pager = null;
+        adapter = null;
+
+
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         swipeRefreshLayout.setRefreshing(true);

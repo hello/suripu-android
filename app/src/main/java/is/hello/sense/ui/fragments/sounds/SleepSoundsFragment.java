@@ -45,8 +45,8 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
         progressBar = (ProgressBar) view.findViewById(R.id.fragment_sleep_sounds_progressbar);
         playButton = (ImageButton) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
         preferences = getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, 0);
@@ -56,7 +56,7 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
         final Resources resources = getResources();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        InsetItemDecoration decoration = new InsetItemDecoration();
+        final InsetItemDecoration decoration = new InsetItemDecoration();
         decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
@@ -66,22 +66,29 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(sleepSoundsStatePresenter.state, this::bind, this::presentError);
         sleepSoundsStatePresenter.update();
+        //todo restore state
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onDestroyView() {
+        super.onDestroyView();
+        recyclerView = null;
+        progressBar = null;
+        playButton = null;
+        adapter = null;
+        preferences = null;
+
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            String value = data.getStringExtra(ListActivity.VALUE_NAME);
+            final String value = data.getStringExtra(ListActivity.VALUE_NAME);
             if (value == null) {
                 return;
             }
@@ -98,16 +105,16 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
         }
     }
 
-    private void presentError(@NonNull Throwable error) {
+    private void presentError(final @NonNull Throwable error) {
     }
 
-    private void bind(@NonNull SleepSoundsState state) {
+    private void bind(final @NonNull SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
     }
 
     @Override
-    public void onSoundClick(@NonNull String currentSound, @NonNull List<?> sounds) {
+    public void onSoundClick(final @NonNull String currentSound, final @NonNull List<?> sounds) {
         ListActivity.startActivityForResult(
                 this,
                 SOUNDS_REQUEST_CODE,
@@ -117,7 +124,7 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     }
 
     @Override
-    public void onDurationClick(@NonNull String currentDuration, @NonNull List<?> durations) {
+    public void onDurationClick(final @NonNull String currentDuration, final @NonNull List<?> durations) {
         ListActivity.startActivityForResult(
                 this,
                 DURATION_REQUEST_CODE,
