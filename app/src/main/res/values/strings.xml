@@ -358,6 +358,8 @@
     <string name="welcome_dialog_smart_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle, up to 30 minutes before your requested wake-up time, making sure you wake up refreshed and at the right time for you.</string>
     <string name="welcome_dialog_pill_color_title">Sleep Pill Color</string>
     <string name="welcome_dialog_pill_color">Each Sleep Pill paired with Sense is assigned a unique color — you can see which color yours is on this page. If you shake your Sleep Pill for a few seconds, Sense will glow the color assigned to your Sleep Pill. If you’re sharing Sense with a partner, this is also a great way to tell your Sleep Pills apart if they get mixed up.</string>
+    <string name="welcome_dialog_sleep_sounds_title">Sleep Sounds</string>
+    <string name="welcome_dialog_sleep_sounds">Falling asleep to a consistent and calming ambient sound can help you mask nighttime noise, and help you sleep better. Sense makes it easy to start your night off right: choose a custom-designed Sleep Sound, and drift peacefully off to sleep.</string>
 
     <string name="alert_title_skip_pair_pill">Are you sure?</string>
     <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep, or set Smart Alarms. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>

@@ -25,6 +25,7 @@ import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.util.Constants;
@@ -101,6 +102,18 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
                        .putString(constant, value)
                        .apply();
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        // This method is called before onCreateView, when not visible to the user.
+        // When it is visible, then this is called after the view has been created,
+        // although we really do not depend on the view being created first.
+        if (isVisibleToUser) {
+            final boolean flickerWorkAround = true;
+            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
         }
     }
 
