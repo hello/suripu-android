@@ -1,6 +1,7 @@
 package is.hello.sense.util;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -17,6 +18,7 @@ import java.io.OutputStream;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.permissions.Permissions;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -37,6 +39,8 @@ public abstract class Share {
     }
 
     public abstract void send(@NonNull Activity from);
+
+    public abstract void send(@NonNull Fragment from);
 
     //endregion
 
@@ -77,6 +81,11 @@ public abstract class Share {
         public void send(@NonNull Activity from) {
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
         }
+
+        @Override
+        public void send(@NonNull Fragment from) {
+
+        }
     }
 
     public static class Email extends Share {
@@ -112,11 +121,18 @@ public abstract class Share {
                 alertDialog.show();
             }
         }
+
+        @Override
+        public void send(@NonNull Fragment from) {
+
+        }
     }
 
     public static class Image extends Share {
         private final Bitmap bitmap;
-        private @Nullable SenseDialogFragment loadingDialogFragment;
+        private
+        @Nullable
+        SenseDialogFragment loadingDialogFragment;
 
         private Image(@NonNull Bitmap bitmap) {
             super(Intent.ACTION_SEND);
@@ -141,8 +157,12 @@ public abstract class Share {
         }
 
         @Override
-        public void send(@NonNull Activity from) {
-            ContentResolver contentResolver = from.getContentResolver();
+        public void send(@NonNull Fragment from) {
+            if (Permissions.needsWriteExternalStoragePermission(from)) {
+                Permissions.requestWriteExternalStoragePermission(from);
+                return;
+            }
+            ContentResolver contentResolver = from.getActivity().getContentResolver();
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, intent.getStringExtra(Intent.EXTRA_SUBJECT));
             values.put(MediaStore.Images.Media.DESCRIPTION, intent.getStringExtra(Intent.EXTRA_TEXT));
@@ -177,11 +197,17 @@ public abstract class Share {
                           }
                       }, e -> {
                           Logger.error(Share.class.getSimpleName(), "Could not share bitmap image", e);
-                          ErrorDialogFragment.presentError(from, e);
+                          ErrorDialogFragment.presentError(from.getActivity(), e);
                           if (loadingDialogFragment != null) {
                               loadingDialogFragment.dismissSafely();
                           }
                       });
+        }
+
+
+        @Override
+        public void send(@NonNull Activity from) {
+
         }
     }
 

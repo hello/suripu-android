@@ -1,5 +1,6 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
@@ -8,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.jar.Attributes;
 
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.markup.text.MarkupString;
@@ -60,6 +62,15 @@ public class Timeline extends ApiResponse {
 
     public ArrayList<TimelineMetric> getMetrics() {
         return metrics;
+    }
+
+    public TimelineMetric getMetricWithName(@NonNull final TimelineMetric.Name name) {
+        for (final TimelineMetric metric : metrics) {
+            if (metric.getName().equals(name)) {
+                return metric;
+            }
+        }
+        return null;
     }
 
 
