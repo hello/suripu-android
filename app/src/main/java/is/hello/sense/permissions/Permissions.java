@@ -26,7 +26,7 @@ public class Permissions {
     private static boolean needsPermission(@NonNull Activity activity, @NonNull String permission) {
         final int permissionLevel = PermissionChecker.checkSelfPermission(activity,
                                                                           permission);
-        return (permissionLevel == PermissionChecker.PERMISSION_DENIED);
+        return permissionLevel != PermissionChecker.PERMISSION_GRANTED;
     }
 
 
@@ -105,7 +105,7 @@ public class Permissions {
 
     @TargetApi(Build.VERSION_CODES.M)
     public static void requestWriteExternalStoragePermission(@NonNull Fragment fragment) {
-        // todo track new event. Analytics.trackEvent(Analytics.Permissions.EVENT_WE_NEED_LOCATION, null);
+        Analytics.trackEvent(Analytics.Permissions.EVENT_WE_NEED_STORAGE, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
         dialog.setTitle(R.string.request_permission_write_external_storage_title);
@@ -116,13 +116,13 @@ public class Permissions {
                                               WRITE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
         });
         dialog.setNegativeButton(R.string.action_more_info, (sender, which) -> {
-            // TODO link to info
+            UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity());
         });
         dialog.show();
     }
 
     public static void showWriteExternalStorageEnableInstructionsDialog(@NonNull Fragment fragment) {
-        // todo track new event. Analytics.trackEvent(Analytics.Permissions.EVENT_LOCATION_DISABLED, null);
+        Analytics.trackEvent(Analytics.Permissions.EVENT_STORAGE_DISABLED, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
         CharSequence clickableText = fragment.getResources().getText(R.string.request_permission_write_external_storage_message);
@@ -130,7 +130,7 @@ public class Permissions {
         dialog.setMessage(Styles.resolveSupportLinks(fragment.getActivity(), clickableText));
         dialog.setPositiveButton(android.R.string.ok, null);
         dialog.setNegativeButton(R.string.action_more_info, (sender, which) -> {
-            // todo link to info
+            UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity());
         });
 
         dialog.show();

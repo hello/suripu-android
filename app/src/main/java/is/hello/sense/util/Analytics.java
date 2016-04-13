@@ -524,7 +524,10 @@ public class Analytics {
     public interface Permissions {
         String EVENT_WE_NEED_LOCATION = "Location Permission Explanation";
         String EVENT_LOCATION_DISABLED = "Location Not Granted";
-        String EVENT_MORE_INFO = "Location Permission More Info";
+        String EVENT_LOCATION_MORE_INFO = "Location Permission More Info";
+        String EVENT_WE_NEED_STORAGE = "External Storage Permission Explanation";
+        String EVENT_STORAGE_DISABLED = "External Storage Not Granted";
+        String EVENT_STORAGE_MORE_INFO = "External Storage Permission More Info";
     }
 
 
