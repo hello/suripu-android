@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 import java.util.Collection;
@@ -85,7 +85,7 @@ public class Alarm extends ApiResponse {
         return new LocalTime(hourOfDay, minuteOfHour);
     }
 
-    public DateTime toTimeToday() {
+    public @NonNull DateTime toTimeToday() {
         return new DateTime(DateTimeZone.getDefault())
                       .withHourOfDay(hourOfDay)
                       .withMinuteOfHour(minuteOfHour)
