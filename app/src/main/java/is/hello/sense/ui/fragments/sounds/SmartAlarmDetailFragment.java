@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.ui.fragments.sounds;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -374,10 +374,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
-        } else if (ApiException.statusEquals(e, 400)) {
-            errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
-            errorDialogBuilder.withAction(new Intent(Settings.ACTION_DATE_SETTINGS), R.string.action_settings);
-        } else if (ApiException.statusEquals(e, 412)) {
+        }  else if (ApiException.statusEquals(e, 412)) {
             errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_requires_device)));
         }
         final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();

@@ -60,6 +60,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
 
         if (device.state == SleepPillDevice.State.LOW_BATTERY) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setTitle(StringRef.from(R.string.issue_title_low_battery))
                     .setMessage(StringRef.from(R.string.issue_message_low_battery))
                     .setPrimaryButtonTitle(R.string.action_replace_battery)
                     .setPrimaryButtonOnClick(this::replaceBattery);
@@ -67,6 +68,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         } else if (device.isMissing()) {
             final String missingMessage = getString(R.string.error_sleep_pill_missing_fmt, device.getLastUpdatedDescription(getActivity()));
             final TroubleshootingAlert alert = new TroubleshootingAlert()
+                    .setTitle(StringRef.from(R.string.error_sleep_pill_missing_title))
                     .setMessage(StringRef.from(missingMessage))
                     .setPrimaryButtonTitle(R.string.action_troubleshoot)
                     .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.SLEEP_PILL_MISSING));

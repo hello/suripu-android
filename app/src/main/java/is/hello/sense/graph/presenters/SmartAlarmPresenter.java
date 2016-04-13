@@ -113,7 +113,7 @@ import rx.subjects.ReplaySubject;
         final DateTime now = DateTime.now(DateTimeZone.getDefault())
                                      .withSecondOfMinute(0)
                                      .withMillisOfSecond(0);
-        final DateTime alarmTime = alarm.getTime().toDateTimeToday();
+        final DateTime alarmTime = alarm.toTimeToday();
         final Set<Integer> daysOfWeek = alarm.getDaysOfWeek();
         if (Lists.isEmpty(daysOfWeek) || daysOfWeek.contains(now.getDayOfWeek())) {
             // Alarm includes today, check if next 2 minutes

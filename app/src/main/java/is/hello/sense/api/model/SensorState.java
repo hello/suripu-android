@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -48,6 +49,51 @@ public class SensorState extends ApiResponse {
         this.condition = condition;
         this.unit = unit;
         this.lastUpdated = lastUpdated;
+    }
+
+    @VisibleForTesting
+    public static SensorState generateHumidityExample(double value, Condition condition){
+        String name = "Humidity";
+        return  new SensorState(value,
+                                new MarkupString(name,0,name.length()),
+                                condition,
+                                "%",
+                                DateTime.now());
+    }
+
+    @VisibleForTesting
+    public static SensorState generateTemperatureExample(double value, Condition condition){
+        String name = "Temperature";
+        return  new SensorState(value,
+                                new MarkupString(name,0,name.length()),
+                                condition,
+                                "c",
+                                DateTime.now());
+    }
+
+    @VisibleForTesting
+    public static SensorState generateSoundExample(double value, Condition condition){
+        String name = "Noise";
+        SensorState sensorState =  new SensorState(value,
+                                new MarkupString(name,0,name.length()),
+                                condition,
+                                "",
+                                DateTime.now());
+        // This forces the RoomConditionsFragment.Adapter.SensorViewHolder to have an empty readingText value during #bind.
+        sensorState.name = null;
+        sensorState.value = null;
+        sensorState.unit = null;
+        return sensorState;
+    }
+
+    @VisibleForTesting
+    public static SensorState generateLightExample(double value, Condition condition){
+        String name = "Light";
+        return  new SensorState(value,
+                                new MarkupString(name,0,name.length()),
+                                condition,
+                                "lux",
+                                DateTime.now());
     }
 
     /**

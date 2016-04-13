@@ -56,6 +56,7 @@ public class GridTrendGraphView extends TrendGraphView {
                     ((GridGraphDrawable) drawable).initHeight(getWidth() / 7);
                     requestLayout();
                     invalidate();
+                    bindGraph(drawable.getGraph());
                 }
             }
         });
@@ -71,6 +72,10 @@ public class GridTrendGraphView extends TrendGraphView {
         }
         final int currentHeight = getDrawableHeight();
         final int targetHeight = getDrawableHeight(graph);
+        if (currentHeight == 0 && targetHeight == 0) {
+            super.bindGraph(graph);
+            return;
+        }
         final ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
         animator.setDuration(Anime.DURATION_NORMAL);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);

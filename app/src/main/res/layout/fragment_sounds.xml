@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <is.hello.sense.ui.widget.SelectorView
+        android:id="@+id/fragment_alarms_time_scale"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/trends_title_height"/>
+
+    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
+        android:id="@+id/fragment_alarms_refresh_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/fragment_alarms_time_scale">
+
+        <is.hello.sense.ui.widget.ExtendedViewPager
+            android:id="@+id/fragment_alarms_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            app:senseFadingEdgeStyle="rounded"/>
+
+    </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
+
+    <ProgressBar
+        android:id="@+id/fragment_alarms_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
