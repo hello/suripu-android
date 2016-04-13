@@ -117,14 +117,14 @@ public class BacksideFragment extends InjectionFragment
                 R.drawable.backside_icon_currently,
                 R.drawable.backside_icon_trends,
                 R.drawable.backside_icon_insights,
-                R.drawable.backside_icon_alarm,
+                R.drawable.backside_icon_sounds,
                 R.drawable.backside_icon_settings,
         };
         final @DrawableRes int[] activeIcons = {
                 R.drawable.backside_icon_currently_active,
                 R.drawable.backside_icon_trends_active,
                 R.drawable.backside_icon_insights_active,
-                R.drawable.backside_icon_alarm_active,
+                R.drawable.backside_icon_sounds_active,
                 R.drawable.backside_icon_settings_active,
         };
         for (int i = 0, count = adapter.getCount(); i < count; i++) {

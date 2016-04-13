@@ -6,9 +6,9 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +20,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
+import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.ListActivity;
@@ -32,18 +34,26 @@ import is.hello.sense.util.Constants;
 public class SleepSoundsFragment extends InjectionFragment implements SleepSoundsAdapter.InteractionListener {
     private final static int SOUNDS_REQUEST_CODE = 1234;
     private final static int DURATION_REQUEST_CODE = 4321;
+    private final static int VOLUME_REQUEST_CODE = 2143;
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private ImageButton playButton;
     private SleepSoundsAdapter adapter;
-
-    @Inject
-    SleepSoundsStatePresenter sleepSoundsStatePresenter;
     private SharedPreferences preferences;
 
 
-    @Nullable
+    @Inject
+    SleepSoundsStatePresenter sleepSoundsStatePresenter;
+
+    @Inject
+    SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
@@ -60,7 +70,7 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
         decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
-        this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this);
+        this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext());
         recyclerView.setAdapter(adapter);
         return view;
     }
@@ -68,13 +78,15 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(sleepSoundsStatePresenter.state, this::bind, this::presentError);
+        bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentError);
+        bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentError);
         sleepSoundsStatePresenter.update();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.e("Destroying", "Destroyed");
         recyclerView = null;
         progressBar = null;
         playButton = null;
@@ -94,8 +106,10 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
             final String constant;
             if (requestCode == SOUNDS_REQUEST_CODE) {
                 constant = Constants.SLEEP_SOUNDS_SOUND_NAME;
-            } else {
+            } else if (requestCode == DURATION_REQUEST_CODE) {
                 constant = Constants.SLEEP_SOUNDS_DURATION_NAME;
+            } else {
+                constant = Constants.SLEEP_SOUNDS_VOLUME_NAME;
             }
             preferences.edit()
                        .putString(constant, value)
@@ -105,11 +119,18 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     }
 
     private void presentError(final @NonNull Throwable error) {
+        Log.e("Updating", "Error");
+
     }
 
-    private void bind(final @NonNull SleepSoundsState state) {
+    private void bindState(final @NonNull SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
+        sleepSoundsStatusPresenter.update();
+    }
+
+    private void bindStatus(final @NonNull SleepSoundStatus status) {
+        adapter.bind(status);
     }
 
     @Override
@@ -132,4 +153,13 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
                 durations);
     }
 
+    @Override
+    public void onVolumeClick(@NonNull String currentVolume, @NonNull List<?> volumes) {
+        ListActivity.startActivityForResult(
+                this,
+                VOLUME_REQUEST_CODE,
+                R.string.list_activity_volume_title,
+                currentVolume,
+                volumes);
+    }
 }
