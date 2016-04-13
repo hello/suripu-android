@@ -108,11 +108,15 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        // This method is called before onCreateView, when not visible to the user.
+        // When it is visible, then this is called after the view has been created,
+        // although we really do not depend on the view being created first.
         if (isVisibleToUser) {
             final boolean flickerWorkAround = true;
             WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
         }
     }
+
     private void presentError(final @NonNull Throwable error) {
     }
 
