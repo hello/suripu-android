@@ -22,7 +22,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;

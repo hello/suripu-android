@@ -25,6 +25,7 @@ import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
+import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;
@@ -93,7 +94,7 @@ public class BacksideFragment extends InjectionFragment
                                                  new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new Item(TrendsFragment.class, getString(R.string.title_trends)),
                                                  new Item(InsightsFragment.class, getString(R.string.action_insights)),
-                                                 new Item(SmartAlarmListFragment.class, getString(R.string.action_alarm)),
+                                                 new Item(SoundsFragment.class, getString(R.string.action_alarm)),
                                                  new Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);
 

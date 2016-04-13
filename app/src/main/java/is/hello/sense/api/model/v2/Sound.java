@@ -1,5 +1,6 @@
 package is.hello.sense.api.model.v2;
 
+
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
@@ -24,5 +25,10 @@ public class Sound extends ApiResponse {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 }

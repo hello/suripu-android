@@ -89,6 +89,9 @@
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
+        <activity
+            android:name=".ui.activities.ListActivity"
+            android:parentActivityName=".ui.activities.HomeActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

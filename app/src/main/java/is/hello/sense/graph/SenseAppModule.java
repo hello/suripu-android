@@ -20,6 +20,8 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.SensorHistoryPresenter;
+import is.hello.sense.graph.presenters.SleepDurationsPresenter;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TrendsPresenter;
@@ -37,12 +39,14 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
+import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
-import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
-import is.hello.sense.ui.fragments.SmartAlarmListFragment;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
@@ -54,6 +58,7 @@ import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
+import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
@@ -105,9 +110,14 @@ import is.hello.sense.zendesk.ZendeskModule;
         TrendsFragment.class,
         SmartAlarmDetailActivity.class,
         SmartAlarmListFragment.class,
+        SleepSoundsFragment.class,
+        SoundsFragment.class,
         SmartAlarmDetailFragment.class,
         SmartAlarmSoundDialogFragment.class,
         SmartAlarmPresenter.class,
+        SleepSoundsPresenter.class,
+        SleepDurationsPresenter.class,
+        ListActivity.class
     }
 )
 @SuppressWarnings("UnusedDeclaration")

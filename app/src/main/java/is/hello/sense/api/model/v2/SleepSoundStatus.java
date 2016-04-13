@@ -1,7 +1,11 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 
 /**
@@ -33,7 +37,36 @@ public class SleepSoundStatus extends ApiResponse {
         return duration;
     }
 
-    public Integer getVolume() {
-        return volume;
+    public Volume getVolume() {
+        return Volume.fromInt(volume);
+    }
+
+    public enum Volume implements Enums.FromString {
+        High(100),
+        Medium(50),
+        Low(25),
+        None(0);
+
+        final int volume;
+
+        Volume(int volume) {
+            this.volume = volume;
+        }
+
+        public static Volume fromString(@NonNull String string) {
+            return Enums.fromString(string, values(), None);
+        }
+
+        public static Volume fromInt(@Nullable Integer value) {
+            if (value == null){
+                return None;
+            }
+            for (Volume volume : values()) {
+                if (volume.volume == value) {
+                    return volume;
+                }
+            }
+            return None;
+        }
     }
 }

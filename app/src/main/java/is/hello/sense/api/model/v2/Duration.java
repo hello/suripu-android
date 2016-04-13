@@ -18,4 +18,9 @@ public class Duration extends ApiResponse {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

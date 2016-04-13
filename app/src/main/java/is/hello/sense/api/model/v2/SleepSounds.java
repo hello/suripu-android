@@ -1,6 +1,7 @@
 package is.hello.sense.api.model.v2;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -23,6 +24,18 @@ public class SleepSounds extends ApiResponse {
 
     public State getState() {
         return state;
+    }
+
+    public boolean hasSound(@Nullable String soundName) {
+        if (soundName == null) {
+            return false;
+        }
+        for (Sound sound : sounds) {
+            if (sound.getName().equals(soundName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public enum State implements Enums.FromString {

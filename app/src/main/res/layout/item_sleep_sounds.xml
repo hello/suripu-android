@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/item_sleep_sounds_sound_holder"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/background_light"
+    android:gravity="center_vertical"
+    android:paddingBottom="@dimen/gap_card_content"
+    android:paddingTop="@dimen/gap_card_content">
+
+    <ImageView
+        android:id="@+id/item_sleep_sounds_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/gap_medium"
+        android:layout_marginRight="@dimen/gap_medium"/>
+
+    <TextView
+        android:id="@+id/item_sleep_sounds_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/item_sleep_sounds_image"
+        android:layout_toRightOf="@+id/item_sleep_sounds_image"/>
+
+    <TextView
+        android:id="@+id/item_sleep_sounds_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/item_sleep_sounds_chevron"
+        />
+
+    <ImageView
+        android:id="@+id/item_sleep_sounds_chevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/gap_medium"
+        android:layout_marginRight="@dimen/gap_medium"
+        android:src="@drawable/disclosure_chevron"
+        />
+</RelativeLayout>

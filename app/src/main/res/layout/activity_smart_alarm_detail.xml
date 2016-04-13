@@ -8,7 +8,7 @@
         android:id="@+id/activity_smart_alarm_detail_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="is.hello.sense.ui.fragments.SmartAlarmDetailFragment"
+        android:name="is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment"
         tools:layout="@layout/fragment_smart_alarm_detail" />
 
 </merge>
