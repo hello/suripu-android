@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
 import java.util.Collection;
@@ -83,6 +84,14 @@ public class Alarm extends ApiResponse {
 
     public LocalTime getTime() {
         return new LocalTime(hourOfDay, minuteOfHour);
+    }
+
+    public DateTime toTimeToday() {
+        return new DateTime(DateTimeZone.getDefault())
+                      .withHourOfDay(hourOfDay)
+                      .withMinuteOfHour(minuteOfHour)
+                      .withSecondOfMinute(0)
+                      .withMillisOfSecond(0);
     }
 
     public void setTime(@NonNull LocalTime time) {
