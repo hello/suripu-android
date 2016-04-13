@@ -85,6 +85,14 @@ public class Alarm extends ApiResponse {
         return new LocalTime(hourOfDay, minuteOfHour);
     }
 
+    public @NonNull DateTime toTimeToday() {
+        return new DateTime(DateTimeZone.getDefault())
+                      .withHourOfDay(hourOfDay)
+                      .withMinuteOfHour(minuteOfHour)
+                      .withSecondOfMinute(0)
+                      .withMillisOfSecond(0);
+    }
+
     public void setTime(@NonNull LocalTime time) {
         this.hourOfDay = time.getHourOfDay();
         this.minuteOfHour = time.getMinuteOfHour();
