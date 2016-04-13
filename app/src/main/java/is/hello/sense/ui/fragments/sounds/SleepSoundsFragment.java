@@ -42,17 +42,11 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     private SleepSoundsAdapter adapter;
     private SharedPreferences preferences;
 
-
     @Inject
     SleepSoundsStatePresenter sleepSoundsStatePresenter;
 
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -86,7 +80,6 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.e("Destroying", "Destroyed");
         recyclerView = null;
         progressBar = null;
         playButton = null;
@@ -120,6 +113,8 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
 
     private void presentError(final @NonNull Throwable error) {
         Log.e("Updating", "Error");
+
+        //todo report error. Determine how to handle when status fails.
 
     }
 

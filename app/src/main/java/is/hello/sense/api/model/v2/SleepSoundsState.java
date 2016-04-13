@@ -8,7 +8,6 @@ import is.hello.sense.api.model.ApiResponse;
  * Created by jimmy on 4/8/16.
  */
 public class SleepSoundsState extends ApiResponse {
-    public boolean isJobDone = false;
 
     @SerializedName("availableDurations")
     private SleepDurations durations;
@@ -31,8 +30,4 @@ public class SleepSoundsState extends ApiResponse {
         return status;
     }
 
-    @Override
-    public String toString() {
-        return "IsJobDone= " + isJobDone;
-    }
 }

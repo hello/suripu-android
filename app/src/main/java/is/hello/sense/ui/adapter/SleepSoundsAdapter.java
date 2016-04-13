@@ -153,7 +153,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     public class TitleViewHolder extends BaseViewHolder {
-        TextView title;
+        private final TextView title;
 
         TitleViewHolder(final @NonNull View itemView) {
             super(itemView);
