@@ -149,21 +149,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
-        if (userWants == UserWants.NONE) {
-            if (status.isPlaying()) {
+        if (status.isPlaying()) {
+            if (userWants != UserWants.STOP) {
                 displayStopButton();
-            } else {
-                displayPlayButton();
             }
         } else {
-            if (status.isPlaying()) {
-                if (userWants == UserWants.PLAY) {
-                    displayStopButton();
-                }
-            } else {
-                if (userWants == UserWants.STOP) {
-                    displayPlayButton();
-                }
+            if (userWants != UserWants.PLAY) {
+                displayPlayButton();
             }
         }
         adapter.bind(status);
