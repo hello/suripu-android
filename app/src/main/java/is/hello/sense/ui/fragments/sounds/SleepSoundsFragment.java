@@ -6,8 +6,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -60,12 +60,12 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         NONE
     }
 
-    final Runnable buttonSpinner = new Runnable() {
+    final Runnable spinningRunnable = new Runnable() {
         @Override
         public void run() {
             if (spin && playButton != null) {
                 playButton.setRotation(playButton.getRotation() + 5);
-                playButton.postDelayed(buttonSpinner, 1);
+                playButton.postDelayed(spinningRunnable, 1);
             }
         }
     };
@@ -207,29 +207,31 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         adapter.bind(status);
     }
 
-    private void displayButton(final @DrawableRes int resource, final View.OnClickListener listener) {
-        userWants = UserWants.NONE;
-        spin = false;
+    private void displayButton(final @DrawableRes int resource,
+                               final @Nullable View.OnClickListener listener,
+                               final boolean enabled,
+                               final @NonNull UserWants wants) {
+        userWants = wants;
+        spin = !enabled;
         playButton.setRotation(0);
         playButton.setImageResource(resource);
         playButton.setOnClickListener(listener);
-        playButton.setEnabled(true);
+        playButton.setEnabled(enabled);
+        if (!enabled){
+            playButton.post(spinningRunnable);
+        }
     }
 
     private void displayPlayButton() {
-        displayButton(R.drawable.sound_play_icon, playClickListener);
+        displayButton(R.drawable.sound_play_icon, playClickListener, true, UserWants.NONE);
     }
 
     private void displayStopButton() {
-        displayButton(R.drawable.sound_stop_icon, stopClickListener);
+        displayButton(R.drawable.sound_stop_icon, stopClickListener, true, UserWants.NONE);
     }
 
     private void displayLoadingButton(UserWants userWants) {
-        this.userWants = userWants;
-        playButton.setEnabled(false);
-        spin = true;
-        playButton.post(buttonSpinner);
-        playButton.setImageResource(R.drawable.sound_loading_icon);
+        displayButton(R.drawable.sound_loading_icon, null, false, userWants);
     }
 
     private void presentError(final @NonNull Throwable error) {
