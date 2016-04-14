@@ -26,7 +26,7 @@ public class SleepSounds extends ApiResponse {
         return state;
     }
 
-    public boolean hasSound(@Nullable String soundName) {
+    public boolean hasSound(final @Nullable String soundName) {
         if (soundName == null) {
             return false;
         }
@@ -38,7 +38,7 @@ public class SleepSounds extends ApiResponse {
         return false;
     }
 
-    public Sound getSoundWithName(@Nullable String name) {
+    public Sound getSoundWithName(final @Nullable String name) {
         if (name == null) {
             return null;
         }
@@ -59,7 +59,7 @@ public class SleepSounds extends ApiResponse {
         State() {
         }
 
-        public static State fromString(@NonNull String string) {
+        public static State fromString(final @NonNull String string) {
             return Enums.fromString(string, values(), OK);
         }
     }

@@ -59,7 +59,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         NONE
     }
 
-    Runnable buttonSpinner = new Runnable() {
+    final Runnable buttonSpinner = new Runnable() {
         @Override
         public void run() {
             if (spin && playButton != null) {
@@ -187,9 +187,9 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                 return;
             }
 
-            Sound sound = adapter.getDisplayedSound();
-            Duration duration = adapter.getDisplayedDuration();
-            SleepSoundStatus.Volume volume = adapter.getDisplayedVolume();
+            final Sound sound = adapter.getDisplayedSound();
+            final Duration duration = adapter.getDisplayedDuration();
+            final SleepSoundStatus.Volume volume = adapter.getDisplayedVolume();
             if (sound == null || duration == null || volume == null) {
                 displayPlayButton();
                 return;
