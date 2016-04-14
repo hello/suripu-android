@@ -48,6 +48,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     private final float maxFadeFactor = 1f;
     private float fadeFactor = 1f;
 
+    private Sound displayedSound;
+    private Duration displayedDuration;
+    private SleepSoundStatus.Volume displayedVolume;
+
     public SleepSoundsAdapter(final @NonNull Context context,
                               final @NonNull SharedPreferences preferences,
                               final @NonNull InteractionListener interactionListener,
@@ -94,6 +98,18 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.sleepSoundStatus = status;
         notifyDataSetChanged();
 
+    }
+
+    public Sound getDisplayedSound() {
+        return displayedSound;
+    }
+
+    public Duration getDisplayedDuration() {
+        return displayedDuration;
+    }
+
+    public SleepSoundStatus.Volume getDisplayedVolume() {
+        return displayedVolume;
     }
 
     private String getSavedSound() {
@@ -234,6 +250,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                     value.setText(sounds.get(0).getName());
                 }
             }
+            displayedSound = sleepSounds.getSoundWithName(value.getText().toString());
         }
     }
 
@@ -271,6 +288,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                     value.setText(durations.get(0).getName());
                 }
             }
+            displayedDuration = sleepDurations.getDurationWithName(value.getText().toString());
         }
     }
 
@@ -306,6 +324,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                     value.setText(volumes.get(0).toString());
                 }
             }
+            displayedVolume = sleepSoundStatus.getVolume(value.getText().toString());
 
         }
     }

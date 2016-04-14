@@ -41,6 +41,10 @@ public class SleepSoundStatus extends ApiResponse {
         return Volume.fromInt(volume);
     }
 
+    public Volume getVolume(final @NonNull String name) {
+        return Volume.fromString(name);
+    }
+
     public enum Volume implements Enums.FromString {
         High(100),
         Medium(50),
@@ -51,6 +55,10 @@ public class SleepSoundStatus extends ApiResponse {
 
         Volume(int volume) {
             this.volume = volume;
+        }
+
+        public int getVolume() {
+            return volume;
         }
 
         public static Volume fromString(@NonNull String string) {

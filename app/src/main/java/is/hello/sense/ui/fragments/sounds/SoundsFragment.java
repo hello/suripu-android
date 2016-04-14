@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.sounds;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,7 @@ import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
 

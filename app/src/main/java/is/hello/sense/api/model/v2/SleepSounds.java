@@ -38,6 +38,18 @@ public class SleepSounds extends ApiResponse {
         return false;
     }
 
+    public Sound getSoundWithName(@Nullable String name) {
+        if (name == null) {
+            return null;
+        }
+        for (Sound sound : sounds) {
+            if (sound.getName().equals(name)) {
+                return sound;
+            }
+        }
+        return null;
+    }
+
     public enum State implements Enums.FromString {
         OK(),
         SOUNDS_NOT_DOWNLOADED(),    // Sounds have not *yet* been downloaded to Sense, but should be.

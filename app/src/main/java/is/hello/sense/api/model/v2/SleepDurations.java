@@ -29,4 +29,16 @@ public class SleepDurations extends ApiResponse {
         }
         return false;
     }
+
+    public Duration getDurationWithName(@Nullable String name) {
+        if (name == null) {
+            return null;
+        }
+        for (Duration duration: durations) {
+            if (duration.getName().equals(name)) {
+                return duration;
+            }
+        }
+        return null;
+    }
 }
