@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -66,6 +68,50 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                 playButton.setRotation(playButton.getRotation() + 5);
                 playButton.postDelayed(buttonSpinner, 1);
             }
+        }
+    };
+
+    final View.OnClickListener playClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            displayLoadingButton(UserWants.PLAY);
+            if (adapter.getItemCount() != 4) {
+                displayPlayButton();
+                return;
+            }
+
+            final Sound sound = adapter.getDisplayedSound();
+            final Duration duration = adapter.getDisplayedDuration();
+            final SleepSoundStatus.Volume volume = adapter.getDisplayedVolume();
+            if (sound == null || duration == null || volume == null) {
+                displayPlayButton();
+                return;
+            }
+            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
+            bindAndSubscribe(saveOperation, ignored -> {
+                                 // do nothing
+                             },
+                             e -> {
+                                 // Failed to send
+                                 displayPlayButton();
+
+                             });
+        }
+    };
+
+    final View.OnClickListener stopClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            displayLoadingButton(UserWants.STOP);
+            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
+            bindAndSubscribe(saveOperation, ignored -> {
+                                 // do nothing
+                             },
+                             e -> {
+                                 // Failed to send
+                                 displayStopButton();
+
+                             });
         }
     };
 
@@ -174,58 +220,21 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         adapter.bind(status);
     }
 
-    private void displayPlayButton() {
+    private void displayButton(final @DrawableRes int resource, final View.OnClickListener listener) {
         userWants = UserWants.NONE;
         spin = false;
-        playButton.setImageResource(R.drawable.sound_play_icon);
         playButton.setRotation(0);
-
-        playButton.setOnClickListener(v -> {
-            displayLoadingButton(UserWants.PLAY);
-            if (adapter.getItemCount() != 4) {
-                displayPlayButton();
-                return;
-            }
-
-            final Sound sound = adapter.getDisplayedSound();
-            final Duration duration = adapter.getDisplayedDuration();
-            final SleepSoundStatus.Volume volume = adapter.getDisplayedVolume();
-            if (sound == null || duration == null || volume == null) {
-                displayPlayButton();
-                return;
-            }
-            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
-            bindAndSubscribe(saveOperation, ignored -> {
-                                 // do nothing
-                             },
-                             e -> {
-                                 // Failed to send
-                                 displayPlayButton();
-
-                             });
-        });
+        playButton.setImageResource(resource);
+        playButton.setOnClickListener(listener);
         playButton.setEnabled(true);
     }
 
+    private void displayPlayButton() {
+        displayButton(R.drawable.sound_play_icon, playClickListener);
+    }
+
     private void displayStopButton() {
-        userWants = UserWants.NONE;
-        spin = false;
-        playButton.setImageResource(R.drawable.sound_stop_icon);
-        playButton.setRotation(0);
-
-        playButton.setOnClickListener(v -> {
-            displayLoadingButton(UserWants.STOP);
-            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
-            bindAndSubscribe(saveOperation, ignored -> {
-                                 // do nothing
-                             },
-                             e -> {
-                                 // Failed to send
-                                 displayStopButton();
-
-                             });
-        });
-        playButton.setEnabled(true);
+        displayButton(R.drawable.sound_stop_icon, stopClickListener);
     }
 
     private void displayLoadingButton(UserWants userWants) {
