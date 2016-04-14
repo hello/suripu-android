@@ -533,11 +533,13 @@
     <string name="alarm_subnavbar_alarm_list">Alarms</string>
     <string name="alarm_subnavbar_sounds_list">Sounds</string>
     <string name="sleep_sounds_title">Play a Sound</string>
+    <string name="sleep_sounds_title_playing">Now Playing</string>
     <string name="sleep_sounds_sound_label">Sound</string>
     <string name="sleep_sounds_duration_label">Duration</string>
     <string name="sleep_sounds_volume_label">Volume</string>
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
+    <string name="list_activity_volume_title">VOLUME CONTROL</string>
 
 
     <plurals name="item_support_comment_detail_attachments">
