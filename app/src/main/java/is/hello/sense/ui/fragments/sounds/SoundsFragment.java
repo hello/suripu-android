@@ -15,9 +15,7 @@ import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.ui.widget.util.Styles;
 
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
 

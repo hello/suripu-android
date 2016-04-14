@@ -3,7 +3,6 @@ package is.hello.sense.graph.presenters;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;

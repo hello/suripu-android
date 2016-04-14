@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
 
 public class SleepDurations extends ApiResponse {
@@ -18,15 +17,27 @@ public class SleepDurations extends ApiResponse {
         return durations;
     }
 
-    public boolean hasDuration(@Nullable String durationName) {
+    public boolean hasDuration(final @Nullable String durationName) {
         if (durationName == null) {
             return false;
         }
-        for (Duration duration : durations) {
+        for (final Duration duration : durations) {
             if (duration.getName().equals(durationName)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public Duration getDurationWithName(final @Nullable String name) {
+        if (name == null) {
+            return null;
+        }
+        for (final Duration duration: durations) {
+            if (duration.getName().equals(name)) {
+                return duration;
+            }
+        }
+        return null;
     }
 }
