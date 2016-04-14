@@ -53,7 +53,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private boolean spin = false;
     private UserWants userWants = UserWants.NONE;
 
-    enum UserWants { // todo switch this to boolean if no other enums are needed after testing
+    enum UserWants {
         PLAY,
         STOP,
         NONE

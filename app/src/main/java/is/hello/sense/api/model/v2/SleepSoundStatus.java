@@ -41,7 +41,7 @@ public class SleepSoundStatus extends ApiResponse {
         return Volume.fromInt(volume);
     }
 
-    public Volume getVolume(final @NonNull String name) {
+    public Volume getVolumeWithName(final @NonNull String name) {
         return Volume.fromString(name);
     }
 

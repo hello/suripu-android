@@ -1,6 +1,5 @@
 package is.hello.sense.graph.presenters;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
@@ -8,9 +7,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.SleepSoundActionPlay;
-import is.hello.sense.api.model.v2.SleepSoundActionStop;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.graph.PresenterSubject;
 import rx.Observable;
@@ -49,7 +45,5 @@ public class SleepSoundsStatusPresenter extends ScopedValuePresenter<SleepSoundS
                                                   });
                              }
                          });
-
-
     }
 }

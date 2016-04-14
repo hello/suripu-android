@@ -323,7 +323,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                     value.setText(volumes.get(0).toString());
                 }
             }
-            displayedVolume = sleepSoundStatus.getVolume(value.getText().toString());
+            displayedVolume = sleepSoundStatus.getVolumeWithName(value.getText().toString());
 
         }
     }
