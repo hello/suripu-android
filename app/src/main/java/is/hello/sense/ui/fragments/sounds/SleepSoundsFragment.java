@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,8 +22,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.Duration;
+import is.hello.sense.api.model.v2.SleepSoundActionPlay;
+import is.hello.sense.api.model.v2.SleepSoundActionStop;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSoundsState;
+import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
@@ -31,8 +38,11 @@ import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.util.Constants;
+import rx.Observable;
 
-public class SleepSoundsFragment extends InjectionFragment implements SleepSoundsAdapter.InteractionListener {
+import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
+
+public class SleepSoundsFragment extends InjectionFragment implements InteractionListener {
     private final static int SOUNDS_REQUEST_CODE = 1234;
     private final static int DURATION_REQUEST_CODE = 4321;
     private final static int VOLUME_REQUEST_CODE = 2143;
@@ -42,6 +52,69 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
     private ImageButton playButton;
     private SleepSoundsAdapter adapter;
     private SharedPreferences preferences;
+    private boolean spin = false;
+    private UserWants userWants = UserWants.NONE;
+
+    enum UserWants {
+        PLAY,
+        STOP,
+        NONE
+    }
+
+    final Runnable spinningRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (spin && playButton != null) {
+                playButton.setRotation(playButton.getRotation() + 5);
+                playButton.postDelayed(spinningRunnable, 1);
+            }
+        }
+    };
+
+    final View.OnClickListener playClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            displayLoadingButton(UserWants.PLAY);
+            if (adapter.getItemCount() != 4) {
+                displayPlayButton();
+                return;
+            }
+
+            final Sound sound = adapter.getDisplayedSound();
+            final Duration duration = adapter.getDisplayedDuration();
+            final SleepSoundStatus.Volume volume = adapter.getDisplayedVolume();
+            if (sound == null || duration == null || volume == null) {
+                displayPlayButton();
+                return;
+            }
+            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
+            bindAndSubscribe(saveOperation, ignored -> {
+                                 // do nothing
+                             },
+                             e -> {
+                                 // Failed to send
+                                 displayPlayButton();
+
+                             });
+        }
+    };
+
+    final View.OnClickListener stopClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            displayLoadingButton(UserWants.STOP);
+            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
+            bindAndSubscribe(saveOperation, ignored -> {
+                                 // do nothing
+                             },
+                             e -> {
+                                 // Failed to send
+                                 displayStopButton();
+
+                             });
+        }
+    };
+
 
     @Inject
     SleepSoundsStatePresenter sleepSoundsStatePresenter;
@@ -80,6 +153,7 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
 
     @Override
     public void onDestroyView() {
+
         super.onDestroyView();
         recyclerView = null;
         progressBar = null;
@@ -124,21 +198,59 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
         }
     }
 
-    private void presentError(final @NonNull Throwable error) {
-        Log.e("Updating", "Error");
-
-        //todo report error. Determine how to handle when status fails.
-
-    }
 
     private void bindState(final @NonNull SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
         sleepSoundsStatusPresenter.update();
+        playButton.setVisibility(View.VISIBLE);
+        displayLoadingButton(userWants);
     }
 
-    private void bindStatus(final @NonNull SleepSoundStatus status) {
+    public void bindStatus(final @NonNull SleepSoundStatus status) {
+        if (status.isPlaying()) {
+            if (userWants != UserWants.STOP) {
+                displayStopButton();
+            }
+        } else {
+            if (userWants != UserWants.PLAY) {
+                displayPlayButton();
+            }
+        }
         adapter.bind(status);
+    }
+
+    private void displayButton(final @DrawableRes int resource,
+                               final @Nullable View.OnClickListener listener,
+                               final boolean enabled,
+                               final @NonNull UserWants wants) {
+        userWants = wants;
+        spin = !enabled;
+        playButton.setRotation(0);
+        playButton.setImageResource(resource);
+        playButton.setOnClickListener(listener);
+        playButton.setEnabled(enabled);
+        if (!enabled){
+            playButton.post(spinningRunnable);
+        }
+    }
+
+    private void displayPlayButton() {
+        displayButton(R.drawable.sound_play_icon, playClickListener, true, UserWants.NONE);
+    }
+
+    private void displayStopButton() {
+        displayButton(R.drawable.sound_stop_icon, stopClickListener, true, UserWants.NONE);
+    }
+
+    private void displayLoadingButton(UserWants userWants) {
+        displayButton(R.drawable.sound_loading_icon, null, false, userWants);
+    }
+
+    private void presentError(final @NonNull Throwable error) {
+        Log.e("Updating", "Error");
+
+        //todo report error. Determine how to handle when status fails.
     }
 
     @Override
@@ -170,4 +282,5 @@ public class SleepSoundsFragment extends InjectionFragment implements SleepSound
                 currentVolume,
                 volumes);
     }
+
 }

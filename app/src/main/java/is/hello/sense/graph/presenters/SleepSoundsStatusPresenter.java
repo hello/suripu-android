@@ -34,6 +34,7 @@ public class SleepSoundsStatusPresenter extends ScopedValuePresenter<SleepSoundS
                          .flatMap(new Func1<Long, Observable<SleepSoundStatus>>() {
                              @Override
                              public Observable<SleepSoundStatus> call(Long tick) {
+
                                  return apiService.getSleepSoundStatus()
                                                   .doOnError(err -> Log.e("Polling", "Error retrieving messages" + err))
                                                   .onErrorResumeNext(new Func1<Throwable, Observable<? extends SleepSoundStatus>>() {
@@ -44,8 +45,5 @@ public class SleepSoundsStatusPresenter extends ScopedValuePresenter<SleepSoundS
                                                   });
                              }
                          });
-
-
     }
-
 }
