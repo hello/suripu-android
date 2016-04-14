@@ -30,7 +30,7 @@ public class SleepSounds extends ApiResponse {
         if (soundName == null) {
             return false;
         }
-        for (Sound sound : sounds) {
+        for (final Sound sound : sounds) {
             if (sound.getName().equals(soundName)) {
                 return true;
             }
@@ -42,7 +42,7 @@ public class SleepSounds extends ApiResponse {
         if (name == null) {
             return null;
         }
-        for (Sound sound : sounds) {
+        for (final Sound sound : sounds) {
             if (sound.getName().equals(name)) {
                 return sound;
             }
