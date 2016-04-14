@@ -77,6 +77,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
 
         if (this.sleepSoundStatus.isPlaying() != status.isPlaying()) {
+            this.sleepSoundStatus = status;
             final ValueAnimator animator;
             if (status.isPlaying()) {
                 animator = ValueAnimator.ofFloat(maxFadeFactor, minFadeFactor);
@@ -91,8 +92,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             });
             animatorContext.startWhenIdle(animator);
         }
-        this.sleepSoundStatus = status;
-        notifyDataSetChanged();
 
     }
 
