@@ -14,31 +14,31 @@ import is.hello.sense.api.model.ApiResponse;
 public class SleepSoundActionPlay extends ApiResponse {
 
     @SerializedName("sound")
-    private final Long soundId;
+    private final int soundId;
 
     @SerializedName("duration")
-    private final Long durationId;
+    private final int durationId;
 
     @SerializedName("order")
     private final Long order;
 
     @SerializedName("volume_percent")
-    private final Integer volume;
+    private final int volume;
 
-    public SleepSoundActionPlay(@NonNull final Long soundId,
-                                @NonNull final Long durationId,
-                                @NonNull final Integer volume) {
+    public SleepSoundActionPlay(final int soundId,
+                                final int durationId,
+                                final int volume) {
         this.order = Instant.now().getMillis(); // needs to be always incrementing
         this.soundId = soundId;
         this.durationId = durationId;
         this.volume = volume;
     }
 
-    public Long getSoundId() {
+    public int getSoundId() {
         return soundId;
     }
 
-    public Long getDurationId() {
+    public int getDurationId() {
         return durationId;
     }
 
