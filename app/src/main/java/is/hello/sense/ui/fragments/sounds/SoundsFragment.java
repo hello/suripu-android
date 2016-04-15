@@ -1,8 +1,11 @@
 package is.hello.sense.ui.fragments.sounds;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,20 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (pager != null && adapter != null && pager.getChildCount() == adapter.getCount()) {
+            final long itemId = adapter.getItemId(pager.getCurrentItem());
+            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+            final Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
+            if (fragment != null) {
+                // This is what stops SleepSoundsFragment from polling when the fragment changes.
+                fragment.setUserVisibleHint(isVisibleToUser);
+            }
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,7 +55,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_alarms_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
-                                                                   TabsBackgroundDrawable.Style.TRENDS));
+                                                                   TabsBackgroundDrawable.Style.SUBNAV));
         timeScaleSelector.addOption(R.string.alarm_subnavbar_alarm_list, false);
         timeScaleSelector.addOption(R.string.alarm_subnavbar_sounds_list, false);
         timeScaleSelector.setOnSelectionChangedListener(this);
@@ -67,10 +84,15 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        timeScaleSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
-        timeScaleSelector.setSelectedIndex(0);
         onUpdate();
-        //todo restore state
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        timeScaleSelector.setSelectedIndex(pager.getCurrentItem());
     }
 
     @Override

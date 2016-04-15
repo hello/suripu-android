@@ -70,7 +70,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setVisibility(View.INVISIBLE);
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(getResources(),
-                                                                   TabsBackgroundDrawable.Style.TRENDS));
+                                                                   TabsBackgroundDrawable.Style.SUBNAV));
         timeScaleSelector.setOnSelectionChangedListener(this);
 
         return view;

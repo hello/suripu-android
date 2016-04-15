@@ -25,10 +25,11 @@ import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
-    static final int VIEW_TITLE = 0;
-    static final int VIEW_VOLUME = 1;
-    static final int VIEW_SOUNDS = 2;
-    static final int VIEW_DURATIONS = 3;
+    private static final int DESIRED_ITEM_COUNT = 4;
+    private static final int VIEW_TITLE = 0;
+    private static final int VIEW_VOLUME = 1;
+    private static final int VIEW_SOUNDS = 2;
+    private static final int VIEW_DURATIONS = 3;
 
     private final static SleepSoundStatus.Volume[] volumes = new SleepSoundStatus.Volume[]{
             SleepSoundStatus.Volume.Low,
@@ -68,7 +69,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.sleepSoundStatus = status;
         this.sleepSounds = sleepSounds;
         this.sleepDurations = sleepDurations;
-        this.itemCount = 4;
+        this.itemCount = DESIRED_ITEM_COUNT;
         if (sleepSoundStatus.isPlaying()) {
             fadeFactor = minFadeFactor;
         }
@@ -76,7 +77,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     public void bind(final @NonNull SleepSoundStatus status) {
-        if (itemCount != 4 || this.sleepSoundStatus == null) {
+        if (!hasDesiredItemCount() || this.sleepSoundStatus == null) {
             return; // todo determine how to recover when SleepSoundState fails.
         }
 
@@ -156,6 +157,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     @Override
     public int getItemCount() {
         return itemCount;
+    }
+
+    public boolean hasDesiredItemCount() {
+        return itemCount == DESIRED_ITEM_COUNT;
     }
 
     abstract static class BaseViewHolder extends RecyclerView.ViewHolder {
@@ -317,7 +322,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 value.setText(sleepSoundStatus.getVolume().toString());
             } else {
                 final String savedVolume = getSavedVolume();
-                if (sleepSoundStatus.getVolume().name().equals(savedVolume)) {
+                if (!sleepSoundStatus.getVolumeWithName(savedVolume).equals(SleepSoundStatus.Volume.None)) {
                     value.setText(savedVolume);
                 } else {
                     value.setText(volumes.get(0).toString());
