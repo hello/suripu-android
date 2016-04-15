@@ -42,7 +42,8 @@ public class ReviewQuestionProvider implements QuestionProvider {
     private final Resources resources;
     private final LocalBroadcastManager localBroadcastManager;
     private final ApiService apiService;
-    private final Destination destination;
+
+    @VisibleForTesting Destination destination;
 
     private Question currentQuestion;
     @VisibleForTesting long currentQuestionId;
@@ -129,7 +130,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
             choices.add(Choice.create(R.string.question_text_rating_prompt_good_never,
                                       getString(R.string.question_text_rating_prompt_good_never)));
             this.currentQuestion = Question.create(currentQuestionId, 0,
-                                                   resources.getString(destination.questionId),
+                                                   resources.getString(destination.questionTextId),
                                                    Question.Type.CHOICE,
                                                    DateTime.now(),
                                                    Question.AskTime.ANYTIME,
@@ -266,14 +267,14 @@ public class ReviewQuestionProvider implements QuestionProvider {
                 RESPONSE_WRITE_REVIEW_AMAZON,
                 Analytics.StoreReview.RATE_APP_AMAZON);
 
-        final int questionId;
+        final int questionTextId;
         final int responseId;
         final String analyticsEvent;
 
         Destination(final int questionId,
                     final int responseId,
                     @NonNull final String analyticsEvent) {
-            this.questionId = questionId;
+            this.questionTextId = questionId;
             this.responseId = responseId;
             this.analyticsEvent = analyticsEvent;
         }
