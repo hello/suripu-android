@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.inject.Inject;
 
@@ -38,6 +39,7 @@ import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import rx.Observable;
 
@@ -98,6 +100,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                 displayPlayButton();
                 return;
             }
+
+            // send a play event no matter and track errors, if any, from the request
+            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_PLAY,
+                                 Analytics.createProperties(Analytics.SleepSounds.PROP_SLEEP_SOUDNS_SOUND_ID, sound.getId(),
+                                                            Analytics.SleepSounds.PROP_SLEEP_SOUNDS_DURATION_ID, duration.getId(),
+                                                            Analytics.SleepSounds.PROP_SLEEP_SOUNDS_VOLUME, volume.getVolume()));
+
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
             bindAndSubscribe(saveOperation, ignored -> {
                                  // do nothing
@@ -113,6 +122,9 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         @Override
         public void onClick(View v) {
             displayLoadingButton(UserWants.STOP);
+
+            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_STOP, null);
+
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
             bindAndSubscribe(saveOperation, ignored -> {
                                  // do nothing
@@ -162,6 +174,11 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
         this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext());
         recyclerView.setAdapter(adapter);
+
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
+        }
+
         return view;
     }
 
