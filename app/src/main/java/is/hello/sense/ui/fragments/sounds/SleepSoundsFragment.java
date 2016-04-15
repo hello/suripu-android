@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -46,14 +47,19 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private final static int SOUNDS_REQUEST_CODE = 1234;
     private final static int DURATION_REQUEST_CODE = 4321;
     private final static int VOLUME_REQUEST_CODE = 2143;
+    @Inject
+    SleepSoundsStatePresenter sleepSoundsStatePresenter;
 
-    private RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    @Inject
+    SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
+
     private ImageButton playButton;
+    private ProgressBar progressBar;
+    private RecyclerView recyclerView;
     private SleepSoundsAdapter adapter;
     private SharedPreferences preferences;
-    private boolean spin = false;
     private UserWants userWants = UserWants.NONE;
+    private StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
 
     enum UserWants {
         PLAY,
@@ -64,18 +70,19 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     final Runnable spinningRunnable = new Runnable() {
         @Override
         public void run() {
-            if (spin && playButton != null) {
+            if (playButton != null) {
                 playButton.setRotation(playButton.getRotation() + 5);
-                playButton.postDelayed(spinningRunnable, 1);
+                playButton.postDelayed(this, 1);
             }
         }
     };
+
 
     final View.OnClickListener playClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             displayLoadingButton(UserWants.PLAY);
-            if (adapter.getItemCount() != 4) {
+            if (!adapter.hasDesiredItemCount()) {
                 displayPlayButton();
                 return;
             }
@@ -94,7 +101,6 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                              e -> {
                                  // Failed to send
                                  displayPlayButton();
-
                              });
         }
     };
@@ -110,17 +116,29 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                              e -> {
                                  // Failed to send
                                  displayStopButton();
-
                              });
         }
     };
 
 
-    @Inject
-    SleepSoundsStatePresenter sleepSoundsStatePresenter;
-
-    @Inject
-    SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        statusPollingHelper.setViewVisible(isVisibleToUser);
+        // This method is called before onCreateView, when not visible to the user.
+        // When it is visible, then this is called after the view has been created,
+        // although we really do not depend on the view being created first.
+        if (isVisibleToUser) {
+            sleepSoundsStatusPresenter.update();
+            if (getActivity() != null) {
+                final boolean flickerWorkAround = true;
+                WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
+            }
+            statusPollingHelper.poll();
+        } else {
+            statusPollingHelper.cancelLastPoll();
+        }
+    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -152,15 +170,19 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     }
 
     @Override
-    public void onDestroyView() {
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        statusPollingHelper.cancelLastPoll();
+    }
 
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         recyclerView = null;
         progressBar = null;
         playButton = null;
         adapter = null;
         preferences = null;
-
     }
 
     @Override
@@ -186,23 +208,9 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         }
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        // This method is called before onCreateView, when not visible to the user.
-        // When it is visible, then this is called after the view has been created,
-        // although we really do not depend on the view being created first.
-        if (isVisibleToUser) {
-            final boolean flickerWorkAround = true;
-            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
-        }
-    }
-
-
     private void bindState(final @NonNull SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
-        sleepSoundsStatusPresenter.update();
         playButton.setVisibility(View.VISIBLE);
         displayLoadingButton(userWants);
     }
@@ -218,6 +226,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             }
         }
         adapter.bind(status);
+        statusPollingHelper.poll();
     }
 
     private void displayButton(final @DrawableRes int resource,
@@ -225,12 +234,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                                final boolean enabled,
                                final @NonNull UserWants wants) {
         userWants = wants;
-        spin = !enabled;
         playButton.setRotation(0);
         playButton.setImageResource(resource);
         playButton.setOnClickListener(listener);
         playButton.setEnabled(enabled);
-        if (!enabled){
+        if (enabled) {
+            playButton.removeCallbacks(spinningRunnable);
+        } else {
             playButton.post(spinningRunnable);
         }
     }
@@ -281,6 +291,38 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                 R.string.list_activity_volume_title,
                 currentVolume,
                 volumes);
+    }
+
+    private class StatusPollingHelper {
+        private boolean isViewVisible;
+        private boolean isRunning = false;
+        private final static int pollingInterval = 500;
+        private Handler statusPollingHandler = new Handler();
+
+        public void setViewVisible(boolean isViewVisible) {
+            this.isViewVisible = isViewVisible;
+        }
+
+        final Runnable statusPollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                isRunning = false;
+                sleepSoundsStatusPresenter.update();
+            }
+        };
+
+        private void poll() {
+            if (!isRunning && isViewVisible) {
+                Log.e("Poll", "Poll");
+                isRunning = true;
+                statusPollingHandler.postDelayed(statusPollingRunnable, pollingInterval);
+            }
+        }
+
+        private void cancelLastPoll() {
+            statusPollingHandler.removeCallbacks(statusPollingRunnable);
+            isRunning = false;
+        }
     }
 
 }
