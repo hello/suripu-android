@@ -158,7 +158,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     public int getItemCount() {
         return itemCount;
     }
-    public boolean hasDesiredItemCount(){
+
+    public boolean hasDesiredItemCount() {
         return itemCount == DESIRED_ITEM_COUNT;
     }
 
@@ -321,7 +322,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 value.setText(sleepSoundStatus.getVolume().toString());
             } else {
                 final String savedVolume = getSavedVolume();
-                if (sleepSoundStatus.getVolume().name().equals(savedVolume)) {
+                if (!sleepSoundStatus.getVolumeWithName(savedVolume).equals(SleepSoundStatus.Volume.None)) {
                     value.setText(savedVolume);
                 } else {
                     value.setText(volumes.get(0).toString());
