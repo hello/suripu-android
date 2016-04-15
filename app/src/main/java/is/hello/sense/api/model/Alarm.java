@@ -253,6 +253,14 @@ public class Alarm extends ApiResponse {
             }
     }
 
+    public int getHourOfDay() {
+        return hourOfDay;
+    }
+
+    public int getMinuteOfHour() {
+        return minuteOfHour;
+    }
+
     public Sound getSound() {
         return sound;
     }
