@@ -510,6 +510,15 @@ public class Analytics {
         String EVENT_TIMESCALE_QUARTER = "quarter";
     }
 
+    public interface SleepSounds {
+        String EVENT_SLEEP_SOUNDS = "Sleep sounds";
+        String EVENT_SLEEP_SOUNDS_PLAY = "Play sleep sound";
+        String EVENT_SLEEP_SOUNDS_STOP = "Stop sleep sound";
+        String PROP_SLEEP_SOUDNS_SOUND_ID = "sound id";
+        String PROP_SLEEP_SOUNDS_DURATION_ID = "duration id";
+        String PROP_SLEEP_SOUNDS_VOLUME = "volume";
+    }
+
     public interface StoreReview {
         String SHOWN = "App review shown";
         String START = "App review start";
