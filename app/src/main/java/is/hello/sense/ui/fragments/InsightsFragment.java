@@ -25,6 +25,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -35,6 +36,7 @@ import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
+import is.hello.sense.graph.presenters.questions.QuestionProvider;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -360,7 +362,12 @@ public class InsightsFragment extends BacksideTabFragment
         });
         stageOne.subscribe(showReview -> {
                                if (showReview) {
-                                   questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW);
+                                   if (!preferences.getBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false) &&
+                                           Locale.getDefault().getCountry().equalsIgnoreCase("US")) { // only for US users
+                                       questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW_AMAZON);
+                                   } else {
+                                       questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW);
+                                   }
                                } else {
                                    questionsPresenter.setSource(QuestionsPresenter.Source.API);
                                }
@@ -423,6 +430,16 @@ public class InsightsFragment extends BacksideTabFragment
                     stateSafeExecutor.execute(() -> UserSupport.showProductPage(getActivity()));
                     preferences.edit()
                                .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
+                               .apply();
+                    break;
+
+                case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity()));
+                    // mark amazon review done AND skip the review prompt until next cycle so regular
+                    // app review prompt may be asked again
+                    localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+                    preferences.edit()
+                               .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
                                .apply();
                     break;
 

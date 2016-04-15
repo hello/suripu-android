@@ -44,13 +44,15 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
 
         this.questionProvider = new ReviewQuestionProvider(getContext(),
-                                                           apiService);
+                                                           apiService,
+                                                           ReviewQuestionProvider.Destination.PlayStore);
         assertThat(questionProvider.getCurrentQuestion(), is(notNullValue()));
     }
 
     @After
     public void tearDown() throws Exception {
         trackingReceiver.responses.clear();
+        this.questionProvider.destination = ReviewQuestionProvider.Destination.PlayStore;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -147,6 +149,16 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
 
         assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_SUPPRESS_TEMPORARILY));
         assertThat(questionProvider.getCurrentQuestion(), is(nullValue()));
+
+        questionProvider.destination = ReviewQuestionProvider.Destination.Amazon;
+        questionProvider.setCurrentQuestionId(ReviewQuestionProvider.QUESTION_ID_GOOD);
+        question = questionProvider.getCurrentQuestion();
+        assertThat(question.getText(),
+                   is(equalTo(getString(R.string.question_text_rating_prompt_good_amazon))));
+
+        firstChoice = question.getChoices().get(0);
+        questionProvider.answerCurrent(Lists.newArrayList(firstChoice));
+        assertThat(trackingReceiver.responses, hasItem(ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON));
     }
 
     @SuppressWarnings("ConstantConditions")
