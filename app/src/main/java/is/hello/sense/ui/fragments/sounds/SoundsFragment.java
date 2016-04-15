@@ -20,7 +20,7 @@ import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 
 
-public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener, OnPageChangeListener {
+public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -34,7 +34,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         if (pager != null && adapter != null && pager.getChildCount() == adapter.getCount()) {
             final long itemId = adapter.getItemId(pager.getCurrentItem());
             final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
+            final Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
             if (fragment != null) {
                 // This is what stops SleepSoundsFragment from polling when the fragment changes.
                 fragment.setUserVisibleHint(isVisibleToUser);
@@ -109,20 +109,5 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
         pager.setCurrentItem(newSelectionIndex);
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
     }
 }

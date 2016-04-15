@@ -47,6 +47,10 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private final static int SOUNDS_REQUEST_CODE = 1234;
     private final static int DURATION_REQUEST_CODE = 4321;
     private final static int VOLUME_REQUEST_CODE = 2143;
+    private final static int deltaRotation = 5; // degrees
+    private final static int spinnerInterval = 1; // ms
+    private final static int pollingInterval = 500; // ms
+
     @Inject
     SleepSoundsStatePresenter sleepSoundsStatePresenter;
 
@@ -59,7 +63,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private SleepSoundsAdapter adapter;
     private SharedPreferences preferences;
     private UserWants userWants = UserWants.NONE;
-    private StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
+    private final StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
 
     enum UserWants {
         PLAY,
@@ -71,8 +75,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         @Override
         public void run() {
             if (playButton != null) {
-                playButton.setRotation(playButton.getRotation() + 5);
-                playButton.postDelayed(this, 1);
+                playButton.setRotation(playButton.getRotation() + deltaRotation);
+                playButton.postDelayed(this, spinnerInterval);
             }
         }
     };
@@ -296,8 +300,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private class StatusPollingHelper {
         private boolean isViewVisible;
         private boolean isRunning = false;
-        private final static int pollingInterval = 500;
-        private Handler statusPollingHandler = new Handler();
+        private final Handler statusPollingHandler = new Handler();
 
         public void setViewVisible(boolean isViewVisible) {
             this.isViewVisible = isViewVisible;
@@ -313,7 +316,6 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
 
         private void poll() {
             if (!isRunning && isViewVisible) {
-                Log.e("Poll", "Poll");
                 isRunning = true;
                 statusPollingHandler.postDelayed(statusPollingRunnable, pollingInterval);
             }
