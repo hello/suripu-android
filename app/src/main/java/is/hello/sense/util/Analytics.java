@@ -465,6 +465,8 @@ public class Analytics {
         String PROP_ALARM_DAYS_REPEATED = "days_repeated";
         String PROP_ALARM_ENABLED = "enabled";
         String PROP_ALARM_IS_SMART = "smart_alarm";
+        String PROP_ALARM_HOUR = "hour";
+        String PROP_ALARM_MINUTE = "minute";
 
         String EVENT_ALARM_ON_OFF = "Alarm On/Off";
         String EVENT_EDIT_ALARM = "Edit Alarm";
@@ -506,6 +508,15 @@ public class Analytics {
         String EVENT_TIMESCALE_WEEK = "week";
         String EVENT_TIMESCALE_MONTH = "month";
         String EVENT_TIMESCALE_QUARTER = "quarter";
+    }
+
+    public interface SleepSounds {
+        String EVENT_SLEEP_SOUNDS = "Sleep sounds";
+        String EVENT_SLEEP_SOUNDS_PLAY = "Play sleep sound";
+        String EVENT_SLEEP_SOUNDS_STOP = "Stop sleep sound";
+        String PROP_SLEEP_SOUDNS_SOUND_ID = "sound id";
+        String PROP_SLEEP_SOUNDS_DURATION_ID = "duration id";
+        String PROP_SLEEP_SOUNDS_VOLUME = "volume";
     }
 
     public interface StoreReview {

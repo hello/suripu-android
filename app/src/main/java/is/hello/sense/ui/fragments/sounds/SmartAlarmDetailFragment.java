@@ -360,7 +360,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         final Properties properties =
                 Analytics.createProperties(Analytics.Backside.PROP_ALARM_ENABLED, alarm.isEnabled(),
                                            Analytics.Backside.PROP_ALARM_IS_SMART, alarm.isSmart(),
-                                           Analytics.Backside.PROP_ALARM_DAYS_REPEATED, daysRepeated);
+                                           Analytics.Backside.PROP_ALARM_DAYS_REPEATED, daysRepeated,
+                                           Analytics.Backside.PROP_ALARM_HOUR, alarm.getHourOfDay(),
+                                           Analytics.Backside.PROP_ALARM_MINUTE, alarm.getMinuteOfHour());
         Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_SAVED, properties);
 
         LoadingDialogFragment.close(getFragmentManager());
