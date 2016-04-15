@@ -515,6 +515,7 @@ public class Analytics {
         String DO_NOT_ENJOY_SENSE = "Do not enjoy Sense";
         String HELP_FROM_APP_REVIEW = "Help from app review";
         String RATE_APP = "Rate app";
+        String RATE_APP_AMAZON = "Rate on Amazon";
         String DO_NOT_ASK_TO_RATE_APP_AGAIN = "Do not ask to rate app again";
         String FEEDBACK_FROM_APP_REVIEW = "Feedback from app review";
         String APP_REVIEW_COMPLETED_WITH_NO_ACTION = "App review completed with no action";

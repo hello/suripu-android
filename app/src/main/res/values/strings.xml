@@ -490,6 +490,7 @@
     <string name="question_text_rating_prompt_initial_no">Not really</string>
     <string name="question_text_rating_prompt_initial_help">I need help</string>
     <string name="question_text_rating_prompt_good">Great. Would you mind leaving us a rating on the Play Store?</string>
+    <string name="question_text_rating_prompt_good_amazon">Great. Would you mind leaving us a rating on Amazon?</string>
     <string name="question_text_rating_prompt_good_yes">Sure, I‘ll rate</string>
     <string name="question_text_rating_prompt_good_no">No, not now</string>
     <string name="question_text_rating_prompt_good_never">Don‘t ask again</string>

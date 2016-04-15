@@ -44,7 +44,8 @@ public class ReviewQuestionProviderTests extends InjectionTestCase {
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
 
         this.questionProvider = new ReviewQuestionProvider(getContext(),
-                                                           apiService);
+                                                           apiService,
+                                                           ReviewQuestionProvider.Destination.PlayStore);
         assertThat(questionProvider.getCurrentQuestion(), is(notNullValue()));
     }
 

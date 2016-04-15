@@ -76,6 +76,20 @@ public class UserSupport {
         }
     }
 
+    public static void showAmazonReviewPage(@NonNull Activity from) {
+        final Uri amazonReviewUri = new Uri.Builder()
+                .scheme("https")
+                .authority("www.amazon.com")
+                .appendPath("review")
+                .appendPath("create-review")
+                .appendQueryParameter("ie", "UTF8")
+                .appendQueryParameter("asin", "B016XBL2RE")
+                .appendQueryParameter("channel", "awUDPv3")
+                .appendQueryParameter("ref_", "cm_cr_dp_aw_wr_but#")
+                .build();
+        openUri(from, amazonReviewUri);
+    }
+
     public static void showUserGuide(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.Backside.EVENT_HELP, null);
 

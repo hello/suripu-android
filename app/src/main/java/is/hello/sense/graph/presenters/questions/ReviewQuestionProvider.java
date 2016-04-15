@@ -31,6 +31,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
     public static final int RESPONSE_SHOW_HELP = 2;
     public static final int RESPONSE_SUPPRESS_TEMPORARILY = 3;
     public static final int RESPONSE_SUPPRESS_PERMANENTLY = 4;
+    public static final int RESPONSE_WRITE_REVIEW_AMAZON = 5;
 
 
     @VisibleForTesting static final long QUESTION_ID_NONE = -1;
@@ -41,6 +42,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
     private final Resources resources;
     private final LocalBroadcastManager localBroadcastManager;
     private final ApiService apiService;
+    private final Destination destination;
 
     private Question currentQuestion;
     @VisibleForTesting long currentQuestionId;
@@ -48,10 +50,13 @@ public class ReviewQuestionProvider implements QuestionProvider {
     //region Lifecycle
 
     public ReviewQuestionProvider(@NonNull Context context,
-                                  @NonNull ApiService apiService) {
+                                  @NonNull ApiService apiService,
+                                  @NonNull Destination destination) {
+
         this.resources = context.getResources();
         this.localBroadcastManager = LocalBroadcastManager.getInstance(context);
         this.apiService = apiService;
+        this.destination = destination;
 
         Analytics.trackEvent(Analytics.StoreReview.SHOWN, null);
         setCurrentQuestionId(QUESTION_ID_INITIAL);
@@ -124,7 +129,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
             choices.add(Choice.create(R.string.question_text_rating_prompt_good_never,
                                       getString(R.string.question_text_rating_prompt_good_never)));
             this.currentQuestion = Question.create(currentQuestionId, 0,
-                                                   resources.getString(R.string.question_text_rating_prompt_good),
+                                                   resources.getString(destination.questionId),
                                                    Question.Type.CHOICE,
                                                    DateTime.now(),
                                                    Question.AskTime.ANYTIME,
@@ -179,12 +184,12 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
             // Second screen (good)
             case R.string.question_text_rating_prompt_good_yes: {
-                Analytics.trackEvent(Analytics.StoreReview.RATE_APP, null);
+                Analytics.trackEvent(destination.analyticsEvent, null);
                 apiService.trackStoreReview(new StoreReview(StoreReview.Feedback.YES, true))
                           .subscribe();
                 setCurrentQuestionId(QUESTION_ID_NONE);
                 localBroadcastManager.sendBroadcast(new Intent(ACTION_COMPLETED)
-                                                            .putExtra(EXTRA_RESPONSE, RESPONSE_WRITE_REVIEW));
+                                                            .putExtra(EXTRA_RESPONSE, destination.responseId));
                 break;
             }
             case R.string.question_text_rating_prompt_good_no: {
@@ -251,4 +256,26 @@ public class ReviewQuestionProvider implements QuestionProvider {
     }
 
     //endregion
+
+    public enum Destination {
+        PlayStore (R.string.question_text_rating_prompt_good,
+                   RESPONSE_WRITE_REVIEW,
+                   Analytics.StoreReview.RATE_APP),
+
+        Amazon (R.string.question_text_rating_prompt_good_amazon,
+                RESPONSE_WRITE_REVIEW_AMAZON,
+                Analytics.StoreReview.RATE_APP_AMAZON);
+
+        final int questionId;
+        final int responseId;
+        final String analyticsEvent;
+
+        Destination(final int questionId,
+                    final int responseId,
+                    @NonNull final String analyticsEvent) {
+            this.questionId = questionId;
+            this.responseId = responseId;
+            this.analyticsEvent = analyticsEvent;
+        }
+    }
 }
