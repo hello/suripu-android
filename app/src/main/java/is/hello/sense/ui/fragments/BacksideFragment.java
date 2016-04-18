@@ -20,7 +20,9 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -46,7 +48,12 @@ public class BacksideFragment extends InjectionFragment
     public static final int OPTION_NONE = 0;
     public static final int OPTION_ANIMATE = (1 << 1);
 
-    @Inject UnreadStatePresenter unreadStatePresenter;
+    @Inject
+    UnreadStatePresenter unreadStatePresenter;
+
+    @Inject
+    SleepSoundsPresenter sleepSoundsPresenter;
+
     private SharedPreferences internalPreferences;
 
     private int tabSelectorHeight;
@@ -144,7 +151,10 @@ public class BacksideFragment extends InjectionFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        if (!hasSleepSounds()) {
+            sleepSoundsPresenter.update();
+            bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
+        }
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
@@ -184,7 +194,9 @@ public class BacksideFragment extends InjectionFragment
     }
 
 
-    public @Nullable BacksideTabFragment getCurrentTabFragment() {
+    public
+    @Nullable
+    BacksideTabFragment getCurrentTabFragment() {
         if (adapter != null) {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
@@ -223,6 +235,16 @@ public class BacksideFragment extends InjectionFragment
         return (-tabSelector.getTranslationY() / tabSelectorHeight);
     }
 
+    public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
+        if (sleepSounds.getSounds() == null || sleepSounds.getSounds().isEmpty()) {
+            return;
+        }
+        // todo update fragment
+    }
+
+    public void presentError(@NonNull Throwable error) {
+        //todo check again?
+    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -273,5 +295,10 @@ public class BacksideFragment extends InjectionFragment
         if (!button.isChecked()) {
             button.setText(inactiveContent);
         }
+    }
+
+    public boolean hasSleepSounds() {
+        return getInternalPreferences(getActivity())
+                .getBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, false);
     }
 }
