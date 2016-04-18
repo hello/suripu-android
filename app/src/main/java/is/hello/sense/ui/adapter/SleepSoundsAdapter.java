@@ -224,7 +224,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         SleepSoundsViewHolder(final @NonNull View itemView) {
             super(itemView);
-            image.setImageResource(R.drawable.backside_icon_sounds);
+            image.setImageResource(R.drawable.icon_alarm_tone);
             label.setText(R.string.sleep_sounds_sound_label);
         }
 
