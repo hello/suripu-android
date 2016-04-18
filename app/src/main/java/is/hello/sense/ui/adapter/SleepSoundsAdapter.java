@@ -194,14 +194,12 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         protected final ImageView image;
         protected final TextView label;
         protected final TextView value;
-        protected final ImageView chevron;
         protected final View holder;
 
         SleepViewHolder(final @NonNull View itemView) {
             super(itemView);
             this.holder = itemView;
             this.image = (ImageView) itemView.findViewById(R.id.item_sleep_sounds_image);
-            this.chevron = (ImageView) itemView.findViewById(R.id.item_sleep_sounds_chevron);
             this.label = (TextView) itemView.findViewById(R.id.item_sleep_sounds_label);
             this.value = (TextView) itemView.findViewById(R.id.item_sleep_sounds_value);
         }
@@ -210,11 +208,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             label.setAlpha(fadeFactor);
             image.setAlpha(fadeFactor);
             value.setAlpha(fadeFactor);
-            if (fadeFactor <= minFadeFactor) {
-                chevron.setAlpha(0f);
-            } else {
-                chevron.setAlpha(fadeFactor);
-            }
             holder.setClickable(!sleepSoundStatus.isPlaying());
             holder.setEnabled(!sleepSoundStatus.isPlaying());
         }

@@ -19,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import java.util.List;
-import java.util.Properties;
 
 import javax.inject.Inject;
 
