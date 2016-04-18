@@ -5,28 +5,35 @@
                 android:layout_height="match_parent">
 
     <is.hello.sense.ui.widget.SelectorView
-        android:id="@+id/fragment_alarms_time_scale"
+        android:id="@+id/fragment_sounds_time_scale"
         android:layout_width="match_parent"
         android:layout_height="@dimen/trends_title_height"/>
 
-    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
-        android:id="@+id/fragment_alarms_refresh_container"
+    <RelativeLayout
+        android:id="@+id/fragment_sounds_single_fragment_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/fragment_alarms_time_scale">
+        android:scrollbars="none"/>
+
+    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
+        android:id="@+id/fragment_sounds_refresh_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/fragment_sounds_time_scale">
 
         <is.hello.sense.ui.widget.ExtendedViewPager
-            android:id="@+id/fragment_alarms_scrollview"
+            android:id="@+id/fragment_sounds_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:scrollbars="none"
             app:senseFadingEdgeStyle="rounded"/>
 
+
     </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
 
     <ProgressBar
-        android:id="@+id/fragment_alarms_loading"
+        android:id="@+id/fragment_sounds_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"/>

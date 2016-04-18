@@ -161,7 +161,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, false));
+            stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, false));
         }
 
         deviceIssuesPresenter.update();
@@ -172,7 +172,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
         Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, true);
+            showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, true);
         });
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
@@ -217,7 +217,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, false);
+            showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);
         }
@@ -348,7 +348,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case ALARM: {
-                    showBacksideWithItem(BacksideFragment.ITEM_SMART_ALARM_LIST, animate);
+                    showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, animate);
                     break;
                 }
                 case SETTINGS: {

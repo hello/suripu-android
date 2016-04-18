@@ -40,7 +40,7 @@ public class BacksideFragment extends InjectionFragment
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
-    public static final int ITEM_SMART_ALARM_LIST = 3;
+    public static final int ITEM_SOUNDS = 3;
     public static final int ITEM_APP_SETTINGS = 4;
 
     private static final int DEFAULT_START_ITEM = ITEM_INSIGHTS;
@@ -200,9 +200,7 @@ public class BacksideFragment extends InjectionFragment
         if (adapter != null) {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
-            final long itemId = adapter.getItemId(pager.getCurrentItem());
-            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(getItemTag(pager.getCurrentItem()));
         } else {
             return null;
         }
@@ -219,6 +217,13 @@ public class BacksideFragment extends InjectionFragment
                            .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED,
                                     System.currentTimeMillis())
                            .apply();
+    }
+
+    private String getItemTag(int position) {
+        if (position < 0 || position > adapter.getCount() - 1) {
+            position = pager.getCurrentItem();
+        }
+        return "android:switcher:" + pager.getId() + ":" + adapter.getItemId(position);
     }
 
     public void setChromeTranslationAmount(float amount) {
@@ -239,7 +244,14 @@ public class BacksideFragment extends InjectionFragment
         if (sleepSounds.getSounds() == null || sleepSounds.getSounds().isEmpty()) {
             return;
         }
-        // todo update fragment
+        getInternalPreferences(getActivity())
+                .edit()
+                .putBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, true)
+                .apply();
+        SoundsFragment soundsFragment = (SoundsFragment) getChildFragmentManager().findFragmentByTag(getItemTag(ITEM_SOUNDS));
+        if (soundsFragment != null) {
+            soundsFragment.displayWithSleepSounds(true);
+        }
     }
 
     public void presentError(@NonNull Throwable error) {
