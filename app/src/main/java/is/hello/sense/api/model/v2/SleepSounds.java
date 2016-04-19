@@ -38,18 +38,6 @@ public class SleepSounds extends ApiResponse {
         return false;
     }
 
-    public Sound getSoundWithName(final @Nullable String name) {
-        if (name == null) {
-            return null;
-        }
-        for (final Sound sound : sounds) {
-            if (sound.getName().equals(name)) {
-                return sound;
-            }
-        }
-        return null;
-    }
-
     public Sound getSoundWithId(final int id) {
         if (id == -1) {
             return null;
