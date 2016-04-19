@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 
@@ -41,8 +43,16 @@ public class SleepSoundStatus extends ApiResponse {
         return Volume.fromInt(volume);
     }
 
-    public Volume getVolumeWithName(final @NonNull String name) {
-        return Volume.fromString(name);
+    public Volume getVolumeWithValue(final @NonNull int value) {
+        return Volume.fromInt(value);
+    }
+
+    public ArrayList<Volume> getVolumes() {
+        ArrayList<Volume> volumes = new ArrayList();
+        volumes.add(Volume.High);
+        volumes.add(Volume.Medium);
+        volumes.add(Volume.Low);
+        return volumes;
     }
 
     public enum Volume implements Enums.FromString {
@@ -66,7 +76,7 @@ public class SleepSoundStatus extends ApiResponse {
         }
 
         public static Volume fromInt(@Nullable Integer value) {
-            if (value == null){
+            if (value == null) {
                 return None;
             }
             for (Volume volume : values()) {

@@ -18,23 +18,23 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Duration;
+import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.activities.SleepSoundsListActivity;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
@@ -45,9 +45,6 @@ import rx.Observable;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
 
 public class SleepSoundsFragment extends InjectionFragment implements InteractionListener {
-    private final static int SOUNDS_REQUEST_CODE = 1234;
-    private final static int DURATION_REQUEST_CODE = 4321;
-    private final static int VOLUME_REQUEST_CODE = 2143;
     private final static int deltaRotation = 5; // degrees
     private final static int spinnerInterval = 1; // ms
     private final static int pollingInterval = 500; // ms
@@ -72,6 +69,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         NONE
     }
 
+    // todo create a custom component that has this logic
     final Runnable spinningRunnable = new Runnable() {
         @Override
         public void run() {
@@ -209,20 +207,20 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            final String value = data.getStringExtra(ListActivity.VALUE_NAME);
-            if (value == null) {
+            final int value = data.getIntExtra(SleepSoundsListActivity.VALUE_ID, -1);
+            if (value == -1) {
                 return;
             }
             final String constant;
-            if (requestCode == SOUNDS_REQUEST_CODE) {
-                constant = Constants.SLEEP_SOUNDS_SOUND_NAME;
-            } else if (requestCode == DURATION_REQUEST_CODE) {
-                constant = Constants.SLEEP_SOUNDS_DURATION_NAME;
+            if (requestCode == SleepSoundsListActivity.SOUNDS_REQUEST_CODE) {
+                constant = Constants.SLEEP_SOUNDS_SOUND_ID;
+            } else if (requestCode == SleepSoundsListActivity.DURATION_REQUEST_CODE) {
+                constant = Constants.SLEEP_SOUNDS_DURATION_ID;
             } else {
-                constant = Constants.SLEEP_SOUNDS_VOLUME_NAME;
+                constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
             }
             preferences.edit()
-                       .putString(constant, value)
+                       .putInt(constant, value)
                        .apply();
             adapter.notifyDataSetChanged();
         }
@@ -284,33 +282,30 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     }
 
     @Override
-    public void onSoundClick(final @NonNull String currentSound, final @NonNull List<?> sounds) {
-        ListActivity.startActivityForResult(
+    public void onSoundClick(final int currentSound, final @NonNull SleepSounds sleepSounds) {
+        SleepSoundsListActivity.startActivityForResult(
                 this,
-                SOUNDS_REQUEST_CODE,
-                R.string.list_activity_sound_title,
                 currentSound,
-                sounds);
+                sleepSounds,
+                SleepSoundsListActivity.ListType.SLEEP_SOUNDS);
     }
 
     @Override
-    public void onDurationClick(final @NonNull String currentDuration, final @NonNull List<?> durations) {
-        ListActivity.startActivityForResult(
+    public void onDurationClick(final int currentDuration, final @NonNull SleepDurations durations) {
+        SleepSoundsListActivity.startActivityForResult(
                 this,
-                DURATION_REQUEST_CODE,
-                R.string.list_activity_duration_title,
                 currentDuration,
-                durations);
+                durations,
+                SleepSoundsListActivity.ListType.SLEEP_DURATIONS);
     }
 
     @Override
-    public void onVolumeClick(@NonNull String currentVolume, @NonNull List<?> volumes) {
-        ListActivity.startActivityForResult(
+    public void onVolumeClick(final int currentVolume, @NonNull SleepSoundStatus volumes) {
+        SleepSoundsListActivity.startActivityForResult(
                 this,
-                VOLUME_REQUEST_CODE,
-                R.string.list_activity_volume_title,
                 currentVolume,
-                volumes);
+                volumes,
+                SleepSoundsListActivity.ListType.SLEEP_VOLUME);
     }
 
     private class StatusPollingHelper {
@@ -342,5 +337,4 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             isRunning = false;
         }
     }
-
 }

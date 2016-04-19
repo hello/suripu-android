@@ -20,7 +20,9 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -38,7 +40,7 @@ public class BacksideFragment extends InjectionFragment
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
-    public static final int ITEM_SMART_ALARM_LIST = 3;
+    public static final int ITEM_SOUNDS = 3;
     public static final int ITEM_APP_SETTINGS = 4;
 
     private static final int DEFAULT_START_ITEM = ITEM_INSIGHTS;
@@ -46,7 +48,12 @@ public class BacksideFragment extends InjectionFragment
     public static final int OPTION_NONE = 0;
     public static final int OPTION_ANIMATE = (1 << 1);
 
-    @Inject UnreadStatePresenter unreadStatePresenter;
+    @Inject
+    UnreadStatePresenter unreadStatePresenter;
+
+    @Inject
+    SleepSoundsPresenter sleepSoundsPresenter;
+
     private SharedPreferences internalPreferences;
 
     private int tabSelectorHeight;
@@ -144,7 +151,8 @@ public class BacksideFragment extends InjectionFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        sleepSoundsPresenter.update();
+        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
@@ -184,13 +192,13 @@ public class BacksideFragment extends InjectionFragment
     }
 
 
-    public @Nullable BacksideTabFragment getCurrentTabFragment() {
+    public
+    @Nullable
+    BacksideTabFragment getCurrentTabFragment() {
         if (adapter != null) {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
-            final long itemId = adapter.getItemId(pager.getCurrentItem());
-            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(getItemTag(pager.getCurrentItem()));
         } else {
             return null;
         }
@@ -209,6 +217,13 @@ public class BacksideFragment extends InjectionFragment
                            .apply();
     }
 
+    private String getItemTag(int position) {
+        if (position < 0 || position > adapter.getCount() - 1) {
+            position = pager.getCurrentItem();
+        }
+        return "android:switcher:" + pager.getId() + ":" + adapter.getItemId(position);
+    }
+
     public void setChromeTranslationAmount(float amount) {
         final float tabsTranslationY = Anime.interpolateFloats(amount, 0f, -tabSelectorHeight);
         tabSelector.setTranslationY(tabsTranslationY);
@@ -223,6 +238,26 @@ public class BacksideFragment extends InjectionFragment
         return (-tabSelector.getTranslationY() / tabSelectorHeight);
     }
 
+    public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
+        final boolean hasSounds;
+        if (sleepSounds.getSounds() == null || sleepSounds.getSounds().isEmpty()) {
+            hasSounds = false;
+        } else {
+            hasSounds = true;
+        }
+        getInternalPreferences(getActivity())
+                .edit()
+                .putBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, hasSounds)
+                .apply();
+        SoundsFragment soundsFragment = (SoundsFragment) getChildFragmentManager().findFragmentByTag(getItemTag(ITEM_SOUNDS));
+        if (soundsFragment != null) {
+            soundsFragment.displayWithSleepSounds(hasSounds);
+        }
+    }
+
+    public void presentError(@NonNull Throwable error) {
+        //todo check again?
+    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

@@ -91,7 +91,7 @@
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
         <activity
-            android:name=".ui.activities.ListActivity"
+            android:name=".ui.activities.SleepSoundsListActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
 
         <meta-data
