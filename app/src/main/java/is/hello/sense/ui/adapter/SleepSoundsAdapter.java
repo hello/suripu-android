@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,11 +26,15 @@ import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
+    private static final int TEMP_PROBLEM_ITEM_COUNT = 1;
     private static final int DESIRED_ITEM_COUNT = 4;
     private static final int VIEW_TITLE = 0;
     private static final int VIEW_VOLUME = 1;
     private static final int VIEW_SOUNDS = 2;
     private static final int VIEW_DURATIONS = 3;
+    private static final int VIEW_SENSE_FIRMWARE_UPDATE = 4;
+    private static final int VIEW_SENSE_SOUNDS_DOWNLOAD = 5;
+    private static final int VIEW_ERROR = 6;
 
     private final static SleepSoundStatus.Volume[] volumes = new SleepSoundStatus.Volume[]{
             SleepSoundStatus.Volume.Low,
@@ -69,7 +74,13 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.sleepSoundStatus = status;
         this.sleepSounds = sleepSounds;
         this.sleepDurations = sleepDurations;
-        this.itemCount = DESIRED_ITEM_COUNT;
+
+        if (sleepSounds.getState() != SleepSounds.State.OK) {
+            this.itemCount = TEMP_PROBLEM_ITEM_COUNT;
+        } else {
+            this.itemCount = DESIRED_ITEM_COUNT;
+        }
+
         if (sleepSoundStatus.isPlaying()) {
             fadeFactor = minFadeFactor;
         }
@@ -127,14 +138,25 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public int getItemViewType(final int position) {
-        if (position == 0) {
-            return VIEW_TITLE;
-        } else if (position == 1) {
-            return VIEW_SOUNDS;
-        } else if (position == 2) {
-            return VIEW_DURATIONS;
+        if (hasDesiredItemCount()) {
+            if (position == 0) {
+                return VIEW_TITLE;
+            } else if (position == 1) {
+                return VIEW_SOUNDS;
+            } else if (position == 2) {
+                return VIEW_DURATIONS;
+            } else {
+                return VIEW_VOLUME;
+            }
+        } else if (this.sleepSounds != null) {
+            final SleepSounds.State state = this.sleepSounds.getState();
+            if (state == SleepSounds.State.SENSE_UPDATE_REQUIRED) {
+                return VIEW_SENSE_FIRMWARE_UPDATE;
+            } else if (state == SleepSounds.State.SOUNDS_NOT_DOWNLOADED) {
+                return VIEW_SENSE_SOUNDS_DOWNLOAD;
+            }
         }
-        return VIEW_VOLUME;
+        return VIEW_ERROR;
     }
 
     @Override
@@ -145,8 +167,14 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new SleepSoundsViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
         } else if (viewType == VIEW_DURATIONS) {
             return new SleepDurationsViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
+        } else if (viewType == VIEW_VOLUME) {
+            return new SleepVolumeViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
+        } else if (viewType == VIEW_SENSE_FIRMWARE_UPDATE) {
+            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+        } else if (viewType == VIEW_SENSE_SOUNDS_DOWNLOAD) {
+            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
-        return new SleepVolumeViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
+        return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
 
     @Override
@@ -189,6 +217,89 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             }
         }
     }
+
+    //region sleep state view holders
+
+    public abstract class SleepStateViewHolder extends BaseViewHolder {
+        protected final ImageView image;
+        protected final TextView title;
+        protected final TextView message;
+
+        SleepStateViewHolder(final @NonNull View view) {
+            super(view);
+
+            this.image = (ImageView) view.findViewById(R.id.item_message_card_image);
+            this.title = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.message = (TextView) view.findViewById(R.id.item_message_card_message);
+
+            final Button action = (Button) view.findViewById(R.id.item_message_card_action);
+            action.setVisibility(View.GONE);
+
+            view.setPadding(0, view.getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
+        }
+    }
+
+    class NoSoundsStateViewHolder extends SleepStateViewHolder {
+
+        NoSoundsStateViewHolder(final @NonNull View view) {
+            super(view);
+        }
+
+        @Override
+        void bind(final int ignored) {
+            this.title.setText(R.string.sleep_sounds_state_no_sounds_title);
+            this.message.setText(R.string.sleep_sounds_state_no_sounds_message);
+            this.image.setImageResource(R.drawable.illustration_sense_download);
+        }
+    }
+
+    class FwUpdateStateViewHolder extends SleepStateViewHolder {
+
+        FwUpdateStateViewHolder(final @NonNull View view) {
+            super(view);
+        }
+
+        @Override
+        void bind(final int ignored) {
+            this.title.setText(R.string.sleep_sounds_state_fw_update_title);
+            this.message.setText(R.string.sleep_sounds_state_fw_update_message);
+            this.image.setImageResource(R.drawable.illustration_sense_update);
+        }
+    }
+
+    //endregion
+
+    //region error
+
+    public class ErrorViewHolder extends BaseViewHolder implements View.OnClickListener {
+        private final TextView message;
+        private final Button action;
+
+        ErrorViewHolder(final @NonNull View view) {
+            super(view);
+
+            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            title.setVisibility(View.GONE);
+
+            this.message = (TextView) view.findViewById(R.id.item_message_card_message);
+            this.action = (Button) view.findViewById(R.id.item_message_card_action);
+            action.setOnClickListener(this);
+        }
+
+        @Override
+        void bind(final int ignored) {
+            action.setText(R.string.action_retry);
+            message.setText(R.string.sleep_sounds_error_generic);
+        }
+
+        @Override
+        public void onClick(final View view) {
+            // TODO refresh / retry!
+        }
+
+    }
+
+    //endregion
 
     public abstract class SleepViewHolder extends BaseViewHolder {
         protected final ImageView image;
