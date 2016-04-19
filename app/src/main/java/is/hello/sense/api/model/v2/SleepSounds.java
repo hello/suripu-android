@@ -50,6 +50,18 @@ public class SleepSounds extends ApiResponse {
         return null;
     }
 
+    public Sound getSoundWithId(final int id) {
+        if (id == -1) {
+            return null;
+        }
+        for (final Sound sound : sounds) {
+            if (sound.getId() == id) {
+                return sound;
+            }
+        }
+        return null;
+    }
+
     public enum State implements Enums.FromString {
         OK(),
         SOUNDS_NOT_DOWNLOADED(),    // Sounds have not *yet* been downloaded to Sense, but should be.

@@ -33,8 +33,20 @@ public class SleepDurations extends ApiResponse {
         if (name == null) {
             return null;
         }
-        for (final Duration duration: durations) {
+        for (final Duration duration : durations) {
             if (duration.getName().equals(name)) {
+                return duration;
+            }
+        }
+        return null;
+    }
+
+    public Duration getDurationWithId(final int id) {
+        if (id == -1) {
+            return null;
+        }
+        for (final Duration duration : durations) {
+            if (duration.getId() == id) {
                 return duration;
             }
         }

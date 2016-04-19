@@ -18,9 +18,9 @@ public final class Constants {
     public static final String HANDHOLDING_NUMBER_TIMELINES_SHOWN = "number_timelines_shown";
 
     public static final String SLEEP_SOUNDS_PREFS = "sleep_sounds_prefs";
-    public static final String SLEEP_SOUNDS_SOUND_NAME = "sleep_sounds_sound_name";
-    public static final String SLEEP_SOUNDS_DURATION_NAME = "sleep_sounds_duration_name";
-    public static final String SLEEP_SOUNDS_VOLUME_NAME = "sleep_sounds_volume_name";
+    public static final String SLEEP_SOUNDS_SOUND_ID = "sleep_sounds_sound_id";
+    public static final String SLEEP_SOUNDS_DURATION_ID = "sleep_sounds_duration_id";
+    public static final String SLEEP_SOUNDS_VOLUME_ID = "sleep_sounds_volume_id";
 
     /**
      * The point at which a gesture's velocity dictates that
