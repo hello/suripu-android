@@ -3,8 +3,10 @@ package is.hello.sense.ui.adapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -230,7 +232,14 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             final Button action = (Button) view.findViewById(R.id.item_message_card_action);
             action.setVisibility(View.GONE);
 
-            view.setPadding(0, view.getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
+            title.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                //noinspection deprecation
+                message.setTextAppearance(view.getContext(), R.style.AppTheme_Text_Body_Small_New);
+            } else {
+                message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
+            }
         }
     }
 

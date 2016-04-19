@@ -240,7 +240,7 @@ public class BacksideFragment extends InjectionFragment
 
     public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
         final boolean hasSounds;
-        if (sleepSounds.getSounds() == null || sleepSounds.getSounds().isEmpty()) {
+        if (sleepSounds.getSounds() == null) {
             hasSounds = false;
         } else {
             hasSounds = true;
