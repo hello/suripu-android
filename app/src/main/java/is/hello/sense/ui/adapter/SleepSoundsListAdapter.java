@@ -104,6 +104,7 @@ public abstract class SleepSoundsListAdapter extends RecyclerView.Adapter<SleepS
         @Override
         public void finish() {
             player.stopPlayback();
+            player.recycle();
         }
 
         @Override

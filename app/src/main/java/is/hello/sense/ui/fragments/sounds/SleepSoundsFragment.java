@@ -286,8 +286,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         SleepSoundsListActivity.startActivityForResult(
                 this,
                 currentSound,
-                SleepSoundsListActivity.ListType.SLEEP_SOUNDS,
-                sleepSounds);
+                sleepSounds,
+                SleepSoundsListActivity.ListType.SLEEP_SOUNDS);
     }
 
     @Override
@@ -295,8 +295,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         SleepSoundsListActivity.startActivityForResult(
                 this,
                 currentDuration,
-                SleepSoundsListActivity.ListType.SLEEP_DURATIONS,
-                durations);
+                durations,
+                SleepSoundsListActivity.ListType.SLEEP_DURATIONS);
     }
 
     @Override
@@ -304,8 +304,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         SleepSoundsListActivity.startActivityForResult(
                 this,
                 currentVolume,
-                SleepSoundsListActivity.ListType.SLEEP_VOLUME,
-                volumes);
+                volumes,
+                SleepSoundsListActivity.ListType.SLEEP_VOLUME);
     }
 
     private class StatusPollingHelper {

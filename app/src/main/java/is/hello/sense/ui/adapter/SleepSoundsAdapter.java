@@ -234,11 +234,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 return;
             }
 
-            holder.setOnClickListener(v -> {
-                String soundText = value.getText().toString();
-                interactionListener.onSoundClick(sleepSounds.getSoundWithName(soundText).getId(), sleepSounds);
-            });
-
             final Sound currentSounds = sleepSoundStatus.getSound();
             if (currentSounds != null && sleepSounds.hasSound(currentSounds.getName())) {
                 displayedSound = currentSounds;
@@ -253,6 +248,11 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                     value.setText(sounds.get(0).getName());
                 }
             }
+
+            holder.setOnClickListener(v -> {
+                String soundText = value.getText().toString();
+                interactionListener.onSoundClick(displayedSound.getId(), sleepSounds);
+            });
         }
     }
 
@@ -275,10 +275,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 return;
             }
 
-            holder.setOnClickListener(v -> {
-                interactionListener.onDurationClick(sleepDurations.getDurationWithName(value.getText().toString()).getId(), sleepDurations);
-            });
-
             final Duration currentDuration = sleepSoundStatus.getDuration();
             if (currentDuration != null && sleepDurations.hasDuration(currentDuration.getName())) {
                 value.setText(currentDuration.getName());
@@ -293,6 +289,11 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                     displayedDuration = durations.get(0);
                 }
             }
+
+            holder.setOnClickListener(v -> {
+                interactionListener.onDurationClick(displayedDuration.getId(), sleepDurations);
+            });
+
         }
     }
 
@@ -314,10 +315,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 value.setText(null);
                 return;
             }
-            holder.setOnClickListener(v -> {
-                interactionListener.onVolumeClick(sleepSoundStatus.getVolumeWithName(value.getText().toString()).getVolume(),
-                                                  sleepSoundStatus);
-            });
 
             if (sleepSoundStatus.getVolume() != SleepSoundStatus.Volume.None) {
                 value.setText(sleepSoundStatus.getVolume().toString());
@@ -333,6 +330,9 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 }
             }
 
+            holder.setOnClickListener(v -> {
+                interactionListener.onVolumeClick(displayedVolume.getVolume(), sleepSoundStatus);
+            });
         }
     }
 

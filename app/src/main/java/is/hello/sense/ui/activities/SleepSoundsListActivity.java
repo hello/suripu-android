@@ -32,22 +32,21 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
 
     private static final int NONE = -1;
     private static final String ARG_API_RESPONSE = SleepSoundsListActivity.class.getName() + ".ARG_API_RESPONSE";
-    private static final String ARG_SELECTED_NAME = SleepSoundsListActivity.class.getName() + ".ARG_SELECTED_NAME";
+    private static final String ARG_SELECTED_ID = SleepSoundsListActivity.class.getName() + ".ARG_SELECTED_ID";
     private static final String ARG_LIST_TYPE = SleepSoundsListActivity.class.getName() + ".ARG_LIST_TYPE";
 
-    private ListType listType;
     private SleepSoundsListAdapter adapter;
 
 
     public static void startActivityForResult(
             final @NonNull InjectionFragment fragment,
             final @NonNull int selectedId,
-            final @NonNull ListType type,
-            final @NonNull ApiResponse response) {
+            final @NonNull ApiResponse response,
+            final @NonNull ListType type) {
 
         final Intent intent = new Intent(fragment.getActivity(), SleepSoundsListActivity.class);
         intent.putExtra(ARG_API_RESPONSE, response);
-        intent.putExtra(ARG_SELECTED_NAME, selectedId);
+        intent.putExtra(ARG_SELECTED_ID, selectedId);
         intent.putExtra(ARG_LIST_TYPE, type);
         fragment.startActivityForResult(intent, type.requestCode);
     }
@@ -61,8 +60,13 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
         if (intent == null) {
             return;
         }
-        final int selectedId = intent.getIntExtra(ARG_SELECTED_NAME, NONE);
-        listType = (ListType) intent.getSerializableExtra(ARG_LIST_TYPE);
+        final int selectedId;
+        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SELECTED_ID)) {
+            selectedId = savedInstanceState.getInt(ARG_SELECTED_ID);
+        } else {
+            selectedId = intent.getIntExtra(ARG_SELECTED_ID, NONE);
+        }
+        final ListType listType = (ListType) intent.getSerializableExtra(ARG_LIST_TYPE);
         ApiResponse apiResponse = (ApiResponse) intent.getSerializableExtra(ARG_API_RESPONSE);
 
         final int titleRes = listType.titleRes;
@@ -92,16 +96,27 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
     }
 
     @Override
+    protected void onDestroy() {
+        adapter.finish();
+        adapter = null;
+        super.onDestroy();
+    }
+
+    @Override
     public void onBackPressed() {
         setResultAndFinish();
-        // onClick(selectedBaseViewHolder.getTitle());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         setResultAndFinish();
-        // onClick(selectedBaseViewHolder.getTitle());
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(ARG_SELECTED_ID, adapter.getSelectedId());
+        adapter.finish();
     }
 
     @Override
@@ -118,7 +133,6 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
         SLEEP_DURATIONS(R.string.list_activity_duration_title, DURATION_REQUEST_CODE),
         SLEEP_VOLUME(R.string.list_activity_volume_title, VOLUME_REQUEST_CODE);
 
-
         @StringRes
         public final int titleRes;
         public final int requestCode;
@@ -129,9 +143,4 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
 
         }
     }
-
-    private enum PlayerStatus {
-        Idle, Loading, Playing
-    }
-
 }
