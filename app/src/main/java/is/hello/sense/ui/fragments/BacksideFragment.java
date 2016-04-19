@@ -151,10 +151,8 @@ public class BacksideFragment extends InjectionFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (!hasSleepSounds()) {
-            sleepSoundsPresenter.update();
-            bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
-        }
+        sleepSoundsPresenter.update();
+        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
@@ -241,16 +239,19 @@ public class BacksideFragment extends InjectionFragment
     }
 
     public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
+        final boolean hasSounds;
         if (sleepSounds.getSounds() == null || sleepSounds.getSounds().isEmpty()) {
-            return;
+            hasSounds = false;
+        } else {
+            hasSounds = true;
         }
         getInternalPreferences(getActivity())
                 .edit()
-                .putBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, true)
+                .putBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, hasSounds)
                 .apply();
         SoundsFragment soundsFragment = (SoundsFragment) getChildFragmentManager().findFragmentByTag(getItemTag(ITEM_SOUNDS));
         if (soundsFragment != null) {
-            soundsFragment.displayWithSleepSounds(true);
+            soundsFragment.displayWithSleepSounds(hasSounds);
         }
     }
 
@@ -307,10 +308,5 @@ public class BacksideFragment extends InjectionFragment
         if (!button.isChecked()) {
             button.setText(inactiveContent);
         }
-    }
-
-    public boolean hasSleepSounds() {
-        return getInternalPreferences(getActivity())
-                .getBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, false);
     }
 }
