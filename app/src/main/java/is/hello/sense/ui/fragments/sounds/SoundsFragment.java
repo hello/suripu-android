@@ -29,6 +29,8 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 
 public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
+    private static final String ARG_HAS_SENSE = SoundsFragment.class.getName() + ".ARG_HAS_SENSE";
+    private static final String ARG_HAS_SOUNDS = SoundsFragment.class.getName() + ".ARG_HAS_SOUNDS";
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -90,6 +92,14 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
         pager.setAdapter(adapter);
         pager.setFadePageTransformer(true);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(ARG_HAS_SOUNDS)) {
+                hasSounds = savedInstanceState.getBoolean(ARG_HAS_SOUNDS);
+            }
+            if (savedInstanceState.containsKey(ARG_HAS_SENSE)){
+                hasSense= savedInstanceState.getBoolean(ARG_HAS_SENSE);
+            }
+        }
         displayWithSleepSounds(hasSense && hasSounds);
         return view;
     }
@@ -102,6 +112,12 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         subNavSelector = null;
         pager = null;
         adapter = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(ARG_HAS_SENSE, hasSense);
+        outState.putBoolean(ARG_HAS_SOUNDS, hasSounds);
 
     }
 
@@ -178,6 +194,9 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
     private void transitionInSubNavBar() {
+        if (subNavSelector == null){
+            return;
+        }
         subNavSelector.setVisibility(View.INVISIBLE);
         Views.runWhenLaidOut(subNavSelector, stateSafeExecutor.bind(() -> {
             subNavSelector.setTranslationY(-subNavSelector.getMeasuredHeight());
@@ -189,6 +208,9 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
     private void transitionOutSubNavBar() {
+        if (subNavSelector == null){
+            return;
+        }
         animatorFor(subNavSelector, getAnimatorContext())
                 .translationY(-subNavSelector.getMeasuredHeight())
                 .addOnAnimationCompleted(finished -> {
