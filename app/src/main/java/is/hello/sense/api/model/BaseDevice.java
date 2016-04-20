@@ -10,6 +10,7 @@ import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import org.joda.time.Minutes;
 
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -58,6 +59,20 @@ public abstract class BaseDevice extends ApiResponse {
     public int getHoursSinceLastUpdated() {
         if (lastUpdated != null) {
             return Hours.hoursBetween(lastUpdated, DateTime.now()).getHours();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Returns the number of minutes since the device was last updated.
+     * <p/>
+     * Returns 0 if the device has not reported being update yet. This state
+     * happens immediately after a device has been paired to an account.
+     */
+    public int getMinutesSinceLastUpdated() {
+        if (lastUpdated != null) {
+            return Minutes.minutesBetween(lastUpdated, DateTime.now()).getMinutes();
         } else {
             return 0;
         }
