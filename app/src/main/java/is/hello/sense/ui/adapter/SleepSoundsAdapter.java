@@ -9,12 +9,10 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -238,7 +236,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         TitleViewHolder(final @NonNull View itemView) {
             super(itemView);
-            Log.e("New Title", "Created");
             title = ((TextView) itemView.findViewById(R.id.item_centered_title_text));
             leftMusic = ((ImageView) itemView.findViewById(R.id.item_centered_image_left));
             rightMusic = ((ImageView) itemView.findViewById(R.id.item_centered_image_right));
