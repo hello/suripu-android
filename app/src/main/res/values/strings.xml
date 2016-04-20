@@ -546,7 +546,9 @@
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
-
+    <string name="sleep_sounds_error_loading">There was a problem loading Sleep Sounds. Please try again.</string>
+    <string name="sleep_sounds_error_communicating_with_sense">There was a problem communicating with your Sense. Please try again.</string>
+    <string name="sleep_sounds_error_commanding">There was a problem sending the command to your Sense. Please try again.</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

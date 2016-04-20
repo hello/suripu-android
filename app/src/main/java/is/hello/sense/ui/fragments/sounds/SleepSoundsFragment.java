@@ -21,7 +21,9 @@ import android.widget.ProgressBar;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Duration;
 import is.hello.sense.api.model.v2.SleepDurations;
@@ -36,6 +38,7 @@ import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.SleepSoundsListActivity;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
@@ -64,6 +67,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private SharedPreferences preferences;
     private UserWants userWants = UserWants.NONE;
     private final StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
+    private int exponentialBackOff = 1000;
 
     enum UserWants {
         PLAY,
@@ -107,11 +111,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                                                             Analytics.SleepSounds.PROP_SLEEP_SOUNDS_VOLUME, volume.getVolume()));
 
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
-            bindAndSubscribe(saveOperation, ignored -> {
+            bindAndSubscribe(saveOperation,
+                             ignored -> {
                                  // do nothing
                              },
                              e -> {
                                  // Failed to send
+                                 presentCommandError(e);
                                  displayPlayButton();
                              });
         }
@@ -125,13 +131,11 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_STOP, null);
 
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
-            bindAndSubscribe(saveOperation, ignored -> {
+            bindAndSubscribe(saveOperation,
+                             ignored -> {
                                  // do nothing
                              },
-                             e -> {
-                                 // Failed to send
-                                 displayStopButton();
-                             });
+                             SleepSoundsFragment.this::presentCommandError);
         }
     };
 
@@ -185,8 +189,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentError);
-        bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentError);
+        bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentStateError);
+        bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentStatusError);
         sleepSoundsStatePresenter.update();
     }
 
@@ -256,7 +260,37 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             }
         }
         adapter.bind(status);
+        exponentialBackOff = 1000;
         statusPollingHelper.poll();
+    }
+
+    private void presentStateError(final @NonNull Throwable error) {
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
+                .withMessage(StringRef.from(R.string.sleep_sounds_error_loading))
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    private void presentStatusError(final @NonNull Throwable error) {
+        exponentialBackOff += 1000;
+        if (exponentialBackOff > 2000) {
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
+                    .withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense))
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+            return; // give up
+        }
+        statusPollingHelper.poll();
+
+        //todo report error. Determine how to handle when status fails.
+    }
+
+    private void presentCommandError(final @NonNull Throwable error) {
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
+                .withMessage(StringRef.from(R.string.sleep_sounds_error_commanding))
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
     }
 
     private void displayButton(final @DrawableRes int resource,
@@ -288,11 +322,6 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         displayButton(R.drawable.sound_loading_icon, null, false, userWants);
     }
 
-    private void presentError(final @NonNull Throwable error) {
-        Log.e("Updating", "Error");
-
-        //todo report error. Determine how to handle when status fails.
-    }
 
     @Override
     public void onSoundClick(final int currentSound, final @NonNull SleepSounds sleepSounds) {
@@ -341,7 +370,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         private void poll() {
             if (!isRunning && isViewVisible) {
                 isRunning = true;
-                statusPollingHandler.postDelayed(statusPollingRunnable, pollingInterval);
+                statusPollingHandler.postDelayed(statusPollingRunnable, pollingInterval + exponentialBackOff);
             }
         }
 
