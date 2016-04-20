@@ -51,9 +51,6 @@ public class BacksideFragment extends InjectionFragment
     @Inject
     UnreadStatePresenter unreadStatePresenter;
 
-    @Inject
-    SleepSoundsPresenter sleepSoundsPresenter;
-
     private SharedPreferences internalPreferences;
 
     private int tabSelectorHeight;
@@ -151,8 +148,6 @@ public class BacksideFragment extends InjectionFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sleepSoundsPresenter.update();
-        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
@@ -236,27 +231,6 @@ public class BacksideFragment extends InjectionFragment
 
     public float getChromeTranslationAmount() {
         return (-tabSelector.getTranslationY() / tabSelectorHeight);
-    }
-
-    public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
-        final boolean hasSounds;
-        if (sleepSounds.getSounds() == null) {
-            hasSounds = false;
-        } else {
-            hasSounds = true;
-        }
-        getInternalPreferences(getActivity())
-                .edit()
-                .putBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, hasSounds)
-                .apply();
-        SoundsFragment soundsFragment = (SoundsFragment) getChildFragmentManager().findFragmentByTag(getItemTag(ITEM_SOUNDS));
-        if (soundsFragment != null) {
-            soundsFragment.displayWithSleepSounds(hasSounds);
-        }
-    }
-
-    public void presentError(@NonNull Throwable error) {
-        //todo check again?
     }
 
     @Override
