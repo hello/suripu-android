@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Duration;
 import is.hello.sense.api.model.v2.SleepDurations;
@@ -48,10 +46,13 @@ import rx.Observable;
 
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
 
-public class SleepSoundsFragment extends InjectionFragment implements InteractionListener {
+public class SleepSoundsFragment extends InjectionFragment implements InteractionListener, Retry {
     private final static int deltaRotation = 5; // degrees
     private final static int spinnerInterval = 1; // ms
     private final static int pollingInterval = 500; // ms
+    private final static int initialBackOff = 0; // ms
+    private final static int backOffIncrements = 1000; // ms
+    private final static int maxBackOff = 6000;
 
     @Inject
     SleepSoundsStatePresenter sleepSoundsStatePresenter;
@@ -67,7 +68,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private SharedPreferences preferences;
     private UserWants userWants = UserWants.NONE;
     private final StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
-    private int exponentialBackOff = 1000;
+    private int backOff = initialBackOff;
+
+    @Override
+    public void retry() {
+        sleepSoundsStatePresenter.update();
+        progressBar.setVisibility(View.VISIBLE);
+    }
 
     enum UserWants {
         PLAY,
@@ -113,7 +120,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
             bindAndSubscribe(saveOperation,
                              ignored -> {
-                                 // do nothing
+                                 // incase we were in a failed state
+                                 statusPollingHelper.poll();
                              },
                              e -> {
                                  // Failed to send
@@ -133,7 +141,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
             bindAndSubscribe(saveOperation,
                              ignored -> {
-                                 // do nothing
+                                 // incase we were in a failed state
+                                 statusPollingHelper.poll();
                              },
                              SleepSoundsFragment.this::presentCommandError);
         }
@@ -176,7 +185,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new DividerItemDecoration(resources));
-        this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext());
+        this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext(), this);
         recyclerView.setAdapter(adapter);
 
         if (savedInstanceState == null) {
@@ -243,8 +252,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         } else {
             buttonLayout.setVisibility(View.GONE);
         }
-
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
+
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
@@ -260,20 +269,19 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
             }
         }
         adapter.bind(status);
-        exponentialBackOff = 1000;
+        backOff = initialBackOff;
         statusPollingHelper.poll();
     }
 
     private void presentStateError(final @NonNull Throwable error) {
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
-                .withMessage(StringRef.from(R.string.sleep_sounds_error_loading))
-                .build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        adapter.setErrorState();
+        buttonLayout.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
     }
 
     private void presentStatusError(final @NonNull Throwable error) {
-        exponentialBackOff += 1000;
-        if (exponentialBackOff > 2000) {
+        backOff += backOffIncrements;
+        if (backOff > maxBackOff) {
             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
                     .withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense))
                     .build();
@@ -370,7 +378,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         private void poll() {
             if (!isRunning && isViewVisible) {
                 isRunning = true;
-                statusPollingHandler.postDelayed(statusPollingRunnable, pollingInterval + exponentialBackOff);
+                statusPollingHandler.postDelayed(statusPollingRunnable, pollingInterval + backOff);
             }
         }
 
