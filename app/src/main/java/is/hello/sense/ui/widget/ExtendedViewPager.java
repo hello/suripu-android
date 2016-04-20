@@ -98,7 +98,7 @@ public class ExtendedViewPager extends ViewPager {
         this.scrollingEnabled = swipingEnabled;
     }
 
-    public void setFadePageTransformer(boolean fade) {
+    public void setFadePageTransformer(final boolean fade) {
         if (fade) {
             this.setPageTransformer(false, new FadePageTransformer());
         }else{
@@ -111,13 +111,15 @@ public class ExtendedViewPager extends ViewPager {
         public FadePageTransformer() {
         }
 
-        public void transformPage(View view, float position) {
+        public void transformPage(final View view, final float position) {
             view.setTranslationX(view.getWidth() * -position);
 
             if (position <= -1.0F || position >= 1.0F) {
                 view.setAlpha(0.0F);
+                view.setVisibility(INVISIBLE);
             } else if (position == 0.0F) {
                 view.setAlpha(1.0F);
+                view.setVisibility(VISIBLE);
             } else {
                 // position is between -1.0F & 0.0F OR 0.0F & 1.0F
                 view.setAlpha(1.0F - Math.abs(position));

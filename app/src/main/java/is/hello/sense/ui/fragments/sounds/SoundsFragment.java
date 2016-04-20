@@ -35,8 +35,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private SelectorView subNavSelector;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
-    private boolean hasSounds = false;
-    private boolean hasSense = false;
+    private boolean hasSounds = true;
+    private boolean hasSense = true;
     private boolean isShowingSounds = false;
 
     @Inject
@@ -142,7 +142,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
     public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
 
-        hasSounds = sleepSounds.getSounds() != null;
+        hasSounds = sleepSounds.getSounds() != null && !sleepSounds.getSounds().isEmpty();
         displayWithSleepSounds(hasSounds && hasSense);
     }
 
