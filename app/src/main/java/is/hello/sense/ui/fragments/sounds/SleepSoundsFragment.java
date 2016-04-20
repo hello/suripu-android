@@ -40,7 +40,6 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.SleepSoundsListActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -191,7 +190,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         final InsetItemDecoration decoration = new InsetItemDecoration();
         decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
-        recyclerView.addItemDecoration(new DividerItemDecoration(resources));
+//        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+//                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext(), this);
         recyclerView.setAdapter(adapter);
 
@@ -254,9 +254,9 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private void bindDevices(final @NonNull Devices devices) {
         if (devices.getSense() != null) {
             if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
-                adapter.setOfflineToLong(true);
+                adapter.setOfflineTooLong(true);
             } else {
-                adapter.setOfflineToLong(false);
+                adapter.setOfflineTooLong(false);
                 sleepSoundsStatePresenter.update();
             }
         }

@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.List;
 
 import is.hello.go99.Anime;
@@ -37,7 +36,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     private static final int VIEW_SENSE_FIRMWARE_UPDATE = 4;
     private static final int VIEW_SENSE_SOUNDS_DOWNLOAD = 5;
     private static final int VIEW_ERROR = 6;
-    private static final int VIEW_OFFLINE_TO_LONG = 7;
+    private static final int VIEW_OFFLINE_TOO_LONG = 7;
     private boolean isOffline = false;
 
     private final LayoutInflater inflater;
@@ -133,7 +132,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         notifyDataSetChanged();
     }
 
-    public void setOfflineToLong(boolean isOffline){
+    public void setOfflineTooLong(boolean isOffline){
         this.isOffline = isOffline;
         if (isOffline){
             itemCount = 1;
@@ -160,7 +159,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     @Override
     public int getItemViewType(final int position) {
         if (isOffline){
-            return VIEW_OFFLINE_TO_LONG;
+            return VIEW_OFFLINE_TOO_LONG;
         }
         if (hasDesiredItemCount()) {
             if (position == 0) {
@@ -197,7 +196,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == VIEW_SENSE_SOUNDS_DOWNLOAD) {
             return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
-        }else if (viewType == VIEW_OFFLINE_TO_LONG){
+        }else if (viewType == VIEW_OFFLINE_TOO_LONG){
             return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
         return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));

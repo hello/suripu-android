@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/background_light"
-                android:orientation="vertical">
+<is.hello.sense.ui.widget.RoundedLinearLayout
+    style="@style/AppTheme.Card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light"
+    android:orientation="vertical"
+    app:senseCornerRadius="@dimen/card_large_corner_radius">
 
     <TextView
         android:id="@+id/item_centered_title_text"
@@ -15,4 +19,4 @@
         android:paddingTop="@dimen/gap_card_content"
         />
 
-</RelativeLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>
