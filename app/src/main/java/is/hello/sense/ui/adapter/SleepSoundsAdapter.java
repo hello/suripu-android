@@ -54,15 +54,18 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     private Sound displayedSound;
     private Duration displayedDuration;
     private SleepSoundStatus.Volume displayedVolume;
+    private Retry retry;
 
     public SleepSoundsAdapter(final @NonNull Context context,
                               final @NonNull SharedPreferences preferences,
                               final @NonNull InteractionListener interactionListener,
-                              final @NonNull AnimatorContext animatorContext) {
+                              final @NonNull AnimatorContext animatorContext,
+                              final @NonNull Retry retry) {
         this.interactionListener = interactionListener;
         this.inflater = LayoutInflater.from(context);
         this.preferences = preferences;
         this.animatorContext = animatorContext;
+        this.retry = retry;
     }
 
     public void bind(final @NonNull SleepSoundStatus status,
@@ -118,6 +121,14 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public SleepSoundStatus.Volume getDisplayedVolume() {
         return displayedVolume;
+    }
+
+    public void setErrorState() {
+        itemCount = 1;
+        sleepSounds = null;
+        sleepSoundStatus = null;
+        sleepDurations = null;
+        notifyDataSetChanged();
     }
 
     private Sound getSavedSound() {
@@ -298,7 +309,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         @Override
         public void onClick(final View view) {
-            // TODO refresh / retry!
+            retry.retry();
         }
 
     }
@@ -455,6 +466,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         void onDurationClick(final int currentDuration, final @NonNull SleepDurations sleepDurations);
 
         void onVolumeClick(final int currentVolume, final @NonNull SleepSoundStatus status);
+    }
+
+    public interface Retry {
+        void retry();
     }
 
 }
