@@ -18,8 +18,8 @@
         android:layout_centerInParent="true"/>
 
     <FrameLayout
-        style="@style/AppTheme.Button.Circular"
         android:id="@+id/fragment_sleep_sounds_buttonLayout"
+        style="@style/AppTheme.Button.Circular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

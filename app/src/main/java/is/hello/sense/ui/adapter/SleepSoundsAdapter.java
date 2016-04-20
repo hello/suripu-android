@@ -37,6 +37,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     private static final int VIEW_SENSE_FIRMWARE_UPDATE = 4;
     private static final int VIEW_SENSE_SOUNDS_DOWNLOAD = 5;
     private static final int VIEW_ERROR = 6;
+    private static final int VIEW_OFFLINE_TO_LONG = 7;
+    private boolean isOffline = false;
 
     private final LayoutInflater inflater;
     private final SharedPreferences preferences;
@@ -131,6 +133,17 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         notifyDataSetChanged();
     }
 
+    public void setOfflineToLong(boolean isOffline){
+        this.isOffline = isOffline;
+        if (isOffline){
+            itemCount = 1;
+            sleepSounds = null;
+            sleepSoundStatus = null;
+            sleepDurations = null;
+        }
+        notifyDataSetChanged();
+    }
+
     private Sound getSavedSound() {
         return sleepSounds.getSoundWithId(preferences.getInt(Constants.SLEEP_SOUNDS_SOUND_ID, -1));
     }
@@ -146,6 +159,9 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public int getItemViewType(final int position) {
+        if (isOffline){
+            return VIEW_OFFLINE_TO_LONG;
+        }
         if (hasDesiredItemCount()) {
             if (position == 0) {
                 return VIEW_TITLE;
@@ -181,6 +197,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == VIEW_SENSE_SOUNDS_DOWNLOAD) {
             return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+        }else if (viewType == VIEW_OFFLINE_TO_LONG){
+            return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
         return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
@@ -251,6 +269,20 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             } else {
                 message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
             }
+        }
+    }
+
+    class OfflineViewHolder extends SleepStateViewHolder{
+        OfflineViewHolder(final @NonNull View view){
+            super(view);
+        }
+
+        @Override
+        void bind(int position) {
+            this.title.setText(R.string.sense_offline_title);
+            this.image.setImageResource(R.drawable.illustration_sense_offline);
+            this.message.setText(R.string.sense_offline_message);
+
         }
     }
 

@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Duration;
 import is.hello.sense.api.model.v2.SleepDurations;
@@ -31,6 +32,7 @@ import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
@@ -52,13 +54,17 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     private final static int pollingInterval = 500; // ms
     private final static int initialBackOff = 0; // ms
     private final static int backOffIncrements = 1000; // ms
-    private final static int maxBackOff = 6000;
+    private final static int maxBackOff = 6000; //ms
+    private final static int offlineMinutes = 30; // minutes
 
     @Inject
     SleepSoundsStatePresenter sleepSoundsStatePresenter;
 
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
+
+    @Inject
+    DevicesPresenter devicesPresenter;
 
     private ImageButton playButton;
     private FrameLayout buttonLayout;
@@ -157,6 +163,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         // When it is visible, then this is called after the view has been created,
         // although we really do not depend on the view being created first.
         if (isVisibleToUser) {
+            devicesPresenter.update();
             sleepSoundsStatusPresenter.update();
             if (getActivity() != null) {
                 final boolean flickerWorkAround = true;
@@ -198,6 +205,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, ignore -> {
+        });
         bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentStateError);
         bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentStatusError);
         sleepSoundsStatePresenter.update();
@@ -239,6 +248,17 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                        .putInt(constant, value)
                        .apply();
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    private void bindDevices(final @NonNull Devices devices) {
+        if (devices.getSense() != null) {
+            if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
+                adapter.setOfflineToLong(true);
+            } else {
+                adapter.setOfflineToLong(false);
+                sleepSoundsStatePresenter.update();
+            }
         }
     }
 
