@@ -1,24 +1,31 @@
 package is.hello.sense.ui.fragments.sounds;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
+
+import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Devices;
+import is.hello.sense.api.model.v2.SleepSounds;
+import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.util.Constants;
+import is.hello.sense.ui.widget.util.Views;
+
+import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 
 public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
@@ -28,7 +35,15 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private SelectorView subNavSelector;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
-    private RelativeLayout tempHolder;
+    private boolean hasSounds = true;
+    private boolean hasSense = true;
+    private boolean isShowingSounds = false;
+
+    @Inject
+    SleepSoundsPresenter sleepSoundsPresenter;
+
+    @Inject
+    DevicesPresenter devicesPresenter;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
@@ -44,6 +59,12 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         }
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -53,7 +74,6 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_sounds_loading);
         this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_sounds_scrollview);
         this.subNavSelector = (SelectorView) view.findViewById(R.id.fragment_sounds_sub_nav);
-        this.tempHolder = (RelativeLayout) view.findViewById(R.id.fragment_sounds_single_fragment_view);
         pager.setScrollingEnabled(false);
         subNavSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         subNavSelector.setBackground(new TabsBackgroundDrawable(getResources(),
@@ -69,8 +89,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
                                                  new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
 
         pager.setAdapter(adapter);
-        final boolean hasSleepSounds = getActivity().getSharedPreferences(Constants.INTERNAL_PREFS, 0).getBoolean(Constants.INTERNAL_PREF_BACKSIDE_HAS_SLEEP_SOUNDS, false);
-        displayWithSleepSounds(hasSleepSounds);
+        pager.setFadePageTransformer(true);
+        displayWithSleepSounds(hasSense && hasSounds);
         return view;
     }
 
@@ -83,12 +103,15 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         pager = null;
         adapter = null;
 
-
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        sleepSoundsPresenter.update();
+        devicesPresenter.update();
+        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
+        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentError);
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
         onUpdate();
@@ -97,6 +120,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onResume() {
         super.onResume();
+        devicesPresenter.update();
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
     }
 
@@ -116,23 +140,63 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         pager.setCurrentItem(newSelectionIndex);
     }
 
+    public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
+
+        hasSounds = sleepSounds.getSounds() != null && !sleepSounds.getSounds().isEmpty();
+        displayWithSleepSounds(hasSounds && hasSense);
+    }
+
+    public void bindDevices(@NonNull Devices devices) {
+        hasSense = !(devices.getSense() == null || devices.getSense().isMissing());
+        displayWithSleepSounds(hasSounds && hasSense);
+    }
+
+
+    public void presentError(@NonNull Throwable error) {
+        //todo check again?
+    }
+
+
     public void displayWithSleepSounds(final boolean hasSleepSounds) {
-        if (tempHolder == null || subNavSelector == null || swipeRefreshLayout == null) {
+        if (subNavSelector == null || swipeRefreshLayout == null) {
             return;
         }
-        tempHolder.removeAllViews();
-        if (hasSleepSounds) {
-            tempHolder.setVisibility(View.GONE);
-            subNavSelector.setVisibility(View.VISIBLE);
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
-        } else {
-            tempHolder.setVisibility(View.VISIBLE);
-            subNavSelector.setVisibility(View.GONE);
-            swipeRefreshLayout.setVisibility(View.GONE);
-            final Fragment fragment = new SmartAlarmListFragment();
-            final FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            ft.add(tempHolder.getId(), fragment).commit();
-
+        if (hasSleepSounds && !isShowingSounds) {
+            isShowingSounds = true;
+            transitionInSubNavBar();
+            adapter.setOverrideCount(-1);
+            adapter.notifyDataSetChanged();
+        } else if (!hasSleepSounds) {
+            isShowingSounds = false;
+            transitionOutSubNavBar();
+            adapter.setOverrideCount(1);
+            adapter.notifyDataSetChanged();
+            subNavSelector.setSelectedIndex(0);
+            pager.setCurrentItem(0);
+            adapter.notifyDataSetChanged();
         }
     }
+
+    private void transitionInSubNavBar() {
+        subNavSelector.setVisibility(View.INVISIBLE);
+        Views.runWhenLaidOut(subNavSelector, stateSafeExecutor.bind(() -> {
+            subNavSelector.setTranslationY(-subNavSelector.getMeasuredHeight());
+            subNavSelector.setVisibility(View.VISIBLE);
+            animatorFor(subNavSelector, getAnimatorContext())
+                    .translationY(0f)
+                    .start();
+        }));
+    }
+
+    private void transitionOutSubNavBar() {
+        animatorFor(subNavSelector, getAnimatorContext())
+                .translationY(-subNavSelector.getMeasuredHeight())
+                .addOnAnimationCompleted(finished -> {
+                    if (finished) {
+                        subNavSelector.setVisibility(View.GONE);
+                    }
+                })
+                .start();
+    }
+
 }

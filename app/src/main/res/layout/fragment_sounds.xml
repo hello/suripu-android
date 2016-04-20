@@ -9,12 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/trends_title_height"/>
 
-    <RelativeLayout
-        android:id="@+id/fragment_sounds_single_fragment_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none"/>
-
     <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
         android:id="@+id/fragment_sounds_refresh_container"
         android:layout_width="match_parent"
