@@ -1,15 +1,20 @@
 package is.hello.sense.ui.adapter;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -132,9 +137,9 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         notifyDataSetChanged();
     }
 
-    public void setOfflineTooLong(boolean isOffline){
+    public void setOfflineTooLong(boolean isOffline) {
         this.isOffline = isOffline;
-        if (isOffline){
+        if (isOffline) {
             itemCount = 1;
             sleepSounds = null;
             sleepSoundStatus = null;
@@ -158,7 +163,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public int getItemViewType(final int position) {
-        if (isOffline){
+        if (isOffline) {
             return VIEW_OFFLINE_TOO_LONG;
         }
         if (hasDesiredItemCount()) {
@@ -196,7 +201,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == VIEW_SENSE_SOUNDS_DOWNLOAD) {
             return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
-        }else if (viewType == VIEW_OFFLINE_TOO_LONG){
+        } else if (viewType == VIEW_OFFLINE_TOO_LONG) {
             return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
         return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
@@ -227,20 +232,85 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public class TitleViewHolder extends BaseViewHolder {
         private final TextView title;
+        private boolean isPlaying = false;
+        private final ImageView leftMusic;
+        private final ImageView rightMusic;
 
         TitleViewHolder(final @NonNull View itemView) {
             super(itemView);
+            Log.e("New Title", "Created");
             title = ((TextView) itemView.findViewById(R.id.item_centered_title_text));
+            leftMusic = ((ImageView) itemView.findViewById(R.id.item_centered_image_left));
+            rightMusic = ((ImageView) itemView.findViewById(R.id.item_centered_image_right));
+            title.setText(R.string.sleep_sounds_title);
         }
 
         @Override
         void bind(final int position) {
-            if (sleepSoundStatus.isPlaying()) {
-                title.setText(R.string.sleep_sounds_title_playing);
-            } else {
-                title.setText(R.string.sleep_sounds_title);
+            if (sleepSoundStatus.isPlaying() && !isPlaying) {
+                isPlaying = true;
+                cycle(R.string.sleep_sounds_title_playing, true);
+                animateMusic(leftMusic, .3f, 1f);
+                animateMusic(rightMusic, 1f, .3f);
+                leftMusic.setVisibility(View.VISIBLE);
+                rightMusic.setVisibility(View.VISIBLE);
+            } else if (!sleepSoundStatus.isPlaying() && isPlaying) {
+                isPlaying = false;
+                leftMusic.setVisibility(View.INVISIBLE);
+                rightMusic.setVisibility(View.INVISIBLE);
+                cycle(R.string.sleep_sounds_title, false);
             }
         }
+
+        private void cycle(@StringRes int textRes, boolean moveDown) {
+            final float initialPosition = 0;
+            final float endPosition;
+            if (moveDown) {
+                endPosition = title.getBottom();
+            } else {
+                endPosition = -title.getBottom();
+            }
+            ValueAnimator animator = ValueAnimator.ofFloat(initialPosition, endPosition);
+            animator.setDuration(Anime.DURATION_SLOW);
+            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+            animator.addUpdateListener(a -> {
+                title.setY((float) a.getAnimatedValue());
+            });
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    title.setText(textRes);
+                    ValueAnimator animator2 = ValueAnimator.ofFloat(-endPosition, initialPosition);
+                    animator2.setDuration(Anime.DURATION_SLOW);
+                    animator2.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+                    animator2.addUpdateListener(a -> {
+                        title.setY((float) a.getAnimatedValue());
+                    });
+                    animatorContext.startWhenIdle(animator2);
+                }
+            });
+            animatorContext.startWhenIdle(animator);
+        }
+
+        private void animateMusic(ImageView view, float start, float end) {
+            ValueAnimator animator = ValueAnimator.ofFloat(start, end);
+            animator.setDuration(500);
+            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+            animator.addUpdateListener(a -> {
+                view.setScaleY((float) a.getAnimatedValue());
+            });
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animateMusic(view, end, start);
+                }
+            });
+            animatorContext.startWhenIdle(animator);
+        }
+
+
     }
 
     //region sleep state view holders
@@ -271,8 +341,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class OfflineViewHolder extends SleepStateViewHolder{
-        OfflineViewHolder(final @NonNull View view){
+    class OfflineViewHolder extends SleepStateViewHolder {
+        OfflineViewHolder(final @NonNull View view) {
             super(view);
         }
 
@@ -405,7 +475,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             }
 
             holder.setOnClickListener(v -> {
-                String soundText = value.getText().toString();
                 interactionListener.onSoundClick(displayedSound.getId(), sleepSounds);
             });
         }

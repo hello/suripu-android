@@ -6,17 +6,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_light"
+    android:clipChildren="true"
     android:orientation="vertical"
     app:senseCornerRadius="@dimen/card_large_corner_radius">
 
-    <TextView
-        android:id="@+id/item_centered_title_text"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:paddingBottom="@dimen/gap_card_content"
-        android:paddingTop="@dimen/gap_card_content"
-        />
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/item_centered_layout_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_toLeftOf="@+id/item_centered_title_text">
+
+            <ImageView
+                android:id="@+id/item_centered_image_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/music_left"
+                android:visibility="invisible"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/item_centered_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:paddingBottom="@dimen/gap_card_content"
+            android:paddingTop="@dimen/gap_card_content"
+            />
+
+        <RelativeLayout
+            android:id="@+id/item_centered_layout_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/item_centered_title_text">
+
+            <ImageView
+                android:id="@+id/item_centered_image_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/music_right"
+                android:visibility="invisible"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View style="@style/Divider.Horizontal"/>
 
 </is.hello.sense.ui.widget.RoundedLinearLayout>
