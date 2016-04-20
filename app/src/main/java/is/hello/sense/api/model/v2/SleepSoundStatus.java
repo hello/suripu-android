@@ -49,9 +49,9 @@ public class SleepSoundStatus extends ApiResponse {
 
     public ArrayList<Volume> getVolumes() {
         ArrayList<Volume> volumes = new ArrayList();
-        volumes.add(Volume.High);
-        volumes.add(Volume.Medium);
         volumes.add(Volume.Low);
+        volumes.add(Volume.Medium);
+        volumes.add(Volume.High);
         return volumes;
     }
 
