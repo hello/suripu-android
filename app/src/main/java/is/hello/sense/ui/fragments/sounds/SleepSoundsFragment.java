@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
@@ -56,6 +57,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
 
     private ImageButton playButton;
+    private FrameLayout buttonLayout;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private SleepSoundsAdapter adapter;
@@ -158,6 +160,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
         progressBar = (ProgressBar) view.findViewById(R.id.fragment_sleep_sounds_progressbar);
         playButton = (ImageButton) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
+        buttonLayout = (FrameLayout) view.findViewById(R.id.fragment_sleep_sounds_buttonLayout);
         preferences = getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, 0);
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_sleep_sounds_recycler);
         recyclerView.setHasFixedSize(true);
@@ -228,19 +231,28 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
 
     private void bindState(final @NonNull SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
+
+        if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
+            buttonLayout.setVisibility(View.VISIBLE);
+            playButton.setVisibility(View.VISIBLE);
+            displayLoadingButton(userWants);
+        } else {
+            buttonLayout.setVisibility(View.GONE);
+        }
+
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
-        playButton.setVisibility(View.VISIBLE);
-        displayLoadingButton(userWants);
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
-        if (status.isPlaying()) {
-            if (userWants != UserWants.STOP) {
-                displayStopButton();
-            }
-        } else {
-            if (userWants != UserWants.PLAY) {
-                displayPlayButton();
+        if (adapter.hasDesiredItemCount()) {
+            if (status.isPlaying()) {
+                if (userWants != UserWants.STOP) {
+                    displayStopButton();
+                }
+            } else {
+                if (userWants != UserWants.PLAY) {
+                    displayPlayButton();
+                }
             }
         }
         adapter.bind(status);
@@ -252,6 +264,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                                final boolean enabled,
                                final @NonNull UserWants wants) {
         userWants = wants;
+        buttonLayout.setVisibility(View.VISIBLE);
         playButton.setRotation(0);
         playButton.setImageResource(resource);
         playButton.setOnClickListener(listener);
