@@ -125,8 +125,8 @@ public class Permissions {
         Analytics.trackEvent(Analytics.Permissions.EVENT_STORAGE_DISABLED, null);
 
         SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
-        CharSequence clickableText = fragment.getResources().getText(R.string.request_permission_write_external_storage_message);
-        dialog.setTitle(R.string.request_permission_write_external_storage_title);
+        CharSequence clickableText = fragment.getResources().getText(R.string.request_permission_write_external_storage_required_message);
+        dialog.setTitle(R.string.request_permission_write_external_storage_required_title);
         dialog.setMessage(Styles.resolveSupportLinks(fragment.getActivity(), clickableText));
         dialog.setPositiveButton(android.R.string.ok, null);
         dialog.setNegativeButton(R.string.action_more_info, (sender, which) -> {
