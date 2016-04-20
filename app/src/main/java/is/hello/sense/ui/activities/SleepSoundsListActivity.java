@@ -79,7 +79,6 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getResources()));
 
         if (apiResponse instanceof SleepSounds) {
             adapter = new SleepSoundsListAdapter.SoundsListAdapter(this, selectedId, (SleepSounds) apiResponse);
