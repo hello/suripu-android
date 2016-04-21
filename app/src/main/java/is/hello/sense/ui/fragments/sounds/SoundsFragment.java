@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.sounds;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,17 +17,19 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 
-public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
+public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_HAS_SENSE = SoundsFragment.class.getName() + ".ARG_HAS_SENSE";
     private static final String ARG_HAS_SOUNDS = SoundsFragment.class.getName() + ".ARG_HAS_SOUNDS";
 
@@ -52,11 +53,12 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         if (isVisibleToUser) {
             sleepSoundsPresenter.update();
             devicesPresenter.update();
+            bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
+            bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
         }
         if (pager != null && adapter != null && pager.getChildCount() == adapter.getCount()) {
-            final long itemId = adapter.getItemId(pager.getCurrentItem());
-            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            final Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
+
+            final SubFragment fragment = getSubFragment(pager.getCurrentItem());
             if (fragment != null) {
                 // This is what stops SleepSoundsFragment from polling when the fragment changes.
                 fragment.setUserVisibleHint(isVisibleToUser);
@@ -77,7 +79,10 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sounds, container, false);
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_sounds_refresh_container);
-        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setEnabled(true);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
+
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_sounds_loading);
         this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_sounds_scrollview);
         this.subNavSelector = (SelectorView) view.findViewById(R.id.fragment_sounds_sub_nav);
@@ -133,10 +138,6 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sleepSoundsPresenter.update();
-        devicesPresenter.update();
-        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
-        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
         onUpdate();
@@ -146,6 +147,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onResume() {
         super.onResume();
+        sleepSoundsPresenter.update();
         devicesPresenter.update();
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
     }
@@ -167,13 +169,19 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
     }
 
+    private SubFragment getSubFragment(int position) {
+        final long itemId = adapter.getItemId(position);
+        final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+        return (SubFragment) getChildFragmentManager().findFragmentByTag(tag);
+    }
+
     public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
-        soundsState = StateManager.createState(sleepSounds.getSounds() != null && !sleepSounds.getSounds().isEmpty());
+        soundsState = StateManager.createState(sleepSounds.getSounds() != null);
         refreshView();
     }
 
     public void bindDevices(@NonNull Devices devices) {
-        senseState = StateManager.createState(!(devices.getSense() == null || devices.getSense().isMissing()));
+        senseState = StateManager.createState(!(devices.getSense() == null));
         refreshView();
     }
 
@@ -195,6 +203,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         if (subNavSelector == null || swipeRefreshLayout == null) {
             return;
         }
+        swipeRefreshLayout.setRefreshing(false);
         if (senseState == StateManager.Unknown || soundsState == StateManager.Unknown) {
             return;
         }
@@ -224,10 +233,6 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
                 subNavSelector.setVisibility(View.VISIBLE);
                 animatorFor(subNavSelector, getAnimatorContext())
                         .translationY(0f)
-                        .addOnAnimationCompleted(finished -> {
-                            if (finished) {
-                            }
-                        })
                         .start();
             }
         }));
@@ -245,6 +250,19 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
                     }
                 })
                 .start();
+    }
+
+    @Override
+    public void onRefresh() {
+        sleepSoundsPresenter.update();
+        devicesPresenter.update();
+        swipeRefreshLayout.setRefreshing(true);
+        for (int i = 0; i < adapter.getCount(); i++) {
+            SubFragment fragment = getSubFragment(i);
+            if (fragment != null) {
+                fragment.update();
+            }
+        }
     }
 
     public enum StateManager {

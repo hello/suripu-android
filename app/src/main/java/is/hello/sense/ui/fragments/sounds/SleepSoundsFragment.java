@@ -38,6 +38,7 @@ import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.SleepSoundsListActivity;
+import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
@@ -47,7 +48,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
 
-public class SleepSoundsFragment extends InjectionFragment implements InteractionListener, Retry {
+public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
     private final static int deltaRotation = 5; // degrees
     private final static int spinnerInterval = 1; // ms
     private final static int pollingInterval = 500; // ms
@@ -162,8 +163,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         // When it is visible, then this is called after the view has been created,
         // although we really do not depend on the view being created first.
         if (isVisibleToUser) {
-            devicesPresenter.update();
-            sleepSoundsStatusPresenter.update();
+            update();
             if (getActivity() != null) {
                 final boolean flickerWorkAround = true;
                 WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
@@ -209,7 +209,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         });
         bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentStateError);
         bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentStatusError);
-        sleepSoundsStatePresenter.update();
+        update();
     }
 
     @Override
@@ -251,6 +251,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         }
     }
 
+    @Override
+    public void update() {
+        sleepSoundsStatePresenter.update();
+        devicesPresenter.update();
+        sleepSoundsStatusPresenter.update();
+    }
+
     private void bindDevices(final @NonNull Devices devices) {
         if (devices.getSense() != null) {
             if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
@@ -267,7 +274,11 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
 
         if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             buttonLayout.setVisibility(View.VISIBLE);
-            playButton.setVisibility(View.VISIBLE);
+            if (state.getSounds().getSounds().isEmpty()) {
+                playButton.setVisibility(View.GONE);
+            } else {
+                playButton.setVisibility(View.VISIBLE);
+            }
             displayLoadingButton(userWants);
         } else {
             buttonLayout.setVisibility(View.GONE);
@@ -278,6 +289,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
         if (adapter.hasDesiredItemCount()) {
+            playButton.setVisibility(View.VISIBLE);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
@@ -287,6 +299,8 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                     displayPlayButton();
                 }
             }
+        } else {
+            playButton.setVisibility(View.GONE);
         }
         adapter.bind(status);
         backOff = initialBackOff;
