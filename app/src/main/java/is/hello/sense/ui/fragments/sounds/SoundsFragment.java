@@ -147,6 +147,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onResume() {
         super.onResume();
+        sleepSoundsPresenter.update();
         devicesPresenter.update();
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
     }
