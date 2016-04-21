@@ -64,6 +64,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser){
             update();
         }
