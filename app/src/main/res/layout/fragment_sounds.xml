@@ -7,6 +7,7 @@
     <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/fragment_sounds_sub_nav"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="@dimen/trends_title_height"/>
 
     <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
