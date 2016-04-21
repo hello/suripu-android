@@ -179,13 +179,13 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
 
     public void presentSoundsError(@NonNull Throwable error) {
-        senseState = StateManager.Missing;
+        soundsState = StateManager.Missing;
         refreshView();
         //todo check again?
     }
 
     public void presentDevicesError(@NonNull Throwable error) {
-        soundsState = StateManager.Missing;
+        senseState = StateManager.Missing;
         refreshView();
         //todo check again?
     }
