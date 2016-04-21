@@ -11,12 +11,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+
+import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 
@@ -75,6 +78,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private UserWants userWants = UserWants.NONE;
     private final StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
     private int backOff = initialBackOff;
+    private long timeSent = 0;
 
     @Override
     public void retry() {
@@ -124,6 +128,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                                                             Analytics.SleepSounds.PROP_SLEEP_SOUNDS_VOLUME, volume.getVolume()));
 
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
+            timeSent = System.currentTimeMillis();
             bindAndSubscribe(saveOperation,
                              ignored -> {
                                  // incase we were in a failed state
@@ -145,6 +150,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_STOP, null);
 
             final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
+            timeSent = System.currentTimeMillis();
             bindAndSubscribe(saveOperation,
                              ignored -> {
                                  // incase we were in a failed state
@@ -276,11 +282,14 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             buttonLayout.setVisibility(View.VISIBLE);
             if (state.getSounds().getSounds().isEmpty()) {
                 playButton.setVisibility(View.GONE);
+                buttonLayout.setVisibility(View.GONE);
             } else {
                 playButton.setVisibility(View.VISIBLE);
+                buttonLayout.setVisibility(View.VISIBLE);
             }
             displayLoadingButton(userWants);
         } else {
+            playButton.setVisibility(View.GONE);
             buttonLayout.setVisibility(View.GONE);
         }
         adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
@@ -290,17 +299,26 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     public void bindStatus(final @NonNull SleepSoundStatus status) {
         if (adapter.hasDesiredItemCount()) {
             playButton.setVisibility(View.VISIBLE);
+            buttonLayout.setVisibility(View.VISIBLE);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
+                } else if ( System.currentTimeMillis()- timeSent > 30000) {
+                    presentCommandError(null);
+                    displayStopButton();
+                    userWants = UserWants.NONE;
                 }
             } else {
                 if (userWants != UserWants.PLAY) {
+                    displayPlayButton();
+                } else if ( System.currentTimeMillis() -timeSent > 30000) {
+                    presentCommandError(null);
                     displayPlayButton();
                 }
             }
         } else {
             playButton.setVisibility(View.GONE);
+            buttonLayout.setVisibility(View.GONE);
         }
         adapter.bind(status);
         backOff = initialBackOff;
@@ -310,6 +328,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private void presentStateError(final @NonNull Throwable error) {
         adapter.setErrorState();
         buttonLayout.setVisibility(View.GONE);
+        playButton.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
     }
 
@@ -327,7 +346,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         //todo report error. Determine how to handle when status fails.
     }
 
-    private void presentCommandError(final @NonNull Throwable error) {
+
+    private void presentCommandError(final @Nullable Throwable error) {
         ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
                 .withMessage(StringRef.from(R.string.sleep_sounds_error_commanding))
                 .build();
