@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +36,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private SelectorView subNavSelector;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
-    private boolean hasSounds = true;
-    private boolean hasSense = true;
+    private boolean hasSounds = false;
+    private boolean hasSense = false;
     private boolean isShowingSounds = false;
 
     @Inject
