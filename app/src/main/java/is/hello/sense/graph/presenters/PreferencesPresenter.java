@@ -61,6 +61,7 @@ import rx.subscriptions.Subscriptions;
 
     public static final String HAS_UNREAD_INSIGHT_ITEMS = "has_unread_insight_items";
     public static final String DISABLE_REVIEW_PROMPT = "disable_review_prompt";
+    public static final String HAS_REVIEWED_ON_AMAZON = "has_reviewed_on_amazon";
 
     public static final String SYSTEM_ALERT_LAST_SHOWN = "system_alert_last_shown";
     public static final String SENSE_ALERT_LAST_SHOWN = "sense_alert_last_shown";

@@ -20,11 +20,14 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
+import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;
@@ -37,7 +40,7 @@ public class BacksideFragment extends InjectionFragment
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
-    public static final int ITEM_SMART_ALARM_LIST = 3;
+    public static final int ITEM_SOUNDS = 3;
     public static final int ITEM_APP_SETTINGS = 4;
 
     private static final int DEFAULT_START_ITEM = ITEM_INSIGHTS;
@@ -45,7 +48,9 @@ public class BacksideFragment extends InjectionFragment
     public static final int OPTION_NONE = 0;
     public static final int OPTION_ANIMATE = (1 << 1);
 
-    @Inject UnreadStatePresenter unreadStatePresenter;
+    @Inject
+    UnreadStatePresenter unreadStatePresenter;
+
     private SharedPreferences internalPreferences;
 
     private int tabSelectorHeight;
@@ -93,7 +98,7 @@ public class BacksideFragment extends InjectionFragment
                                                  new Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new Item(TrendsFragment.class, getString(R.string.title_trends)),
                                                  new Item(InsightsFragment.class, getString(R.string.action_insights)),
-                                                 new Item(SmartAlarmListFragment.class, getString(R.string.action_alarm)),
+                                                 new Item(SoundsFragment.class, getString(R.string.action_alarm)),
                                                  new Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);
 
@@ -116,14 +121,14 @@ public class BacksideFragment extends InjectionFragment
                 R.drawable.backside_icon_currently,
                 R.drawable.backside_icon_trends,
                 R.drawable.backside_icon_insights,
-                R.drawable.backside_icon_alarm,
+                R.drawable.backside_icon_sounds,
                 R.drawable.backside_icon_settings,
         };
         final @DrawableRes int[] activeIcons = {
                 R.drawable.backside_icon_currently_active,
                 R.drawable.backside_icon_trends_active,
                 R.drawable.backside_icon_insights_active,
-                R.drawable.backside_icon_alarm_active,
+                R.drawable.backside_icon_sounds_active,
                 R.drawable.backside_icon_settings_active,
         };
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
@@ -143,7 +148,6 @@ public class BacksideFragment extends InjectionFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
@@ -183,13 +187,13 @@ public class BacksideFragment extends InjectionFragment
     }
 
 
-    public @Nullable BacksideTabFragment getCurrentTabFragment() {
+    public
+    @Nullable
+    BacksideTabFragment getCurrentTabFragment() {
         if (adapter != null) {
             // This depends on semi-undefined behavior. It may break in a future update
             // of the Android support library, but won't break if the host OS changes.
-            final long itemId = adapter.getItemId(pager.getCurrentItem());
-            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(tag);
+            return (BacksideTabFragment) getChildFragmentManager().findFragmentByTag(getItemTag(pager.getCurrentItem()));
         } else {
             return null;
         }
@@ -208,6 +212,13 @@ public class BacksideFragment extends InjectionFragment
                            .apply();
     }
 
+    private String getItemTag(int position) {
+        if (position < 0 || position > adapter.getCount() - 1) {
+            position = pager.getCurrentItem();
+        }
+        return "android:switcher:" + pager.getId() + ":" + adapter.getItemId(position);
+    }
+
     public void setChromeTranslationAmount(float amount) {
         final float tabsTranslationY = Anime.interpolateFloats(amount, 0f, -tabSelectorHeight);
         tabSelector.setTranslationY(tabsTranslationY);
@@ -221,7 +232,6 @@ public class BacksideFragment extends InjectionFragment
     public float getChromeTranslationAmount() {
         return (-tabSelector.getTranslationY() / tabSelectorHeight);
     }
-
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

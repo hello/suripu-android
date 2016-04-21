@@ -8,13 +8,17 @@ import android.support.v13.app.FragmentPagerAdapter;
 public class StaticFragmentAdapter extends FragmentPagerAdapter {
     private final Item[] items;
 
+    /**
+     * Used to limit the number of items shown.
+     */
+    private int overrideCount = -1;
+
     public StaticFragmentAdapter(@NonNull FragmentManager fm,
                                  @NonNull Item... items) {
         super(fm);
 
         this.items = items;
     }
-
     @Override
     public Fragment getItem(int position) {
         return items[position].newInstance();
@@ -27,8 +31,23 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return items.length;
+        if (overrideCount == -1) {
+            return items.length;
+        }
+        return overrideCount;
+
     }
+
+    public void setOverrideCount(int overrideCount) {
+        if (overrideCount < -1) {
+            overrideCount = -1;
+        }
+        if (overrideCount > items.length - 1) {
+            overrideCount = items.length - 1;
+        }
+        this.overrideCount = overrideCount;
+    }
+
 
 
     public static class Item {
@@ -42,7 +61,9 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         }
 
 
-        public @NonNull Fragment newInstance() {
+        public
+        @NonNull
+        Fragment newInstance() {
             try {
                 return fragmentClass.newInstance();
             } catch (Exception e) {

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.ui.fragments.sounds;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -45,7 +47,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SmartAlarmListFragment extends BacksideTabFragment implements SmartAlarmAdapter.InteractionListener {
+public class SmartAlarmListFragment extends InjectionFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
@@ -105,9 +107,11 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        onUpdate();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
+
     }
 
     @Override
@@ -134,11 +138,6 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
         }
     }
 
-    @Override
-    public void onSwipeInteractionDidFinish() {
-    }
-
-    @Override
     public void onUpdate() {
         smartAlarmPresenter.update();
     }
@@ -180,11 +179,6 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
                     StringRef.from(R.string.error_smart_alarms_unavailable));
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
-        } else if (ApiException.statusEquals(e, 400)) {
-            message = new SmartAlarmAdapter.Message(0,
-                    StringRef.from(R.string.error_smart_alarm_clock_drift));
-            message.actionRes = R.string.action_retry;
-            message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 412)) {
             message = new SmartAlarmAdapter.Message(0,
                     StringRef.from(R.string.error_smart_alarm_requires_device));
@@ -213,8 +207,6 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
-        } else if (ApiException.statusEquals(e, 400)) {
-            errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_clock_drift)));
         }
         final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -250,8 +242,13 @@ public class SmartAlarmListFragment extends BacksideTabFragment implements Smart
             smartAlarm.setRingOnce();
         }
 
-        final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_ALARM_ENABLED,
-                                                                 enabled);
+        final String daysRepeated = TextUtils.join(", ", smartAlarm.getSortedDaysOfWeek());
+        final Properties properties =
+                Analytics.createProperties(Analytics.Backside.PROP_ALARM_ENABLED, smartAlarm.isEnabled(),
+                                           Analytics.Backside.PROP_ALARM_IS_SMART, smartAlarm.isSmart(),
+                                           Analytics.Backside.PROP_ALARM_DAYS_REPEATED, daysRepeated,
+                                           Analytics.Backside.PROP_ALARM_HOUR, smartAlarm.getHourOfDay(),
+                                           Analytics.Backside.PROP_ALARM_MINUTE, smartAlarm.getMinuteOfHour());
         Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_ON_OFF, properties);
 
         activityIndicator.setVisibility(View.VISIBLE);

@@ -17,6 +17,11 @@ public final class Constants {
     public static final String HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO = "has_shown_timeline_adjust_intro";
     public static final String HANDHOLDING_NUMBER_TIMELINES_SHOWN = "number_timelines_shown";
 
+    public static final String SLEEP_SOUNDS_PREFS = "sleep_sounds_prefs";
+    public static final String SLEEP_SOUNDS_SOUND_ID = "sleep_sounds_sound_id";
+    public static final String SLEEP_SOUNDS_DURATION_ID = "sleep_sounds_duration_id";
+    public static final String SLEEP_SOUNDS_VOLUME_ID = "sleep_sounds_volume_id";
+
     /**
      * The point at which a gesture's velocity dictates that
      * it be completed regardless of relative position.

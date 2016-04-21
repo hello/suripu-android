@@ -19,16 +19,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/fragment_device_details_alert_icon"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_medium"
-                android:src="@drawable/icon_warning"
-                tools:ignore="ContentDescription" />
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/gap_outer"
+                android:layout_marginEnd="@dimen/gap_outer"
+                android:layout_marginTop="@dimen/device_detail_progress_margin"
+                android:layout_marginBottom="@dimen/device_detail_text_margin">
+
+                <ImageView
+                    android:id="@+id/fragment_device_details_alert_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_warning"
+                    android:layout_gravity="center_vertical"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/fragment_device_details_alert_title_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+                    android:text="@string/app_name"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/gap_xsmall"
+                    android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/fragment_device_details_alert_busy"

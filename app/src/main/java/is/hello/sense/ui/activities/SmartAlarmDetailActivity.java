@@ -15,15 +15,23 @@ import org.joda.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.ui.fragments.SmartAlarmDetailFragment;
+import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public class SmartAlarmDetailActivity extends SenseActivity {
+public class SmartAlarmDetailActivity extends InjectionActivity {
+
+    @Inject
+    ApiSessionManager sessionManager;
+
     //region Constants
 
     public static final String EXTRA_ALARM = SmartAlarmDetailActivity.class.getName() + ".ARG_ALARM";
@@ -49,10 +57,16 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
     //region Lifecycle
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bounce();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (savedInstanceState == null) {
             if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
                 Properties properties = Analytics.createProperties(
@@ -110,7 +124,6 @@ public class SmartAlarmDetailActivity extends SenseActivity {
         }
         return super.onMenuItemSelected(featureId, item);
     }
-
     //endregion
 
 
@@ -156,7 +169,7 @@ public class SmartAlarmDetailActivity extends SenseActivity {
 
     private void processSetAlarmIntent() {
         final Intent intent = getIntent();
-        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 6) + 1;
+        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 6);
         final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
         final List<Integer> calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
 
@@ -176,4 +189,11 @@ public class SmartAlarmDetailActivity extends SenseActivity {
     }
 
     //endregion
+
+    private void bounce(){
+        if (!sessionManager.hasSession()) {
+            startActivity(new Intent(this, OnboardingActivity.class));
+            finish();
+        }
+    }
 }

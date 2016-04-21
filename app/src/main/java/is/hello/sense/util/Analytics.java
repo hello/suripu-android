@@ -465,6 +465,8 @@ public class Analytics {
         String PROP_ALARM_DAYS_REPEATED = "days_repeated";
         String PROP_ALARM_ENABLED = "enabled";
         String PROP_ALARM_IS_SMART = "smart_alarm";
+        String PROP_ALARM_HOUR = "hour";
+        String PROP_ALARM_MINUTE = "minute";
 
         String EVENT_ALARM_ON_OFF = "Alarm On/Off";
         String EVENT_EDIT_ALARM = "Edit Alarm";
@@ -508,6 +510,15 @@ public class Analytics {
         String EVENT_TIMESCALE_QUARTER = "quarter";
     }
 
+    public interface SleepSounds {
+        String EVENT_SLEEP_SOUNDS = "Sleep sounds";
+        String EVENT_SLEEP_SOUNDS_PLAY = "Play sleep sound";
+        String EVENT_SLEEP_SOUNDS_STOP = "Stop sleep sound";
+        String PROP_SLEEP_SOUDNS_SOUND_ID = "sound id";
+        String PROP_SLEEP_SOUNDS_DURATION_ID = "duration id";
+        String PROP_SLEEP_SOUNDS_VOLUME = "volume";
+    }
+
     public interface StoreReview {
         String SHOWN = "App review shown";
         String START = "App review start";
@@ -515,6 +526,7 @@ public class Analytics {
         String DO_NOT_ENJOY_SENSE = "Do not enjoy Sense";
         String HELP_FROM_APP_REVIEW = "Help from app review";
         String RATE_APP = "Rate app";
+        String RATE_APP_AMAZON = "Rate on Amazon";
         String DO_NOT_ASK_TO_RATE_APP_AGAIN = "Do not ask to rate app again";
         String FEEDBACK_FROM_APP_REVIEW = "Feedback from app review";
         String APP_REVIEW_COMPLETED_WITH_NO_ACTION = "App review completed with no action";
@@ -524,7 +536,10 @@ public class Analytics {
     public interface Permissions {
         String EVENT_WE_NEED_LOCATION = "Location Permission Explanation";
         String EVENT_LOCATION_DISABLED = "Location Not Granted";
-        String EVENT_MORE_INFO = "Location Permission More Info";
+        String EVENT_LOCATION_MORE_INFO = "Location Permission More Info";
+        String EVENT_WE_NEED_STORAGE = "External Storage Permission Explanation";
+        String EVENT_STORAGE_DISABLED = "External Storage Not Granted";
+        String EVENT_STORAGE_MORE_INFO = "External Storage Permission More Info";
     }
 
 

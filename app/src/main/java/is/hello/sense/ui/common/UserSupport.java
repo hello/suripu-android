@@ -21,7 +21,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class UserSupport {
-    public static final String ORDER_URL = "https://order.hello.is";
+    public static final String ORDER_URL = "https://store.hello.is";
     public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
 
@@ -76,6 +76,20 @@ public class UserSupport {
         }
     }
 
+    public static void showAmazonReviewPage(@NonNull Activity from) {
+        final Uri amazonReviewUri = new Uri.Builder()
+                .scheme("https")
+                .authority("www.amazon.com")
+                .appendPath("review")
+                .appendPath("create-review")
+                .appendQueryParameter("ie", "UTF8")
+                .appendQueryParameter("asin", "B016XBL2RE")
+                .appendQueryParameter("channel", "awUDPv3")
+                .appendQueryParameter("ref_", "cm_cr_dp_aw_wr_but#")
+                .build();
+        openUri(from, amazonReviewUri);
+    }
+
     public static void showUserGuide(@NonNull Activity from) {
         Analytics.trackEvent(Analytics.Backside.EVENT_HELP, null);
 
@@ -127,9 +141,16 @@ public class UserSupport {
     }
 
     public static void showLocationPermissionMoreInfoPage(@NonNull Activity from) {
-        Analytics.trackEvent(Analytics.Permissions.EVENT_MORE_INFO, null);
+        Analytics.trackEvent(Analytics.Permissions.EVENT_LOCATION_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/207716923");
+        openUri(from, supportUrl);
+    }
+
+    public static void showStoragePermissionMoreInfoPage(@NonNull Activity from) {
+        Analytics.trackEvent(Analytics.Permissions.EVENT_STORAGE_MORE_INFO, null);
+
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/209777573");
         openUri(from, supportUrl);
     }
 

@@ -36,6 +36,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     private TextView alertText;
     private Button primaryAlertAction;
     private Button secondaryAlertAction;
+    private TextView alertTitleText;
 
     private LinearLayout actionsContainer;
 
@@ -69,6 +70,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         this.alertIcon = (ImageView) alertContainer.findViewById(R.id.fragment_device_details_alert_icon);
         this.alertBusy = (ProgressBar) alertContainer.findViewById(R.id.fragment_device_details_alert_busy);
         this.alertText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_text);
+        this.alertTitleText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_title_text);
         this.primaryAlertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action);
         this.secondaryAlertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action_secondary);
 
@@ -88,6 +90,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         this.alertIcon = null;
         this.alertBusy = null;
         this.alertText = null;
+        this.alertTitleText = null;
         this.primaryAlertAction = null;
 
         this.actionsContainer = null;
@@ -153,6 +156,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
     protected void showBlockingAlert(@StringRes int messageRes) {
         alertIcon.setVisibility(View.GONE);
+        alertTitleText.setVisibility(View.GONE);
         alertBusy.setVisibility(View.VISIBLE);
         primaryAlertAction.setVisibility(View.GONE);
         secondaryAlertAction.setVisibility(View.GONE);
@@ -170,6 +174,10 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         alertBusy.setVisibility(View.GONE);
         primaryAlertAction.setVisibility(View.VISIBLE);
 
+        if (alert.title != null) {
+            alertTitleText.setVisibility(View.VISIBLE);
+            alertTitleText.setText(alert.title.resolve(getActivity()));
+        }
         alertText.setGravity(Gravity.TOP | Gravity.START);
         alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_MidSized);
         alertText.setText(alert.message.resolve(getActivity()));
@@ -194,12 +202,17 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     }
 
     protected class TroubleshootingAlert {
+        StringRef title;
         StringRef message;
         @StringRes int primaryButtonTitle;
         Runnable primaryButtonOnClick;
         @StringRes int secondaryButtonTitle;
         Runnable secondaryButtonOnClick;
 
+        public TroubleshootingAlert setTitle(@NonNull StringRef title){
+            this.title = title;
+            return this;
+        }
         public TroubleshootingAlert setMessage(@NonNull StringRef message) {
             this.message = message;
             return this;

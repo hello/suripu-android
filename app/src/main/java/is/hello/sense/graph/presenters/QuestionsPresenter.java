@@ -205,7 +205,24 @@ import rx.Scheduler;
             QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
                                                     @NonNull Context context,
                                                     @NonNull Scheduler scheduler) {
-                return new ReviewQuestionProvider(context, apiService);
+                return new ReviewQuestionProvider(context,
+                                                  apiService,
+                                                  ReviewQuestionProvider.Destination.PlayStore);
+            }
+        },
+        REVIEW_AMAZON {
+            @Override
+            String getName() {
+                return "AmazonReviewQuestionProvider";
+            }
+
+            @Override
+            QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
+                                                    @NonNull Context context,
+                                                    @NonNull Scheduler scheduler) {
+                return new ReviewQuestionProvider(context,
+                                                  apiService,
+                                                  ReviewQuestionProvider.Destination.Amazon);
             }
         };
 

@@ -28,6 +28,17 @@ public class RoomConditions extends ApiResponse {
     @VisibleForTesting SensorState sound;
 
 
+    @VisibleForTesting
+    public static RoomConditions generateTestExample() {
+        RoomConditions conditions = new RoomConditions();
+        conditions.temperature = SensorState.generateTemperatureExample(100, Condition.IDEAL);
+        conditions.humidity = SensorState.generateHumidityExample(60, Condition.WARNING);
+        conditions.light = SensorState.generateLightExample(-1, Condition.ALERT);
+        conditions.sound = SensorState.generateSoundExample(-2, Condition.UNKNOWN);
+        conditions.particulates = null;
+        return conditions;
+    }
+
     public SensorState getTemperature() {
         if (temperature != null) {
             temperature.setName(ApiService.SENSOR_NAME_TEMPERATURE);

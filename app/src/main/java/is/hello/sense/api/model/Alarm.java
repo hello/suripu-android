@@ -85,6 +85,14 @@ public class Alarm extends ApiResponse {
         return new LocalTime(hourOfDay, minuteOfHour);
     }
 
+    public @NonNull DateTime toTimeToday() {
+        return new DateTime(DateTimeZone.getDefault())
+                      .withHourOfDay(hourOfDay)
+                      .withMinuteOfHour(minuteOfHour)
+                      .withSecondOfMinute(0)
+                      .withMillisOfSecond(0);
+    }
+
     public void setTime(@NonNull LocalTime time) {
         this.hourOfDay = time.getHourOfDay();
         this.minuteOfHour = time.getMinuteOfHour();
@@ -243,6 +251,14 @@ public class Alarm extends ApiResponse {
             } else {
                 return context.getString(R.string.alarm_repeat_everyday);
             }
+    }
+
+    public int getHourOfDay() {
+        return hourOfDay;
+    }
+
+    public int getMinuteOfHour() {
+        return minuteOfHour;
     }
 
     public Sound getSound() {

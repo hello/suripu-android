@@ -211,7 +211,7 @@ public class Graph extends ApiResponse {
         HOURS {
             @Override
             public CharSequence renderAnnotation(@NonNull Annotation annotation) {
-                return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 2),
+                return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 1),
                                                      BarTrendGraphView.BarGraphDrawable.HOUR_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
             }

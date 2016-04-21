@@ -79,6 +79,7 @@ public class TrendFeedView extends LinearLayout {
         setLoading(false);
 
         this.trends = null;
+        this.welcomeCard = null;
 
         removeAllViews();
         cardViews.clear();
