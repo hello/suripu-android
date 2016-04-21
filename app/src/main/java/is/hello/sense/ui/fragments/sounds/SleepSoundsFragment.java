@@ -38,6 +38,7 @@ import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.SleepSoundsListActivity;
+import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
@@ -47,7 +48,7 @@ import rx.Observable;
 
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
 
-public class SleepSoundsFragment extends InjectionFragment implements InteractionListener, Retry {
+public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
     private final static int deltaRotation = 5; // degrees
     private final static int spinnerInterval = 1; // ms
     private final static int pollingInterval = 500; // ms
@@ -162,8 +163,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         // When it is visible, then this is called after the view has been created,
         // although we really do not depend on the view being created first.
         if (isVisibleToUser) {
-            devicesPresenter.update();
-            sleepSoundsStatusPresenter.update();
+            update();
             if (getActivity() != null) {
                 final boolean flickerWorkAround = true;
                 WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
@@ -209,7 +209,7 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
         });
         bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentStateError);
         bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentStatusError);
-        sleepSoundsStatePresenter.update();
+        update();
     }
 
     @Override
@@ -249,6 +249,13 @@ public class SleepSoundsFragment extends InjectionFragment implements Interactio
                        .apply();
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void update() {
+        sleepSoundsStatePresenter.update();
+        devicesPresenter.update();
+        sleepSoundsStatusPresenter.update();
     }
 
     private void bindDevices(final @NonNull Devices devices) {

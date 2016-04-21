@@ -36,6 +36,7 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.SenseDialogFragment;
+import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
@@ -47,7 +48,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SmartAlarmListFragment extends InjectionFragment implements SmartAlarmAdapter.InteractionListener {
+public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject SmartAlarmPresenter smartAlarmPresenter;
@@ -60,6 +61,13 @@ public class SmartAlarmListFragment extends InjectionFragment implements SmartAl
 
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private SmartAlarmAdapter adapter;
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        if (isVisibleToUser){
+            update();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -271,6 +279,11 @@ public class SmartAlarmListFragment extends InjectionFragment implements SmartAl
     public void retry(@NonNull View sender) {
         startLoading();
         onUpdate();
+    }
+
+    @Override
+    public void update() {
+        smartAlarmPresenter.update();
     }
 
 
