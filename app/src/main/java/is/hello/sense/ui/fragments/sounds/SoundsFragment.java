@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private SelectorView subNavSelector;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
-    private boolean hasSounds = true;
-    private boolean hasSense = true;
+    private boolean hasSounds = false;
+    private boolean hasSense = false;
     private boolean isShowingSounds = false;
 
     @Inject
@@ -126,8 +127,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         super.onViewCreated(view, savedInstanceState);
         sleepSoundsPresenter.update();
         devicesPresenter.update();
-        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
-        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentError);
+        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
+        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
         onUpdate();
@@ -168,7 +169,15 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
 
-    public void presentError(@NonNull Throwable error) {
+    public void presentSoundsError(@NonNull Throwable error) {
+        hasSounds = false;
+        displayWithSleepSounds(hasSounds && hasSense);
+        //todo check again?
+    }
+
+    public void presentDevicesError(@NonNull Throwable error) {
+        hasSense = false;
+        displayWithSleepSounds(hasSounds && hasSense);
         //todo check again?
     }
 
