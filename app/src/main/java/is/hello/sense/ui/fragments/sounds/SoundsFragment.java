@@ -154,11 +154,13 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
     public void presentSoundsError(@NonNull Throwable error) {
         hasSounds = false;
+        displayWithSleepSounds(hasSounds && hasSense);
         //todo check again?
     }
 
     public void presentDevicesError(@NonNull Throwable error) {
         hasSense = false;
+        displayWithSleepSounds(hasSounds && hasSense);
         //todo check again?
     }
 
