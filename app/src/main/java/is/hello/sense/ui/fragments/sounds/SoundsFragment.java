@@ -110,8 +110,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         super.onViewCreated(view, savedInstanceState);
         sleepSoundsPresenter.update();
         devicesPresenter.update();
-        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentError);
-        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentError);
+        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
+        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
         onUpdate();
@@ -152,7 +152,13 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
 
-    public void presentError(@NonNull Throwable error) {
+    public void presentSoundsError(@NonNull Throwable error) {
+        hasSounds = false;
+        //todo check again?
+    }
+
+    public void presentDevicesError(@NonNull Throwable error) {
+        hasSense = false;
         //todo check again?
     }
 
