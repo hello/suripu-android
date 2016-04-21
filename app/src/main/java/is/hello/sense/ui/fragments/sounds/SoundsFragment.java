@@ -181,7 +181,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
     public void bindDevices(@NonNull Devices devices) {
-        senseState = StateManager.createState(!(devices.getSense() == null || devices.getSense().isMissing()));
+        senseState = StateManager.createState(!(devices.getSense() == null));
         refreshView();
     }
 
