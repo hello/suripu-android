@@ -274,7 +274,11 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
         if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             buttonLayout.setVisibility(View.VISIBLE);
-            playButton.setVisibility(View.VISIBLE);
+            if (state.getSounds().getSounds().isEmpty()) {
+                playButton.setVisibility(View.GONE);
+            } else {
+                playButton.setVisibility(View.VISIBLE);
+            }
             displayLoadingButton(userWants);
         } else {
             buttonLayout.setVisibility(View.GONE);
@@ -285,6 +289,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
         if (adapter.hasDesiredItemCount()) {
+            playButton.setVisibility(View.VISIBLE);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
@@ -294,6 +299,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                     displayPlayButton();
                 }
             }
+        } else {
+            playButton.setVisibility(View.GONE);
         }
         adapter.bind(status);
         backOff = initialBackOff;
