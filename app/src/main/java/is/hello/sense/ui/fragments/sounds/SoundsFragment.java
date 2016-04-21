@@ -1,11 +1,9 @@
 package is.hello.sense.ui.fragments.sounds;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,17 +17,19 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 
-public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener {
+public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_HAS_SENSE = SoundsFragment.class.getName() + ".ARG_HAS_SENSE";
     private static final String ARG_HAS_SOUNDS = SoundsFragment.class.getName() + ".ARG_HAS_SOUNDS";
 
@@ -38,9 +38,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private SelectorView subNavSelector;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
-    private boolean hasSounds = false;
-    private boolean hasSense = false;
-    private boolean isShowingSounds = false;
+    private StateManager senseState = StateManager.Unknown;
+    private StateManager soundsState = StateManager.Unknown;
 
     @Inject
     SleepSoundsPresenter sleepSoundsPresenter;
@@ -51,10 +50,15 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            sleepSoundsPresenter.update();
+            devicesPresenter.update();
+            bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
+            bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
+        }
         if (pager != null && adapter != null && pager.getChildCount() == adapter.getCount()) {
-            final long itemId = adapter.getItemId(pager.getCurrentItem());
-            final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
-            final Fragment fragment = getChildFragmentManager().findFragmentByTag(tag);
+
+            final SubFragment fragment = getSubFragment(pager.getCurrentItem());
             if (fragment != null) {
                 // This is what stops SleepSoundsFragment from polling when the fragment changes.
                 fragment.setUserVisibleHint(isVisibleToUser);
@@ -66,6 +70,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        presenterContainer.addPresenter(sleepSoundsPresenter);
+        presenterContainer.addPresenter(devicesPresenter);
     }
 
     @Nullable
@@ -73,7 +79,10 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sounds, container, false);
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_sounds_refresh_container);
-        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setEnabled(true);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
+
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_sounds_loading);
         this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_sounds_scrollview);
         this.subNavSelector = (SelectorView) view.findViewById(R.id.fragment_sounds_sub_nav);
@@ -85,7 +94,6 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         subNavSelector.addOption(R.string.alarm_subnavbar_sounds_list, false);
         subNavSelector.setOnSelectionChangedListener(this);
         subNavSelector.setTranslationY(0);
-        subNavSelector.setVisibility(View.VISIBLE);
 
         this.adapter = new StaticFragmentAdapter(getChildFragmentManager(),
                                                  new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
@@ -95,13 +103,14 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         pager.setFadePageTransformer(true);
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ARG_HAS_SOUNDS)) {
-                hasSounds = savedInstanceState.getBoolean(ARG_HAS_SOUNDS);
+                soundsState = StateManager.createState(savedInstanceState.getBoolean(ARG_HAS_SOUNDS));
             }
-            if (savedInstanceState.containsKey(ARG_HAS_SENSE)){
-                hasSense= savedInstanceState.getBoolean(ARG_HAS_SENSE);
+            if (savedInstanceState.containsKey(ARG_HAS_SENSE)) {
+                senseState = StateManager.createState(savedInstanceState.getBoolean(ARG_HAS_SENSE));
             }
         }
-        displayWithSleepSounds(hasSense && hasSounds);
+
+        refreshView();
         return view;
     }
 
@@ -117,26 +126,28 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(ARG_HAS_SENSE, hasSense);
-        outState.putBoolean(ARG_HAS_SOUNDS, hasSounds);
+        if (soundsState != StateManager.Unknown) {
+            outState.putBoolean(ARG_HAS_SOUNDS, soundsState == StateManager.Exists);
+        }
+        if (senseState != StateManager.Unknown) {
+            outState.putBoolean(ARG_HAS_SENSE, senseState == StateManager.Exists);
+        }
 
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sleepSoundsPresenter.update();
-        devicesPresenter.update();
-        bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
-        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
         onUpdate();
+        refreshView();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        sleepSoundsPresenter.update();
         devicesPresenter.update();
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
     }
@@ -155,44 +166,53 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onSelectionChanged(final int newSelectionIndex) {
         pager.setCurrentItem(newSelectionIndex);
+
+    }
+
+    private SubFragment getSubFragment(int position) {
+        final long itemId = adapter.getItemId(position);
+        final String tag = "android:switcher:" + pager.getId() + ":" + itemId;
+        return (SubFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
     public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
-
-        hasSounds = sleepSounds.getSounds() != null && !sleepSounds.getSounds().isEmpty();
-        displayWithSleepSounds(hasSounds && hasSense);
+        soundsState = StateManager.createState(sleepSounds.getSounds() != null);
+        refreshView();
     }
 
     public void bindDevices(@NonNull Devices devices) {
-        hasSense = !(devices.getSense() == null || devices.getSense().isMissing());
-        displayWithSleepSounds(hasSounds && hasSense);
+        senseState = StateManager.createState(!(devices.getSense() == null));
+        refreshView();
     }
 
 
     public void presentSoundsError(@NonNull Throwable error) {
-        hasSounds = false;
-        displayWithSleepSounds(hasSounds && hasSense);
+        soundsState = StateManager.Missing;
+        refreshView();
         //todo check again?
     }
 
     public void presentDevicesError(@NonNull Throwable error) {
-        hasSense = false;
-        displayWithSleepSounds(hasSounds && hasSense);
+        senseState = StateManager.Missing;
+        refreshView();
         //todo check again?
     }
 
 
-    public void displayWithSleepSounds(final boolean hasSleepSounds) {
+    private void refreshView() {
         if (subNavSelector == null || swipeRefreshLayout == null) {
             return;
         }
-        if (hasSleepSounds && !isShowingSounds) {
-            isShowingSounds = true;
+        swipeRefreshLayout.setRefreshing(false);
+        if (senseState == StateManager.Unknown || soundsState == StateManager.Unknown) {
+            return;
+        }
+        boolean hasSleepSounds = senseState == StateManager.Exists && soundsState == StateManager.Exists;
+        if (hasSleepSounds && subNavSelector.getVisibility() == View.GONE) {
             transitionInSubNavBar();
             adapter.setOverrideCount(-1);
             adapter.notifyDataSetChanged();
-        } else if (!hasSleepSounds) {
-            isShowingSounds = false;
+        } else if (!hasSleepSounds && subNavSelector.getVisibility() == View.VISIBLE) {
             transitionOutSubNavBar();
             adapter.setOverrideCount(1);
             adapter.notifyDataSetChanged();
@@ -203,31 +223,58 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     }
 
     private void transitionInSubNavBar() {
-        if (subNavSelector == null){
+        if (subNavSelector == null) {
             return;
         }
         subNavSelector.setVisibility(View.INVISIBLE);
         Views.runWhenLaidOut(subNavSelector, stateSafeExecutor.bind(() -> {
-            subNavSelector.setTranslationY(-subNavSelector.getMeasuredHeight());
-            subNavSelector.setVisibility(View.VISIBLE);
-            animatorFor(subNavSelector, getAnimatorContext())
-                    .translationY(0f)
-                    .start();
+            if (subNavSelector != null) {
+                subNavSelector.setTranslationY(-subNavSelector.getMeasuredHeight());
+                subNavSelector.setVisibility(View.VISIBLE);
+                animatorFor(subNavSelector, getAnimatorContext())
+                        .translationY(0f)
+                        .start();
+            }
         }));
     }
 
     private void transitionOutSubNavBar() {
-        if (subNavSelector == null){
+        if (subNavSelector == null) {
             return;
         }
         animatorFor(subNavSelector, getAnimatorContext())
                 .translationY(-subNavSelector.getMeasuredHeight())
                 .addOnAnimationCompleted(finished -> {
-                    if (finished) {
+                    if (finished && subNavSelector != null) {
                         subNavSelector.setVisibility(View.GONE);
                     }
                 })
                 .start();
     }
 
+    @Override
+    public void onRefresh() {
+        sleepSoundsPresenter.update();
+        devicesPresenter.update();
+        swipeRefreshLayout.setRefreshing(true);
+        for (int i = 0; i < adapter.getCount(); i++) {
+            SubFragment fragment = getSubFragment(i);
+            if (fragment != null) {
+                fragment.update();
+            }
+        }
+    }
+
+    public enum StateManager {
+        Unknown,
+        Exists,
+        Missing;
+
+        static StateManager createState(boolean has) {
+            if (has) {
+                return Exists;
+            }
+            return Missing;
+        }
+    }
 }
