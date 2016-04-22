@@ -72,6 +72,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.retry = retry;
     }
 
+    public boolean isOffline() {
+        return isOffline;
+    }
+
     public void bind(final @NonNull SleepSoundStatus status,
                      final @NonNull SleepSounds sleepSounds,
                      final @NonNull SleepDurations sleepDurations) {
@@ -79,7 +83,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.sleepSounds = sleepSounds;
         this.sleepDurations = sleepDurations;
 
-        if (sleepSounds.getState() != SleepSounds.State.OK) {
+        if (sleepSounds.getState() != SleepSounds.State.OK || isOffline) {
             this.itemCount = TEMP_PROBLEM_ITEM_COUNT;
         } else {
             this.itemCount = DESIRED_ITEM_COUNT;
