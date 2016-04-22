@@ -47,6 +47,8 @@ public abstract class SleepSoundsListAdapter extends RecyclerView.Adapter<SleepS
 
     }
 
+    public void destroy() {/** do nothing by default*/}
+
     public static abstract class BaseViewHolder extends RecyclerView.ViewHolder {
         protected final TextView title;
         protected final ImageView image;
@@ -103,6 +105,11 @@ public abstract class SleepSoundsListAdapter extends RecyclerView.Adapter<SleepS
 
         @Override
         public void finish() {
+            player.stopPlayback();
+        }
+
+        @Override
+        public void destroy() {
             player.stopPlayback();
             player.recycle();
         }
