@@ -96,7 +96,7 @@ public class SleepSoundsListActivity extends InjectionActivity implements SleepS
 
     @Override
     protected void onDestroy() {
-        adapter.finish();
+        adapter.destroy();
         adapter = null;
         super.onDestroy();
     }
