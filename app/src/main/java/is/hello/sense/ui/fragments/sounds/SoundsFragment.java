@@ -13,8 +13,8 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
-import is.hello.sense.api.model.v2.SleepSounds;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.api.model.v2.SleepSoundsState;
+import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.SubFragment;
@@ -30,31 +30,23 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 
 public class SoundsFragment extends BacksideTabFragment implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
-    private static final String ARG_HAS_SENSE = SoundsFragment.class.getName() + ".ARG_HAS_SENSE";
-    private static final String ARG_HAS_SOUNDS = SoundsFragment.class.getName() + ".ARG_HAS_SOUNDS";
+    private static final String ARG_HAS_NAVBAR = SoundsFragment.class.getName() + ".ARG_HAS_NAVBAR";
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
     private SelectorView subNavSelector;
     private ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
-    private StateManager senseState = StateManager.Unknown;
-    private StateManager soundsState = StateManager.Unknown;
 
     @Inject
     SleepSoundsPresenter sleepSoundsPresenter;
-
-    @Inject
-    DevicesPresenter devicesPresenter;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             sleepSoundsPresenter.update();
-            devicesPresenter.update();
-            bindAndSubscribe(sleepSoundsPresenter.sounds, this::bindSleepSounds, this::presentSoundsError);
-            bindAndSubscribe(devicesPresenter.devices, this::bindDevices, this::presentDevicesError);
+            bindAndSubscribe(sleepSoundsPresenter.sub, this::bind, this::presentError);
         }
         if (pager != null && adapter != null && pager.getChildCount() == adapter.getCount()) {
 
@@ -71,7 +63,6 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         presenterContainer.addPresenter(sleepSoundsPresenter);
-        presenterContainer.addPresenter(devicesPresenter);
     }
 
     @Nullable
@@ -102,15 +93,12 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         pager.setAdapter(adapter);
         pager.setFadePageTransformer(true);
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(ARG_HAS_SOUNDS)) {
-                soundsState = StateManager.createState(savedInstanceState.getBoolean(ARG_HAS_SOUNDS));
+            if (savedInstanceState.containsKey(ARG_HAS_NAVBAR)) {
+                refreshView(savedInstanceState.getBoolean(ARG_HAS_NAVBAR));
             }
-            if (savedInstanceState.containsKey(ARG_HAS_SENSE)) {
-                senseState = StateManager.createState(savedInstanceState.getBoolean(ARG_HAS_SENSE));
-            }
+        } else {
+            refreshView(false);
         }
-
-        refreshView();
         return view;
     }
 
@@ -126,12 +114,11 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (soundsState != StateManager.Unknown) {
-            outState.putBoolean(ARG_HAS_SOUNDS, soundsState == StateManager.Exists);
+        boolean isVisible = false;
+        if (subNavSelector.getVisibility() == View.VISIBLE) {
+            isVisible = true;
         }
-        if (senseState != StateManager.Unknown) {
-            outState.putBoolean(ARG_HAS_SENSE, senseState == StateManager.Exists);
-        }
+        outState.putBoolean(ARG_HAS_NAVBAR, isVisible);
 
     }
 
@@ -141,14 +128,12 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
         swipeRefreshLayout.setRefreshing(true);
         onUpdate();
-        refreshView();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         sleepSoundsPresenter.update();
-        devicesPresenter.update();
         subNavSelector.setSelectedIndex(pager.getCurrentItem());
     }
 
@@ -175,44 +160,34 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         return (SubFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
-    public void bindSleepSounds(@Nullable SleepSounds sleepSounds) {
-        soundsState = StateManager.createState(sleepSounds != null && sleepSounds.getSounds() != null);
-        refreshView();
+    public void bind(@NonNull SleepSoundsStateDevice stateDevice) {
+        final Devices devices = stateDevice.getDevices();
+        final SleepSoundsState state = stateDevice.getSleepSoundsState();
+        boolean show = false;
+        if (devices != null && state != null) {
+            if (devices.getSense() != null && state.getSounds() != null) {
+                show = true;
+            }
+        }
+        refreshView(show);
     }
 
-    public void bindDevices(@NonNull Devices devices) {
-        senseState = StateManager.createState(!(devices.getSense() == null));
-        refreshView();
-    }
-
-
-    public void presentSoundsError(@NonNull Throwable error) {
-        soundsState = StateManager.Missing;
-        refreshView();
-        //todo check again?
-    }
-
-    public void presentDevicesError(@NonNull Throwable error) {
-        senseState = StateManager.Missing;
-        refreshView();
+    public void presentError(@NonNull Throwable error) {
+        refreshView(false);
         //todo check again?
     }
 
 
-    private void refreshView() {
+    private void refreshView(boolean show) {
         if (subNavSelector == null || swipeRefreshLayout == null) {
             return;
         }
         swipeRefreshLayout.setRefreshing(false);
-        if (senseState == StateManager.Unknown || soundsState == StateManager.Unknown) {
-            return;
-        }
-        boolean hasSleepSounds = senseState == StateManager.Exists && soundsState == StateManager.Exists;
-        if (hasSleepSounds && subNavSelector.getVisibility() == View.GONE) {
+        if (show && subNavSelector.getVisibility() == View.GONE) {
             transitionInSubNavBar();
             adapter.setOverrideCount(-1);
             adapter.notifyDataSetChanged();
-        } else if (!hasSleepSounds && subNavSelector.getVisibility() == View.VISIBLE) {
+        } else if(!show && subNavSelector.getVisibility() == View.VISIBLE){
             transitionOutSubNavBar();
             adapter.setOverrideCount(1);
             adapter.notifyDataSetChanged();
@@ -255,7 +230,6 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onRefresh() {
         sleepSoundsPresenter.update();
-        devicesPresenter.update();
         swipeRefreshLayout.setRefreshing(true);
         for (int i = 0; i < adapter.getCount(); i++) {
             SubFragment fragment = getSubFragment(i);
@@ -265,16 +239,4 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         }
     }
 
-    public enum StateManager {
-        Unknown,
-        Exists,
-        Missing;
-
-        static StateManager createState(boolean has) {
-            if (has) {
-                return Exists;
-            }
-            return Missing;
-        }
-    }
 }
