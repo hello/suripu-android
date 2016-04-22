@@ -32,8 +32,10 @@ import is.hello.sense.api.model.v2.SleepSoundActionStop;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
+import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
@@ -57,14 +59,13 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private final static int maxBackOff = 6000; //ms
     private final static int offlineMinutes = 30; // minutes
 
-    @Inject
-    SleepSoundsStatePresenter sleepSoundsStatePresenter;
 
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
 
     @Inject
-    DevicesPresenter devicesPresenter;
+    SleepSoundsPresenter sleepSoundsPresenter;
+
 
     private ImageButton playButton;
     private FrameLayout buttonLayout;
@@ -208,10 +209,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, ignore -> {
-        });
-        bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentStateError);
         bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentStatusError);
+        bindAndSubscribe(sleepSoundsPresenter.sub, this::bind, ignore -> {
+        });
         update();
     }
 
@@ -259,6 +259,32 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         sleepSoundsStatePresenter.update();
         devicesPresenter.update();
         sleepSoundsStatusPresenter.update();
+        sleepSoundsPresenter.update();
+    }
+
+    private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
+        final Devices devices = stateDevice.getDevices();
+        final SleepSoundsState state = stateDevice.getSleepSoundsState();
+
+        // 1. Check if account has sense.
+        if (devices.getSense() == null) {
+            // Error. Should never happen (Parent fragment should be hiding this fragment if it does).
+            return;
+        }
+
+        // 2. Check if sense last updated in 30 minutes.
+        if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
+            // Sense Offline error.
+            return;
+        }
+
+        // 3. Check if sense has sounds.
+        if (state.getSounds() !=  null && state.getSounds().getState() == SleepSounds.State.OK){
+
+        }
+        // 4. Check if sense has state ok.
+        // 5. Error.
+
     }
 
     private void bindDevices(final @NonNull Devices devices) {
