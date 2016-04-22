@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 
@@ -39,7 +37,6 @@ import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.activities.SleepSoundsListActivity;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -268,6 +265,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         if (devices.getSense() != null) {
             if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
                 adapter.setOfflineTooLong(true);
+                playButton.setVisibility(View.GONE);
+                buttonLayout.setVisibility(View.GONE);
             } else {
                 adapter.setOfflineTooLong(false);
                 sleepSoundsStatePresenter.update();
@@ -278,8 +277,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private void bindState(final @NonNull SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
 
-        if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
-            buttonLayout.setVisibility(View.VISIBLE);
+        if (!adapter.isOffline() && state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             if (state.getSounds().getSounds().isEmpty()) {
                 playButton.setVisibility(View.GONE);
                 buttonLayout.setVisibility(View.GONE);
