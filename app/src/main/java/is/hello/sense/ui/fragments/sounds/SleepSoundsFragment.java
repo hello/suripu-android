@@ -274,10 +274,10 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         }
     }
 
-    private void bindState(final @NonNull SleepSoundsState state) {
+    private void bindState(final @Nullable SleepSoundsState state) {
         progressBar.setVisibility(View.GONE);
 
-        if (!adapter.isOffline() && state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
+        if (state != null && !adapter.isOffline() && state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             if (state.getSounds().getSounds().isEmpty()) {
                 playButton.setVisibility(View.GONE);
                 buttonLayout.setVisibility(View.GONE);
@@ -290,7 +290,10 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             playButton.setVisibility(View.GONE);
             buttonLayout.setVisibility(View.GONE);
         }
-        adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
+        if (state != null) {
+            // if state is null, this fragment shouldn't be visible.
+            adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
+        }
 
     }
 
@@ -301,7 +304,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
-                } else if ( System.currentTimeMillis()- timeSent > 30000) {
+                } else if (System.currentTimeMillis() - timeSent > 30000) {
                     presentCommandError(null);
                     displayStopButton();
                     userWants = UserWants.NONE;
@@ -309,7 +312,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             } else {
                 if (userWants != UserWants.PLAY) {
                     displayPlayButton();
-                } else if ( System.currentTimeMillis() -timeSent > 30000) {
+                } else if (System.currentTimeMillis() - timeSent > 30000) {
                     presentCommandError(null);
                     displayPlayButton();
                 }

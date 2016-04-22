@@ -175,8 +175,8 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
         return (SubFragment) getChildFragmentManager().findFragmentByTag(tag);
     }
 
-    public void bindSleepSounds(@NonNull SleepSounds sleepSounds) {
-        soundsState = StateManager.createState(sleepSounds.getSounds() != null);
+    public void bindSleepSounds(@Nullable SleepSounds sleepSounds) {
+        soundsState = StateManager.createState(sleepSounds != null && sleepSounds.getSounds() != null);
         refreshView();
     }
 
