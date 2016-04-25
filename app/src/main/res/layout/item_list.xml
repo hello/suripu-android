@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="@dimen/gap_outer"
-        android:paddingRight="@dimen/gap_outer"
-        android:paddingTop="@dimen/gap_medium"
-        android:paddingBottom="@dimen/gap_medium"
         android:layout_toStartOf="@+id/item_list_play_holder"
         android:drawablePadding="@dimen/gap_large"
         android:drawableStart="@drawable/radio_off"
-        android:gravity="center_vertical"/>
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/gap_medium"
+        android:paddingLeft="@dimen/gap_outer"
+        android:paddingRight="@dimen/gap_outer"
+        android:paddingTop="@dimen/gap_medium"/>
 
     <FrameLayout
         android:id="@+id/item_list_play_holder"
@@ -28,7 +28,7 @@
         android:layout_centerVertical="true"
         android:clickable="true">
 
-        <ImageView
+        <is.hello.sense.ui.widget.SpinnerImageView
             android:id="@+id/item_list_play_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

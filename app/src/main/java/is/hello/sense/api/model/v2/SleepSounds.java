@@ -5,12 +5,14 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.ui.activities.ListActivity;
 
-public class SleepSounds extends ApiResponse {
+public class SleepSounds extends ApiResponse implements ListActivity.ListObject {
 
     @SerializedName("sounds")
     private List<Sound> sounds;
@@ -48,6 +50,11 @@ public class SleepSounds extends ApiResponse {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<Sound> getListOptions() {
+        return sounds;
     }
 
     public enum State implements Enums.FromString {
