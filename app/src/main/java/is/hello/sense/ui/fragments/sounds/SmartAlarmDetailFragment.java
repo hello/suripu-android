@@ -196,15 +196,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         bindAndSubscribe(smartAlarmPresenter.availableAlarmSounds(),
                          sounds -> {
-                             if (alarm.getSound() == null && !sounds.isEmpty()) {
-                                 alarm.setAlarmTones(sounds);
-                                 final Alarm.Sound sound = sounds.get(0);
-                                 alarm.setSound(sound);
-                                 toneName.setText(sound.name);
-
-                                 if (getDetailActivity().skipUI()) {
-                                     saveAlarm();
+                             if (!sounds.isEmpty()) {
+                                 if (alarm.getSound() == null) {
+                                     final Alarm.Sound sound = sounds.get(0);
+                                     alarm.setSound(sound);
+                                     toneName.setText(sound.name);
+                                     if (getDetailActivity().skipUI()) {
+                                         saveAlarm();
+                                     }
                                  }
+                                 alarm.setAlarmTones(sounds);
                              }
                              if (wantsTone) {
                                  selectTone();
