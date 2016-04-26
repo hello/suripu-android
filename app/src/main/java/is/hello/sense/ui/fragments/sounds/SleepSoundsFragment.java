@@ -36,8 +36,8 @@ import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
+import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
-import is.hello.sense.ui.activities.SleepSoundsListActivity;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -56,7 +56,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private final static int backOffIncrements = 1000; // ms
     private final static int maxBackOff = 6000; //ms
     private final static int offlineMinutes = 30; // minutes
-
+    private static final int SOUNDS_REQUEST_CODE = 123;
+    private static final int DURATION_REQUEST_CODE = 231;
+    private static final int VOLUME_REQUEST_CODE = 312;
 
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
@@ -232,14 +234,14 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            final int value = data.getIntExtra(SleepSoundsListActivity.VALUE_ID, -1);
+            final int value = data.getIntExtra(ListActivity.VALUE_ID, -1);
             if (value == -1) {
                 return;
             }
             final String constant;
-            if (requestCode == SleepSoundsListActivity.SOUNDS_REQUEST_CODE) {
+            if (requestCode == SOUNDS_REQUEST_CODE) {
                 constant = Constants.SLEEP_SOUNDS_SOUND_ID;
-            } else if (requestCode == SleepSoundsListActivity.DURATION_REQUEST_CODE) {
+            } else if (requestCode == DURATION_REQUEST_CODE) {
                 constant = Constants.SLEEP_SOUNDS_DURATION_ID;
             } else {
                 constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
@@ -383,29 +385,36 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public void onSoundClick(final int currentSound, final @NonNull SleepSounds sleepSounds) {
-        SleepSoundsListActivity.startActivityForResult(
+        ListActivity.startActivityForResult(
                 this,
+                SOUNDS_REQUEST_CODE,
+                R.string.list_activity_sound_title,
                 currentSound,
-                sleepSounds,
-                SleepSoundsListActivity.ListType.SLEEP_SOUNDS);
+                true,
+                sleepSounds);
     }
 
     @Override
     public void onDurationClick(final int currentDuration, final @NonNull SleepDurations durations) {
-        SleepSoundsListActivity.startActivityForResult(
+        ListActivity.startActivityForResult(
                 this,
+                DURATION_REQUEST_CODE,
+                R.string.list_activity_duration_title,
                 currentDuration,
-                durations,
-                SleepSoundsListActivity.ListType.SLEEP_DURATIONS);
+                false,
+                durations);
     }
 
     @Override
     public void onVolumeClick(final int currentVolume, @NonNull SleepSoundStatus volumes) {
-        SleepSoundsListActivity.startActivityForResult(
+
+        ListActivity.startActivityForResult(
                 this,
+                VOLUME_REQUEST_CODE,
+                R.string.list_activity_volume_title,
                 currentVolume,
-                volumes,
-                SleepSoundsListActivity.ListType.SLEEP_VOLUME);
+                false,
+                volumes);
     }
 
     private class StatusPollingHelper {

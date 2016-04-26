@@ -6,14 +6,13 @@ import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.ui.activities.ListActivity;
 
-/**
- * Created by jimmy on 4/8/16.
- */
-public class SleepSoundStatus extends ApiResponse {
+public class SleepSoundStatus extends ApiResponse implements ListActivity.ListObject {
 
     @SerializedName("playing")
     private Boolean playing;
@@ -55,7 +54,12 @@ public class SleepSoundStatus extends ApiResponse {
         return volumes;
     }
 
-    public enum Volume implements Enums.FromString {
+    @Override
+    public List<? extends ListActivity.ListItem> getListOptions() {
+        return getVolumes();
+    }
+
+    public enum Volume implements Enums.FromString, ListActivity.ListItem {
         High(100),
         Medium(50),
         Low(25),
@@ -66,6 +70,7 @@ public class SleepSoundStatus extends ApiResponse {
         Volume(int volume) {
             this.volume = volume;
         }
+
 
         public int getVolume() {
             return volume;
@@ -85,6 +90,21 @@ public class SleepSoundStatus extends ApiResponse {
                 }
             }
             return None;
+        }
+
+        @Override
+        public int getId() {
+            return getVolume();
+        }
+
+        @Override
+        public String getName() {
+            return this.toString();
+        }
+
+        @Override
+        public String getPreviewUrl() {
+            return null;
         }
     }
 }
