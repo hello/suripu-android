@@ -121,8 +121,10 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.stopPlayback();
-        player.recycle();
+        if (player != null) {
+            player.stopPlayback();
+            player.recycle();
+        }
         listAdapter = null;
     }
 
