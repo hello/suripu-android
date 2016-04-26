@@ -302,12 +302,12 @@ public class Alarm extends ApiResponse {
     public static class AlarmTones implements ListActivity.ListObject{
         private final ArrayList<Sound> sounds;
 
-        public AlarmTones(ArrayList<Alarm.Sound> sounds) {
+        public AlarmTones(final @NonNull ArrayList<Alarm.Sound> sounds) {
             this.sounds = sounds;
         }
 
-        public Alarm.Sound getSoundWithId(int id) {
-            for (Alarm.Sound sound : sounds) {
+        public Alarm.Sound getSoundWithId(final int id) {
+            for (final Alarm.Sound sound : sounds) {
                 if (sound.getId() == id) {
                     return sound;
                 }

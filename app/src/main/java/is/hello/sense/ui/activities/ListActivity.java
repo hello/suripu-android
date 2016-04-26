@@ -65,11 +65,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         if (intent == null) {
             finish();
             return;
@@ -113,7 +113,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         setResultAndFinish();
         return true;
     }
@@ -129,7 +129,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final @NonNull Bundle outState) {
         outState.putInt(ARG_SELECTED_ID, selectedId);
     }
 
@@ -139,7 +139,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     @Override
-    public void onPlaybackStarted(@NonNull Player player) {
+    public void onPlaybackStarted(final @NonNull Player player) {
         if (requestedSoundId == selectedId) {
             playerStatus = PlayerStatus.Playing;
             notifyAdapter();
@@ -149,13 +149,13 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     @Override
-    public void onPlaybackStopped(@NonNull Player player, boolean finished) {
+    public void onPlaybackStopped(final @NonNull Player player, final boolean finished) {
         playerStatus = PlayerStatus.Idle;
         notifyAdapter();
     }
 
     @Override
-    public void onPlaybackError(@NonNull Player player, @NonNull Throwable error) {
+    public void onPlaybackError(final @NonNull Player player, final @NonNull Throwable error) {
         playerStatus = PlayerStatus.Idle;
         notifyAdapter();
     }
@@ -183,7 +183,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         @Override
-        public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public BaseViewHolder onCreateViewHolder(final @NonNull ViewGroup parent, final int viewType) {
             if (wantsPlayer) {
                 return new PlayerViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
             }
@@ -192,8 +192,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         @Override
-        public void onBindViewHolder(BaseViewHolder holder, int position) {
-            ListItem item = listObject.getListOptions().get(position);
+        public void onBindViewHolder(final @NonNull BaseViewHolder holder, final int position) {
+            final ListItem item = listObject.getListOptions().get(position);
             holder.bind(item);
         }
 
@@ -228,8 +228,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             return title.getText().toString();
         }
 
-        public void bind(ListItem item) {
-            int itemId = item.getId();
+        public void bind(final @NonNull ListItem item) {
+            final int itemId = item.getId();
             title.setText(item.getName());
             if (itemId == selectedId) {
                 selectedState();
@@ -266,8 +266,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         @Override
-        public void bind(ListItem item) {
-            int itemId = item.getId();
+        public void bind(final @NonNull ListItem item) {
+            final int itemId = item.getId();
             title.setText(item.getName());
             if (itemId == selectedId) {
                 image.setVisibility(View.VISIBLE);

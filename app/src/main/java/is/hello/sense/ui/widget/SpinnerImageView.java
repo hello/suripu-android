@@ -25,11 +25,11 @@ public class SpinnerImageView extends ImageView {
         this(context, null);
     }
 
-    public SpinnerImageView(Context context, AttributeSet attrs) {
+    public SpinnerImageView(final @NonNull Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SpinnerImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SpinnerImageView(final @NonNull Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
