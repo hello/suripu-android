@@ -50,10 +50,7 @@ public class SpinnerImageView extends ImageView {
         spinnerInterval = speed;
     }
 
-    public void setDeltaRotation(int rotation) {
-        if (rotation < 0) {
-            rotation = 0;
-        }
+    public void setDeltaRotation(final int rotation) {
         deltaRotation = rotation;
     }
 
