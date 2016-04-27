@@ -4,9 +4,9 @@ package is.hello.sense.api.model.v2;
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.util.ListObject;
 
-public class Sound extends ApiResponse implements ListActivity.ListItem{
+public class Sound extends ApiResponse implements ListObject.ListItem {
     @SerializedName("id")
     private int id;
 

@@ -14,12 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.Serializable;
-import java.util.List;
-
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.widget.SpinnerImageView;
+import is.hello.sense.util.ListObject;
+import is.hello.sense.util.ListObject.ListItem;
 import is.hello.sense.util.Player;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
@@ -330,15 +329,5 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
 
-    public interface ListObject extends Serializable {
-        List<? extends ListItem> getListOptions();
-    }
 
-    public interface ListItem {
-        String getName();
-
-        int getId();
-
-        String getPreviewUrl();
-    }
 }

@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,10 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,6 +48,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.GenericListObject;
 import rx.Observable;
 
 
@@ -142,7 +146,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         final ImageButton smartHelp = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
         final Drawable smartHelpDrawable = smartHelp.getDrawable().mutate();
-        final int accent = getResources().getColor(R.color.light_accent);
+        final int accent = ContextCompat.getColor(getActivity(), R.color.light_accent);
         final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
         Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
         smartHelp.setImageDrawable(smartHelpDrawable);
@@ -304,11 +308,26 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void selectRepeatDays(@NonNull View sender) {
-        final AlarmRepeatDialogFragment dialogFragment =
-                AlarmRepeatDialogFragment.newInstance(alarm.getDaysOfWeek());
-        dialogFragment.setTargetFragment(this, REPEAT_REQUEST_CODE);
-        dialogFragment.showAllowingStateLoss(getFragmentManager(),
-                                             AlarmRepeatDialogFragment.TAG);
+
+
+        final int firstCalendarDayOfWeek = Calendar.getInstance().getFirstDayOfWeek();
+        final int firstJodaTimeDayOfWeek = DateFormatter.calendarDayToJodaTimeDay(firstCalendarDayOfWeek);
+        final List<Integer> daysOfWeek = DateFormatter.getDaysOfWeek(firstJodaTimeDayOfWeek);
+        final GenericListObject.GenericItemConverter converter = new GenericListObject.GenericItemConverter() {
+            @Override
+            public String getNameFor(int value) {
+                return new DateTime().withDayOfWeek(value).toString("EEEE");
+            }
+        };
+        ListActivity.startActivityForResult(
+                this,
+                SOUND_REQUEST_CODE,
+                R.string.title_alarm_tone,
+                0,
+                false,
+                new GenericListObject(converter,
+                                      daysOfWeek,
+                                      true));
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {

@@ -21,10 +21,9 @@ import java.util.UUID;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.ui.activities.ListActivity;
-import is.hello.sense.ui.activities.ListActivity.ListItem;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.DateFormatter.JodaWeekDay;
+import is.hello.sense.util.ListObject;
 
 public class Alarm extends ApiResponse {
     public static final int TOO_SOON_MINUTES = 2;
@@ -299,7 +298,7 @@ public class Alarm extends ApiResponse {
                 '}';
     }
 
-    public static class AlarmTones implements ListActivity.ListObject{
+    public static class AlarmTones implements ListObject {
         private final ArrayList<Sound> sounds;
 
         public AlarmTones(final @NonNull ArrayList<Alarm.Sound> sounds) {
@@ -316,13 +315,17 @@ public class Alarm extends ApiResponse {
         }
 
         @Override
-        public List<? extends ListActivity.ListItem> getListOptions() {
+        public List<? extends ListItem> getListOptions() {
             return sounds;
         }
 
+        @Override
+        public boolean multipleOptions() {
+            return false;
+        }
     }
 
-    public static class Sound extends ApiResponse implements ListItem {
+    public static class Sound extends ApiResponse implements ListObject.ListItem {
         @SerializedName("id")
         public final long id;
 
