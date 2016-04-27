@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Selection;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -259,8 +257,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             this.image = (SpinnerImageView) view.findViewById(R.id.item_list_play_image);
 
             if (selectionTracker.isMultiple) {
-                this.onImage = R.drawable.radio_on;
-                this.offImage = R.drawable.radio_off;
+                this.onImage = R.drawable.holo_check_on;
+                this.offImage = R.drawable.holo_check_off;
             } else {
                 this.onImage = R.drawable.radio_on;
                 this.offImage = R.drawable.radio_off;

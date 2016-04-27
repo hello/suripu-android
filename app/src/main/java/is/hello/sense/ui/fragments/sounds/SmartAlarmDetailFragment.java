@@ -22,7 +22,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -39,7 +38,6 @@ import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.AlarmRepeatDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
@@ -257,7 +255,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             alarm.setDaysOfWeek(selectedDays);
             repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
-
             markDirty();
         }
     }
@@ -325,8 +322,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         list.addAll(alarm.getDaysOfWeek());
         ListActivity.startActivityForResult(
                 this,
-                SOUND_REQUEST_CODE,
-                R.string.title_alarm_tone,
+                REPEAT_REQUEST_CODE,
+                R.string.title_alarm_repeat,
                 list,
                 new GenericListObject(converter, daysOfWeek));
     }
