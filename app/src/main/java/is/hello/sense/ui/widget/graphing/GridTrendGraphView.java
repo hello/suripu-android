@@ -280,6 +280,9 @@ public class GridTrendGraphView extends TrendGraphView {
          */
         private void updateCellController() {
             cellController = new GridCellController();
+            if (graph == null || graph.getSections() == null){
+                return;
+            }
 
             if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
                 List<Graph> graphs = graph.convertToQuarterGraphs();
