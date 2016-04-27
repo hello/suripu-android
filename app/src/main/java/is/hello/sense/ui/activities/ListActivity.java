@@ -5,14 +5,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Selection;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -31,17 +35,21 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private static final String ARG_TITLE = ListActivity.class.getName() + ".ARG_TITLE";
     private static final String ARG_REQUEST_CODE = ListActivity.class.getName() + ".ARG_REQUEST_CODE";
     private static final String ARG_SELECTED_ID = ListActivity.class.getName() + ".ARG_SELECTED_ID";
+    private static final String ARG_SELECTED_IDS = ListActivity.class.getName() + ".ARG_SELECTED_IDS";
     private static final String ARG_WANTS_PLAYER = ListActivity.class.getName() + ".ARG_WANTS_PLAYER";
+    private static final String ARG_MULTIPLE_OPTIONS = ListActivity.class.getName() + ".ARG_MULTIPLE_OPTIONS";
     private static final String ARG_LIST_OBJECT = ListActivity.class.getName() + ".ARG_LIST_OBJECT";
     public static final String VALUE_ID = ListActivity.class.getName() + ".VALUE_ID";
 
     private ListAdapter listAdapter;
-    private int selectedId = -1;
     private int requestedSoundId = NONE;
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
+    private SelectionTracker selectionTracker;
 
     /**
+     * Display with radios.
+     *
      * @param fragment    Calling fragment for reference.
      * @param requestCode Request code on finish.
      * @param title       Title to display.
@@ -52,14 +60,38 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               final int requestCode,
                                               final @StringRes int title,
                                               final int selectedId,
-                                              final boolean wantsPlayer,
-                                              final @NonNull ListObject listObject) {
+                                              final @NonNull ListObject listObject,
+                                              final boolean wantsPlayer) {
         Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
         intent.putExtra(ARG_TITLE, title);
         intent.putExtra(ARG_SELECTED_ID, selectedId);
         intent.putExtra(ARG_WANTS_PLAYER, wantsPlayer);
         intent.putExtra(ARG_LIST_OBJECT, listObject);
+        intent.putExtra(ARG_MULTIPLE_OPTIONS, false);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    /**
+     * Display with checkboxes. Not supporting player. Yet
+     *
+     * @param fragment    Calling fragment for reference.
+     * @param requestCode Request code on finish.
+     * @param title       Title to display.
+     * @param selectedIds Initial ID values to select.
+     */
+    public static void startActivityForResult(final @NonNull Fragment fragment,
+                                              final int requestCode,
+                                              final @StringRes int title,
+                                              final @NonNull ArrayList<Integer> selectedIds,
+                                              final @NonNull ListObject listObject) {
+        Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
+        intent.putExtra(ARG_REQUEST_CODE, requestCode);
+        intent.putExtra(ARG_TITLE, title);
+        intent.putIntegerArrayListExtra(ARG_SELECTED_IDS, selectedIds);
+        intent.putExtra(ARG_WANTS_PLAYER, false);
+        intent.putExtra(ARG_LIST_OBJECT, listObject);
+        intent.putExtra(ARG_MULTIPLE_OPTIONS, true);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -75,18 +107,23 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         final @StringRes int title = intent.getIntExtra(ARG_TITLE, -1);
-        selectedId = intent.getIntExtra(ARG_SELECTED_ID, -1);
         final ListObject listObject = (ListObject) intent.getSerializableExtra(ARG_LIST_OBJECT);
         final boolean wantsPlayer = intent.getBooleanExtra(ARG_WANTS_PLAYER, false);
+        final boolean multipleOptions = intent.getBooleanExtra(ARG_MULTIPLE_OPTIONS, false);
 
+        selectionTracker = new SelectionTracker(multipleOptions);
+        if (multipleOptions) {
+            selectionTracker.selectionIds = intent.getIntegerArrayListExtra(ARG_SELECTED_IDS);
+        } else {
+            selectionTracker.selectionId = intent.getIntExtra(ARG_SELECTED_ID, -1);
+        }
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ARG_SELECTED_ID)) {
-                selectedId = savedInstanceState.getInt(ARG_SELECTED_ID);
+                selectionTracker.selectionId = savedInstanceState.getInt(ARG_SELECTED_ID);
             }
-        }
-        if (title == -1 || selectedId == -1 || listObject == null) {
-            finish();
-            return;
+            if (savedInstanceState.containsKey(ARG_SELECTED_IDS)) {
+                selectionTracker.selectionIds = savedInstanceState.getIntegerArrayList(ARG_SELECTED_ID);
+            }
         }
 
         if (wantsPlayer) {
@@ -125,11 +162,12 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             player.recycle();
         }
         listAdapter = null;
+        selectionTracker = null;
     }
 
     @Override
     protected void onSaveInstanceState(final @NonNull Bundle outState) {
-        outState.putInt(ARG_SELECTED_ID, selectedId);
+        selectionTracker.writeSaveInstanceState(outState);
     }
 
 
@@ -139,7 +177,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
     @Override
     public void onPlaybackStarted(final @NonNull Player player) {
-        if (requestedSoundId == selectedId) {
+        if (selectionTracker.contains(requestedSoundId)) {
             playerStatus = PlayerStatus.Playing;
             notifyAdapter();
         } else {
@@ -161,7 +199,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
     private void setResultAndFinish() {
         final Intent intent = new Intent();
-        intent.putExtra(VALUE_ID, selectedId);
+        selectionTracker.writeValue(intent);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -192,13 +230,13 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         @Override
         public void onBindViewHolder(final @NonNull BaseViewHolder holder, final int position) {
-            final ListItem item = listObject.getListOptions().get(position);
+            final ListItem item = listObject.getListItems().get(position);
             holder.bind(item);
         }
 
         @Override
         public int getItemCount() {
-            return listObject.getListOptions().size();
+            return listObject.getListItems().size();
         }
     }
 
@@ -207,20 +245,35 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         protected final SpinnerImageView image;
         protected final View view;
 
+        @DrawableRes
+        protected final int onImage;
+
+        @DrawableRes
+        protected final int offImage;
+
+
         BaseViewHolder(final @NonNull View view) {
             super(view);
             this.view = view;
             this.title = (TextView) view.findViewById(R.id.item_list_name);
             this.image = (SpinnerImageView) view.findViewById(R.id.item_list_play_image);
 
+            if (selectionTracker.isMultiple) {
+                this.onImage = R.drawable.radio_on;
+                this.offImage = R.drawable.radio_off;
+            } else {
+                this.onImage = R.drawable.radio_on;
+                this.offImage = R.drawable.radio_off;
+            }
+
         }
 
         protected void selectedState() {
-            title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_on, 0, 0, 0);
+            title.setCompoundDrawablesWithIntrinsicBounds(onImage, 0, 0, 0);
         }
 
         public void unselectedState() {
-            title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_off, 0, 0, 0);
+            title.setCompoundDrawablesWithIntrinsicBounds(offImage, 0, 0, 0);
         }
 
         public String getTitle() {
@@ -230,19 +283,21 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         public void bind(final @NonNull ListItem item) {
             final int itemId = item.getId();
             title.setText(item.getName());
-            if (itemId == selectedId) {
+            if (selectionTracker.contains(itemId)) {
                 selectedState();
             } else {
                 unselectedState();
             }
 
             title.setOnClickListener(v -> {
-                if (selectedId == itemId) {
+                if (selectionTracker.contains(itemId) && !selectionTracker.isMultiple) {
                     return;
                 }
-                selectedId = itemId;
+                selectionTracker.trackSelection(itemId);
                 notifyAdapter();
-                setResultAndFinish();
+                if (!selectionTracker.isMultiple) {
+                    setResultAndFinish();
+                }
             });
         }
     }
@@ -258,7 +313,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         @DrawableRes
         private final static int stopIcon = R.drawable.sound_preview_stop;
 
-
         PlayerViewHolder(@NonNull View view) {
             super(view);
             image.stopSpinning();
@@ -268,7 +322,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         public void bind(final @NonNull ListItem item) {
             final int itemId = item.getId();
             title.setText(item.getName());
-            if (itemId == selectedId) {
+            if (selectionTracker.contains(itemId)) {
                 image.setVisibility(View.VISIBLE);
                 selectedState();
                 switch (playerStatus) {
@@ -282,15 +336,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 unselectedState();
                 image.setVisibility(View.INVISIBLE);
                 image.stopSpinning();
-
             }
 
             title.setOnClickListener(v -> {
-                if (selectedId == itemId) {
+                if (selectionTracker.contains(itemId)) {
                     return;
                 }
                 player.stopPlayback();
-                selectedId = itemId;
+                selectionTracker.trackSelection(itemId);
                 notifyAdapter();
             });
         }
@@ -328,6 +381,51 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
     }
 
+    private class SelectionTracker {
+        public boolean isMultiple = false;
+        public ArrayList<Integer> selectionIds = new ArrayList<>();
+        public int selectionId = 0;
 
+        public SelectionTracker(boolean isMultiple) {
+            this.isMultiple = isMultiple;
+        }
+
+        public boolean contains(final int id) {
+            if (isMultiple) {
+                return selectionIds.contains(id);
+            }
+            return id == selectionId;
+        }
+
+        public Bundle writeSaveInstanceState(final @NonNull Bundle bundle) {
+            if (isMultiple) {
+                bundle.putIntegerArrayList(ARG_SELECTED_IDS, selectionIds);
+            } else {
+                bundle.putInt(ARG_SELECTED_ID, selectionId);
+            }
+            return bundle;
+        }
+
+        public Intent writeValue(final @NonNull Intent intent) {
+            if (isMultiple) {
+                intent.putExtra(VALUE_ID, selectionIds);
+            } else {
+                intent.putExtra(VALUE_ID, selectionId);
+            }
+            return intent;
+        }
+
+        public void trackSelection(int id) {
+            if (isMultiple) {
+                if (!selectionIds.contains(id)) {
+                    selectionIds.add(id);
+                } else {
+                    selectionIds.remove((Integer) id);
+                }
+            } else {
+                selectionId = id;
+            }
+        }
+    }
 
 }

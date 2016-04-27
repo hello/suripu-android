@@ -43,12 +43,7 @@ public class SleepDurations extends ApiResponse implements ListObject {
     }
 
     @Override
-    public List<? extends ListItem> getListOptions() {
+    public List<? extends ListItem> getListItems() {
         return this.durations;
-    }
-
-    @Override
-    public boolean multipleOptions() {
-        return false;
     }
 }

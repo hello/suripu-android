@@ -315,13 +315,8 @@ public class Alarm extends ApiResponse {
         }
 
         @Override
-        public List<? extends ListItem> getListOptions() {
+        public List<? extends ListItem> getListItems() {
             return sounds;
-        }
-
-        @Override
-        public boolean multipleOptions() {
-            return false;
         }
     }
 

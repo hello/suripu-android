@@ -6,26 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenericListObject implements ListObject {
-
-    private boolean multipleOptions = false;
     private ArrayList<ListItem> items = new ArrayList<>();
 
-    public GenericListObject(final @NonNull GenericItemConverter itemConverter, final @NonNull List<Integer> set, boolean multipleOptions) {
-        this.multipleOptions = multipleOptions;
+    public GenericListObject(final @NonNull GenericItemConverter itemConverter, final @NonNull List<Integer> set) {
         for (Integer integer : set) {
             items.add(new GenericListItem(itemConverter.getNameFor(integer), integer));
         }
     }
 
     @Override
-    public List<? extends ListItem> getListOptions() {
+    public List<? extends ListItem> getListItems() {
         return items;
     }
 
-    @Override
-    public boolean multipleOptions() {
-        return multipleOptions;
-    }
 
     public class GenericListItem implements ListItem {
         private final int value;

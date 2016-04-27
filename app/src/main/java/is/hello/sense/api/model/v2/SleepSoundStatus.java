@@ -55,13 +55,8 @@ public class SleepSoundStatus extends ApiResponse implements ListObject {
     }
 
     @Override
-    public List<? extends ListItem> getListOptions() {
+    public List<? extends ListItem> getListItems() {
         return getVolumes();
-    }
-
-    @Override
-    public boolean multipleOptions() {
-        return false;
     }
 
     public enum Volume implements Enums.FromString, ListItem {

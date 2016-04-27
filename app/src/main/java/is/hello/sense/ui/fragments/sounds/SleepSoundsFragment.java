@@ -390,8 +390,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                 SOUNDS_REQUEST_CODE,
                 R.string.list_activity_sound_title,
                 currentSound,
-                true,
-                sleepSounds);
+                sleepSounds,
+                true);
     }
 
     @Override
@@ -401,8 +401,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                 DURATION_REQUEST_CODE,
                 R.string.list_activity_duration_title,
                 currentDuration,
-                false,
-                durations);
+                durations,
+                false);
     }
 
     @Override
@@ -413,8 +413,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                 VOLUME_REQUEST_CODE,
                 R.string.list_activity_volume_title,
                 currentVolume,
-                false,
-                volumes);
+                volumes,
+                false);
     }
 
     private class StatusPollingHelper {

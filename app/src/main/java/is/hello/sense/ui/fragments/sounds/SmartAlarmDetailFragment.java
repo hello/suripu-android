@@ -21,6 +21,8 @@ import com.segment.analytics.Properties;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -252,7 +254,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             }
             markDirty();
         } else if (requestCode == REPEAT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            final List<Integer> selectedDays = data.getIntegerArrayListExtra(AlarmRepeatDialogFragment.RESULT_DAYS);
+            final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             alarm.setDaysOfWeek(selectedDays);
             repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
 
@@ -302,8 +304,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 SOUND_REQUEST_CODE,
                 R.string.title_alarm_tone,
                 alarm.getSound().getId(),
-                true,
-                alarm.getAlarmTones());
+                alarm.getAlarmTones(),
+                true);
         wantsTone = false;
     }
 
@@ -319,15 +321,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 return new DateTime().withDayOfWeek(value).toString("EEEE");
             }
         };
+        ArrayList<Integer> list = new ArrayList<>();
+        list.addAll(alarm.getDaysOfWeek());
         ListActivity.startActivityForResult(
                 this,
                 SOUND_REQUEST_CODE,
                 R.string.title_alarm_tone,
-                0,
-                false,
-                new GenericListObject(converter,
-                                      daysOfWeek,
-                                      true));
+                list,
+                new GenericListObject(converter, daysOfWeek));
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {
