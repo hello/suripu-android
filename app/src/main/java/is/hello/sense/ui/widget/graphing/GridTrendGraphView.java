@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
@@ -370,6 +371,7 @@ public class GridTrendGraphView extends TrendGraphView {
 
         private class QuarterCellDrawable extends GridCellDrawable {
             private final int graphNumber;
+            private final float height;
 
             public QuarterCellDrawable(int graphNumber, int sectionIndex, int index, @Nullable Float value) {
                 super(sectionIndex, index, value);
@@ -430,12 +432,10 @@ public class GridTrendGraphView extends TrendGraphView {
             protected final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             protected boolean highlight = false;
             protected final boolean shouldDraw;
-            protected float height;
 
             public GridCellDrawable(final int sectionIndex, final int index, @Nullable final Float value) {
                 this.sectionIndex = sectionIndex;
                 this.left = index * circleSize + padding + (circleSize - padding - padding) / 2;
-                this.height = ((graph.getSections().size() - sectionIndex) * (padding + circleSize)) + radius;
                 if (value != null) {
                     if (value < 0f) {
                         textValue = context.getString(R.string.missing_data_placeholder);
@@ -464,7 +464,7 @@ public class GridTrendGraphView extends TrendGraphView {
                 if (!shouldDraw) {
                     return;
                 }
-                float top = canvas.getHeight() - height;
+                float top = canvas.getHeight() - ((graph.getSections().size() - sectionIndex) * (padding + circleSize)) + radius;
                 if (top < reservedTopSpace + radius) {
                     top = reservedTopSpace + radius;
                 }
