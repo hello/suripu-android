@@ -43,7 +43,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private int requestedSoundId = NONE;
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
-    private SelectionTracker selectionTracker;
+    private SelectionTracker selectionTracker = new SelectionTracker();
 
     /**
      * Display with radios.
@@ -109,18 +109,18 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         final boolean wantsPlayer = intent.getBooleanExtra(ARG_WANTS_PLAYER, false);
         final boolean multipleOptions = intent.getBooleanExtra(ARG_MULTIPLE_OPTIONS, false);
 
-        selectionTracker = new SelectionTracker(multipleOptions);
+        selectionTracker.setMultiple(multipleOptions);
         if (multipleOptions) {
-            selectionTracker.selectionIds = intent.getIntegerArrayListExtra(ARG_SELECTED_IDS);
+            selectionTracker.trackSelection(intent.getIntegerArrayListExtra(ARG_SELECTED_IDS));
         } else {
-            selectionTracker.selectionId = intent.getIntExtra(ARG_SELECTED_ID, -1);
+            selectionTracker.trackSelection(intent.getIntExtra(ARG_SELECTED_ID, -1));
         }
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ARG_SELECTED_ID)) {
-                selectionTracker.selectionId = savedInstanceState.getInt(ARG_SELECTED_ID);
+                selectionTracker.trackSelection(savedInstanceState.getInt(ARG_SELECTED_ID));
             }
             if (savedInstanceState.containsKey(ARG_SELECTED_IDS)) {
-                selectionTracker.selectionIds = savedInstanceState.getIntegerArrayList(ARG_SELECTED_ID);
+                selectionTracker.trackSelection(savedInstanceState.getIntegerArrayList(ARG_SELECTED_IDS));
             }
         }
 
@@ -380,11 +380,19 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     private class SelectionTracker {
-        public boolean isMultiple = false;
-        public ArrayList<Integer> selectionIds = new ArrayList<>();
-        public int selectionId = 0;
+        private boolean isMultiple = false;
+        private boolean isSet = false;
+        private final ArrayList<Integer> selectionIds = new ArrayList<>();
 
-        public SelectionTracker(boolean isMultiple) {
+        public SelectionTracker() {
+            selectionIds.add(NONE);
+        }
+
+        private void setMultiple(boolean isMultiple) {
+            if (isSet) {
+                return;
+            }
+            isSet = true;
             this.isMultiple = isMultiple;
         }
 
@@ -392,14 +400,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             if (isMultiple) {
                 return selectionIds.contains(id);
             }
-            return id == selectionId;
+            return id == selectionIds.get(0);
         }
 
         public Bundle writeSaveInstanceState(final @NonNull Bundle bundle) {
             if (isMultiple) {
                 bundle.putIntegerArrayList(ARG_SELECTED_IDS, selectionIds);
             } else {
-                bundle.putInt(ARG_SELECTED_ID, selectionId);
+                bundle.putInt(ARG_SELECTED_ID, selectionIds.get(0));
             }
             return bundle;
         }
@@ -408,7 +416,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             if (isMultiple) {
                 intent.putExtra(VALUE_ID, selectionIds);
             } else {
-                intent.putExtra(VALUE_ID, selectionId);
+                intent.putExtra(VALUE_ID, selectionIds.get(0));
             }
             return intent;
         }
@@ -421,7 +429,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                     selectionIds.remove((Integer) id);
                 }
             } else {
-                selectionId = id;
+                selectionIds.set(0, id);
+            }
+        }
+
+        public void trackSelection(ArrayList<Integer> ids) {
+            if (isMultiple) {
+                selectionIds.clear();
+                selectionIds.addAll(ids);
             }
         }
     }
