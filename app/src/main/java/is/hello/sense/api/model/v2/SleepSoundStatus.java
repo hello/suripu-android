@@ -10,9 +10,9 @@ import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.util.ListObject;
 
-public class SleepSoundStatus extends ApiResponse implements ListActivity.ListObject {
+public class SleepSoundStatus extends ApiResponse implements ListObject {
 
     @SerializedName("playing")
     private Boolean playing;
@@ -42,12 +42,12 @@ public class SleepSoundStatus extends ApiResponse implements ListActivity.ListOb
         return Volume.fromInt(volume);
     }
 
-    public Volume getVolumeWithValue(final @NonNull int value) {
+    public Volume getVolumeWithValue(final int value) {
         return Volume.fromInt(value);
     }
 
     public ArrayList<Volume> getVolumes() {
-        ArrayList<Volume> volumes = new ArrayList();
+        ArrayList<Volume> volumes = new ArrayList<>();
         volumes.add(Volume.Low);
         volumes.add(Volume.Medium);
         volumes.add(Volume.High);
@@ -55,11 +55,11 @@ public class SleepSoundStatus extends ApiResponse implements ListActivity.ListOb
     }
 
     @Override
-    public List<? extends ListActivity.ListItem> getListOptions() {
+    public List<? extends ListItem> getListItems() {
         return getVolumes();
     }
 
-    public enum Volume implements Enums.FromString, ListActivity.ListItem {
+    public enum Volume implements Enums.FromString, ListItem {
         High(100),
         Medium(50),
         Low(25),

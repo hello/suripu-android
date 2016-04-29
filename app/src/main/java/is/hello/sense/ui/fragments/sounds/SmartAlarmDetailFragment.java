@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,11 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,7 +38,6 @@ import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.dialogs.AlarmRepeatDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
@@ -45,6 +48,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.GenericListObject;
 import rx.Observable;
 
 
@@ -142,7 +146,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         final ImageButton smartHelp = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_detail_smart_help);
         final Drawable smartHelpDrawable = smartHelp.getDrawable().mutate();
-        final int accent = getResources().getColor(R.color.light_accent);
+        final int accent = ContextCompat.getColor(getActivity(), R.color.light_accent);
         final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
         Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
         smartHelp.setImageDrawable(smartHelpDrawable);
@@ -248,10 +252,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             }
             markDirty();
         } else if (requestCode == REPEAT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            final List<Integer> selectedDays = data.getIntegerArrayListExtra(AlarmRepeatDialogFragment.RESULT_DAYS);
+            final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             alarm.setDaysOfWeek(selectedDays);
             repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
-
             markDirty();
         }
     }
@@ -298,17 +301,31 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 SOUND_REQUEST_CODE,
                 R.string.title_alarm_tone,
                 alarm.getSound().getId(),
-                true,
-                alarm.getAlarmTones());
+                alarm.getAlarmTones(),
+                true);
         wantsTone = false;
     }
 
     public void selectRepeatDays(@NonNull View sender) {
-        final AlarmRepeatDialogFragment dialogFragment =
-                AlarmRepeatDialogFragment.newInstance(alarm.getDaysOfWeek());
-        dialogFragment.setTargetFragment(this, REPEAT_REQUEST_CODE);
-        dialogFragment.showAllowingStateLoss(getFragmentManager(),
-                                             AlarmRepeatDialogFragment.TAG);
+
+
+        final int firstCalendarDayOfWeek = Calendar.getInstance().getFirstDayOfWeek();
+        final int firstJodaTimeDayOfWeek = DateFormatter.calendarDayToJodaTimeDay(firstCalendarDayOfWeek);
+        final List<Integer> daysOfWeek = DateFormatter.getDaysOfWeek(firstJodaTimeDayOfWeek);
+        final GenericListObject.GenericItemConverter converter = new GenericListObject.GenericItemConverter() {
+            @Override
+            public String getNameFor(int value) {
+                return new DateTime().withDayOfWeek(value).toString("EEEE");
+            }
+        };
+        ArrayList<Integer> list = new ArrayList<>();
+        list.addAll(alarm.getDaysOfWeek());
+        ListActivity.startActivityForResult(
+                this,
+                REPEAT_REQUEST_CODE,
+                R.string.title_alarm_repeat,
+                list,
+                new GenericListObject(converter, daysOfWeek));
     }
 
     public void showSmartAlarmIntro(@NonNull View sender) {

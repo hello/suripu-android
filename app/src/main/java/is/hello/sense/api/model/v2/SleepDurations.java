@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.util.ListObject;
 
-public class SleepDurations extends ApiResponse implements ListActivity.ListObject {
+public class SleepDurations extends ApiResponse implements ListObject {
     @SerializedName("durations")
     private List<Duration> durations;
 
@@ -43,7 +43,7 @@ public class SleepDurations extends ApiResponse implements ListActivity.ListObje
     }
 
     @Override
-    public List<? extends ListActivity.ListItem> getListOptions() {
+    public List<? extends ListItem> getListItems() {
         return this.durations;
     }
 }
