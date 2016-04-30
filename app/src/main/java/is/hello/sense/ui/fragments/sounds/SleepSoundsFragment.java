@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Duration;
@@ -35,6 +36,7 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
+import is.hello.sense.graph.presenters.SleepSoundsStatusBus;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
@@ -59,6 +61,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
     private static final int VOLUME_REQUEST_CODE = 312;
+
 
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
@@ -106,7 +109,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         @Override
         public void onClick(View v) {
             displayLoadingButton(UserWants.PLAY);
-            if (!adapter.hasDesiredItemCount()) {
+            if (!adapter.isShowingPlayer()) {
                 displayPlayButton();
                 return;
             }
@@ -276,7 +279,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             return;
         }
 
-        adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
+        adapter.bindData(state);
+        //   adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
         if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             displayLoadingButton(userWants);
             setButtonVisible(true);
@@ -289,8 +293,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
+
         progressBar.setVisibility(View.GONE);
-        if (adapter.hasDesiredItemCount()) {
+        if (adapter.isShowingPlayer()) {
             setButtonVisible(true);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
@@ -446,4 +451,5 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             isRunning = false;
         }
     }
+
 }

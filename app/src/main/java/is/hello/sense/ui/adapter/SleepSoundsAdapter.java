@@ -3,12 +3,13 @@ package is.hello.sense.ui.adapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,27 +20,25 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Duration;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
+import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
-    private static final int TEMP_PROBLEM_ITEM_COUNT = 1;
-    private static final int DESIRED_ITEM_COUNT = 4;
-    private static final int VIEW_TITLE = 0;
-    private static final int VIEW_VOLUME = 1;
-    private static final int VIEW_SOUNDS = 2;
-    private static final int VIEW_DURATIONS = 3;
+    private static final int VIEW_NONE = 0;
+    private static final int VIEW_PLAYER = 1;
     private static final int VIEW_SENSE_FIRMWARE_UPDATE = 4;
     private static final int VIEW_SENSE_SOUNDS_DOWNLOAD = 5;
     private static final int VIEW_ERROR = 6;
     private static final int VIEW_OFFLINE_TOO_LONG = 7;
+    private int currentView = VIEW_NONE;
     private boolean isOffline = false;
 
     private final LayoutInflater inflater;
@@ -47,18 +46,16 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     private final InteractionListener interactionListener;
     private final AnimatorContext animatorContext;
 
+    private SleepSoundsState combinedSleepState;
     private SleepSoundStatus sleepSoundStatus;
     private SleepSounds sleepSounds;
     private SleepDurations sleepDurations;
-    private int itemCount = 0;
-    private final float minFadeFactor = .2f;
-    private final float maxFadeFactor = 1f;
     private float fadeFactor = 1f;
 
-    private Sound displayedSound;
-    private Duration displayedDuration;
-    private SleepSoundStatus.Volume displayedVolume;
     private Retry retry;
+    private final Context context;
+    private IDisplayedValues displayedValues;
+
 
     public SleepSoundsAdapter(final @NonNull Context context,
                               final @NonNull SharedPreferences preferences,
@@ -70,67 +67,42 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.preferences = preferences;
         this.animatorContext = animatorContext;
         this.retry = retry;
+        this.context = context;
     }
 
-    public void bind(final @NonNull SleepSoundStatus status,
-                     final @NonNull SleepSounds sleepSounds,
-                     final @NonNull SleepDurations sleepDurations) {
-        this.sleepSoundStatus = status;
-        this.sleepSounds = sleepSounds;
-        this.sleepDurations = sleepDurations;
-        this.isOffline = false;
-
-        if (sleepSounds.getState() != SleepSounds.State.OK) {
-            this.itemCount = TEMP_PROBLEM_ITEM_COUNT;
-        } else {
-            this.itemCount = DESIRED_ITEM_COUNT;
-        }
-
-        if (sleepSoundStatus.isPlaying()) {
-            fadeFactor = minFadeFactor;
-        }
+    public void bindData(final @NonNull SleepSoundsState combinedState) {
+        this.combinedSleepState = combinedState;
+        this.sleepSoundStatus = combinedState.getStatus();
+        this.currentView = VIEW_PLAYER;
         notifyDataSetChanged();
     }
 
     public void bind(final @NonNull SleepSoundStatus status) {
-        if (!hasDesiredItemCount() || this.sleepSoundStatus == null) {
-            return; // todo determine how to recover when SleepSoundState fails.
+        if (this.combinedSleepState == null) {
+            return;
         }
+        this.sleepSoundStatus = status;
+        notifyDataSetChanged();
+    }
 
-        if (this.sleepSoundStatus.isPlaying() != status.isPlaying()) {
-            this.sleepSoundStatus = status;
-            final ValueAnimator animator;
-            if (status.isPlaying()) {
-                animator = ValueAnimator.ofFloat(maxFadeFactor, minFadeFactor);
-            } else {
-                animator = ValueAnimator.ofFloat(minFadeFactor, maxFadeFactor);
-            }
-            animator.setDuration(Anime.DURATION_SLOW);
-            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-            animator.addUpdateListener(a -> {
-                fadeFactor = (float) a.getAnimatedValue();
-                notifyDataSetChanged();
-            });
-            animatorContext.startWhenIdle(animator);
-        }
-
+    public boolean isShowingPlayer() {
+        return this.currentView == VIEW_PLAYER;
     }
 
     public Sound getDisplayedSound() {
-        return displayedSound;
+        return displayedValues.displayedSound();
     }
 
     public Duration getDisplayedDuration() {
-        return displayedDuration;
+        return displayedValues.displayedDuration();
     }
 
     public SleepSoundStatus.Volume getDisplayedVolume() {
-        return displayedVolume;
+        return displayedValues.displayedVolume();
     }
 
     public void setErrorState() {
         this.isOffline = false;
-        itemCount = 1;
         sleepSounds = null;
         sleepSoundStatus = null;
         sleepDurations = null;
@@ -139,7 +111,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public void setOfflineTooLong() {
         this.isOffline = true;
-        itemCount = 1;
         sleepSounds = null;
         sleepSoundStatus = null;
         sleepDurations = null;
@@ -161,7 +132,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public int getItemViewType(final int position) {
-        if (isOffline) {
+        /*if (isOffline) {
             return VIEW_OFFLINE_TOO_LONG;
         }
         if (hasDesiredItemCount()) {
@@ -182,19 +153,16 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 return VIEW_SENSE_SOUNDS_DOWNLOAD;
             }
         }
-        return VIEW_ERROR;
+        return VIEW_ERROR;*/
+        return currentView;
     }
 
     @Override
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        if (viewType == VIEW_TITLE) {
-            return new TitleViewHolder(inflater.inflate(R.layout.item_centered_title, parent, false));
-        } else if (viewType == VIEW_SOUNDS) {
-            return new SleepSoundsViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
-        } else if (viewType == VIEW_DURATIONS) {
-            return new SleepDurationsViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
-        } else if (viewType == VIEW_VOLUME) {
-            return new SleepVolumeViewHolder(inflater.inflate(R.layout.item_sleep_sounds, parent, false));
+        if (viewType == VIEW_PLAYER) {
+            SleepSoundsPlayerView playerView = new SleepSoundsPlayerView(context, animatorContext, combinedSleepState, interactionListener);
+            displayedValues = playerView;
+            return new SleepSoundsPlayerViewHolder(playerView);
         } else if (viewType == VIEW_SENSE_FIRMWARE_UPDATE) {
             return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == VIEW_SENSE_SOUNDS_DOWNLOAD) {
@@ -205,6 +173,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
 
+
     @Override
     public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         holder.bind(position);
@@ -212,11 +181,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     @Override
     public int getItemCount() {
-        return itemCount;
-    }
-
-    public boolean hasDesiredItemCount() {
-        return itemCount == DESIRED_ITEM_COUNT;
+        return currentView == VIEW_NONE ? 0 : 1;
     }
 
     abstract static class BaseViewHolder extends RecyclerView.ViewHolder {
@@ -228,87 +193,20 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         abstract void bind(final int position);
     }
 
-    public class TitleViewHolder extends BaseViewHolder {
-        private final TextView title;
-        private boolean isPlaying = false;
-        private final ImageView leftMusic;
-        private final ImageView rightMusic;
+    public class SleepSoundsPlayerViewHolder extends BaseViewHolder {
+        private final SleepSoundsPlayerView view;
 
-        TitleViewHolder(final @NonNull View itemView) {
-            super(itemView);
-            title = ((TextView) itemView.findViewById(R.id.item_centered_title_text));
-            leftMusic = ((ImageView) itemView.findViewById(R.id.item_centered_image_left));
-            rightMusic = ((ImageView) itemView.findViewById(R.id.item_centered_image_right));
-            title.setText(R.string.sleep_sounds_title);
+        SleepSoundsPlayerViewHolder(@NonNull SleepSoundsPlayerView playerView) {
+            super(playerView);
+            this.view = playerView;
         }
 
         @Override
-        void bind(final int position) {
-            if (sleepSoundStatus.isPlaying() && !isPlaying) {
-                isPlaying = true;
-                cycle(R.string.sleep_sounds_title_playing, true);
-                animateMusic(leftMusic, .3f, 1f);
-                animateMusic(rightMusic, 1f, .3f);
-                leftMusic.setVisibility(View.VISIBLE);
-                rightMusic.setVisibility(View.VISIBLE);
-            } else if (!sleepSoundStatus.isPlaying() && isPlaying) {
-                isPlaying = false;
-                leftMusic.setVisibility(View.INVISIBLE);
-                rightMusic.setVisibility(View.INVISIBLE);
-                cycle(R.string.sleep_sounds_title, false);
-            }
+        void bind(int position) {
+            view.bindStatus(sleepSoundStatus);
         }
-
-        private void cycle(@StringRes int textRes, boolean moveDown) {
-            final float initialPosition = 0;
-            final float endPosition;
-            if (moveDown) {
-                endPosition = title.getBottom();
-            } else {
-                endPosition = -title.getBottom();
-            }
-            ValueAnimator animator = ValueAnimator.ofFloat(initialPosition, endPosition);
-            animator.setDuration(Anime.DURATION_SLOW);
-            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-            animator.addUpdateListener(a -> {
-                title.setY((float) a.getAnimatedValue());
-            });
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    title.setText(textRes);
-                    ValueAnimator animator2 = ValueAnimator.ofFloat(-endPosition, initialPosition);
-                    animator2.setDuration(Anime.DURATION_SLOW);
-                    animator2.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-                    animator2.addUpdateListener(a -> {
-                        title.setY((float) a.getAnimatedValue());
-                    });
-                    animatorContext.startWhenIdle(animator2);
-                }
-            });
-            animatorContext.startWhenIdle(animator);
-        }
-
-        private void animateMusic(ImageView view, float start, float end) {
-            ValueAnimator animator = ValueAnimator.ofFloat(start, end);
-            animator.setDuration(500);
-            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-            animator.addUpdateListener(a -> {
-                view.setScaleY((float) a.getAnimatedValue());
-            });
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    animateMusic(view, end, start);
-                }
-            });
-            animatorContext.startWhenIdle(animator);
-        }
-
-
     }
+
 
     //region sleep state view holders
 
@@ -414,6 +312,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     //endregion
 
+    /*
     public abstract class SleepViewHolder extends BaseViewHolder {
         protected final ImageView image;
         protected final TextView label;
@@ -436,8 +335,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             holder.setEnabled(!sleepSoundStatus.isPlaying());
         }
     }
-
-    class SleepSoundsViewHolder extends SleepViewHolder {
+class SleepSoundsViewHolder extends SleepViewHolder {
 
         SleepSoundsViewHolder(final @NonNull View itemView) {
             super(itemView);
@@ -555,7 +453,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
                 interactionListener.onVolumeClick(displayedVolume.getVolume(), sleepSoundStatus);
             });
         }
-    }
+    }*/
 
     public interface InteractionListener {
         void onSoundClick(final int currentSound, final @NonNull SleepSounds sleepSounds);
@@ -568,5 +466,14 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     public interface Retry {
         void retry();
     }
+
+    public interface IDisplayedValues {
+        Sound displayedSound();
+
+        Duration displayedDuration();
+
+        SleepSoundStatus.Volume displayedVolume();
+    }
+
 
 }
