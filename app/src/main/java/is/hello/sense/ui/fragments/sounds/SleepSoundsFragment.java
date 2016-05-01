@@ -182,8 +182,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         final InsetItemDecoration decoration = new InsetItemDecoration();
         decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
-//        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-//                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext(), this);
         recyclerView.setAdapter(adapter);
 
