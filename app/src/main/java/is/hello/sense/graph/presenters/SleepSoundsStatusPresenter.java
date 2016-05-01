@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 
-import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -13,7 +12,6 @@ import rx.Observable;
 public class SleepSoundsStatusPresenter extends ScopedValuePresenter<SleepSoundStatus> {
     @Inject
     ApiService apiService;
-
 
     public final PresenterSubject<SleepSoundStatus> state = this.subject;
 
@@ -31,7 +29,6 @@ public class SleepSoundsStatusPresenter extends ScopedValuePresenter<SleepSoundS
     protected Observable<SleepSoundStatus> provideUpdateObservable() {
         return apiService.getSleepSoundStatus();
     }
-
 
 
 }

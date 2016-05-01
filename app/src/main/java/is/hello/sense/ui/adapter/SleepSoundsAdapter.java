@@ -124,7 +124,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     @Override
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         if (viewType == AdapterState.PLAYER.ordinal()) {
-            SleepSoundsPlayerView playerView = new SleepSoundsPlayerView(context, animatorContext, combinedSleepState, interactionListener);
+            final SleepSoundsPlayerView playerView = new SleepSoundsPlayerView(context, animatorContext, combinedSleepState, interactionListener);
             displayedValues = playerView;
             return new SleepSoundsPlayerViewHolder(playerView);
         } else if (viewType == AdapterState.FIRMWARE_UPDATE.ordinal()) {

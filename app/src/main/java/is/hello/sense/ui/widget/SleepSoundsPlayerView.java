@@ -146,7 +146,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
 
         public TitleRow(final @NonNull Context context) {
             super(context);
-            View view = inflateView(R.layout.item_centered_title);  // todo change view name
+            final View view = inflateView(R.layout.item_player_title);
             title = ((TextView) view.findViewById(R.id.item_centered_title_text));
             leftMusic = ((ImageView) view.findViewById(R.id.item_centered_image_left));
             rightMusic = ((ImageView) view.findViewById(R.id.item_centered_image_right));
@@ -169,7 +169,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             }
         }
 
-        private void cycle(@StringRes int textRes, boolean moveDown) {
+        private void cycle(final @StringRes int textRes, final boolean moveDown) {
             final float initialPosition = 0;
             final float endPosition;
             if (moveDown) {
@@ -177,7 +177,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             } else {
                 endPosition = -title.getBottom();
             }
-            ValueAnimator animator = ValueAnimator.ofFloat(initialPosition, endPosition);
+            final ValueAnimator animator = ValueAnimator.ofFloat(initialPosition, endPosition);
             animator.setDuration(Anime.DURATION_SLOW);
             animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
             animator.addUpdateListener(a -> {
@@ -188,7 +188,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
                     title.setText(textRes);
-                    ValueAnimator animator2 = ValueAnimator.ofFloat(-endPosition, initialPosition);
+                    final ValueAnimator animator2 = ValueAnimator.ofFloat(-endPosition, initialPosition);
                     animator2.setDuration(Anime.DURATION_SLOW);
                     animator2.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
                     animator2.addUpdateListener(a -> {
@@ -200,8 +200,8 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             animatorContext.startWhenIdle(animator);
         }
 
-        private void animateMusic(ImageView view, float start, float end) {
-            ValueAnimator animator = ValueAnimator.ofFloat(start, end);
+        private void animateMusic(final @NonNull ImageView view, final float start, final float end) {
+            final ValueAnimator animator = ValueAnimator.ofFloat(start, end);
             animator.setDuration(500);
             animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
             animator.addUpdateListener(a -> {
@@ -222,7 +222,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
     }
 
     private class SleepSoundsPlayerRow extends PlayerRow implements IDisplayedValue {
-        protected ISleepSoundsPlayerRowItem rowItem;
+        protected final ISleepSoundsPlayerRowItem rowItem;
         protected final View holder;
         protected final TextView label;
         protected final TextView value;
@@ -242,7 +242,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
 
         public void bind(final @Nullable IListObject.IListItem currentItem,
                          final @Nullable IListObject.IListItem savedItem) {
-            List<? extends IListObject.IListItem> items = rowItem.getListObject().getListItems();
+            final List<? extends IListObject.IListItem> items = rowItem.getListObject().getListItems();
 
             if (currentItem != null && items.contains(currentItem)) {
                 listItem = currentItem;
@@ -279,10 +279,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
         IListObject getListObject();
     }
 
-    /*
-        */
     public interface IDisplayedValue {
         IListObject.IListItem displayedItem();
-
     }
 }

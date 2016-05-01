@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Duration;
@@ -36,7 +35,6 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.graph.presenters.SleepSoundsPresenter;
-import is.hello.sense.graph.presenters.SleepSoundsStatusBus;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
@@ -280,7 +278,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         }
 
         adapter.bindData(state);
-        //   adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
         if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             displayLoadingButton(userWants);
             setButtonVisible(true);
