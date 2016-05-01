@@ -22,6 +22,7 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
 
@@ -101,44 +102,22 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         sleepSoundStatus = null;
         notifyDataSetChanged();
     }
-/*
+
     private Sound getSavedSound() {
-        return sleepSounds.getSoundWithId(preferences.getInt(Constants.SLEEP_SOUNDS_SOUND_ID, -1));
+        return combinedSleepState.getSounds().getSoundWithId(preferences.getInt(Constants.SLEEP_SOUNDS_SOUND_ID, -1));
     }
 
     private Duration getSavedDuration() {
-        return sleepDurations.getDurationWithId(preferences.getInt(Constants.SLEEP_SOUNDS_DURATION_ID, -1));
+        return combinedSleepState.getDurations().getDurationWithId(preferences.getInt(Constants.SLEEP_SOUNDS_DURATION_ID, -1));
     }
 
     private SleepSoundStatus.Volume getSavedVolume() {
-        return sleepSoundStatus.getVolumeWithValue(preferences.getInt(Constants.SLEEP_SOUNDS_VOLUME_ID, -1));
-    }*/
+        return combinedSleepState.getStatus().getVolumeWithValue(preferences.getInt(Constants.SLEEP_SOUNDS_VOLUME_ID, -1));
+    }
 
 
     @Override
     public int getItemViewType(final int position) {
-        /*if (isOffline) {
-            return VIEW_OFFLINE_TOO_LONG;
-        }
-        if (hasDesiredItemCount()) {
-            if (position == 0) {
-                return VIEW_TITLE;
-            } else if (position == 1) {
-                return VIEW_SOUNDS;
-            } else if (position == 2) {
-                return VIEW_DURATIONS;
-            } else {
-                return VIEW_VOLUME;
-            }
-        } else if (this.sleepSounds != null) {
-            final SleepSounds.State state = this.sleepSounds.getState();
-            if (state == SleepSounds.State.SENSE_UPDATE_REQUIRED) {
-                return VIEW_SENSE_FIRMWARE_UPDATE;
-            } else if (state == SleepSounds.State.SOUNDS_NOT_DOWNLOADED) {
-                return VIEW_SENSE_SOUNDS_DOWNLOAD;
-            }
-        }
-        return VIEW_ERROR;*/
         return currentState.ordinal();
     }
 
@@ -188,7 +167,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         @Override
         void bind(int position) {
-            view.bindStatus(sleepSoundStatus);
+            view.bindStatus(sleepSoundStatus,
+                            getSavedSound(),
+                            getSavedDuration(),
+                            getSavedVolume());
         }
     }
 
@@ -302,7 +284,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         SOUNDS_DOWNLOAD,
         ERROR,
         OFFLINE
-
     }
 
     //endregion
