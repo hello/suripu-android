@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -85,6 +86,12 @@ public class OnboardingActivity extends InjectionActivity
 
     private @Nullable Account account;
 
+    public static void startActivityForPairingSense(@NonNull final Activity from){
+        Intent intent = new Intent(from, OnboardingActivity.class);
+        intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+        from.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,42 +107,47 @@ public class OnboardingActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if (navigationDelegate.getTopFragment() == null) {
-            int lastCheckpoint = getLastCheckPoint();
-            switch (lastCheckpoint) {
-                case Constants.ONBOARDING_CHECKPOINT_NONE:
-                    showIntroductionFragment();
-                    break;
+        boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+        if (pairOnly) {
+            showPairSense();
+        } else {
+            if (navigationDelegate.getTopFragment() == null) {
+                int lastCheckpoint = getLastCheckPoint();
+                switch (lastCheckpoint) {
+                    case Constants.ONBOARDING_CHECKPOINT_NONE:
+                        showIntroductionFragment();
+                        break;
 
-                case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
-                    if (account == null) {
-                        LoadingDialogFragment.show(getFragmentManager(),
-                                getString(R.string.dialog_loading_message),
-                                LoadingDialogFragment.OPAQUE_BACKGROUND);
-                        bindAndSubscribe(apiService.getAccount(),
-                                         account -> {
-                                             showBirthday(account, false);
-                                         },
-                                         e -> {
-                                             LoadingDialogFragment.close(getFragmentManager());
-                                             ErrorDialogFragment.presentError(this, e);
-                                         });
-                    } else {
-                        showBirthday(account, false);
-                    }
-                    break;
+                    case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
+                        if (account == null) {
+                            LoadingDialogFragment.show(getFragmentManager(),
+                                                       getString(R.string.dialog_loading_message),
+                                                       LoadingDialogFragment.OPAQUE_BACKGROUND);
+                            bindAndSubscribe(apiService.getAccount(),
+                                             account -> {
+                                                 showBirthday(account, false);
+                                             },
+                                             e -> {
+                                                 LoadingDialogFragment.close(getFragmentManager());
+                                                 ErrorDialogFragment.presentError(this, e);
+                                             });
+                        } else {
+                            showBirthday(account, false);
+                        }
+                        break;
 
-                case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
-                    showSetupSense();
-                    break;
+                    case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
+                        showSetupSense();
+                        break;
 
-                case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                    showPairPill(!getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false));
-                    break;
+                    case Constants.ONBOARDING_CHECKPOINT_SENSE:
+                        showPairPill(!getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false));
+                        break;
 
-                case Constants.ONBOARDING_CHECKPOINT_PILL:
-                    showSenseColorsInfo();
-                    break;
+                    case Constants.ONBOARDING_CHECKPOINT_PILL:
+                        showSenseColorsInfo();
+                        break;
+                }
             }
         }
 
@@ -345,6 +357,14 @@ public class OnboardingActivity extends InjectionActivity
             }
             builder.setHelpStep(UserSupport.OnboardingStep.SETTING_UP_SENSE);
             pushFragment(builder.toFragment(), null, false);
+        } else {
+            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
+        }
+    }
+
+    public void showPairSense() {
+        if (bluetoothStack.isEnabled()) {
+            pushFragment(new OnboardingPairSenseFragment(), null, false);
         } else {
             pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
         }
