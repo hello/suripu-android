@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericListObject implements ListObject {
-    private ArrayList<ListItem> items = new ArrayList<>();
+public class GenericListObject implements IListObject {
+    private ArrayList<IListItem> items = new ArrayList<>();
 
     public GenericListObject(final @NonNull GenericItemConverter itemConverter, final @NonNull List<Integer> set) {
         for (Integer integer : set) {
@@ -15,12 +15,12 @@ public class GenericListObject implements ListObject {
     }
 
     @Override
-    public List<? extends ListItem> getListItems() {
+    public List<? extends IListItem> getListItems() {
         return items;
     }
 
 
-    public class GenericListItem implements ListItem {
+    public class GenericListItem implements IListItem {
         private final int value;
         private final String name;
 

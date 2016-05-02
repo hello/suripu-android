@@ -3,9 +3,9 @@ package is.hello.sense.api.model.v2;
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.util.ListObject;
+import is.hello.sense.util.IListObject;
 
-public class Duration extends ApiResponse implements ListObject.ListItem {
+public class Duration extends ApiResponse implements IListObject.IListItem {
     @SerializedName("id")
     private int id;
 

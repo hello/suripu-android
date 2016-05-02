@@ -28,7 +28,7 @@
         android:layout_marginEnd="@dimen/gap_small"
         android:visibility="invisible">
 
-        <ImageButton
+        <is.hello.sense.ui.widget.SpinnerImageView
             android:id="@+id/fragment_sleep_sounds_playbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -23,7 +23,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.DateFormatter.JodaWeekDay;
-import is.hello.sense.util.ListObject;
+import is.hello.sense.util.IListObject;
 
 public class Alarm extends ApiResponse {
     public static final int TOO_SOON_MINUTES = 2;
@@ -298,7 +298,7 @@ public class Alarm extends ApiResponse {
                 '}';
     }
 
-    public static class AlarmTones implements ListObject {
+    public static class AlarmTones implements IListObject {
         private final ArrayList<Sound> sounds;
 
         public AlarmTones(final @NonNull ArrayList<Alarm.Sound> sounds) {
@@ -315,12 +315,12 @@ public class Alarm extends ApiResponse {
         }
 
         @Override
-        public List<? extends ListItem> getListItems() {
+        public List<? extends IListItem> getListItems() {
             return sounds;
         }
     }
 
-    public static class Sound extends ApiResponse implements ListObject.ListItem {
+    public static class Sound extends ApiResponse implements IListObject.IListItem {
         @SerializedName("id")
         public final long id;
 

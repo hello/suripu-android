@@ -42,6 +42,7 @@ import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import rx.Observable;
@@ -49,8 +50,6 @@ import rx.Observable;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
 
 public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
-    private final static int deltaRotation = 5; // degrees
-    private final static int spinnerInterval = 1; // ms
     private final static int pollingInterval = 500; // ms
     private final static int initialBackOff = 0; // ms
     private final static int backOffIncrements = 1000; // ms
@@ -60,6 +59,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private static final int DURATION_REQUEST_CODE = 231;
     private static final int VOLUME_REQUEST_CODE = 312;
 
+
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
 
@@ -67,7 +67,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     SleepSoundsPresenter sleepSoundsPresenter;
 
 
-    private ImageButton playButton;
+    private SpinnerImageView playButton;
     private FrameLayout buttonLayout;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
@@ -90,23 +90,11 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         NONE
     }
 
-    // todo create a custom component that has this logic
-    final Runnable spinningRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (playButton != null) {
-                playButton.setRotation(playButton.getRotation() + deltaRotation);
-                playButton.postDelayed(this, spinnerInterval);
-            }
-        }
-    };
-
-
     final View.OnClickListener playClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             displayLoadingButton(UserWants.PLAY);
-            if (!adapter.hasDesiredItemCount()) {
+            if (!adapter.isShowingPlayer()) {
                 displayPlayButton();
                 return;
             }
@@ -182,7 +170,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
         progressBar = (ProgressBar) view.findViewById(R.id.fragment_sleep_sounds_progressbar);
-        playButton = (ImageButton) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
+        playButton = (SpinnerImageView) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
         buttonLayout = (FrameLayout) view.findViewById(R.id.fragment_sleep_sounds_buttonLayout);
         preferences = getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, 0);
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_sleep_sounds_recycler);
@@ -194,8 +182,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         final InsetItemDecoration decoration = new InsetItemDecoration();
         decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
-//        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-//                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext(), this);
         recyclerView.setAdapter(adapter);
 
@@ -276,7 +262,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             return;
         }
 
-        adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
+        adapter.bindData(state);
         if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
             displayLoadingButton(userWants);
             setButtonVisible(true);
@@ -289,8 +275,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
+
         progressBar.setVisibility(View.GONE);
-        if (adapter.hasDesiredItemCount()) {
+        if (adapter.isShowingPlayer()) {
             setButtonVisible(true);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
@@ -364,9 +351,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         playButton.setOnClickListener(listener);
         playButton.setEnabled(enabled);
         if (enabled) {
-            playButton.removeCallbacks(spinningRunnable);
+            playButton.stopSpinning();
         } else {
-            playButton.post(spinningRunnable);
+            playButton.startSpinning();
         }
     }
 
@@ -446,4 +433,5 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             isRunning = false;
         }
     }
+
 }

@@ -8,11 +8,15 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Singleton;
+
+import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.util.ListObject;
+import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.IListObject;
 
-public class SleepSoundStatus extends ApiResponse implements ListObject {
+public class SleepSoundStatus extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
 
     @SerializedName("playing")
     private Boolean playing;
@@ -55,11 +59,27 @@ public class SleepSoundStatus extends ApiResponse implements ListObject {
     }
 
     @Override
-    public List<? extends ListItem> getListItems() {
+    public List<? extends IListItem> getListItems() {
         return getVolumes();
     }
 
-    public enum Volume implements Enums.FromString, ListItem {
+    @Override
+    public int getLabelRes() {
+        return R.string.sleep_sounds_volume_label;
+    }
+
+    @Override
+    public int getImageRes() {
+        return R.drawable.sounds_volume_icon;
+    }
+
+    @Override
+    public IListObject getListObject() {
+        return this;
+    }
+
+
+    public enum Volume implements Enums.FromString, IListItem {
         High(100),
         Medium(50),
         Low(25),

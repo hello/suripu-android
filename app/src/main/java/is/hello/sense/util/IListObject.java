@@ -4,11 +4,11 @@ package is.hello.sense.util;
 import java.io.Serializable;
 import java.util.List;
 
-public interface ListObject extends Serializable {
-    List<? extends ListItem> getListItems();
+public interface IListObject extends Serializable {
+    List<? extends IListItem> getListItems();
 
 
-    interface ListItem extends Serializable {
+    interface IListItem extends Serializable {
         String getName();
 
         int getId();

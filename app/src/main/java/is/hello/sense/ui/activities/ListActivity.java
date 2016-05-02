@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.widget.SpinnerImageView;
-import is.hello.sense.util.ListObject;
-import is.hello.sense.util.ListObject.ListItem;
+import is.hello.sense.util.IListObject;
+import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
@@ -58,14 +58,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               final int requestCode,
                                               final @StringRes int title,
                                               final int selectedId,
-                                              final @NonNull ListObject listObject,
+                                              final @NonNull IListObject IListObject,
                                               final boolean wantsPlayer) {
         Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
         intent.putExtra(ARG_TITLE, title);
         intent.putExtra(ARG_SELECTED_ID, selectedId);
         intent.putExtra(ARG_WANTS_PLAYER, wantsPlayer);
-        intent.putExtra(ARG_LIST_OBJECT, listObject);
+        intent.putExtra(ARG_LIST_OBJECT, IListObject);
         intent.putExtra(ARG_MULTIPLE_OPTIONS, false);
         fragment.startActivityForResult(intent, requestCode);
     }
@@ -82,13 +82,13 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               final int requestCode,
                                               final @StringRes int title,
                                               final @NonNull ArrayList<Integer> selectedIds,
-                                              final @NonNull ListObject listObject) {
+                                              final @NonNull IListObject IListObject) {
         Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
         intent.putExtra(ARG_TITLE, title);
         intent.putIntegerArrayListExtra(ARG_SELECTED_IDS, selectedIds);
         intent.putExtra(ARG_WANTS_PLAYER, false);
-        intent.putExtra(ARG_LIST_OBJECT, listObject);
+        intent.putExtra(ARG_LIST_OBJECT, IListObject);
         intent.putExtra(ARG_MULTIPLE_OPTIONS, true);
         fragment.startActivityForResult(intent, requestCode);
     }
@@ -105,7 +105,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         final @StringRes int title = intent.getIntExtra(ARG_TITLE, -1);
-        final ListObject listObject = (ListObject) intent.getSerializableExtra(ARG_LIST_OBJECT);
+        final IListObject IListObject = (IListObject) intent.getSerializableExtra(ARG_LIST_OBJECT);
         final boolean wantsPlayer = intent.getBooleanExtra(ARG_WANTS_PLAYER, false);
         final boolean multipleOptions = intent.getBooleanExtra(ARG_MULTIPLE_OPTIONS, false);
 
@@ -131,7 +131,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         final TextView titleTextView = (TextView) findViewById(R.id.item_section_title_text);
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        listAdapter = new ListAdapter(listObject, wantsPlayer);
+        listAdapter = new ListAdapter(IListObject, wantsPlayer);
 
         titleTextView.setText(title);
 
@@ -209,11 +209,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     private class ListAdapter extends RecyclerView.Adapter<BaseViewHolder> {
-        final ListObject listObject;
+        final IListObject IListObject;
         final boolean wantsPlayer;
 
-        public ListAdapter(final @NonNull ListObject listObject, boolean wantsPlayer) {
-            this.listObject = listObject;
+        public ListAdapter(final @NonNull IListObject IListObject, boolean wantsPlayer) {
+            this.IListObject = IListObject;
             this.wantsPlayer = wantsPlayer;
         }
 
@@ -228,13 +228,13 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         @Override
         public void onBindViewHolder(final @NonNull BaseViewHolder holder, final int position) {
-            final ListItem item = listObject.getListItems().get(position);
+            final IListItem item = IListObject.getListItems().get(position);
             holder.bind(item);
         }
 
         @Override
         public int getItemCount() {
-            return listObject.getListItems().size();
+            return IListObject.getListItems().size();
         }
     }
 
@@ -278,7 +278,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             return title.getText().toString();
         }
 
-        public void bind(final @NonNull ListItem item) {
+        public void bind(final @NonNull IListItem item) {
             final int itemId = item.getId();
             title.setText(item.getName());
             if (selectionTracker.contains(itemId)) {
@@ -317,7 +317,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         @Override
-        public void bind(final @NonNull ListItem item) {
+        public void bind(final @NonNull IListItem item) {
             final int itemId = item.getId();
             title.setText(item.getName());
             if (selectionTracker.contains(itemId)) {
@@ -346,7 +346,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             });
         }
 
-        private void enterIdleState(final @NonNull ListItem item) {
+        private void enterIdleState(final @NonNull IListItem item) {
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
                 playerStatus = PlayerStatus.Loading;
