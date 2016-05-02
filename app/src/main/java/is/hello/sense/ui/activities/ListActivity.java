@@ -350,7 +350,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
                 playerStatus = PlayerStatus.Loading;
-                player.setDataSource(Uri.parse(item.getPreviewUrl()), true);
+                player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
                 enterLoadingState();
             });
             image.setImageResource(playIcon);

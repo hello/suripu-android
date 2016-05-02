@@ -29,17 +29,20 @@ public final class Player implements MediaPlayer.OnPreparedListener,
     public static final int STATE_LOADED = 2;
     public static final int STATE_PLAYING = 3;
     public static final int STATE_PAUSED = 4;
+    private int timesToLoop = 0;
+    private int timesLooped = 0;
 
     @IntDef({
-        STATE_RECYCLED,
-        STATE_EMPTY,
-        STATE_LOADING,
-        STATE_LOADED,
-        STATE_PLAYING,
-        STATE_PAUSED,
+            STATE_RECYCLED,
+            STATE_EMPTY,
+            STATE_LOADING,
+            STATE_LOADED,
+            STATE_PLAYING,
+            STATE_PAUSED,
     })
     @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-    @interface State {}
+    @interface State {
+    }
 
     public static String stateToString(@State int state) {
         switch (state) {
@@ -76,7 +79,9 @@ public final class Player implements MediaPlayer.OnPreparedListener,
 
     private int targetVideoScalingMode = MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT;
     private boolean startWhenPrepared = false;
-    private @State int state = STATE_EMPTY;
+    private
+    @State
+    int state = STATE_EMPTY;
 
 
     //region Lifecycle
@@ -189,8 +194,13 @@ public final class Player implements MediaPlayer.OnPreparedListener,
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (!mp.isLooping()) {
-            stop();
-            onEventListener.onPlaybackStopped(this, true);
+            if (timesLooped >= timesToLoop) {
+                stop();
+                onEventListener.onPlaybackStopped(this, true);
+            }else {
+                mp.start();
+                timesLooped++;
+            }
         }
     }
 
@@ -222,11 +232,16 @@ public final class Player implements MediaPlayer.OnPreparedListener,
         }
     }
 
-
     public void setDataSource(@NonNull Uri source, boolean startWhenPrepared) {
+        setDataSource(source, startWhenPrepared, 0);
+    }
+
+    public void setDataSource(@NonNull Uri source, boolean startWhenPrepared, int timesToLoop) {
         try {
             stop();
             unscheduleTimePulse();
+            this.timesLooped = 0;
+            this.timesToLoop = timesToLoop;
 
             // See <https://code.google.com/p/android/issues/detail?id=957>
             try {
@@ -277,7 +292,9 @@ public final class Player implements MediaPlayer.OnPreparedListener,
 
     //region Properties
 
-    public @State int getState() {
+    public
+    @State
+    int getState() {
         return state;
     }
 
@@ -296,6 +313,10 @@ public final class Player implements MediaPlayer.OnPreparedListener,
         } catch (Throwable e) {
             return false;
         }
+    }
+
+    public void setTimesToLoop(int times) {
+        this.timesToLoop = times;
     }
 
     public void setLooping(boolean looping) {
@@ -396,8 +417,11 @@ public final class Player implements MediaPlayer.OnPreparedListener,
 
     public interface OnEventListener {
         void onPlaybackReady(@NonNull Player player);
+
         void onPlaybackStarted(@NonNull Player player);
+
         void onPlaybackStopped(@NonNull Player player, boolean finished);
+
         void onPlaybackError(@NonNull Player player, @NonNull Throwable error);
     }
 
