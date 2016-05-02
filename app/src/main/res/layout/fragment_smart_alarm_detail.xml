@@ -32,34 +32,6 @@
 
         </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/fragment_smart_alarm_detail_enabled"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/smart_alarm_details_row_height"
-            android:gravity="center_vertical"
-            android:paddingLeft="@dimen/gap_outer"
-            android:paddingRight="@dimen/gap_outer"
-            android:orientation="horizontal"
-            android:background="@drawable/selectable_dark_bounded">
-
-            <TextView
-                android:id="@+id/fragment_smart_alarm_detail_enabled_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="@dimen/gap_small"
-                android:drawableStart="@drawable/icon_alarm_disabled"
-                android:drawablePadding="@dimen/gap_outer"
-                android:gravity="start|center_vertical"
-                android:text="@string/title_enabled"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
-
-            <include
-                android:id="@+id/fragment_smart_alarm_detail_enabled_toggle"
-                layout="@layout/widget_switch" />
-
-        </LinearLayout>
-
         <View style="@style/Divider.Horizontal" />
 
         <LinearLayout
