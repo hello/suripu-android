@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
@@ -52,9 +51,15 @@ public class GridTrendGraphView extends TrendGraphView {
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                final float circleSize = getWidth() / 7;
+                final int elements;
+                if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
+                    elements = 15;
+                } else {
+                    elements = 7;
+                }
+                final float circleSize = getWidth() / elements;
                 if (getCircleSize() != circleSize) {
-                    ((GridGraphDrawable) drawable).initHeight(getWidth() / 7);
+                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
                     requestLayout();
                     invalidate();
                     bindGraph(drawable.getGraph());
@@ -281,7 +286,7 @@ public class GridTrendGraphView extends TrendGraphView {
          */
         private void updateCellController() {
             cellController = new GridCellController();
-            if (graph == null || graph.getSections() == null){
+            if (graph == null || graph.getSections() == null) {
                 return;
             }
 

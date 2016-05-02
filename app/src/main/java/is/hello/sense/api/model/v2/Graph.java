@@ -111,14 +111,17 @@ public class Graph extends ApiResponse {
     public ArrayList<Graph> convertToQuarterGraphs() {
         final ArrayList<Graph> graphs = new ArrayList<>();
         for (GraphSection graphSection : sections) {
-            final String monthTitle = graphSection.getTitles().get(0);
             int offset = 0;
-            try {
-                final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-            } catch (ParseException e) {
-                Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+            if (graphSection.getTitles() != null && !graphSection.getTitles().isEmpty()) {
+                final String monthTitle = graphSection.getTitles().get(0);
+                try {
+                    final int monthValue = DateFormatter.getMonthInt(monthTitle);
+                    offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
+                } catch (ParseException e) {
+                    Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+                }
             }
+
             final Graph graph = new Graph(this);
             if (offset > 0) {
                 final GraphSection temp = new GraphSection(graphSection);
