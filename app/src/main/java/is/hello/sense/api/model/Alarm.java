@@ -66,7 +66,7 @@ public class Alarm extends ApiResponse {
     @SerializedName("smart")
     private boolean smart;
 
-    private AlarmTones alarmTones;
+    private transient AlarmTones alarmTones;
 
 
     public Alarm() {
