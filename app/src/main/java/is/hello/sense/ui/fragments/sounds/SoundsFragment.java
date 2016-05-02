@@ -115,7 +115,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     @Override
     public void onSaveInstanceState(Bundle outState) {
         boolean isVisible = false;
-        if (subNavSelector.getVisibility() == View.VISIBLE) {
+        if (subNavSelector != null && subNavSelector.getVisibility() == View.VISIBLE) {
             isVisible = true;
         }
         outState.putBoolean(ARG_HAS_NAVBAR, isVisible);
@@ -187,7 +187,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
             transitionInSubNavBar();
             adapter.setOverrideCount(-1);
             adapter.notifyDataSetChanged();
-        } else if(!show && subNavSelector.getVisibility() == View.VISIBLE){
+        } else if (!show && subNavSelector.getVisibility() == View.VISIBLE) {
             transitionOutSubNavBar();
             adapter.setOverrideCount(1);
             adapter.notifyDataSetChanged();
