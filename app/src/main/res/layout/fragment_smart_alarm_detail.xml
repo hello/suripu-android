@@ -32,8 +32,6 @@
 
         </FrameLayout>
 
-        <View style="@style/Divider.Horizontal" />
-
         <LinearLayout
             android:id="@+id/fragment_smart_alarm_detail_smart"
             android:layout_width="match_parent"
