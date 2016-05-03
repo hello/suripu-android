@@ -275,6 +275,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
     public class SimpleViewHolder extends BaseViewHolder {
         protected final TextView title;
+        protected final TextView status;
         protected final SpinnerImageView image;
         protected final View view;
 
@@ -290,6 +291,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             this.view = view;
             this.title = (TextView) view.findViewById(R.id.item_list_name);
             this.image = (SpinnerImageView) view.findViewById(R.id.item_list_play_image);
+            this.status = (TextView) view.findViewById(R.id.item_list_player_status);
 
             if (selectionTracker.isMultiple) {
                 this.onImage = R.drawable.holo_check_on;
@@ -381,6 +383,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         private void enterIdleState(final @NonNull IListItem item) {
+            status.setText(R.string.preview);
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
                 playerStatus = PlayerStatus.Loading;
@@ -393,6 +396,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         private void enterPlayingState() {
+            status.setText(R.string.stop);
             image.setOnClickListener(v -> {
                 player.stopPlayback();
                 playerStatus = PlayerStatus.Idle;
@@ -406,6 +410,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         private void enterLoadingState() {
+            status.setText(null);
             image.setOnClickListener(null);
             image.setImageResource(loadingIcon);
             image.startSpinning();
