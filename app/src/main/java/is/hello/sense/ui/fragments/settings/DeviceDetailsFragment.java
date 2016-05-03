@@ -7,6 +7,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -122,8 +123,8 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
         final TextView itemView = new TextView(context);
         itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        itemView.setTextAppearance(context, R.style.AppTheme_Text_Body);
-        itemView.setTextColor(resources.getColorStateList(R.color.text_color_selector_dark));
+        Styles.setTextAppearance(itemView, R.style.AppTheme_Text_Body);
+        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.text_color_selector_dark));
         itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
         itemView.setText(titleRes);
 
@@ -155,17 +156,19 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     }
 
     protected void showBlockingAlert(@StringRes int messageRes) {
-        alertIcon.setVisibility(View.GONE);
-        alertTitleText.setVisibility(View.GONE);
-        alertBusy.setVisibility(View.VISIBLE);
-        primaryAlertAction.setVisibility(View.GONE);
-        secondaryAlertAction.setVisibility(View.GONE);
+        if (getView() != null) {
+            alertIcon.setVisibility(View.GONE);
+            alertTitleText.setVisibility(View.GONE);
+            alertBusy.setVisibility(View.VISIBLE);
+            primaryAlertAction.setVisibility(View.GONE);
+            secondaryAlertAction.setVisibility(View.GONE);
 
-        alertText.setGravity(Gravity.CENTER);
-        alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_MidSized_DarkText);
-        alertText.setText(messageRes);
+            alertText.setGravity(Gravity.CENTER);
+            Styles.setTextAppearance(alertText, R.style.AppTheme_Text_Body_MidSized_DarkText);
+            alertText.setText(messageRes);
 
-        alertContainer.setVisibility(View.VISIBLE);
+            alertContainer.setVisibility(View.VISIBLE);
+        }
         clearActions();
     }
 
@@ -179,7 +182,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
             alertTitleText.setText(alert.title.resolve(getActivity()));
         }
         alertText.setGravity(Gravity.TOP | Gravity.START);
-        alertText.setTextAppearance(getActivity(), R.style.AppTheme_Text_Body_MidSized);
+        Styles.setTextAppearance(alertText, R.style.AppTheme_Text_Body_MidSized);
         alertText.setText(alert.message.resolve(getActivity()));
 
         if (alert.primaryButtonTitle != 0 && alert.primaryButtonOnClick != null) {
