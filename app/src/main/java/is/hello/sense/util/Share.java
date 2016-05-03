@@ -136,7 +136,7 @@ public abstract class Share {
 
         private Image(@NonNull Bitmap bitmap) {
             super(Intent.ACTION_SEND);
-            intent.setType("*/*");
+            intent.setType("image/jpeg");
 
             this.bitmap = bitmap;
         }
