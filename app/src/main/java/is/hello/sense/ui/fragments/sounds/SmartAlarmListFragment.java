@@ -32,6 +32,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -199,7 +200,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
             message.titleIconRes = R.drawable.illustration_no_sense;
             message.actionRes = R.string.action_pair_new_sense;
             message.onClickListener = ignored -> {
-                DeviceListFragment.startStandaloneFrom(getActivity());
+                OnboardingActivity.startActivityForPairingSense(getActivity());
             };
         } else {
             StringRef errorMessage = Errors.getDisplayMessage(e);
