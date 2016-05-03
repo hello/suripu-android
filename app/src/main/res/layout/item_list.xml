@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/selectable_dark_bounded"
                 android:gravity="center_vertical">
 
     <TextView
@@ -11,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/item_list_play_holder"
+        android:layout_toStartOf="@+id/item_list_player_holder"
         android:drawablePadding="@dimen/gap_large"
         android:drawableStart="@drawable/radio_off"
         android:gravity="center_vertical"
@@ -20,27 +19,41 @@
         android:paddingRight="@dimen/gap_outer"
         android:paddingTop="@dimen/gap_medium"/>
 
-    <FrameLayout
-        android:id="@+id/item_list_play_holder"
+    <LinearLayout
+        android:id="@+id/item_list_player_holder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:clickable="true">
+        android:orientation="horizontal">
 
-        <is.hello.sense.ui.widget.SpinnerImageView
-            android:id="@+id/item_list_play_image"
+        <TextView
+            android:id="@+id/item_list_player_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:paddingBottom="@dimen/gap_outer_half"
-            android:paddingLeft="@dimen/gap_outer"
-            android:paddingRight="@dimen/gap_outer"
-            android:paddingTop="@dimen/gap_outer_half"
-            android:src="@drawable/sound_preview_play"
-            android:visibility="invisible"
-            />
-    </FrameLayout>
+            android:layout_gravity="center_vertical|right"
+            android:gravity="center_vertical|right"/>
+
+        <FrameLayout
+            android:id="@+id/item_list_play_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true">
+
+            <is.hello.sense.ui.widget.SpinnerImageView
+                android:id="@+id/item_list_play_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:paddingBottom="@dimen/gap_outer_half"
+                android:paddingLeft="@dimen/gap_outer"
+                android:paddingRight="@dimen/gap_outer"
+                android:paddingTop="@dimen/gap_outer_half"
+                android:src="@drawable/sound_preview_play"
+                android:visibility="invisible"
+                />
+        </FrameLayout>
+    </LinearLayout>
 
 </RelativeLayout>
