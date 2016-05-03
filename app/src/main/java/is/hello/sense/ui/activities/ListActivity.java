@@ -24,12 +24,13 @@ import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
-
     private enum PlayerStatus {
         Idle, Loading, Playing
     }
 
     private static final int NONE = -1;
+    private static final int VIEW_TITLE = 1;
+    private static final int VIEW_NOT_TITLE = 2;
     private static final String ARG_TITLE = ListActivity.class.getName() + ".ARG_TITLE";
     private static final String ARG_REQUEST_CODE = ListActivity.class.getName() + ".ARG_REQUEST_CODE";
     private static final String ARG_SELECTED_ID = ListActivity.class.getName() + ".ARG_SELECTED_ID";
@@ -44,6 +45,9 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
+    private
+    @StringRes
+    int titleRes;
 
     /**
      * Display with radios.
@@ -104,7 +108,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             return;
         }
 
-        final @StringRes int title = intent.getIntExtra(ARG_TITLE, -1);
+        titleRes = intent.getIntExtra(ARG_TITLE, -1);
         final IListObject IListObject = (IListObject) intent.getSerializableExtra(ARG_LIST_OBJECT);
         final boolean wantsPlayer = intent.getBooleanExtra(ARG_WANTS_PLAYER, false);
         final boolean multipleOptions = intent.getBooleanExtra(ARG_MULTIPLE_OPTIONS, false);
@@ -127,13 +131,9 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         if (wantsPlayer) {
             player = new Player(this, this, null);
         }
-        findViewById(R.id.item_section_title_divider).setVisibility(View.GONE);
-        final TextView titleTextView = (TextView) findViewById(R.id.item_section_title_text);
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listAdapter = new ListAdapter(IListObject, wantsPlayer);
-
-        titleTextView.setText(title);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
@@ -219,26 +219,59 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         @Override
         public BaseViewHolder onCreateViewHolder(final @NonNull ViewGroup parent, final int viewType) {
-            if (wantsPlayer) {
-                return new PlayerViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
+            if (viewType != VIEW_TITLE) {
+                if (wantsPlayer) {
+                    return new PlayerViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
+                }
+                return new SimpleViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
             }
-            return new BaseViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
+            return new TitleViewHolder(getLayoutInflater().inflate(R.layout.item_section_title, null));
 
         }
 
         @Override
         public void onBindViewHolder(final @NonNull BaseViewHolder holder, final int position) {
-            final IListItem item = IListObject.getListItems().get(position);
-            holder.bind(item);
+            if (position > 0) {
+                final IListItem item = IListObject.getListItems().get(position - 1);
+                holder.bind(item);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return IListObject.getListItems().size();
+            return IListObject.getListItems().size() + 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position == 0 ? VIEW_TITLE : VIEW_NOT_TITLE;
         }
     }
 
-    public class BaseViewHolder extends RecyclerView.ViewHolder {
+    public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
+
+        public BaseViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        abstract void bind(@NonNull IListItem item);
+    }
+
+    public class TitleViewHolder extends BaseViewHolder {
+
+        TitleViewHolder(final @NonNull View view) {
+            super(view);
+            ((TextView) view.findViewById(R.id.item_section_title_text)).setText(titleRes);
+            view.findViewById(R.id.item_section_title_divider).setVisibility(View.GONE);
+        }
+
+        @Override
+        void bind(@NonNull IListItem item) {
+
+        }
+    }
+
+    public class SimpleViewHolder extends BaseViewHolder {
         protected final TextView title;
         protected final SpinnerImageView image;
         protected final View view;
@@ -250,7 +283,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         protected final int offImage;
 
 
-        BaseViewHolder(final @NonNull View view) {
+        SimpleViewHolder(final @NonNull View view) {
             super(view);
             this.view = view;
             this.title = (TextView) view.findViewById(R.id.item_list_name);
@@ -263,7 +296,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 this.onImage = R.drawable.radio_on;
                 this.offImage = R.drawable.radio_off;
             }
-
         }
 
         protected void selectedState() {
@@ -300,7 +332,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
     }
 
-    public class PlayerViewHolder extends BaseViewHolder {
+    public class PlayerViewHolder extends SimpleViewHolder {
 
         @DrawableRes
         private final static int playIcon = R.drawable.sound_preview_play;
