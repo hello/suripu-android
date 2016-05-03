@@ -155,6 +155,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         // When it is visible, then this is called after the view has been created,
         // although we really do not depend on the view being created first.
         if (isVisibleToUser) {
+            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
             update();
             if (getActivity() != null) {
                 final boolean flickerWorkAround = true;
@@ -184,11 +185,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         recyclerView.addItemDecoration(decoration);
         this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext(), this);
         recyclerView.setAdapter(adapter);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-        }
-
         return view;
     }
 
