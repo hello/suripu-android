@@ -177,7 +177,7 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
     public void onPlaybackError(@NonNull Player player, @NonNull Throwable error) {
         Analytics.trackError(error, "Alarm sound preview");
 
-        Toast.makeText(getActivity().getApplicationContext(), R.string.error_failed_to_play_alarm_tone, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.error_failed_to_play_alarm_tone, Toast.LENGTH_SHORT).show();
         adapter.setPlayingSoundId(SmartAlarmSoundAdapter.NONE, false);
     }
 
