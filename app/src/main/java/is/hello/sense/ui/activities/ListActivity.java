@@ -14,6 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
@@ -46,6 +54,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
+    private boolean cancelled = false;
     private
     @StringRes
     int titleRes;
@@ -163,6 +172,13 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
         listAdapter = null;
         selectionTracker = null;
+        if (isFinishing()) {
+            try {
+                trimCache();
+            } catch (Exception e) {
+                //todo log?
+            }
+        }
     }
 
     @Override
@@ -198,6 +214,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     private void setResultAndFinish() {
+        cancelled = true;
         final Intent intent = new Intent();
         selectionTracker.writeValue(intent);
         setResult(RESULT_OK, intent);
@@ -209,6 +226,82 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             listAdapter.notifyDataSetChanged();
         }
     }
+
+    private File getCacheFile(String url) {
+        File file;
+        String fileName = Uri.parse(url).getLastPathSegment();
+        //  file = File.createTempFile(fileName, ".mp3", this.getCacheDir());
+        file = new File(this.getCacheDir(), fileName);
+        file.deleteOnExit();
+
+        return file;
+    }
+
+    private boolean saveAudioToFile(@NonNull File file, @NonNull String urlLocation) {
+        final InputStream input;
+        final OutputStream output;
+        HttpURLConnection connection = null;
+        try {
+            final URL url = new URL(urlLocation);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                return false;
+            }
+            input = connection.getInputStream();
+            output = new FileOutputStream(file);
+            final byte data[] = new byte[4096];
+            int count;
+            while ((count = input.read(data)) != -1) {
+                if (cancelled) {
+                    input.close();
+                    connection.disconnect();
+                    return false;
+                }
+                output.write(data, 0, count);
+            }
+        } catch (MalformedURLException e) {
+            //todo log?
+            return false;
+        } catch (IOException e) {
+            if (connection != null) {
+                connection.disconnect();
+            }
+            //todo log?
+            return false;
+        }
+        return true;
+    }
+
+    private void trimCache() {
+        try {
+            File dir = getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            //todo log?
+        }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String child : children) {
+                boolean success = deleteDir(new File(dir, child));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        if (dir == null) {
+            return false;
+        }
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
+
 
     private class ListAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         final IListObject IListObject;
@@ -387,9 +480,23 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
                 playerStatus = PlayerStatus.Loading;
-                player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
                 enterLoadingState();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final File file = getCacheFile(item.getPreviewUrl());
+                        final boolean saved;
+                        saved = file.exists() || saveAudioToFile(file, item.getPreviewUrl());
+                        if (saved) {
+                            player.setDataSource(Uri.fromFile(file), true, 1);
+                        } else {
+                            player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
+                        }
+                    }
+                }).start();
+
             });
+
             image.setImageResource(playIcon);
             image.stopSpinning();
             image.setRotation(0);
