@@ -324,10 +324,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void saveAlarm() {
-        if (!dirty) {
+        if (!dirty && alarm.isEnabled()) {
             finish();
             return;
         }
+
+        alarm.setEnabled(true);
 
         // This is the only callback that does not have an outside state guard.
         stateSafeExecutor.execute(() -> {
