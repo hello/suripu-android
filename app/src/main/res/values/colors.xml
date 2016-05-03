@@ -2,106 +2,171 @@
 <resources>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
-    <color name="grey">#515151</color>
-    <color name="transparent">#00FFFFFF</color>
-    <color name="transparent_overlay">#3c000000</color>
-    <color name="light_accent">#009CFF</color>
-    <color name="light_accent_dimmed">#6ec2fe</color>
-    <color name="light_accent_extra_dimmed">#ebf9ff</color>
-    <color name="light_accent_darkened">#007DCD</color>
-    <color name="destructive_accent">#ff0000</color>
-    <color name="status_bar_grey">#ADB5C0</color>
-    <color name="status_bar_illustration">#a9b6c0</color>
 
-    <color name="background">#EBEDF0</color>
-    <color name="insight_card_background">#DFE1E6</color>
+    <!-- Gray -->
+    <color name="gray7">#162B48</color>
+    <color name="gray6">#162B48</color>
+    <color name="gray5">#5C6B7F</color>
+    <color name="gray4">#8B95A4</color>
+    <color name="gray3">#B9BFC8</color>
+    <color name="gray2">#E8EAED</color>
+    <color name="gray1">#F8F8F9</color>
+
+
+    <!-- Purple -->
+    <color name="purple7">#764EC9</color>
+    <color name="purple6">#865CDE</color>
+    <color name="purple5">#AB8DE8</color>
+    <color name="purple4">#C3AEEF</color>
+    <color name="purple3">#DBCEF6</color>
+    <color name="purple2">#F3EFFC</color>
+    <color name="purple1">#FCFAFE</color>
+
+
+    <!-- Blue -->
+    <color name="blue7">#0083D9</color>
+    <color name="blue6">#009AFF</color>
+    <color name="blue5">#4CB9FF</color>
+    <color name="blue4">#7FCDFF</color>
+    <color name="blue3">#B2E1FF</color>
+    <color name="blue2">#E5F5FF</color>
+    <color name="blue1">#F7FCFF</color>
+
+    <!-- Green -->
+    <color name="green7">#21BD90</color>
+    <color name="green6">#36D8A9</color>
+    <color name="green5">#72E4C3</color>
+    <color name="green4">#9BECD4</color>
+    <color name="green3">#C3F4E6</color>
+    <color name="green2">#EBFCF7</color>
+    <color name="green1">#F9FEFD</color>
+
+    <!-- Yellow -->
+    <color name="yellow7">#E9AD1A</color>
+    <color name="yellow6">#FFBC17</color>
+    <color name="yellow5">#FFD05D</color>
+    <color name="yellow4">#FFDE8B</color>
+    <color name="yellow3">#FFEBB9</color>
+    <color name="yellow2">#FFF9E8</color>
+    <color name="yellow1">#FFFDF8</color>
+
+    <!-- Orange -->
+    <color name="orange7">#E88A3D</color>
+    <color name="orange6">#FF9742</color>
+    <color name="orange5">#FFB67B</color>
+    <color name="orange4">#FFCBA1</color>
+    <color name="orange3">#FFE0C6</color>
+    <color name="orange2">#FFF5EC</color>
+    <color name="orange1">#FFFCFA</color>
+
+    <!-- Red -->
+    <color name="red7">#E35533</color>
+    <color name="red6">#FF6B47</color>
+    <color name="red5">#FF9177</color>
+    <color name="red4">#FFB2A0</color>
+    <color name="red3">#FFC8BB</color>
+    <color name="red2">#FFF4F2</color>
+    <color name="red1">#FFFCFB</color>
+
+    <color name="transparent">@color/white</color> <!-- 0% opacity -->
+    <color name="transparent_overlay">#3c000000</color> <!-- update with the Dk Blue and a transparency -->
+    <color name="light_accent">@color/blue6</color>
+    <color name="light_accent_dimmed">@color/blue4</color>
+    <color name="light_accent_extra_dimmed">@color/blue2</color>
+    <color name="light_accent_darkened">@color/blue7</color>
+    <color name="destructive_accent">@color/red6</color>
+    <color name="status_bar_grey">@color/gray3</color>
+    <color name="status_bar_illustration">@color/gray3</color>
+
+    <color name="background">@color/gray2</color>
+    <color name="insight_card_background">@color/gray2</color>
     <color name="background_light">@color/white</color>
-    <color name="background_light_overlay">#99ffffff</color>
-    <color name="background_dark_overlay">#80000000</color>
+    <color name="background_light_overlay">@color/white</color> <!-- 60% opacity -->
+    <color name="background_dark_overlay">@color/white</color> <!-- 50% opacity -->
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
-    <color name="background_insight_illustration">#CFDCE6</color>
+    <color name="background_insight_illustration">@color/gray3</color>
 
-    <color name="background_dark_item_clicked">#EBF7FF</color>
+    <color name="background_dark_item_clicked">@color/blue2</color>
 
-    <color name="border">#d9d9d9</color>
-    <color name="border_backside_tabs">#d0d0d0</color>
-    <color name="shadow_end">#19000000</color>
-    <color name="view_time_picker_shadow_end">#10000000</color>
+    <color name="border">@color/gray2</color>
+    <color name="border_backside_tabs">@color/gray3</color>
+    <color name="shadow_end">#19000000</color> <!-- ???????? -->
+    <color name="view_time_picker_shadow_end">#10000000</color> <!-- ???????? -->
 
-    <color name="timeline_header_border">#C5E7FF</color>
-    <color name="timeline_header_gradient_end">#ffF0F3F7</color>
-    <color name="timeline_background_fill">#E0F4FF</color>
-    <color name="timeline_segment_stripe">#40009cff</color>
+    <color name="timeline_header_border">@color/blue3</color>
+    <color name="timeline_header_gradient_end">@color/gray1</color>
+    <color name="timeline_background_fill">@color/blue2</color>
+    <color name="timeline_segment_stripe">@color/blue6</color> <!-- 25% opacity -->
 
-    <color name="text_dark">#4D4D4D</color>
-    <color name="text_medium">#6c6c6c</color>
-    <color name="text_light">#b2b2b2</color>
-    <color name="text_dark_disabled">#45000000</color>
-    <color name="text_dim">#88000000</color>
-    <color name="text_dim_light">#b2ffffff</color>
-    <color name="text_detail_grey">#40000000</color>
-    <color name="text_section_header">#b1b1b1</color>
-    <color name="text_dim_placeholder">#e0e0e0</color>
-    <color name="text_link">#009CFF</color>
-    <color name="text_body_new">#808080</color>
-    <color name="text_heading_major">#4D4D4D</color>
-    <color name="text_black_70">#b3000000</color>
+    <color name="text_dark">@color/gray6</color>
+    <color name="text_medium">@color/blue5</color>
+    <color name="text_light">@color/gray4</color>
+    <color name="text_dark_disabled">@color/black</color> <!-- 27% opacity -->
+    <color name="text_dim">#88000000</color> <!-- ???????? -->
+    <color name="text_dim_light">@color/white</color> <!-- 75% opacity -->
+    <color name="text_detail_grey">@color/white</color> <!-- 25% opacity -->
+    <color name="text_section_header">@color/gray3</color>
+    <color name="text_dim_placeholder">@color/gray2</color>
+    <color name="text_link">@color/blue6</color>
+    <color name="text_body_new">@color/gray5</color>
+    <color name="text_heading_major">@color/gray6</color>
+    <color name="text_black_70">@color/black</color> <!-- 70% opacity -->
 
-    <color name="text_rotary_picker_focused">@color/light_accent</color>
-    <color name="text_rotary_picker_unfocused">#999999</color>
-    <color name="text_rotary_picker_almost_gone">#E6E6E6</color>
+    <color name="text_rotary_picker_focused">@color/light_accent</color> <!-- I don't know what the light accent is -->
+    <color name="text_rotary_picker_unfocused">@color/gray4</color>
+    <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="edit_text_bottom_line_normal">#919191</color>
-    <color name="edit_text_bottom_line_disabled">#cacaca</color>
+    <color name="edit_text_bottom_line_normal">@color/gray5</color>
+    <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
-    <color name="text_white_button">#ffffff</color>
-    <color name="text_white_button_pressed">#d5d5d5</color>
+    <color name="text_white_button">@color/white</color>
+    <color name="text_white_button_pressed">@color/gray3</color>
 
-    <color name="background_button_white_pressed">#28d5d5d5</color>
-    <color name="background_button_dark_pressed">#EEdff2fe</color>
+    <color name="background_button_white_pressed">#28d5d5d5</color> <!-- Grey 2 -->
+    <color name="background_button_dark_pressed">#EEdff2fe</color> <!-- Blue 10 -->
 
-    <color name="sensor_alert">#FF8066</color>
-    <color name="sensor_warning">#FFAA00</color>
-    <color name="sensor_ideal">#41D7AC</color>
-    <color name="sensor_unknown">#565961</color>
-    <color name="sensor_empty">#B5B5B5</color>
+    <color name="sensor_alert">@color/red6</color>
+    <color name="sensor_warning">@color/orange6</color>
+    <color name="sensor_ideal">@color/green6</color>
+    <color name="sensor_unknown">@color/gray6</color>
+    <color name="sensor_empty">@color/gray3</color>
 
     <color name="sleep_awake">@color/transparent</color>
-    <color name="sleep_light">#4d009cff</color>
-    <color name="sleep_medium">#80009cff</color>
-    <color name="sleep_sound">#cc009cff</color>
+    <color name="sleep_light">@color/blue6</color> <!-- 30% opacity -->
+    <color name="sleep_medium">@color/blue6</color> <!-- 50% opacity -->
+    <color name="sleep_sound">@color/blue6</color> <!-- 80% opacity -->
 
-    <color name="graph_stroke_color">#66000000</color>
-    <color name="graph_fill_gradient_top">#22000000</color>
-    <color name="graph_fill_gradient_bottom">#11000000</color>
-    <color name="graph_fill_solid">#22D6D6D6</color>
-    <color name="graph_fill_empty">#00d6d6d6</color>
+    <color name="graph_stroke_color">@color/white</color> <!-- 40% opacity -->
+    <color name="graph_fill_gradient_top">#22000000</color>  <!-- ???????? -->
+    <color name="graph_fill_gradient_bottom">#11000000</color>  <!-- ???????? -->
+    <color name="graph_fill_solid">#22D6D6D6</color>  <!-- ???????? -->
+    <color name="graph_fill_empty">@color/gray2</color> <!-- 0% opacity -->
 
     <color name="graph_grid_empty_cell">@color/white</color>
-    <color name="graph_grid_empty_missing">#e5e9ec</color>
+    <color name="graph_grid_empty_missing">@color/gray2</color>
 
-    <color name="view_scale_tick_normal">#dfdfdf</color>
-    <color name="view_scale_tick_emphasized">#c1c1c1</color>
+    <color name="view_scale_tick_normal">@color/gray2</color>
+    <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="trends_title">#b2596980</color>
-    <color name="trends_line_divider">#19596980</color>
-    <color name="trends_line_divider_shimmer">#33596980</color>
-    <color name="trends_bargraph_dashedline">#000000</color>
-    <color name="trends_bargraph">#66596980</color>
-    <color name="trends_bargraph_bar">#BFE6FF</color>
-    <color name="trends_bargraph_annotation_text">#009cff</color>
-    <color name="trends_bargraph_hightlight">#009CFF</color>
-    <color name="trends_bargraph_hightlight_bar">#66C4FF</color>
+    <color name="trends_title">@color/gray4</color> <!-- The transparency is missing #b2596980 -->
+    <color name="trends_line_divider">@color/gray2</color> <!-- The transparency is missing #19596980 -->
+    <color name="trends_line_divider_shimmer">@color/gray2</color>
+    <color name="trends_bargraph_dashedline">@color/gray7</color>
+    <color name="trends_bargraph">@color/gray3</color>
+    <color name="trends_bargraph_bar">@color/blue3</color>
+    <color name="trends_bargraph_annotation_text">@color/blue6</color>
+    <color name="trends_bargraph_hightlight">@color/blue6</color>
+    <color name="trends_bargraph_hightlight_bar">@color/blue5</color>
     <color name="trends_bargraph_highlight_text">@color/white</color>
-    <color name="trends_bubblegraph_light_bubble">#80CEFF</color>
-    <color name="trends_bubblegraph_medium_bubble">#40B6FF</color>
-    <color name="trends_bubblegraph_deep_bubble">#009CFF</color>
-    <color name="trends_bubblegraph_text_title">@color/text_dim_light</color>
+    <color name="trends_bubblegraph_light_bubble">@color/blue4</color>
+    <color name="trends_bubblegraph_medium_bubble">@color/blue5</color>
+    <color name="trends_bubblegraph_deep_bubble">@color/blue6</color>
+    <color name="trends_bubblegraph_text_title">@color/blue6</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
-    <color name="trends_gridgraph">#66596980</color>
+    <color name="trends_gridgraph">@color/gray3</color>
 
-    <color name="timeline_share_text">#94A0AE</color>
-    <color name="timeline_share_background_gradient_top">#F5F7FA</color>
-    <color name="timeline_share_background_gradient_bottom">#FFFFFF</color>
+    <color name="timeline_share_text">@color/gray4</color>
+    <color name="timeline_share_background_gradient_top">@color/gray1</color>
+    <color name="timeline_share_background_gradient_bottom">@color/white</color>
 </resources>
