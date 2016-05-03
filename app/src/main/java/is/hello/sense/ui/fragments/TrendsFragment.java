@@ -42,15 +42,19 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     private SelectorView timeScaleSelector;
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser){
+            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPresenter(trendsPresenter);
         setHasOptionsMenu(true);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
-        }
     }
 
     @Nullable

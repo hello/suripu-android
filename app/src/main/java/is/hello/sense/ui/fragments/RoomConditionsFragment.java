@@ -72,15 +72,17 @@ public class RoomConditionsFragment extends BacksideTabFragment
     //region Lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser){
             Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
         }
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         addPresenter(presenter);
-
         updateTimer.setOnUpdate(presenter::update);
     }
 

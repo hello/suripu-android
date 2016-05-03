@@ -66,6 +66,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser){
+            Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
             update();
         }
     }
@@ -73,11 +74,6 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
-        }
-
         addPresenter(smartAlarmPresenter);
     }
 
