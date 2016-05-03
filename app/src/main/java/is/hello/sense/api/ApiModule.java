@@ -160,7 +160,7 @@ public class ApiModule {
         } else {
             builder.setLogLevel(RestAdapter.LogLevel.BASIC);
         }
-        builder.setLog(Logger. RETROFIT_LOGGER);
+        builder.setLog(Logger.RETROFIT_LOGGER);
         builder.setErrorHandler(error -> {
             if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
                 LocalBroadcastManager.getInstance(applicationContext)
