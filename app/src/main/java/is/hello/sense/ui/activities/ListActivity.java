@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
@@ -134,7 +135,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listAdapter = new ListAdapter(IListObject, wantsPlayer);
-
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources(),
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
         recyclerView.setLayoutManager(layoutManager);
