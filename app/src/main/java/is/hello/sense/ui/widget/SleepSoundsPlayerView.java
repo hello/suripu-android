@@ -108,12 +108,12 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             this.currentStatus = status;
         }
 
-        soundRow.bind(status.getSound(), savedSound);
-        durationRow.bind(status.getDuration(), savedDuration);
-        if (savedVolume == SleepSoundStatus.Volume.None){
+        soundRow.bind(status.getSound(), savedSound, null);
+        durationRow.bind(status.getDuration(), savedDuration, null);
+        if (savedVolume == SleepSoundStatus.Volume.None) {
             savedVolume = null;
         }
-        volumeRow.bind(status.getVolume(), savedVolume);
+        volumeRow.bind(status.getVolume(), savedVolume, SleepSoundStatus.Volume.Medium);
     }
 
     @Override
@@ -245,13 +245,16 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
         }
 
         public void bind(final @Nullable IListObject.IListItem currentItem,
-                         final @Nullable IListObject.IListItem savedItem) {
+                         final @Nullable IListObject.IListItem savedItem,
+                         final @Nullable IListObject.IListItem defaultItem) {
             final List<? extends IListObject.IListItem> items = rowItem.getListObject().getListItems();
 
             if (currentItem != null && items.contains(currentItem)) {
                 listItem = currentItem;
             } else if (savedItem != null) {
                 listItem = savedItem;
+            } else if (defaultItem != null) {
+                listItem = defaultItem;
             } else {
                 listItem = items.get(0);
             }
