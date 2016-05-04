@@ -2,6 +2,7 @@ package is.hello.sense.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -176,6 +177,7 @@ public class ApiModule {
         });
         builder.setRequestInterceptor(request -> {
             request.addHeader(ApiService.HEADER_CLIENT_VERSION, BuildConfig.VERSION_NAME);
+            request.addHeader("User-Agent", "Sense/" + BuildConfig.VERSION_NAME + " Platform/Android OS/" + Build.VERSION.SDK_INT);
             if (sessionManager.hasSession()) {
                 request.addHeader("Authorization", "Bearer " + sessionManager.getAccessToken());
             }
