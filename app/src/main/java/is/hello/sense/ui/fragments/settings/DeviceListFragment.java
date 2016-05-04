@@ -195,7 +195,7 @@ public class DeviceListFragment extends InjectionFragment
         switch (type) {
             case SENSE: {
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
-                intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                intent.putExtra(OnboardingActivity.EXTRA_SHOW_SENSE_PAIR_ONLY, true);
                 break;
             }
 
