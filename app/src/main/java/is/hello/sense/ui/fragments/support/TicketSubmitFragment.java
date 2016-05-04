@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.support;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.common.api.Api;
 import com.zendesk.sdk.attachment.AttachmentHelper;
 import com.zendesk.sdk.attachment.ImageUploadHelper;
 import com.zendesk.sdk.feedback.ui.AttachmentContainerHost;
@@ -34,7 +34,10 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.SupportTopic;
+import is.hello.sense.permissions.ExternalStoragePermission;
+import is.hello.sense.permissions.Permission;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
@@ -42,10 +45,11 @@ import is.hello.sense.zendesk.AttachmentPicker;
 import is.hello.sense.zendesk.TicketsPresenter;
 import rx.Observable;
 
-public class TicketSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener {
+public class TicketSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener, Permission.PermissionDialogResources {
     private static final String ARG_SUPPORT_TOPIC = TicketSubmitFragment.class.getName() + ".ARG_SUPPORT_TOPIC";
 
-    @Inject TicketsPresenter ticketsPresenter;
+    @Inject
+    TicketsPresenter ticketsPresenter;
 
     private AttachmentPicker attachmentPicker;
     private SupportTopic supportTopic;
@@ -56,6 +60,8 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
 
     private MenuItem addAttachmentItem;
     private MenuItem sendItem;
+
+    private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
 
 
     //region Lifecycle
@@ -135,6 +141,15 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
         attachmentPicker.saveInstanceState(outState);
     }
 
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
+        if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            showAttachOptions();
+        } else {
+            externalStoragePermission.showEnableInstructionsDialog(this);
+        }
+    }
+
     //endregion
 
 
@@ -184,16 +199,20 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     //region Attachments
 
     private void showAttachOptions() {
-        LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(ticketsPresenter.initializeIfNeeded(),
-                         config -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             attachmentPicker.showOptions();
-                         },
-                         e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getActivity(), e);
-                         });
+        if (externalStoragePermission.isGranted()) {
+            LoadingDialogFragment.show(getFragmentManager());
+            bindAndSubscribe(ticketsPresenter.initializeIfNeeded(),
+                             config -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 attachmentPicker.showOptions();
+                             },
+                             e -> {
+                                 LoadingDialogFragment.close(getFragmentManager());
+                                 ErrorDialogFragment.presentError(getActivity(), e);
+                             });
+        } else {
+            externalStoragePermission.requestPermission();
+        }
     }
 
     @Override
@@ -262,6 +281,27 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     @Override
     public void afterTextChanged(Editable s) {
         getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public int dialogTitle() {
+        return R.string.request_permission_write_external_storage_required_title;
+    }
+
+    @Override
+    public int dialogMessage() {
+        return R.string.request_permission_write_external_storage_required_message_generic;
+    }
+
+    @NonNull
+    @Override
+    public DialogInterface.OnClickListener clickListener() {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                UserSupport.showStoragePermissionMoreInfoPage(getActivity());
+            }
+        };
     }
 
     //endregion
