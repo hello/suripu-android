@@ -81,7 +81,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
     public void bindStatus(final @NonNull SleepSoundStatus status,
                            final @Nullable Sound savedSound,
                            final @Nullable Duration savedDuration,
-                           final @Nullable SleepSoundStatus.Volume savedVolume) {
+                           @Nullable SleepSoundStatus.Volume savedVolume) {
         if (this.currentStatus.isPlaying() != status.isPlaying()) {
             this.currentStatus = status;
             final ValueAnimator animator;
@@ -107,8 +107,12 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
         } else {
             this.currentStatus = status;
         }
+
         soundRow.bind(status.getSound(), savedSound);
         durationRow.bind(status.getDuration(), savedDuration);
+        if (savedVolume == SleepSoundStatus.Volume.None){
+            savedVolume = null;
+        }
         volumeRow.bind(status.getVolume(), savedVolume);
     }
 
