@@ -38,7 +38,8 @@ public abstract class Permission {
 
     public void requestPermission() {
         FragmentCompat.requestPermissions(fragment,
-                                          getPermissions(), getPermissionCode());
+                                          getPermissions(),
+                                          getPermissionCode());
     }
 
 
@@ -47,11 +48,12 @@ public abstract class Permission {
                                                @NonNull final DialogInterface.OnClickListener listener) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_WE_NEED_LOCATION, null);
 
-        SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
+        final SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
         dialog.setTitle(titleRes);
         dialog.setMessage(messageRes);
         dialog.setPositiveButton(R.string.action_continue, (sender, which) -> {
-            requestPermission();
+            dialog.dismiss();
+            Permission.this.requestPermission();
         });
         dialog.setNegativeButton(R.string.action_more_info, listener);
         dialog.show();
@@ -67,8 +69,8 @@ public abstract class Permission {
                                                 @NonNull final DialogInterface.OnClickListener listener) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_LOCATION_DISABLED, null);
 
-        SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
-        CharSequence clickableText = fragment.getResources().getText(messageRes);
+        final SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
+        final CharSequence clickableText = fragment.getResources().getText(messageRes);
         dialog.setTitle(titleRes);
         dialog.setMessage(Styles.resolveSupportLinks(fragment.getActivity(), clickableText));
         dialog.setPositiveButton(android.R.string.ok, null);
@@ -83,7 +85,7 @@ public abstract class Permission {
     }
 
     protected int getPermissionCode() {
-        return getPermissionName().hashCode();
+        return Math.abs(getPermissionName().hashCode());
     }
 
     private String[] getPermissions() {

@@ -153,7 +153,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void onResume() {
         super.onResume();
 
-        if (locationPermission.isGranted()) {
+        if (!locationPermission.isGranted()) {
             showPermissionPrompt();
         } else if (bluetoothStack.isEnabled() && !blockConnection) {
             connectToPeripheral();

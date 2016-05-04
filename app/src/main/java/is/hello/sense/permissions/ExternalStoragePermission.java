@@ -20,11 +20,6 @@ public class ExternalStoragePermission extends Permission {
     }
 
     @Override
-    protected int getPermissionCode() {
-        return getPermissionName().hashCode();
-    }
-
-    @Override
     public void requestPermissionWithDialog() {
         requestPermissionWithDialog(
                 R.string.request_permission_write_external_storage_title,

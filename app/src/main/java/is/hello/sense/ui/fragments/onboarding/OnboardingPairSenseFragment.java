@@ -24,6 +24,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
+import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
@@ -217,7 +218,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     }
 
     public void next() {
-        if (locationPermission.isGranted()) {
+        if (!locationPermission.isGranted()) {
             locationPermission.requestPermissionWithDialog();
             return;
         }
