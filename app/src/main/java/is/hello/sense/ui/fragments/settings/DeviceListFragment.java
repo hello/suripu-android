@@ -194,12 +194,13 @@ public class DeviceListFragment extends InjectionFragment
     public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
         if (type == PlaceholderDevice.Type.SENSE) {
             OnboardingActivity.startActivityForPairingSense(getActivity());
-        } else {
+        } else if (type == PlaceholderDevice.Type.SLEEP_PILL) {
             Intent intent = new Intent(getActivity(), OnboardingActivity.class);
             intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
             intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
             startActivityForResult(intent, PAIR_DEVICE_REQUEST_CODE);
-
+        } else {
+            throw new IllegalStateException();
         }
     }
 }
