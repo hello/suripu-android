@@ -468,6 +468,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 unselectedState();
                 image.setVisibility(View.INVISIBLE);
                 image.stopSpinning();
+                status.setText(null);
             }
 
             title.setOnClickListener(v -> {
