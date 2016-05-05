@@ -89,8 +89,8 @@ public class OnboardingActivity extends InjectionActivity
 
     public static void startActivityForPairingSense(@NonNull final Activity from){
         Intent intent = new Intent(from, OnboardingActivity.class);
-        intent.putExtra(OnboardingActivity.EXTRA_SHOW_SENSE_PAIR_ONLY, true);
-        intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+        intent.putExtra(EXTRA_SHOW_SENSE_PAIR_ONLY, true);
+        intent.putExtra(EXTRA_PAIR_ONLY, true);
         from.startActivity(intent);
     }
 
