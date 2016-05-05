@@ -53,6 +53,7 @@
     <dimen name="text_size_trends_bubblegraph_title">10sp</dimen>
     <dimen name="text_size_trends_gridgraph">10sp</dimen>
     <dimen name="text_size_trends_gridgraph_cell">11sp</dimen>
+    <dimen name="player_preview_text_size">12sp</dimen>
 
     <item name="line_multiple_none" format="float" type="dimen">0</item>
     <item name="line_multiple_normal" format="float" type="dimen">1</item>
