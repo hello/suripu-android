@@ -55,6 +55,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
@@ -204,7 +205,10 @@ public class RoomConditionsFragment extends BacksideTabFragment
                                    getString(R.string.error_room_conditions_no_sense),
                                    R.string.action_pair_new_sense,
                                    ignored -> {
-                                       OnboardingActivity.startActivityForPairingSense(getActivity());
+                                       Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+                                       intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                                       intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                                       startActivity(intent);
                                    });
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
