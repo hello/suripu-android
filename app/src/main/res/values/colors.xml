@@ -2,7 +2,6 @@
 <resources>
     <color name="white">#ffffff</color>
     <color name="white_00">#00ffffff</color>
-    <color name="white_25">#40ffffff</color>
     <color name="white_40">#66ffffff</color>
     <color name="white_50">#80ffffff</color>
     <color name="white_60">#99ffffff</color>
@@ -13,6 +12,7 @@
     <color name="black_06">#10000000</color>
     <color name="black_10">#19000000</color>
     <color name="black_13">#22000000</color>
+    <color name="black_25">#40000000</color>
     <color name="black_27">#45000000</color>
     <color name="black_53">#86000000</color>
     <color name="black_70">#b3000000</color>
@@ -29,7 +29,6 @@
     <color name="gray2_10">#1ae8eaed</color>
     <color name="gray2_15">#28e8eaed</color>
     <color name="gray1">#F8F8F9</color>
-
 
     <!-- Purple -->
     <color name="purple7">#764EC9</color>
@@ -91,7 +90,7 @@
     <color name="red1">#FFFCFB</color>
 
     <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/white_25</color>
+    <color name="transparent_overlay">@color/black_25</color>
     <color name="light_accent">@color/blue6</color>
     <color name="light_accent_dimmed">@color/blue4</color>
     <color name="light_accent_extra_dimmed">@color/blue2</color>
@@ -122,12 +121,12 @@
     <color name="timeline_segment_stripe">@color/blue6_30</color>
 
     <color name="text_dark">@color/gray6</color>
-    <color name="text_medium">@color/blue5</color>
+    <color name="text_medium">@color/gray5</color>
     <color name="text_light">@color/gray4</color>
     <color name="text_dark_disabled">@color/black_27</color>
     <color name="text_dim">@color/black_53</color>
     <color name="text_dim_light">@color/white_75</color>
-    <color name="text_detail_grey">@color/white_25</color>
+    <color name="text_detail_grey">@color/black_25</color>
     <color name="text_section_header">@color/gray3</color>
     <color name="text_dim_placeholder">@color/gray2</color>
     <color name="text_link">@color/blue6</color>
