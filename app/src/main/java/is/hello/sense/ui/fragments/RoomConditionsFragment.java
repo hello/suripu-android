@@ -39,6 +39,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
@@ -203,7 +204,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
                                    getString(R.string.error_room_conditions_no_sense),
                                    R.string.action_pair_new_sense,
                                    ignored -> {
-                                       DeviceListFragment.startStandaloneFrom(getActivity());
+                                       OnboardingActivity.startActivityForPairingSense(getActivity());
                                    });
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
