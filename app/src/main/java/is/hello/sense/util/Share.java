@@ -159,7 +159,7 @@ public abstract class Share {
         @Override
         public void send(@NonNull Fragment from) {
             ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(from);
-            if (externalStoragePermission.isGranted()) {
+            if (!externalStoragePermission.isGranted()) {
                 externalStoragePermission.requestPermissionWithDialog();
                 return;
             }
