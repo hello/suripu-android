@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -468,6 +469,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 unselectedState();
                 image.setVisibility(View.INVISIBLE);
                 image.stopSpinning();
+                status.setText(null);
             }
 
             title.setOnClickListener(v -> {
