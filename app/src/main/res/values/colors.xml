@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">#ffffff</color>
+    <color name="white_00">#00ffffff</color>
+    <color name="white_25">#40ffffff</color>
+    <color name="white_40">#66ffffff</color>
+    <color name="white_50">#80ffffff</color>
+    <color name="white_60">#99ffffff</color>
+    <color name="white_75">#bfffffff</color>
+
+
     <color name="black">#000000</color>
+    <color name="black_06">#10000000</color>
+    <color name="black_10">#19000000</color>
+    <color name="black_13">#22000000</color>
+    <color name="black_27">#45000000</color>
+    <color name="black_53">#86000000</color>
+    <color name="black_70">#b3000000</color>
 
     <!-- Gray -->
     <color name="gray7">#162B48</color>
     <color name="gray6">#162B48</color>
     <color name="gray5">#5C6B7F</color>
     <color name="gray4">#8B95A4</color>
+    <color name="gray4_70">#b38b95a4</color>
     <color name="gray3">#B9BFC8</color>
     <color name="gray2">#E8EAED</color>
+    <color name="gray2_00">#00e8eaed</color>
+    <color name="gray2_10">#1ae8eaed</color>
+    <color name="gray2_15">#28e8eaed</color>
     <color name="gray1">#F8F8F9</color>
 
 
@@ -26,9 +44,13 @@
     <!-- Blue -->
     <color name="blue7">#0083D9</color>
     <color name="blue6">#009AFF</color>
+    <color name="blue6_80">#cc009aff</color>
+    <color name="blue6_50">#80009aff</color>
+    <color name="blue6_30">#4d009aff</color>
     <color name="blue5">#4CB9FF</color>
     <color name="blue4">#7FCDFF</color>
     <color name="blue3">#B2E1FF</color>
+    <color name="blue3_93">#eeb2e1ff</color>
     <color name="blue2">#E5F5FF</color>
     <color name="blue1">#F7FCFF</color>
 
@@ -68,8 +90,8 @@
     <color name="red2">#FFF4F2</color>
     <color name="red1">#FFFCFB</color>
 
-    <color name="transparent">@color/white</color> <!-- 0% opacity -->
-    <color name="transparent_overlay">#3c000000</color> <!-- update with the Dk Blue and a transparency -->
+    <color name="transparent">@color/white_00</color>
+    <color name="transparent_overlay">@color/white_25</color>
     <color name="light_accent">@color/blue6</color>
     <color name="light_accent_dimmed">@color/blue4</color>
     <color name="light_accent_extra_dimmed">@color/blue2</color>
@@ -81,8 +103,8 @@
     <color name="background">@color/gray2</color>
     <color name="insight_card_background">@color/gray2</color>
     <color name="background_light">@color/white</color>
-    <color name="background_light_overlay">@color/white</color> <!-- 60% opacity -->
-    <color name="background_dark_overlay">@color/white</color> <!-- 50% opacity -->
+    <color name="background_light_overlay">@color/white_60</color>
+    <color name="background_dark_overlay">@color/white_50</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
     <color name="background_insight_illustration">@color/gray3</color>
@@ -91,29 +113,28 @@
 
     <color name="border">@color/gray2</color>
     <color name="border_backside_tabs">@color/gray3</color>
-    <color name="shadow_end">#19000000</color> <!-- ???????? -->
-    <color name="view_time_picker_shadow_end">#10000000</color> <!-- ???????? -->
+    <color name="shadow_end">@color/black_10</color>
+    <color name="view_time_picker_shadow_end">@color/black_06</color>
 
     <color name="timeline_header_border">@color/blue3</color>
     <color name="timeline_header_gradient_end">@color/gray1</color>
     <color name="timeline_background_fill">@color/blue2</color>
-    <color name="timeline_segment_stripe">@color/blue6</color> <!-- 25% opacity -->
+    <color name="timeline_segment_stripe">@color/blue6_30</color>
 
     <color name="text_dark">@color/gray6</color>
     <color name="text_medium">@color/blue5</color>
     <color name="text_light">@color/gray4</color>
-    <color name="text_dark_disabled">@color/black</color> <!-- 27% opacity -->
-    <color name="text_dim">#88000000</color> <!-- ???????? -->
-    <color name="text_dim_light">@color/white</color> <!-- 75% opacity -->
-    <color name="text_detail_grey">@color/white</color> <!-- 25% opacity -->
+    <color name="text_dark_disabled">@color/black_27</color>
+    <color name="text_dim">@color/black_53</color>
+    <color name="text_dim_light">@color/white_75</color>
+    <color name="text_detail_grey">@color/white_25</color>
     <color name="text_section_header">@color/gray3</color>
     <color name="text_dim_placeholder">@color/gray2</color>
     <color name="text_link">@color/blue6</color>
     <color name="text_body_new">@color/gray5</color>
     <color name="text_heading_major">@color/gray6</color>
-    <color name="text_black_70">@color/black</color> <!-- 70% opacity -->
 
-    <color name="text_rotary_picker_focused">@color/light_accent</color> <!-- I don't know what the light accent is -->
+    <color name="text_rotary_picker_focused">@color/light_accent</color>
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
@@ -123,8 +144,8 @@
     <color name="text_white_button">@color/white</color>
     <color name="text_white_button_pressed">@color/gray3</color>
 
-    <color name="background_button_white_pressed">#28d5d5d5</color> <!-- Grey 2 -->
-    <color name="background_button_dark_pressed">#EEdff2fe</color> <!-- Blue 10 -->
+    <color name="background_button_white_pressed">@color/gray2_15</color>
+    <color name="background_button_dark_pressed">@color/blue3_93</color>
 
     <color name="sensor_alert">@color/red6</color>
     <color name="sensor_warning">@color/orange6</color>
@@ -133,15 +154,15 @@
     <color name="sensor_empty">@color/gray3</color>
 
     <color name="sleep_awake">@color/transparent</color>
-    <color name="sleep_light">@color/blue6</color> <!-- 30% opacity -->
-    <color name="sleep_medium">@color/blue6</color> <!-- 50% opacity -->
-    <color name="sleep_sound">@color/blue6</color> <!-- 80% opacity -->
+    <color name="sleep_light">@color/blue6_30</color>
+    <color name="sleep_medium">@color/blue6_50</color>
+    <color name="sleep_sound">@color/blue6_80</color>
 
-    <color name="graph_stroke_color">@color/white</color> <!-- 40% opacity -->
-    <color name="graph_fill_gradient_top">#22000000</color>  <!-- ???????? -->
-    <color name="graph_fill_gradient_bottom">#11000000</color>  <!-- ???????? -->
-    <color name="graph_fill_solid">#22D6D6D6</color>  <!-- ???????? -->
-    <color name="graph_fill_empty">@color/gray2</color> <!-- 0% opacity -->
+    <color name="graph_stroke_color">@color/white_40</color>
+    <color name="graph_fill_gradient_top">@color/black_13</color>
+    <color name="graph_fill_gradient_bottom">@color/black_06</color>
+    <color name="graph_fill_solid">@color/gray2_15</color>
+    <color name="graph_fill_empty">@color/gray2_00</color>
 
     <color name="graph_grid_empty_cell">@color/white</color>
     <color name="graph_grid_empty_missing">@color/gray2</color>
@@ -149,8 +170,8 @@
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="trends_title">@color/gray4</color> <!-- The transparency is missing #b2596980 -->
-    <color name="trends_line_divider">@color/gray2</color> <!-- The transparency is missing #19596980 -->
+    <color name="trends_title">@color/gray4_70</color>
+    <color name="trends_line_divider">@color/gray2_10</color>
     <color name="trends_line_divider_shimmer">@color/gray2</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>
     <color name="trends_bargraph">@color/gray3</color>
