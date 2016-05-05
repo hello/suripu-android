@@ -193,7 +193,7 @@ public class TimelineAdapterTests extends SenseTestCase {
         adapter.bindViewHolder(holder, adapter.getHeaderCount());
 
         assertThat(holder.drawable.getSleepDepthFraction(), is(equalTo(0.5f)));
-        assertThat(holder.drawable.getSleepDepthColor(), is(equalTo(-0xff6501)));
+        assertThat(holder.drawable.getSleepDepthColor(), is(equalTo(-0x7fff6501)));
 
         assertThat(holder.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0f)));
         assertThat(holder.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0f)));
@@ -218,7 +218,7 @@ public class TimelineAdapterTests extends SenseTestCase {
         holder.setExcludedFromParallax(true);
 
         assertThat(holder.drawable.getSleepDepthFraction(), is(equalTo(0.5f)));
-        assertThat(holder.drawable.getSleepDepthColor(), is(equalTo(0xff009aff)));
+        assertThat(holder.drawable.getSleepDepthColor(), is(equalTo(0x80009aff)));
 
         assertThat(holder.drawable.getStolenTopSleepDepthFraction(), is(equalTo(0f)));
         assertThat(holder.drawable.getStolenBottomSleepDepthFraction(), is(equalTo(0f)));

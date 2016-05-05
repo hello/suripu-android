@@ -14,6 +14,7 @@
     <color name="black_13">#22000000</color>
     <color name="black_25">#40000000</color>
     <color name="black_27">#45000000</color>
+    <color name="black_50">#80000000</color>
     <color name="black_53">#86000000</color>
     <color name="black_70">#b3000000</color>
 
@@ -103,7 +104,7 @@
     <color name="insight_card_background">@color/gray2</color>
     <color name="background_light">@color/white</color>
     <color name="background_light_overlay">@color/white_60</color>
-    <color name="background_dark_overlay">@color/white_50</color>
+    <color name="background_dark_overlay">@color/black_50</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
     <color name="background_insight_illustration">@color/gray3</color>
@@ -147,7 +148,7 @@
     <color name="background_button_dark_pressed">@color/blue3_93</color>
 
     <color name="sensor_alert">@color/red6</color>
-    <color name="sensor_warning">@color/orange6</color>
+    <color name="sensor_warning">@color/yellow6</color>
     <color name="sensor_ideal">@color/green6</color>
     <color name="sensor_unknown">@color/gray6</color>
     <color name="sensor_empty">@color/gray3</color>
@@ -182,7 +183,7 @@
     <color name="trends_bubblegraph_light_bubble">@color/blue4</color>
     <color name="trends_bubblegraph_medium_bubble">@color/blue5</color>
     <color name="trends_bubblegraph_deep_bubble">@color/blue6</color>
-    <color name="trends_bubblegraph_text_title">@color/blue6</color>
+    <color name="trends_bubblegraph_text_title">@color/white</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
     <color name="trends_gridgraph">@color/gray3</color>
 
