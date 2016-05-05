@@ -240,6 +240,12 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         sleepSoundsPresenter.update();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        statusPollingHelper.poll();
+    }
+
     private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
         final Devices devices = stateDevice.getDevices();
         final SleepSoundsState state = stateDevice.getSleepSoundsState();

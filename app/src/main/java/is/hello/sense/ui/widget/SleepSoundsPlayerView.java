@@ -82,31 +82,28 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                            final @Nullable Sound savedSound,
                            final @Nullable Duration savedDuration,
                            @Nullable SleepSoundStatus.Volume savedVolume) {
-        if (this.currentStatus.isPlaying() != status.isPlaying()) {
-            this.currentStatus = status;
-            final ValueAnimator animator;
-            if (status.isPlaying()) {
-                animator = ValueAnimator.ofFloat(maxFadeFactor, minFadeFactor);
-            } else {
-                animator = ValueAnimator.ofFloat(minFadeFactor, maxFadeFactor);
-            }
-            animator.setDuration(Anime.DURATION_SLOW);
-            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-            animator.addUpdateListener(a -> {
-                fadeFactor = (float) a.getAnimatedValue();
-                invalidate();
-                requestLayout();
-            });
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    titleRow.update();
-                }
-            });
-            animatorContext.startWhenIdle(animator);
+        this.currentStatus = status;
+        final ValueAnimator animator;
+        if (status.isPlaying()) {
+            animator = ValueAnimator.ofFloat(minFadeFactor, maxFadeFactor);
         } else {
-            this.currentStatus = status;
+            animator = ValueAnimator.ofFloat(maxFadeFactor, minFadeFactor);
         }
+        animator.setDuration(Anime.DURATION_SLOW);
+        animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+        animator.addUpdateListener(a -> {
+            fadeFactor = (float) a.getAnimatedValue();
+            invalidate();
+            requestLayout();
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                titleRow.update();
+            }
+        });
+        animatorContext.startWhenIdle(animator);
+        this.currentStatus = status;
 
         soundRow.bind(status.getSound(), savedSound, null);
         durationRow.bind(status.getDuration(), savedDuration, null);
