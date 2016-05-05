@@ -67,7 +67,6 @@ public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation, AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
-    public static final String EXTRA_SHOW_SENSE_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_SHOW_SENSE_PAIR_ONLY";
 
     public static final int FLOW_NONE = -1;
     public static final int FLOW_REGISTER = 0;
@@ -76,23 +75,23 @@ public class OnboardingActivity extends InjectionActivity
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FLOW_NONE, FLOW_REGISTER, FLOW_SIGN_IN})
     @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
-    public @interface Flow {}
+    public @interface Flow {
+    }
 
-    @Inject ApiService apiService;
-    @Inject HardwarePresenter hardwarePresenter;
-    @Inject PreferencesPresenter preferences;
-    @Inject BluetoothStack bluetoothStack;
+    @Inject
+    ApiService apiService;
+    @Inject
+    HardwarePresenter hardwarePresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    BluetoothStack bluetoothStack;
 
     private FragmentNavigationDelegate navigationDelegate;
 
-    private @Nullable Account account;
-
-    public static void startActivityForPairingSense(@NonNull final Activity from){
-        Intent intent = new Intent(from, OnboardingActivity.class);
-        intent.putExtra(OnboardingActivity.EXTRA_SHOW_SENSE_PAIR_ONLY, true);
-        intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-        from.startActivity(intent);
-    }
+    private
+    @Nullable
+    Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,19 +101,25 @@ public class OnboardingActivity extends InjectionActivity
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_onboarding_container,
                                                                  stateSafeExecutor);
-        boolean showSensePairOnly = false;
-        if (getIntent() != null){
-            showSensePairOnly = getIntent().getBooleanExtra(EXTRA_SHOW_SENSE_PAIR_ONLY, false);
-        }
+
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
 
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if (showSensePairOnly) {
-            showPairSense();
+        if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+            int lastCheckPoint = getLastCheckPoint();
+            switch (lastCheckPoint) {
+                case Constants.ONBOARDING_CHECKPOINT_SENSE:
+                    showPairSense();
+                    break;
+                case Constants.ONBOARDING_CHECKPOINT_PILL:
+                    showPairPill(true);
+                    break;
+            }
         } else {
+
             if (navigationDelegate.getTopFragment() == null) {
                 int lastCheckpoint = getLastCheckPoint();
                 switch (lastCheckpoint) {
@@ -275,6 +280,14 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new SignInFragment(), null, true);
     }
 
+    public void showPairSense() {
+        if (bluetoothStack.isEnabled()) {
+            pushFragment(new OnboardingPairSenseFragment(), null, false);
+        } else {
+            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
+        }
+    }
+
     public void showGetStarted(boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && !hardwarePresenter.isDeviceSupported()) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
@@ -366,14 +379,6 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showPairSense() {
-        if (bluetoothStack.isEnabled()) {
-            pushFragment(new OnboardingPairSenseFragment(), null, false);
-        } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
-        }
-    }
-
     public void showSelectWifiNetwork() {
         boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
         pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(pairOnly), null, true);
@@ -388,8 +393,8 @@ public class OnboardingActivity extends InjectionActivity
                                  Logger.info(getClass().getSimpleName(), "Loaded devices info");
                                  Analytics.setSenseId(devicesInfo.getSenseId());
                              }, e -> {
-                                 Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
-                             });
+                        Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
+                    });
 
             final OnboardingSimpleStepFragment.Builder builder =
                     new OnboardingSimpleStepFragment.Builder(this);
@@ -399,7 +404,7 @@ public class OnboardingActivity extends InjectionActivity
             builder.setHideToolbar(true);
             if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
-            }else{
+            } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             }
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
@@ -476,7 +481,9 @@ public class OnboardingActivity extends InjectionActivity
 
     public static final String ANIMATION_ROOM_CHECK = "room_check";
 
-    public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
+    public
+    @Nullable
+    OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (view, onCompletion) -> {

@@ -44,6 +44,7 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -196,7 +197,10 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
             message.titleIconRes = R.drawable.illustration_no_sense;
             message.actionRes = R.string.action_pair_new_sense;
             message.onClickListener = ignored -> {
-                OnboardingActivity.startActivityForPairingSense(getActivity());
+                Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                startActivity(intent);
             };
         } else {
             StringRef errorMessage = Errors.getDisplayMessage(e);
