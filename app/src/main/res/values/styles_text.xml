@@ -81,7 +81,7 @@
     </style>
 
     <style name="AppTheme.Text.Body.MidSized.DarkText">
-        <item name="android:textColor">@color/text_black_70</item>
+        <item name="android:textColor">@color/black_70</item>
     </style>
 
     <style name="AppTheme.Text.Body.MidSized.New">
@@ -184,7 +184,7 @@
         <item name="android:textSize">@dimen/text_size_score_share_date_text</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/text_black_70</item>
+        <item name="android:textColor">@color/black_70</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm" />
