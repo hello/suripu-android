@@ -124,7 +124,7 @@ public class GridTrendGraphView extends TrendGraphView {
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
+                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements, graph);
                     if (!GridTrendGraphView.this.getGraph().equals(graph)) {
                         GridTrendGraphView.super.bindGraph(graph);
                     }
@@ -268,7 +268,7 @@ public class GridTrendGraphView extends TrendGraphView {
          *
          * @param circleSize width / 7
          */
-        private void initHeight(float circleSize) {
+        private void initHeight(float circleSize, @NonNull final Graph graph) {
             if (circleSize == this.circleSize || circleSize == 0) {
                 return;
             }
@@ -278,7 +278,10 @@ public class GridTrendGraphView extends TrendGraphView {
             this.reservedTopSpace = textHeight * 2 + padding;
             this.radius = circleSize / 2 - padding * 2;
             updateCellController();
+        }
 
+        private void initHeight(float circleSize) {
+            initHeight(circleSize, this.graph);
         }
 
         /**
