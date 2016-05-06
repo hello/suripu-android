@@ -129,7 +129,7 @@
     <color name="text_dim">@color/black_53</color>
     <color name="text_dim_light">@color/white_75</color>
     <color name="text_detail_grey">@color/black_25</color>
-    <color name="text_section_header">@color/gray3</color>
+    <color name="text_section_header">@color/gray4</color>
     <color name="text_dim_placeholder">@color/gray2</color>
     <color name="text_link">@color/blue6</color>
     <color name="text_body_new">@color/gray5</color>
