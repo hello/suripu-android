@@ -271,6 +271,14 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             return;
         }
 
+        if (state.getSounds() !=null){
+            if (state.getSounds().getState() == SleepSounds.State.SENSE_UPDATE_REQUIRED){
+                adapter.setUpdatingState();
+                setButtonVisible(false);
+                return;
+            }
+        }
+
         setButtonVisible(false);
         adapter.setErrorState();
     }
