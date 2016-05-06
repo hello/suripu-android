@@ -315,9 +315,14 @@
     </style>
 
     <style name="AppTheme.Text.Player.Item">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:textColor">@color/gray5</item>
     </style>
 
     <style name="AppTheme.Text.Player.Preview">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/gray4</item>
     </style>
 </resources>
