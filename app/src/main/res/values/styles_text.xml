@@ -309,6 +309,9 @@
     </style>
 
     <style name="AppTheme.Text.Player.Title">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textColor">@color/trends_title</item>
     </style>
 
     <style name="AppTheme.Text.Player.Item">

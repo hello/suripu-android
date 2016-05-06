@@ -14,7 +14,7 @@
         android:id="@+id/item_section_title_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/gap_mlarge"
+        android:paddingLeft="@dimen/gap_outer"
         android:paddingRight="@dimen/gap_outer"
         android:paddingTop="@dimen/gap_large"
         android:paddingBottom="@dimen/gap_medium"
