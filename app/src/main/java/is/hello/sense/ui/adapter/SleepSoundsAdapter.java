@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public void bind(final @NonNull SleepSoundStatus status) {
         if (this.combinedSleepState == null) {
+            currentState = AdapterState.NONE;
             return;
         }
         this.sleepSoundStatus = status;
@@ -99,6 +101,12 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public void setOfflineTooLong() {
         currentState = AdapterState.OFFLINE;
+        sleepSoundStatus = null;
+        notifyDataSetChanged();
+    }
+
+    public void setUpdatingState() {
+        currentState = AdapterState.FIRMWARE_UPDATE;
         sleepSoundStatus = null;
         notifyDataSetChanged();
     }
