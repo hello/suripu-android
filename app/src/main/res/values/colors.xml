@@ -29,6 +29,7 @@
     <color name="gray2_00">#00e8eaed</color>
     <color name="gray2_10">#1ae8eaed</color>
     <color name="gray2_15">#28e8eaed</color>
+    <color name="gray2_50">#80e8eaed</color>
     <color name="gray1">#F8F8F9</color>
 
     <!-- Purple -->
@@ -128,7 +129,7 @@
     <color name="text_dim">@color/black_53</color>
     <color name="text_dim_light">@color/white_75</color>
     <color name="text_detail_grey">@color/black_25</color>
-    <color name="text_section_header">@color/gray3</color>
+    <color name="text_section_header">@color/gray4</color>
     <color name="text_dim_placeholder">@color/gray2</color>
     <color name="text_link">@color/blue6</color>
     <color name="text_body_new">@color/gray5</color>
@@ -171,8 +172,8 @@
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
     <color name="trends_title">@color/gray4_70</color>
-    <color name="trends_line_divider">@color/gray2_10</color>
-    <color name="trends_line_divider_shimmer">@color/gray2</color>
+    <color name="trends_line_divider">@color/gray2_50</color>
+    <color name="trends_line_divider_shimmer">@color/gray3</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>
     <color name="trends_bargraph">@color/gray3</color>
     <color name="trends_bargraph_bar">@color/blue3</color>

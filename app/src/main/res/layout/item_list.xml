@@ -6,6 +6,7 @@
 
     <TextView
         android:id="@+id/item_list_name"
+        style="@style/AppTheme.Text.Player.Item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -25,19 +26,23 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:gravity="right"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/item_list_player_status"
+            style="@style/AppTheme.Text.Player.Preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:gravity="center_vertical|right"/>
+            android:layout_marginRight="@dimen/gap_small"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"/>
 
         <FrameLayout
             android:id="@+id/item_list_play_holder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/gap_medium"
             android:clickable="true">
 
             <is.hello.sense.ui.widget.SpinnerImageView
@@ -46,10 +51,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:clickable="true"
-                android:paddingBottom="@dimen/gap_outer_half"
-                android:paddingLeft="@dimen/gap_outer"
-                android:paddingRight="@dimen/gap_outer"
-                android:paddingTop="@dimen/gap_outer_half"
                 android:src="@drawable/sound_preview_play"
                 android:visibility="invisible"
                 />
