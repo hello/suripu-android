@@ -36,8 +36,8 @@ import is.hello.sense.ui.widget.util.Styles;
  */
 public class BarTrendGraphView extends TrendGraphView {
 
-    public BarTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-        super(context, animatorContext);
+    public BarTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+        super(context, animatorContext,animationCallback);
         this.drawable = new BarGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -260,10 +260,12 @@ public class BarTrendGraphView extends TrendGraphView {
 
         @Override
         public void updateGraph(@NonNull Graph graph) {
+            isAnimating = true;
             if (graph.getTimeScale() == this.graph.getTimeScale()) {
                 BarGraphDrawable.this.graph = graph;
                 canvasValues.updateValues(getBounds());
                 requestLayout();
+                finishedAnimating();
                 return;
             }
             ValueAnimator animator = ValueAnimator.ofFloat(maxScaleFactor, minScaleFactor);
@@ -278,6 +280,7 @@ public class BarTrendGraphView extends TrendGraphView {
                     BarGraphDrawable.this.graph = graph;
                     canvasValues.updateValues(getBounds());
                     showGraphAnimation();
+                    isAnimating = false;
                 }
             });
             animatorContext.startWhenIdle(animator);

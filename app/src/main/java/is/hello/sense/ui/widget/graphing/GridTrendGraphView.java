@@ -41,8 +41,8 @@ public class GridTrendGraphView extends TrendGraphView {
     private final AnimatorContext animatorContext;
     private boolean showText = true;
 
-    public GridTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-        super(context, animatorContext);
+    public GridTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+        super(context, animatorContext, animationCallback);
         this.animatorContext = animatorContext;
         this.drawable = new GridGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
@@ -71,16 +71,21 @@ public class GridTrendGraphView extends TrendGraphView {
 
     @Override
     public void bindGraph(@NonNull Graph graph) {
+        isAnimating = true;
         final Graph oldGraph = getGraph();
         if (getAlpha() == 0) { // No need to animate, the view isn't visible.
             setDrawableHeight(getDrawableHeight(graph));
             requestLayout();
+            finishedAnimating();
+            animationCallback.isFinished();
             super.bindGraph(graph);
             return;
         }
         if (oldGraph.getTimeScale() == graph.getTimeScale()) { // just update the data
             super.bindGraph(graph);
+            setDrawableHeight(getDrawableHeight(graph));
             requestLayout();
+            finishedAnimating();
             return;
         }
         final int currentHeight = getDrawableHeight();
@@ -98,7 +103,14 @@ public class GridTrendGraphView extends TrendGraphView {
                     GridTrendGraphView.super.bindGraph(graph);
                     ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
                     final int targetHeight = getDrawableHeight(graph);
-                    animatorContext.startWhenIdle(getHeightChangeAnimator(minAnimationFactor, maxAnimationFactor, targetHeight));
+                    final ValueAnimator expandAnimator = getHeightChangeAnimator(minAnimationFactor, maxAnimationFactor, targetHeight);
+                    expandAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            finishedAnimating();
+                        }
+                    });
+                    animatorContext.startWhenIdle(expandAnimator);
                 }
             });
             animatorContext.startWhenIdle(shrinkAnimator);
@@ -124,10 +136,11 @@ public class GridTrendGraphView extends TrendGraphView {
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
+                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements, graph);
                     if (!GridTrendGraphView.this.getGraph().equals(graph)) {
                         GridTrendGraphView.super.bindGraph(graph);
                     }
+                    finishedAnimating();
                 }
             });
 
@@ -268,17 +281,20 @@ public class GridTrendGraphView extends TrendGraphView {
          *
          * @param circleSize width / 7
          */
-        private void initHeight(float circleSize) {
+        private void initHeight(float circleSize, @NonNull final Graph graph) {
             if (circleSize == this.circleSize || circleSize == 0) {
                 return;
             }
             this.circleSize = circleSize;
             this.padding = circleSize * .08f;
-            this.height = getHeight(this.graph);
+            this.height = getHeight(graph);
             this.reservedTopSpace = textHeight * 2 + padding;
             this.radius = circleSize / 2 - padding * 2;
             updateCellController();
+        }
 
+        private void initHeight(float circleSize) {
+            initHeight(circleSize, this.graph);
         }
 
         /**

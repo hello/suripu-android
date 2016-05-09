@@ -95,6 +95,10 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
     }
 
+    public boolean isAnimating() {
+        return graphBinder.isAnimating();
+    }
+
     public void setLoading(boolean loading) {
         if (loading) {
             dividerDrawable.start();
@@ -227,5 +231,8 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     public interface OnBindGraph {
 
         void bindGraph(@NonNull Graph graph);
+
+        boolean isAnimating();
+
     }
 }
