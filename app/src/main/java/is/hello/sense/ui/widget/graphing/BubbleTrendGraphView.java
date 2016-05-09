@@ -32,8 +32,8 @@ import is.hello.sense.ui.widget.util.Styles;
 @SuppressLint("ViewConstructor")
 public class BubbleTrendGraphView extends TrendGraphView {
 
-    public BubbleTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
-        super(context, animatorContext);
+    public BubbleTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+        super(context, animatorContext, animationCallback);
         this.drawable = new BubbleGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -151,15 +151,18 @@ public class BubbleTrendGraphView extends TrendGraphView {
 
         @Override
         public void updateGraph(@NonNull Graph graph) {
+            isAnimating = true;
             if (graph.getTimeScale() == this.graph.getTimeScale()) {
                 BubbleGraphDrawable.this.graph = graph;
                 currentBubbleController = createBubbleController(graph);
                 requestLayout();
+                finishedAnimating();
                 return;
             }
             final BubbleController animateTo = createBubbleController(graph);
             if (currentBubbleController == null) {
                 currentBubbleController = animateTo;
+                finishedAnimating();
                 return;
             }
             currentBubbleController.get(LEFT_BUBBLE).setTargetBubble(animateTo.get(LEFT_BUBBLE));
@@ -178,6 +181,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
                 public void onAnimationEnd(Animator animation) {
                     BubbleGraphDrawable.this.graph = graph;
                     currentBubbleController = animateTo;
+                    finishedAnimating();
                 }
             });
             animatorContext.startWhenIdle(animator);

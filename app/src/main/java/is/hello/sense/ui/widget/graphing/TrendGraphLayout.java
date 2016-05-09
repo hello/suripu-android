@@ -48,6 +48,11 @@ public class TrendGraphLayout extends LinearLayout implements TrendFeedViewItem.
         trendGraphView.bindGraph(graph);
     }
 
+    @Override
+    public boolean isAnimating() {
+        return trendGraphView.isAnimating();
+    }
+
     public TrendGraphView getTrendGraphView() {
         return trendGraphView;
     }
