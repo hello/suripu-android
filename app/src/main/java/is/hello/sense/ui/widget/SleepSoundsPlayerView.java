@@ -103,7 +103,6 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             }
         });
         animatorContext.startWhenIdle(animator);
-        this.currentStatus = status;
 
         soundRow.bind(status.getSound(), savedSound, null);
         durationRow.bind(status.getDuration(), savedDuration, null);
