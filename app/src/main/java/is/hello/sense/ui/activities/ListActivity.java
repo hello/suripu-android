@@ -361,7 +361,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         TitleViewHolder(@NonNull final View view) {
             super(view);
-            String title = getString(titleRes);
+            final String title = getString(titleRes);
             ((TextView) view.findViewById(R.id.item_section_title_text)).setText(title.toUpperCase());
             view.findViewById(R.id.item_section_title_divider).setVisibility(View.GONE);
         }
