@@ -115,7 +115,7 @@ public class OnboardingActivity extends InjectionActivity
                     showPairSense();
                     break;
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
-                    showPairPill(true);
+                    showPairPill(false);
                     break;
             }
         } else {
