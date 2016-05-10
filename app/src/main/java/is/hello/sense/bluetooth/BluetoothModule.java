@@ -11,7 +11,7 @@ import is.hello.buruberi.bluetooth.Buruberi;
 import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.util.ErrorListener;
-import is.hello.commonsense.service.SenseService.ForegroundNotificationProvider;
+import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.SensePresenter;
@@ -40,7 +40,8 @@ public class BluetoothModule {
         };
     }
 
-    @Provides ForegroundNotificationProvider provideForegroundNotificationProvider(@NonNull Context context) {
+    @Provides
+    SenseService.ForegroundNotificationProvider provideForegroundNotificationProvider(@NonNull Context context) {
         return new SenseNotificationProvider(context);
     }
 
@@ -52,8 +53,9 @@ public class BluetoothModule {
                 .build();
     }
 
-    @Provides @Singleton SenseServiceConnection provideServiceConnection(@NonNull Context context,
-                                                                         @NonNull ForegroundNotificationProvider provider) {
+    @Provides @Singleton
+    SenseServiceConnection provideServiceConnection(@NonNull Context context,
+                                                                         @NonNull SenseService.ForegroundNotificationProvider provider) {
         final SenseServiceConnection connection = new SenseServiceConnection(context);
 
         // The connection lives for the duration of the app being alive.

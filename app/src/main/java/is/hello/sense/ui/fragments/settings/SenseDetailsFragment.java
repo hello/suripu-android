@@ -44,7 +44,6 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -87,7 +86,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private boolean didEnableBluetooth = false;
 
     private @Nullable SenseNetworkStatus currentWifiNetwork;
-
+    private final LocationPermission locationPermission = new LocationPermission(this);
 
     //region Lifecycle
 
