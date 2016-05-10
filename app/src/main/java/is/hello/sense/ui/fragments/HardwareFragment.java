@@ -29,9 +29,10 @@ import rx.functions.Action1;
  * in-app and on Sense loading indicators.
  */
 public abstract class HardwareFragment extends InjectionFragment {
-    public @Inject HardwarePresenter hardwarePresenter;
+    public
+    @Inject
+    HardwarePresenter hardwarePresenter;
 
-    private LoadingDialogFragment loadingDialogFragment;
 
     protected boolean isPairOnlySession() {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
@@ -41,27 +42,21 @@ public abstract class HardwareFragment extends InjectionFragment {
     //region Activity
 
     protected void showBlockingActivity(@StringRes int titleRes) {
-        if (loadingDialogFragment == null) {
-            stateSafeExecutor.execute(() -> {
-                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                        getString(titleRes),
-                                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
-            });
-        } else {
-            loadingDialogFragment.setTitle(getString(titleRes));
-        }
+        stateSafeExecutor.execute(() -> {
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       getString(titleRes),
+                                       LoadingDialogFragment.OPAQUE_BACKGROUND);
+        });
     }
 
     protected void hideBlockingActivity(boolean success, @NonNull Runnable onCompletion) {
         stateSafeExecutor.execute(() -> {
             if (success) {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                    this.loadingDialogFragment = null;
                     stateSafeExecutor.execute(onCompletion);
                 });
             } else {
                 LoadingDialogFragment.close(getFragmentManager());
-                this.loadingDialogFragment = null;
                 onCompletion.run();
             }
         });
