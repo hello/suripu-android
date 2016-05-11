@@ -54,6 +54,7 @@
     <color name="blue3_93">#eeb2e1ff</color>
     <color name="blue2">#E5F5FF</color>
     <color name="blue1">#F7FCFF</color>
+    <color name="blue1_75">#bff7fcff</color>
 
     <!-- Green -->
     <color name="green7">#21BD90</color>
@@ -119,7 +120,7 @@
 
     <color name="timeline_header_border">@color/blue3</color>
     <color name="timeline_header_gradient_end">@color/gray1</color>
-    <color name="timeline_background_fill">@color/blue2</color>
+    <color name="timeline_background_fill">@color/blue1_75</color>
     <color name="timeline_segment_stripe">@color/blue6_30</color>
 
     <color name="text_dark">@color/gray6</color>
