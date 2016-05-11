@@ -26,7 +26,7 @@ public class SenseFragment extends Fragment {
                 .add(containerId, this, tag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(tag)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     /**
