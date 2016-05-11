@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -65,14 +66,6 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return;
         }
         this.sleepSoundStatus = status;
-        if (this.combinedSleepState.getSounds() != null) {
-            final SleepSounds.State state = this.combinedSleepState.getSounds().getState();
-            if (state == SleepSounds.State.SENSE_UPDATE_REQUIRED) {
-                currentState = AdapterState.FIRMWARE_UPDATE;
-            } else if (state == SleepSounds.State.SOUNDS_NOT_DOWNLOADED) {
-                currentState = AdapterState.SOUNDS_DOWNLOAD;
-            }
-        }
         notifyDataSetChanged();
     }
 
@@ -92,21 +85,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         return displayedValues.displayedVolume();
     }
 
-    public void setErrorState() {
-        currentState = AdapterState.ERROR;
-        sleepSoundStatus = null;
-        notifyDataSetChanged();
-    }
-
-    public void setOfflineTooLong() {
-        currentState = AdapterState.OFFLINE;
-        sleepSoundStatus = null;
-        notifyDataSetChanged();
-    }
-
-    public void setUpdatingState() {
-        currentState = AdapterState.FIRMWARE_UPDATE;
-        sleepSoundStatus = null;
+    public void setState(@NonNull final AdapterState state,
+                         @Nullable final SleepSoundStatus status) {
+        currentState = state;
+        sleepSoundStatus = status;
         notifyDataSetChanged();
     }
 
@@ -284,7 +266,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     }
 
-    private enum AdapterState {
+    public enum AdapterState {
         NONE,
         PLAYER,
         FIRMWARE_UPDATE,

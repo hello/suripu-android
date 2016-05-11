@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 
-
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
@@ -248,39 +247,46 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
         final Devices devices = stateDevice.getDevices();
-        final SleepSoundsState state = stateDevice.getSleepSoundsState();
-        if (devices == null || state == null || devices.getSense() == null) {
+        final SleepSoundsState combinedState = stateDevice.getSleepSoundsState();
+        if (devices == null || combinedState == null || devices.getSense() == null) {
             // Error. Should never happen (Parent fragment should be hiding this fragment if it does).
-            adapter.setErrorState();
+            adapter.setState(AdapterState.ERROR, null);
             setButtonVisible(false);
             return;
         }
 
         if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
             // Sense Offline error.
-            adapter.setOfflineTooLong();
+            adapter.setState(AdapterState.OFFLINE, null);
             setButtonVisible(false);
             return;
         }
 
-        adapter.bindData(state);
-        if (state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
-            displayLoadingButton(userWants);
-            setButtonVisible(true);
-            // Show.
-            return;
-        }
-
-        if (state.getSounds() !=null){
-            if (state.getSounds().getState() == SleepSounds.State.SENSE_UPDATE_REQUIRED){
-                adapter.setUpdatingState();
-                setButtonVisible(false);
-                return;
+        if (combinedState.getSounds() != null) {
+            SleepSounds.State currentState = combinedState.getSounds().getState();
+            switch (currentState) {
+                case SENSE_UPDATE_REQUIRED:
+                    adapter.setState(AdapterState.FIRMWARE_UPDATE, null);
+                    setButtonVisible(false);
+                    return;
+                case SOUNDS_NOT_DOWNLOADED:
+                    adapter.setState(AdapterState.SOUNDS_DOWNLOAD, null);
+                    setButtonVisible(false);
+                    return;
+                case OK:
+                    adapter.bindData(combinedState);
+                    displayLoadingButton(userWants);
+                    setButtonVisible(true);
+                    return;
+                default:
+                    adapter.setState(AdapterState.ERROR, null);
+                    setButtonVisible(false);
+                    return;
             }
         }
-
+        adapter.setState(AdapterState.NONE, null);
         setButtonVisible(false);
-        adapter.setErrorState();
+
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
@@ -313,7 +319,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     }
 
     private void presentError(final @NonNull Throwable error) {
-        adapter.setErrorState();
+        adapter.setState(AdapterState.ERROR, null);
         setButtonVisible(false);
         progressBar.setVisibility(View.GONE);
     }
