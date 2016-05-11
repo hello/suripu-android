@@ -89,6 +89,14 @@ public class InsightsFragment extends BacksideTabFragment
     private @NonNull List<Insight> insights = Collections.emptyList();
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser){
+            Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -101,9 +109,6 @@ public class InsightsFragment extends BacksideTabFragment
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
 
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
-        }
     }
 
     @Nullable

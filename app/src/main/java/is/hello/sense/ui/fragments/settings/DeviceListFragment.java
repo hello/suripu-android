@@ -46,11 +46,12 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class DeviceListFragment extends InjectionFragment
         implements DevicesAdapter.OnPairNewDeviceListener,
-            ArrayRecyclerAdapter.OnItemClickedListener<BaseDevice> {
+        ArrayRecyclerAdapter.OnItemClickedListener<BaseDevice> {
     private static final int DEVICE_REQUEST_CODE = 0x14;
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
-    @Inject DevicesPresenter devicesPresenter;
+    @Inject
+    DevicesPresenter devicesPresenter;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -194,13 +195,13 @@ public class DeviceListFragment extends InjectionFragment
         Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         switch (type) {
             case SENSE: {
-                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
+                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
             }
 
             case SLEEP_PILL: {
-                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
             }

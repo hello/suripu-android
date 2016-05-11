@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.support;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -42,8 +44,11 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.permissions.ExternalStoragePermission;
+import is.hello.sense.permissions.Permission;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
@@ -55,12 +60,13 @@ import is.hello.sense.zendesk.AttachmentPicker;
 import is.hello.sense.zendesk.TicketDetailPresenter;
 
 public class TicketDetailFragment extends InjectionFragment
-        implements ImageUploadHelper.ImageUploadProgressListener, TextWatcher,
-            ArrayRecyclerAdapter.OnItemClickedListener<CommentResponse> {
+        implements ImageUploadHelper.ImageUploadProgressListener, TextWatcher, Permission.PermissionDialogResources,
+        ArrayRecyclerAdapter.OnItemClickedListener<CommentResponse> {
     private static final String ARG_TICKET_ID = TicketDetailFragment.class.getName() + ".ARG_TICKET_ID";
     private static final String ARG_TICKET_SUBJECT = TicketDetailFragment.class.getName() + ".ARG_TICKET_SUBJECT";
 
-    @Inject TicketDetailPresenter presenter;
+    @Inject
+    TicketDetailPresenter presenter;
 
     private AttachmentPicker attachmentPicker;
     private ImageUploadHelper imageUploadHelper;
@@ -71,6 +77,7 @@ public class TicketDetailFragment extends InjectionFragment
     private EditText commentText;
     private ImageButton sendComment;
     private ProgressBar loadingIndicator;
+    private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
 
     //region Lifecycle
 
@@ -124,12 +131,12 @@ public class TicketDetailFragment extends InjectionFragment
         adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 
-        final @ColorInt int tintColor = resources.getColor(R.color.light_accent);
+        final @ColorInt int tintColor = ContextCompat.getColor(getActivity(), R.color.light_accent);
         this.attach = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_attach);
         final Drawable attachDrawable = attach.getDrawable().mutate();
         Drawables.setTintColor(attachDrawable, tintColor);
         attach.setImageDrawable(attachDrawable);
-        Views.setSafeOnClickListener(attach, ignored -> attachmentPicker.showOptions());
+        Views.setSafeOnClickListener(attach, ignored -> showAttachOptions());
 
         this.sendComment = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_send);
         final Drawable sendDrawable = sendComment.getDrawable().mutate();
@@ -152,8 +159,8 @@ public class TicketDetailFragment extends InjectionFragment
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(presenter.comments,
-                this::bindComments,
-                this::presentError);
+                         this::bindComments,
+                         this::presentError);
     }
 
     @Override
@@ -204,12 +211,12 @@ public class TicketDetailFragment extends InjectionFragment
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(presenter.submitComment(commentText.getText().toString(),
                                                  imageUploadHelper.getUploadTokens()),
-                ignored -> {
-                    commentText.setText(null);
-                    attachmentHost.reset();
-                    presenter.update();
-                },
-                this::presentError);
+                         ignored -> {
+                             commentText.setText(null);
+                             attachmentHost.reset();
+                             presenter.update();
+                         },
+                         this::presentError);
     }
 
     @Override
@@ -230,13 +237,23 @@ public class TicketDetailFragment extends InjectionFragment
 
     //region Attachments
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            showAttachOptions();
+        } else {
+            externalStoragePermission.showEnableInstructionsDialog(this);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent response) {
         super.onActivityResult(requestCode, resultCode, response);
 
         final List<File> files = attachmentPicker.getFilesFromResult(requestCode, resultCode, response);
         AttachmentHelper.processAndUploadSelectedFiles(files,
-                imageUploadHelper, getActivity(), attachmentHost);
+                                                       imageUploadHelper, getActivity(), attachmentHost);
         getActivity().invalidateOptionsMenu();
     }
 
@@ -295,7 +312,7 @@ public class TicketDetailFragment extends InjectionFragment
             for (int i = 0, attachmentsSize = attachments.size(); i < attachmentsSize; i++) {
                 final Attachment attachment = attachments.get(i);
                 attachmentPicker.addOption(new SenseBottomSheet.Option(i)
-                        .setTitle(attachment.getFileName()));
+                                                   .setTitle(attachment.getFileName()));
             }
 
             attachmentPicker.setOnOptionSelectedListener(option -> {
@@ -313,6 +330,35 @@ public class TicketDetailFragment extends InjectionFragment
     }
 
     //endregion
+
+    private void showAttachOptions() {
+        if (externalStoragePermission.isGranted()) {
+            attachmentPicker.showOptions();
+        } else {
+            externalStoragePermission.requestPermission();
+        }
+    }
+
+    @Override
+    public int dialogTitle() {
+        return R.string.request_permission_write_external_storage_required_title;
+    }
+
+    @Override
+    public int dialogMessage() {
+        return R.string.request_permission_write_external_storage_required_message_generic;
+    }
+
+    @NonNull
+    @Override
+    public DialogInterface.OnClickListener clickListener() {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                UserSupport.showStoragePermissionMoreInfoPage(getActivity());
+            }
+        };
+    }
 
 
     static class CommentAdapter extends ArrayRecyclerAdapter<CommentResponse, CommentAdapter.ViewHolder> {
@@ -342,7 +388,7 @@ public class TicketDetailFragment extends InjectionFragment
             if (!Lists.isEmpty(comment.getAttachments())) {
                 final int attachmentCount = comment.getAttachments().size();
                 final String detailString = resources.getQuantityString(R.plurals.item_support_comment_detail_attachments,
-                        attachmentCount, date, attachmentCount);
+                                                                        attachmentCount, date, attachmentCount);
                 holder.detail.setText(detailString);
                 holder.itemView.setBackgroundResource(R.drawable.background_timeline_header_card_selector);
             } else {

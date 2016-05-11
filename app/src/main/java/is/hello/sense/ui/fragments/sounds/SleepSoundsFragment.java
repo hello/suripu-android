@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 
@@ -32,16 +31,17 @@ import is.hello.sense.api.model.v2.SleepSoundActionStop;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
+import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
-import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.SleepSoundsStatePresenter;
+import is.hello.sense.graph.presenters.SleepSoundsPresenter;
 import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
+import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
-import is.hello.sense.ui.activities.SleepSoundsListActivity;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
+import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import rx.Observable;
@@ -49,24 +49,24 @@ import rx.Observable;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
 
 public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
-    private final static int deltaRotation = 5; // degrees
-    private final static int spinnerInterval = 1; // ms
     private final static int pollingInterval = 500; // ms
     private final static int initialBackOff = 0; // ms
     private final static int backOffIncrements = 1000; // ms
     private final static int maxBackOff = 6000; //ms
     private final static int offlineMinutes = 30; // minutes
+    private static final int SOUNDS_REQUEST_CODE = 123;
+    private static final int DURATION_REQUEST_CODE = 231;
+    private static final int VOLUME_REQUEST_CODE = 312;
 
-    @Inject
-    SleepSoundsStatePresenter sleepSoundsStatePresenter;
 
     @Inject
     SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
 
     @Inject
-    DevicesPresenter devicesPresenter;
+    SleepSoundsPresenter sleepSoundsPresenter;
 
-    private ImageButton playButton;
+
+    private SpinnerImageView playButton;
     private FrameLayout buttonLayout;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
@@ -79,7 +79,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public void retry() {
-        sleepSoundsStatePresenter.update();
+        sleepSoundsPresenter.update();
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -89,23 +89,11 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         NONE
     }
 
-    // todo create a custom component that has this logic
-    final Runnable spinningRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (playButton != null) {
-                playButton.setRotation(playButton.getRotation() + deltaRotation);
-                playButton.postDelayed(this, spinnerInterval);
-            }
-        }
-    };
-
-
     final View.OnClickListener playClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             displayLoadingButton(UserWants.PLAY);
-            if (!adapter.hasDesiredItemCount()) {
+            if (!adapter.isShowingPlayer()) {
                 displayPlayButton();
                 return;
             }
@@ -124,7 +112,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                                                             Analytics.SleepSounds.PROP_SLEEP_SOUNDS_DURATION_ID, duration.getId(),
                                                             Analytics.SleepSounds.PROP_SLEEP_SOUNDS_VOLUME, volume.getVolume()));
 
-            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
+            final Observable<VoidResponse> saveOperation = sleepSoundsPresenter.play(new SleepSoundActionPlay(sound.getId(), duration.getId(), volume.getVolume()));
             timeSent = System.currentTimeMillis();
             bindAndSubscribe(saveOperation,
                              ignored -> {
@@ -146,7 +134,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_STOP, null);
 
-            final Observable<VoidResponse> saveOperation = sleepSoundsStatePresenter.stop(new SleepSoundActionStop());
+            final Observable<VoidResponse> saveOperation = sleepSoundsPresenter.stop(new SleepSoundActionStop());
             timeSent = System.currentTimeMillis();
             bindAndSubscribe(saveOperation,
                              ignored -> {
@@ -166,6 +154,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         // When it is visible, then this is called after the view has been created,
         // although we really do not depend on the view being created first.
         if (isVisibleToUser) {
+            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
             update();
             if (getActivity() != null) {
                 final boolean flickerWorkAround = true;
@@ -181,7 +170,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
         progressBar = (ProgressBar) view.findViewById(R.id.fragment_sleep_sounds_progressbar);
-        playButton = (ImageButton) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
+        playButton = (SpinnerImageView) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
         buttonLayout = (FrameLayout) view.findViewById(R.id.fragment_sleep_sounds_buttonLayout);
         preferences = getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, 0);
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_sleep_sounds_recycler);
@@ -190,28 +179,18 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         final Resources resources = getResources();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        final InsetItemDecoration decoration = new InsetItemDecoration();
-        decoration.addBottomInset(3, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
-        recyclerView.addItemDecoration(decoration);
-//        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-//                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         this.adapter = new SleepSoundsAdapter(getActivity(), preferences, this, getAnimatorContext(), this);
         recyclerView.setAdapter(adapter);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-        }
-
         return view;
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(devicesPresenter.devices, this::bindDevices, ignore -> {
-        });
-        bindAndSubscribe(sleepSoundsStatePresenter.state, this::bindState, this::presentStateError);
         bindAndSubscribe(sleepSoundsStatusPresenter.state, this::bindStatus, this::presentStatusError);
+        bindAndSubscribe(sleepSoundsPresenter.sub, this::bind, this::presentError);
         update();
     }
 
@@ -235,14 +214,14 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            final int value = data.getIntExtra(SleepSoundsListActivity.VALUE_ID, -1);
+            final int value = data.getIntExtra(ListActivity.VALUE_ID, -1);
             if (value == -1) {
                 return;
             }
             final String constant;
-            if (requestCode == SleepSoundsListActivity.SOUNDS_REQUEST_CODE) {
+            if (requestCode == SOUNDS_REQUEST_CODE) {
                 constant = Constants.SLEEP_SOUNDS_SOUND_ID;
-            } else if (requestCode == SleepSoundsListActivity.DURATION_REQUEST_CODE) {
+            } else if (requestCode == DURATION_REQUEST_CODE) {
                 constant = Constants.SLEEP_SOUNDS_DURATION_ID;
             } else {
                 constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
@@ -256,51 +235,65 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public void update() {
-        sleepSoundsStatePresenter.update();
-        devicesPresenter.update();
         sleepSoundsStatusPresenter.update();
+        sleepSoundsPresenter.update();
     }
 
-    private void bindDevices(final @NonNull Devices devices) {
-        if (devices.getSense() != null) {
-            if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
-                adapter.setOfflineTooLong(true);
-                playButton.setVisibility(View.GONE);
-                buttonLayout.setVisibility(View.GONE);
-            } else {
-                adapter.setOfflineTooLong(false);
-                sleepSoundsStatePresenter.update();
-            }
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        statusPollingHelper.poll();
     }
 
-    private void bindState(final @Nullable SleepSoundsState state) {
-        progressBar.setVisibility(View.GONE);
+    private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
+        final Devices devices = stateDevice.getDevices();
+        final SleepSoundsState combinedState = stateDevice.getSleepSoundsState();
+        if (devices == null || combinedState == null || devices.getSense() == null) {
+            // Error. Should never happen (Parent fragment should be hiding this fragment if it does).
+            adapter.setState(AdapterState.ERROR, null);
+            setButtonVisible(false);
+            return;
+        }
 
-        if (state != null && !adapter.isOffline() && state.getSounds() != null && state.getSounds().getState() == SleepSounds.State.OK) {
-            if (state.getSounds().getSounds().isEmpty()) {
-                playButton.setVisibility(View.GONE);
-                buttonLayout.setVisibility(View.GONE);
-            } else {
-                playButton.setVisibility(View.VISIBLE);
-                buttonLayout.setVisibility(View.VISIBLE);
+        if (devices.getSense().getMinutesSinceLastUpdated() >= offlineMinutes) {
+            // Sense Offline error.
+            adapter.setState(AdapterState.OFFLINE, null);
+            setButtonVisible(false);
+            return;
+        }
+
+        if (combinedState.getSounds() != null) {
+            SleepSounds.State currentState = combinedState.getSounds().getState();
+            switch (currentState) {
+                case SENSE_UPDATE_REQUIRED:
+                    adapter.setState(AdapterState.FIRMWARE_UPDATE, null);
+                    setButtonVisible(false);
+                    return;
+                case SOUNDS_NOT_DOWNLOADED:
+                    adapter.setState(AdapterState.SOUNDS_DOWNLOAD, null);
+                    setButtonVisible(false);
+                    return;
+                case OK:
+                    adapter.bindData(combinedState);
+                    displayLoadingButton(userWants);
+                    setButtonVisible(true);
+                    return;
+                default:
+                    adapter.setState(AdapterState.ERROR, null);
+                    setButtonVisible(false);
+                    return;
             }
-            displayLoadingButton(userWants);
-        } else {
-            playButton.setVisibility(View.GONE);
-            buttonLayout.setVisibility(View.GONE);
         }
-        if (state != null) {
-            // if state is null, this fragment shouldn't be visible.
-            adapter.bind(state.getStatus(), state.getSounds(), state.getDurations());
-        }
+        adapter.setState(AdapterState.NONE, null);
+        setButtonVisible(false);
 
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
-        if (adapter.hasDesiredItemCount()) {
-            playButton.setVisibility(View.VISIBLE);
-            buttonLayout.setVisibility(View.VISIBLE);
+
+        progressBar.setVisibility(View.GONE);
+        if (adapter.isShowingPlayer()) {
+            setButtonVisible(true);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
@@ -318,18 +311,16 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                 }
             }
         } else {
-            playButton.setVisibility(View.GONE);
-            buttonLayout.setVisibility(View.GONE);
+            setButtonVisible(false);
         }
         adapter.bind(status);
         backOff = initialBackOff;
         statusPollingHelper.poll();
     }
 
-    private void presentStateError(final @NonNull Throwable error) {
-        adapter.setErrorState();
-        buttonLayout.setVisibility(View.GONE);
-        playButton.setVisibility(View.GONE);
+    private void presentError(final @NonNull Throwable error) {
+        adapter.setState(AdapterState.ERROR, null);
+        setButtonVisible(false);
         progressBar.setVisibility(View.GONE);
     }
 
@@ -343,8 +334,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             return; // give up
         }
         statusPollingHelper.poll();
-
-        //todo report error. Determine how to handle when status fails.
     }
 
 
@@ -354,6 +343,16 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
                 .build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
 
+    }
+
+    private void setButtonVisible(final boolean visible) {
+        if (visible) {
+            buttonLayout.setVisibility(View.VISIBLE);
+            playButton.setVisibility(View.VISIBLE);
+        } else {
+            buttonLayout.setVisibility(View.GONE);
+            playButton.setVisibility(View.GONE);
+        }
     }
 
     private void displayButton(final @DrawableRes int resource,
@@ -367,9 +366,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         playButton.setOnClickListener(listener);
         playButton.setEnabled(enabled);
         if (enabled) {
-            playButton.removeCallbacks(spinningRunnable);
+            playButton.stopSpinning();
         } else {
-            playButton.post(spinningRunnable);
+            playButton.startSpinning();
         }
     }
 
@@ -388,29 +387,36 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public void onSoundClick(final int currentSound, final @NonNull SleepSounds sleepSounds) {
-        SleepSoundsListActivity.startActivityForResult(
+        ListActivity.startActivityForResult(
                 this,
+                SOUNDS_REQUEST_CODE,
+                R.string.list_activity_sound_title,
                 currentSound,
                 sleepSounds,
-                SleepSoundsListActivity.ListType.SLEEP_SOUNDS);
+                true);
     }
 
     @Override
     public void onDurationClick(final int currentDuration, final @NonNull SleepDurations durations) {
-        SleepSoundsListActivity.startActivityForResult(
+        ListActivity.startActivityForResult(
                 this,
+                DURATION_REQUEST_CODE,
+                R.string.list_activity_duration_title,
                 currentDuration,
                 durations,
-                SleepSoundsListActivity.ListType.SLEEP_DURATIONS);
+                false);
     }
 
     @Override
     public void onVolumeClick(final int currentVolume, @NonNull SleepSoundStatus volumes) {
-        SleepSoundsListActivity.startActivityForResult(
+
+        ListActivity.startActivityForResult(
                 this,
+                VOLUME_REQUEST_CODE,
+                R.string.list_activity_volume_title,
                 currentVolume,
                 volumes,
-                SleepSoundsListActivity.ListType.SLEEP_VOLUME);
+                false);
     }
 
     private class StatusPollingHelper {
@@ -442,4 +448,5 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             isRunning = false;
         }
     }
+
 }

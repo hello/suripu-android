@@ -39,6 +39,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
@@ -54,6 +55,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
@@ -72,15 +74,17 @@ public class RoomConditionsFragment extends BacksideTabFragment
     //region Lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser){
             Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
         }
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         addPresenter(presenter);
-
         updateTimer.setOnUpdate(presenter::update);
     }
 
@@ -201,7 +205,10 @@ public class RoomConditionsFragment extends BacksideTabFragment
                                    getString(R.string.error_room_conditions_no_sense),
                                    R.string.action_pair_new_sense,
                                    ignored -> {
-                                       DeviceListFragment.startStandaloneFrom(getActivity());
+                                       Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+                                       intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                                       intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                                       startActivity(intent);
                                    });
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -44,7 +45,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.permissions.Permissions;
+import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
@@ -76,7 +77,6 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     @Inject HardwarePresenter hardwarePresenter;
     @Inject AccountPresenter accountPresenter;
     @Inject BluetoothStack bluetoothStack;
-
     private TextView pairingMode;
     private TextView changeWiFi;
 
@@ -85,6 +85,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
     private @Nullable SenseNetworkStatus currentWifiNetwork;
 
+    private final LocationPermission locationPermission = new LocationPermission(this);
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -152,7 +153,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void onResume() {
         super.onResume();
 
-        if (Permissions.needsLocationPermission(this)) {
+        if (!locationPermission.isGranted()) {
             showPermissionPrompt();
         } else if (bluetoothStack.isEnabled() && !blockConnection) {
             connectToPeripheral();
@@ -287,17 +288,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                 .setTitle(StringRef.from(R.string.request_permission_location_title2))
                 .setMessage(StringRef.from(R.string.request_permission_location_message))
                 .setPrimaryButtonTitle(R.string.action_enable_location)
-                .setPrimaryButtonOnClick(this::promptForLocationPermission)
+                .setPrimaryButtonOnClick(locationPermission::requestPermissionWithDialog)
                 .setSecondaryButtonTitle(R.string.action_more_info)
                 .setSecondaryButtonOnClick(() -> UserSupport.showLocationPermissionMoreInfoPage(getActivity()));
         showTroubleshootingAlert(alert);
         showRestrictedSenseActions();
-    }
-
-    private void promptForLocationPermission() {
-        FragmentCompat.requestPermissions(this,
-                                          Permissions.getLocationPermissions(),
-                                          Permissions.LOCATION_PERMISSION_REQUEST_CODE);
     }
 
     @Override
@@ -306,13 +301,13 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (Permissions.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
+        if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             if (bluetoothStack.isEnabled() && !blockConnection) {
                 connectToPeripheral();
             }
         } else {
             showPermissionPrompt();
-            Permissions.showEnableInstructionsDialog(this);
+            locationPermission.showEnableInstructionsDialog();
         }
     }
 
@@ -450,7 +445,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWiFiNetworkFragment.class);
         builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
-        builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
     }
@@ -534,7 +529,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
                         .setTitle(R.string.action_replace_this_sense)
-                        .setTitleColor(getResources().getColor(R.color.text_dark))
+                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
                         .setDescription(R.string.description_replace_this_sense)
                         .setIcon(R.drawable.settings_advanced)
                    );
@@ -542,7 +537,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
                             .setTitle(R.string.action_factory_reset)
-                            .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
                             .setDescription(R.string.description_factory_reset)
                             .setIcon(R.drawable.settings_factory_reset)
                        );
