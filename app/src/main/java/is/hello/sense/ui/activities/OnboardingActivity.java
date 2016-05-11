@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -74,16 +75,23 @@ public class OnboardingActivity extends InjectionActivity
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FLOW_NONE, FLOW_REGISTER, FLOW_SIGN_IN})
     @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
-    public @interface Flow {}
+    public @interface Flow {
+    }
 
-    @Inject ApiService apiService;
-    @Inject HardwarePresenter hardwarePresenter;
-    @Inject PreferencesPresenter preferences;
-    @Inject BluetoothStack bluetoothStack;
+    @Inject
+    ApiService apiService;
+    @Inject
+    HardwarePresenter hardwarePresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    BluetoothStack bluetoothStack;
 
     private FragmentNavigationDelegate navigationDelegate;
 
-    private @Nullable Account account;
+    private
+    @Nullable
+    Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,42 +108,55 @@ public class OnboardingActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if (navigationDelegate.getTopFragment() == null) {
-            int lastCheckpoint = getLastCheckPoint();
-            switch (lastCheckpoint) {
-                case Constants.ONBOARDING_CHECKPOINT_NONE:
-                    showIntroductionFragment();
-                    break;
-
-                case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
-                    if (account == null) {
-                        LoadingDialogFragment.show(getFragmentManager(),
-                                getString(R.string.dialog_loading_message),
-                                LoadingDialogFragment.OPAQUE_BACKGROUND);
-                        bindAndSubscribe(apiService.getAccount(),
-                                         account -> {
-                                             showBirthday(account, false);
-                                         },
-                                         e -> {
-                                             LoadingDialogFragment.close(getFragmentManager());
-                                             ErrorDialogFragment.presentError(this, e);
-                                         });
-                    } else {
-                        showBirthday(account, false);
-                    }
-                    break;
-
-                case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
-                    showSetupSense();
-                    break;
-
+        if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+            int lastCheckPoint = getLastCheckPoint();
+            switch (lastCheckPoint) {
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                    showPairPill(!getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false));
+                    showPairSense();
                     break;
-
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
-                    showSenseColorsInfo();
+                    showPairPill(false);
                     break;
+            }
+        } else {
+
+            if (navigationDelegate.getTopFragment() == null) {
+                int lastCheckpoint = getLastCheckPoint();
+                switch (lastCheckpoint) {
+                    case Constants.ONBOARDING_CHECKPOINT_NONE:
+                        showIntroductionFragment();
+                        break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_ACCOUNT:
+                        if (account == null) {
+                            LoadingDialogFragment.show(getFragmentManager(),
+                                                       getString(R.string.dialog_loading_message),
+                                                       LoadingDialogFragment.OPAQUE_BACKGROUND);
+                            bindAndSubscribe(apiService.getAccount(),
+                                             account -> {
+                                                 showBirthday(account, false);
+                                             },
+                                             e -> {
+                                                 LoadingDialogFragment.close(getFragmentManager());
+                                                 ErrorDialogFragment.presentError(this, e);
+                                             });
+                        } else {
+                            showBirthday(account, false);
+                        }
+                        break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_QUESTIONS:
+                        showSetupSense();
+                        break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_SENSE:
+                        showPairPill(!getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false));
+                        break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_PILL:
+                        showSenseColorsInfo();
+                        break;
+                }
             }
         }
 
@@ -259,6 +280,14 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new SignInFragment(), null, true);
     }
 
+    public void showPairSense() {
+        if (bluetoothStack.isEnabled()) {
+            pushFragment(new OnboardingPairSenseFragment(), null, false);
+        } else {
+            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
+        }
+    }
+
     public void showGetStarted(boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && !hardwarePresenter.isDeviceSupported()) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
@@ -364,8 +393,8 @@ public class OnboardingActivity extends InjectionActivity
                                  Logger.info(getClass().getSimpleName(), "Loaded devices info");
                                  Analytics.setSenseId(devicesInfo.getSenseId());
                              }, e -> {
-                                 Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
-                             });
+                        Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
+                    });
 
             final OnboardingSimpleStepFragment.Builder builder =
                     new OnboardingSimpleStepFragment.Builder(this);
@@ -375,7 +404,7 @@ public class OnboardingActivity extends InjectionActivity
             builder.setHideToolbar(true);
             if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
-            }else{
+            } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             }
             builder.setNextFragmentClass(OnboardingPairPillFragment.class);
@@ -452,7 +481,9 @@ public class OnboardingActivity extends InjectionActivity
 
     public static final String ANIMATION_ROOM_CHECK = "room_check";
 
-    public @Nullable OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
+    public
+    @Nullable
+    OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (view, onCompletion) -> {

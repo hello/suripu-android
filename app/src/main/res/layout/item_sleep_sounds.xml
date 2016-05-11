@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <is.hello.sense.ui.widget.RoundedRelativeLayout
     android:id="@+id/item_sleep_sounds_sound_holder"
-    style="@style/AppTheme.Card"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background_light"
     android:gravity="center_vertical"
     android:paddingBottom="@dimen/gap_medium"
-    android:paddingTop="@dimen/gap_medium"
-    app:senseCornerRadius="@dimen/card_large_corner_radius">
+    android:paddingTop="@dimen/gap_medium">
 
     <ImageView
         android:id="@+id/item_sleep_sounds_image"

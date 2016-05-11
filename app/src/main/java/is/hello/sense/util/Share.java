@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.permissions.Permissions;
+import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -136,7 +136,7 @@ public abstract class Share {
 
         private Image(@NonNull Bitmap bitmap) {
             super(Intent.ACTION_SEND);
-            intent.setType("*/*");
+            intent.setType("image/jpeg");
 
             this.bitmap = bitmap;
         }
@@ -158,8 +158,9 @@ public abstract class Share {
 
         @Override
         public void send(@NonNull Fragment from) {
-            if (Permissions.needsWriteExternalStoragePermission(from)) {
-                Permissions.requestWriteExternalStoragePermission(from);
+            ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(from);
+            if (!externalStoragePermission.isGranted()) {
+                externalStoragePermission.requestPermissionWithDialog();
                 return;
             }
             ContentResolver contentResolver = from.getActivity().getContentResolver();

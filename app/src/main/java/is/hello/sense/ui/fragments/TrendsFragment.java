@@ -25,13 +25,14 @@ import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.TrendFeedView;
+import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class TrendsFragment extends BacksideTabFragment implements TrendFeedViewItem.OnRetry, SelectorView.OnSelectionChangedListener {
+public class TrendsFragment extends BacksideTabFragment implements TrendFeedViewItem.OnRetry, SelectorView.OnSelectionChangedListener, TrendGraphView.AnimationCallback {
     @Inject
     TrendsPresenter trendsPresenter;
 
@@ -40,6 +41,15 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     private TrendFeedView trendFeedView;
     private SelectorView timeScaleSelector;
+    private int oldSelection = 0;
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,10 +57,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
         addPresenter(trendsPresenter);
         setHasOptionsMenu(true);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
-        }
     }
 
     @Nullable
@@ -65,7 +71,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
         this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
         this.trendFeedView = (TrendFeedView) view.findViewById(R.id.fragment_trends_trendgraph);
         this.trendFeedView.setAnimatorContext(getAnimatorContext());
-
+        this.trendFeedView.setAnimationCallback(this);
         this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setVisibility(View.INVISIBLE);
@@ -140,7 +146,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     public void bindTrends(@NonNull Trends trends) {
         trendFeedView.bindTrends(trends);
-        timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
@@ -183,8 +188,9 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        trendFeedView.setLoading(true);
         timeScaleSelector.setEnabled(false);
+        oldSelection = newSelectionIndex;
+        trendFeedView.setLoading(true);
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
         trendsPresenter.setTimeScale(newTimeScale);
@@ -195,5 +201,10 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
         properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
         Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
 
+    }
+
+    @Override
+    public void isFinished() {
+        timeScaleSelector.setEnabled(!trendFeedView.isAnimating());
     }
 }

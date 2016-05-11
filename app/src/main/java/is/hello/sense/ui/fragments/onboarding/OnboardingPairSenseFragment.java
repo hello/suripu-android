@@ -24,11 +24,12 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
+import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.permissions.Permissions;
+import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -51,10 +52,13 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private static final int LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI = 3;
     private static final String OPERATION_LINK_ACCOUNT = "Linking account";
 
-    @Inject ApiService apiService;
+    @Inject
+    ApiService apiService;
 
     private int linkAccountFailures = 0;
     private boolean hasLinkedAccount = false;
+
+    private final LocationPermission locationPermission = new LocationPermission(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,17 +115,17 @@ public class OnboardingPairSenseFragment extends HardwareFragment
             next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
             getOnboardingActivity().showSelectWifiNetwork();
-        }else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK){
-            Permissions.requestLocationPermission(this);
+        } else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK) {
+            locationPermission.requestPermissionWithDialog();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (Permissions.isLocationPermissionGranted(requestCode, permissions, grantResults)) {
+        if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             next();
-        }else{
-            Permissions.showEnableInstructionsDialog(this);
+        } else {
+            locationPermission.showEnableInstructionsDialog();
         }
     }
 
@@ -214,8 +218,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     }
 
     public void next() {
-        if (Permissions.needsLocationPermission(this)) {
-            Permissions.requestLocationPermission(this);
+        if (!locationPermission.isGranted()) {
+            locationPermission.requestPermissionWithDialog();
             return;
         }
 
@@ -245,10 +249,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         if (hardwarePresenter.getBondStatus() == GattPeripheral.BOND_BONDED) {
             showBlockingActivity(R.string.title_clearing_bond);
             bindAndSubscribe(hardwarePresenter.clearBond(),
-                    ignored -> {
-                        completePeripheralPair();
-                    },
-                    e -> presentError(e, "Clearing Bond"));
+                             ignored -> {
+                                 completePeripheralPair();
+                             },
+                             e -> presentError(e, "Clearing Bond"));
         } else {
             showBlockingActivity(R.string.title_connecting);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {

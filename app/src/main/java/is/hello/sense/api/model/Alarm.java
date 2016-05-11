@@ -11,6 +11,7 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.DateFormatter.JodaWeekDay;
+import is.hello.sense.util.IListObject;
 
 public class Alarm extends ApiResponse {
     public static final int TOO_SOON_MINUTES = 2;
@@ -63,6 +65,8 @@ public class Alarm extends ApiResponse {
 
     @SerializedName("smart")
     private boolean smart;
+
+    private transient AlarmTones alarmTones;
 
 
     public Alarm() {
@@ -269,6 +273,12 @@ public class Alarm extends ApiResponse {
         this.sound = sound;
     }
 
+    public void setAlarmTones(final @NonNull ArrayList<Alarm.Sound> sounds) {
+        this.alarmTones = new AlarmTones(sounds);
+    }
+    public AlarmTones getAlarmTones(){
+        return this.alarmTones;
+    }
 
     @Override
     public String toString() {
@@ -288,7 +298,29 @@ public class Alarm extends ApiResponse {
                 '}';
     }
 
-    public static class Sound extends ApiResponse {
+    public static class AlarmTones implements IListObject {
+        private final ArrayList<Sound> sounds;
+
+        public AlarmTones(final @NonNull ArrayList<Alarm.Sound> sounds) {
+            this.sounds = sounds;
+        }
+
+        public Alarm.Sound getSoundWithId(final int id) {
+            for (final Alarm.Sound sound : sounds) {
+                if (sound.getId() == id) {
+                    return sound;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public List<? extends IListItem> getListItems() {
+            return sounds;
+        }
+    }
+
+    public static class Sound extends ApiResponse implements IListObject.IListItem {
         @SerializedName("id")
         public final long id;
 
@@ -313,6 +345,21 @@ public class Alarm extends ApiResponse {
                     ", name='" + name + '\'' +
                     ", url='" + url + '\'' +
                     '}';
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public int getId() {
+            return (int) id;
+        }
+
+        @Override
+        public String getPreviewUrl() {
+            return url;
         }
     }
 }

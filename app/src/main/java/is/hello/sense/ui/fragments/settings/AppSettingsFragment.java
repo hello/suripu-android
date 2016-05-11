@@ -23,11 +23,11 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Share;
 
 public class AppSettingsFragment extends BacksideTabFragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser){
             Analytics.trackEvent(Analytics.Backside.EVENT_SETTINGS, null);
         }
     }

@@ -28,6 +28,7 @@ import java.util.Collection;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 import rx.functions.Action1;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -42,7 +43,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
     private final ArrayList<Option> options = new ArrayList<>();
     private final LayoutInflater inflater;
-
+    private boolean wasClicked = false;
     private final RelativeLayout contentRoot;
     private final LinearLayout optionsContainer;
     private final TextView titleText;
@@ -232,10 +233,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         this.wantsBigTitle = wantsBigTitle;
 
         if (wantsBigTitle) {
-            titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(titleText, R.style.AppTheme_Text_Body);
             titleText.setAllCaps(false);
         } else {
-            titleText.setTextAppearance(getContext(), R.style.AppTheme_Text_SectionHeading);
+            Styles.setTextAppearance(titleText, R.style.AppTheme_Text_SectionHeading);
         }
     }
 
@@ -290,6 +291,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        if (wasClicked){
+            return;
+        }
+        wasClicked = true;
         if (onOptionSelectedListener != null) {
             int position = (int) view.getTag();
             Option option = options.get(position);

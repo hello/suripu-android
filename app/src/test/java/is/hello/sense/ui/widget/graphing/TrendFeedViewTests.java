@@ -23,11 +23,18 @@ import static org.junit.Assert.assertThat;
 public class TrendFeedViewTests extends SenseTestCase {
     private final AnimatorContext animatorContext = new AnimatorContext("TrendFeedViewTests");
     private TrendFeedView view;
+    private TrendGraphView.AnimationCallback callback = new TrendGraphView.AnimationCallback() {
+        @Override
+        public void isFinished() {
+
+        }
+    };
 
     @Before
     public void setUp() {
         this.view = new TrendFeedView(getContext());
         view.setAnimatorContext(animatorContext);
+        view.setAnimationCallback(callback);
     }
 
     @Test

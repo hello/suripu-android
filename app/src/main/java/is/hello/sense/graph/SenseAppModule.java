@@ -35,6 +35,7 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
+import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
@@ -58,7 +59,7 @@ import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
-import is.hello.sense.ui.activities.SleepSoundsListActivity;
+import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
@@ -117,7 +118,8 @@ import is.hello.sense.zendesk.ZendeskModule;
         SmartAlarmPresenter.class,
         SleepSoundsPresenter.class,
         SleepDurationsPresenter.class,
-        SleepSoundsListActivity.class
+        ListActivity.class,
+        SleepSoundsPlayerView.class
     }
 )
 @SuppressWarnings("UnusedDeclaration")
