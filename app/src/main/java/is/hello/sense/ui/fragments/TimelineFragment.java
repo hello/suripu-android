@@ -16,7 +16,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,7 @@ import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
-import is.hello.sense.permissions.Permissions;
+import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -128,6 +127,7 @@ public class TimelineFragment extends InjectionFragment
     WeakReference<Dialog> activeDialog;
 
     private TimelineInfoOverlay infoOverlay;
+    private ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
 
 
     //region Lifecycle
@@ -374,12 +374,12 @@ public class TimelineFragment extends InjectionFragment
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        Log.e("Permission", "result");
-        if (Permissions.isWriteExternalStoragePermissionGranted(requestCode, permissions, grantResults)) {
+        if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             share();
         } else {
-            Permissions.showWriteExternalStorageEnableInstructionsDialog(this);
+            externalStoragePermission.showEnableInstructionsDialog();
         }
+
     }
 
     //endregion

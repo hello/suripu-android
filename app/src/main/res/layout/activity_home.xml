@@ -41,6 +41,7 @@
                 android:layout_gravity="end|bottom"
                 android:src="@drawable/timeline_smart_alarm"
                 android:contentDescription="@string/action_show_alarms"
+                android:visibility="invisible"
                 style="@style/AppTheme.Button.Circular"/>
 
         </FrameLayout>

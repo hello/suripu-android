@@ -7,10 +7,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.IListObject;
 
-public class SleepSounds extends ApiResponse {
+public class SleepSounds extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
 
     @SerializedName("sounds")
     private List<Sound> sounds;
@@ -48,6 +51,26 @@ public class SleepSounds extends ApiResponse {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<Sound> getListItems() {
+        return sounds;
+    }
+
+    @Override
+    public int getLabelRes() {
+        return R.string.sleep_sounds_sound_label;
+    }
+
+    @Override
+    public int getImageRes() {
+        return R.drawable.icon_alarm_tone;
+    }
+
+    @Override
+    public IListObject getListObject() {
+        return this;
     }
 
     public enum State implements Enums.FromString {

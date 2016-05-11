@@ -14,16 +14,18 @@ import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 
 @SuppressLint("ViewConstructor")
-public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGraph {
+public abstract class TrendGraphView extends View implements TrendFeedViewItem.OnBindGraph {
     protected TrendGraphDrawable drawable;
     protected AnimatorContext animatorContext;
     protected static final float maxAnimationFactor = 1f;
     protected static final float minAnimationFactor = 0;
+    protected boolean isAnimating = false;
+    protected AnimationCallback animationCallback;
 
-
-    protected TrendGraphView(@NonNull Context context, @NonNull AnimatorContext animatorContext) {
+    protected TrendGraphView(@NonNull Context context, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
         super(context);
         this.animatorContext = animatorContext;
+        this.animationCallback = animationCallback;
 
     }
 
@@ -34,6 +36,15 @@ public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGrap
     @Override
     public void bindGraph(@NonNull Graph graph) {
         drawable.updateGraph(graph);
+    }
+
+    public boolean isAnimating() {
+        return isAnimating;
+    }
+
+    protected void finishedAnimating() {
+        isAnimating = false;
+        animationCallback.isFinished();
     }
 
     public void fadeOut(@Nullable Animator.AnimatorListener animatorListener) {
@@ -55,4 +66,9 @@ public class TrendGraphView extends View implements TrendFeedViewItem.OnBindGrap
         }
         animatorContext.startWhenIdle(animator);
     }
+
+    public interface AnimationCallback {
+        void isFinished();
+    }
+
 }

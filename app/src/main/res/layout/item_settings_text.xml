@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_text"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="72dp"
-    android:paddingEnd="@dimen/gap_outer"
-    android:textAppearance="@style/AppTheme.Text.Body.Small"
-    android:textColor="@color/text_dim"
-    android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/item_settings_place_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_small"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="@dimen/gap_small"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/item_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_weight="1"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:textAppearance="@style/AppTheme.Text.Body.Small"
+        android:textColor="@color/text_dim"/>
+
+</LinearLayout>

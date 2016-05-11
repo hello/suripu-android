@@ -6,9 +6,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.IListObject;
 
-public class SleepDurations extends ApiResponse {
+public class SleepDurations extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
     @SerializedName("durations")
     private List<Duration> durations;
 
@@ -39,5 +42,25 @@ public class SleepDurations extends ApiResponse {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<? extends IListItem> getListItems() {
+        return this.durations;
+    }
+
+    @Override
+    public int getLabelRes() {
+        return R.string.sleep_sounds_duration_label;
+    }
+
+    @Override
+    public int getImageRes() {
+        return R.drawable.sounds_duration_icon;
+    }
+
+    @Override
+    public IListObject getListObject() {
+        return this;
     }
 }

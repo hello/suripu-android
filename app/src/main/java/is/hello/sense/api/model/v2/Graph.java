@@ -49,6 +49,9 @@ public class Graph extends ApiResponse {
     @SerializedName("annotations")
     private List<Annotation> annotations;
 
+    private ArrayList<Graph> quarterGraphs;
+    private int quarterSections = 0;
+
     @VisibleForTesting
     public Graph(@NonNull String title,
                  @NonNull DataType dataType,
@@ -71,6 +74,32 @@ public class Graph extends ApiResponse {
 
     }
 
+    public ArrayList<Graph> getQuarterGraphs() {
+        if (quarterGraphs == null) {
+            quarterGraphs = convertToQuarterGraphs();
+        }
+        return quarterGraphs;
+    }
+
+    public int getQuarterSections() {
+        if (quarterSections == 0) {
+            int sections = 0;
+            final ArrayList<Graph> graphs = getQuarterGraphs();
+            for (int i = 0; i < graphs.size(); i += 2) {
+                Graph quarterGraph = graphs.get(i);
+                sections += quarterGraph.getSections().size();
+            }
+            for (int i = 1; i < graphs.size(); i += 2) {
+                Graph quarterGraph = graphs.get(i);
+                quarterSections += quarterGraph.getSections().size();
+            }
+            if (sections > quarterSections) {
+                quarterSections = sections;
+            }
+        }
+        return quarterSections;
+    }
+
     /**
      * The quarter graph response from /v2/trends/LAST_3_MONTHS uses each {@link GraphSection} to
      * represent one month of data, rather than one week. This method will break apart each
@@ -82,14 +111,17 @@ public class Graph extends ApiResponse {
     public ArrayList<Graph> convertToQuarterGraphs() {
         final ArrayList<Graph> graphs = new ArrayList<>();
         for (GraphSection graphSection : sections) {
-            final String monthTitle = graphSection.getTitles().get(0);
             int offset = 0;
-            try {
-                final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-            } catch (ParseException e) {
-                Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+            if (graphSection.getTitles() != null && !graphSection.getTitles().isEmpty()) {
+                final String monthTitle = graphSection.getTitles().get(0);
+                try {
+                    final int monthValue = DateFormatter.getMonthInt(monthTitle);
+                    offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
+                } catch (ParseException e) {
+                    Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+                }
             }
+
             final Graph graph = new Graph(this);
             if (offset > 0) {
                 final GraphSection temp = new GraphSection(graphSection);

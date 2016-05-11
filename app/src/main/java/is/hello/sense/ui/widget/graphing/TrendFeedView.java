@@ -1,6 +1,5 @@
 package is.hello.sense.ui.widget.graphing;
 
-import android.animation.LayoutTransition;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +25,7 @@ public class TrendFeedView extends LinearLayout {
 
     private Trends trends;
     private AnimatorContext animatorContext;
+    private TrendGraphView.AnimationCallback animationCallback;
     private boolean loading = false;
 
     private final Map<Graph.GraphType, TrendFeedViewItem> cardViews = new HashMap<>(3);
@@ -51,6 +51,10 @@ public class TrendFeedView extends LinearLayout {
 
     public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
+    }
+
+    public void setAnimationCallback(@NonNull TrendGraphView.AnimationCallback animationCallback) {
+        this.animationCallback = animationCallback;
     }
 
     public void setLoading(boolean loading) {
@@ -162,17 +166,27 @@ public class TrendFeedView extends LinearLayout {
         }
     }
 
+    public boolean isAnimating() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof TrendFeedViewItem) {
+                if (((TrendFeedViewItem) child).isAnimating()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private TrendFeedViewItem createTrendCard(@NonNull Graph graph) {
         final Context context = getContext();
         switch (graph.getGraphType()) {
             case BAR:
-                return new TrendFeedViewItem(new TrendGraphLayout.BarTrendGraphLayout(context, graph, animatorContext));
-
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new BarTrendGraphView(context, graph, animatorContext, animationCallback)));
             case BUBBLES:
-                return new TrendFeedViewItem(new TrendGraphLayout.BubbleTrendGraphLayout(context, graph, animatorContext));
-
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new BubbleTrendGraphView(context, graph, animatorContext, animationCallback)));
             case GRID:
-                return new TrendFeedViewItem(new TrendGraphLayout.GridTrendGraphLayout(context, graph, animatorContext));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new GridTrendGraphView(context, graph, animatorContext, animationCallback)));
 
             default:
                 throw new IllegalArgumentException("Unknown graph type " + graph.getGraphType());

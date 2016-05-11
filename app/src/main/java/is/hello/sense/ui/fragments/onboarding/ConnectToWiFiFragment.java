@@ -406,7 +406,11 @@ public class ConnectToWiFiFragment extends HardwareFragment
         }
 
         hideAllActivityForSuccess(() -> {
-            getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+            if (useInAppEvents){
+                getActivity().finish();
+            }else {
+                getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+            }
         }, e -> {
             getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
             presentError(e, "Turning off LEDs");
