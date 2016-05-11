@@ -285,6 +285,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             }
         }
         adapter.setState(AdapterState.NONE, null);
+        setButtonVisible(false);
 
     }
 
