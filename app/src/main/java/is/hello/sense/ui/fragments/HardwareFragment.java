@@ -1,17 +1,20 @@
 package is.hello.sense.ui.fragments;
 
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 
 import javax.inject.Inject;
 
-import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.commonsense.service.SenseService;
+import is.hello.commonsense.service.SenseServiceConnection;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.SensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -22,6 +25,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 import rx.functions.Action1;
 
 /**
@@ -29,9 +33,17 @@ import rx.functions.Action1;
  * in-app and on Sense loading indicators.
  */
 public abstract class HardwareFragment extends InjectionFragment {
-    public @Inject HardwarePresenter hardwarePresenter;
+    public @Inject SensePresenter sensePresenter;
+    public @Inject SenseServiceConnection serviceConnection;
 
     private LoadingDialogFragment loadingDialogFragment;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        addPresenter(sensePresenter);
+    }
 
     protected boolean isPairOnlySession() {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
@@ -70,7 +82,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void showHardwareActivity(@NonNull Runnable onCompletion,
                                         @NonNull Action1<Throwable> onError) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY),
+        bindAndSubscribe(serviceConnection.perform(SenseService::busyLEDs),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
@@ -80,8 +92,8 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     protected void hideHardwareActivity(@NonNull Runnable onCompletion,
                                         @Nullable Action1<Throwable> onError) {
-        if (hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.TRIPPY),
+        if (serviceConnection.isConnectedToSense()) {
+            bindAndSubscribe(serviceConnection.perform(SenseService::trippyLEDs),
                              ignored -> onCompletion.run(),
                              e -> {
                                  Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity.", e);
@@ -97,7 +109,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
     protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.STOP),
+        bindAndSubscribe(serviceConnection.perform(SenseService::stopLEDs),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);
@@ -134,17 +146,17 @@ public abstract class HardwareFragment extends InjectionFragment {
         options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
                                   .setTitle(R.string.action_factory_reset)
-                                  .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                                  .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
                                   .setDescription(R.string.description_recovery_factory_reset));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             options.addOption(new SenseBottomSheet.Option(1)
                                       .setTitle("Debug")
-                                      .setTitleColor(getResources().getColor(R.color.light_accent))
+                                      .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                       .setDescription("If you're adventurous, but here there be dragons."));
             if (!isPairOnlySession()) {
                 options.addOption(new SenseBottomSheet.Option(2)
                                           .setTitle("Skip to End")
-                                          .setTitleColor(getResources().getColor(R.color.light_accent))
+                                          .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                           .setDescription("If you're in a hurry."));
             }
         }
@@ -187,22 +199,24 @@ public abstract class HardwareFragment extends InjectionFragment {
     private void performRecoveryFactoryReset() {
         showBlockingActivity(R.string.dialog_loading_message);
 
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+        if (!sensePresenter.hasPeripheral()) {
+            bindAndSubscribe(sensePresenter.peripheral.take(1),
                              ignored -> performRecoveryFactoryReset(),
                              this::presentFactoryResetError);
-        } else if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
+            sensePresenter.scanForLastConnectedSense();
+        } else if (!serviceConnection.isConnectedToSense()) {
+            bindAndSubscribe(sensePresenter.connectToPeripheral(),
                              state -> {
-                                 if (state != ConnectProgress.CONNECTED) {
-                                     return;
+                                 if (state == ConnectProgress.CONNECTED) {
+                                     performRecoveryFactoryReset();
                                  }
-                                 performRecoveryFactoryReset();
                              },
                              this::presentFactoryResetError);
         } else {
             showHardwareActivity(() -> {
-                bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
+                final Observable<SenseService> factoryReset =
+                        serviceConnection.perform(SenseService::factoryReset);
+                bindAndSubscribe(factoryReset,
                                  ignored -> {
                                      hideBlockingActivity(true, () -> {
                                          Analytics.setSenseId("unpaired");
