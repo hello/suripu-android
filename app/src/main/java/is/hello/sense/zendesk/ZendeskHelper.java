@@ -46,7 +46,7 @@ public class ZendeskHelper {
                     // the same identifier, authentication will fail upon
                     // the first request made to Zendesk.
                     Identity identity = new AnonymousIdentity.Builder()
-                            .withNameIdentifier(a.getName())
+                            .withNameIdentifier(a.getFirstName())
                             .withEmailIdentifier(a.getEmail())
                             .build();
                     config.setIdentity(identity);

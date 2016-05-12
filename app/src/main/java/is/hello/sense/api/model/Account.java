@@ -19,9 +19,12 @@ public class Account extends ApiResponse implements Cloneable {
 
     @SerializedName("tz")
     private int timeZoneOffset;
-
+    //Todo API side may need to update to first_name
     @SerializedName("name")
     private String name;
+
+    @SerializedName("last_name")
+    private String lastName;
 
     @SerializedName("gender")
     private Gender gender;
@@ -89,12 +92,25 @@ public class Account extends ApiResponse implements Cloneable {
         this.timeZoneOffset = timeZoneOffset;
     }
 
-    public String getName() {
+    public String getFirstName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setFirstName(String name) {
         this.name = name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFullName(){
+        String lastName = this.lastName == null ? "" : this.lastName;
+        return String.format("%s %s",name,lastName);
     }
 
     public Gender getGender() {
@@ -177,6 +193,7 @@ public class Account extends ApiResponse implements Cloneable {
                 ", email='" + email + '\'' +
                 ", timeZoneOffset=" + timeZoneOffset +
                 ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", gender=" + gender +
                 ", height=" + height +
                 ", weight=" + weight +

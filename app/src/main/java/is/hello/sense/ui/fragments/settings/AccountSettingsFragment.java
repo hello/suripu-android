@@ -68,6 +68,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
+    private SettingsRecyclerAdapter.DetailItem lastNameItem;
 
 
     //region Lifecycle
@@ -117,6 +118,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
                                                                this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
+
         this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                                 this::changeEmail);
         emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
@@ -247,7 +249,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        nameItem.setText(account.getName());
+        nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
         birthdayItem.setValue(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
