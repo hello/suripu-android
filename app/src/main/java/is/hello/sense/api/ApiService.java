@@ -86,13 +86,13 @@ public interface ApiService {
 
     //region Account
 
-    @GET("/v1/account")
+    @GET("/v2/account")
     Observable<Account> getAccount();
 
-    @POST("/v1/account")
+    @POST("/v2/account")
     Observable<Account> createAccount(@NonNull @Body Account account);
 
-    @PUT("/v1/account")
+    @PUT("/v2/account")
     Observable<Account> updateAccount(@NonNull @Body Account account);
 
     @POST("/v1/account/password")

@@ -19,8 +19,8 @@ public class Account extends ApiResponse implements Cloneable {
 
     @SerializedName("tz")
     private int timeZoneOffset;
-    //Todo API side may need to update to first_name
-    @SerializedName("name")
+
+    @SerializedName("first_name")
     private String name;
 
     @SerializedName("last_name")
