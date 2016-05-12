@@ -50,8 +50,8 @@ public class ChangeNameFragment extends SenseFragment {
     }
 
     public void submit(@NonNull View sender) {
-        String firstName = AccountPresenter.normalizeInput(firstNameText.getText());
-        String lastName = AccountPresenter.normalizeInput(lastNameText.getText());
+        final String firstName = AccountPresenter.normalizeInput(firstNameText.getText());
+        final String lastName = AccountPresenter.normalizeInput(lastNameText.getText());
         firstNameText.setText(firstName);
         lastNameText.setText(lastName);
         //Todo Currently no validation for lastName

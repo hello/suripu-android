@@ -1,5 +1,7 @@
 package is.hello.sense.api.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,10 +22,10 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("tz")
     private int timeZoneOffset;
 
-    @SerializedName("first_name")
-    private String name;
+    @SerializedName("firstname")
+    private String firstName;
 
-    @SerializedName("last_name")
+    @SerializedName("lastname")
     private String lastName;
 
     @SerializedName("gender")
@@ -60,6 +62,8 @@ public class Account extends ApiResponse implements Cloneable {
 
     public static Account createDefault() {
         Account newAccount = new Account();
+        newAccount.setFirstName("");
+        newAccount.setLastName("");
         newAccount.setHeight(177);
         newAccount.setWeight(68039);
         newAccount.setTimeZoneOffset(DateTimeZone.getDefault()
@@ -93,24 +97,23 @@ public class Account extends ApiResponse implements Cloneable {
     }
 
     public String getFirstName() {
-        return name;
+        return firstName;
     }
 
-    public void setFirstName(String name) {
-        this.name = name;
+    public void setFirstName(@NonNull String name) {
+        this.firstName = name;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(@NonNull String lastName) {
         this.lastName = lastName;
     }
 
     public String getFullName(){
-        String lastName = this.lastName == null ? "" : this.lastName;
-        return String.format("%s %s",name,lastName);
+        return String.format("%s %s", firstName,lastName);
     }
 
     public Gender getGender() {
@@ -192,7 +195,7 @@ public class Account extends ApiResponse implements Cloneable {
                 "id='" + id + '\'' +
                 ", email='" + email + '\'' +
                 ", timeZoneOffset=" + timeZoneOffset +
-                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", gender=" + gender +
                 ", height=" + height +

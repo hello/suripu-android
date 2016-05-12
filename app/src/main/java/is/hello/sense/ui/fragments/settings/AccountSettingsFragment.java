@@ -68,7 +68,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
-    private SettingsRecyclerAdapter.DetailItem lastNameItem;
 
 
     //region Lifecycle
