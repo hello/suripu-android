@@ -17,7 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.widget.CircleImageView;
+import is.hello.sense.ui.widget.ProfileImageView;
 
 public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.Item,
         SettingsRecyclerAdapter.ViewHolder> {
@@ -80,7 +80,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 return new TextViewHolder(view);
             }
             case Item.ID: {
-                final View view = new CircleImageView(parent.getContext());
+                final View view = inflater.inflate(R.layout.item_settings_profile_picture, parent, false);
                 return new CircleViewHolder(view);
             }
             default: {
@@ -130,11 +130,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     }
 
     class CircleViewHolder extends ViewHolder<Item<String>> {
-        final CircleImageView imageView;
+        final ProfileImageView imageView;
 
         CircleViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.imageView = (CircleImageView) itemView;
+            this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
         }
 
         @Override

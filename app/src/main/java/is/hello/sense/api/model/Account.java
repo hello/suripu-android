@@ -11,6 +11,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.api.gson.Exclude;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
@@ -58,6 +59,9 @@ public class Account extends ApiResponse implements Cloneable {
 
     @SerializedName("long")
     private Double longitude;
+
+    @SerializedName("profilepicture")
+    private MultiDensityImage profilePicture;
 
 
     public static Account createDefault() {
@@ -177,6 +181,14 @@ public class Account extends ApiResponse implements Cloneable {
         this.longitude = longitude;
     }
 
+    public MultiDensityImage getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(@NonNull MultiDensityImage profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
 
 
 
@@ -247,8 +259,4 @@ public class Account extends ApiResponse implements Cloneable {
         }
     }
 
-    public static class ProfilePicture {
-
-
-    }
 }

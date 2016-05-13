@@ -16,20 +16,20 @@ import com.squareup.picasso.Target;
 
 import is.hello.sense.R;
 
-public class CircleImageView extends FrameLayout implements Target {
+public class ProfileImageView extends FrameLayout implements Target {
 
     private ImageButton plusButton;
     private ImageView profileImage;
 
-    public CircleImageView(Context context) {
+    public ProfileImageView(Context context) {
         this(context, null);
     }
 
-    public CircleImageView(Context context, AttributeSet attrs) {
+    public ProfileImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CircleImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ProfileImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         final View view = LayoutInflater.from(context).inflate(R.layout.item_profile_picture,this,false);
         this.profileImage = (ImageView) view.findViewById(R.id.item_profile_picture_image);
