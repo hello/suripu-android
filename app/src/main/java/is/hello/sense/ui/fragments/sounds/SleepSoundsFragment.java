@@ -325,15 +325,19 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     }
 
     private void presentStatusError(final @NonNull Throwable error) {
-        backOff += backOffIncrements;
-        if (backOff > maxBackOff) {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
-                    .withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense))
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-            return; // give up
+        if (userWants != UserWants.NONE) {
+            backOff += backOffIncrements;
+            if (backOff > maxBackOff) {
+                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
+                        .withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense))
+                        .build();
+                errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+                userWants = UserWants.NONE;
+                statusPollingHelper.cancelLastPoll();
+                return; // give up
+            }
+            statusPollingHelper.poll();
         }
-        statusPollingHelper.poll();
     }
 
 
