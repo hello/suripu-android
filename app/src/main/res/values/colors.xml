@@ -171,7 +171,7 @@
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="trends_title">@color/gray4_70</color>
+    <color name="trends_title">@color/gray4</color>
     <color name="trends_line_divider">@color/gray2_50</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>
