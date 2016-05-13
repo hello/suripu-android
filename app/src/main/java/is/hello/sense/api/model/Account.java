@@ -1,5 +1,6 @@
 package is.hello.sense.api.model;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
@@ -189,8 +190,10 @@ public class Account extends ApiResponse implements Cloneable {
         this.profilePicture = profilePicture;
     }
 
-
-
+    public String getProfilePictureUrl(@NonNull Resources resources) {
+        return "";
+        //return this.profilePicture.getUrl(resources);
+    }
 
     public final Account clone() {
         try {

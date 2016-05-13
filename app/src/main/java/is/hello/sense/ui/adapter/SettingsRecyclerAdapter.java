@@ -17,13 +17,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.widget.ProfileImageView;
 
 public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.Item,
         SettingsRecyclerAdapter.ViewHolder> {
     private final Resources resources;
-    private final LayoutInflater inflater;
-
+    protected final LayoutInflater inflater;
     private boolean wantsDividers = true;
 
     public SettingsRecyclerAdapter(@NonNull Context context) {
@@ -79,10 +77,6 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 final View view = inflater.inflate(R.layout.item_settings_text, parent, false);
                 return new TextViewHolder(view);
             }
-            case Item.ID: {
-                final View view = inflater.inflate(R.layout.item_settings_profile_picture, parent, false);
-                return new CircleViewHolder(view);
-            }
             default: {
                 throw new IllegalArgumentException("Unknown view type " + viewType);
             }
@@ -125,22 +119,6 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 if (onClick != null) {
                     onClick.run();
                 }
-            }
-        }
-    }
-
-    class CircleViewHolder extends ViewHolder<Item<String>> {
-        final ProfileImageView imageView;
-
-        CircleViewHolder(@NonNull View itemView) {
-            super(itemView);
-            this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
-        }
-
-        @Override
-        void bind(Item<String> item){
-            if(item.value != null){
-                //update imageView.setPath(item.value);
             }
         }
     }
@@ -266,7 +244,6 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
         public void setText(String text) {
             this.text = text;
-
             notifyChanged();
         }
     }

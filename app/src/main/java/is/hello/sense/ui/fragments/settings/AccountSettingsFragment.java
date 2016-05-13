@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -26,12 +27,16 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.permissions.ExternalStoragePermission;
+import is.hello.sense.permissions.Permission;
+import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
@@ -44,13 +49,15 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Fetch;
 
-public class AccountSettingsFragment extends InjectionFragment implements AccountEditor.Container {
+public class AccountSettingsFragment extends InjectionFragment
+        implements AccountEditor.Container, Permission.PermissionDialogResources {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
+    private static final int REQUEST_CODE_CAMERA = 0x10;
 
-    @Inject
-    Picasso picasso;
+    @Inject Picasso picasso;
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
@@ -72,7 +79,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
-    private SettingsRecyclerAdapter.Item<String> profilePictureItem;
+    private AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
+
+    private ExternalStoragePermission permission;
 
 
     //region Lifecycle
@@ -89,6 +98,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         accountPresenter.update();
         addPresenter(accountPresenter);
+
+        permission = new ExternalStoragePermission(this);
 
         setRetainInstance(true);
     }
@@ -110,7 +121,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.adapter = new SettingsRecyclerAdapter(getActivity());
+        this.adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
@@ -119,7 +130,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
 
-        this.profilePictureItem = new SettingsRecyclerAdapter.Item<String>(this::changeName);
+        this.profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
         adapter.add(profilePictureItem);
 
         this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
@@ -224,11 +235,13 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK) return;
+        if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
-        } else if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
+        } else if(requestCode == REQUEST_CODE_CAMERA) {
+            profilePictureItem.setValue(data.toUri(Intent.URI_ANDROID_APP_SCHEME));
         }
     }
 
@@ -257,6 +270,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
+        profilePictureItem.setValue(account.getProfilePictureUrl(getResources()));
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
@@ -290,6 +304,16 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
 
     //region Basic Info
+    private void changePicture() {
+        if(permission.isGranted()){
+            // proceed to start camera intent
+            Fetch.Image fetchImage = Fetch.image(REQUEST_CODE_CAMERA);
+            fetchImage.fetch(this);
+
+        } else{
+            permission.showEnableInstructionsDialog(this);
+        }
+    }
 
     public void changeName() {
         final ChangeNameFragment fragment = new ChangeNameFragment();
@@ -419,6 +443,33 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
                                  ErrorDialogFragment.presentError(getActivity(), e);
                              });
         });
+    }
+
+    //endregion
+
+    //region Permissions
+
+    @Override
+    public int dialogTitle() {
+        return R.string.request_permission_write_external_storage_required_title;
+    }
+
+    @Override
+    public int dialogMessage() {
+        return R.string.request_permission_write_external_storage_for_profile_picture;
+    }
+
+    @NonNull
+    @Override
+    public DialogInterface.OnClickListener clickListener() {
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(which == Dialog.BUTTON_POSITIVE) {
+                    changePicture();
+                }
+            }
+        };
     }
 
     //endregion

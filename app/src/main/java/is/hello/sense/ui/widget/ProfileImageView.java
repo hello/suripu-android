@@ -38,6 +38,10 @@ public class ProfileImageView extends FrameLayout implements Target {
         this.addView(view);
     }
 
+    public int getSizeDimen() {
+        return R.dimen.profile_image_size;
+    }
+
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
         profileImage.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
