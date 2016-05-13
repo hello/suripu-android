@@ -17,8 +17,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.CircleImageView;
 
-public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.TextItem,
+public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.Item,
         SettingsRecyclerAdapter.ViewHolder> {
     private final Resources resources;
     private final LayoutInflater inflater;
@@ -40,7 +41,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     //region Binding
 
     @Override
-    public boolean add(TextItem item) {
+    public boolean add(Item item) {
         if (super.add(item)) {
             item.bind(this, getItemCount() - 1);
             return true;
@@ -51,13 +52,15 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
     @Override
     public int getItemViewType(int position) {
-        final TextItem item = getItem(position);
+        final Item item = getItem(position);
         if (item instanceof DetailItem) {
             return DetailItem.ID;
         } else if (item instanceof ToggleItem) {
             return ToggleItem.ID;
-        } else {
+        } else if (item instanceof TextItem){
             return TextItem.ID;
+        } else{
+            return Item.ID;
         }
     }
 
@@ -76,6 +79,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 final View view = inflater.inflate(R.layout.item_settings_text, parent, false);
                 return new TextViewHolder(view);
             }
+            case Item.ID: {
+                final View view = new CircleImageView(parent.getContext());
+                return new CircleViewHolder(view);
+            }
             default: {
                 throw new IllegalArgumentException("Unknown view type " + viewType);
             }
@@ -84,7 +91,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final TextItem item = getItem(position);
+        final Item item = getItem(position);
         //noinspection unchecked
         holder.bind(item);
     }
@@ -94,7 +101,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
     //region View Holders
 
-    abstract class ViewHolder<T extends TextItem> extends RecyclerView.ViewHolder
+    abstract class ViewHolder<T extends Item> extends RecyclerView.ViewHolder
             implements View.OnClickListener {
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,11 +120,27 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             // view holder before the callback fires.
             final int adapterPosition = getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                final TextItem item = getItem(adapterPosition);
+                final Item item = getItem(adapterPosition);
                 final Runnable onClick = item.onClick;
                 if (onClick != null) {
                     onClick.run();
                 }
+            }
+        }
+    }
+
+    class CircleViewHolder extends ViewHolder<Item<String>> {
+        final CircleImageView imageView;
+
+        CircleViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.imageView = (CircleImageView) itemView;
+        }
+
+        @Override
+        void bind(Item<String> item){
+            if(item.value != null){
+                //update imageView.setPath(item.value);
             }
         }
     }
@@ -196,19 +219,16 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
     //region Items
 
-    public static class TextItem<T> {
+    public static class Item<T> {
         static final int ID = 0;
 
-        String text;
         T value;
         final @Nullable Runnable onClick;
 
         @Nullable SettingsRecyclerAdapter adapter;
         int position = RecyclerView.NO_POSITION;
 
-        public TextItem(@NonNull String text,
-                        @Nullable Runnable onClick) {
-            this.text = text;
+        public Item(@Nullable Runnable onClick) {
             this.onClick = onClick;
         }
 
@@ -217,29 +237,42 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             this.adapter = adapter;
         }
 
-        public void setText(String text) {
-            this.text = text;
-
-            if (position != RecyclerView.NO_POSITION && adapter != null) {
-                adapter.notifyItemChanged(position);
-            }
-        }
-
         public void setValue(T value) {
             this.value = value;
-
-            if (position != RecyclerView.NO_POSITION && adapter != null) {
-                adapter.notifyItemChanged(position);
-            }
+            notifyChanged();
         }
 
         public T getValue() {
             return value;
         }
+
+        protected void notifyChanged(){
+            if (position != RecyclerView.NO_POSITION && adapter != null) {
+                adapter.notifyItemChanged(position);
+            }
+        }
+    }
+
+    public static class TextItem<T> extends Item<T>{
+        static final int ID = 1;
+
+        String text;
+
+        public TextItem(@NonNull String text,
+                        @Nullable Runnable onClick) {
+            super(onClick);
+            this.text = text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+
+            notifyChanged();
+        }
     }
 
     public static class DetailItem extends TextItem<String> {
-        static final int ID = 1;
+        static final int ID = 2;
 
         @DrawableRes int icon;
         @StringRes int iconContentDescription;
@@ -255,7 +288,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     }
 
     public static class ToggleItem extends TextItem<Boolean> {
-        static final int ID = 2;
+        static final int ID = 3;
 
         public ToggleItem(@NonNull String title, @Nullable Runnable onClick) {
             super(title, onClick);

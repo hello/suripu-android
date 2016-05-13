@@ -86,7 +86,7 @@ public interface ApiService {
 
     //region Account
 
-    @GET("/v2/account")
+    @GET("/v1/account")
     Observable<Account> getAccount();
 
     @POST("/v2/account")
@@ -115,6 +115,12 @@ public interface ApiService {
 
     @PUT("/v2/account/preferences")
     Observable<Account.Preferences> updateAccountPreferences(@NonNull @Body Account.Preferences preference);
+
+    @GET("/v2/account/profilepicture")
+    Observable<Account.ProfilePicture> ProfilePicture();
+
+    @PUT("/v2/account/profilepicture")
+    Observable<Account.ProfilePicture> updateProfilePicture(@NonNull @Body Account.ProfilePicture picture);
 
     //endregion
 

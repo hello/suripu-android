@@ -246,4 +246,9 @@ public class Account extends ApiResponse implements Cloneable {
                     '}';
         }
     }
+
+    public static class ProfilePicture {
+
+
+    }
 }

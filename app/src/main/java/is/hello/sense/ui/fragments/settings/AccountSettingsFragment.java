@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -47,6 +49,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
+    @Inject
+    Picasso picasso;
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
@@ -68,6 +72,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
+    private SettingsRecyclerAdapter.Item<String> profilePictureItem;
 
 
     //region Lifecycle
@@ -113,6 +118,10 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         recyclerView.addItemDecoration(decoration);
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
+
+        this.profilePictureItem = new SettingsRecyclerAdapter.Item<String>(this::changeName);
+        adapter.add(profilePictureItem);
+
         this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                                this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
