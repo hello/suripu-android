@@ -3,15 +3,39 @@ package is.hello.sense.permissions;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 
 public class ExternalStoragePermission extends Permission {
 
     public ExternalStoragePermission(@NonNull final Fragment fragment) {
         super(fragment);
+    }
+
+    public ExternalStoragePermission(@NonNull final Fragment fragment,
+                                     @StringRes final int negativeText,
+                                     @StringRes final int positiveText) {
+        super(fragment, negativeText, positiveText);
+    }
+
+    public static ExternalStoragePermission forCamera(@NonNull Fragment fragment) {
+        return new ExternalStoragePermission(fragment, R.string.action_deny, R.string.action_ok);
+    }
+
+    public void requestPermissionWithDialogForCamera(){
+        requestPermissionWithDialog(
+                SenseAlertDialog.NO_TITLE_ID,
+                R.string.request_permission_write_external_storage_for_profile_picture,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
     }
 
     @Override

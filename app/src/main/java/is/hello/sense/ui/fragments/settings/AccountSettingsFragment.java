@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,7 +53,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Fetch;
 
 public class AccountSettingsFragment extends InjectionFragment
-        implements AccountEditor.Container, Permission.PermissionDialogResources {
+        implements AccountEditor.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
     private static final int REQUEST_CODE_CAMERA = 0x10;
@@ -99,7 +100,7 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
 
-        permission = new ExternalStoragePermission(this);
+        permission = ExternalStoragePermission.forCamera(this);
 
         setRetainInstance(true);
     }
@@ -241,7 +242,7 @@ public class AccountSettingsFragment extends InjectionFragment
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
         } else if(requestCode == REQUEST_CODE_CAMERA) {
-            profilePictureItem.setValue(data.toUri(Intent.URI_ANDROID_APP_SCHEME));
+            profilePictureItem.setValue(data.getDataString());
         }
     }
 
@@ -310,8 +311,8 @@ public class AccountSettingsFragment extends InjectionFragment
             Fetch.Image fetchImage = Fetch.image(REQUEST_CODE_CAMERA);
             fetchImage.fetch(this);
 
-        } else{
-            permission.showEnableInstructionsDialog(this);
+        } else {
+            permission.requestPermissionWithDialogForCamera();
         }
     }
 
@@ -447,30 +448,4 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //endregion
 
-    //region Permissions
-
-    @Override
-    public int dialogTitle() {
-        return R.string.request_permission_write_external_storage_required_title;
-    }
-
-    @Override
-    public int dialogMessage() {
-        return R.string.request_permission_write_external_storage_for_profile_picture;
-    }
-
-    @NonNull
-    @Override
-    public DialogInterface.OnClickListener clickListener() {
-        return new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which == Dialog.BUTTON_POSITIVE) {
-                    changePicture();
-                }
-            }
-        };
-    }
-
-    //endregion
 }

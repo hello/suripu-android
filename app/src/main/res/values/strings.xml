@@ -68,6 +68,8 @@
     <string name="title_info">Info</string>
     <string name="title_demographics">Demographics</string>
 
+    <string name="action_ok">OK</string>
+    <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
     <string name="title_setup_sense">Setting up Sense</string>

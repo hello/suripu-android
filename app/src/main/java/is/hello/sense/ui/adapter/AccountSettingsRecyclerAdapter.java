@@ -48,7 +48,8 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
         void bind(Item<String> item){
             if(item.value != null && !item.value.isEmpty()){
                 picasso.load(item.value)
-                       .resizeDimen(imageView.getSizeDimen(), imageView.getSizeDimen())
+                       .centerCrop()
+                        .resizeDimen(imageView.getSizeDimen(), imageView.getSizeDimen())
                        .noFade()
                        .into(imageView);
             } else {

@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import is.hello.sense.R;
+import is.hello.sense.util.Logger;
 
 public class ProfileImageView extends FrameLayout implements Target {
 
@@ -49,7 +50,7 @@ public class ProfileImageView extends FrameLayout implements Target {
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
-
+        Logger.error(ProfileImageView.class.getSimpleName(),"failed to load bitmap.");
     }
 
     @Override

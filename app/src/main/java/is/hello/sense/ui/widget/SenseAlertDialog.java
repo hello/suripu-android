@@ -26,6 +26,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 
 public class SenseAlertDialog extends Dialog {
+    public static final int NO_TITLE_ID = 0;
     private final LinearLayout container;
 
     private final TextView titleText;
@@ -105,15 +106,15 @@ public class SenseAlertDialog extends Dialog {
 
     @Override
     public void setTitle(@StringRes int titleId) {
-        super.setTitle(titleId);
 
-        if (titleId == 0) {
+        if (titleId == NO_TITLE_ID) {
             titleText.setVisibility(View.GONE);
         } else {
+            super.setTitle(titleId);
             titleText.setVisibility(View.VISIBLE);
+            titleText.setText(titleId);
         }
 
-        titleText.setText(titleId);
         updatePaddingAndDividers();
     }
 
