@@ -1,15 +1,14 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -29,7 +29,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.permissions.ExternalStoragePermission;
-import is.hello.sense.permissions.Permission;
 import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
@@ -37,7 +36,7 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
-import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
@@ -47,16 +46,21 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Fetch;
+import is.hello.sense.util.Logger;
 
 public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
-    private static final int REQUEST_CODE_CAMERA = 0x10;
+    private static final int REQUEST_CODE_PICTURE = 0x30;
+    private static final int OPTION_ID_FROM_FACEBOOK = 0;
+    private static final int OPTION_ID_FROM_CAMERA = 1;
+    private static final int OPTION_ID_FROM_GALLERY = 2;
 
     @Inject Picasso picasso;
     @Inject AccountPresenter accountPresenter;
@@ -241,8 +245,12 @@ public class AccountSettingsFragment extends InjectionFragment
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
-        } else if(requestCode == REQUEST_CODE_CAMERA) {
+        } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA ||
+                requestCode == Fetch.Image.REQUEST_CODE_GALLERY) {
             profilePictureItem.setValue(data.getDataString());
+        } else if(requestCode == REQUEST_CODE_PICTURE){
+            final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
+            handlePictureOptionSelection(optionID);
         }
     }
 
@@ -307,10 +315,7 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Basic Info
     private void changePicture() {
         if(permission.isGranted()){
-            // proceed to start camera intent
-            Fetch.Image fetchImage = Fetch.image(REQUEST_CODE_CAMERA);
-            fetchImage.fetch(this);
-
+            this.showPictureOptions();
         } else {
             permission.requestPermissionWithDialogForCamera();
         }
@@ -444,6 +449,55 @@ public class AccountSettingsFragment extends InjectionFragment
                                  ErrorDialogFragment.presentError(getActivity(), e);
                              });
         });
+    }
+
+    //endregion
+
+    //region Camera Options
+
+    private void handlePictureOptionSelection(final int optionID){
+        switch(optionID){
+            case OPTION_ID_FROM_FACEBOOK:
+                break;
+            case OPTION_ID_FROM_CAMERA:
+                Fetch.imageFromCamera().fetch(this);
+                break;
+            case OPTION_ID_FROM_GALLERY:
+                Fetch.imageFromGallery().fetch(this);
+                break;
+            default:
+                Logger.warn(AccountSettingsFragment.class.getSimpleName(),"unknown picture option selected");
+        }
+    }
+
+    public void showPictureOptions() {
+        //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
+
+        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        options.add(
+                new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
+                        .setTitle(R.string.action_import_from_facebook)
+                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                        .setIcon(R.drawable.settings_camera)
+                   );
+
+        options.add(
+                new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
+                        .setTitle(R.string.action_take_photo)
+                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                        .setIcon(R.drawable.settings_camera)
+                   );
+
+        options.add(
+                new SenseBottomSheet.Option(OPTION_ID_FROM_GALLERY)
+                .setTitle(R.string.action_import_from_gallery)
+                .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                .setIcon(R.drawable.settings_photo_library)
+                );
+
+        BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
+        advancedOptions.setTargetFragment(this, REQUEST_CODE_PICTURE);
+        advancedOptions.showAllowingStateLoss(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     //endregion

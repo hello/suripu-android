@@ -30,14 +30,29 @@ public abstract class Fetch {
     }
 
 
-    public static Image image(final int requestCode){
-        return new Image("profilePicture", requestCode);
+    public static Image imageFromCamera(){
+        return new Image(MediaStore.ACTION_IMAGE_CAPTURE, Image.REQUEST_CODE_CAMERA);
+    }
+
+    public static Image imageFromGallery(){
+        final Image image = new Image(Intent.ACTION_PICK, Image.REQUEST_CODE_GALLERY);
+            image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        return image;
+    }
+
+    public static Image imageFromFacebook(){
+        final Image image = new Image(Intent.ACTION_PICK, Image.REQUEST_CODE_FACEBOOK);
+        image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        return image;
     }
 
     public static class Image extends Fetch{
+        public static final int REQUEST_CODE_CAMERA = 0x11;
+        public static final int REQUEST_CODE_GALLERY = 0x12;
+        public static final int REQUEST_CODE_FACEBOOK = 0x13;
 
-        protected Image(@NonNull String fileName, int requestCode) {
-            super(MediaStore.ACTION_IMAGE_CAPTURE, requestCode);
+        protected Image(@NonNull String action, int requestCode) {
+            super(action, requestCode);
         }
 
         @Override

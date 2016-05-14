@@ -583,4 +583,7 @@
 
     <string name="empty"> </string>
 
+    <string name="action_import_from_facebook">Import from Facebook</string>
+    <string name="action_import_from_gallery">Open Gallery</string>
+
 </resources>
