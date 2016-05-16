@@ -23,6 +23,10 @@
 
     <!-- Text -->
 
+    <!-- Official text sizes provided by Nathan -->
+    <dimen name="text_body">15sp</dimen>
+    <dimen name="text_body_line_height">24px</dimen>
+
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_size_body_mid_sized">14sp</dimen>
     <dimen name="text_size_body_small">13sp</dimen>

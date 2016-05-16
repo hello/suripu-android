@@ -406,7 +406,9 @@
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding">
-        <item name="android:textSize">@dimen/text_size_subheading</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@drawable/onboarding_edittext_selector</item>
+        <item name="android:minHeight">@dimen/text_body_line_height</item>
     </style>
 
     <!-- Specific Tinting -->
