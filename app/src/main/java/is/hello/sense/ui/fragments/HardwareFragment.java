@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 
 import javax.inject.Inject;
 
@@ -29,7 +30,9 @@ import rx.functions.Action1;
  * in-app and on Sense loading indicators.
  */
 public abstract class HardwareFragment extends InjectionFragment {
-    public @Inject HardwarePresenter hardwarePresenter;
+    public
+    @Inject
+    HardwarePresenter hardwarePresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
 
@@ -48,7 +51,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                                                                         LoadingDialogFragment.OPAQUE_BACKGROUND);
             });
         } else {
-            loadingDialogFragment.setTitle(getString(titleRes));
+                loadingDialogFragment.setTitle(getString(titleRes));
         }
     }
 
@@ -134,17 +137,17 @@ public abstract class HardwareFragment extends InjectionFragment {
         options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
                                   .setTitle(R.string.action_factory_reset)
-                                  .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                                  .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
                                   .setDescription(R.string.description_recovery_factory_reset));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             options.addOption(new SenseBottomSheet.Option(1)
                                       .setTitle("Debug")
-                                      .setTitleColor(getResources().getColor(R.color.light_accent))
+                                      .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                       .setDescription("If you're adventurous, but here there be dragons."));
             if (!isPairOnlySession()) {
                 options.addOption(new SenseBottomSheet.Option(2)
                                           .setTitle("Skip to End")
-                                          .setTitleColor(getResources().getColor(R.color.light_accent))
+                                          .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                           .setDescription("If you're in a hurry."));
             }
         }
