@@ -225,7 +225,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         }
 
         showBlockingActivity(R.string.title_scanning_for_sense);
-
+        hardwarePresenter.clearPeripheral();
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
         bindAndSubscribe(device, this::tryToPairWith, e -> presentError(e, "Discovering Sense"));
     }
