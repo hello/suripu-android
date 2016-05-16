@@ -197,6 +197,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
             if (isPairOnlySession()) {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
                 getOnboardingActivity().finish();
+                hardwarePresenter.clearPeripheral();
             } else {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
                 getOnboardingActivity().showPairPill(true);

@@ -245,7 +245,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                          final @Nullable IListObject.IListItem defaultItem) {
             final List<? extends IListObject.IListItem> items = rowItem.getListObject().getListItems();
 
-            if (currentItem != null && items.contains(currentItem)) {
+            if (currentItem != null && itemIsContained(items, currentItem)) {
                 listItem = currentItem;
             } else if (savedItem != null) {
                 listItem = savedItem;
@@ -269,6 +269,15 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
         @Override
         public IListObject.IListItem displayedItem() {
             return listItem;
+        }
+
+        private boolean itemIsContained(@NonNull final List<? extends IListObject.IListItem> items, @NonNull final IListObject.IListItem currentItem) {
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getId() == currentItem.getId()) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
