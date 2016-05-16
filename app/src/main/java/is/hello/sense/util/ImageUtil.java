@@ -31,6 +31,10 @@ public class ImageUtil {
         this.storageUtil = storageUtil;
     }
 
+    public boolean hasDeviceCamera(){
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+    }
+
     /**
      * @param isTemporary determines whether or not to make temporary file
      *                    using {@link File#createTempFile(String, String, File)}
@@ -83,11 +87,7 @@ public class ImageUtil {
     }
 
     protected String getFullFileName(){
-        return String.format("%s_%s",imageFileName, timestampFormat);
-    }
-
-    public boolean hasDeviceCamera(){
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        return String.format("%s_%s", imageFileName, timestampFormat);
     }
 
 }

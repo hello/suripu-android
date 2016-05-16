@@ -43,6 +43,10 @@ public class ProfileImageView extends FrameLayout implements Target {
         return R.dimen.profile_image_size;
     }
 
+    public void addButtonListener(OnClickListener listener){
+        plusButton.setOnClickListener(listener);
+    }
+
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
         profileImage.setImageDrawable(new BitmapDrawable(getResources(), bitmap));

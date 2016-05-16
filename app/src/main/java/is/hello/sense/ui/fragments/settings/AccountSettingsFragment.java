@@ -1,10 +1,8 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -76,6 +74,8 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private ProgressBar loadingIndicator;
 
+
+    private AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
 
@@ -90,7 +90,6 @@ public class AccountSettingsFragment extends InjectionFragment
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
-    private AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
 
     private ExternalStoragePermission permission;
     private Uri imageUri;
@@ -252,9 +251,12 @@ public class AccountSettingsFragment extends InjectionFragment
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA ||
-                requestCode == Fetch.Image.REQUEST_CODE_GALLERY) {
+        } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
             profilePictureItem.setValue(this.imageUri.toString());
+        } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
+            final Uri imageUri = data.getData();
+            profilePictureItem.setValue(imageUri.toString());
+            setUri(imageUri);
         } else if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
@@ -475,6 +477,7 @@ public class AccountSettingsFragment extends InjectionFragment
                 }
                 break;
             case OPTION_ID_FROM_GALLERY:
+
                 Fetch.imageFromGallery().fetch(this);
                 break;
             default:

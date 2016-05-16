@@ -42,6 +42,8 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
         CircleViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
+            this.imageView.addButtonListener(this);
+            this.imageView.setOnClickListener(null);
         }
 
         @Override
@@ -49,7 +51,7 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
             if(item.value != null && !item.value.isEmpty()){
                 picasso.load(item.value)
                        .centerCrop()
-                        .resizeDimen(imageView.getSizeDimen(), imageView.getSizeDimen())
+                       .resizeDimen(imageView.getSizeDimen(), imageView.getSizeDimen())
                        .noFade()
                        .into(imageView);
             } else {
