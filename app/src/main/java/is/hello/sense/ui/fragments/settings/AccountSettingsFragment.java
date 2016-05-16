@@ -1,10 +1,13 @@
 package is.hello.sense.ui.fragments.settings;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +21,7 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
@@ -51,6 +55,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Fetch;
+import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 
 public class AccountSettingsFragment extends InjectionFragment
@@ -67,6 +72,7 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject ImageUtil imageUtil;
 
     private ProgressBar loadingIndicator;
 
@@ -87,6 +93,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
 
     private ExternalStoragePermission permission;
+    private Uri imageUri;
 
 
     //region Lifecycle
@@ -247,7 +254,7 @@ public class AccountSettingsFragment extends InjectionFragment
             getActivity().finish();
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA ||
                 requestCode == Fetch.Image.REQUEST_CODE_GALLERY) {
-            profilePictureItem.setValue(data.getDataString());
+            profilePictureItem.setValue(this.imageUri.toString());
         } else if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
@@ -460,7 +467,12 @@ public class AccountSettingsFragment extends InjectionFragment
             case OPTION_ID_FROM_FACEBOOK:
                 break;
             case OPTION_ID_FROM_CAMERA:
-                Fetch.imageFromCamera().fetch(this);
+                File imageFile = imageUtil.createFile(true);
+                if(imageFile != null){
+                    Uri imageUri = Uri.fromFile(imageFile);
+                    setUri(imageUri);
+                    Fetch.imageFromCamera().fetch(this, imageUri);
+                }
                 break;
             case OPTION_ID_FROM_GALLERY:
                 Fetch.imageFromGallery().fetch(this);
@@ -474,19 +486,23 @@ public class AccountSettingsFragment extends InjectionFragment
         //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
 
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        // check if user has facebook app installed else open permissions
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
                         .setTitle(R.string.action_import_from_facebook)
                         .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
                         .setIcon(R.drawable.settings_camera)
                    );
+        if(imageUtil.hasDeviceCamera()){
 
-        options.add(
-                new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
-                        .setTitle(R.string.action_take_photo)
-                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
-                        .setIcon(R.drawable.settings_camera)
-                   );
+            options.add(
+                    new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
+                            .setTitle(R.string.action_take_photo)
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                            .setIcon(R.drawable.settings_camera)
+                       );
+
+        }
 
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_GALLERY)
@@ -498,6 +514,14 @@ public class AccountSettingsFragment extends InjectionFragment
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
         advancedOptions.setTargetFragment(this, REQUEST_CODE_PICTURE);
         advancedOptions.showAllowingStateLoss(getFragmentManager(), BottomSheetDialogFragment.TAG);
+    }
+
+    public void setUri(Uri uri) {
+        this.imageUri = uri;
+    }
+
+    public Uri getUri(){
+        return this.imageUri;
     }
 
     //endregion

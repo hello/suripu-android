@@ -2,6 +2,7 @@ package is.hello.sense.permissions;
 
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
