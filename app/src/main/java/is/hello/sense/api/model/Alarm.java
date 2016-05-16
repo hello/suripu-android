@@ -101,10 +101,10 @@ public class Alarm extends ApiResponse {
                     .withSecondOfMinute(0)
                     .withMillisOfSecond(0);
         } catch (IllegalFieldValueException e) {
-            hourOfDay++;
+            hourOfDay++; // For day light savings time
             return toTimeToday();
         } catch (IllegalInstantException e) {
-            hourOfDay++;
+            hourOfDay++; // For day light savings time
             return toTimeToday();
         }
     }
