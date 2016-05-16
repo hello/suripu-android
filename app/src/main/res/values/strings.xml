@@ -319,6 +319,8 @@
     <string name="label_sleep_summary">Sleep Summary</string>
     <string name="action_fix_later">Later</string>
     <string name="action_fix_now">Fix Now</string>
+    <string name="title_pairing_request">Pairing Request</string>
+    <string name="message_pairing_request">Sense and your device are not in sync. If you do not see a pairing request dialog, you will need to approve the pairing request from your notification drawer.</string>
 
     <string name="issue_title_no_sense">Sense Not Paired</string>
     <string name="issue_message_no_sense">Your account does not have a Sense paired.  Sense is required to track your sleep behavior.</string>
@@ -578,5 +580,6 @@
     </plurals>
 
     <string name="empty"> </string>
+    <string name="info_connected">Connected</string>
 
 </resources>

@@ -13,7 +13,6 @@ import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -78,7 +77,6 @@ import is.hello.sense.zendesk.ZendeskModule;
 
         SignInFragment.class,
         RegisterFragment.class,
-        HardwarePresenter.class,
         SelectWiFiNetworkFragment.class,
         ConnectToWiFiFragment.class,
 
