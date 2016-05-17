@@ -38,12 +38,9 @@ android {
     }
     signingConfigs {
         debug {
-            def keyStore = file("../../Hello-Android-Internal.keystore")
-            if (keyStore.exists()) {
-                storeFile file("../../Hello-Android-Internal.keystore")
-            } else {
-                logger.warn("Could not find internal keystore, ignoring.")
-            }
+            keyAlias "androiddebugkey"
+            storeFile file("../../Hello-Android-Internal.keystore")
+            storePassword "android"
         }
         release {
             storeFile file("../../Hello-Android-Release.keystore")
