@@ -588,6 +588,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                  powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                                  finishWithResult(RESULT_REPLACED_DEVICE, null);
+
+                                 hardwarePresenter.clearPeripheral();
                              },
                              this::presentError);
         }, e -> {
@@ -612,6 +614,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                              ignored -> {
                                  Analytics.setSenseId("unpaired");
                                  finishDeviceReplaced();
+                                 hardwarePresenter.clearPeripheral();
                              },
                              this::presentError);
         });

@@ -203,7 +203,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
             }
         },
                                   e -> {
-                                      
+
                                       Log.e("Error", "E: " + e.getLocalizedMessage());
                                       presentError(e, "Turning off LEDs");
                                   });
@@ -230,7 +230,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
         showBlockingActivity(R.string.title_scanning_for_sense);
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
-        bindAndSubscribe(device, this::tryToPairWith, e -> presentError(e, "Discovering Sense"));
+        bindAndSubscribe(device, this::tryToPairWith, e -> {
+            hardwarePresenter.clearPeripheral();
+            presentError(e, "Discovering Sense");
+        });
     }
 
     public void tryToPairWith(@NonNull SensePeripheral device) {
