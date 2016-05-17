@@ -9,6 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.api.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
@@ -71,7 +72,8 @@ import is.hello.sense.zendesk.ZendeskModule;
             DebugModule.class,
             OnboardingModule.class,
             SettingsModule.class,
-            UtilityModule.class
+            UtilityModule.class,
+            FacebookApiModule.class
     },
     injects = {
         SenseApplication.class,

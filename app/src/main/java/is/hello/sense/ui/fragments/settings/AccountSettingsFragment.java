@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -39,7 +38,9 @@ import java.util.EnumSet;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.FacebookApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.v2.FacebookProfilePicture;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -79,6 +80,8 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
+    @Inject
+    FacebookApiService facebookApiService;
     @Inject Picasso picasso;
     @Inject CallbackManager facebookCallbackManager;
     @Inject AccountPresenter accountPresenter;
@@ -108,6 +111,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private ExternalStoragePermission permission;
     private Uri imageUri;
+    private Uri tempImageUri;
 
 
     //region Lifecycle
@@ -271,6 +275,8 @@ public class AccountSettingsFragment extends InjectionFragment
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
+            setUri(this.tempImageUri);
+            setTempImageUri(null);
             profilePictureItem.setValue(this.imageUri.toString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
@@ -492,7 +498,7 @@ public class AccountSettingsFragment extends InjectionFragment
                 File imageFile = imageUtil.createFile(true);
                 if(imageFile != null){
                     Uri imageUri = Uri.fromFile(imageFile);
-                    setUri(imageUri);
+                    setTempImageUri(imageUri);
                     Fetch.imageFromCamera().fetch(this, imageUri);
                 }
                 break;
@@ -557,6 +563,14 @@ public class AccountSettingsFragment extends InjectionFragment
     public Uri getUri(){
         return this.imageUri;
     }
+    //Used primarily for take picture from camera
+    public Uri getTempImageUri() {
+        return tempImageUri;
+    }
+
+    public void setTempImageUri(Uri tempImageUri) {
+        this.tempImageUri = tempImageUri;
+    }
 
     //endregion
 
@@ -582,11 +596,14 @@ public class AccountSettingsFragment extends InjectionFragment
                                 @Override
                                 public void onError(FacebookException exception) {
                                     // App code
+                                    Logger.debug(FacebookProfilePicture.class.getSimpleName(),"login failed", exception.fillInStackTrace());
                                 }
                             });
     }
 
     private void makeProfilePictureRequest(){
+        //facebookApiService.getProfilePicture("0","large");
+
         Bundle params = new Bundle();
         params.putInt("redirect",0);
         params.putString("type","large");
@@ -600,7 +617,7 @@ public class AccountSettingsFragment extends InjectionFragment
                     /* handle the result */
                         if(response.getRawResponse() != null){
                             Logger.debug(this.getClass().getSimpleName(), response.getRawResponse());
-                            String url = null;
+                            String url;
                             try {
                                 url = response.getJSONObject().getJSONObject("data").getString("url");
                                 profilePictureItem.setValue(url);

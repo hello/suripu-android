@@ -68,7 +68,6 @@ public class Account extends ApiResponse implements Cloneable {
     public static Account createDefault() {
         Account newAccount = new Account();
         newAccount.setFirstName("");
-        newAccount.setLastName("");
         newAccount.setHeight(177);
         newAccount.setWeight(68039);
         newAccount.setTimeZoneOffset(DateTimeZone.getDefault()
@@ -113,11 +112,12 @@ public class Account extends ApiResponse implements Cloneable {
         return lastName;
     }
 
-    public void setLastName(@NonNull String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     public String getFullName(){
+        final String lastName = this.lastName != null ? this.lastName : "";
         return String.format("%s %s", firstName,lastName);
     }
 
