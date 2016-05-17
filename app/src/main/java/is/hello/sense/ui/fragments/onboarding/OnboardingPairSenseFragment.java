@@ -193,15 +193,17 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
     private void finishedLinking() {
         hideAllActivityForSuccess(() -> {
-            if (isPairOnlySession()) {
-                hardwarePresenter.clearPeripheral();
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
-                getOnboardingActivity().finish();
-            } else {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
-                getOnboardingActivity().showPairPill(true);
-            }
-        },
+                                      if (isPairOnlySession()) {
+                                          if (shouldReleasePeripheralOnPair()) {
+                                              hardwarePresenter.clearPeripheral();
+                                          }
+                                          Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
+                                          getOnboardingActivity().finish();
+                                      } else {
+                                          Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
+                                          getOnboardingActivity().showPairPill(true);
+                                      }
+                                  },
                                   e -> {
 
                                       Log.e("Error", "E: " + e.getLocalizedMessage());
