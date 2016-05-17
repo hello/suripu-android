@@ -64,6 +64,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final int OPTION_ID_FROM_FACEBOOK = 0;
     private static final int OPTION_ID_FROM_CAMERA = 1;
     private static final int OPTION_ID_FROM_GALLERY = 2;
+    private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
     @Inject Picasso picasso;
     @Inject AccountPresenter accountPresenter;
@@ -477,9 +478,11 @@ public class AccountSettingsFragment extends InjectionFragment
                 }
                 break;
             case OPTION_ID_FROM_GALLERY:
-
                 Fetch.imageFromGallery().fetch(this);
                 break;
+            case OPTION_ID_REMOVE_PICTURE:
+                setUri(null);
+                this.profilePictureItem.setValue(null);
             default:
                 Logger.warn(AccountSettingsFragment.class.getSimpleName(),"unknown picture option selected");
         }
@@ -513,6 +516,15 @@ public class AccountSettingsFragment extends InjectionFragment
                 .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
                 .setIcon(R.drawable.settings_photo_library)
                 );
+
+        if(imageUri != null){
+            options.add(
+                    new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
+                            .setTitle(R.string.action_remove_picture)
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
+                            .setIcon(R.drawable.icon_alarm_delete)
+                       );
+        }
 
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
         advancedOptions.setTargetFragment(this, REQUEST_CODE_PICTURE);

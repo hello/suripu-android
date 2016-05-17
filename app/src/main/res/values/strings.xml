@@ -585,5 +585,6 @@
 
     <string name="action_import_from_facebook">Import from Facebook</string>
     <string name="action_import_from_gallery">Open Gallery</string>
+    <string name="action_remove_picture">Remove picture</string>
 
 </resources>

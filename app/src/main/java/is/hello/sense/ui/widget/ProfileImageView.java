@@ -43,6 +43,10 @@ public class ProfileImageView extends FrameLayout implements Target {
         return R.dimen.profile_image_size;
     }
 
+    public int getDefaultProfileRes() {
+        return R.drawable.default_profile_picture;
+    }
+
     public void addButtonListener(OnClickListener listener){
         plusButton.setOnClickListener(listener);
     }
@@ -54,7 +58,7 @@ public class ProfileImageView extends FrameLayout implements Target {
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
-        Logger.error(ProfileImageView.class.getSimpleName(),"failed to load bitmap.");
+        Logger.error(ProfileImageView.class.getSimpleName(), "failed to load bitmap.");
     }
 
     @Override
