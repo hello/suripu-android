@@ -56,6 +56,7 @@ android {
         def TYPE_INT = "int"
         def TYPE_BOOLEAN = "boolean"
         def TYPE_STRING = "String"
+        def TYPE_RES_STRING = "string"
 
         def MIN_LOGGING_LEVEL = "MIN_LOGGING_LEVEL"
         def DEBUG_SCREEN_ENABLED = "DEBUG_SCREEN_ENABLED"
@@ -64,6 +65,7 @@ android {
         def BASE_URL = "BASE_URL"
         def HOCKEY_API_KEY = "HOCKEY_API_KEY"
         def SEGMENT_API_KEY = "SEGMENT_API_KEY"
+        def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
         def IS_BETA = "IS_BETA"
 
         def TRUE = "true"
@@ -78,6 +80,7 @@ android {
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://dev-api.hello.is" + '"'
             buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "805427569ce2035dcda0b99e4d984256" + '"'
             buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "AnMchQr1VXQhPKjeYuoEEQ7pPRlow9SO" + '"'
+            resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "1037386233006901" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
 
             signingConfig signingConfigs.debug
@@ -93,6 +96,7 @@ android {
             buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is" + '"'
             buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "UiFCuqdEpi6STaMCx3bo70Hii0XvWnOK" + '"'
+            resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "1037386233006901" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, FALSE
 
             signingConfig signingConfigs.release
@@ -182,6 +186,8 @@ dependencies {
 
     compile 'is.hello.commonsense:ble:2016.3.3.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
+
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
 
     // !! If you remove this, remove the above workaround.
     compile('com.zendesk:sdk:1.4.1.1') {

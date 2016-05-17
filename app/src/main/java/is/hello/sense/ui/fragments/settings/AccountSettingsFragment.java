@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -17,10 +18,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -67,6 +80,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
     @Inject Picasso picasso;
+    @Inject CallbackManager facebookCallbackManager;
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
@@ -201,6 +215,8 @@ public class AccountSettingsFragment extends InjectionFragment
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
 
+        handleFacebookCallbacks();
+
         return view;
     }
 
@@ -247,6 +263,8 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //Todo should we let facebook listen to all results?
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
@@ -468,6 +486,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private void handlePictureOptionSelection(final int optionID){
         switch(optionID){
             case OPTION_ID_FROM_FACEBOOK:
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
                 break;
             case OPTION_ID_FROM_CAMERA:
                 File imageFile = imageUtil.createFile(true);
@@ -540,5 +559,61 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     //endregion
+
+    // region Facebook import
+
+    private void handleFacebookCallbacks() {
+        LoginManager.getInstance()
+                    .registerCallback(
+                            facebookCallbackManager,
+                            new FacebookCallback<LoginResult>() {
+                                @Override
+                                public void onSuccess(LoginResult loginResult) {
+                                    // App code
+                                    AccessToken.setCurrentAccessToken(loginResult.getAccessToken());
+                                    makeProfilePictureRequest();
+                                }
+
+                                @Override
+                                public void onCancel() {
+                                    // App code
+                                }
+
+                                @Override
+                                public void onError(FacebookException exception) {
+                                    // App code
+                                }
+                            });
+    }
+
+    private void makeProfilePictureRequest(){
+        Bundle params = new Bundle();
+        params.putInt("redirect",0);
+        params.putString("type","large");
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/picture",
+                params,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                    /* handle the result */
+                        if(response.getRawResponse() != null){
+                            Logger.debug(this.getClass().getSimpleName(), response.getRawResponse());
+                            String url = null;
+                            try {
+                                url = response.getJSONObject().getJSONObject("data").getString("url");
+                                profilePictureItem.setValue(url);
+                                setUri(Uri.parse(url));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        ).executeAsync();
+    }
+
+    // endregion
 
 }

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.bugsnag.android.Bugsnag;
+import com.facebook.FacebookSdk;
 import com.squareup.picasso.LruCache;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -60,6 +61,7 @@ public class SenseApplication extends Application {
             Bugsnag.setNotifyReleaseStages("release");
         }
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         JodaTimeAndroid.init(this);
         if (!isRunningInRobolectric){
