@@ -8,6 +8,8 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import java.util.Calendar;
+
 import is.hello.sense.api.gson.Exclude;
 
 public class Account extends ApiResponse implements Cloneable {
@@ -53,6 +55,9 @@ public class Account extends ApiResponse implements Cloneable {
 
     @SerializedName("long")
     private Double longitude;
+
+    @SerializedName("time_zone")
+    private final String timeZone = DateTimeZone.getDefault().getID();
 
 
     public static Account createDefault() {
@@ -158,8 +163,9 @@ public class Account extends ApiResponse implements Cloneable {
         this.longitude = longitude;
     }
 
-
-
+    public String getTimeZone() {
+        return timeZone;
+    }
 
     public final Account clone() {
         try {
