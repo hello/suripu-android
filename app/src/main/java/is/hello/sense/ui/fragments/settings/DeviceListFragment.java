@@ -25,6 +25,7 @@ import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -56,6 +57,7 @@ public class DeviceListFragment extends InjectionFragment
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
     private TextView supportInfoFooter;
+    private final LocationPermission locationPermission = new LocationPermission(this);
 
     public static void startStandaloneFrom(@NonNull Activity activity) {
         final FragmentNavigationActivity.Builder builder =
@@ -151,6 +153,14 @@ public class DeviceListFragment extends InjectionFragment
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            onPairNewDevice(PlaceholderDevice.Type.SLEEP_PILL);
+        } else {
+            locationPermission.showEnableInstructionsDialog();
+        }
+    }
 
     public void bindDevices(@NonNull Devices devices) {
         adapter.bindDevices(devices);
@@ -201,6 +211,10 @@ public class DeviceListFragment extends InjectionFragment
             }
 
             case SLEEP_PILL: {
+                if (!locationPermission.isGranted()) {
+                    locationPermission.requestPermission();
+                    return;
+                }
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
