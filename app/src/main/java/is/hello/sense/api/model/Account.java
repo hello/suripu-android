@@ -57,7 +57,7 @@ public class Account extends ApiResponse implements Cloneable {
     private Double longitude;
 
     @SerializedName("time_zone")
-    private final String timeZone = Calendar.getInstance().getTimeZone().getDisplayName();
+    private final String timeZone = DateTimeZone.getDefault().getID();
 
 
     public static Account createDefault() {
