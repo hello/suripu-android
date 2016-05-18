@@ -23,7 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/gap_small"
-        android:layout_toEndOf="@+id/item_sleep_sounds_image"/>
+        android:layout_toEndOf="@+id/item_sleep_sounds_image"
+        style="@style/AppTheme.Text.Player.Item"/>
 
     <TextView
         android:id="@+id/item_sleep_sounds_value"
