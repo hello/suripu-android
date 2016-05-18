@@ -585,7 +585,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                 public void onSuccess(LoginResult loginResult) {
                                     // App code
                                     AccessToken.setCurrentAccessToken(loginResult.getAccessToken());
-                                    makeProfilePictureRequest();
+                                    makeProfilePictureRequest("Bearer " + AccessToken.getCurrentAccessToken().getToken());
                                 }
 
                                 @Override
@@ -601,34 +601,23 @@ public class AccountSettingsFragment extends InjectionFragment
                             });
     }
 
-    private void makeProfilePictureRequest(){
-        //facebookApiService.getProfilePicture("0","large");
+    private void makeProfilePictureRequest(String authToken){
+        bindAndSubscribe(
+                facebookApiService.getProfilePicture("0", "large", authToken),
+                this::changePictureWithFacebook,
+                this::handleFacebookError);
+    }
 
-        Bundle params = new Bundle();
-        params.putInt("redirect",0);
-        params.putString("type","large");
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/picture",
-                params,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                    /* handle the result */
-                        if(response.getRawResponse() != null){
-                            Logger.debug(this.getClass().getSimpleName(), response.getRawResponse());
-                            String url;
-                            try {
-                                url = response.getJSONObject().getJSONObject("data").getString("url");
-                                profilePictureItem.setValue(url);
-                                setUri(Uri.parse(url));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-        ).executeAsync();
+    private void handleFacebookError(Throwable error) {
+        Logger.debug(FacebookProfilePicture.class.getSimpleName(),"fetch profile picture failed", error);
+    }
+
+    private void changePictureWithFacebook(FacebookProfilePicture facebookProfilePicture) {
+        final String fbImageUri = facebookProfilePicture.getImageUrl();
+        if(fbImageUri != null){
+            profilePictureItem.setValue(fbImageUri);
+            setUri(Uri.parse(fbImageUri));
+        }
     }
 
     // endregion

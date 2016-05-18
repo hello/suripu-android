@@ -2,7 +2,6 @@ package is.hello.sense.api;
 
 import android.support.annotation.NonNull;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
@@ -24,8 +23,10 @@ import retrofit.client.OkClient;
 @Module(complete = false, injects = {AccountSettingsFragment.class})
 public class FacebookApiModule {
 
-    @Provides AccessToken provideCurrentAccessToken(){
-        return AccessToken.getCurrentAccessToken();
+    static final String FACEBOOK_BASE_URL = "https://graph.facebook.com/v2.6";
+
+    @Provides @Named("facebook") ApiEndpoint provideApiEndpoint() {
+        return new ApiEndpoint("","",FACEBOOK_BASE_URL);
     }
 
     @Singleton
@@ -33,8 +34,7 @@ public class FacebookApiModule {
     @Named("facebook")
     RestAdapter provideFacebookRestAdapter(@NonNull Gson gson,
                                            @NonNull OkHttpClient httpClient,
-                                           @NonNull ApiEndpoint endpoint,
-                                           @NonNull AccessToken accessToken) {
+                                           @Named("facebook") @NonNull ApiEndpoint endpoint) {
         final RestAdapter.Builder builder = new RestAdapter.Builder();
         builder.setClient(new OkClient(httpClient));
         builder.setConverter(new ApiGsonConverter(gson));
@@ -56,7 +56,7 @@ public class FacebookApiModule {
         });
         builder.setRequestInterceptor(request -> {
             request.addHeader("Host", "graph.facebook.com");
-            request.addHeader("Authorization", "Bearer " + accessToken.getToken());
+            //request.addHeader("Authorization", "Bearer " + accessToken.getToken());
         });
         return builder.build();
     }
