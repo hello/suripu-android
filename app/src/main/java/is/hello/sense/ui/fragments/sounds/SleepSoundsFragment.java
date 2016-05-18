@@ -290,14 +290,14 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     }
 
     public void bindStatus(final @NonNull SleepSoundStatus status) {
-
+        final int MAX_TIME_OUT = 30000;
         progressBar.setVisibility(View.GONE);
         if (adapter.isShowingPlayer()) {
             setButtonVisible(true);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
-                } else if (System.currentTimeMillis() - timeSent > 30000) {
+                } else if (System.currentTimeMillis() - timeSent > MAX_TIME_OUT) {
                     presentCommandError(null);
                     displayStopButton();
                     userWants = UserWants.NONE;
@@ -305,7 +305,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             } else {
                 if (userWants != UserWants.PLAY) {
                     displayPlayButton();
-                } else if (System.currentTimeMillis() - timeSent > 30000) {
+                } else if (System.currentTimeMillis() - timeSent > MAX_TIME_OUT) {
                     presentCommandError(null);
                     displayPlayButton();
                 }
