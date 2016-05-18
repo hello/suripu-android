@@ -61,7 +61,8 @@ public class RegisterFragment extends InjectionFragment
 
     private Account account;
 
-    private EditText nameText;
+    private EditText firstNameText;
+    private EditText lastNameText;
     private EditText emailText;
     private EditText passwordText;
 
@@ -96,8 +97,11 @@ public class RegisterFragment extends InjectionFragment
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
         AnimatorTemplate.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
-        this.nameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_name);
-        nameText.addTextChangedListener(this);
+        this.firstNameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_first_name);
+        firstNameText.addTextChangedListener(this);
+
+        this.lastNameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_last_name);
+        lastNameText.addTextChangedListener(this);
 
         this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);
         emailText.addTextChangedListener(this);
@@ -147,8 +151,11 @@ public class RegisterFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
 
-        nameText.removeTextChangedListener(this);
-        this.nameText = null;
+        firstNameText.removeTextChangedListener(this);
+        this.firstNameText = null;
+
+        lastNameText.removeTextChangedListener(this);
+        this.lastNameText = null;
 
         emailText.removeTextChangedListener(this);
         this.emailText = null;
@@ -199,7 +206,8 @@ public class RegisterFragment extends InjectionFragment
             case UNKNOWN:
             case NAME_TOO_LONG:
             case NAME_TOO_SHORT: {
-                affectedField = nameText;
+                //Todo if last name is to be validated this will need modification
+                affectedField = firstNameText;
                 break;
             }
 
@@ -224,21 +232,25 @@ public class RegisterFragment extends InjectionFragment
     private void clearRegistrationError() {
         credentialsContainer.removeView(registrationErrorText);
 
-        nameText.setBackgroundResource(R.drawable.edit_text_selector);
+        firstNameText.setBackgroundResource(R.drawable.edit_text_selector);
+        lastNameText.setBackgroundResource(R.drawable.edit_text_selector);
         emailText.setBackgroundResource(R.drawable.edit_text_selector);
         passwordText.setBackgroundResource(R.drawable.edit_text_selector);
     }
 
     private boolean doCompleteValidation() {
-        final CharSequence name = AccountPresenter.normalizeInput(nameText.getText());
+        final CharSequence firstName = AccountPresenter.normalizeInput(firstNameText.getText());
+        final CharSequence lastName = AccountPresenter.normalizeInput(lastNameText.getText());
         final CharSequence email = AccountPresenter.normalizeInput(emailText.getText());
         final CharSequence password = passwordText.getText();
 
-        if (!AccountPresenter.validateName(name)) {
+        if (!AccountPresenter.validateName(firstName)) {
             displayRegistrationError(RegistrationError.NAME_TOO_SHORT);
-            nameText.requestFocus();
+            firstNameText.requestFocus();
             return false;
         }
+
+        //Currently we do not validate Last Name
 
         if (!AccountPresenter.validateEmail(email)) {
             displayRegistrationError(RegistrationError.EMAIL_INVALID);
@@ -252,7 +264,8 @@ public class RegisterFragment extends InjectionFragment
             return false;
         }
 
-        nameText.setText(name);
+        firstNameText.setText(firstName);
+        lastNameText.setText(lastName);
         emailText.setText(email);
         clearRegistrationError();
 
@@ -265,7 +278,8 @@ public class RegisterFragment extends InjectionFragment
             return;
         }
 
-        account.setName(nameText.getText().toString());
+        account.setFirstName(firstNameText.getText().toString());
+        account.setLastName(lastNameText.getText().toString());
         account.setEmail(emailText.getText().toString());
         account.setPassword(passwordText.getText().toString());
 
@@ -313,7 +327,7 @@ public class RegisterFragment extends InjectionFragment
             accountPresenter.pushAccountPreferences();
 
             Analytics.trackRegistration(session.getAccountId(),
-                                        createdAccount.getName(),
+                                        createdAccount.getFirstName(),
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
@@ -328,9 +342,9 @@ public class RegisterFragment extends InjectionFragment
 
 
     //region Next button state control
-
+    //Todo include lastNameText non empty validation?
     private boolean isInputValidSimple() {
-        return (!TextUtils.isEmpty(nameText.getText()) &&
+        return (!TextUtils.isEmpty(firstNameText.getText()) &&
                 TextUtils.getTrimmedLength(emailText.getText()) > 0 &&
                 !TextUtils.isEmpty(passwordText.getText()));
     }

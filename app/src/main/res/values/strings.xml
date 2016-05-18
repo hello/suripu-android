@@ -8,6 +8,8 @@
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
     <string name="label_name">Name</string>
+    <string name="label_first_name">First name</string>
+    <string name="label_last_name">Last name</string>
     <string name="label_gender">Gender</string>
     <string name="label_height">Height</string>
     <string name="label_weight">Weight</string>

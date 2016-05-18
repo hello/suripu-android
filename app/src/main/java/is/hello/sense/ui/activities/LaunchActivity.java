@@ -42,7 +42,7 @@ public class LaunchActivity extends InjectionActivity {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
             if (sessionManager.hasSession()) {
                 apiService.getAccount().subscribe(account -> {
-                    Analytics.backFillUserInfo(account.getName(), account.getEmail());
+                    Analytics.backFillUserInfo(account.getFullName(), account.getEmail());
                     Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
                 }, e -> {
                     Logger.error(getClass().getSimpleName(), "Could not load user info", e);
