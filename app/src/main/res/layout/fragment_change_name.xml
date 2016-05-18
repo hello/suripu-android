@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_large"
             android:inputType="textPersonName"
-            android:imeOptions="actionGo|flagNoExtractUi"
+            android:imeOptions="actionNext|flagNoExtractUi"
+            android:nextFocusForward="@+id/fragment_change_last_name_value"
             android:selectAllOnFocus="true"
             android:contentDescription="@string/label_first_name"
             tools:ignore="LabelFor">
@@ -51,11 +52,7 @@
             android:imeOptions="actionGo|flagNoExtractUi"
             android:selectAllOnFocus="true"
             android:contentDescription="@string/label_last_name"
-            tools:ignore="LabelFor">
-
-            <requestFocus />
-
-        </EditText>
+            tools:ignore="LabelFor"/>
 
         <Button
             android:id="@+id/fragment_change_name_submit"

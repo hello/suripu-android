@@ -139,7 +139,7 @@
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="edit_text_bottom_line_normal">@color/gray5</color>
+    <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
     <color name="text_white_button">@color/white</color>

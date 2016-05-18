@@ -69,6 +69,9 @@
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
 
     <dimen name="edit_text_min_height">45dp</dimen>
+    <dimen name="edit_text_dash_width">4dp</dimen>
+    <dimen name="edit_text_dash_gap">4dp</dimen>
+    <dimen name="edit_text_stroke_size">1dp</dimen>
 
     <!-- Divisions and Borders -->
 

@@ -400,7 +400,6 @@
         <item name="android:paddingRight">@dimen/gap_tiny</item>
 
         <item name="android:background">@drawable/edit_text_selector</item>
-
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
