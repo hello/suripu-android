@@ -1,10 +1,9 @@
 package is.hello.sense.graph.presenters;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -13,21 +12,13 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
-import java.util.regex.Pattern;
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiService;
 import is.hello.sense.api.fb.model.FacebookProfilePicture;
-import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -71,7 +62,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
         AccessToken.setCurrentAccessToken(token);
     }
 
-    public void login() {
+    public void init() {
         LoginManager.getInstance()
                     .registerCallback(
                             callbackManager,
@@ -96,8 +87,12 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
                             });
     }
 
+    public void login(Fragment container) {
+        LoginManager.getInstance().logInWithReadPermissions(container, Arrays.asList("public_profile"));
+    }
+
     public boolean isLoggedIn(){
-        return profilePicture.hasValue();
+        return profilePicture.hasValue() && AccessToken.getCurrentAccessToken() != null;
     }
 
     public void logout() {

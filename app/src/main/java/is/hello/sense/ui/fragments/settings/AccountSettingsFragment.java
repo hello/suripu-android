@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,19 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.api.fb.model.FacebookProfilePicture;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
@@ -40,9 +35,9 @@ import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
-import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
@@ -52,23 +47,16 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Fetch;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 
 public class AccountSettingsFragment extends InjectionFragment
-        implements AccountEditor.Container {
+        implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
-    private static final int REQUEST_CODE_PICTURE = 0x30;
-    private static final int OPTION_ID_FROM_FACEBOOK = 0;
-    private static final int OPTION_ID_FROM_CAMERA = 1;
-    private static final int OPTION_ID_FROM_GALLERY = 2;
-    private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
     @Inject Picasso picasso;
     @Inject AccountPresenter accountPresenter;
@@ -77,6 +65,9 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject PreferencesPresenter preferences;
     @Inject FacebookPresenter facebookPresenter;
     @Inject ImageUtil imageUtil;
+
+    private ProfileImageManager profileImageManager;
+    private ExternalStoragePermission permission;
 
     private ProgressBar loadingIndicator;
 
@@ -97,11 +88,6 @@ public class AccountSettingsFragment extends InjectionFragment
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
 
-    private ExternalStoragePermission permission;
-    private Uri imageUri;
-    private Uri tempImageUri;
-
-
     //region Lifecycle
 
     @Override
@@ -118,6 +104,8 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
         permission = ExternalStoragePermission.forCamera(this);
+
+        profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil);
 
         setRetainInstance(true);
     }
@@ -207,7 +195,7 @@ public class AccountSettingsFragment extends InjectionFragment
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
 
-        facebookPresenter.login();
+        facebookPresenter.init();
 
         return view;
     }
@@ -234,7 +222,7 @@ public class AccountSettingsFragment extends InjectionFragment
         super.onDestroyView();
 
         this.loadingIndicator = null;
-
+        this.profilePictureItem = null;
         this.nameItem = null;
         this.emailItem = null;
 
@@ -247,6 +235,9 @@ public class AccountSettingsFragment extends InjectionFragment
 
         this.recyclerView = null;
         this.adapter = null;
+
+        this.permission = null;
+        this.profileImageManager = null;
     }
 
     @Override
@@ -261,22 +252,12 @@ public class AccountSettingsFragment extends InjectionFragment
         super.onActivityResult(requestCode, resultCode, data);
         //Todo should we let facebook listen to all results?
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
+        profileImageManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            setImageUri(this.tempImageUri);
-            setTempImageUri(null);
-            profilePictureItem.setValue(this.imageUri.toString());
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
-            final Uri imageUri = data.getData();
-            profilePictureItem.setValue(imageUri.toString());
-            setImageUri(imageUri);
-        } else if(requestCode == REQUEST_CODE_PICTURE){
-            final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
-            handlePictureOptionSelection(optionID);
         }
     }
 
@@ -341,7 +322,7 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Basic Info
     private void changePicture() {
         if(permission.isGranted()){
-            this.showPictureOptions();
+            profileImageManager.showPictureOptions();
         } else {
             permission.requestPermissionWithDialogForCamera();
         }
@@ -444,6 +425,7 @@ public class AccountSettingsFragment extends InjectionFragment
             recyclerView.post(() -> {
                 getActivity().finish();
                 accountPresenter.logOut();
+                facebookPresenter.logout();
             });
         });
         signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -479,90 +461,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //endregion
 
-    //region Camera Options
-
-    private void handlePictureOptionSelection(final int optionID){
-        switch(optionID){
-            case OPTION_ID_FROM_FACEBOOK:
-                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
-                break;
-            case OPTION_ID_FROM_CAMERA:
-                File imageFile = imageUtil.createFile(true);
-                if(imageFile != null){
-                    Uri imageUri = Uri.fromFile(imageFile);
-                    setTempImageUri(imageUri);
-                    Fetch.imageFromCamera().fetch(this, imageUri);
-                }
-                break;
-            case OPTION_ID_FROM_GALLERY:
-                Fetch.imageFromGallery().fetch(this);
-                break;
-            case OPTION_ID_REMOVE_PICTURE:
-                setImageUri(null);
-                this.profilePictureItem.setValue(null);
-                facebookPresenter.logout();
-            default:
-                Logger.warn(AccountSettingsFragment.class.getSimpleName(),"unknown picture option selected");
-        }
-    }
-
-    public void showPictureOptions() {
-        //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
-
-        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
-
-        if(!facebookPresenter.isLoggedIn()) {
-            options.add(
-                    new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
-                            .setTitle(R.string.action_import_from_facebook)
-                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
-                            .setIcon(R.drawable.settings_camera)
-                       );
-        }
-        if(imageUtil.hasDeviceCamera()){
-            options.add(
-                    new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
-                            .setTitle(R.string.action_take_photo)
-                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
-                            .setIcon(R.drawable.settings_camera)
-                       );
-        }
-
-        options.add(
-                new SenseBottomSheet.Option(OPTION_ID_FROM_GALLERY)
-                .setTitle(R.string.action_import_from_gallery)
-                .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
-                .setIcon(R.drawable.settings_photo_library)
-                );
-
-        if(imageUri != null){
-            options.add(
-                    new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
-                            .setTitle(R.string.action_remove_picture)
-                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
-                            .setIcon(R.drawable.icon_alarm_delete)
-                       );
-        }
-
-        BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
-        advancedOptions.setTargetFragment(this, REQUEST_CODE_PICTURE);
-        advancedOptions.showAllowingStateLoss(getFragmentManager(), BottomSheetDialogFragment.TAG);
-    }
-
-    public void setImageUri(Uri uri) {
-        this.imageUri = uri;
-    }
-
-    public Uri getImageUri(){
-        return this.imageUri;
-    }
-    //Used primarily for take picture from camera
-    public void setTempImageUri(Uri tempImageUri) {
-        this.tempImageUri = tempImageUri;
-    }
-
-    //endregion
-
     // region Facebook import
 
     private void handleFacebookError(Throwable error) {
@@ -573,8 +471,33 @@ public class AccountSettingsFragment extends InjectionFragment
         final String fbImageUri = facebookProfilePicture.getImageUrl();
         if(fbImageUri != null){
             profilePictureItem.setValue(fbImageUri);
-            setImageUri(Uri.parse(fbImageUri));
+            profileImageManager.setImageUri(Uri.parse(fbImageUri));
         }
+    }
+
+    //endregion
+
+    //region ProfileImageManagerListener methods
+
+    @Override
+    public void onImportFromFacebook() {
+        facebookPresenter.login(this);
+    }
+
+    @Override
+    public void onFromCamera(String imageUriString) {
+        this.profilePictureItem.setValue(imageUriString);
+    }
+
+    @Override
+    public void onFromGallery(String imageUriString) {
+        this.profilePictureItem.setValue(imageUriString);
+    }
+
+    @Override
+    public void onRemove() {
+        this.profilePictureItem.setValue(null);
+        facebookPresenter.logout();
     }
 
     // endregion
