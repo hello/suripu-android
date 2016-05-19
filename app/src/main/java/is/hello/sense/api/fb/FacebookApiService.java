@@ -1,6 +1,6 @@
-package is.hello.sense.api;
+package is.hello.sense.api.fb;
 
-import is.hello.sense.api.model.v2.FacebookProfilePicture;
+import is.hello.sense.api.fb.model.FacebookProfilePicture;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Query;

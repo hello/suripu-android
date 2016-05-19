@@ -1,4 +1,4 @@
-package is.hello.sense.api.model.v2;
+package is.hello.sense.api.fb.model;
 
 import android.support.annotation.NonNull;
 
@@ -20,7 +20,7 @@ public class FacebookProfilePicture extends ApiResponse{
     }
 
 
-    public static class Data {
+    public static class Data extends ApiResponse{
         @SerializedName("url")
         private String imageUrl;
 

@@ -9,7 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiModule;
-import is.hello.sense.api.FacebookApiModule;
+import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;

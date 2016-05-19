@@ -17,18 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,11 +28,11 @@ import java.util.EnumSet;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.FacebookApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.v2.FacebookProfilePicture;
+import is.hello.sense.api.fb.model.FacebookProfilePicture;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
@@ -80,14 +70,12 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
-    @Inject
-    FacebookApiService facebookApiService;
     @Inject Picasso picasso;
-    @Inject CallbackManager facebookCallbackManager;
     @Inject AccountPresenter accountPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
     @Inject PreferencesPresenter preferences;
+    @Inject FacebookPresenter facebookPresenter;
     @Inject ImageUtil imageUtil;
 
     private ProgressBar loadingIndicator;
@@ -128,7 +116,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
         accountPresenter.update();
         addPresenter(accountPresenter);
-
+        addPresenter(facebookPresenter);
         permission = ExternalStoragePermission.forCamera(this);
 
         setRetainInstance(true);
@@ -219,7 +207,7 @@ public class AccountSettingsFragment extends InjectionFragment
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
 
-        handleFacebookCallbacks();
+        facebookPresenter.login();
 
         return view;
     }
@@ -235,6 +223,10 @@ public class AccountSettingsFragment extends InjectionFragment
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
+
+        bindAndSubscribe(facebookPresenter.profilePicture,
+                         this::changePictureWithFacebook,
+                         this::handleFacebookError);
     }
 
     @Override
@@ -268,20 +260,20 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Todo should we let facebook listen to all results?
-        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+        facebookPresenter.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            setUri(this.tempImageUri);
+            setImageUri(this.tempImageUri);
             setTempImageUri(null);
             profilePictureItem.setValue(this.imageUri.toString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
             profilePictureItem.setValue(imageUri.toString());
-            setUri(imageUri);
+            setImageUri(imageUri);
         } else if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
@@ -506,8 +498,9 @@ public class AccountSettingsFragment extends InjectionFragment
                 Fetch.imageFromGallery().fetch(this);
                 break;
             case OPTION_ID_REMOVE_PICTURE:
-                setUri(null);
+                setImageUri(null);
                 this.profilePictureItem.setValue(null);
+                facebookPresenter.logout();
             default:
                 Logger.warn(AccountSettingsFragment.class.getSimpleName(),"unknown picture option selected");
         }
@@ -517,22 +510,22 @@ public class AccountSettingsFragment extends InjectionFragment
         //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
 
         ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
-        // check if user has facebook app installed else open permissions
-        options.add(
-                new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
-                        .setTitle(R.string.action_import_from_facebook)
-                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
-                        .setIcon(R.drawable.settings_camera)
-                   );
-        if(imageUtil.hasDeviceCamera()){
 
+        if(!facebookPresenter.isLoggedIn()) {
+            options.add(
+                    new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
+                            .setTitle(R.string.action_import_from_facebook)
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                            .setIcon(R.drawable.settings_camera)
+                       );
+        }
+        if(imageUtil.hasDeviceCamera()){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
                             .setTitle(R.string.action_take_photo)
                             .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
                             .setIcon(R.drawable.settings_camera)
                        );
-
         }
 
         options.add(
@@ -556,18 +549,14 @@ public class AccountSettingsFragment extends InjectionFragment
         advancedOptions.showAllowingStateLoss(getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
-    public void setUri(Uri uri) {
+    public void setImageUri(Uri uri) {
         this.imageUri = uri;
     }
 
-    public Uri getUri(){
+    public Uri getImageUri(){
         return this.imageUri;
     }
     //Used primarily for take picture from camera
-    public Uri getTempImageUri() {
-        return tempImageUri;
-    }
-
     public void setTempImageUri(Uri tempImageUri) {
         this.tempImageUri = tempImageUri;
     }
@@ -576,47 +565,15 @@ public class AccountSettingsFragment extends InjectionFragment
 
     // region Facebook import
 
-    private void handleFacebookCallbacks() {
-        LoginManager.getInstance()
-                    .registerCallback(
-                            facebookCallbackManager,
-                            new FacebookCallback<LoginResult>() {
-                                @Override
-                                public void onSuccess(LoginResult loginResult) {
-                                    // App code
-                                    AccessToken.setCurrentAccessToken(loginResult.getAccessToken());
-                                    makeProfilePictureRequest("Bearer " + AccessToken.getCurrentAccessToken().getToken());
-                                }
-
-                                @Override
-                                public void onCancel() {
-                                    // App code
-                                }
-
-                                @Override
-                                public void onError(FacebookException exception) {
-                                    // App code
-                                    Logger.debug(FacebookProfilePicture.class.getSimpleName(),"login failed", exception.fillInStackTrace());
-                                }
-                            });
-    }
-
-    private void makeProfilePictureRequest(String authToken){
-        bindAndSubscribe(
-                facebookApiService.getProfilePicture("0", "large", authToken),
-                this::changePictureWithFacebook,
-                this::handleFacebookError);
-    }
-
     private void handleFacebookError(Throwable error) {
-        Logger.debug(FacebookProfilePicture.class.getSimpleName(),"fetch profile picture failed", error);
+        Logger.debug(FacebookPresenter.class.getSimpleName(),"fetch profile picture failed", error);
     }
 
     private void changePictureWithFacebook(FacebookProfilePicture facebookProfilePicture) {
         final String fbImageUri = facebookProfilePicture.getImageUrl();
         if(fbImageUri != null){
             profilePictureItem.setValue(fbImageUri);
-            setUri(Uri.parse(fbImageUri));
+            setImageUri(Uri.parse(fbImageUri));
         }
     }
 

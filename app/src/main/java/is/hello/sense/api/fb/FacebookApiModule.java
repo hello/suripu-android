@@ -1,4 +1,4 @@
-package is.hello.sense.api;
+package is.hello.sense.api.fb;
 
 import android.support.annotation.NonNull;
 
@@ -12,20 +12,22 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.BuildConfig;
+import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.gson.ApiGsonConverter;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
-import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
+import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
-@Module(complete = false, injects = {AccountSettingsFragment.class})
+@Module(complete = false, injects = {FacebookPresenter.class})
 public class FacebookApiModule {
 
     static final String FACEBOOK_BASE_URL = "https://graph.facebook.com/v2.6";
 
-    @Provides @Named("facebook") ApiEndpoint provideApiEndpoint() {
+    @Provides @Named("facebook")
+    ApiEndpoint provideApiEndpoint() {
         return new ApiEndpoint("","",FACEBOOK_BASE_URL);
     }
 
