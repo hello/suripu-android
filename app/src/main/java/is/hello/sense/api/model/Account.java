@@ -115,23 +115,16 @@ public class Account extends ApiResponse implements Cloneable {
     public String getLastName() {
         return lastName;
     }
-<<<<<<< HEAD
 
-=======
     //Not guaranteed to be @NonNull
->>>>>>> develop
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     public String getFullName(){
-<<<<<<< HEAD
-        final String lastName = this.lastName != null ? this.lastName : "";
-        return String.format("%s %s", firstName,lastName);
-=======
         final String nonNullLastName = lastName != null ? lastName : "";
         return String.format("%s %s", firstName,nonNullLastName);
->>>>>>> develop
+
     }
 
     public Gender getGender() {
