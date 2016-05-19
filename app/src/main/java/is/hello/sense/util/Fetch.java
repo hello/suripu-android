@@ -35,6 +35,7 @@ public abstract class Fetch {
         return new Image(MediaStore.ACTION_IMAGE_CAPTURE, Image.REQUEST_CODE_CAMERA);
     }
 
+    //Todo unimplemented
     public static Image imageFromCustomCamera(){
         return new Image(MediaStore.ACTION_IMAGE_CAPTURE, Image.REQUEST_CODE_CAMERA);
     }
@@ -45,16 +46,9 @@ public abstract class Fetch {
         return image;
     }
 
-    public static Image imageFromFacebook(){
-        final Image image = new Image(Intent.ACTION_PICK, Image.REQUEST_CODE_FACEBOOK);
-        image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        return image;
-    }
-
     public static class Image extends Fetch{
         public static final int REQUEST_CODE_CAMERA = 0x11;
         public static final int REQUEST_CODE_GALLERY = 0x12;
-        public static final int REQUEST_CODE_FACEBOOK = 0x13;
 
         protected Image(@NonNull String action, int requestCode) {
             super(action, requestCode);

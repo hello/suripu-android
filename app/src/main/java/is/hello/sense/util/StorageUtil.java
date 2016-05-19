@@ -5,9 +5,6 @@ import android.support.annotation.NonNull;
 
 import java.io.File;
 
-/**
- * Created by simonchen on 5/16/16.
- */
 public class StorageUtil {
 
     private boolean externalStorageAvailable;

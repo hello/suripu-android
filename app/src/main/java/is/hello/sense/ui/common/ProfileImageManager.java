@@ -3,7 +3,6 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,7 +13,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
-import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Fetch;
@@ -91,11 +89,9 @@ public class ProfileImageManager {
             handlePictureOptionSelection(optionID);
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
             this.setImageUriWithTemp();
-            //Todo profilePictureItem.setValue(profileImageManager.getImageUriString());
             ((Listener) fragment).onFromCamera(getImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
-            //Todo profilePictureItem.setValue(imageUri.toString());
             this.setImageUri(imageUri);
             ((Listener) fragment).onFromGallery(getImageUriString());
         }
