@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="@color/edit_text_bottom_line_disabled" />
+
+    <item >
+        <shape android:shape="rectangle" >
+            <stroke
+                android:height="@dimen/divider_size_thick"
+                android:width="@dimen/divider_size_thick"
+                android:color="@color/edit_text_bottom_line_disabled"
+                android:dashGap="@dimen/edit_text_dash_gap"
+                android:dashWidth="@dimen/edit_text_dash_width"/>
         </shape>
     </item>
 
     <item android:bottom="@dimen/divider_size_thick">
         <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
+            <solid android:color="@color/white"/>
         </shape>
     </item>
 </layer-list>

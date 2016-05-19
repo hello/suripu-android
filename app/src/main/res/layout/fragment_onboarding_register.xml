@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 style="@style/AppTheme.Text.EditText.Onboarding"
                 android:inputType="textPersonName|textCapWords"
-                android:nextFocusForward="@+id/fragment_onboarding_register_email"
+                android:nextFocusForward="@+id/fragment_onboarding_register_last_name"
                 android:imeOptions="actionNext|flagNoExtractUi"
                 android:hint="@string/label_first_name">
 
@@ -59,9 +59,7 @@
                 android:inputType="textPersonName|textCapWords"
                 android:nextFocusForward="@+id/fragment_onboarding_register_email"
                 android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/label_last_name">
-
-            </EditText>
+                android:hint="@string/label_last_name"/>
 
             <EditText
                 android:id="@+id/fragment_onboarding_register_email"

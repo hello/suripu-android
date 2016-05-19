@@ -54,6 +54,7 @@
     <color name="blue3_93">#eeb2e1ff</color>
     <color name="blue2">#E5F5FF</color>
     <color name="blue1">#F7FCFF</color>
+    <color name="blue1_75">#bff7fcff</color>
 
     <!-- Green -->
     <color name="green7">#21BD90</color>
@@ -119,7 +120,7 @@
 
     <color name="timeline_header_border">@color/blue3</color>
     <color name="timeline_header_gradient_end">@color/gray1</color>
-    <color name="timeline_background_fill">@color/blue2</color>
+    <color name="timeline_background_fill">@color/blue1_75</color>
     <color name="timeline_segment_stripe">@color/blue6_30</color>
 
     <color name="text_dark">@color/gray6</color>
@@ -139,7 +140,7 @@
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="edit_text_bottom_line_normal">@color/gray5</color>
+    <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
     <color name="text_white_button">@color/white</color>
@@ -171,7 +172,7 @@
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="trends_title">@color/gray4_70</color>
+    <color name="trends_title">@color/gray4</color>
     <color name="trends_line_divider">@color/gray2_50</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>

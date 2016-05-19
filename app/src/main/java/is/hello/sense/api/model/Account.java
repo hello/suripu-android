@@ -11,6 +11,7 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+
 import is.hello.sense.api.gson.Exclude;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 
@@ -64,6 +65,9 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("profilepicture")
     private MultiDensityImage profilePicture;
 
+    @SerializedName("time_zone")
+    private final String timeZone = DateTimeZone.getDefault().getID();
+
 
     public static Account createDefault() {
         Account newAccount = new Account();
@@ -111,14 +115,23 @@ public class Account extends ApiResponse implements Cloneable {
     public String getLastName() {
         return lastName;
     }
+<<<<<<< HEAD
 
+=======
+    //Not guaranteed to be @NonNull
+>>>>>>> develop
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     public String getFullName(){
+<<<<<<< HEAD
         final String lastName = this.lastName != null ? this.lastName : "";
         return String.format("%s %s", firstName,lastName);
+=======
+        final String nonNullLastName = lastName != null ? lastName : "";
+        return String.format("%s %s", firstName,nonNullLastName);
+>>>>>>> develop
     }
 
     public Gender getGender() {
@@ -193,6 +206,10 @@ public class Account extends ApiResponse implements Cloneable {
     public String getProfilePictureUrl(@NonNull Resources resources) {
         return "";
         //return this.profilePicture.getUrl(resources);
+    }
+
+    public String getTimeZone() {
+        return timeZone;
     }
 
     public final Account clone() {

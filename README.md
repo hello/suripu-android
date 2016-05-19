@@ -1,5 +1,8 @@
 # suripu-android
 
+[![Circle
+CI](https://circleci.com/gh/hello/suripu-android.svg?style=svg&circle-token=6f1d36ce3c3ebe9c0127da90f189ee7dbc6f6861)](https://circleci.com/gh/hello/suripu-android)
+
 It's Sense for Android. Don't see what you're looking for here? Check the [Wiki](https://github.com/hello/suripu-android/wiki).
 
 # Building

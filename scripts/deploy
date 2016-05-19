@@ -130,13 +130,18 @@ flavor_names.each do |flavor_name|
     -H "X-HockeyAppToken: #{hockey_token}" \
     https://rink.hockeyapp.net/api/2/apps/#{app_id}/app_versions/upload`
   abort "!! Upload failed".red.bold if last_command_failed?
-  puts "-- Upload completed".green
 
   response = JSON::parse(raw_response)
-  config_url = response["config_url"]
-  puts "-> Opening <#{config_url}>".blue
-  system "open '#{config_url}'"
-
+  response_errors = response["errors"]
+  if response_errors
+    puts "-- Error Uploading Response: <#{response_errors}>".red.bold
+    puts "-- Check Hockey account permissions".red.bold if response_errors["app"] == ["not found"]
+  else
+    puts "-- Upload completed".green
+    config_url = response["config_url"]
+    puts "-> Opening <#{config_url}>".blue
+    system "open '#{config_url}'"
+  end
   #endregion
 
 

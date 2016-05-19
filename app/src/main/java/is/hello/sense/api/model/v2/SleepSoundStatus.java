@@ -17,6 +17,7 @@ import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.IListObject;
 
 public class SleepSoundStatus extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
+    private static final int VolumeAccuracyOffset = 5;
 
     @SerializedName("playing")
     private Boolean playing;
@@ -105,7 +106,7 @@ public class SleepSoundStatus extends ApiResponse implements IListObject, SleepS
                 return None;
             }
             for (Volume volume : values()) {
-                if (volume.volume == value) {
+                if (volume.volume <= value + VolumeAccuracyOffset && volume.volume >= value - VolumeAccuracyOffset) {
                     return volume;
                 }
             }

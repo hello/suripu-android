@@ -202,7 +202,7 @@ public class SignInFragment extends InjectionFragment
             bindAndSubscribe(initializeLocalState,
                              account -> {
                                  Analytics.trackSignIn(account.getId(),
-                                                       account.getFirstName(),
+                                                       account.getFullName(),
                                                        account.getEmail());
                                  getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_SIGN_IN);
                              },
