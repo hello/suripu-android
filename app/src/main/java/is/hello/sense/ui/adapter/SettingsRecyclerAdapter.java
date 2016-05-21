@@ -133,7 +133,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         }
 
         @Override
-        void bind(TextItem item) {
+        void bind(@NonNull TextItem item) {
             text.setText(item.text);
         }
     }
@@ -154,7 +154,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         }
 
         @Override
-        void bind(DetailItem item) {
+        void bind(@NonNull DetailItem item) {
             if (item.icon != 0) {
                 icon.setImageResource(item.icon);
                 icon.setContentDescription(resources.getString(item.iconContentDescription));
@@ -186,7 +186,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         }
 
         @Override
-        void bind(ToggleItem item) {
+        void bind(@NonNull ToggleItem item) {
             title.setText(item.text);
             toggle.setChecked(item.value);
         }

@@ -28,23 +28,24 @@ public class ProfileImageManager {
 
     private final Context context;
     private final Fragment fragment;
-    private ImageUtil imageUtil;
+    private final ImageUtil imageUtil;
     private Uri imageUri;
     private Uri tempImageUri;
 
-    public ProfileImageManager(@NonNull final Context context, @NonNull final Fragment fragment, @NonNull ImageUtil imageUtil){
+    public ProfileImageManager(@NonNull final Context context, @NonNull final Fragment fragment, @NonNull final ImageUtil imageUtil){
         checkFragmentInstance(fragment);
         this.context = context;
         this.fragment = fragment;
         this.imageUtil = imageUtil;
+        this.imageUri = Uri.EMPTY;
     }
 
     public void showPictureOptions() {
         //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
 
-        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>(4);
 
-
+        // User will always have option to import from facebook b/c they may update their picture outside the app
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
                         .setTitle(R.string.action_import_from_facebook)
@@ -68,7 +69,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(imageUri != null){
+        if(imageUri.equals(Uri.EMPTY) == false){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -82,7 +83,7 @@ public class ProfileImageManager {
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
         if(resultCode != Activity.RESULT_OK) return;
         if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
@@ -97,9 +98,9 @@ public class ProfileImageManager {
         }
     }
 
-    public void setImageUri(Uri uri) {
+    public void setImageUri(@NonNull final Uri uri) {
         this.imageUri = uri;
-        this.tempImageUri = null;
+        this.tempImageUri = Uri.EMPTY;
     }
 
     public Uri getImageUri(){
@@ -111,11 +112,11 @@ public class ProfileImageManager {
     }
 
     public String getImageUriString() {
-        return imageUri != null ? imageUri.toString() : "";
+        return imageUri.toString();
     }
 
     //Used primarily for take picture from camera
-    private void setTempImageUri(Uri tempImageUri) {
+    private void setTempImageUri(@NonNull final Uri tempImageUri) {
         this.tempImageUri = tempImageUri;
     }
 
@@ -127,9 +128,9 @@ public class ProfileImageManager {
                 ((Listener) fragment).onImportFromFacebook();
                 break;
             case OPTION_ID_FROM_CAMERA:
-                File imageFile = imageUtil.createFile(true);
+                final File imageFile = imageUtil.createFile(true);
                 if(imageFile != null){
-                    Uri imageUri = Uri.fromFile(imageFile);
+                    final Uri imageUri = Uri.fromFile(imageFile);
                     setTempImageUri(imageUri);
                     Fetch.imageFromCamera().fetch(fragment, imageUri);
                 }
@@ -138,8 +139,9 @@ public class ProfileImageManager {
                 Fetch.imageFromGallery().fetch(fragment);
                 break;
             case OPTION_ID_REMOVE_PICTURE:
-                setImageUri(null);
+                setImageUri(Uri.EMPTY);
                 ((Listener) fragment).onRemove();
+                break;
             default:
                 Logger.warn(ProfileImageManager.class.getSimpleName(), "unknown picture option selected");
         }
@@ -159,9 +161,9 @@ public class ProfileImageManager {
 
         void onImportFromFacebook();
 
-        void onFromCamera(String imageUriString);
+        void onFromCamera(final String imageUriString);
 
-        void onFromGallery(String imageUriString);
+        void onFromGallery(final String imageUriString);
 
         void onRemove();
     }

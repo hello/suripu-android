@@ -15,7 +15,7 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
 
     private final Picasso picasso;
 
-    public AccountSettingsRecyclerAdapter(@NonNull Context context, @NonNull Picasso picasso) {
+    public AccountSettingsRecyclerAdapter(@NonNull final Context context, @NonNull final Picasso picasso) {
         super(context);
         this.picasso = picasso;
     }
@@ -47,7 +47,7 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
         }
 
         @Override
-        void bind(Item<String> item){
+        void bind(@NonNull Item<String> item){
             if(item.value != null && !item.value.isEmpty()){
                 picasso.load(item.value)
                        .centerCrop()

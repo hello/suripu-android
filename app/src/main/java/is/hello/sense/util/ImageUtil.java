@@ -15,18 +15,19 @@ import java.util.Queue;
 public class ImageUtil {
 
     @VisibleForTesting
-    SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     @VisibleForTesting
-    String imageFileName = "HelloProfile";
+    final String imageFileName = "HelloProfile";
     @VisibleForTesting
     String fileFormat = ".jpg";
     @VisibleForTesting
-    String DIRECTORY_NAME = "HelloAppPictures";
-    StorageUtil storageUtil;
+    final String DIRECTORY_NAME = "HelloAppPictures";
+
+    final StorageUtil storageUtil;
 
     private final Context context;
 
-    public ImageUtil(@NonNull final Context context, @NonNull StorageUtil storageUtil){
+    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil){
         this.context = context;
         this.storageUtil = storageUtil;
     }
@@ -42,7 +43,7 @@ public class ImageUtil {
      * Returns <code>null</code> if exception occurs.
      */
     public File createFile(boolean isTemporary){
-        File storageDir = getStorageDirectory();
+        final File storageDir = getStorageDirectory();
 
         try {
             if(isTemporary){
@@ -71,7 +72,7 @@ public class ImageUtil {
         File storageDir = null;
         //Todo figure out how much memory taking a picture costs for a phone
         final long memoryRequirement = 100L;
-        Queue<File> storageOptions = new LinkedList<>();
+        final Queue<File> storageOptions = new LinkedList<>();
 
         if(storageUtil.isExternalStorageAvailableAndWriteable()){
             storageOptions.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));

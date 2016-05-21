@@ -9,9 +9,9 @@ import is.hello.sense.api.model.ApiResponse;
 public class FacebookProfilePicture extends ApiResponse{
 
     @SerializedName("data")
-    private Data imageData;
+    private final Data imageData;
 
-    public FacebookProfilePicture(@NonNull String imageUrl){
+    public FacebookProfilePicture(@NonNull final String imageUrl){
         this.imageData = new Data(imageUrl);
     }
 
@@ -22,9 +22,9 @@ public class FacebookProfilePicture extends ApiResponse{
 
     public static class Data extends ApiResponse{
         @SerializedName("url")
-        private String imageUrl;
+        private final String imageUrl;
 
-        public Data(@NonNull String imageUrl){
+        public Data(@NonNull final String imageUrl){
             this.imageUrl = imageUrl;
         }
 

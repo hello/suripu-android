@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,18 +21,18 @@ import is.hello.sense.util.Logger;
 
 public class ProfileImageView extends FrameLayout implements Target {
 
-    private ImageButton plusButton;
-    private ImageView profileImage;
+    private final ImageButton plusButton;
+    private final ImageView profileImage;
 
-    public ProfileImageView(Context context) {
+    public ProfileImageView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public ProfileImageView(Context context, AttributeSet attrs) {
+    public ProfileImageView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ProfileImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ProfileImageView(@NonNull final Context context, @Nullable final AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         final View view = LayoutInflater.from(context).inflate(R.layout.item_profile_picture,this,false);
         this.profileImage = (ImageView) view.findViewById(R.id.item_profile_picture_image);
@@ -47,22 +49,22 @@ public class ProfileImageView extends FrameLayout implements Target {
         return R.drawable.default_profile_picture;
     }
 
-    public void addButtonListener(OnClickListener listener){
+    public void addButtonListener(@NonNull final OnClickListener listener){
         plusButton.setOnClickListener(listener);
     }
 
     @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+    public void onBitmapLoaded(@NonNull final Bitmap bitmap, @NonNull final Picasso.LoadedFrom from) {
         profileImage.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
     }
 
     @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
+    public void onBitmapFailed(@NonNull final Drawable errorDrawable) {
         Logger.error(ProfileImageView.class.getSimpleName(), "failed to load bitmap.");
     }
 
     @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
+    public void onPrepareLoad(@NonNull final Drawable placeHolderDrawable) {
         profileImage.setImageDrawable(placeHolderDrawable);
     }
 }

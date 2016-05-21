@@ -54,7 +54,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
     }
 
     //region Updates
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode,final int resultCode,@NonNull final Intent data) {
         callbackManager.onActivityResult(requestCode,resultCode, data);
     }
 

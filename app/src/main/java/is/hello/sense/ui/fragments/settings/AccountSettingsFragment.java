@@ -104,7 +104,6 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
         permission = ExternalStoragePermission.forCamera(this);
-
         profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil);
 
         setRetainInstance(true);
@@ -464,10 +463,14 @@ public class AccountSettingsFragment extends InjectionFragment
     // region Facebook import
 
     private void handleFacebookError(Throwable error) {
-        Logger.debug(FacebookPresenter.class.getSimpleName(),"fetch profile picture failed", error);
+        final String temporaryCopy = "Fetching Facebook profile picture failed";
+        Logger.debug(FacebookPresenter.class.getSimpleName(),temporaryCopy, error);
+        stateSafeExecutor.execute(() -> {
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(temporaryCopy));
+        });
     }
 
-    private void changePictureWithFacebook(FacebookProfilePicture facebookProfilePicture) {
+    private void changePictureWithFacebook(@NonNull final FacebookProfilePicture facebookProfilePicture) {
         final String fbImageUri = facebookProfilePicture.getImageUrl();
         if(fbImageUri != null){
             profilePictureItem.setValue(fbImageUri);
@@ -485,12 +488,12 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onFromCamera(String imageUriString) {
+    public void onFromCamera(@NonNull final String imageUriString) {
         this.profilePictureItem.setValue(imageUriString);
     }
 
     @Override
-    public void onFromGallery(String imageUriString) {
+    public void onFromGallery(@NonNull final String imageUriString) {
         this.profilePictureItem.setValue(imageUriString);
     }
 
