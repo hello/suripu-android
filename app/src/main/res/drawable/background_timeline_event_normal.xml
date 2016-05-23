@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:bottom="@dimen/gap_xsmallradius"
+        android:left="@dimen/gap_xsmallradius"
+        android:right="@dimen/gap_xsmallradius"
+        android:top="@dimen/gap_xsmallradius">
+        <shape
+            android:shape="rectangle">
+            <corners
+                android:radius="4dp">
+            </corners>
+            <solid
+                android:color="@color/blue7_10">
+            </solid>
+        </shape>
+    </item>
+
+
+    <item
+        android:bottom="@dimen/gap_xsmall"
+        android:left="@dimen/gap_xsmall"
+        android:right="@dimen/gap_xsmall"
+        android:top="@dimen/gap_xsmall">
+        <shape
+            android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/gap_xsmall"
+                android:left="@dimen/gap_xsmall"
+                android:right="@dimen/gap_xsmall"
+                android:top="@dimen/gap_xsmall"
+                />
+            <corners
+                android:radius="4dp">
+            </corners>
+            <solid
+                android:color="@color/white">
+            </solid>
+        </shape>
+    </item>
+</layer-list>
