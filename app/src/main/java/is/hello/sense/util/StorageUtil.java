@@ -34,7 +34,7 @@ public class StorageUtil {
         }
     }
 
-    public boolean hasEnoughMemory(@NonNull File directory, long requiredSpace){
+    public boolean hasEnoughMemory(@NonNull final File directory, final long requiredSpace){
         long availableRemainingSpace = directory.getUsableSpace() - requiredSpace;
 
         final boolean hasEnoughMemory = availableRemainingSpace / (1000*1000)  > usableSpaceThreshold;
@@ -59,15 +59,14 @@ public class StorageUtil {
         return externalStorageAvailable && externalStorageWriteable;
     }
 
-    public boolean canUse(File directory, long requiredSpace) {
-        return directory != null
-                && directory.exists()
+    public boolean canUse(@NonNull File directory, final long requiredSpace) {
+        return directory.exists()
                 && directory.canWrite()
                 && hasEnoughMemory(directory, requiredSpace);
     }
 
-    public File createDirectory(File parentDirectory, String directoryName) {
-        File directory = new File(parentDirectory, directoryName);
+    public File createDirectory(@NonNull final File parentDirectory, @NonNull final String directoryName) {
+        final File directory = new File(parentDirectory, directoryName);
         if(!directory.exists() && !directory.mkdir()){
             Logger.error(StorageUtil.class.getSimpleName(), "could not create directory " + directory);
             return null;

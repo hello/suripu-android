@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.squareup.okhttp.RequestBody;
-
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -21,7 +19,6 @@ import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.Observable;
 
@@ -29,14 +26,20 @@ public class AccountPresenter extends ValuePresenter<Account> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^.+@.+\\..+$");
     private static final int MIN_PASSWORD_LENGTH = 6;
 
-    @Inject ApiService apiService;
-    @Inject ApiSessionManager sessionManager;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    ApiService apiService;
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    PreferencesPresenter preferences;
 
     public final PresenterSubject<Account> account = this.subject;
-    @NonNull private final Context context;
+    @NonNull
+    private final Context context;
 
-    public @Inject AccountPresenter(@NonNull Context context){
+    public
+    @Inject
+    AccountPresenter(@NonNull Context context) {
         this.context = context;
     }
 
@@ -63,7 +66,9 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //region Validation
 
-    public static @NonNull String normalizeInput(@Nullable CharSequence value) {
+    public static
+    @NonNull
+    String normalizeInput(@Nullable CharSequence value) {
         if (TextUtils.isEmpty(value)) {
             return "";
         } else {
@@ -114,6 +119,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //endregion
 
+    public Observable<MultiDensityImage> updateProfilePicture(@NonNull TypedFile picture){
+        return apiService.uploadProfilePhoto(picture)
+                .doOnError(Functions.LOG_ERROR);
+    }
 
     //region Preferences
 

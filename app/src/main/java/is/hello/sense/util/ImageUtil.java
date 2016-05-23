@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -42,7 +44,7 @@ public class ImageUtil {
      * @return
      * Returns <code>null</code> if exception occurs.
      */
-    public File createFile(boolean isTemporary){
+    public @Nullable File createFile(boolean isTemporary){
         final File storageDir = getStorageDirectory();
 
         try {
@@ -68,7 +70,7 @@ public class ImageUtil {
      *  Last attempt will try to access internal app storage.
      * @return File directory to write image file.
      */
-    protected File getStorageDirectory(){
+    protected @Nullable File getStorageDirectory(){
         File storageDir = null;
         //Todo figure out how much memory taking a picture costs for a phone
         final long memoryRequirement = 100L;
@@ -80,15 +82,13 @@ public class ImageUtil {
         }
         //internal storage directory
         storageOptions.add(context.getFilesDir());
-
-        while(!storageUtil.canUse(storageDir, memoryRequirement) && !storageOptions.isEmpty()){
-            storageDir = storageUtil.createDirectory(storageOptions.poll(),DIRECTORY_NAME);
-        }
+        do{storageDir = storageUtil.createDirectory(storageOptions.poll(),DIRECTORY_NAME);}
+        while((storageUtil.canUse(storageDir, memoryRequirement) || storageOptions.isEmpty()) == false);
         return storageDir;
     }
 
     protected String getFullFileName(){
-        return String.format("%s_%s", imageFileName, timestampFormat);
+        return String.format("%s_%s", imageFileName, timestampFormat.format(new Date()));
     }
 
 }

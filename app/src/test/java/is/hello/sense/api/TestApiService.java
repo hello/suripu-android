@@ -39,6 +39,7 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
@@ -56,8 +57,11 @@ import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.markup.text.MarkupString;
 import retrofit.http.Body;
+import retrofit.http.Multipart;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -149,6 +153,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<SenseTimeZone> currentTimeZone() {
+        return unimplemented();
+    }
+
+    @Multipart
+    @Override
+    public Observable<MultiDensityImage> uploadProfilePhoto(@Part("photo") TypedFile profilePhoto) {
         return unimplemented();
     }
 

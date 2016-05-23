@@ -25,4 +25,9 @@ public class UtilityModule {
     public ImageUtil providesImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil){
         return new ImageUtil(context, storageUtil);
     }
+
+    @Provides
+    @Singleton FilePathUtil providesFilePathUtil(@NonNull final Context context){
+        return new FilePathUtil(context);
+    }
 }

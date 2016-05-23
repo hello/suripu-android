@@ -50,8 +50,10 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
 
 public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
@@ -65,6 +67,7 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject PreferencesPresenter preferences;
     @Inject FacebookPresenter facebookPresenter;
     @Inject ImageUtil imageUtil;
+    @Inject FilePathUtil filePathUtil;
 
     private ProfileImageManager profileImageManager;
     private ExternalStoragePermission permission;
@@ -104,7 +107,7 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
         permission = ExternalStoragePermission.forCamera(this);
-        profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil);
+        profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil, filePathUtil);
 
         setRetainInstance(true);
     }
@@ -495,6 +498,18 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onFromGallery(@NonNull final String imageUriString) {
         this.profilePictureItem.setValue(imageUriString);
+    }
+
+    @Override
+    public void onUploadReady(@NonNull final TypedFile imageFile) {
+        try{
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
+                             ignored -> { Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");},
+                             e ->{ });
+
+        } catch (Exception e){
+            Logger.error(AccountSettingsFragment.class.getSimpleName(), "file creation failed.", e);
+        }
     }
 
     @Override

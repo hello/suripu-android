@@ -60,6 +60,7 @@ public class ProfileImageView extends FrameLayout implements Target {
 
     @Override
     public void onBitmapFailed(@NonNull final Drawable errorDrawable) {
+        profileImage.setImageResource(getDefaultProfileRes());
         Logger.error(ProfileImageView.class.getSimpleName(), "failed to load bitmap.");
     }
 
