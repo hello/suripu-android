@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.squareup.okhttp.RequestBody;
-
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -14,15 +12,12 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
-import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public class AccountPresenter extends ValuePresenter<Account> {

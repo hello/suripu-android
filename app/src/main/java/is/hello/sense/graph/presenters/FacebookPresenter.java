@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
@@ -29,10 +28,8 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
     @Inject CallbackManager callbackManager;
 
     public final PresenterSubject<FacebookProfilePicture> profilePicture = this.subject;
-    @NonNull private final Context context;
 
-    public @Inject FacebookPresenter(@NonNull Context context){
-        this.context = context;
+    public @Inject FacebookPresenter(){
     }
 
     @Override

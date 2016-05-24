@@ -86,7 +86,6 @@ public class AccountSettingsFragment extends InjectionFragment
     private Account currentAccount;
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
-    private SettingsRecyclerAdapter adapter;
 
     //region Lifecycle
 
@@ -104,7 +103,7 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
         permission = ExternalStoragePermission.forCamera(this);
-        profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil);
+        profileImageManager = new ProfileImageManager(this, imageUtil);
 
         setRetainInstance(true);
     }
@@ -126,7 +125,7 @@ public class AccountSettingsFragment extends InjectionFragment
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
+        final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
@@ -233,7 +232,6 @@ public class AccountSettingsFragment extends InjectionFragment
         this.enhancedAudioItem = null;
 
         this.recyclerView = null;
-        this.adapter = null;
 
         this.permission = null;
         this.profileImageManager = null;
