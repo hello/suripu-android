@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -235,6 +234,18 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
 
             view.setOnClickListener(this);
+            status2Label.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
+                            WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -245,7 +256,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         @Override
         public void bind(int position) {
             super.bind(position);
-
             final SleepPillDevice device = (SleepPillDevice) getItem(position);
             title.setText(R.string.device_pill);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
@@ -277,18 +287,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status2.setText(color.nameRes);
             status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.gap_medium));
             status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
-            status2Label.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
-                            WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            });
         }
     }
 
