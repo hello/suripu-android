@@ -62,12 +62,11 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("long")
     private Double longitude;
 
-    @SerializedName("profilepicture")
-    private MultiDensityImage profilePicture;
+    @SerializedName("profile_photo")
+    private MultiDensityImage profilePhoto;
 
     @SerializedName("time_zone")
     private final String timeZone = DateTimeZone.getDefault().getID();
-
 
     public static Account createDefault() {
         Account newAccount = new Account();
@@ -188,17 +187,16 @@ public class Account extends ApiResponse implements Cloneable {
         this.longitude = longitude;
     }
 
-    public MultiDensityImage getProfilePicture() {
-        return profilePicture;
+    public MultiDensityImage getProfilePhoto() {
+        return profilePhoto;
     }
 
-    public void setProfilePicture(@NonNull MultiDensityImage profilePicture) {
-        this.profilePicture = profilePicture;
+    public void setProfilePhoto(@NonNull MultiDensityImage profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 
     public String getProfilePictureUrl(@NonNull Resources resources) {
-        return "";
-        //return this.profilePicture.getUrl(resources);
+        return this.profilePhoto != null ? this.profilePhoto.getUrl(resources) : "";
     }
 
     public String getTimeZone() {

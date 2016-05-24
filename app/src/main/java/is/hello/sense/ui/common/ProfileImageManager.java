@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import java.io.File;
 import java.util.ArrayList;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
@@ -20,6 +21,7 @@ import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
+import rx.schedulers.Schedulers;
 
 public class ProfileImageManager {
     private static final int REQUEST_CODE_PICTURE = 0x30;
@@ -152,9 +154,15 @@ public class ProfileImageManager {
     }
 
     private void prepareImageUpload(@NonNull final String filePath){
-        final TypedFile typedFile = new TypedFile("multipart/form-data", new File(filePath));
-        Logger.warn(ProfileImageManager.class.getSimpleName(), " file size exceeds 5 MB? : " + (typedFile.length() > 5 * Math.pow(2,20)));
-        ((Listener) fragment).onUploadReady(typedFile);
+        imageUtil.provideObservableToCompressFile(filePath)
+                .doOnNext(file -> {
+                    final TypedFile typedFile = new TypedFile("multipart/form-data", file);
+                    Logger.warn(ProfileImageManager.class.getSimpleName(), " file size exceeds 5 MB? : " + (typedFile.length() > 5 * Math.pow(2, 20)));
+                    ((Listener) fragment).onUploadReady(typedFile);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Rx.mainThreadScheduler())
+                .subscribe();
     }
 
     //region Camera Options
