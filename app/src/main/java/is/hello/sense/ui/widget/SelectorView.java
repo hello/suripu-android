@@ -86,6 +86,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
         for (ToggleButton button : buttons) {
             button.setEnabled(enabled);
+            button.setClickable(enabled);
         }
 
         if (selectionAwareBackground != null) {
@@ -131,6 +132,21 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             selectionAwareBackground.setEnabled(isEnabled());
             selectionAwareBackground.setNumberOfItems(buttons.size());
             selectionAwareBackground.setSelectedIndex(selectedIndex);
+        }
+    }
+
+    public void clicked(int index) {
+        for (int i = 0; i < buttons.size(); i++) {
+            ToggleButton button = buttons.get(i);
+            if (i == index) {
+                button.setClickable(false);
+            } else {
+                button.setEnabled(false);
+            }
+        }
+
+        if (selectionAwareBackground != null) {
+            selectionAwareBackground.setEnabled(false);
         }
     }
 
