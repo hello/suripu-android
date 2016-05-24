@@ -9,7 +9,7 @@
         <shape
             android:shape="rectangle">
             <corners
-                android:radius="4dp">
+                android:radius="@dimen/button_corner_radius">
             </corners>
             <solid
                 android:color="@color/blue7_10">
@@ -32,7 +32,7 @@
                 android:top="@dimen/gap_xsmall"
                 />
             <corners
-                android:radius="4dp">
+                android:radius="@dimen/button_corner_radius">
             </corners>
             <solid
                 android:color="@color/white">
