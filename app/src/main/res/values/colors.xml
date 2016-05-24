@@ -188,6 +188,7 @@
     <color name="trends_bubblegraph_text_title">@color/white</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
     <color name="trends_gridgraph">@color/gray3</color>
+    <color name="trends_gridgraph_empty_cell_border">@color/gray3</color>
 
     <color name="timeline_share_text">@color/gray4</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
