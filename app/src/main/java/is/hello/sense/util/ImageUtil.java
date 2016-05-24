@@ -11,10 +11,8 @@ import android.support.annotation.VisibleForTesting;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -25,11 +23,17 @@ import rx.Observable;
 public class ImageUtil {
 
     @VisibleForTesting
+    final int FILE_SIZE_LIMIT =  5000 * 1024; //5MB
+    @VisibleForTesting
+    final int COMPRESSION_AMOUNT = 100;
+    @VisibleForTesting
+    final Bitmap.CompressFormat COMPRESSION_FORMAT = Bitmap.CompressFormat.JPEG;
+    @VisibleForTesting
     final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     @VisibleForTesting
     final String imageFileName = "HelloProfile";
     @VisibleForTesting
-    String fileFormat = ".jpg";
+    final String fileFormat = ".jpg";
     @VisibleForTesting
     final String DIRECTORY_NAME = "HelloAppPictures";
 
@@ -96,7 +100,7 @@ public class ImageUtil {
         return file;
     }
 
-    private byte[] compressByteArray(@NonNull final String path) throws IOException{
+    public byte[] compressByteArray(@NonNull final String path) throws IOException{
         try(
                 final ByteArrayOutputStream bos = new ByteArrayOutputStream()
         ){
@@ -104,10 +108,10 @@ public class ImageUtil {
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(path, options);
             //Todo ask Tim or Jimmy what the min width and height are for image
-            options.inSampleSize = calculateInSampleSize(options,500,500);
+            options.inSampleSize = calculateInSampleSize(options, FILE_SIZE_LIMIT);
             options.inJustDecodeBounds = false;
             final Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bos);
+            bitmap.compress(COMPRESSION_FORMAT, COMPRESSION_AMOUNT, bos);
             final byte[] byteArray = bos.toByteArray();
             bos.close();
             return byteArray;
@@ -121,18 +125,45 @@ public class ImageUtil {
      * @param requiredHeight
      * @return
      */
-    private static int calculateInSampleSize(final BitmapFactory.Options options, final int requiredWidth, final int requiredHeight){
+    private int calculateInSampleSize(@NonNull final BitmapFactory.Options options, final int memoryLimit){
+        final int pixelByteDensity = getPixelByteDensity(options.inPreferredConfig);
         final int rawHeight = options.outHeight;
         final int rawWidth = options.outWidth;
         int inSampleSize = 1;
 
-        if( rawHeight <= requiredHeight && rawWidth <= requiredWidth){
+        if( getSizeInMemory(rawWidth,rawHeight,pixelByteDensity) <= memoryLimit){
             return inSampleSize;
         } else{
             do{ inSampleSize *= 2;}
-            while((rawHeight / inSampleSize) > requiredHeight && (rawWidth / inSampleSize) > requiredWidth);
+            while(getSizeInMemory((rawHeight / inSampleSize), (rawWidth / inSampleSize), pixelByteDensity) > memoryLimit);
             return inSampleSize - 1;
         }
+    }
+
+    /**
+     * Returns number of bytes per pixel given a {@link android.graphics.Bitmap.Config}.
+     * If unknown config, returns {@link Bitmap#DENSITY_NONE}.
+     * @param config
+     * @return
+     */
+    private int getPixelByteDensity(@NonNull final Bitmap.Config config){
+        switch (config){
+            case ARGB_8888:
+                return 4;
+            case RGB_565:
+                return 3;
+            case ARGB_4444:
+                return 2;
+            case ALPHA_8:
+                return 1;
+            default:
+                Logger.error(ImageUtil.class.getSimpleName(), "unknown bitmap config " + config);
+                return Bitmap.DENSITY_NONE;
+        }
+    }
+
+    private int getSizeInMemory(final int width, final int height, final int pixelByteDensity){
+        return width * height * pixelByteDensity;
     }
 
     /**
@@ -142,8 +173,7 @@ public class ImageUtil {
      */
     protected @Nullable File getStorageDirectory(){
         File storageDir = null;
-        //Todo figure out how much memory taking a picture costs for a phone
-        final long memoryRequirement = 100L;
+        final long memoryRequirement = FILE_SIZE_LIMIT;
         final Queue<File> storageOptions = new LinkedList<>();
 
         if(storageUtil.isExternalStorageAvailableAndWriteable()){

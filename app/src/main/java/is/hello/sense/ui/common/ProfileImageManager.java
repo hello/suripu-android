@@ -157,7 +157,7 @@ public class ProfileImageManager {
         imageUtil.provideObservableToCompressFile(filePath)
                 .doOnNext(file -> {
                     final TypedFile typedFile = new TypedFile("multipart/form-data", file);
-                    Logger.warn(ProfileImageManager.class.getSimpleName(), " file size exceeds 5 MB? : " + (typedFile.length() > 5 * Math.pow(2, 20)));
+                    Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
                     ((Listener) fragment).onUploadReady(typedFile);
                 })
                 .subscribeOn(Schedulers.io())
