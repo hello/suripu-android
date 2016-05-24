@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -46,6 +47,7 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -53,11 +55,16 @@ import rx.Observable;
 
 public class RegisterFragment extends InjectionFragment
         implements StatusBarColorProvider, TextWatcher {
-    @Inject ApiService apiService;
-    @Inject ApiEndpoint apiEndpoint;
-    @Inject ApiSessionManager sessionManager;
-    @Inject AccountPresenter accountPresenter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    ApiService apiService;
+    @Inject
+    ApiEndpoint apiEndpoint;
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    PreferencesPresenter preferences;
 
     private Account account;
 
@@ -118,7 +125,7 @@ public class RegisterFragment extends InjectionFragment
 
         if (BuildConfig.DEBUG) {
             final Button selectHost = new Button(getActivity());
-            selectHost.setTextAppearance(getActivity(), R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
@@ -177,7 +184,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public int getStatusBarColor(@NonNull Resources resources) {
-        return resources.getColor(R.color.status_bar_grey);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
     }
 
     @Override
@@ -211,7 +218,8 @@ public class RegisterFragment extends InjectionFragment
                 break;
             }
 
-            case EMAIL_INVALID: {
+            case EMAIL_INVALID:
+            case EMAIL_IN_USE: {
                 affectedField = emailText;
                 break;
             }
@@ -306,8 +314,10 @@ public class RegisterFragment extends InjectionFragment
                     new ErrorDialogFragment.Builder(error, getResources());
 
             if (ApiException.statusEquals(error, 409)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken,
-                                                              account.getEmail()));
+
+                displayRegistrationError(RegistrationError.EMAIL_IN_USE);
+                emailText.requestFocus();
+                return;
             }
 
             final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
