@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -170,6 +171,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             } else {
                 divider.setVisibility(View.VISIBLE);
             }
+
+            if (item.iconIdRes != 0) {
+                icon.setId(item.iconIdRes);
+            }
         }
     }
 
@@ -201,9 +206,12 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
         String text;
         T value;
-        final @Nullable Runnable onClick;
+        final
+        @Nullable
+        Runnable onClick;
 
-        @Nullable SettingsRecyclerAdapter adapter;
+        @Nullable
+        SettingsRecyclerAdapter adapter;
         int position = RecyclerView.NO_POSITION;
 
         public TextItem(@NonNull String text,
@@ -241,11 +249,19 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     public static class DetailItem extends TextItem<String> {
         static final int ID = 1;
 
-        @DrawableRes int icon;
-        @StringRes int iconContentDescription;
+        @DrawableRes
+        int icon;
+        @StringRes
+        int iconContentDescription;
+        private int iconIdRes = 0;
 
         public DetailItem(@NonNull String title, @Nullable Runnable onClick) {
             super(title, onClick);
+        }
+
+        public DetailItem(@NonNull String title, @Nullable Runnable onClick, @IdRes int iconIdRes) {
+            super(title, onClick);
+            this.iconIdRes = iconIdRes;
         }
 
         public void setIcon(@DrawableRes int icon, @StringRes int iconContentDescription) {

@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -36,6 +39,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -47,10 +52,14 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
-    @Inject AccountPresenter accountPresenter;
-    @Inject DateFormatter dateFormatter;
-    @Inject UnitFormatter unitFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    UnitFormatter unitFormatter;
+    @Inject
+    PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
 
@@ -65,9 +74,17 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
     private Account currentAccount;
-    private @Nullable Account.Preferences accountPreferences;
+    private
+    @Nullable
+    Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
+
+    final LocalDate releaseDateForName = new DateTime()
+            .withYear(2016)
+            .withMonthOfYear(5)
+            .withDayOfMonth(25) // todo change this to the release date of 1.4.1
+            .toLocalDate();
 
 
     //region Lifecycle
@@ -114,7 +131,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
         this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                               this::changeName);
+                                                               this::changeName,
+                                                               R.id.fragment_account_settings_name);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
 
@@ -263,6 +281,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         this.currentAccount = account;
 
         hideLoadingIndicator();
+
+        showTutorialHelperIfNeeded(account.getCreated());
+
     }
 
     public void accountUnavailable(Throwable e) {
@@ -275,6 +296,17 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
         this.accountPreferences = preferences;
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
+    }
+
+    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt){
+        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(releaseDateForName)) {
+            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            overlayView.setAnchorContainer(getView());
+            getAnimatorContext().runWhenIdle(() -> {
+                overlayView.postShow(R.id.static_recycler_container);
+                Tutorial.TAP_NAME.markShown(getActivity());
+            });
+        }
     }
 
     //endregion
