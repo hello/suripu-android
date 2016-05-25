@@ -15,6 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -76,6 +79,12 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
+
+    final LocalDate releaseDateForName = new DateTime()
+            .withYear(2016)
+            .withMonthOfYear(5)
+            .withDayOfMonth(25) // todo change this to the release date of 1.4.1
+            .toLocalDate();
 
 
     //region Lifecycle
@@ -273,14 +282,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         hideLoadingIndicator();
 
-        if (Tutorial.TAP_NAME.shouldShow(getActivity())) {
-            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
-            overlayView.setAnchorContainer(getView());
-            getAnimatorContext().runWhenIdle(() -> {
-                overlayView.postShow(R.id.static_recycler_container);
-                Tutorial.TAP_NAME.markShown(getActivity());
-            });
-        }
+        showTutorialHelperIfNeeded(account.getCreated());
+
     }
 
     public void accountUnavailable(Throwable e) {
@@ -293,6 +296,17 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
         this.accountPreferences = preferences;
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
+    }
+
+    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt){
+        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(releaseDateForName)) {
+            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            overlayView.setAnchorContainer(getView());
+            getAnimatorContext().runWhenIdle(() -> {
+                overlayView.postShow(R.id.static_recycler_container);
+                Tutorial.TAP_NAME.markShown(getActivity());
+            });
+        }
     }
 
     //endregion
