@@ -41,7 +41,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     private TrendFeedView trendFeedView;
     private SelectorView timeScaleSelector;
-    private int oldSelection = 0;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -188,8 +187,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        timeScaleSelector.setEnabled(false);
-        oldSelection = newSelectionIndex;
+        timeScaleSelector.clicked(newSelectionIndex);
         trendFeedView.setLoading(true);
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
