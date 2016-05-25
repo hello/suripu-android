@@ -1,10 +1,13 @@
 package is.hello.sense.ui.adapter;
 
+import android.app.Activity;
 import android.widget.FrameLayout;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class DevicesAdapterTests extends SenseTestCase {
+    private Activity parent;
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private DevicesAdapter adapter;
 
@@ -31,7 +35,8 @@ public class DevicesAdapterTests extends SenseTestCase {
 
     @Before
     public void setUp() {
-        this.adapter = new DevicesAdapter(getContext());
+        this.parent = Robolectric.setupActivity(Activity.class);
+        this.adapter = new DevicesAdapter(parent);
     }
 
     //endregion
