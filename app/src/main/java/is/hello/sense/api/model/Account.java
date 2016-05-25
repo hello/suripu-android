@@ -195,7 +195,7 @@ public class Account extends ApiResponse implements Cloneable {
         this.profilePhoto = profilePhoto;
     }
 
-    public String getProfilePictureUrl(@NonNull Resources resources) {
+    public String getProfilePhotoUrl(@NonNull Resources resources) {
         return this.profilePhoto != null ? this.profilePhoto.getUrl(resources) : "";
     }
 

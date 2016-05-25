@@ -288,7 +288,7 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        profilePictureItem.setValue(account.getProfilePictureUrl(getResources()));
+        profilePictureItem.setValue(account.getProfilePhotoUrl(getResources()));
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
@@ -468,8 +468,12 @@ public class AccountSettingsFragment extends InjectionFragment
     private void handleFacebookError(Throwable error) {
         final String temporaryCopy = "Fetching Facebook profile picture failed";
         Logger.debug(FacebookPresenter.class.getSimpleName(),temporaryCopy, error);
+        handleError(error, temporaryCopy);
+    }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage){
         stateSafeExecutor.execute(() -> {
-            ErrorDialogFragment.presentError(getActivity(), new Throwable(temporaryCopy));
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
         });
     }
 
@@ -502,13 +506,19 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onUploadReady(@NonNull final TypedFile imageFile) {
+        final String temporaryCopy = " file creation failed";
         try{
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
-                             ignored -> { Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");},
-                             e ->{ });
+                             photo -> {
+                                 Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
+                                 //will not need if account will contain profile_url
+                                 currentAccount.setProfilePhoto(photo);
+                                 bindAccount(currentAccount);
+                             },
+                             e ->{ handleError(e, temporaryCopy); });
 
         } catch (Exception e){
-            Logger.error(AccountSettingsFragment.class.getSimpleName(), "file creation failed.", e);
+            Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
         }
     }
 

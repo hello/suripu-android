@@ -94,11 +94,8 @@ public class ImageUtil {
     }
 
     public File compressFile(@NonNull final String path) throws IOException{
-        File file = new File(path);
-        if(file.length() > FILE_SIZE_LIMIT){
-            return file;
-        }
         final byte[] compressedByteArray = compressToByteArray(path);
+        final File file = new File(path);
         try(final FileOutputStream fos = new FileOutputStream(file)){
             fos.write(compressedByteArray);
         }
@@ -173,7 +170,7 @@ public class ImageUtil {
         } else{
             do{ inSampleSize *= 2;}
             while(getSizeInMemory((rawHeight / inSampleSize), (rawWidth / inSampleSize), pixelByteDensity) > memoryLimit);
-            return inSampleSize - 1;
+            return inSampleSize;
         }
     }
 
