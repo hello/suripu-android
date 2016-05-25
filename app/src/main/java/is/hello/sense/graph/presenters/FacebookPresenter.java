@@ -2,6 +2,7 @@ package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.facebook.AccessToken;
@@ -52,7 +53,11 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
 
     //region Updates
     public void onActivityResult(final int requestCode,final int resultCode,@NonNull final Intent data) {
-        callbackManager.onActivityResult(requestCode,resultCode, data);
+        final Bundle extras = data.getExtras();
+        int errorCode = extras.getInt("error_code",-1);
+        if(errorCode == -1) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public void setAuthToken(AccessToken token){
@@ -78,7 +83,8 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
 
                                 @Override
                                 public void onError(FacebookException exception) {
-                                    // App code
+                                    // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
+                                    // consider presenting an error dialog here.
                                     Logger.debug(FacebookPresenter.class.getSimpleName(), "login failed", exception.fillInStackTrace());
                                 }
                             });
