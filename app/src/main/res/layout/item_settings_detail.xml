@@ -5,20 +5,28 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical">
 
-    <ImageView
-        android:id="@+id/item_settings_detail_icon"
+    <RelativeLayout
+        android:id="@+id/item_icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/icon_settings_advanced"
-        android:importantForAccessibility="no" />
+        android:layout_marginStart="20dp">
+
+        <ImageView
+            android:id="@+id/item_settings_detail_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:importantForAccessibility="no"
+            android:src="@drawable/icon_settings_advanced"/>
+    </RelativeLayout>
+
 
     <TextView
         android:id="@+id/item_settings_detail_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/item_settings_detail_icon"
+        android:layout_toEndOf="@id/item_icon_container"
         android:layout_marginStart="@dimen/gap_outer"
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"

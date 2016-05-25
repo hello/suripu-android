@@ -36,6 +36,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -47,10 +49,14 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
-    @Inject AccountPresenter accountPresenter;
-    @Inject DateFormatter dateFormatter;
-    @Inject UnitFormatter unitFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    UnitFormatter unitFormatter;
+    @Inject
+    PreferencesPresenter preferences;
 
     private ProgressBar loadingIndicator;
 
@@ -65,7 +71,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
     private Account currentAccount;
-    private @Nullable Account.Preferences accountPreferences;
+    private
+    @Nullable
+    Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
     private SettingsRecyclerAdapter adapter;
 
@@ -114,7 +122,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
         this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                               this::changeName);
+                                                               this::changeName,
+                                                               R.id.fragment_account_settings_name);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
 
@@ -263,6 +272,15 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         this.currentAccount = account;
 
         hideLoadingIndicator();
+
+        if (Tutorial.TAP_NAME.shouldShow(getActivity())) {
+            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            overlayView.setAnchorContainer(getView());
+            getAnimatorContext().runWhenIdle(() -> {
+                overlayView.postShow(R.id.static_recycler_container);
+                Tutorial.TAP_NAME.markShown(getActivity());
+            });
+        }
     }
 
     public void accountUnavailable(Throwable e) {
