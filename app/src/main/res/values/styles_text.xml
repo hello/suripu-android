@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Generic -->
 
-    <style name="AppTheme.Text" parent="android:TextAppearance">
-        <item name="android:textColor">@color/text_dark</item>
-        <item name="android:textColorLink">@color/text_link</item>
-    </style>
+    <style name="Body" parent="AppTheme.Text.Body" />
 
+
+    ​<!-- Generic -->
     <style name="AppTheme.Text.Heading">
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">@dimen/text_size_heading</item>
@@ -63,12 +61,6 @@
 
     <style name="AppTheme.Text.ScreenTitle.Accent">
         <item name="android:textColor">@color/light_accent</item>
-    </style>
-
-    <style name="AppTheme.Text.Body">
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="AppTheme.Text.Body.New">

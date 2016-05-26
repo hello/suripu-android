@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.Text" parent="android:TextAppearance">
+        <item name="android:textColor">@color/gray5</item>
+        <item name="android:textColorLink">@color/blue6</item>
+    </style>
+
+    <style name="AppTheme.Text.Header">
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_small</item>
+        <item name="android:textColor">@color/default_color</item>
+    </style>
+
+    <style name="AppTheme.Text.Header.H1">
+        <item name="android:textSize">@dimen/text_h1</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H1.Thin">
+        <item name="android:fontFamily">sans-serif-thin</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H2">
+        <item name="android:textSize">@dimen/text_h2</item>
+    </style>
+
+    <style name="AppTheme.Text.Header.H2.Light">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H3">
+        <item name="android:textSize">@dimen/text_h3</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H3.Light">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H4">
+        <item name="android:textSize">@dimen/text_h4</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H4.Light">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H5">
+        <item name="android:textSize">@dimen/text_h5</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H6">
+        <item name="android:textSize">@dimen/text_h6</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H7">
+        <item name="android:textSize">@dimen/text_h7</item>
+    </style>
+    ​
+
+    <style name="AppTheme.Text.Header.H7.Medium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="AppTheme.Text.Header.H8">
+        <item name="android:textSize">@dimen/text_h8</item>
+    </style>
+
+    <style name="AppTheme.Text.Header.H8.Medium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="AppTheme.Text.Body">
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_large</item>
+        <item name="android:textColor">@color/default_color</item>
+    </style>
+    ​
+    ​ ​
+</resources>

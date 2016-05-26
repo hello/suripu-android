@@ -26,7 +26,25 @@
 
     <!-- Official text sizes provided by Nathan -->
     <dimen name="text_body">15sp</dimen>
+    <dimen name="text_h1">64sp</dimen>
+    <dimen name="text_h2">40sp</dimen>
+    <dimen name="text_h3">32sp</dimen>
+    <dimen name="text_h4">24sp</dimen>
+    <dimen name="text_h5">20sp</dimen>
+    <dimen name="text_h6">18sp</dimen>
+    <dimen name="text_h7">12sp</dimen>
+    <dimen name="text_h8">10sp</dimen>
+
     <dimen name="text_body_line_height">24px</dimen>
+
+    <item name="line_multiple_small" format="float" type="dimen">1.4</item>
+    <item name="line_multiple_medium" format="float" type="dimen">1.5</item>
+    <item name="line_multiple_large" format="float" type="dimen">1.6</item>
+
+
+
+
+
 
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_size_body_mid_sized">14sp</dimen>
