@@ -87,7 +87,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(imageUri.equals(EMPTY_URI_STATE) == false){
+        if(!imageUri.equals(EMPTY_URI_STATE)){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -146,15 +146,16 @@ public class ProfileImageManager {
     }
 
     /**
-     * Used primarily to upload files through api requiring full uri path
+     * Used primarily to upload local files through api requiring full uri path
      * @param imageUriString
      */
     public void setFullImageUriString(@NonNull final String imageUriString) {
         this.fullImageUriString = imageUriString;
     }
 
-    private void prepareImageUpload(@NonNull final String filePath){
-        imageUtil.provideObservableToCompressFile(filePath)
+    public void prepareImageUpload(@NonNull final String filePath){
+        final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
+        imageUtil.provideObservableToCompressFile(filePath, mustDownload)
                 .doOnNext(file -> {
                     final TypedFile typedFile = new TypedFile("multipart/form-data", file);
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
@@ -195,7 +196,7 @@ public class ProfileImageManager {
     //endregion
 
     private void checkFragmentInstance(Fragment fragment) {
-        if (fragment instanceof Listener == false) {
+        if (!(fragment instanceof Listener)) {
             throw new ClassCastException(
                     fragment.toString() + " must implement " + Listener.class.getSimpleName()
             );

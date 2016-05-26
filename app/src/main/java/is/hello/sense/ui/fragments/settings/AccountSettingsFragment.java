@@ -60,22 +60,30 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
-    @Inject Picasso picasso;
-    @Inject AccountPresenter accountPresenter;
-    @Inject DateFormatter dateFormatter;
-    @Inject UnitFormatter unitFormatter;
-    @Inject PreferencesPresenter preferences;
-    @Inject FacebookPresenter facebookPresenter;
-    @Inject ImageUtil imageUtil;
-    @Inject FilePathUtil filePathUtil;
+    @Inject
+    Picasso picasso;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    UnitFormatter unitFormatter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    FacebookPresenter facebookPresenter;
+    @Inject
+    ImageUtil imageUtil;
+    @Inject
+    FilePathUtil filePathUtil;
 
     private ProfileImageManager profileImageManager;
-    private ExternalStoragePermission permission;
+    private final ExternalStoragePermission permission = ExternalStoragePermission.forCamera(this);
 
     private ProgressBar loadingIndicator;
 
 
-    private AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
 
@@ -89,7 +97,6 @@ public class AccountSettingsFragment extends InjectionFragment
     private Account currentAccount;
     private @Nullable Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
-    private SettingsRecyclerAdapter adapter;
 
     //region Lifecycle
 
@@ -106,7 +113,6 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
-        permission = ExternalStoragePermission.forCamera(this);
         profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil, filePathUtil);
 
         setRetainInstance(true);
@@ -129,7 +135,7 @@ public class AccountSettingsFragment extends InjectionFragment
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
+        final SettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
@@ -138,7 +144,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
 
-        this.profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
         adapter.add(profilePictureItem);
 
         this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
@@ -224,7 +229,6 @@ public class AccountSettingsFragment extends InjectionFragment
         super.onDestroyView();
 
         this.loadingIndicator = null;
-        this.profilePictureItem = null;
         this.nameItem = null;
         this.emailItem = null;
 
@@ -236,9 +240,7 @@ public class AccountSettingsFragment extends InjectionFragment
         this.enhancedAudioItem = null;
 
         this.recyclerView = null;
-        this.adapter = null;
 
-        this.permission = null;
         this.profileImageManager = null;
     }
 
@@ -482,6 +484,7 @@ public class AccountSettingsFragment extends InjectionFragment
         if(fbImageUri != null){
             profilePictureItem.setValue(fbImageUri);
             profileImageManager.setImageUri(Uri.parse(fbImageUri));
+            profileImageManager.prepareImageUpload(fbImageUri);
         }
     }
 

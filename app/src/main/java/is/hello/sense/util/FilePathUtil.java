@@ -9,6 +9,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
+import java.io.File;
+
 
 /**
  * Converts Android media content URIs to full paths
@@ -69,7 +71,7 @@ public class FilePathUtil {
 
     private String getRealPathApi19AndUp(@NonNull final Uri uri){
         String filePath = EMPTY_URI_STATE_STRING;
-        if(DocumentsContract.isDocumentUri(context,uri) == false){
+        if(!DocumentsContract.isDocumentUri(context, uri)){
             return getRealPathApi18To11(uri);
         }
         final String wholeID = DocumentsContract.getDocumentId(uri);
@@ -98,4 +100,7 @@ public class FilePathUtil {
         return filePath;
     }
 
+    public boolean isFoundOnDevice(@NonNull final String filePath) {
+        return new File(filePath).exists();
+    }
 }
