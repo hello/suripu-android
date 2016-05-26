@@ -7,15 +7,28 @@
     <TextView
         android:id="@+id/view_label_edit_text_label"
         style="@style/Label"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:labelFor="@+id/view_label_edit_text_input"
         android:text="@string/title_register"/>
 
-    <EditText
-        android:id="@+id/view_label_edit_text_input"
-        style="@style/EditText"
-        android:layout_width="fill_parent"
+    <FrameLayout
+        android:id="@+id/view_label_edit_text_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/view_label_edit_text_label"/>
+        android:layout_below="@id/view_label_edit_text_label">
+
+        <EditText
+            android:id="@+id/view_label_edit_text_input"
+            style="@style/EditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+        <is.hello.sense.ui.widget.PasswordEditText
+            android:id="@+id/view_label_edit_text_input_password"
+            style="@style/EditText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
 </RelativeLayout>

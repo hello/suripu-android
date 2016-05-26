@@ -70,5 +70,6 @@
     <declare-styleable name="LabelEditText">
         <attr name="labelText" format="string"/>
         <attr name="inputText" format="string"/>
+        <attr name="isPassword" format="boolean"/>
     </declare-styleable>
 </resources>
