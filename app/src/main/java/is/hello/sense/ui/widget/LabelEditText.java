@@ -42,18 +42,24 @@ public class LabelEditText extends RelativeLayout {
             ta.recycle();
         }
 
-        int nextId = attrs.getAttributeIntValue(ANDROID_NAMESPACE, "nextFocusForward", -1);
-        if (nextId != -1) {
-            input.setNextFocusForwardId(nextId);
+        int value = attrs.getAttributeIntValue(ANDROID_NAMESPACE, "nextFocusForward", -1);
+        if (value != -1) {
+            input.setNextFocusForwardId(value);
         }
 
-        int inputType = attrs.getAttributeIntValue(ANDROID_NAMESPACE, "inputType", -1);
-        if (inputType != -1) {
-            input.setInputType(inputType);
+        value = attrs.getAttributeIntValue(ANDROID_NAMESPACE, "inputType", -1);
+        if (value != -1) {
+            input.setInputType(value);
+        }
+
+        value = attrs.getAttributeIntValue(ANDROID_NAMESPACE, "imeOptions", -1);
+        if (value != -1) {
+            input.setImeOptions(value);
         }
 
         boolean selectAllOnFocus = attrs.getAttributeBooleanValue(ANDROID_NAMESPACE, "selectAllOnFocus", false);
         input.setSelectAllOnFocus(selectAllOnFocus);
+
     }
 
     public void setInputText(@Nullable final String inputText) {

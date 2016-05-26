@@ -17,7 +17,5 @@
         style="@style/EditText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/view_label_edit_text_label"
-        android:imeOptions="actionNext|flagNoExtractUi"
-        android:inputType="textPersonName|textCapWords"/>
+        android:layout_below="@id/view_label_edit_text_label"/>
 </RelativeLayout>
