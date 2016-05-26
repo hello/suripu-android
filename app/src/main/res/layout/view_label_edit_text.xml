@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/view_label_edit_text_label"
+        style="@style/Label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/view_label_edit_text_input"
+        android:text="@string/title_register"/>
+
+    <EditText
+        android:id="@+id/view_label_edit_text_input"
+        style="@style/EditText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/view_label_edit_text_label"
+        android:imeOptions="actionNext|flagNoExtractUi"
+        android:inputType="textPersonName|textCapWords"/>
+</RelativeLayout>

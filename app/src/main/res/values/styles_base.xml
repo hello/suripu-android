@@ -9,7 +9,7 @@
     <style name="AppTheme.Text.Header">
         <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_small</item>
-        <item name="android:textColor">@color/default_color</item>
+        <item name="android:textColor">@color/dark</item>
     </style>
 
     <style name="AppTheme.Text.Header.H1">
@@ -82,7 +82,7 @@
         <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:textSize">@dimen/text_body</item>
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_large</item>
-        <item name="android:textColor">@color/default_color</item>
+        <item name="android:textColor">@color/standard</item>
     </style>
     ​
     ​ ​

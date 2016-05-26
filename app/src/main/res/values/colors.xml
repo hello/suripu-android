@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- start Nathan's official colors -->
-    <color name="default_color">@color/gray6</color>
+    <color name="dark">@color/gray6</color>
+    <color name="standard">@color/gray5</color>
+    <color name="dim">@color/gray4</color>
+    <color name="primary">@color/blue6</color>
+    <color name="error">@color/red6</color>
+    <color name="warning">@color/yellow6</color>
+    <color name="success">@color/green6</color>
 
     <!-- end Nathan's official colors -->
 

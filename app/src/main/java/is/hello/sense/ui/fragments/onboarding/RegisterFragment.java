@@ -243,10 +243,10 @@ public class RegisterFragment extends InjectionFragment
     private void clearRegistrationError() {
         credentialsContainer.removeView(registrationErrorText);
 
-        firstNameText.setBackgroundResource(R.drawable.edit_text_selector);
-        lastNameText.setBackgroundResource(R.drawable.edit_text_selector);
-        emailText.setBackgroundResource(R.drawable.edit_text_selector);
-        passwordText.setBackgroundResource(R.drawable.edit_text_selector);
+        firstNameText.setBackgroundResource(R.drawable.edit_text_background_selector);
+        lastNameText.setBackgroundResource(R.drawable.edit_text_background_selector);
+        emailText.setBackgroundResource(R.drawable.edit_text_background_selector);
+        passwordText.setBackgroundResource(R.drawable.edit_text_background_selector);
     }
 
     private boolean doCompleteValidation() {

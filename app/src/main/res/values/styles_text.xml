@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Body" parent="AppTheme.Text.Body" />
+    <style name="Body" parent="AppTheme.Text.Body"/>
 
+
+    <style name="Label" parent="AppTheme.Text.Header.H7">
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+    </style>
 
     ​<!-- Generic -->
     <style name="AppTheme.Text.Heading">

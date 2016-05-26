@@ -13,27 +13,28 @@ import is.hello.sense.R;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class ChangeNameFragment extends SenseFragment {
-    private TextView firstNameText;
-    private TextView lastNameText;
+    private LabelEditText firstNameLET;
+    private LabelEditText lastNameLET;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_name, container, false);
 
-        this.firstNameText = (TextView) view.findViewById(R.id.fragment_change_first_name_value);
-        firstNameText.setOnEditorActionListener(new EditorActionHandler(() -> submit(firstNameText)));
-        firstNameText.setText(AccountEditor.getContainer(this).getAccount().getFirstName());
+        this.firstNameLET = (LabelEditText) view.findViewById(R.id.fragment_change_first_name_let);
+        firstNameLET.setOnEditorActionListener(new EditorActionHandler(() -> submit(firstNameLET)));
+        firstNameLET.setInputText(AccountEditor.getContainer(this).getAccount().getFirstName());
 
-        this.lastNameText = (TextView) view.findViewById(R.id.fragment_change_last_name_value);
-        lastNameText.setOnEditorActionListener(new EditorActionHandler(() -> submit(lastNameText)));
-        lastNameText.setText(AccountEditor.getContainer(this).getAccount().getLastName());
+        this.lastNameLET = (LabelEditText) view.findViewById(R.id.fragment_change_last_name_let);
+        lastNameLET.setOnEditorActionListener(new EditorActionHandler(() -> submit(lastNameLET)));
+        lastNameLET.setInputText(AccountEditor.getContainer(this).getAccount().getLastName());
 
         Button submit = (Button) view.findViewById(R.id.fragment_change_name_submit);
         Views.setSafeOnClickListener(submit, this::submit);
@@ -45,23 +46,23 @@ public class ChangeNameFragment extends SenseFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.firstNameText = null;
-        this.lastNameText = null;
+        this.firstNameLET = null;
+        this.lastNameLET = null;
     }
 
     public void submit(@NonNull View sender) {
-        final String firstName = AccountPresenter.normalizeInput(firstNameText.getText());
-        final String lastName = AccountPresenter.normalizeInput(lastNameText.getText());
-        firstNameText.setText(firstName);
-        lastNameText.setText(lastName);
+        final String firstName = AccountPresenter.normalizeInput(firstNameLET.getInputText());
+        final String lastName = AccountPresenter.normalizeInput(lastNameLET.getInputText());
+        firstNameLET.setInputText(firstName);
+        lastNameLET.setInputText(lastName);
         //Todo Currently no validation for lastName
         // Todo suggest updating the error validation animation
         if (!AccountPresenter.validateName(firstName)) {
-            animatorFor(firstNameText)
+            animatorFor(firstNameLET)
                     .scale(1.4f)
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
-                            animatorFor(firstNameText)
+                            animatorFor(firstNameLET)
                                     .scale(1.0f)
                                     .start();
                         }

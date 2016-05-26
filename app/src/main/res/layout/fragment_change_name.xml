@@ -1,65 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background_light">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_light"
+            android:fillViewport="true">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/gap_outer"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:padding="@dimen/gap_outer">
 
-        <TextView
-            android:layout_width="match_parent"
+
+        <is.hello.sense.ui.widget.LabelEditText
+            android:id="@+id/fragment_change_first_name_let"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_medium"
+            android:nextFocusForward="@+id/fragment_change_last_name_let"
+            android:selectAllOnFocus="true"
+            app:labelText="@string/label_first_name">
+
+            <requestFocus/>
+        </is.hello.sense.ui.widget.LabelEditText>
+
+        <is.hello.sense.ui.widget.LabelEditText
+            android:id="@+id/fragment_change_last_name_let"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/gap_small"
-            android:textAppearance="?attr/senseTextAppearanceFieldLabel"
-            android:text="@string/label_first_name"/>
-
-        <EditText
-            android:id="@+id/fragment_change_first_name_value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:inputType="textPersonName"
-            android:imeOptions="actionNext|flagNoExtractUi"
             android:nextFocusForward="@+id/fragment_change_last_name_value"
             android:selectAllOnFocus="true"
-            android:contentDescription="@string/label_first_name"
-            tools:ignore="LabelFor">
-
-            <requestFocus />
-
-        </EditText>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_small"
-            android:textAppearance="?attr/senseTextAppearanceFieldLabel"
-            android:text="@string/label_last_name"/>
-
-        <EditText
-            android:id="@+id/fragment_change_last_name_value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_large"
-            android:inputType="textPersonName"
-            android:imeOptions="actionGo|flagNoExtractUi"
-            android:selectAllOnFocus="true"
-            android:contentDescription="@string/label_last_name"
-            tools:ignore="LabelFor"/>
+            app:labelText="@string/label_last_name"/>
 
         <Button
             android:id="@+id/fragment_change_name_submit"
+            style="@style/AppTheme.Button.Rounded"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_change_name"
-            style="@style/AppTheme.Button.Rounded"/>
+            android:text="@string/action_change_name"/>
 
     </LinearLayout>
 
