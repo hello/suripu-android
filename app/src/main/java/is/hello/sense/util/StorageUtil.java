@@ -2,6 +2,7 @@ package is.hello.sense.util;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 
@@ -65,7 +66,7 @@ public class StorageUtil {
                 && hasEnoughMemory(directory, requiredSpace);
     }
 
-    public File createDirectory(@NonNull final File parentDirectory, @NonNull final String directoryName) {
+    public @Nullable File createDirectory(@NonNull final File parentDirectory, @NonNull final String directoryName) {
         final File directory = new File(parentDirectory, directoryName);
         if(!directory.exists() && !directory.mkdir()){
             Logger.error(StorageUtil.class.getSimpleName(), "could not create directory " + directory);

@@ -1,7 +1,6 @@
 package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
@@ -17,23 +16,21 @@ import java.util.Arrays;
 import javax.inject.Inject;
 
 import is.hello.sense.api.fb.FacebookApiService;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.fb.model.FacebookProfilePicture;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
+public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
 
     @Inject FacebookApiService apiService;
     @Inject CallbackManager callbackManager;
 
-    public final PresenterSubject<FacebookProfilePicture> profilePicture = this.subject;
-    @NonNull private final Context context;
+    public final PresenterSubject<FacebookProfile> profile = this.subject;
 
-    public @Inject FacebookPresenter(@NonNull Context context){
-        this.context = context;
-    }
+    public @Inject FacebookPresenter(){}
 
     @Override
     protected boolean isDataDisposable() {
@@ -46,7 +43,14 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
     }
 
     @Override
-    protected Observable<FacebookProfilePicture> provideUpdateObservable() {
+    protected Observable<FacebookProfile> provideUpdateObservable() {
+        return apiService.getProfile("picture.type(large),first_name,last_name,email,gender", true, getAuthTokenString())
+                         .doOnNext(profile ->
+                                           logEvent("fetched profile from facebook")
+                                  );
+    }
+
+    public Observable<FacebookProfilePicture> providePictureUpdateObservable() {
         return apiService.getProfilePicture("0", "large", getAuthTokenString())
                          .doOnNext(profilePicture ->
                                            logEvent("fetched profile picture from facebook")
@@ -88,16 +92,16 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
     }
 
     public void login(Fragment container) {
-        LoginManager.getInstance().logInWithReadPermissions(container, Arrays.asList("public_profile"));
+        LoginManager.getInstance().logInWithReadPermissions(container, Arrays.asList("public_profile","email"));
     }
 
     public boolean isLoggedIn(){
-        return profilePicture.hasValue() && AccessToken.getCurrentAccessToken() != null;
+        return profile.hasValue() && AccessToken.getCurrentAccessToken() != null;
     }
 
     public void logout() {
         AccessToken.setCurrentAccessToken(null);
-        profilePicture.forget();
+        profile.forget();
     }
 
     //endregion

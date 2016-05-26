@@ -23,7 +23,7 @@ import java.util.EnumSet;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.fb.model.FacebookProfilePicture;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -219,7 +219,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        bindAndSubscribe(facebookPresenter.profilePicture,
+        bindAndSubscribe(facebookPresenter.profile,
                          this::changePictureWithFacebook,
                          this::handleFacebookError);
     }
@@ -476,11 +476,12 @@ public class AccountSettingsFragment extends InjectionFragment
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage){
         stateSafeExecutor.execute(() -> {
             ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
+            Logger.error(getClass().getSimpleName(),errorMessage,error);
         });
     }
 
-    private void changePictureWithFacebook(@NonNull final FacebookProfilePicture facebookProfilePicture) {
-        final String fbImageUri = facebookProfilePicture.getImageUrl();
+    private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
+        final String fbImageUri = profile.getPictureUrl();
         if(fbImageUri != null){
             profilePictureItem.setValue(fbImageUri);
             profileImageManager.setImageUri(Uri.parse(fbImageUri));
