@@ -2,7 +2,6 @@ package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.facebook.AccessToken;
@@ -53,11 +52,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfilePicture> {
 
     //region Updates
     public void onActivityResult(final int requestCode,final int resultCode,@NonNull final Intent data) {
-        final Bundle extras = data.getExtras();
-        int errorCode = extras.getInt("error_code",-1);
-        if(errorCode == -1) {
-            callbackManager.onActivityResult(requestCode, resultCode, data);
-        }
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     public void setAuthToken(AccessToken token){

@@ -15,7 +15,6 @@ import is.hello.sense.ui.recycler.InsetItemDecoration;
 
 public class WelcomeDialogsActivity extends InjectionActivity {
     WelcomeDialogStringResource[] dialogs = new WelcomeDialogStringResource[]{
-            new WelcomeDialogStringResource("Device List", R.xml.welcome_dialog_pill_color),
             new WelcomeDialogStringResource("Room Conditions", R.xml.welcome_dialog_current_conditions),
             new WelcomeDialogStringResource("Temperature", R.xml.welcome_dialog_sensor_temperature),
             new WelcomeDialogStringResource("Humidity", R.xml.welcome_dialog_sensor_humidity),

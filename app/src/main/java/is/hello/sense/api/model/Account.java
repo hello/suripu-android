@@ -62,7 +62,7 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("long")
     private Double longitude;
 
-    @SerializedName("profilepicture")
+    @SerializedName("profile_photo")
     private MultiDensityImage profilePicture;
 
     @SerializedName("time_zone")
@@ -197,8 +197,7 @@ public class Account extends ApiResponse implements Cloneable {
     }
 
     public String getProfilePictureUrl(@NonNull Resources resources) {
-        return "";
-        //return this.profilePicture.getUrl(resources);
+        return profilePicture != null ? profilePicture.getUrl(resources) : "";
     }
 
     public String getTimeZone() {
