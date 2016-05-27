@@ -1,5 +1,6 @@
 package is.hello.sense.api.model;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
@@ -10,9 +11,9 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-import java.util.Calendar;
 
 import is.hello.sense.api.gson.Exclude;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
@@ -61,6 +62,9 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("long")
     private Double longitude;
 
+    @SerializedName("profile_photo")
+    private MultiDensityImage profilePicture;
+
     @SerializedName("time_zone")
     private final String timeZone = DateTimeZone.getDefault().getID();
 
@@ -68,7 +72,6 @@ public class Account extends ApiResponse implements Cloneable {
     public static Account createDefault() {
         Account newAccount = new Account();
         newAccount.setFirstName("");
-        newAccount.setLastName("");
         newAccount.setHeight(177);
         newAccount.setWeight(68039);
         newAccount.setTimeZoneOffset(DateTimeZone.getDefault()
@@ -112,6 +115,7 @@ public class Account extends ApiResponse implements Cloneable {
     public String getLastName() {
         return lastName;
     }
+
     //Not guaranteed to be @NonNull
     public void setLastName(String lastName) {
         this.lastName = lastName;
@@ -120,6 +124,7 @@ public class Account extends ApiResponse implements Cloneable {
     public String getFullName(){
         final String nonNullLastName = lastName != null ? lastName : "";
         return String.format("%s %s", firstName,nonNullLastName);
+
     }
 
     public Gender getGender() {
@@ -181,6 +186,18 @@ public class Account extends ApiResponse implements Cloneable {
     public void setLocation(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public MultiDensityImage getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(@NonNull MultiDensityImage profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getProfilePictureUrl(@NonNull Resources resources) {
+        return profilePicture != null ? profilePicture.getUrl(resources) : "";
     }
 
     public String getTimeZone() {
@@ -253,4 +270,5 @@ public class Account extends ApiResponse implements Cloneable {
                     '}';
         }
     }
+
 }

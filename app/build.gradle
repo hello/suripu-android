@@ -38,12 +38,9 @@ android {
     }
     signingConfigs {
         debug {
-            def keyStore = file("../../Hello-Android-Internal.keystore")
-            if (keyStore.exists()) {
-                storeFile file("../../Hello-Android-Internal.keystore")
-            } else {
-                logger.warn("Could not find internal keystore, ignoring.")
-            }
+            keyAlias "androiddebugkey"
+            storeFile file("../../Hello-Android-Internal.keystore")
+            storePassword "android"
         }
         release {
             storeFile file("../../Hello-Android-Release.keystore")
@@ -56,6 +53,7 @@ android {
         def TYPE_INT = "int"
         def TYPE_BOOLEAN = "boolean"
         def TYPE_STRING = "String"
+        def TYPE_RES_STRING = "string"
 
         def MIN_LOGGING_LEVEL = "MIN_LOGGING_LEVEL"
         def DEBUG_SCREEN_ENABLED = "DEBUG_SCREEN_ENABLED"
@@ -64,6 +62,7 @@ android {
         def BASE_URL = "BASE_URL"
         def HOCKEY_API_KEY = "HOCKEY_API_KEY"
         def SEGMENT_API_KEY = "SEGMENT_API_KEY"
+        def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
         def IS_BETA = "IS_BETA"
 
         def TRUE = "true"
@@ -78,6 +77,7 @@ android {
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://dev-api.hello.is" + '"'
             buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "805427569ce2035dcda0b99e4d984256" + '"'
             buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "AnMchQr1VXQhPKjeYuoEEQ7pPRlow9SO" + '"'
+            resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
 
             signingConfig signingConfigs.debug
@@ -93,6 +93,7 @@ android {
             buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "4f771f6f-5c10-4104-bbc6-3333f5b11bf9" + '"'
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is" + '"'
             buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "UiFCuqdEpi6STaMCx3bo70Hii0XvWnOK" + '"'
+            resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, FALSE
 
             signingConfig signingConfigs.release
@@ -150,20 +151,17 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    // Is there anything we don't depend on?
 
+    // Is there anything we don't depend on?
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
-
     compile 'io.reactivex:rxjava:1.0.9'
-
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
-
     compile 'com.google.code.gson:gson:2.3.1'
-
     compile 'net.danlew:android.joda:2.7.2'
+
     compile 'com.segment.analytics.android:analytics:4.1.0'
 
     compile 'com.android.support:support-v4:23.1.1'
@@ -172,34 +170,28 @@ dependencies {
     compile 'com.android.support:customtabs:23.1.1'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-location:8.4.0'
-
     compile 'com.squareup.picasso:picasso:2.5.2'
-
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'
-
+    compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'is.hello.commonsense:ble:2016.3.3.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
-
+    compile 'com.facebook.android:facebook-android-sdk:4.12.0'
     // !! If you remove this, remove the above workaround.
     compile('com.zendesk:sdk:1.4.1.1') {
         // When you remove this rule, you will also need to remove
         // `styles_zendesk.xml` and the first attr in `attrs.xml`.
         exclude group: 'com.android.support'
     }
-
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
-
-
     // Necessary to be able to compile and run tests with
+
     // Android Studio 1.3 + build tools 1.3. Remove when
+
     // retrolambda releases an update.
-    testCompile files(System.getenv('JAVA_HOME') + '/jre/lib/rt.jar')
-    testCompile "org.robolectric:robolectric:3.0"
+    testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
-
     compile 'com.bugsnag:bugsnag-android:3.2.6'
 }

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.Picasso;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -23,14 +26,19 @@ import java.util.EnumSet;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.fb.model.FacebookProfilePicture;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.permissions.ExternalStoragePermission;
+import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -47,11 +55,20 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.ImageUtil;
+import is.hello.sense.util.Logger;
 
-public class AccountSettingsFragment extends InjectionFragment implements AccountEditor.Container {
+public class AccountSettingsFragment extends InjectionFragment
+        implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
+    @Inject
+    Picasso picasso;
+    @Inject
+    FacebookPresenter facebookPresenter;
+    @Inject
+    ImageUtil imageUtil;
     @Inject
     AccountPresenter accountPresenter;
     @Inject
@@ -61,11 +78,15 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     @Inject
     PreferencesPresenter preferences;
 
+    private ProfileImageManager profileImageManager;
+    private final ExternalStoragePermission permission;
+
     private ProgressBar loadingIndicator;
 
+
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
-
     private SettingsRecyclerAdapter.DetailItem birthdayItem;
     private SettingsRecyclerAdapter.DetailItem genderItem;
     private SettingsRecyclerAdapter.DetailItem heightItem;
@@ -78,7 +99,6 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     @Nullable
     Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
-    private SettingsRecyclerAdapter adapter;
 
     final LocalDate releaseDateForName = new DateTime()
             .withYear(2016)
@@ -88,6 +108,11 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
 
     //region Lifecycle
+    public AccountSettingsFragment(){
+        super();
+        permission = ExternalStoragePermission.forCamera(this);
+        profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,6 +126,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         accountPresenter.update();
         addPresenter(accountPresenter);
+        addPresenter(facebookPresenter);
+        profileImageManager = new ProfileImageManager(this, imageUtil);
 
         setRetainInstance(true);
     }
@@ -122,7 +149,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.adapter = new SettingsRecyclerAdapter(getActivity());
+        final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
@@ -130,14 +157,12 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         recyclerView.addItemDecoration(decoration);
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
-        this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                               this::changeName,
-                                                               R.id.fragment_account_settings_name);
+
+        adapter.add(profilePictureItem);
+        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
-
-        this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                                this::changeEmail);
+        emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
         emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
         adapter.add(emailItem);
 
@@ -147,10 +172,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-
-
-        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob),
-                                                                   this::changeBirthDate);
+        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob), this::changeBirthDate);
         birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
@@ -187,6 +209,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
 
+        facebookPresenter.init();
+
         return view;
     }
 
@@ -201,6 +225,10 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
+
+        bindAndSubscribe(facebookPresenter.profilePicture,
+                         this::changePictureWithFacebook,
+                         this::handleFacebookError);
     }
 
     @Override
@@ -208,19 +236,17 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         super.onDestroyView();
 
         this.loadingIndicator = null;
-
         this.nameItem = null;
         this.emailItem = null;
-
-        this.birthdayItem = null;
         this.genderItem = null;
+        this.birthdayItem = null;
         this.heightItem = null;
         this.weightItem = null;
-
         this.enhancedAudioItem = null;
 
         this.recyclerView = null;
-        this.adapter = null;
+
+        this.profileImageManager = null;
     }
 
     @Override
@@ -233,10 +259,13 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
+        //Todo should we let facebook listen to all results?
+        facebookPresenter.onActivityResult(requestCode, resultCode, data);
+        profileImageManager.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) return;
+        if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
-        } else if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
         }
     }
@@ -266,6 +295,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
+        profilePictureItem.setValue(account.getProfilePictureUrl(getResources()));
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
@@ -313,6 +343,13 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
 
     //region Basic Info
+    private void changePicture() {
+        if(permission.isGranted()){
+            profileImageManager.showPictureOptions();
+        } else {
+            permission.requestPermissionWithDialogForCamera();
+        }
+    }
 
     public void changeName() {
         final ChangeNameFragment fragment = new ChangeNameFragment();
@@ -411,6 +448,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
             recyclerView.post(() -> {
                 getActivity().finish();
                 accountPresenter.logOut();
+                facebookPresenter.logout();
             });
         });
         signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -445,4 +483,50 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     }
 
     //endregion
+
+    // region Facebook import
+
+    private void handleFacebookError(Throwable error) {
+        final String temporaryCopy = "Fetching Facebook profile picture failed";
+        Logger.debug(FacebookPresenter.class.getSimpleName(),temporaryCopy, error);
+        stateSafeExecutor.execute(() -> {
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(temporaryCopy));
+        });
+    }
+
+    private void changePictureWithFacebook(@NonNull final FacebookProfilePicture facebookProfilePicture) {
+        final String fbImageUri = facebookProfilePicture.getImageUrl();
+        if(fbImageUri != null){
+            profilePictureItem.setValue(fbImageUri);
+            profileImageManager.setImageUri(Uri.parse(fbImageUri));
+        }
+    }
+
+    //endregion
+
+    //region ProfileImageManagerListener methods
+
+    @Override
+    public void onImportFromFacebook() {
+        facebookPresenter.login(this);
+    }
+
+    @Override
+    public void onFromCamera(@NonNull final String imageUriString) {
+        this.profilePictureItem.setValue(imageUriString);
+    }
+
+    @Override
+    public void onFromGallery(@NonNull final String imageUriString) {
+        this.profilePictureItem.setValue(imageUriString);
+    }
+
+    @Override
+    public void onRemove() {
+        this.profilePictureItem.setValue(null);
+        facebookPresenter.logout();
+    }
+
+    // endregion
+
 }

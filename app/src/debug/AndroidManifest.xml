@@ -39,7 +39,13 @@
             </intent-filter>
         </receiver>
 
-        <meta-data android:name="com.mixpanel.android.MPConfig.ResourcePackageName" android:value="is.hello.sense" />
+        <meta-data
+            android:name="com.mixpanel.android.MPConfig.ResourcePackageName"
+            android:value="is.hello.sense" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/FACEBOOK_APP_ID"/>
 
     </application>
 

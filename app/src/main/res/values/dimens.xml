@@ -135,6 +135,8 @@
 
     <dimen name="trends_title_height">48dp</dimen>
 
+    <dimen name="profile_image_size">104dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>
