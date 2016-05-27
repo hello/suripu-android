@@ -1,85 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-    <include layout="@layout/sub_fragment_onboarding_toolbar" />
+    <include layout="@layout/sub_fragment_onboarding_toolbar"/>
 
     <ScrollView
         android:id="@+id/fragment_onboarding_register_scroll_view"
-        android:orientation="vertical"
+        style="@style/AppTheme.FadingScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
-        style="@style/AppTheme.FadingScrollView">
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/fragment_onboarding_register_credentials"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/gap_small"
+            android:animateLayoutChanges="true"
+            android:background="@color/background_onboarding"
+            android:orientation="vertical"
             android:paddingBottom="@dimen/gap_small"
             android:paddingLeft="@dimen/gap_outer"
             android:paddingRight="@dimen/gap_outer"
-            android:orientation="vertical"
-            android:background="@color/background_onboarding"
-            android:animateLayoutChanges="true">
+            android:paddingTop="@dimen/gap_small">
 
             <TextView
                 android:id="@+id/fragment_onboarding_register_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap_medium"
-                android:textAppearance="?attr/senseTextAppearanceHeading"
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-                android:text="@string/title_register"/>
+                android:text="@string/title_register"
+                android:textAppearance="?attr/senseTextAppearanceHeading"/>
 
-            <EditText
-                android:id="@+id/fragment_onboarding_register_first_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/AppTheme.Text.EditText.Onboarding"
-                android:inputType="textPersonName|textCapWords"
-                android:nextFocusForward="@+id/fragment_onboarding_register_last_name"
-                android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/label_first_name">
 
-                <requestFocus />
-
-            </EditText>
-
-            <EditText
-                android:id="@+id/fragment_onboarding_register_last_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/AppTheme.Text.EditText.Onboarding"
-                android:inputType="textPersonName|textCapWords"
-                android:nextFocusForward="@+id/fragment_onboarding_register_email"
-                android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/label_last_name"/>
-
-            <EditText
-                android:id="@+id/fragment_onboarding_register_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/AppTheme.Text.EditText.Onboarding"
-                android:inputType="textEmailAddress"
-                android:nextFocusForward="@+id/fragment_onboarding_register_password"
-                android:imeOptions="actionNext|flagNoExtractUi"
-                android:hint="@string/label_email"/>
-
-            <is.hello.sense.ui.widget.PasswordEditText
-                android:id="@+id/fragment_onboarding_register_password"
-                android:layout_width="match_parent"
+            <is.hello.sense.ui.widget.LabelEditText
+                android:id="@+id/fragment_onboarding_register_first_name_let"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap_large"
-                style="@style/AppTheme.Text.EditText.Onboarding"
-                android:inputType="textPassword"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:inputType="textPersonName|textCapWords"
+                android:nextFocusForward="@+id/fragment_onboarding_register_last_name_let"
+                app:labelText="@string/label_first_name"
+                >
+
+                <requestFocus/>
+            </is.hello.sense.ui.widget.LabelEditText>
+
+            <is.hello.sense.ui.widget.LabelEditText
+                android:id="@+id/fragment_onboarding_register_last_name_let"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/gap_large"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:inputType="textPersonName|textCapWords"
+                android:nextFocusForward="@+id/fragment_onboarding_register_email_let"
+                app:labelText="@string/label_last_name"/>
+
+            <is.hello.sense.ui.widget.LabelEditText
+                android:id="@+id/fragment_onboarding_register_email_let"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/gap_large"
+                android:imeOptions="actionNext|flagNoExtractUi"
+                android:inputType="textEmailAddress"
+                android:nextFocusForward="@+id/fragment_onboarding_register_password_let"
+                app:labelText="@string/label_email"/>
+
+            <is.hello.sense.ui.widget.LabelEditText
+                android:id="@+id/fragment_onboarding_register_password_let"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/gap_large"
                 android:imeOptions="actionGo|flagNoExtractUi"
-                android:hint="@string/label_password"/>
+                android:inputType="textPassword"
+                android:nextFocusForward="@+id/fragment_onboarding_register_password"
+                app:isPassword="true"
+                app:labelText="@string/label_password"/>
 
         </LinearLayout>
 
@@ -87,12 +90,12 @@
 
     <Button
         android:id="@+id/fragment_onboarding_register_next"
+        style="@style/AppTheme.Button.Rounded.Onboarding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
         android:layout_marginBottom="@dimen/gap_large"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        style="@style/AppTheme.Button.Rounded.Onboarding"/>
+        android:layout_marginTop="@dimen/gap_small"/>
 
 </LinearLayout>
