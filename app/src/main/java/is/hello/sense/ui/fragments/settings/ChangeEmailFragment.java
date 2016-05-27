@@ -85,6 +85,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         String newEmail = AccountPresenter.normalizeInput(emailLET.getInputText());
         emailLET.setInputText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
+            emailLET.setError("Invalid Email");
             emailLET.requestFocus();
             animatorFor(emailLET)
                     .scale(1.4f)
@@ -99,6 +100,7 @@ public class ChangeEmailFragment extends InjectionFragment {
 
             return;
         }
+        emailLET.removeError();
 
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.DEFAULTS);

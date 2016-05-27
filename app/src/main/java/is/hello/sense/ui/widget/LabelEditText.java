@@ -11,11 +11,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class LabelEditText extends RelativeLayout {
     private static final String ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android";
+    private static final String DASH = " - ";
+
     private final EditText input;
     private final TextView label;
+
+    private final String labelText;
 
     public LabelEditText(Context context) {
         this(context, null);
@@ -39,8 +44,8 @@ public class LabelEditText extends RelativeLayout {
                 input = (EditText) findViewById(R.id.view_label_edit_text_input);
                 findViewById(R.id.view_label_edit_text_input_password).setVisibility(GONE);
             }
-            final String labelText = ta.getString(R.styleable.LabelEditText_labelText);
             final String inputText = ta.getString(R.styleable.LabelEditText_inputText);
+            labelText = ta.getString(R.styleable.LabelEditText_labelText);
             label.setText(labelText);
             input.setText(inputText);
         } finally {
@@ -85,5 +90,17 @@ public class LabelEditText extends RelativeLayout {
 
     public void setOnEditorActionListener(@NonNull final TextView.OnEditorActionListener l) {
         input.setOnEditorActionListener(l);
+    }
+
+    public void removeError() {
+        label.setText(labelText);
+        Styles.setTextAppearance(label, R.style.Label);
+    }
+
+    public void setError(@Nullable String error) {
+        if (error != null && !error.isEmpty()) {
+            label.setText(String.format("%s %s %s", labelText, DASH, error));
+        }
+        Styles.setTextAppearance(label, R.style.Label_Error);
     }
 }

@@ -8,6 +8,10 @@
         <item name="android:textColor">@color/dim</item>
     </style>
 
+    <style name="Label.Error">
+        <item name="android:textColor">@color/error</item>
+    </style>
+
     ​<!-- Generic -->
     <style name="AppTheme.Text.Heading">
         <item name="android:fontFamily">sans-serif-thin</item>
