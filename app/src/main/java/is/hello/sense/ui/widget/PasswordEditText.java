@@ -47,13 +47,19 @@ public class PasswordEditText extends EditText
 
     /**
      * When this component is not in focus, it should be in a masked state.
-     * Likewise, when in focus, it becomes visible. 
-     * @param v
-     * @param hasFocus
+     * Likewise, when in focus, it becomes visible.
      */
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         setIsPasswordMasked(!hasFocus);
+    }
+
+    @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener l) {
+        if (!l.equals(this)) {
+            throw new Error("Don't set focus on PasswordEditText");
+        }
+        super.setOnFocusChangeListener(this);
     }
 
     private void init() {
@@ -61,6 +67,7 @@ public class PasswordEditText extends EditText
         setOnTouchListener(this);
         setOnFocusChangeListener(this);
     }
+
 
     private void setIsPasswordMasked(boolean isPasswordMasked){
         this.isPasswordMasked = isPasswordMasked;

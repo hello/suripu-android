@@ -30,11 +30,9 @@ public class LabelEditText extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.view_label_edit_text, this);
         label = (TextView) findViewById(R.id.view_label_edit_text_label);
 
-
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.LabelEditText, 0, 0);
         try {
-            final boolean isPassword = ta.getBoolean(R.styleable.LabelEditText_isPassword, false);
-            if (isPassword) {
+            if (ta.getBoolean(R.styleable.LabelEditText_isPassword, false)) {
                 input = (EditText) findViewById(R.id.view_label_edit_text_input_password);
                 findViewById(R.id.view_label_edit_text_input).setVisibility(GONE);
             } else {

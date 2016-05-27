@@ -5,7 +5,7 @@
 
 
     <style name="Label" parent="AppTheme.Text.Header.H7">
-        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:textColor">@color/dim</item>
     </style>
 
     ​<!-- Generic -->
