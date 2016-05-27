@@ -96,8 +96,12 @@ public class ChangePasswordFragment extends InjectionFragment {
     }
 
     private boolean popIfEmpty(LabelEditText... labelEditTexts) {
+        currentPasswordLET.removeError();
+        newPasswordLET.removeError();
+        confirmNewPasswordLET.removeError();
         for (LabelEditText editText : labelEditTexts) {
             if (TextUtils.isEmpty(editText.getInputText())) {
+                editText.setError(R.string.invalid_password);
                 editText.requestFocus();
                 animatorFor(editText)
                         .scale(1.4f)

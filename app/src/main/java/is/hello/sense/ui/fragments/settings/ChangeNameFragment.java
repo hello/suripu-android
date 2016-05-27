@@ -58,6 +58,8 @@ public class ChangeNameFragment extends SenseFragment {
         //Todo Currently no validation for lastName
         // Todo suggest updating the error validation animation
         if (!AccountPresenter.validateName(firstName)) {
+            firstNameLET.setError(R.string.invalid_first_name);
+            firstNameLET.requestFocus();
             animatorFor(firstNameLET)
                     .scale(1.4f)
                     .addOnAnimationCompleted(finished -> {
@@ -70,6 +72,7 @@ public class ChangeNameFragment extends SenseFragment {
                     .start();
             return;
         }
+        firstNameLET.removeError();
 
         final AccountEditor.Container container = AccountEditor.getContainer(this);
         container.getAccount().setFirstName(firstName);

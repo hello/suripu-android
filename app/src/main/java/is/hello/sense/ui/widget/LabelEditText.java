@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.EditText;
@@ -95,6 +97,11 @@ public class LabelEditText extends RelativeLayout {
     public void removeError() {
         label.setText(labelText);
         Styles.setTextAppearance(label, R.style.Label);
+        input.setBackgroundResource(R.drawable.edit_text_background_selector);
+    }
+
+    public void setError(@StringRes int stringRes) {
+        setError(getContext().getString(stringRes));
     }
 
     public void setError(@Nullable String error) {
@@ -102,5 +109,6 @@ public class LabelEditText extends RelativeLayout {
             label.setText(String.format("%s %s %s", labelText, DASH, error));
         }
         Styles.setTextAppearance(label, R.style.Label_Error);
+        input.setBackgroundResource(R.drawable.edit_text_background_error);
     }
 }

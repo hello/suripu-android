@@ -2,8 +2,7 @@
 <resources>
 
     <style name="Body" parent="AppTheme.Text.Body"/>
-
-
+    
     <style name="Label" parent="AppTheme.Text.Header.H7">
         <item name="android:textColor">@color/dim</item>
     </style>
@@ -11,6 +10,8 @@
     <style name="Label.Error">
         <item name="android:textColor">@color/error</item>
     </style>
+
+
 
     ​<!-- Generic -->
     <style name="AppTheme.Text.Heading">
