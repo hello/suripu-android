@@ -292,6 +292,12 @@
         <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
+    <style name="AppTheme.Button.Rounded.Onboarding">
+        <item name="android:background">@drawable/onboarding_button_selector</item>
+    </style>
+
+
+
     <style name="AppTheme.Button.Raised">
         <item name="android:minHeight">@dimen/button_min_size_small</item>
         <item name="android:paddingBottom">1dp</item>
