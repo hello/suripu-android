@@ -9,7 +9,8 @@ import android.widget.EditText;
 
 import is.hello.sense.R;
 
-public class PasswordEditText extends EditText implements View.OnTouchListener{
+public class PasswordEditText extends EditText
+        implements View.OnTouchListener, View.OnFocusChangeListener{
     private boolean isPasswordMasked = true;
     private final int HIDDEN_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
     private final int VISIBLE_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
@@ -44,27 +45,42 @@ public class PasswordEditText extends EditText implements View.OnTouchListener{
         }
     }
 
-    private void init() {
-        setInputType(isPasswordMasked);
-        setDrawableIcon(isPasswordMasked);
-        setOnTouchListener(this);
+    /**
+     * When this component is not in focus, it should be in a masked state.
+     * Likewise, when in focus, it becomes visible. 
+     * @param v
+     * @param hasFocus
+     */
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        setIsPasswordMasked(!hasFocus);
     }
 
-    private void togglePasswordShowing() {
-        isPasswordMasked = !isPasswordMasked;
-        setInputType(isPasswordMasked);
-        setDrawableIcon(isPasswordMasked);
+    private void init() {
+        setIsPasswordMasked(true);
+        setOnTouchListener(this);
+        setOnFocusChangeListener(this);
+    }
+
+    private void setIsPasswordMasked(boolean isPasswordMasked){
+        this.isPasswordMasked = isPasswordMasked;
+        setInputType();
+        setDrawableIcon();
         setSelection(getText().length());
     }
 
-    private void setInputType(boolean isPasswordMasked){
+    private void togglePasswordShowing() {
+        setIsPasswordMasked(!isPasswordMasked);
+    }
+
+    private void setInputType(){
         if (isPasswordMasked) {
             setInputType(HIDDEN_INPUT_TYPE);
         } else {
             setInputType(VISIBLE_INPUT_TYPE);
         }
     }
-    private void setDrawableIcon(boolean isPasswordMasked){
+    private void setDrawableIcon(){
         final int drawableIcon = isPasswordMasked ? HIDDEN_ICON : VISIBLE_ICON;
         setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, drawableIcon, 0);
     }

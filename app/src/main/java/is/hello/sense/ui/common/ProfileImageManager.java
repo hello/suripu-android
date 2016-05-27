@@ -45,12 +45,11 @@ public class ProfileImageManager {
     private String fullImageUriString;
     private Uri tempImageUri;
 
-    public ProfileImageManager(@NonNull final Context context,
-                               @NonNull final Fragment fragment,
+    public ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
                                @NonNull final FilePathUtil filePathUtil){
         checkFragmentInstance(fragment);
-        this.context = context;
+        this.context = fragment.getActivity();
         this.fragment = fragment;
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
@@ -96,7 +95,7 @@ public class ProfileImageManager {
                        );
         }
 
-        BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
+        final BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
         advancedOptions.setTargetFragment(fragment, REQUEST_CODE_PICTURE);
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }

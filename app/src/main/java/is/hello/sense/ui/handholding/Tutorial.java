@@ -48,7 +48,11 @@ public enum Tutorial {
     TAP_HAMBURGER(R.string.tutorial_tap_hamburger,
                   Gravity.BOTTOM,
                   R.id.view_timeline_toolbar_overflow,
-                  Interaction.TAP);
+                  Interaction.TAP),
+    TAP_NAME(R.string.tutorial_tap_name,
+             Gravity.BOTTOM,
+             R.id.fragment_account_settings_name,
+             Interaction.TAP);
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;

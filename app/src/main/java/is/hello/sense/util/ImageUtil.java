@@ -182,7 +182,7 @@ public class ImageUtil {
     }
 
     /**
-     * @param options
+     * @param options contains bitmap info to determine how much down sampling is required
      * @param memoryLimit references {@link ImageUtil#FILE_SIZE_LIMIT}
      * @return largest inSampleSize that meets minimum required width and height.
      */
@@ -202,7 +202,7 @@ public class ImageUtil {
     }
 
     /**
-     * @param config
+     * @param config of the bitmap whose pixel density you want to check.
      * @return Returns number of bytes per pixel given a {@link android.graphics.Bitmap.Config}.
      * If unknown config, returns {@link Bitmap#DENSITY_NONE}.
      */
@@ -211,13 +211,13 @@ public class ImageUtil {
             case ARGB_8888:
                 return 4;
             case RGB_565:
-                return 3;
+                return 2;
             case ARGB_4444:
                 return 2;
             case ALPHA_8:
                 return 1;
             default:
-                Logger.error(ImageUtil.class.getSimpleName(), "unknown bitmap config " + config);
+                Logger.error(getClass().getSimpleName(), "unknown bitmap config " + config);
                 return Bitmap.DENSITY_NONE;
         }
     }

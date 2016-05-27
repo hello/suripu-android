@@ -3,6 +3,7 @@ package is.hello.sense.graph.presenters;
 import android.app.Fragment;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -59,13 +60,17 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     //region Updates
     public void onActivityResult(final int requestCode,final int resultCode,@NonNull final Intent data) {
-        callbackManager.onActivityResult(requestCode,resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void setAuthToken(AccessToken token){
+    public void setAuthToken(@Nullable final AccessToken token){
         AccessToken.setCurrentAccessToken(token);
     }
 
+    /**
+     * Required to run before binding and subscribing to {@link FacebookPresenter#profile}
+     * Otherwise, updates will fail because login callbacks are not handled.
+     */
     public void init() {
         LoginManager.getInstance()
                     .registerCallback(
@@ -85,14 +90,15 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
                                 @Override
                                 public void onError(FacebookException exception) {
-                                    // App code
+                                    // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
+                                    // consider presenting an error dialog here.
                                     Logger.debug(FacebookPresenter.class.getSimpleName(), "login failed", exception.fillInStackTrace());
                                 }
                             });
     }
 
-    public void login(Fragment container) {
-        LoginManager.getInstance().logInWithReadPermissions(container, Arrays.asList("public_profile","email"));
+    public void login(@NonNull final Fragment container) {
+        LoginManager.getInstance().logInWithReadPermissions(container, Arrays.asList("public_profile", "email"));
     }
 
     public boolean isLoggedIn(){
@@ -100,7 +106,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     }
 
     public void logout() {
-        AccessToken.setCurrentAccessToken(null);
+        setAuthToken(null);
         profile.forget();
     }
 

@@ -58,7 +58,6 @@ public class FacebookApiModule {
         });
         builder.setRequestInterceptor(request -> {
             request.addHeader("Host", "graph.facebook.com");
-            //request.addHeader("Authorization", "Bearer " + accessToken.getToken());
         });
         return builder.build();
     }

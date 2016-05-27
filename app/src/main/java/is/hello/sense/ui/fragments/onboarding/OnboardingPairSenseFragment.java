@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,6 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
-import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
@@ -32,7 +32,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -194,15 +193,22 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
     private void finishedLinking() {
         hideAllActivityForSuccess(() -> {
-            if (isPairOnlySession()) {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
-                getOnboardingActivity().finish();
-                hardwarePresenter.clearPeripheral();
-            } else {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
-                getOnboardingActivity().showPairPill(true);
-            }
-        }, e -> presentError(e, "Turning off LEDs"));
+                                      if (isPairOnlySession()) {
+                                          if (shouldReleasePeripheralOnPair()) {
+                                              hardwarePresenter.clearPeripheral();
+                                          }
+                                          Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
+                                          getOnboardingActivity().finish();
+                                      } else {
+                                          Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
+                                          getOnboardingActivity().showPairPill(true);
+                                      }
+                                  },
+                                  e -> {
+
+                                      Log.e("Error", "E: " + e.getLocalizedMessage());
+                                      presentError(e, "Turning off LEDs");
+                                  });
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
@@ -225,9 +231,11 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         }
 
         showBlockingActivity(R.string.title_scanning_for_sense);
-
         Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
-        bindAndSubscribe(device, this::tryToPairWith, e -> presentError(e, "Discovering Sense"));
+        bindAndSubscribe(device, this::tryToPairWith, e -> {
+            hardwarePresenter.clearPeripheral();
+            presentError(e, "Discovering Sense");
+        });
     }
 
     public void tryToPairWith(@NonNull SensePeripheral device) {
@@ -236,7 +244,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
             dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
-            dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> LoadingDialogFragment.close(getFragmentManager()));
+            dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> hideBlockingActivity(false, hardwarePresenter::clearPeripheral));
             dialog.setCancelable(false);
             dialog.show();
         } else {

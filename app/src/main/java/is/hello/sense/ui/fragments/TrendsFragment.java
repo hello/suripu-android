@@ -23,8 +23,8 @@ import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
 import is.hello.sense.graph.presenters.TrendsPresenter;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
-import is.hello.sense.ui.widget.graphing.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.TrendFeedView;
+import is.hello.sense.ui.widget.graphing.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.TrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -41,7 +41,6 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     private TrendFeedView trendFeedView;
     private SelectorView timeScaleSelector;
-    private int oldSelection = 0;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -188,8 +187,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     @Override
     public void onSelectionChanged(int newSelectionIndex) {
-        timeScaleSelector.setEnabled(false);
-        oldSelection = newSelectionIndex;
+        timeScaleSelector.clicked(newSelectionIndex);
         trendFeedView.setLoading(true);
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);

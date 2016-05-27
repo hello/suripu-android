@@ -18,6 +18,9 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -44,6 +47,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -78,15 +83,14 @@ public class AccountSettingsFragment extends InjectionFragment
     FilePathUtil filePathUtil;
 
     private ProfileImageManager profileImageManager;
-    private final ExternalStoragePermission permission = ExternalStoragePermission.forCamera(this);
+    private final ExternalStoragePermission permission;
 
     private ProgressBar loadingIndicator;
 
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
 
-    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
-
     private SettingsRecyclerAdapter.DetailItem birthdayItem;
     private SettingsRecyclerAdapter.DetailItem genderItem;
     private SettingsRecyclerAdapter.DetailItem heightItem;
@@ -95,10 +99,23 @@ public class AccountSettingsFragment extends InjectionFragment
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
     private Account currentAccount;
-    private @Nullable Account.Preferences accountPreferences;
+    private
+    @Nullable
+    Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
 
+    final LocalDate releaseDateForName = new DateTime()
+            .withYear(2016)
+            .withMonthOfYear(5)
+            .withDayOfMonth(25) // todo change this to the release date of 1.4.1
+            .toLocalDate();
+
     //region Lifecycle
+    public AccountSettingsFragment(){
+        super();
+        permission = ExternalStoragePermission.forCamera(this);
+        profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,7 +130,6 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
-        profileImageManager = new ProfileImageManager(getActivity(), this, imageUtil, filePathUtil);
 
         setRetainInstance(true);
     }
@@ -135,7 +151,7 @@ public class AccountSettingsFragment extends InjectionFragment
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        final SettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
+        final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
@@ -145,14 +161,10 @@ public class AccountSettingsFragment extends InjectionFragment
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
 
         adapter.add(profilePictureItem);
-
-        this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                               this::changeName);
+        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
-
-        this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                                this::changeEmail);
+        emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
         emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
         adapter.add(emailItem);
 
@@ -162,10 +174,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-
-
-        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob),
-                                                                   this::changeBirthDate);
+        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob), this::changeBirthDate);
         birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
@@ -219,9 +228,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        bindAndSubscribe(facebookPresenter.profile,
-                         this::changePictureWithFacebook,
-                         this::handleFacebookError);
+        profileImageManager = new ProfileImageManager(this, imageUtil, filePathUtil);
     }
 
     @Override
@@ -231,12 +238,10 @@ public class AccountSettingsFragment extends InjectionFragment
         this.loadingIndicator = null;
         this.nameItem = null;
         this.emailItem = null;
-
-        this.birthdayItem = null;
         this.genderItem = null;
+        this.birthdayItem = null;
         this.heightItem = null;
         this.weightItem = null;
-
         this.enhancedAudioItem = null;
 
         this.recyclerView = null;
@@ -306,6 +311,9 @@ public class AccountSettingsFragment extends InjectionFragment
         this.currentAccount = account;
 
         hideLoadingIndicator();
+
+        showTutorialHelperIfNeeded(account.getCreated());
+
     }
 
     public void accountUnavailable(Throwable e) {
@@ -318,6 +326,17 @@ public class AccountSettingsFragment extends InjectionFragment
     public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
         this.accountPreferences = preferences;
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
+    }
+
+    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt){
+        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(releaseDateForName)) {
+            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            overlayView.setAnchorContainer(getView());
+            getAnimatorContext().runWhenIdle(() -> {
+                overlayView.postShow(R.id.static_recycler_container);
+                Tutorial.TAP_NAME.markShown(getActivity());
+            });
+        }
     }
 
     //endregion
@@ -496,6 +515,10 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onImportFromFacebook() {
         facebookPresenter.login(this);
+
+        bindAndSubscribe(facebookPresenter.profile,
+                         this::changePictureWithFacebook,
+                         this::handleFacebookError);
     }
 
     @Override

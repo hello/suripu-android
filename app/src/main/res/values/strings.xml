@@ -202,6 +202,7 @@
     <string name="error_account_name_too_long">The name you entered is too long.</string>
     <string name="error_account_name_too_short">The name you entered is too short.</string>
     <string name="error_account_email_invalid">Please enter a valid email address.</string>
+    <string name="error_account_email_in_use">Email already in use.</string>
     <string name="error_account_password_insecure">Please enter a stronger password.</string>
     <string name="error_account_password_too_short">Passwords must be at least 6 characters.</string>
     <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
@@ -422,6 +423,7 @@
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
     <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
     <string name="tutorial_tap_hamburger">To explore more now, tap the menu icon.</string>
+    <string name="tutorial_tap_name">Verify your name and add a profile photo.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>

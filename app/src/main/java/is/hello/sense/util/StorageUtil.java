@@ -10,7 +10,7 @@ public class StorageUtil {
 
     private boolean externalStorageAvailable;
     private boolean externalStorageWriteable;
-    private final long usableSpaceThreshold = 5; //Number Mbs of free space needed
+    private final long usableSpaceThreshold = 5000 * 1024; //5 Mbs of free space needed
 
     public StorageUtil(){
         checkState();
@@ -36,9 +36,10 @@ public class StorageUtil {
     }
 
     public boolean hasEnoughMemory(@NonNull final File directory, final long requiredSpace){
+
         long availableRemainingSpace = directory.getUsableSpace() - requiredSpace;
 
-        final boolean hasEnoughMemory = availableRemainingSpace / (1000*1000)  > usableSpaceThreshold;
+        final boolean hasEnoughMemory = availableRemainingSpace > usableSpaceThreshold;
         if(!hasEnoughMemory){
             Logger.warn(StorageUtil.class.getSimpleName(),"not enough memory to create file in directory " + directory);
         }
@@ -60,8 +61,9 @@ public class StorageUtil {
         return externalStorageAvailable && externalStorageWriteable;
     }
 
-    public boolean canUse(@NonNull File directory, final long requiredSpace) {
-        return directory.exists()
+    public boolean canUse(@Nullable final File directory, final long requiredSpace) {
+        return directory != null &&
+                directory.exists()
                 && directory.canWrite()
                 && hasEnoughMemory(directory, requiredSpace);
     }

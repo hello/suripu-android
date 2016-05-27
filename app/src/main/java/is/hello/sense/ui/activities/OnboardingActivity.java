@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -67,6 +66,7 @@ public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation, AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
+    public static final String EXTRA_RELEASE_PERIPHERAL_ON_PAIR = OnboardingActivity.class.getName() + ".EXTRA_RELEASE_PERIPHERAL_ON_PAIR";
 
     public static final int FLOW_NONE = -1;
     public static final int FLOW_REGISTER = 0;

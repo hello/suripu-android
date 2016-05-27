@@ -11,7 +11,6 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-
 import is.hello.sense.api.gson.Exclude;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 

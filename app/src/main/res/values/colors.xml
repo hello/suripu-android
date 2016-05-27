@@ -44,6 +44,7 @@
 
     <!-- Blue -->
     <color name="blue7">#0083D9</color>
+    <color name="blue7_10">#190083d9</color>
     <color name="blue6">#009AFF</color>
     <color name="blue6_80">#cc009aff</color>
     <color name="blue6_50">#80009aff</color>
@@ -120,7 +121,7 @@
 
     <color name="timeline_header_border">@color/blue3</color>
     <color name="timeline_header_gradient_end">@color/gray1</color>
-    <color name="timeline_background_fill">@color/blue1_75</color>
+    <color name="timeline_background_fill">@color/blue2</color>
     <color name="timeline_segment_stripe">@color/blue6_30</color>
 
     <color name="text_dark">@color/gray6</color>
@@ -188,6 +189,7 @@
     <color name="trends_bubblegraph_text_title">@color/white</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
     <color name="trends_gridgraph">@color/gray3</color>
+    <color name="trends_gridgraph_empty_cell_border">@color/gray3</color>
 
     <color name="timeline_share_text">@color/gray4</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
