@@ -3,6 +3,8 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.squareup.picasso.Picasso;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -22,8 +24,10 @@ public class UtilityModule {
 
     @Provides
     @Singleton
-    public ImageUtil providesImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil){
-        return new ImageUtil(context, storageUtil);
+    public ImageUtil providesImageUtil(@NonNull final Context context,
+                                       @NonNull final StorageUtil storageUtil,
+                                       @NonNull final Picasso picasso){
+        return new ImageUtil(context, storageUtil, picasso);
     }
 
     @Provides
