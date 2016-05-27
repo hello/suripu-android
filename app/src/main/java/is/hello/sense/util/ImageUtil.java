@@ -43,12 +43,14 @@ public class ImageUtil {
     final String DIRECTORY_NAME = "HelloAppPictures";
 
     final StorageUtil storageUtil;
+    final Picasso picasso;
 
     private final Context context;
 
-    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil){
+    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso){
         this.context = context;
         this.storageUtil = storageUtil;
+        this.picasso = picasso;
     }
 
     public boolean hasDeviceCamera(){
@@ -236,7 +238,7 @@ public class ImageUtil {
         final Bitmap bitmap = BitmapFactory.decodeStream(fis);
         fis.close();
         return bitmap;*/
-        return Picasso.with(context).load(Uri.parse(path)).get();
+        return picasso.load(Uri.parse(path)).get();
     }
 
     private int getRotationFromExifData(@NonNull final String path) throws IOException{

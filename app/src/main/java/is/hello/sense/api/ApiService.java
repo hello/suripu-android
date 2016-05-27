@@ -91,7 +91,7 @@ public interface ApiService {
     //region Account
 
     @GET("/v1/account")
-    Observable<Account> getAccount();
+    Observable<Account> getAccount(@Query("photo") Boolean includePhoto);
 
     @POST("/v1/account")
     Observable<Account> createAccount(@NonNull @Body Account account);

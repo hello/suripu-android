@@ -75,7 +75,7 @@ public class TicketsPresenter extends Presenter {
             this.updateSubscription = null;
         }
 
-        Observable<List<Request>> updateObservable = ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+        Observable<List<Request>> updateObservable = ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {
             ZendeskRequestProvider provider = new ZendeskRequestProvider();
             provider.getRequests("new,open,pending,hold,solved", callback);
         });
@@ -88,7 +88,7 @@ public class TicketsPresenter extends Presenter {
     public Observable<ZendeskConfig> initializeIfNeeded() {
         logEvent("initializeIfNeeded()");
 
-        return ZendeskHelper.initializeIfNeeded(context, apiService.getAccount());
+        return ZendeskHelper.initializeIfNeeded(context, apiService.getAccount(false));
     }
 
     public Observable<CreateRequest> createTicket(@NonNull SupportTopic onTopic,
@@ -96,7 +96,7 @@ public class TicketsPresenter extends Presenter {
                                                   @NonNull List<String> attachmentTokens) {
         logEvent("createTicket()");
 
-        return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+        return ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {
             final CustomField topicId = new CustomField(CUSTOM_FIELD_ID_TOPIC, onTopic.topic);
             ZendeskConfig.INSTANCE.setCustomFields(Lists.newArrayList(topicId));
 

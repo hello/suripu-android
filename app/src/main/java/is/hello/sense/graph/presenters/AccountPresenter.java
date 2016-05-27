@@ -55,7 +55,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     @Override
     protected Observable<Account> provideUpdateObservable() {
-        return apiService.getAccount()
+        return apiService.getAccount(true)
                          .doOnNext(account -> {
                              logEvent("updated account creation date preference");
                              preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
@@ -97,7 +97,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
         return apiService.updateAccount(updatedAccount)
-                         .doOnNext(account::onNext);
+                    .doOnNext(ignored -> {
+                        AccountPresenter.this.update();
+                    });
+        //   .doOnNext(account::onNext);
     }
 
     public Observable<Account> updateEmail(@NonNull String email) {

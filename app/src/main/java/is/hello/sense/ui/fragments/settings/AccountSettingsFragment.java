@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
@@ -259,7 +260,6 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Todo should we let facebook listen to all results?
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
         profileImageManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
@@ -487,7 +487,7 @@ public class AccountSettingsFragment extends InjectionFragment
     // region Facebook import
 
     private void handleFacebookError(Throwable error) {
-        final String temporaryCopy = "Fetching Facebook profile picture failed";
+        final String temporaryCopy = "Fetching Facebook profile picture failed. Please check your connection.";
         Logger.debug(FacebookPresenter.class.getSimpleName(),temporaryCopy, error);
         handleError(error, temporaryCopy);
     }
@@ -533,16 +533,21 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onUploadReady(@NonNull final TypedFile imageFile) {
-        final String temporaryCopy = " file creation failed";
+        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
         try{
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
                              photo -> {
                                  Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
-                                 //will not need if account will contain profile_url
+                                 //only update the account field but don't refresh view
                                  currentAccount.setProfilePhoto(photo);
-                                 bindAccount(currentAccount);
                              },
-                             e ->{ handleError(e, temporaryCopy); });
+                             e ->{
+                                 //restore previous saved photo and refresh view
+                                 currentAccount.setProfilePhoto(tempPhoto);
+                                 bindAccount(currentAccount);
+                                 handleError(e, temporaryCopy);
+                             });
 
         } catch (Exception e){
             Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
