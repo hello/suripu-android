@@ -120,4 +120,8 @@ public class LabelEditText extends RelativeLayout {
     public void removeTextChangedListener(TextWatcher tw) {
         input.removeTextChangedListener(tw);
     }
+
+    public boolean isInputEmpty() {
+        return input.getText().toString().trim().isEmpty();
+    }
 }
