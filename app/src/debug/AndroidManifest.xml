@@ -30,12 +30,6 @@
         <activity
             android:name="is.hello.sense.debug.WelcomeDialogsActivity" />
 
-        <activity android:name="com.facebook.FacebookActivity"
-                  android:configChanges=
-                      "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  android:label="@string/app_name" />
-
         <receiver
             android:name="is.hello.sense.notifications.NotificationReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >

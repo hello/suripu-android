@@ -69,7 +69,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(imageUri.equals(Uri.EMPTY) == false){
+        if(!(imageUri.equals(Uri.EMPTY))){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -150,7 +150,7 @@ public class ProfileImageManager {
     //endregion
 
     private void checkFragmentInstance(Fragment fragment) {
-        if (fragment instanceof Listener == false) {
+        if (!(fragment instanceof Listener)) {
             throw new ClassCastException(
                     fragment.toString() + " must implement " + Listener.class.getSimpleName()
             );

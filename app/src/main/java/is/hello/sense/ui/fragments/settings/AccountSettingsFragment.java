@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -68,9 +69,6 @@ public class AccountSettingsFragment extends InjectionFragment
     FacebookPresenter facebookPresenter;
     @Inject
     ImageUtil imageUtil;
-
-    private ProfileImageManager profileImageManager;
-    private ExternalStoragePermission permission;
     @Inject
     AccountPresenter accountPresenter;
     @Inject
@@ -80,13 +78,15 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     PreferencesPresenter preferences;
 
+    private ProfileImageManager profileImageManager;
+    private final ExternalStoragePermission permission;
+
     private ProgressBar loadingIndicator;
 
 
-    private AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
-
     private SettingsRecyclerAdapter.DetailItem birthdayItem;
     private SettingsRecyclerAdapter.DetailItem genderItem;
     private SettingsRecyclerAdapter.DetailItem heightItem;
@@ -108,6 +108,11 @@ public class AccountSettingsFragment extends InjectionFragment
 
 
     //region Lifecycle
+    public AccountSettingsFragment(){
+        super();
+        permission = ExternalStoragePermission.forCamera(this);
+        profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,7 +127,6 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
-        permission = ExternalStoragePermission.forCamera(this);
         profileImageManager = new ProfileImageManager(this, imageUtil);
 
         setRetainInstance(true);
@@ -154,17 +158,11 @@ public class AccountSettingsFragment extends InjectionFragment
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
 
-        this.profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
         adapter.add(profilePictureItem);
-
-        this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                               this::changeName,
-                                                               R.id.fragment_account_settings_name);
+        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
-
-        this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                                this::changeEmail);
+        emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
         emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
         adapter.add(emailItem);
 
@@ -174,10 +172,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-
-
-        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob),
-                                                                   this::changeBirthDate);
+        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob), this::changeBirthDate);
         birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
@@ -241,20 +236,16 @@ public class AccountSettingsFragment extends InjectionFragment
         super.onDestroyView();
 
         this.loadingIndicator = null;
-        this.profilePictureItem = null;
         this.nameItem = null;
         this.emailItem = null;
-
-        this.birthdayItem = null;
         this.genderItem = null;
+        this.birthdayItem = null;
         this.heightItem = null;
         this.weightItem = null;
-
         this.enhancedAudioItem = null;
 
         this.recyclerView = null;
 
-        this.permission = null;
         this.profileImageManager = null;
     }
 
