@@ -111,7 +111,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> getAccount() {
+    public Observable<Account> getAccount(@Query("photo") Boolean includePhoto) {
         return loadResponse("account", new TypeToken<Account>() {
         }.getType());
     }
