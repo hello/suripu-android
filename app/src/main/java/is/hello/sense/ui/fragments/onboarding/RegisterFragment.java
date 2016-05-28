@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.FocusFinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +78,6 @@ public class RegisterFragment extends InjectionFragment
     private LinearLayout credentialsContainer;
     private TextView registrationErrorText;
 
-
     //region Lifecycle
 
     @Override
@@ -117,8 +117,12 @@ public class RegisterFragment extends InjectionFragment
         passwordText.setOnEditorActionListener(new EditorActionHandler(this::register));
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_register_next);
-        nextButton.setEnabled(false);
-        Views.setSafeOnClickListener(nextButton, ignored -> register());
+
+        nextButton.setActivated(false);
+        nextButton.setText(R.string.action_next);
+
+        final FocusClickListener nextButtonClickListener = new FocusClickListener(credentialsContainer, stateSafeExecutor.bind(this::register));
+        Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
@@ -368,8 +372,42 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void afterTextChanged(Editable s) {
-        nextButton.setEnabled(isInputValidSimple());
+        final boolean isValid = isInputValidSimple();
+        nextButton.setActivated(isValid);
+        final int buttonText = isValid ? R.string.action_continue : R.string.action_next;
+        nextButton.setText(buttonText);
     }
 
     //endregion
+
+    public static class FocusClickListener implements View.OnClickListener{
+
+        private final int DIRECTION = View.FOCUS_FORWARD;
+        private final ViewGroup container;
+        private final @Nullable Runnable runOnActivatedCommand;
+
+        public FocusClickListener(@NonNull final ViewGroup container){
+            this(container, null);
+        }
+
+        public FocusClickListener(@NonNull final ViewGroup container, @Nullable final Runnable runOnActivatedCommand){
+            this.container = container;
+            this.runOnActivatedCommand = runOnActivatedCommand;
+        }
+
+        @Override
+        public void onClick(@NonNull final View v) {
+            if (!v.isActivated()) {
+                final View focusedView = container.getFocusedChild();
+                if (focusedView != null) {
+                    final View nextFocusView = FocusFinder.getInstance().findNextFocus(container, focusedView, DIRECTION);
+                    if (nextFocusView != null) {
+                        nextFocusView.requestFocus();
+                    }
+                }
+            } else if(runOnActivatedCommand != null){
+                runOnActivatedCommand.run();
+            }
+        }
+    }
 }
