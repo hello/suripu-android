@@ -204,7 +204,8 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     @Override
     public void isFinished() {
         if (trendFeedView != null && timeScaleSelector != null) {
-            timeScaleSelector.setEnabled(!trendFeedView.isAnimating());
+            timeScaleSelector.setClickable(!trendFeedView.isAnimating());
+            timeScaleSelector.setEnabled(true);
         }
     }
 }
