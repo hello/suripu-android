@@ -38,6 +38,36 @@
                 android:text="@string/title_register"
                 android:textAppearance="?attr/senseTextAppearanceHeading"/>
 
+            <is.hello.sense.ui.widget.ProfileImageView
+                android:id="@+id/fragment_onboarding_register_profile_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"/>
+
+            <RelativeLayout
+                android:id="@+id/fragment_onboarding_register_import_facebook_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/gap_outer"
+                android:paddingBottom="@dimen/gap_outer">
+
+                <Button
+                    android:id="@+id/fragment_onboarding_register_import_facebook_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    style="@style/AppTheme.Button.Facebook"/>
+
+                <ImageButton
+                    android:id="@+id/fragment_onboarding_register_import_facebook_info_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/info_button_icon_small_grey"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
 
             <is.hello.sense.ui.widget.LabelEditText
                 android:id="@+id/fragment_onboarding_register_first_name_let"

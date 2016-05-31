@@ -296,6 +296,17 @@
         <item name="android:background">@drawable/onboarding_button_selector</item>
     </style>
 
+    <style name="AppTheme.Button.Facebook">
+        <item name="android:paddingTop">@dimen/gap_medium</item>
+        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:paddingLeft">@dimen/gap_outer</item>
+        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:background">@drawable/facebook_autofill_selector</item>
+        <item name="android:textColor">@color/facebook_official_color</item>
+        <item name="android:drawableLeft">@drawable/facebook_logo_selector</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:text">@string/action_autofill_from_facebook</item>
+    </style>
 
 
     <style name="AppTheme.Button.Raised">

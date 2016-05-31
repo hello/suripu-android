@@ -7,10 +7,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
 @Module(complete = false, injects = {
-        AccountSettingsFragment.class
+        AccountSettingsFragment.class, RegisterFragment.class
 })
 public class UtilityModule {
 
