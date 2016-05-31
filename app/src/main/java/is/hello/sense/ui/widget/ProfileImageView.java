@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -23,6 +24,7 @@ public class ProfileImageView extends FrameLayout implements Target {
 
     private final ImageButton plusButton;
     private final ImageView profileImage;
+    private final ProgressBar progressBar;
 
     public ProfileImageView(@NonNull final Context context) {
         this(context, null);
@@ -37,7 +39,7 @@ public class ProfileImageView extends FrameLayout implements Target {
         final View view = LayoutInflater.from(context).inflate(R.layout.item_profile_picture,this,false);
         this.profileImage = (ImageView) view.findViewById(R.id.item_profile_picture_image);
         this.plusButton = (ImageButton) view.findViewById(R.id.item_profile_picture_button);
-
+        this.progressBar = (ProgressBar) view.findViewById(R.id.item_profile_progress_bar);
         this.addView(view);
     }
 
@@ -55,16 +57,20 @@ public class ProfileImageView extends FrameLayout implements Target {
 
     @Override
     public void onBitmapLoaded(@NonNull final Bitmap bitmap, @NonNull final Picasso.LoadedFrom from) {
+        progressBar.setVisibility(GONE);
         profileImage.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
     }
 
     @Override
     public void onBitmapFailed(@NonNull final Drawable errorDrawable) {
+        progressBar.setVisibility(GONE);
+        profileImage.setImageResource(getDefaultProfileRes());
         Logger.error(ProfileImageView.class.getSimpleName(), "failed to load bitmap.");
     }
 
     @Override
     public void onPrepareLoad(@NonNull final Drawable placeHolderDrawable) {
         profileImage.setImageDrawable(placeHolderDrawable);
+        progressBar.setVisibility(VISIBLE);
     }
 }

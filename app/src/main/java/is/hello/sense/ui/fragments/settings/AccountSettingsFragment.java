@@ -26,8 +26,9 @@ import java.util.EnumSet;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.fb.model.FacebookProfilePicture;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
@@ -55,8 +56,10 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
 
 public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
@@ -66,10 +69,6 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     Picasso picasso;
     @Inject
-    FacebookPresenter facebookPresenter;
-    @Inject
-    ImageUtil imageUtil;
-    @Inject
     AccountPresenter accountPresenter;
     @Inject
     DateFormatter dateFormatter;
@@ -77,14 +76,20 @@ public class AccountSettingsFragment extends InjectionFragment
     UnitFormatter unitFormatter;
     @Inject
     PreferencesPresenter preferences;
+    @Inject
+    FacebookPresenter facebookPresenter;
+    @Inject
+    ImageUtil imageUtil;
+    @Inject
+    FilePathUtil filePathUtil;
 
     private ProfileImageManager profileImageManager;
     private final ExternalStoragePermission permission;
 
     private ProgressBar loadingIndicator;
 
-
     private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
+
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
     private SettingsRecyclerAdapter.DetailItem birthdayItem;
@@ -106,7 +111,6 @@ public class AccountSettingsFragment extends InjectionFragment
             .withDayOfMonth(25) // todo change this to the release date of 1.4.1
             .toLocalDate();
 
-
     //region Lifecycle
     public AccountSettingsFragment(){
         super();
@@ -127,7 +131,6 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
-        profileImageManager = new ProfileImageManager(this, imageUtil);
 
         setRetainInstance(true);
     }
@@ -226,9 +229,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        bindAndSubscribe(facebookPresenter.profilePicture,
-                         this::changePictureWithFacebook,
-                         this::handleFacebookError);
+        profileImageManager = new ProfileImageManager(this, imageUtil, filePathUtil);
     }
 
     @Override
@@ -259,7 +260,6 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Todo should we let facebook listen to all results?
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
         profileImageManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
@@ -295,7 +295,7 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        profilePictureItem.setValue(account.getProfilePictureUrl(getResources()));
+        profilePictureItem.setValue(account.getProfilePhotoUrl(getResources()));
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
@@ -487,18 +487,24 @@ public class AccountSettingsFragment extends InjectionFragment
     // region Facebook import
 
     private void handleFacebookError(Throwable error) {
-        final String temporaryCopy = "Fetching Facebook profile picture failed";
+        final String temporaryCopy = "Fetching Facebook profile picture failed. Please check your connection.";
         Logger.debug(FacebookPresenter.class.getSimpleName(),temporaryCopy, error);
+        handleError(error, temporaryCopy);
+    }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage){
         stateSafeExecutor.execute(() -> {
-            ErrorDialogFragment.presentError(getActivity(), new Throwable(temporaryCopy));
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
+            Logger.error(getClass().getSimpleName(),errorMessage,error);
         });
     }
 
-    private void changePictureWithFacebook(@NonNull final FacebookProfilePicture facebookProfilePicture) {
-        final String fbImageUri = facebookProfilePicture.getImageUrl();
+    private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
+        final String fbImageUri = profile.getPictureUrl();
         if(fbImageUri != null){
             profilePictureItem.setValue(fbImageUri);
             profileImageManager.setImageUri(Uri.parse(fbImageUri));
+            profileImageManager.prepareImageUpload(fbImageUri);
         }
     }
 
@@ -509,6 +515,10 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onImportFromFacebook() {
         facebookPresenter.login(this);
+
+        bindAndSubscribe(facebookPresenter.profile,
+                         this::changePictureWithFacebook,
+                         this::handleFacebookError);
     }
 
     @Override
@@ -519,6 +529,29 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onFromGallery(@NonNull final String imageUriString) {
         this.profilePictureItem.setValue(imageUriString);
+    }
+
+    @Override
+    public void onUploadReady(@NonNull final TypedFile imageFile) {
+        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
+        try{
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
+                             photo -> {
+                                 Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
+                                 //only update the account field but don't refresh view
+                                 currentAccount.setProfilePhoto(photo);
+                             },
+                             e ->{
+                                 //restore previous saved photo and refresh view
+                                 currentAccount.setProfilePhoto(tempPhoto);
+                                 bindAccount(currentAccount);
+                                 handleError(e, temporaryCopy);
+                             });
+
+        } catch (Exception e){
+            Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
+        }
     }
 
     @Override

@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/info_button_icon_small_grey"
-                    android:layout_alignParentRight="true"
+                    android:layout_toRightOf="@+id/fragment_onboarding_register_import_facebook_button"
                     android:layout_centerVertical="true"/>
 
             </RelativeLayout>

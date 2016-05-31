@@ -11,16 +11,13 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.FocusFinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +34,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.DynamicApiEndpoint;
-import is.hello.sense.api.fb.model.FacebookProfilePicture;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
@@ -62,7 +59,6 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -80,8 +76,6 @@ public class RegisterFragment extends InjectionFragment
     PreferencesPresenter preferences;
     @Inject
     FacebookPresenter facebookPresenter;
-    @Inject
-    ImageUtil imageUtil;
     @Inject
     Picasso picasso;
 
@@ -150,21 +144,25 @@ public class RegisterFragment extends InjectionFragment
         Views.setSafeOnClickListener(autofillFacebookButton, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // make request to login with facebook presenter
-                bindAndSubscribe(facebookPresenter.profilePicture,
+                bindAndSubscribe(facebookPresenter.profile,
                                  this::onFacebookProfileSuccess,
                                  this::onFacebookProfileError);
                 facebookPresenter.login(RegisterFragment.this);
             }
 
-            private void onFacebookProfileSuccess(FacebookProfilePicture profilePicture) {
-                final String facebookImageUrl = profilePicture.getImageUrl();
+            private void onFacebookProfileSuccess(FacebookProfile profile) {
+                final String facebookImageUrl = profile.getPictureUrl();
                 final int resizeDimen = profileImageView.getSizeDimen();
                 picasso.load(facebookImageUrl)
                        .resizeDimen(resizeDimen, resizeDimen)
                        .centerCrop()
                        .into(profileImageView);
                 autofillFacebookButton.setEnabled(false);
+
+                firstNameTextLET.setInputText(profile.getFirstName());
+                lastNameTextLET.setInputText(profile.getLastName());
+                emailTextLET.setInputText(profile.getEmail());
+                //Todo should passwordTextLET.requestFocus();
             }
 
             private void onFacebookProfileError(Throwable throwable) {
@@ -182,7 +180,6 @@ public class RegisterFragment extends InjectionFragment
                 options.add(new SenseBottomSheet.Option(OPTION_FACEBOOK_DESCRIPTION)
                                     .setTitle(R.string.facebook_oauth_title)
                                     .setDescription(R.string.facebook_oauth_description)
-                                    .setEnabled(false)
                            );
 
                 final BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.newInstance(options);

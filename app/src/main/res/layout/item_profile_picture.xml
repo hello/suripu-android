@@ -20,4 +20,11 @@
         android:layout_alignBottom="@id/item_profile_picture_image"
         android:paddingLeft="-2dp"
         android:src="@drawable/icon_plus_button"/>
+
+    <ProgressBar
+        android:id="@+id/item_profile_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -133,7 +132,7 @@ public class OnboardingActivity extends InjectionActivity
                             LoadingDialogFragment.show(getFragmentManager(),
                                                        getString(R.string.dialog_loading_message),
                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
-                            bindAndSubscribe(apiService.getAccount(),
+                            bindAndSubscribe(apiService.getAccount(true),
                                              account -> {
                                                  showBirthday(account, false);
                                              },

@@ -24,6 +24,7 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -39,11 +40,14 @@ import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Headers;
+import retrofit.http.Multipart;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.PUT;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public interface ApiService {
@@ -87,7 +91,7 @@ public interface ApiService {
     //region Account
 
     @GET("/v1/account")
-    Observable<Account> getAccount();
+    Observable<Account> getAccount(@Query("photo") Boolean includePhoto);
 
     @POST("/v1/account")
     Observable<Account> createAccount(@NonNull @Body Account account);
@@ -117,6 +121,10 @@ public interface ApiService {
     Observable<Account.Preferences> updateAccountPreferences(@NonNull @Body Account.Preferences preference);
 
     //endregion
+
+    @Multipart
+    @POST("/v1/photo/profile")
+    Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("file") TypedFile profilePhoto);
 
 
     //region Timeline

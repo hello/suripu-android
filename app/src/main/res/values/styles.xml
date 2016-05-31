@@ -302,7 +302,7 @@
         <item name="android:paddingLeft">@dimen/gap_outer</item>
         <item name="android:paddingRight">@dimen/gap_outer</item>
         <item name="android:background">@drawable/facebook_autofill_selector</item>
-        <item name="android:textColor">@color/facebook_official_color</item>
+        <item name="android:textColor">@color/facebook_autofill_text_color_selector</item>
         <item name="android:drawableLeft">@drawable/facebook_logo_selector</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:text">@string/action_autofill_from_facebook</item>
@@ -515,6 +515,11 @@
         <item name="android:maxWidth">28dp</item>
         <item name="android:minHeight">28dp</item>
         <item name="android:maxHeight">28dp</item>
+    </style>
+
+    <style name="FacebookTheme" parent="FacebookTheme.Base"/>
+    <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
     </style>
 
 </resources>
