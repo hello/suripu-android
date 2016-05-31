@@ -126,8 +126,4 @@ public class LabelEditText extends RelativeLayout {
         return input.getText().toString().trim().isEmpty();
     }
 
-    @Override
-    public boolean hasFocus() {
-        return input.hasFocus();
-    }
 }

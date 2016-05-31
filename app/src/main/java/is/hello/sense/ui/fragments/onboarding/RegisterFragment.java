@@ -375,7 +375,6 @@ public class RegisterFragment extends InjectionFragment
 
     public static class FocusClickListener implements View.OnClickListener {
 
-        private final int DIRECTION = View.FOCUS_FORWARD;
         private final ViewGroup container;
         private final
         @Nullable
@@ -396,9 +395,11 @@ public class RegisterFragment extends InjectionFragment
                 final View focusedView = container.getFocusedChild();
                 if (focusedView != null) {
 
-                    final View nextFocusView =container.findViewById(focusedView.getNextFocusForwardId());
+                    final View nextFocusView = container.findViewById(focusedView.getNextFocusForwardId());
                     if (nextFocusView != null) {
                         nextFocusView.requestFocus();
+                    } else if (container.getChildCount() > 1) {
+                        container.getChildAt(1).requestFocus();
                     }
                 }
             } else if (runOnActivatedCommand != null) {
