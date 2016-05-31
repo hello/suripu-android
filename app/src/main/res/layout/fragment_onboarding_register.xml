@@ -29,15 +29,6 @@
             android:paddingRight="@dimen/gap_outer"
             android:paddingTop="@dimen/gap_small">
 
-            <TextView
-                android:id="@+id/fragment_onboarding_register_heading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_medium"
-                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-                android:text="@string/title_register"
-                android:textAppearance="?attr/senseTextAppearanceHeading"/>
-
             <is.hello.sense.ui.widget.ProfileImageView
                 android:id="@+id/fragment_onboarding_register_profile_image"
                 android:layout_width="wrap_content"

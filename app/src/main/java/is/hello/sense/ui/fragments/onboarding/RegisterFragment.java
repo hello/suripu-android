@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +26,8 @@ import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -49,10 +52,12 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.StatusBarColorProvider;
+import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.ProfileImageView;
+import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -91,6 +96,8 @@ public class RegisterFragment extends InjectionFragment
     private Button nextButton;
 
     private LinearLayout credentialsContainer;
+
+    private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
 
     //region Lifecycle
 
@@ -144,7 +151,9 @@ public class RegisterFragment extends InjectionFragment
             @Override
             public void onClick(View v) {
                 // make request to login with facebook presenter
-                bindAndSubscribe(facebookPresenter.profilePicture,this::onFacebookProfileSuccess,this::onFacebookProfileError);
+                bindAndSubscribe(facebookPresenter.profilePicture,
+                                 this::onFacebookProfileSuccess,
+                                 this::onFacebookProfileError);
                 facebookPresenter.login(RegisterFragment.this);
             }
 
@@ -152,16 +161,35 @@ public class RegisterFragment extends InjectionFragment
                 final String facebookImageUrl = profilePicture.getImageUrl();
                 final int resizeDimen = profileImageView.getSizeDimen();
                 picasso.load(facebookImageUrl)
-                        .resizeDimen(resizeDimen, resizeDimen)
-                        .centerCrop()
-                        .into(profileImageView);
+                       .resizeDimen(resizeDimen, resizeDimen)
+                       .centerCrop()
+                       .into(profileImageView);
+                autofillFacebookButton.setEnabled(false);
             }
 
             private void onFacebookProfileError(Throwable throwable) {
-                Logger.error(getClass().getSimpleName(),"failed to fetch fb image",throwable);
+                Logger.error(getClass().getSimpleName(), "failed to fetch fb image", throwable);
             }
         });
         facebookPresenter.init();
+
+        final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
+        Views.setSafeOnClickListener(facebookInfoButton, new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+                options.add(new SenseBottomSheet.Option(OPTION_FACEBOOK_DESCRIPTION)
+                                    .setTitle(R.string.facebook_oauth_title)
+                                    .setDescription(R.string.facebook_oauth_description)
+                                    .setEnabled(false)
+                           );
+
+                final BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.newInstance(options);
+                bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this,OPTION_FACEBOOK_DESCRIPTION);
+                bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(),BottomSheetDialogFragment.TAG);
+            }
+        });
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 

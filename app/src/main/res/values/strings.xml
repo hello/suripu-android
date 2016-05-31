@@ -592,4 +592,10 @@
     <string name="action_import_from_gallery">Open Gallery</string>
     <string name="action_remove_picture">Remove picture</string>
 
+    <string name="facebook_oauth_title">Connecting with Facebook</string>
+    <string name="facebook_oauth_description">
+        Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
+        \n\n Still have questions? <a href="#support">Learn more.</a>
+    </string>
+
 </resources>
