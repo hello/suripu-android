@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -72,8 +73,8 @@ public class LabelEditText extends RelativeLayout {
 
         boolean selectAllOnFocus = attrs.getAttributeBooleanValue(ANDROID_NAMESPACE, "selectAllOnFocus", false);
         input.setSelectAllOnFocus(selectAllOnFocus);
-
     }
+
 
     public void setInputText(@Nullable final String inputText) {
         input.setText(inputText);
@@ -101,11 +102,11 @@ public class LabelEditText extends RelativeLayout {
         input.setBackgroundResource(R.drawable.edit_text_background_selector);
     }
 
-    public void setError(@StringRes int stringRes) {
+    public void setError(@StringRes final int stringRes) {
         setError(getContext().getString(stringRes));
     }
 
-    public void setError(@Nullable String error) {
+    public void setError(@Nullable final String error) {
         if (error != null && !error.isEmpty()) {
             label.setText(String.format("%s %s %s", labelText, DASH, error));
         }
@@ -113,15 +114,20 @@ public class LabelEditText extends RelativeLayout {
         input.setBackgroundResource(R.drawable.edit_text_background_error);
     }
 
-    public void addTextChangedListener(TextWatcher tw) {
+    public void addTextChangedListener(@NonNull final TextWatcher tw) {
         input.addTextChangedListener(tw);
     }
 
-    public void removeTextChangedListener(TextWatcher tw) {
+    public void removeTextChangedListener(@NonNull final TextWatcher tw) {
         input.removeTextChangedListener(tw);
     }
 
     public boolean isInputEmpty() {
         return input.getText().toString().trim().isEmpty();
+    }
+
+    @Override
+    public boolean hasFocus() {
+        return input.hasFocus();
     }
 }

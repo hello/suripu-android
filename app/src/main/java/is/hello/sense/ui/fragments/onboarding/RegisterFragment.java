@@ -395,7 +395,8 @@ public class RegisterFragment extends InjectionFragment
             if (!v.isActivated()) {
                 final View focusedView = container.getFocusedChild();
                 if (focusedView != null) {
-                    final View nextFocusView = FocusFinder.getInstance().findNextFocus(container, focusedView, DIRECTION);
+
+                    final View nextFocusView =container.findViewById(focusedView.getNextFocusForwardId());
                     if (nextFocusView != null) {
                         nextFocusView.requestFocus();
                     }
