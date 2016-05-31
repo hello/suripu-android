@@ -80,7 +80,7 @@
                 android:layout_marginBottom="@dimen/gap_large"
                 android:imeOptions="actionGo|flagNoExtractUi"
                 android:inputType="textPassword"
-                android:nextFocusForward="@+id/fragment_onboarding_register_password"
+                android:nextFocusForward="@+id/fragment_onboarding_register_first_name_let"
                 app:isPassword="true"
                 app:labelText="@string/label_password"/>
 

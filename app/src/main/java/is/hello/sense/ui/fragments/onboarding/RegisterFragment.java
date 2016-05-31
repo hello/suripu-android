@@ -398,8 +398,6 @@ public class RegisterFragment extends InjectionFragment
                     final View nextFocusView = container.findViewById(focusedView.getNextFocusForwardId());
                     if (nextFocusView != null) {
                         nextFocusView.requestFocus();
-                    } else if (container.getChildCount() > 1) {
-                        container.getChildAt(1).requestFocus();
                     }
                 }
             } else if (runOnActivatedCommand != null) {

@@ -21,13 +21,13 @@
         <EditText
             android:id="@+id/view_label_edit_text_input"
             style="@style/EditText"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <is.hello.sense.ui.widget.PasswordEditText
             android:id="@+id/view_label_edit_text_input_password"
             style="@style/EditText"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
     </FrameLayout>
