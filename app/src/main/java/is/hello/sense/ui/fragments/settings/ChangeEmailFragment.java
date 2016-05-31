@@ -21,6 +21,7 @@ import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -28,9 +29,10 @@ import is.hello.sense.util.EditorActionHandler;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class ChangeEmailFragment extends InjectionFragment {
-    @Inject AccountPresenter accountPresenter;
+    @Inject
+    AccountPresenter accountPresenter;
 
-    private EditText email;
+    private LabelEditText emailLET;
     private Button submitButton;
 
     @Override
@@ -52,8 +54,8 @@ public class ChangeEmailFragment extends InjectionFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_change_email, container, false);
 
-        this.email = (EditText) view.findViewById(R.id.fragment_change_email_value);
-        email.setOnEditorActionListener(new EditorActionHandler(this::save));
+        this.emailLET = (LabelEditText) view.findViewById(R.id.fragment_change_email_let);
+        emailLET.setOnEditorActionListener(new EditorActionHandler(this::save));
 
         this.submitButton = (Button) view.findViewById(R.id.fragment_change_email_submit);
         Views.setSafeOnClickListener(submitButton, ignored -> save());
@@ -65,7 +67,7 @@ public class ChangeEmailFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        email.setEnabled(false);
+        emailLET.setEnabled(false);
         submitButton.setEnabled(false);
 
         bindAndSubscribe(accountPresenter.account, this::bindAccount, this::presentError);
@@ -75,20 +77,21 @@ public class ChangeEmailFragment extends InjectionFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        this.email = null;
+        this.emailLET = null;
         this.submitButton = null;
     }
 
     public void save() {
-        String newEmail = AccountPresenter.normalizeInput(email.getText());
-        email.setText(newEmail);
+        String newEmail = AccountPresenter.normalizeInput(emailLET.getInputText());
+        emailLET.setInputText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
-            email.requestFocus();
-            animatorFor(email)
+            emailLET.setError(R.string.invalid_email);
+            emailLET.requestFocus();
+            animatorFor(emailLET)
                     .scale(1.4f)
                     .addOnAnimationCompleted(finished -> {
                         if (finished) {
-                            animatorFor(email)
+                            animatorFor(emailLET)
                                     .scale(1.0f)
                                     .start();
                         }
@@ -97,9 +100,10 @@ public class ChangeEmailFragment extends InjectionFragment {
 
             return;
         }
+        emailLET.removeError();
 
         LoadingDialogFragment.show(getFragmentManager(),
-                null, LoadingDialogFragment.DEFAULTS);
+                                   null, LoadingDialogFragment.DEFAULTS);
         bindAndSubscribe(accountPresenter.updateEmail(newEmail),
                          ignored -> {
                              // After hibernation, finish appears to be synchronous and
@@ -113,11 +117,11 @@ public class ChangeEmailFragment extends InjectionFragment {
 
 
     public void bindAccount(@NonNull Account account) {
-        email.setText(account.getEmail());
+        emailLET.setInputText(account.getEmail());
 
-        email.setEnabled(true);
+        emailLET.setEnabled(true);
         submitButton.setEnabled(true);
-        email.requestFocus();
+        emailLET.requestFocus();
 
         LoadingDialogFragment.close(getFragmentManager());
     }
@@ -128,7 +132,7 @@ public class ChangeEmailFragment extends InjectionFragment {
         ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
 
         if (ApiException.statusEquals(e, 409)) {
-            errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, email.getText().toString()));
+            errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, emailLET.getInputText()));
         }
 
         ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();

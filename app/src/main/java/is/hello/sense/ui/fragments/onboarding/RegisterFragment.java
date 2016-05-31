@@ -47,6 +47,7 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -68,15 +69,14 @@ public class RegisterFragment extends InjectionFragment
 
     private Account account;
 
-    private EditText firstNameText;
-    private EditText lastNameText;
-    private EditText emailText;
-    private EditText passwordText;
+    private LabelEditText firstNameTextLET;
+    private LabelEditText lastNameTextLET;
+    private LabelEditText emailTextLET;
+    private LabelEditText passwordTextLET;
 
     private Button nextButton;
 
     private LinearLayout credentialsContainer;
-    private TextView registrationErrorText;
 
     //region Lifecycle
 
@@ -99,22 +99,21 @@ public class RegisterFragment extends InjectionFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_onboarding_register, container, false);
 
-        this.registrationErrorText = (TextView) inflater.inflate(R.layout.item_inline_field_error, container, false);
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
         AnimatorTemplate.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
-        this.firstNameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_first_name);
-        firstNameText.addTextChangedListener(this);
+        this.firstNameTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_first_name_let);
+        firstNameTextLET.addTextChangedListener(this);
 
-        this.lastNameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_last_name);
-        lastNameText.addTextChangedListener(this);
+        this.lastNameTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_last_name_let);
+        lastNameTextLET.addTextChangedListener(this);
 
-        this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);
-        emailText.addTextChangedListener(this);
+        this.emailTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email_let);
+        emailTextLET.addTextChangedListener(this);
 
-        this.passwordText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_password);
-        passwordText.addTextChangedListener(this);
-        passwordText.setOnEditorActionListener(new EditorActionHandler(this::register));
+        this.passwordTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_password_let);
+        passwordTextLET.addTextChangedListener(this);
+        passwordTextLET.setOnEditorActionListener(new EditorActionHandler(this::register));
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_register_next);
 
@@ -161,21 +160,20 @@ public class RegisterFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
 
-        firstNameText.removeTextChangedListener(this);
-        this.firstNameText = null;
+        firstNameTextLET.removeTextChangedListener(this);
+        this.firstNameTextLET = null;
 
-        lastNameText.removeTextChangedListener(this);
-        this.lastNameText = null;
+        lastNameTextLET.removeTextChangedListener(this);
+        this.lastNameTextLET = null;
 
-        emailText.removeTextChangedListener(this);
-        this.emailText = null;
+        emailTextLET.removeTextChangedListener(this);
+        this.emailTextLET = null;
 
-        passwordText.removeTextChangedListener(this);
-        this.passwordText = null;
+        passwordTextLET.removeTextChangedListener(this);
+        this.passwordTextLET = null;
 
         this.nextButton = null;
         this.credentialsContainer = null;
-        this.registrationErrorText = null;
     }
 
     @Override
@@ -209,55 +207,50 @@ public class RegisterFragment extends InjectionFragment
 
     private void displayRegistrationError(@NonNull RegistrationError error) {
         clearRegistrationError();
-        registrationErrorText.setText(error.messageRes);
-        final EditText affectedField;
+        final LabelEditText affectedField;
         switch (error) {
             default:
             case UNKNOWN:
             case NAME_TOO_LONG:
             case NAME_TOO_SHORT: {
                 //Todo if last name is to be validated this will need modification
-                affectedField = firstNameText;
+                affectedField = firstNameTextLET;
                 break;
             }
 
             case EMAIL_INVALID:
             case EMAIL_IN_USE: {
-                affectedField = emailText;
+                affectedField = emailTextLET;
                 break;
             }
 
             case PASSWORD_INSECURE:
             case PASSWORD_TOO_SHORT: {
-                affectedField = passwordText;
+                affectedField = passwordTextLET;
                 break;
             }
         }
-
-        credentialsContainer.addView(registrationErrorText,
-                                     credentialsContainer.indexOfChild(affectedField));
-        affectedField.setBackgroundResource(R.drawable.edit_text_background_error);
+        affectedField.setError(error.messageRes);
         affectedField.requestFocus();
     }
 
     private void clearRegistrationError() {
-        credentialsContainer.removeView(registrationErrorText);
 
-        firstNameText.setBackgroundResource(R.drawable.edit_text_selector);
-        lastNameText.setBackgroundResource(R.drawable.edit_text_selector);
-        emailText.setBackgroundResource(R.drawable.edit_text_selector);
-        passwordText.setBackgroundResource(R.drawable.edit_text_selector);
+        firstNameTextLET.removeError();
+        lastNameTextLET.removeError();
+        emailTextLET.removeError();
+        passwordTextLET.removeError();
     }
 
     private boolean doCompleteValidation() {
-        final CharSequence firstName = AccountPresenter.normalizeInput(firstNameText.getText());
-        final CharSequence lastName = AccountPresenter.normalizeInput(lastNameText.getText());
-        final CharSequence email = AccountPresenter.normalizeInput(emailText.getText());
-        final CharSequence password = passwordText.getText();
+        final CharSequence firstName = AccountPresenter.normalizeInput(firstNameTextLET.getInputText());
+        final CharSequence lastName = AccountPresenter.normalizeInput(lastNameTextLET.getInputText());
+        final CharSequence email = AccountPresenter.normalizeInput(emailTextLET.getInputText());
+        final CharSequence password = passwordTextLET.getInputText();
 
         if (!AccountPresenter.validateName(firstName)) {
             displayRegistrationError(RegistrationError.NAME_TOO_SHORT);
-            firstNameText.requestFocus();
+            firstNameTextLET.requestFocus();
             return false;
         }
 
@@ -265,19 +258,19 @@ public class RegisterFragment extends InjectionFragment
 
         if (!AccountPresenter.validateEmail(email)) {
             displayRegistrationError(RegistrationError.EMAIL_INVALID);
-            emailText.requestFocus();
+            emailTextLET.requestFocus();
             return false;
         }
 
         if (!AccountPresenter.validatePassword(password)) {
             displayRegistrationError(RegistrationError.PASSWORD_TOO_SHORT);
-            passwordText.requestFocus();
+            passwordTextLET.requestFocus();
             return false;
         }
 
-        firstNameText.setText(firstName);
-        lastNameText.setText(lastName);
-        emailText.setText(email);
+        firstNameTextLET.setInputText(firstName.toString());
+        lastNameTextLET.setInputText(lastName.toString());
+        emailTextLET.setInputText(email.toString());
         clearRegistrationError();
 
         return true;
@@ -289,10 +282,10 @@ public class RegisterFragment extends InjectionFragment
             return;
         }
 
-        account.setFirstName(firstNameText.getText().toString());
-        account.setLastName(lastNameText.getText().toString());
-        account.setEmail(emailText.getText().toString());
-        account.setPassword(passwordText.getText().toString());
+        account.setFirstName(firstNameTextLET.getInputText());
+        account.setLastName(lastNameTextLET.getInputText());
+        account.setEmail(emailTextLET.getInputText());
+        account.setPassword(passwordTextLET.getInputText());
 
         LoadingDialogFragment.show(getFragmentManager(),
                                    getString(R.string.dialog_loading_message),
@@ -319,7 +312,7 @@ public class RegisterFragment extends InjectionFragment
             if (ApiException.statusEquals(error, 409)) {
 
                 displayRegistrationError(RegistrationError.EMAIL_IN_USE);
-                emailText.requestFocus();
+                emailTextLET.requestFocus();
                 return;
             }
 
@@ -330,8 +323,8 @@ public class RegisterFragment extends InjectionFragment
 
     public void login(@NonNull Account createdAccount) {
         final OAuthCredentials credentials = new OAuthCredentials(apiEndpoint,
-                                                                  emailText.getText().toString(),
-                                                                  passwordText.getText().toString());
+                                                                  emailTextLET.getInputText(),
+                                                                  passwordTextLET.getInputText());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
 
@@ -357,9 +350,9 @@ public class RegisterFragment extends InjectionFragment
     //region Next button state control
     //Todo include lastNameText non empty validation?
     private boolean isInputValidSimple() {
-        return (!TextUtils.isEmpty(firstNameText.getText()) &&
-                TextUtils.getTrimmedLength(emailText.getText()) > 0 &&
-                !TextUtils.isEmpty(passwordText.getText()));
+        return (!TextUtils.isEmpty(firstNameTextLET.getInputText()) &&
+                TextUtils.getTrimmedLength(emailTextLET.getInputText()) > 0 &&
+                !TextUtils.isEmpty(passwordTextLET.getInputText()));
     }
 
     @Override
@@ -380,17 +373,18 @@ public class RegisterFragment extends InjectionFragment
 
     //endregion
 
-    public static class FocusClickListener implements View.OnClickListener{
+    public static class FocusClickListener implements View.OnClickListener {
 
-        private final int DIRECTION = View.FOCUS_FORWARD;
         private final ViewGroup container;
-        private final @Nullable Runnable runOnActivatedCommand;
+        private final
+        @Nullable
+        Runnable runOnActivatedCommand;
 
-        public FocusClickListener(@NonNull final ViewGroup container){
+        public FocusClickListener(@NonNull final ViewGroup container) {
             this(container, null);
         }
 
-        public FocusClickListener(@NonNull final ViewGroup container, @Nullable final Runnable runOnActivatedCommand){
+        public FocusClickListener(@NonNull final ViewGroup container, @Nullable final Runnable runOnActivatedCommand) {
             this.container = container;
             this.runOnActivatedCommand = runOnActivatedCommand;
         }
@@ -400,12 +394,13 @@ public class RegisterFragment extends InjectionFragment
             if (!v.isActivated()) {
                 final View focusedView = container.getFocusedChild();
                 if (focusedView != null) {
-                    final View nextFocusView = FocusFinder.getInstance().findNextFocus(container, focusedView, DIRECTION);
+
+                    final View nextFocusView = container.findViewById(focusedView.getNextFocusForwardId());
                     if (nextFocusView != null) {
                         nextFocusView.requestFocus();
                     }
                 }
-            } else if(runOnActivatedCommand != null){
+            } else if (runOnActivatedCommand != null) {
                 runOnActivatedCommand.run();
             }
         }

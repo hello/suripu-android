@@ -560,6 +560,9 @@
     <string name="sense_offline_message">We haven\'t received data from your Sense recently. Make sure Sense is connected to Wi-Fi.</string>
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="invalid_first_name">Invalid first name</string>
+    <string name="invalid_password">Invalid password</string>
 
 
     <plurals name="item_support_comment_detail_attachments">
