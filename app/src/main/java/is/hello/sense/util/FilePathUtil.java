@@ -51,7 +51,7 @@ public class FilePathUtil {
      * @param uri
      * @return
      */
-    private String getRealPathApi18To11(Uri uri) {
+    private String getRealPathApi18To11(@NonNull final Uri uri) {
         final String result;
         final String[] proj = { MediaStore.Images.Media.DATA };
 
@@ -60,7 +60,7 @@ public class FilePathUtil {
         final Cursor cursor = cursorLoader.loadInBackground();
 
         if(cursor != null){
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            final int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             result = cursor.getString(column_index);
         } else {
@@ -85,7 +85,7 @@ public class FilePathUtil {
         // where id is equal to
         final String sel = MediaStore.Images.Media._ID + "=?";
 
-        Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                                            column, sel, ids, null);
         if(cursor == null) {
             return uri.getPath();
