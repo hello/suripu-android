@@ -12,26 +12,34 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public class AccountPresenter extends ValuePresenter<Account> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^.+@.+\\..+$");
     private static final int MIN_PASSWORD_LENGTH = 6;
 
-    @Inject ApiService apiService;
-    @Inject ApiSessionManager sessionManager;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    ApiService apiService;
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    PreferencesPresenter preferences;
 
     public final PresenterSubject<Account> account = this.subject;
-    @NonNull private final Context context;
+    @NonNull
+    private final Context context;
 
-    public @Inject AccountPresenter(@NonNull Context context){
+    public
+    @Inject
+    AccountPresenter(@NonNull Context context) {
         this.context = context;
     }
 
@@ -47,7 +55,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     @Override
     protected Observable<Account> provideUpdateObservable() {
-        return apiService.getAccount()
+        return apiService.getAccount(true)
                          .doOnNext(account -> {
                              logEvent("updated account creation date preference");
                              preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
@@ -58,7 +66,9 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //region Validation
 
-    public static @NonNull String normalizeInput(@Nullable CharSequence value) {
+    public static
+    @NonNull
+    String normalizeInput(@Nullable CharSequence value) {
         if (TextUtils.isEmpty(value)) {
             return "";
         } else {
@@ -87,7 +97,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
         return apiService.updateAccount(updatedAccount)
-                         .doOnNext(account::onNext);
+                    .doOnNext(ignored -> {
+                        AccountPresenter.this.update();
+                    });
+        //   .doOnNext(account::onNext);
     }
 
     public Observable<Account> updateEmail(@NonNull String email) {
@@ -109,6 +122,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //endregion
 
+    public Observable<MultiDensityImage> updateProfilePicture(@NonNull TypedFile picture){
+        return apiService.uploadProfilePhoto(picture)
+                .doOnError(Functions.LOG_ERROR);
+    }
 
     //region Preferences
 

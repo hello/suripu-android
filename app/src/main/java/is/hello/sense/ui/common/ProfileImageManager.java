@@ -12,12 +12,16 @@ import android.support.v4.content.ContextCompat;
 import java.io.File;
 import java.util.ArrayList;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Fetch;
+import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
+import rx.schedulers.Schedulers;
 
 public class ProfileImageManager {
     private static final int REQUEST_CODE_PICTURE = 0x30;
@@ -26,18 +30,31 @@ public class ProfileImageManager {
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
+    /**
+     * Used instead of null to make Uri <code> @NonNull </code>.
+     * It is the equivalent of empty string "".
+     */
+    private static final Uri EMPTY_URI_STATE = Uri.EMPTY;
+    private static final String EMPTY_URI_STATE_STRING = EMPTY_URI_STATE.toString();
+
     private final Context context;
     private final Fragment fragment;
     private final ImageUtil imageUtil;
+    private final FilePathUtil filePathUtil;
     private Uri imageUri;
+    private String fullImageUriString;
     private Uri tempImageUri;
 
-    public ProfileImageManager(@NonNull final Fragment fragment, @NonNull final ImageUtil imageUtil){
+    public ProfileImageManager(@NonNull final Fragment fragment,
+                               @NonNull final ImageUtil imageUtil,
+                               @NonNull final FilePathUtil filePathUtil){
         checkFragmentInstance(fragment);
         this.context = fragment.getActivity();
         this.fragment = fragment;
         this.imageUtil = imageUtil;
-        this.imageUri = Uri.EMPTY;
+        this.filePathUtil = filePathUtil;
+        this.imageUri = EMPTY_URI_STATE;
+        this.fullImageUriString = EMPTY_URI_STATE_STRING;
     }
 
     public void showPictureOptions() {
@@ -69,7 +86,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(!(imageUri.equals(Uri.EMPTY))){
+        if(!imageUri.equals(EMPTY_URI_STATE)){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -91,21 +108,26 @@ public class ProfileImageManager {
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
             this.setImageUriWithTemp();
             ((Listener) fragment).onFromCamera(getImageUriString());
+            prepareImageUpload(getFullImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
             this.setImageUri(imageUri);
             ((Listener) fragment).onFromGallery(getImageUriString());
+            prepareImageUpload(getFullImageUriString());
         }
     }
 
     public void setImageUri(@NonNull final Uri uri) {
         this.imageUri = uri;
-        this.tempImageUri = Uri.EMPTY;
+        this.tempImageUri = EMPTY_URI_STATE;
+        setFullImageUriString(uri.equals(EMPTY_URI_STATE) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
 
     public Uri getImageUri(){
         return this.imageUri;
     }
+
+    public String getFullImageUriString() { return this.fullImageUriString; }
 
     public void setImageUriWithTemp() {
         setImageUri(tempImageUri);
@@ -115,9 +137,32 @@ public class ProfileImageManager {
         return imageUri.toString();
     }
 
-    //Used primarily for take picture from camera
-    private void setTempImageUri(@NonNull final Uri tempImageUri) {
-        this.tempImageUri = tempImageUri;
+    /**
+     * Used primarily for giving pictures taken from camera a temporary file location
+     */
+    private void setTempImageUri(@NonNull final Uri imageUri) {
+        this.tempImageUri = imageUri;
+    }
+
+    /**
+     * Used primarily to upload local files through api requiring full uri path
+     * @param imageUriString
+     */
+    public void setFullImageUriString(@NonNull final String imageUriString) {
+        this.fullImageUriString = imageUriString;
+    }
+
+    public void prepareImageUpload(@NonNull final String filePath){
+        final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
+        imageUtil.provideObservableToCompressFile(filePath, mustDownload)
+                .doOnNext(file -> {
+                    final TypedFile typedFile = new TypedFile("multipart/form-data", file);
+                    Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
+                    ((Listener) fragment).onUploadReady(typedFile);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Rx.mainThreadScheduler())
+                .subscribe();
     }
 
     //region Camera Options
@@ -128,7 +173,7 @@ public class ProfileImageManager {
                 ((Listener) fragment).onImportFromFacebook();
                 break;
             case OPTION_ID_FROM_CAMERA:
-                final File imageFile = imageUtil.createFile(true);
+                final File imageFile = imageUtil.createFile(false);
                 if(imageFile != null){
                     final Uri imageUri = Uri.fromFile(imageFile);
                     setTempImageUri(imageUri);
@@ -139,7 +184,7 @@ public class ProfileImageManager {
                 Fetch.imageFromGallery().fetch(fragment);
                 break;
             case OPTION_ID_REMOVE_PICTURE:
-                setImageUri(Uri.EMPTY);
+                setImageUri(EMPTY_URI_STATE);
                 ((Listener) fragment).onRemove();
                 break;
             default:
@@ -164,6 +209,8 @@ public class ProfileImageManager {
         void onFromCamera(final String imageUriString);
 
         void onFromGallery(final String imageUriString);
+
+        void onUploadReady(final TypedFile imageFile);
 
         void onRemove();
     }

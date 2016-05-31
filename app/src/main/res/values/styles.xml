@@ -506,4 +506,9 @@
         <item name="android:maxHeight">28dp</item>
     </style>
 
+    <style name="FacebookTheme" parent="FacebookTheme.Base"/>
+    <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+    </style>
+
 </resources>

@@ -6,7 +6,6 @@ import android.widget.FrameLayout;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowSystemClock;
 

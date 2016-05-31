@@ -52,7 +52,6 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
                 picasso.load(item.value)
                        .centerCrop()
                        .resizeDimen(imageView.getSizeDimen(), imageView.getSizeDimen())
-                       .noFade()
                        .into(imageView);
             } else {
                 picasso.cancelRequest(imageView);

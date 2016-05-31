@@ -60,7 +60,7 @@ public class TicketDetailPresenter extends Presenter {
 
         if (ticketId != null) {
             final Observable<CommentsResponse> updateObservable =
-                    ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+                    ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {
                         if (requestProvider == null) {
                             this.requestProvider = new ZendeskRequestProvider();
                         }
@@ -83,7 +83,7 @@ public class TicketDetailPresenter extends Presenter {
     public Observable<Comment> submitComment(@NonNull String text, @NonNull List<String> attachmentTokens) {
         logEvent("submitComment()");
 
-        return ZendeskHelper.doAction(context, apiService.getAccount(), callback -> {
+        return ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {
             if (requestProvider == null) {
                 this.requestProvider = new ZendeskRequestProvider();
             }

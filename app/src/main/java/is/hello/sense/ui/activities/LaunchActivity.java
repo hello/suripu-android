@@ -41,7 +41,7 @@ public class LaunchActivity extends InjectionActivity {
         if (savedInstanceState == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
             if (sessionManager.hasSession()) {
-                apiService.getAccount().subscribe(account -> {
+                apiService.getAccount(false).subscribe(account -> {
                     Analytics.backFillUserInfo(account.getFullName(), account.getEmail());
                     Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
                 }, e -> {

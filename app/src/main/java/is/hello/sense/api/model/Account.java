@@ -11,7 +11,6 @@ import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-
 import is.hello.sense.api.gson.Exclude;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 
@@ -63,11 +62,10 @@ public class Account extends ApiResponse implements Cloneable {
     private Double longitude;
 
     @SerializedName("profile_photo")
-    private MultiDensityImage profilePicture;
+    private MultiDensityImage profilePhoto;
 
     @SerializedName("time_zone")
     private final String timeZone = DateTimeZone.getDefault().getID();
-
 
     public static Account createDefault() {
         Account newAccount = new Account();
@@ -188,16 +186,16 @@ public class Account extends ApiResponse implements Cloneable {
         this.longitude = longitude;
     }
 
-    public MultiDensityImage getProfilePicture() {
-        return profilePicture;
+    public MultiDensityImage getProfilePhoto() {
+        return profilePhoto;
     }
 
-    public void setProfilePicture(@NonNull MultiDensityImage profilePicture) {
-        this.profilePicture = profilePicture;
+    public void setProfilePhoto(@NonNull MultiDensityImage profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 
-    public String getProfilePictureUrl(@NonNull Resources resources) {
-        return profilePicture != null ? profilePicture.getUrl(resources) : "";
+    public String getProfilePhotoUrl(@NonNull Resources resources) {
+        return this.profilePhoto != null ? this.profilePhoto.getUrl(resources) : "";
     }
 
     public String getTimeZone() {

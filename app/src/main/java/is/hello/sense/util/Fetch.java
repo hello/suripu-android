@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
@@ -41,14 +42,18 @@ public abstract class Fetch {
     }
 
     public static Image imageFromGallery(){
+        // When using Intent.ACTION_OPEN_DOCUMENT and setting type to Image, non image files also appear
+        // Sticking with ACTION_PICK for now.
         final Image image = new Image(Intent.ACTION_PICK, Image.REQUEST_CODE_GALLERY);
-            image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        image.intent.setType(Image.type);
+        image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         return image;
     }
 
     public static class Image extends Fetch{
         public static final int REQUEST_CODE_CAMERA = 0x11;
         public static final int REQUEST_CODE_GALLERY = 0x12;
+        public static final String type = "image/*";
 
         protected Image(@NonNull String action, int requestCode) {
             super(action, requestCode);
