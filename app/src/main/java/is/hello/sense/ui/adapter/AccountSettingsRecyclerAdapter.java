@@ -43,7 +43,9 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
             super(itemView);
             this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
             this.imageView.addButtonListener(this);
-            this.imageView.setOnClickListener(null);
+            this.imageView.setOnClickListener(this);
+            itemView.setOnClickListener(null);
+            itemView.setClickable(false);
         }
 
         @Override

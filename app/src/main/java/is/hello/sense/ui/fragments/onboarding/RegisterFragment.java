@@ -471,7 +471,7 @@ public class RegisterFragment extends InjectionFragment
     //endregion
 
     //region Facebook presenter
-    public void bindFacebookProfile(@NonNull final Boolean onlyPhoto){
+    private void bindFacebookProfile(@NonNull final Boolean onlyPhoto){
         bindAndSubscribe(facebookPresenter.profile,
                          this::onFacebookProfileSuccess,
                          this::onFacebookProfileError);
@@ -479,7 +479,7 @@ public class RegisterFragment extends InjectionFragment
         facebookPresenter.login(RegisterFragment.this, onlyPhoto);
     }
 
-    private void onFacebookProfileSuccess(FacebookProfile profile) {
+    private void onFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
         final String facebookImageUrl = profile.getPictureUrl();
         final String firstName = profile.getFirstName();
         final String lastName = profile.getLastName();
@@ -498,7 +498,7 @@ public class RegisterFragment extends InjectionFragment
         //Todo should? passwordTextLET.requestFocus();
     }
 
-    private void onFacebookProfileError(Throwable throwable) {
+    private void onFacebookProfileError(@NonNull final Throwable throwable) {
         handleError(throwable, "Unable to fetch facebook profile information. Please check your connection.");
     }
 
@@ -519,17 +519,17 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void onFromCamera(String imageUriString) {
+    public void onFromCamera(@NonNull final String imageUriString) {
         updateProfileImage(imageUriString);
     }
 
     @Override
-    public void onFromGallery(String imageUriString) {
+    public void onFromGallery(@NonNull final String imageUriString) {
         updateProfileImage(imageUriString);
     }
 
     @Override
-    public void onUploadReady(TypedFile imageFile) {
+    public void onUploadReady(@NonNull final TypedFile imageFile) {
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         try{
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
