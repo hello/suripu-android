@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -45,9 +46,11 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -59,11 +62,14 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.FilePathUtil;
+import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public class RegisterFragment extends InjectionFragment
-        implements StatusBarColorProvider, TextWatcher {
+        implements StatusBarColorProvider, TextWatcher, ProfileImageManager.Listener {
     @Inject
     ApiService apiService;
     @Inject
@@ -78,10 +84,16 @@ public class RegisterFragment extends InjectionFragment
     FacebookPresenter facebookPresenter;
     @Inject
     Picasso picasso;
+    @Inject
+    ImageUtil imageUtil;
+    @Inject
+    FilePathUtil filePathUtil;
 
     private ProfileImageView profileImageView;
+    private ProfileImageManager profileImageManager;
+    private final ExternalStoragePermission externalStoragePermission;
+    private Button autofillFacebookButton;
     private Account account;
-
     private LabelEditText firstNameTextLET;
     private LabelEditText lastNameTextLET;
     private LabelEditText emailTextLET;
@@ -94,6 +106,11 @@ public class RegisterFragment extends InjectionFragment
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
 
     //region Lifecycle
+
+    public RegisterFragment(){
+        super();
+        this.externalStoragePermission = ExternalStoragePermission.forCamera(this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -140,33 +157,12 @@ public class RegisterFragment extends InjectionFragment
         final FocusClickListener nextButtonClickListener = new FocusClickListener(credentialsContainer, stateSafeExecutor.bind(this::register));
         Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
 
-        final Button autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
+        autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
         Views.setSafeOnClickListener(autofillFacebookButton, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bindAndSubscribe(facebookPresenter.profile,
-                                 this::onFacebookProfileSuccess,
-                                 this::onFacebookProfileError);
-                facebookPresenter.login(RegisterFragment.this);
-            }
-
-            private void onFacebookProfileSuccess(FacebookProfile profile) {
-                final String facebookImageUrl = profile.getPictureUrl();
-                final int resizeDimen = profileImageView.getSizeDimen();
-                picasso.load(facebookImageUrl)
-                       .resizeDimen(resizeDimen, resizeDimen)
-                       .centerCrop()
-                       .into(profileImageView);
-                autofillFacebookButton.setEnabled(false);
-
-                firstNameTextLET.setInputText(profile.getFirstName());
-                lastNameTextLET.setInputText(profile.getLastName());
-                emailTextLET.setInputText(profile.getEmail());
-                //Todo should passwordTextLET.requestFocus();
-            }
-
-            private void onFacebookProfileError(Throwable throwable) {
-                Logger.error(getClass().getSimpleName(), "failed to fetch fb image", throwable);
+                facebookPresenter.requestOnlyPhoto(false);
+                bindFacebookProfile();
             }
         });
         facebookPresenter.init();
@@ -176,17 +172,36 @@ public class RegisterFragment extends InjectionFragment
 
             @Override
             public void onClick(View v) {
-                final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+                final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>(1);
+                final CharSequence clickableLink = Styles.resolveSupportLinks(getActivity(),getResources().getString(R.string.facebook_oauth_description));
                 options.add(new SenseBottomSheet.Option(OPTION_FACEBOOK_DESCRIPTION)
-                                    .setTitle(R.string.facebook_oauth_title)
-                                    .setDescription(R.string.facebook_oauth_description)
+                                    .setDescription(clickableLink.toString())
                            );
 
-                final BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.newInstance(options);
+                final BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.newInstance(R.string.facebook_oauth_title,options);
+                bottomSheetDialogFragment.setWantsBigTitle(true);
                 bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this,OPTION_FACEBOOK_DESCRIPTION);
                 bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(),BottomSheetDialogFragment.TAG);
+
+
             }
         });
+
+        profileImageManager = new ProfileImageManager(this, imageUtil, filePathUtil);
+
+        final View.OnClickListener profileImageOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(externalStoragePermission.isGranted()) {
+                    profileImageManager.showPictureOptions();
+                } else{
+                    externalStoragePermission.requestPermissionWithDialogForCamera();
+                }
+            }
+        };
+
+        profileImageView.setOnClickListener(profileImageOnClickListener);
+        profileImageView.addButtonListener(profileImageOnClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
@@ -241,6 +256,8 @@ public class RegisterFragment extends InjectionFragment
         this.credentialsContainer = null;
 
         this.profileImageView = null;
+        this.profileImageManager = null;
+        this.autofillFacebookButton = null;
     }
 
     @Override
@@ -254,6 +271,7 @@ public class RegisterFragment extends InjectionFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
+        profileImageManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -442,6 +460,83 @@ public class RegisterFragment extends InjectionFragment
         nextButton.setActivated(isValid);
         final int buttonText = isValid ? R.string.action_continue : R.string.action_next;
         nextButton.setText(buttonText);
+    }
+
+    //endregion
+
+    //region Profile Image View
+    private void updateProfileImage(@NonNull final String imagePath){
+        final int resizeDimen = profileImageView.getSizeDimen();
+        picasso.load(imagePath)
+               .resizeDimen(resizeDimen, resizeDimen)
+               .centerCrop()
+               .into(profileImageView);
+    }
+    //endregion
+
+    //region Facebook presenter
+    public void bindFacebookProfile(){
+        bindAndSubscribe(facebookPresenter.profile,
+                         this::onFacebookProfileSuccess,
+                         this::onFacebookProfileError);
+        facebookPresenter.login(RegisterFragment.this);
+    }
+
+    private void onFacebookProfileSuccess(FacebookProfile profile) {
+        final String facebookImageUrl = profile.getPictureUrl();
+        final String firstName = profile.getFirstName();
+        final String lastName = profile.getLastName();
+        final String email = profile.getEmail();
+        if(facebookImageUrl != null) {
+            updateProfileImage(facebookImageUrl);
+            profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
+        }
+        if(firstName != null) firstNameTextLET.setInputText(firstName);
+        if(lastName != null) lastNameTextLET.setInputText(lastName);
+        if(email != null){
+            emailTextLET.setInputText(email);
+            autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
+        }
+        //Todo should? passwordTextLET.requestFocus();
+    }
+
+    private void onFacebookProfileError(Throwable throwable) {
+        Logger.error(getClass().getSimpleName(), "failed to fetch fb image", throwable);
+    }
+    //endregion
+
+    //region Profile Image Manager Listener Methods
+
+    @Override
+    public void onImportFromFacebook() {
+        facebookPresenter.requestOnlyPhoto(true);
+        bindFacebookProfile();
+    }
+
+    @Override
+    public void onFromCamera(String imageUriString) {
+        updateProfileImage(imageUriString);
+    }
+
+    @Override
+    public void onFromGallery(String imageUriString) {
+        updateProfileImage(imageUriString);
+    }
+
+    @Override
+    public void onUploadReady(TypedFile imageFile) {
+
+    }
+
+    @Override
+    public void onRemove() {
+        final int defaultDimen = profileImageView.getSizeDimen();
+        picasso.cancelRequest(profileImageView);
+        picasso.load(profileImageView.getDefaultProfileRes())
+                .centerCrop()
+                .resizeDimen(defaultDimen, defaultDimen)
+                .into(profileImageView);
+        facebookPresenter.logout();
     }
 
     //endregion

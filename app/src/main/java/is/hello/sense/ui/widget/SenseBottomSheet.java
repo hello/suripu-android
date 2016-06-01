@@ -141,6 +141,8 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         if (option.getTitle() != null) {
             String itemTitle = option.getTitle().resolve(getContext());
             title.setText(itemTitle);
+        } else{
+            title.setVisibility(View.GONE);
         }
 
         if (option.getTitleColor() != null) {
@@ -203,7 +205,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
     }
 
-    public void setMessage(@Nullable String message) {
+    public void setMessage(@Nullable CharSequence message) {
         messageText.setText(message);
 
         if (!TextUtils.isEmpty(message)) {

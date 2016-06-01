@@ -24,6 +24,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
     private static final String ARG_TITLE = BottomSheetDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_OPTIONS = BottomSheetDialogFragment.class.getName() + ".ARG_OPTIONS";
     private static final String ARG_WANTS_DIVIDERS = BottomSheetDialogFragment.class.getName() + ".ARG_WANTS_DIVIDERS";
+    private static final String ARG_WANTS_BIG_TITLE = BottomSheetDialogFragment.class.getName() + ".ARG_WANTS_BIG_TITLE";
 
     //region Lifecycle
 
@@ -66,7 +67,7 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
                 bottomSheet.setTitle(null);
             }
             bottomSheet.setWantsDividers(getArguments().getBoolean(ARG_WANTS_DIVIDERS, false));
-
+            bottomSheet.setWantsBigTitle(getArguments().getBoolean(ARG_WANTS_BIG_TITLE, false));
             ArrayList<Option> options = getArguments().getParcelableArrayList(ARG_OPTIONS);
             if (options != null) {
                 bottomSheet.addOptions(options);
@@ -78,6 +79,10 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
 
     public void setWantsDividers(boolean wantsDividers) {
         getArguments().putBoolean(ARG_WANTS_DIVIDERS, wantsDividers);
+    }
+
+    public void setWantsBigTitle(boolean wantsBigTitle) {
+        getArguments().putBoolean(ARG_WANTS_BIG_TITLE, wantsBigTitle);
     }
 
     //endregion

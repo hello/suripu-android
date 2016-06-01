@@ -13,6 +13,8 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,6 +32,10 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     @Inject CallbackManager callbackManager;
 
     public final PresenterSubject<FacebookProfile> profile = this.subject;
+    private static final String IMAGE_PARAM = "picture.type(large)";
+    private static final String PROFILE_PARAM = "first_name,last_name,email,gender";
+    private String queryParams = String.format("%s,%s",IMAGE_PARAM, PROFILE_PARAM);
+    private List<String> permissionList = Arrays.asList("public_profile", "email");
 
     public @Inject FacebookPresenter(){}
 
@@ -45,7 +51,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     @Override
     protected Observable<FacebookProfile> provideUpdateObservable() {
-        return apiService.getProfile("picture.type(large),first_name,last_name,email,gender", true, getAuthTokenString())
+        return apiService.getProfile(queryParams, true, getAuthTokenString())
                          .doOnNext(profile ->
                                            logEvent("fetched profile from facebook")
                                   );
@@ -65,6 +71,20 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     public void setAuthToken(@Nullable final AccessToken token){
         AccessToken.setCurrentAccessToken(token);
+    }
+
+    /**
+     *
+     * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
+     */
+    public void requestOnlyPhoto(boolean requestOnlyPhoto){
+        if(requestOnlyPhoto){
+            queryParams = IMAGE_PARAM;
+            permissionList = Collections.singletonList("public_profile");
+        } else{
+            queryParams = String.format("%s,%s",IMAGE_PARAM, PROFILE_PARAM);
+            permissionList = Arrays.asList("public_profile","email");
+        }
     }
 
     /**
@@ -98,7 +118,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     }
 
     public void login(@NonNull final Fragment container) {
-        LoginManager.getInstance().logInWithReadPermissions(container, Arrays.asList("public_profile", "email"));
+        LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
     }
 
     public boolean isLoggedIn(){

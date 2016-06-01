@@ -154,6 +154,11 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
+    public static void showFacebookAutoFillMoreInfoPage(@NonNull Activity from){
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210329423");
+        openUri(from, supportUrl);
+    }
+
     public static void showAppSettings(@NonNull Activity from) {
         try {
             from.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
