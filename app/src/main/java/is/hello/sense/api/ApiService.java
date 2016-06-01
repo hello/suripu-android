@@ -97,7 +97,7 @@ public interface ApiService {
     Observable<Account> createAccount(@NonNull @Body Account account);
 
     @PUT("/v1/account")
-    Observable<Account> updateAccount(@NonNull @Body Account account);
+    Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto);
 
     @POST("/v1/account/password")
     Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate);

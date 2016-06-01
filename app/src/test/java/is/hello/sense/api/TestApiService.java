@@ -122,7 +122,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> updateAccount(@NonNull @Body Account account) {
+    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto) {
         return safeJust(account);
     }
 

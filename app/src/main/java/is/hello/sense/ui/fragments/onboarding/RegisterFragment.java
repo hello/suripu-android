@@ -62,8 +62,6 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import is.hello.sense.util.FilePathUtil;
-import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.Observable;
@@ -85,9 +83,7 @@ public class RegisterFragment extends InjectionFragment
     @Inject
     Picasso picasso;
     @Inject
-    ImageUtil imageUtil;
-    @Inject
-    FilePathUtil filePathUtil;
+    ProfileImageManager.Builder builder;
 
     private ProfileImageView profileImageView;
     private ProfileImageManager profileImageManager;
@@ -161,8 +157,7 @@ public class RegisterFragment extends InjectionFragment
         Views.setSafeOnClickListener(autofillFacebookButton, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                facebookPresenter.requestOnlyPhoto(false);
-                bindFacebookProfile();
+                bindFacebookProfile(false);
             }
         });
         facebookPresenter.init();
@@ -187,7 +182,7 @@ public class RegisterFragment extends InjectionFragment
             }
         });
 
-        profileImageManager = new ProfileImageManager(this, imageUtil, filePathUtil);
+        profileImageManager = builder.addFragmentListener(this).build();
 
         final View.OnClickListener profileImageOnClickListener = new View.OnClickListener() {
             @Override
@@ -475,11 +470,12 @@ public class RegisterFragment extends InjectionFragment
     //endregion
 
     //region Facebook presenter
-    public void bindFacebookProfile(){
+    public void bindFacebookProfile(@NonNull final Boolean onlyPhoto){
         bindAndSubscribe(facebookPresenter.profile,
                          this::onFacebookProfileSuccess,
                          this::onFacebookProfileError);
-        facebookPresenter.login(RegisterFragment.this);
+
+        facebookPresenter.login(RegisterFragment.this, onlyPhoto);
     }
 
     private void onFacebookProfileSuccess(FacebookProfile profile) {
@@ -509,8 +505,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void onImportFromFacebook() {
-        facebookPresenter.requestOnlyPhoto(true);
-        bindFacebookProfile();
+        bindFacebookProfile(true);
     }
 
     @Override

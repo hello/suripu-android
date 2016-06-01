@@ -34,10 +34,13 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     public final PresenterSubject<FacebookProfile> profile = this.subject;
     private static final String IMAGE_PARAM = "picture.type(large)";
     private static final String PROFILE_PARAM = "first_name,last_name,email,gender";
-    private String queryParams = String.format("%s,%s",IMAGE_PARAM, PROFILE_PARAM);
-    private List<String> permissionList = Arrays.asList("public_profile", "email");
+    private String queryParams;
+    private List<String> permissionList;
 
-    public @Inject FacebookPresenter(){}
+    public @Inject FacebookPresenter(){
+        this.queryParams = getDefaultQueryParams();
+        this.permissionList = getDefaultPermissions();
+    }
 
     @Override
     protected boolean isDataDisposable() {
@@ -74,20 +77,6 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     }
 
     /**
-     *
-     * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
-     */
-    public void requestOnlyPhoto(boolean requestOnlyPhoto){
-        if(requestOnlyPhoto){
-            queryParams = IMAGE_PARAM;
-            permissionList = Collections.singletonList("public_profile");
-        } else{
-            queryParams = String.format("%s,%s",IMAGE_PARAM, PROFILE_PARAM);
-            permissionList = Arrays.asList("public_profile","email");
-        }
-    }
-
-    /**
      * Required to run before binding and subscribing to {@link FacebookPresenter#profile}
      * Otherwise, updates will fail because login callbacks are not handled.
      */
@@ -117,7 +106,18 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
                             });
     }
 
+    /**
+     * Default requests only profile photo from facebook user
+     * Use {@link FacebookPresenter#login(Fragment, Boolean)} for more profile permissions
+     * @param container
+     */
     public void login(@NonNull final Fragment container) {
+        requestOnlyPhoto(true);
+        LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
+    }
+
+    public void login(@NonNull final Fragment container, @NonNull final Boolean requestOnlyPhoto) {
+        requestOnlyPhoto(requestOnlyPhoto);
         LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
     }
 
@@ -135,5 +135,27 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     private String getAuthTokenString(){
         return String.format("Bearer %s", AccessToken.getCurrentAccessToken().getToken());
+    }
+
+    /**
+     *
+     * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
+     */
+    private void requestOnlyPhoto(boolean requestOnlyPhoto){
+        if(requestOnlyPhoto){
+            queryParams = IMAGE_PARAM;
+            permissionList = Collections.singletonList("public_profile");
+        } else{
+            queryParams = getDefaultQueryParams();
+            permissionList = getDefaultPermissions();
+        }
+    }
+
+    private String getDefaultQueryParams(){
+        return String.format("%s,%s",IMAGE_PARAM, PROFILE_PARAM);
+    }
+
+    private List<String> getDefaultPermissions(){
+        return Arrays.asList("public_profile","email");
     }
 }

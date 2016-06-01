@@ -23,6 +23,9 @@ import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.schedulers.Schedulers;
 
+/**
+ * Must be instantiated by {@link is.hello.sense.ui.common.ProfileImageManager.Builder}
+ */
 public class ProfileImageManager {
     private static final int REQUEST_CODE_PICTURE = 0x30;
     private static final int OPTION_ID_FROM_FACEBOOK = 0;
@@ -45,10 +48,9 @@ public class ProfileImageManager {
     private String fullImageUriString;
     private Uri tempImageUri;
 
-    public ProfileImageManager(@NonNull final Fragment fragment,
+    private ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
                                @NonNull final FilePathUtil filePathUtil){
-        checkFragmentInstance(fragment);
         this.context = fragment.getActivity();
         this.fragment = fragment;
         this.imageUtil = imageUtil;
@@ -194,14 +196,6 @@ public class ProfileImageManager {
 
     //endregion
 
-    private void checkFragmentInstance(Fragment fragment) {
-        if (!(fragment instanceof Listener)) {
-            throw new ClassCastException(
-                    fragment.toString() + " must implement " + Listener.class.getSimpleName()
-            );
-        }
-    }
-
     public interface Listener {
 
         void onImportFromFacebook();
@@ -213,6 +207,36 @@ public class ProfileImageManager {
         void onUploadReady(final TypedFile imageFile);
 
         void onRemove();
+    }
+
+    public static class Builder {
+
+        private final ImageUtil imageUtil;
+        private final FilePathUtil filePathUtil;
+        private Fragment fragmentListener;
+
+        public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil){
+            this.imageUtil = imageUtil;
+            this.filePathUtil = filePathUtil;
+        }
+
+        public Builder addFragmentListener(@NonNull final Fragment listener){
+            checkFragmentInstance(listener);
+            this.fragmentListener = listener;
+            return this;
+        }
+
+        public ProfileImageManager build(){
+            return new ProfileImageManager(fragmentListener, imageUtil, filePathUtil);
+        }
+
+        private void checkFragmentInstance(@NonNull final Fragment fragment) {
+            if (!(fragment instanceof Listener)) {
+                throw new ClassCastException(
+                        fragment.toString() + " must implement " + Listener.class.getSimpleName()
+                );
+            }
+        }
     }
 
 }

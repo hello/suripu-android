@@ -96,11 +96,8 @@ public class AccountPresenter extends ValuePresenter<Account> {
     //region Updates
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
-        return apiService.updateAccount(updatedAccount)
-                    .doOnNext(ignored -> {
-                        AccountPresenter.this.update();
-                    });
-        //   .doOnNext(account::onNext);
+        return apiService.updateAccount(updatedAccount,true)
+                         .doOnNext(account::onNext);
     }
 
     public Observable<Account> updateEmail(@NonNull String email) {

@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
@@ -34,5 +35,11 @@ public class UtilityModule {
     @Provides
     @Singleton FilePathUtil providesFilePathUtil(@NonNull final Context context){
         return new FilePathUtil(context);
+    }
+
+    @Provides
+    @Singleton
+    ProfileImageManager.Builder providesProfileImageManagerBuilder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil){
+        return new ProfileImageManager.Builder(imageUtil, filePathUtil);
     }
 }

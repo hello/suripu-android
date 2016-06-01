@@ -56,8 +56,6 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.FilePathUtil;
-import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 
@@ -79,9 +77,7 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     FacebookPresenter facebookPresenter;
     @Inject
-    ImageUtil imageUtil;
-    @Inject
-    FilePathUtil filePathUtil;
+    ProfileImageManager.Builder builder;
 
     private ProfileImageManager profileImageManager;
     private final ExternalStoragePermission permission;
@@ -229,7 +225,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = new ProfileImageManager(this, imageUtil, filePathUtil);
+        profileImageManager = builder.addFragmentListener(this).build();
     }
 
     @Override
