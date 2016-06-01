@@ -519,12 +519,12 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onFromCamera(@NonNull final String imageUriString) {
-        this.profilePictureItem.setValue(imageUriString);
+        updateProfileAndUpload(imageUriString);
     }
 
     @Override
     public void onFromGallery(@NonNull final String imageUriString) {
-        this.profilePictureItem.setValue(imageUriString);
+        updateProfileAndUpload(imageUriString);
     }
 
     @Override
@@ -554,6 +554,13 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onRemove() {
         this.profilePictureItem.setValue(null);
         facebookPresenter.logout();
+    }
+
+    private void updateProfileAndUpload(String imageUriString) {
+        //updates view
+        this.profilePictureItem.setValue(imageUriString);
+        //starts file upload process
+        profileImageManager.prepareImageUpload();
     }
 
     // endregion

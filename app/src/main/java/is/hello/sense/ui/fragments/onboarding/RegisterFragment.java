@@ -423,6 +423,7 @@ public class RegisterFragment extends InjectionFragment
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
+            profileImageManager.prepareImageUpload();
             getOnboardingActivity().showBirthday(createdAccount, true);
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
@@ -486,6 +487,7 @@ public class RegisterFragment extends InjectionFragment
         if(facebookImageUrl != null) {
             updateProfileImage(facebookImageUrl);
             profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
+            profileImageManager.setFullImageUriString(facebookImageUrl);
         }
         if(firstName != null) firstNameTextLET.setInputText(firstName);
         if(lastName != null) lastNameTextLET.setInputText(lastName);
@@ -497,8 +499,16 @@ public class RegisterFragment extends InjectionFragment
     }
 
     private void onFacebookProfileError(Throwable throwable) {
-        Logger.error(getClass().getSimpleName(), "failed to fetch fb image", throwable);
+        handleError(throwable, "Unable to fetch facebook profile information. Please check your connection.");
     }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage){
+        stateSafeExecutor.execute(() -> {
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
+            Logger.error(getClass().getSimpleName(), errorMessage, error);
+        });
+    }
+
     //endregion
 
     //region Profile Image Manager Listener Methods
@@ -520,7 +530,19 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void onUploadReady(TypedFile imageFile) {
+        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        try{
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
+                             photo -> {
+                                 Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
+                             },
+                             e -> {
+                                 handleError(e, temporaryCopy);
+                             });
 
+        } catch (Exception e){
+            Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);
+        }
     }
 
     @Override

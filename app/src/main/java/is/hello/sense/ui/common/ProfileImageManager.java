@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Fetch;
@@ -110,12 +111,10 @@ public class ProfileImageManager {
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
             this.setImageUriWithTemp();
             ((Listener) fragment).onFromCamera(getImageUriString());
-            prepareImageUpload(getFullImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
             this.setImageUri(imageUri);
             ((Listener) fragment).onFromGallery(getImageUriString());
-            prepareImageUpload(getFullImageUriString());
         }
     }
 
@@ -148,10 +147,16 @@ public class ProfileImageManager {
 
     /**
      * Used primarily to upload local files through api requiring full uri path
-     * @param imageUriString
+     * And facebook to override {@link this#setImageUri(Uri)}
      */
     public void setFullImageUriString(@NonNull final String imageUriString) {
         this.fullImageUriString = imageUriString;
+    }
+
+    public void prepareImageUpload() {
+        if(fullImageUriString != null) {
+            prepareImageUpload(fullImageUriString);
+        }
     }
 
     public void prepareImageUpload(@NonNull final String filePath){
@@ -162,6 +167,7 @@ public class ProfileImageManager {
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
                     ((Listener) fragment).onUploadReady(typedFile);
                 })
+                .doOnError(Functions.LOG_ERROR)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Rx.mainThreadScheduler())
                 .subscribe();
