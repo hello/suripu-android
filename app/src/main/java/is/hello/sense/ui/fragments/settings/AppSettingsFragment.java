@@ -24,7 +24,6 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.widget.RoundedLinearLayout;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -57,7 +56,7 @@ public class AppSettingsFragment extends BacksideTabFragment {
         final View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
         breadcrumb = (ImageView) view.findViewById(R.id.fragment_app_settings_breadcrumb);
 
-        final TextView accountItem = (TextView) view.findViewById(R.id.fragment_app_settings_account);
+        final View accountItem = view.findViewById(R.id.fragment_app_settings_account);
         Views.setSafeOnClickListener(accountItem, ignored -> {
             showFragment(AccountSettingsFragment.class, R.string.label_account, true);
         });
