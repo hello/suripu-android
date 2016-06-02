@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -122,6 +123,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
     public Observable<MultiDensityImage> updateProfilePicture(@NonNull TypedFile picture){
         return apiService.uploadProfilePhoto(picture)
                 .doOnError(Functions.LOG_ERROR);
+    }
+
+    public Observable<VoidResponse> deleteProfilePicture(){
+        return apiService.deleteProfilePhoto();
     }
 
     //region Preferences

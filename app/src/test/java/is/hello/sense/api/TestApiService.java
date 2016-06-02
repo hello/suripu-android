@@ -163,6 +163,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<VoidResponse> deleteProfilePhoto(){
+        return unimplemented();
+    }
+
+    @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
         return safeJust(new VoidResponse());
     }

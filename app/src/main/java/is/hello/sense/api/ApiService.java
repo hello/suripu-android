@@ -126,7 +126,8 @@ public interface ApiService {
     @POST("/v1/photo/profile")
     Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("file") TypedFile profilePhoto);
 
-
+    @DELETE("/v1/photo/profile")
+    Observable<VoidResponse> deleteProfilePhoto();
     //region Timeline
 
     @GET("/v2/timeline/{date}")

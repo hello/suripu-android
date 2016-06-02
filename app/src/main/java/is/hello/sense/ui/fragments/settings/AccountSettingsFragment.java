@@ -291,7 +291,9 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        profilePictureItem.setValue(account.getProfilePhotoUrl(getResources()));
+        final String photoUrl = account.getProfilePhotoUrl(getResources());
+        profileImageManager.setImageUri(Uri.parse(photoUrl));
+        profilePictureItem.setValue(photoUrl);
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
@@ -552,8 +554,12 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onRemove() {
-        this.profilePictureItem.setValue(null);
         facebookPresenter.logout();
+        bindAndSubscribe(accountPresenter.deleteProfilePicture(),
+                         successResponse -> {
+                             this.profilePictureItem.setValue(null);
+                         },
+                         error -> { handleError(error,"Unable to remove photo. Please check your connection.");});
     }
 
     private void updateProfileAndUpload(String imageUriString) {
