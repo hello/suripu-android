@@ -8,14 +8,14 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,9 +40,17 @@ public class SenseAlertDialog extends Dialog {
     private View topViewDivider, bottomViewDivider;
 
     public SenseAlertDialog(@NonNull Context context) {
-        super(context, R.style.AppTheme_Dialog_Simple);
+        this(context,R.style.AppTheme_Dialog_Simple);
+    }
 
-        setContentView(R.layout.dialog_sense_alert);
+    public SenseAlertDialog(@NonNull Context context, final int style){
+        this(context,style,R.layout.dialog_sense_alert);
+    }
+
+    private SenseAlertDialog(@NonNull Context context, final int style, @LayoutRes final int layout){
+        super(context, style);
+
+        setContentView(layout);
 
         this.container = (LinearLayout) findViewById(R.id.dialog_sense_alert_container);
 
@@ -53,6 +61,20 @@ public class SenseAlertDialog extends Dialog {
         this.buttonDivider = findViewById(R.id.dialog_sense_alert_button_divider);
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
+    }
+
+    /**
+     *
+     * @return a dialog with the properties of {@link SenseBottomAlertDialog} except is dismissed easily.
+     */
+    public static SenseAlertDialog newBottomSheetInstance(@NonNull Context context) {
+        final SenseAlertDialog dialog = new SenseAlertDialog(context,
+                                                             R.style.AppTheme_Dialog_BottomSheet,
+                                                             R.layout.dialog_sense_bottom_sheet);
+        final Window window = dialog.getWindow();
+        window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        return dialog;
     }
 
     @Override
@@ -220,9 +242,9 @@ public class SenseAlertDialog extends Dialog {
         }
 
         if (flag) {
-            button.setTextColor(getContext().getResources().getColor(R.color.destructive_accent));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.destructive_accent));
         } else {
-            button.setTextColor(getContext().getResources().getColor(R.color.light_accent));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.light_accent));
         }
     }
 
@@ -234,9 +256,9 @@ public class SenseAlertDialog extends Dialog {
         }
 
         if (flag) {
-            button.setTextColor(getContext().getResources().getColor(R.color.text_medium));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.text_medium));
         } else {
-            button.setTextColor(getContext().getResources().getColor(R.color.light_accent));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.light_accent));
         }
     }
 
@@ -297,6 +319,4 @@ public class SenseAlertDialog extends Dialog {
         View view = getLayoutInflater().inflate(viewRes, container, false);
         setView(view, true);
     }
-
-
 }

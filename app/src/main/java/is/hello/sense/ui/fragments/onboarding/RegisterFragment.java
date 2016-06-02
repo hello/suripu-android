@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -11,15 +12,15 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.FocusFinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -32,6 +33,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.DynamicApiEndpoint;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
@@ -40,22 +42,29 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.FacebookInfoDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.LabelEditText;
+import is.hello.sense.ui.widget.ProfileImageView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public class RegisterFragment extends InjectionFragment
-        implements StatusBarColorProvider, TextWatcher {
+        implements StatusBarColorProvider, TextWatcher, ProfileImageManager.Listener {
     @Inject
     ApiService apiService;
     @Inject
@@ -66,9 +75,18 @@ public class RegisterFragment extends InjectionFragment
     AccountPresenter accountPresenter;
     @Inject
     PreferencesPresenter preferences;
+    @Inject
+    FacebookPresenter facebookPresenter;
+    @Inject
+    Picasso picasso;
+    @Inject
+    ProfileImageManager.Builder builder;
 
+    private ProfileImageView profileImageView;
+    private ProfileImageManager profileImageManager;
+    private final ExternalStoragePermission externalStoragePermission = ExternalStoragePermission.forCamera(this);
+    private Button autofillFacebookButton;
     private Account account;
-
     private LabelEditText firstNameTextLET;
     private LabelEditText lastNameTextLET;
     private LabelEditText emailTextLET;
@@ -77,6 +95,8 @@ public class RegisterFragment extends InjectionFragment
     private Button nextButton;
 
     private LinearLayout credentialsContainer;
+
+    private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
 
     //region Lifecycle
 
@@ -102,6 +122,8 @@ public class RegisterFragment extends InjectionFragment
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
         AnimatorTemplate.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
+        this.profileImageView = (ProfileImageView) view.findViewById(R.id.fragment_onboarding_register_profile_image);
+
         this.firstNameTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_first_name_let);
         firstNameTextLET.addTextChangedListener(this);
 
@@ -122,6 +144,33 @@ public class RegisterFragment extends InjectionFragment
 
         final FocusClickListener nextButtonClickListener = new FocusClickListener(credentialsContainer, stateSafeExecutor.bind(this::register));
         Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
+
+        autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
+        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> bindFacebookProfile(false));
+        facebookPresenter.init();
+
+        final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
+        Views.setSafeOnClickListener(facebookInfoButton, (v) -> {
+            if(getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null){
+                return;
+            }
+            final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
+            bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this,OPTION_FACEBOOK_DESCRIPTION);
+            bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
+        });
+
+        profileImageManager = builder.addFragmentListener(this).build();
+
+        final View.OnClickListener profileImageOnClickListener = (v) -> {
+            if(externalStoragePermission.isGranted()) {
+                profileImageManager.showPictureOptions();
+            } else {
+                externalStoragePermission.requestPermissionWithDialogForCamera();
+            }
+        };
+
+        profileImageView.setOnClickListener(profileImageOnClickListener);
+        profileImageView.addButtonListener(profileImageOnClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
@@ -174,6 +223,10 @@ public class RegisterFragment extends InjectionFragment
 
         this.nextButton = null;
         this.credentialsContainer = null;
+
+        this.profileImageView = null;
+        this.profileImageManager = null;
+        this.autofillFacebookButton = null;
     }
 
     @Override
@@ -181,6 +234,15 @@ public class RegisterFragment extends InjectionFragment
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("account", account);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(profileImageManager.onActivityResult(requestCode, resultCode, data)){
+            return;
+        }
+        facebookPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -205,7 +267,7 @@ public class RegisterFragment extends InjectionFragment
         return (OnboardingActivity) getActivity();
     }
 
-    private void displayRegistrationError(@NonNull RegistrationError error) {
+    private void displayRegistrationError(@NonNull final RegistrationError error) {
         clearRegistrationError();
         final LabelEditText affectedField;
         switch (error) {
@@ -337,6 +399,7 @@ public class RegisterFragment extends InjectionFragment
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
+            profileImageManager.prepareImageUpload();
             getOnboardingActivity().showBirthday(createdAccount, true);
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
@@ -369,6 +432,104 @@ public class RegisterFragment extends InjectionFragment
         nextButton.setActivated(isValid);
         final int buttonText = isValid ? R.string.action_continue : R.string.action_next;
         nextButton.setText(buttonText);
+    }
+
+    //endregion
+
+    //region Profile Image View
+    private void updateProfileImage(@NonNull final String imagePath){
+        final int resizeDimen = profileImageView.getSizeDimen();
+        picasso.load(imagePath)
+               .resizeDimen(resizeDimen, resizeDimen)
+               .centerCrop()
+               .into(profileImageView);
+    }
+    //endregion
+
+    //region Facebook presenter
+    private void bindFacebookProfile(@NonNull final Boolean onlyPhoto){
+        bindAndSubscribe(facebookPresenter.profile,
+                         this::onFacebookProfileSuccess,
+                         this::onFacebookProfileError);
+
+        facebookPresenter.login(RegisterFragment.this, onlyPhoto);
+    }
+
+    private void onFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
+        final String facebookImageUrl = profile.getPictureUrl();
+        final String firstName = profile.getFirstName();
+        final String lastName = profile.getLastName();
+        final String email = profile.getEmail();
+        if(facebookImageUrl != null) {
+            updateProfileImage(facebookImageUrl);
+            profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
+            profileImageManager.setFullImageUriString(facebookImageUrl);
+        }
+        if(firstName != null){
+            firstNameTextLET.setInputText(firstName);
+        }
+        if(lastName != null){
+            lastNameTextLET.setInputText(lastName);
+        }
+        if(email != null){
+            emailTextLET.setInputText(email);
+            autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
+        }
+        //Todo should? passwordTextLET.requestFocus();
+    }
+
+    private void onFacebookProfileError(@NonNull final Throwable throwable) {
+        handleError(throwable, "Unable to fetch facebook profile information. Please check your connection.");
+    }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage){
+        stateSafeExecutor.execute(() -> {
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
+            Logger.error(getClass().getSimpleName(), errorMessage, error);
+        });
+    }
+
+    //endregion
+
+    //region Profile Image Manager Listener Methods
+
+    @Override
+    public void onImportFromFacebook() {
+        bindFacebookProfile(true);
+    }
+
+    @Override
+    public void onFromCamera(@NonNull final String imageUriString) {
+        updateProfileImage(imageUriString);
+    }
+
+    @Override
+    public void onFromGallery(@NonNull final String imageUriString) {
+        updateProfileImage(imageUriString);
+    }
+
+    @Override
+    public void onUploadReady(@NonNull final TypedFile imageFile) {
+        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        try{
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
+                             photo -> Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload"),
+                             e -> handleError(e, temporaryCopy));
+
+        } catch (Exception e){
+            Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);
+        }
+    }
+
+    @Override
+    public void onRemove() {
+        final int defaultDimen = profileImageView.getSizeDimen();
+        picasso.cancelRequest(profileImageView);
+        picasso.load(profileImageView.getDefaultProfileRes())
+                .centerCrop()
+                .resizeDimen(defaultDimen, defaultDimen)
+                .into(profileImageView);
+        facebookPresenter.logout();
     }
 
     //endregion

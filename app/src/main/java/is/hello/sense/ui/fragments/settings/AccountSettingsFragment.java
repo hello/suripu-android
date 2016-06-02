@@ -56,8 +56,6 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.FilePathUtil;
-import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 
@@ -79,16 +77,14 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     FacebookPresenter facebookPresenter;
     @Inject
-    ImageUtil imageUtil;
-    @Inject
-    FilePathUtil filePathUtil;
+    ProfileImageManager.Builder builder;
 
     private ProfileImageManager profileImageManager;
-    private final ExternalStoragePermission permission;
+    private final ExternalStoragePermission permission = ExternalStoragePermission.forCamera(this);
 
     private ProgressBar loadingIndicator;
 
-    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
@@ -112,11 +108,6 @@ public class AccountSettingsFragment extends InjectionFragment
             .toLocalDate();
 
     //region Lifecycle
-    public AccountSettingsFragment(){
-        super();
-        permission = ExternalStoragePermission.forCamera(this);
-        profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -229,7 +220,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = new ProfileImageManager(this, imageUtil, filePathUtil);
+        profileImageManager = builder.addFragmentListener(this).build();
     }
 
     @Override
@@ -260,9 +251,13 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(profileImageManager.onActivityResult(requestCode, resultCode, data)){
+            return;
+        }
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
-        profileImageManager.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) return;
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
         if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
@@ -295,7 +290,9 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        profilePictureItem.setValue(account.getProfilePhotoUrl(getResources()));
+        final String photoUrl = account.getProfilePhotoUrl(getResources());
+        profileImageManager.setImageUri(Uri.parse(photoUrl));
+        profilePictureItem.setValue(photoUrl);
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
@@ -330,7 +327,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt){
         if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(releaseDateForName)) {
-            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
             overlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
                 overlayView.postShow(R.id.static_recycler_container);
@@ -467,7 +464,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onAccountUpdated(@NonNull SenseFragment updatedBy) {
+    public void onAccountUpdated(@NonNull final SenseFragment updatedBy) {
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
@@ -523,12 +520,12 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onFromCamera(@NonNull final String imageUriString) {
-        this.profilePictureItem.setValue(imageUriString);
+        updateProfileAndUpload(imageUriString);
     }
 
     @Override
     public void onFromGallery(@NonNull final String imageUriString) {
-        this.profilePictureItem.setValue(imageUriString);
+        updateProfileAndUpload(imageUriString);
     }
 
     @Override
@@ -556,8 +553,17 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onRemove() {
-        this.profilePictureItem.setValue(null);
         facebookPresenter.logout();
+        bindAndSubscribe(accountPresenter.deleteProfilePicture(),
+                         successResponse -> profilePictureItem.setValue(null),
+                         error -> handleError(error,"Unable to remove photo. Please check your connection."));
+    }
+
+    private void updateProfileAndUpload(@NonNull final String imageUriString) {
+        //updates view
+        profilePictureItem.setValue(imageUriString);
+        //starts file upload process
+        profileImageManager.prepareImageUpload();
     }
 
     // endregion
