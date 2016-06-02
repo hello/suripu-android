@@ -1,7 +1,6 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import is.hello.sense.R;
@@ -25,11 +24,8 @@ public class FacebookInfoDialogFragment extends SenseDialogFragment {
         dialog.setMessage(Styles.resolveSupportLinks(getActivity(),
                                                      clickableLink));
         dialog.setTitle(R.string.facebook_oauth_title);
-        dialog.setNegativeButton(R.string.action_close, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dismiss();
-            }
+        dialog.setNegativeButton(R.string.action_close, (dialogInterface, which) -> {
+            dismiss();
         });
         dialog.setCanceledOnTouchOutside(true);
         dialog.setCancelable(true);

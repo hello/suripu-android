@@ -343,8 +343,7 @@ public class OnboardingActivity extends InjectionActivity
             pushFragment(new OnboardingRegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
             Account account = getAccount();
-            final Boolean includePhoto = true;
-            bindAndSubscribe(apiService.updateAccount(account, includePhoto), ignored -> {
+            bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 showEnhancedAudio();
             }, e -> {

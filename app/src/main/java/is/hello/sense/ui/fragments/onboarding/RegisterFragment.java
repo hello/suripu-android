@@ -84,7 +84,7 @@ public class RegisterFragment extends InjectionFragment
 
     private ProfileImageView profileImageView;
     private ProfileImageManager profileImageManager;
-    private final ExternalStoragePermission externalStoragePermission;
+    private final ExternalStoragePermission externalStoragePermission = ExternalStoragePermission.forCamera(this);
     private Button autofillFacebookButton;
     private Account account;
     private LabelEditText firstNameTextLET;
@@ -99,11 +99,6 @@ public class RegisterFragment extends InjectionFragment
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
 
     //region Lifecycle
-
-    public RegisterFragment(){
-        super();
-        this.externalStoragePermission = ExternalStoragePermission.forCamera(this);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -151,38 +146,28 @@ public class RegisterFragment extends InjectionFragment
         Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
 
         autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
-        Views.setSafeOnClickListener(autofillFacebookButton, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bindFacebookProfile(false);
-            }
+        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> {
+            bindFacebookProfile(false);
         });
         facebookPresenter.init();
 
         final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
-        Views.setSafeOnClickListener(facebookInfoButton, new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                if(getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null){
-                    return;
-                }
-                final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
-                bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this,OPTION_FACEBOOK_DESCRIPTION);
-                bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
+        Views.setSafeOnClickListener(facebookInfoButton, (v) -> {
+            if(getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null){
+                return;
             }
+            final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
+            bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this,OPTION_FACEBOOK_DESCRIPTION);
+            bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
         });
 
         profileImageManager = builder.addFragmentListener(this).build();
 
-        final View.OnClickListener profileImageOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(externalStoragePermission.isGranted()) {
-                    profileImageManager.showPictureOptions();
-                } else{
-                    externalStoragePermission.requestPermissionWithDialogForCamera();
-                }
+        final View.OnClickListener profileImageOnClickListener = (v) -> {
+            if(externalStoragePermission.isGranted()) {
+                profileImageManager.showPictureOptions();
+            } else {
+                externalStoragePermission.requestPermissionWithDialogForCamera();
             }
         };
 

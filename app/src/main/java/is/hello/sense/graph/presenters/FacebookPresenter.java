@@ -109,15 +109,14 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     /**
      * Default requests only profile photo from facebook user
      * Use {@link FacebookPresenter#login(Fragment, Boolean)} for more profile permissions
-     * @param container
      */
     public void login(@NonNull final Fragment container) {
-        requestOnlyPhoto(true);
+        requestInfo(true);
         LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
     }
 
     public void login(@NonNull final Fragment container, @NonNull final Boolean requestOnlyPhoto) {
-        requestOnlyPhoto(requestOnlyPhoto);
+        requestInfo(requestOnlyPhoto);
         LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
     }
 
@@ -141,7 +140,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
      *
      * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
      */
-    private void requestOnlyPhoto(boolean requestOnlyPhoto){
+    private void requestInfo(boolean requestOnlyPhoto){
         if(requestOnlyPhoto){
             queryParams = IMAGE_PARAM;
             permissionList = Collections.singletonList("public_profile");
