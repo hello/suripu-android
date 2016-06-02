@@ -35,6 +35,10 @@ public class Analytics {
 
     private static @Nullable com.segment.analytics.Analytics segment;
 
+    public interface OnEventListener {
+        void onSuccess();
+    }
+
     public interface Global {
 
         /**
@@ -188,6 +192,10 @@ public class Analytics {
          * When user lands on the Sign Up screen
          */
         String EVENT_ACCOUNT = "Onboarding Account";
+
+        String EVENT_ONBOARDING_CHANGE_PROFILE_PHOTO = "Onboarding Change Profile Photo";
+
+        String EVENT_ONBOARDING_DELETE_PHOTO = "Onboarding Delete Profile Photo";
 
         /**
          * When user taps "I don't have a Sense" button.
@@ -473,8 +481,7 @@ public class Analytics {
 
         String EVENT_SETTINGS = "Settings";
         String EVENT_ACCOUNT = "Account";
-        String EVENT_CHANGE_EMAIL = "Change email";
-        String EVENT_CHANGE_PASSWORD = "Change password";
+
 
         String EVENT_DEVICES = "Devices";
         String EVENT_SENSE_DETAIL = "Sense detail";
@@ -540,6 +547,28 @@ public class Analytics {
         String EVENT_WE_NEED_STORAGE = "External Storage Permission Explanation";
         String EVENT_STORAGE_DISABLED = "External Storage Not Granted";
         String EVENT_STORAGE_MORE_INFO = "External Storage Permission More Info";
+    }
+
+    public interface Account {
+        String EVENT_CHANGE_EMAIL = "Change email";
+        String EVENT_CHANGE_PASSWORD = "Change password";
+        String EVENT_CHANGE_NAME = "Change Name";
+        String EVENT_CHANGE_PROFILE_PHOTO = "Change Profile Photo";
+        String EVENT_DELETE_PROFILE_PHOTO = "Delete Profile Photo";
+    }
+
+    public interface ProfilePhoto {
+        String PROP_SOURCE = "source";
+        enum Source{
+            FACEBOOK("facebook"),
+            CAMERA("camera"),
+            GALLERY("photo library");
+            private final String src;
+            Source(@NonNull final String source){
+                this.src = source;
+            }
+        }
+
     }
 
 
@@ -756,6 +785,10 @@ public class Analytics {
                                 Global.PROP_BLUETOOTH_HEADSET_CONNECTED, headsetConnected,
                                 Global.PROP_BLUETOOTH_A2DP_CONNECTED, a2dpConnected,
                                 Global.PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED, healthConnected);
+    }
+
+    public static @NonNull Properties createProfilePhotoTrackingProperties(@NonNull final ProfilePhoto.Source source){
+        return createProperties(ProfilePhoto.PROP_SOURCE, source.src);
     }
 
     public static void trackEvent(@NonNull String event, @Nullable Properties properties) {

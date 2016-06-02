@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -15,11 +14,12 @@ import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class ChangeNameFragment extends SenseFragment {
+public class ChangeNameFragment extends SenseFragment implements Analytics.OnEventListener{
     private LabelEditText firstNameLET;
     private LabelEditText lastNameLET;
 
@@ -79,4 +79,12 @@ public class ChangeNameFragment extends SenseFragment {
         container.getAccount().setLastName(lastName);
         container.onAccountUpdated(this);
     }
+
+    //region Analytics.OnEventListener methods
+
+    @Override
+    public void onSuccess() {
+        Analytics.trackEvent(Analytics.Account.EVENT_CHANGE_NAME,null);
+    }
+    //endregion
 }

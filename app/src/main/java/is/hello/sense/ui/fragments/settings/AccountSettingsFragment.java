@@ -472,6 +472,9 @@ public class AccountSettingsFragment extends InjectionFragment
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
                              ignored -> {
+                                 if (updatedBy instanceof Analytics.OnEventListener) {
+                                     ((Analytics.OnEventListener) updatedBy).onSuccess();
+                                 }
                                  LoadingDialogFragment.close(getFragmentManager());
                                  updatedBy.getFragmentManager().popBackStackImmediate();
                              },
