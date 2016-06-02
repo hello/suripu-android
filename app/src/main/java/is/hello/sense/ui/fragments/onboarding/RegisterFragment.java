@@ -146,9 +146,7 @@ public class RegisterFragment extends InjectionFragment
         Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
 
         autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
-        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> {
-            bindFacebookProfile(false);
-        });
+        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> bindFacebookProfile(false));
         facebookPresenter.init();
 
         final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
@@ -241,7 +239,9 @@ public class RegisterFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(profileImageManager.onActivityResult(requestCode, resultCode, data)) return;
+        if(profileImageManager.onActivityResult(requestCode, resultCode, data)){
+            return;
+        }
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -267,7 +267,7 @@ public class RegisterFragment extends InjectionFragment
         return (OnboardingActivity) getActivity();
     }
 
-    private void displayRegistrationError(@NonNull RegistrationError error) {
+    private void displayRegistrationError(@NonNull final RegistrationError error) {
         clearRegistrationError();
         final LabelEditText affectedField;
         switch (error) {
@@ -465,8 +465,12 @@ public class RegisterFragment extends InjectionFragment
             profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
             profileImageManager.setFullImageUriString(facebookImageUrl);
         }
-        if(firstName != null) firstNameTextLET.setInputText(firstName);
-        if(lastName != null) lastNameTextLET.setInputText(lastName);
+        if(firstName != null){
+            firstNameTextLET.setInputText(firstName);
+        }
+        if(lastName != null){
+            lastNameTextLET.setInputText(lastName);
+        }
         if(email != null){
             emailTextLET.setInputText(email);
             autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
@@ -509,12 +513,8 @@ public class RegisterFragment extends InjectionFragment
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         try{
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
-                             photo -> {
-                                 Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
-                             },
-                             e -> {
-                                 handleError(e, temporaryCopy);
-                             });
+                             photo -> Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload"),
+                             e -> handleError(e, temporaryCopy));
 
         } catch (Exception e){
             Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);

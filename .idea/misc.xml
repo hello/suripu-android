@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <entry_points version="2.0" />
+    <entry_points version="2.0">
+      <entry_point TYPE="method" FQNAME="is.hello.sense.ui.fragments.onboarding.RegisterFragment.FocusClickListener FocusClickListener(android.view.ViewGroup container)" />
+    </entry_points>
     <list size="4">
       <item index="0" class="java.lang.String" itemvalue="com.fasterxml.jackson.annotation.JsonCreator" />
       <item index="1" class="java.lang.String" itemvalue="com.fasterxml.jackson.annotation.JsonProperty" />

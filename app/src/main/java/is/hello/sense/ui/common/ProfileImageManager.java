@@ -107,7 +107,9 @@ public class ProfileImageManager {
      * @return true if requestCode matched and resultCode was Activity.RESULT_OK else false.
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
-        if(resultCode != Activity.RESULT_OK) return false;
+        if(resultCode != Activity.RESULT_OK){
+            return false;
+        }
         boolean wasResultHandled = true;
         if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
@@ -126,16 +128,16 @@ public class ProfileImageManager {
     }
 
     public void setImageUri(@NonNull final Uri uri) {
-        this.imageUri = uri;
-        this.tempImageUri = EMPTY_URI_STATE;
+        imageUri = uri;
+        tempImageUri = EMPTY_URI_STATE;
         setFullImageUriString(uri.equals(EMPTY_URI_STATE) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
 
     public Uri getImageUri(){
-        return this.imageUri;
+        return imageUri;
     }
 
-    public String getFullImageUriString() { return this.fullImageUriString; }
+    public String getFullImageUriString() { return fullImageUriString; }
 
     private void setImageUriWithTemp() {
         setImageUri(tempImageUri);
@@ -149,7 +151,7 @@ public class ProfileImageManager {
      * Used primarily for giving pictures taken from camera a temporary file location
      */
     private void setTempImageUri(@NonNull final Uri imageUri) {
-        this.tempImageUri = imageUri;
+        tempImageUri = imageUri;
     }
 
     /**
@@ -157,7 +159,7 @@ public class ProfileImageManager {
      * And facebook to override {@link this#setImageUri(Uri)}
      */
     public void setFullImageUriString(@NonNull final String imageUriString) {
-        this.fullImageUriString = imageUriString;
+        fullImageUriString = imageUriString;
     }
 
     public void prepareImageUpload() {

@@ -80,11 +80,11 @@ public class AccountSettingsFragment extends InjectionFragment
     ProfileImageManager.Builder builder;
 
     private ProfileImageManager profileImageManager;
-    private final ExternalStoragePermission permission;
+    private final ExternalStoragePermission permission = ExternalStoragePermission.forCamera(this);
 
     private ProgressBar loadingIndicator;
 
-    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem;
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
@@ -108,11 +108,6 @@ public class AccountSettingsFragment extends InjectionFragment
             .toLocalDate();
 
     //region Lifecycle
-    public AccountSettingsFragment(){
-        super();
-        permission = ExternalStoragePermission.forCamera(this);
-        profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -256,9 +251,13 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(profileImageManager.onActivityResult(requestCode, resultCode, data)) return;
+        if(profileImageManager.onActivityResult(requestCode, resultCode, data)){
+            return;
+        }
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) return;
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
         if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
@@ -328,7 +327,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt){
         if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(releaseDateForName)) {
-            TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
             overlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
                 overlayView.postShow(R.id.static_recycler_container);
@@ -465,7 +464,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onAccountUpdated(@NonNull SenseFragment updatedBy) {
+    public void onAccountUpdated(@NonNull final SenseFragment updatedBy) {
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
@@ -556,15 +555,13 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onRemove() {
         facebookPresenter.logout();
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
-                         successResponse -> {
-                             this.profilePictureItem.setValue(null);
-                         },
-                         error -> { handleError(error,"Unable to remove photo. Please check your connection.");});
+                         successResponse -> profilePictureItem.setValue(null),
+                         error -> handleError(error,"Unable to remove photo. Please check your connection."));
     }
 
-    private void updateProfileAndUpload(String imageUriString) {
+    private void updateProfileAndUpload(@NonNull final String imageUriString) {
         //updates view
-        this.profilePictureItem.setValue(imageUriString);
+        profilePictureItem.setValue(imageUriString);
         //starts file upload process
         profileImageManager.prepareImageUpload();
     }
