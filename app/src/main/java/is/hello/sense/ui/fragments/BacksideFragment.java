@@ -1,5 +1,8 @@
 package is.hello.sense.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -20,14 +23,16 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.SleepSounds;
+import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.SleepSoundsPresenter;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.sounds.SoundsFragment;
+import is.hello.sense.ui.handholding.BreadCrumb;
+import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;
@@ -51,6 +56,9 @@ public class BacksideFragment extends InjectionFragment
     @Inject
     UnreadStatePresenter unreadStatePresenter;
 
+    @Inject
+    AccountPresenter accountPresenter;
+
     private SharedPreferences internalPreferences;
 
     private int tabSelectorHeight;
@@ -60,6 +68,9 @@ public class BacksideFragment extends InjectionFragment
 
     private boolean suppressNextSwipeEvent = false;
     private int lastState = ViewPager.SCROLL_STATE_IDLE;
+
+    private BreadCrumb.CoordinateBuilder breadCrumbBuilder;
+    private boolean hasEntered = false; // Tracks when the fragment has finished its entrance animation.
 
 
     private static SharedPreferences getInternalPreferences(@NonNull Context context) {
@@ -84,6 +95,7 @@ public class BacksideFragment extends InjectionFragment
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SHOWN, null);
         }
+        breadCrumbBuilder = new BreadCrumb.CoordinateBuilder(getActivity());
     }
 
     @Nullable
@@ -146,10 +158,29 @@ public class BacksideFragment extends InjectionFragment
     }
 
     @Override
+    public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
+
+        Animator animator = AnimatorInflater.loadAnimator(getActivity(), R.animator.fragment_fade_in);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                hasEntered = true;
+                refreshBreadCrumb(true);
+            }
+        });
+        return animator;
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
+                         Functions.LOG_ERROR);
+
+        bindAndSubscribe(accountPresenter.account,
+                         this::bindAccount,
                          Functions.LOG_ERROR);
     }
 
@@ -168,6 +199,13 @@ public class BacksideFragment extends InjectionFragment
         if (fragment != null) {
             fragment.onUpdate();
         }
+        accountPresenter.update();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        removeBreadCrumb();
     }
 
     public boolean onBackPressed() {
@@ -202,6 +240,7 @@ public class BacksideFragment extends InjectionFragment
     public void setCurrentItem(int currentItem, int options) {
         boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
         pager.setCurrentItem(currentItem, animate);
+        refreshBreadCrumb(false);
     }
 
     public void saveCurrentItem(int currentItem) {
@@ -235,6 +274,7 @@ public class BacksideFragment extends InjectionFragment
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        refreshBreadCrumb(false);
     }
 
     @Override
@@ -259,6 +299,7 @@ public class BacksideFragment extends InjectionFragment
         }
 
         this.lastState = state;
+        refreshBreadCrumb(false);
     }
 
     @Override
@@ -267,6 +308,7 @@ public class BacksideFragment extends InjectionFragment
         this.suppressNextSwipeEvent = true;
 
         setCurrentItem(newSelectionIndex, OPTION_ANIMATE);
+        refreshBreadCrumb(false);
     }
 
 
@@ -282,5 +324,41 @@ public class BacksideFragment extends InjectionFragment
         if (!button.isChecked()) {
             button.setText(inactiveContent);
         }
+    }
+
+    private void bindAccount(@NonNull Account account) {
+        refreshBreadCrumb(false);
+    }
+
+    public void refreshBreadCrumb(boolean forceReset) {
+        if (!hasEntered) {
+            return;
+        }
+
+        if (forceReset) {
+            removeBreadCrumb();
+        }
+
+        if (getView() == null
+                || accountPresenter.account.getValue() == null
+                || pager.getCurrentItem() == ITEM_APP_SETTINGS) {
+            removeBreadCrumb();
+        } else if (Tutorial.TAP_NAME.shouldShow(getActivity())
+                && accountPresenter.account.getValue().getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)
+                && !breadCrumbBuilder.isShowing()) {
+            ToggleButton settings = tabSelector.getButtonAt(ITEM_APP_SETTINGS);
+            int[] location = new int[2];
+            settings.getLocationInWindow(location);
+            breadCrumbBuilder
+                    .setTarget(location[0] + settings.getWidth() / 2, location[1] + settings.getHeight() / 2)
+                    .offsetX(getResources().getDimensionPixelOffset(R.dimen.gap_medium) / 2)
+                    .offsetY(-getResources().getDimensionPixelOffset(R.dimen.gap_medium) / 2)
+                    .build();
+
+        }
+    }
+
+    private void removeBreadCrumb() {
+        breadCrumbBuilder.destroyBreadCrumb();
     }
 }

@@ -9,35 +9,55 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.api.model.Account;
+import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.fragments.support.SupportFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.widget.RoundedLinearLayout;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Share;
 
 public class AppSettingsFragment extends BacksideTabFragment {
+    private ImageView breadcrumb;
+
+    @Inject
+    AccountPresenter accountPresenter;
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
+        if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SETTINGS, null);
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addPresenter(accountPresenter);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
+        breadcrumb = (ImageView) view.findViewById(R.id.fragment_app_settings_breadcrumb);
 
-        final View accountItem = view.findViewById(R.id.fragment_app_settings_account);
+        final TextView accountItem = (TextView) view.findViewById(R.id.fragment_app_settings_account);
         Views.setSafeOnClickListener(accountItem, ignored -> {
             showFragment(AccountSettingsFragment.class, R.string.label_account, true);
         });
@@ -74,12 +94,41 @@ public class AppSettingsFragment extends BacksideTabFragment {
         return view;
     }
 
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(accountPresenter.account, this::bindAccount, Functions.LOG_ERROR);
+        accountPresenter.update();
+    }
+
     @Override
     public void onSwipeInteractionDidFinish() {
     }
 
     @Override
     public void onUpdate() {
+    }
+
+    private void bindAccount(@NonNull Account account) {
+        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && account.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
+            breadcrumb.setVisibility(View.VISIBLE);
+        } else {
+            breadcrumb.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        accountPresenter.update();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        breadcrumb = null;
     }
 
     private void showDeviceList(@NonNull View ignored) {
