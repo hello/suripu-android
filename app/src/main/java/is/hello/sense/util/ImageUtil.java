@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
@@ -96,17 +95,16 @@ public class ImageUtil {
         return Observable.create((subscriber) -> {
             try {
                 byte[] compressedByteArray;
-                String writePath = path;
+                final File freshTempFile = createFile(true);
+                //final String writePath = freshTempFile != null ? freshTempFile.getAbsolutePath() : "";
                 if(mustDownload){
                     compressedByteArray = compressToByteArray(
                             decodeBitmapFromUrlStream(path));
-                    final File freshTempFile = createFile(true);
-                            writePath = freshTempFile != null ? freshTempFile.getAbsolutePath() : "";
                 } else{
                     compressedByteArray = compressToByteArray(
                             applyTransformationAndCompression(path));
                 }
-                final File compressedFile = writeToFile(writePath, compressedByteArray);
+                final File compressedFile = writeToFile(freshTempFile, compressedByteArray);
                 subscriber.onNext(compressedFile);
             } catch (IOException e) {
                 subscriber.onError(e);
@@ -160,8 +158,7 @@ public class ImageUtil {
         return String.format("%s_%s", fileName, timestampFormat.format(new Date()));
     }
 
-    private File writeToFile(@NonNull final String path, @NonNull final byte[] byteArray) throws IOException{
-        final File file = new File(path);
+    private File writeToFile(@NonNull final File file, @NonNull final byte[] byteArray) throws IOException{
         try(final FileOutputStream fos = new FileOutputStream(file)){
             fos.write(byteArray);
         }

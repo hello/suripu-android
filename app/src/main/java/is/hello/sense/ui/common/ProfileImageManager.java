@@ -103,19 +103,26 @@ public class ProfileImageManager {
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
-    public void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
-        if(resultCode != Activity.RESULT_OK) return;
+    /**
+     * @return true if requestCode matched and resultCode was Activity.RESULT_OK else false.
+     */
+    public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
+        if(resultCode != Activity.RESULT_OK) return false;
+        boolean wasResultHandled = true;
         if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            this.setImageUriWithTemp();
+            setImageUriWithTemp();
             ((Listener) fragment).onFromCamera(getImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
-            this.setImageUri(imageUri);
+            setImageUri(imageUri);
             ((Listener) fragment).onFromGallery(getImageUriString());
+        } else{
+            wasResultHandled = false;
         }
+        return wasResultHandled;
     }
 
     public void setImageUri(@NonNull final Uri uri) {
@@ -130,7 +137,7 @@ public class ProfileImageManager {
 
     public String getFullImageUriString() { return this.fullImageUriString; }
 
-    public void setImageUriWithTemp() {
+    private void setImageUriWithTemp() {
         setImageUri(tempImageUri);
     }
 

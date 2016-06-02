@@ -256,8 +256,8 @@ public class RegisterFragment extends InjectionFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(profileImageManager.onActivityResult(requestCode, resultCode, data)) return;
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
-        profileImageManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
