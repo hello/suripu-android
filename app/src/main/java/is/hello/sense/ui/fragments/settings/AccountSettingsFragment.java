@@ -60,7 +60,7 @@ import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 
 public class AccountSettingsFragment extends InjectionFragment
-        implements AccountEditor.Container, ProfileImageManager.Listener {
+        implements AccountEditor.Container, ProfileImageManager.Listener{
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
@@ -262,6 +262,15 @@ public class AccountSettingsFragment extends InjectionFragment
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            profileImageManager.showPictureOptions();
+        } else {
+            permission.showEnableInstructionsDialogForCamera();
         }
     }
 

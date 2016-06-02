@@ -1,7 +1,6 @@
 package is.hello.sense.permissions;
 
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
@@ -30,12 +29,13 @@ public class ExternalStoragePermission extends Permission {
         requestPermissionWithDialog(
                 SenseAlertDialog.NO_TITLE_ID,
                 R.string.request_permission_write_external_storage_for_profile_picture,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                (dialog, which) -> dialog.dismiss());
+    }
+
+    public void showEnableInstructionsDialogForCamera(){
+        showEnableInstructionsDialog(SenseAlertDialog.NO_TITLE_ID,
+                                     R.string.request_permission_write_external_storage_for_profile_picture,
+                                     (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 
     @Override
@@ -48,23 +48,13 @@ public class ExternalStoragePermission extends Permission {
         requestPermissionWithDialog(
                 R.string.request_permission_write_external_storage_title,
                 R.string.request_permission_write_external_storage_message,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity());
-                    }
-                });
+                (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 
     @Override
     public void showEnableInstructionsDialog() {
         showEnableInstructionsDialog(R.string.request_permission_write_external_storage_required_title,
                                      R.string.request_permission_write_external_storage_required_message,
-                                     new DialogInterface.OnClickListener() {
-                                         @Override
-                                         public void onClick(DialogInterface dialog, int which) {
-                                             UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity());
-                                         }
-                                     });
+                                     (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 }
