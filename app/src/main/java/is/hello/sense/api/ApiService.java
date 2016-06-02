@@ -97,7 +97,7 @@ public interface ApiService {
     Observable<Account> createAccount(@NonNull @Body Account account);
 
     @PUT("/v1/account")
-    Observable<Account> updateAccount(@NonNull @Body Account account);
+    Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto);
 
     @POST("/v1/account/password")
     Observable<VoidResponse> changePassword(@NonNull @Body PasswordUpdate passwordUpdate);
@@ -126,7 +126,8 @@ public interface ApiService {
     @POST("/v1/photo/profile")
     Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("file") TypedFile profilePhoto);
 
-
+    @DELETE("/v1/photo/profile")
+    Observable<VoidResponse> deleteProfilePhoto();
     //region Timeline
 
     @GET("/v2/timeline/{date}")

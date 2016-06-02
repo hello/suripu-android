@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Fetch;
@@ -23,6 +24,9 @@ import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.schedulers.Schedulers;
 
+/**
+ * Must be instantiated by {@link is.hello.sense.ui.common.ProfileImageManager.Builder}
+ */
 public class ProfileImageManager {
     private static final int REQUEST_CODE_PICTURE = 0x30;
     private static final int OPTION_ID_FROM_FACEBOOK = 0;
@@ -45,10 +49,9 @@ public class ProfileImageManager {
     private String fullImageUriString;
     private Uri tempImageUri;
 
-    public ProfileImageManager(@NonNull final Fragment fragment,
+    private ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
                                @NonNull final FilePathUtil filePathUtil){
-        checkFragmentInstance(fragment);
         this.context = fragment.getActivity();
         this.fragment = fragment;
         this.imageUtil = imageUtil;
@@ -100,36 +103,43 @@ public class ProfileImageManager {
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
-    public void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
-        if(resultCode != Activity.RESULT_OK) return;
+    /**
+     * @return true if requestCode matched and resultCode was Activity.RESULT_OK else false.
+     */
+    public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
+        if(resultCode != Activity.RESULT_OK){
+            return false;
+        }
+        boolean wasResultHandled = true;
         if(requestCode == REQUEST_CODE_PICTURE){
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            this.setImageUriWithTemp();
+            setImageUriWithTemp();
             ((Listener) fragment).onFromCamera(getImageUriString());
-            prepareImageUpload(getFullImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
-            this.setImageUri(imageUri);
+            setImageUri(imageUri);
             ((Listener) fragment).onFromGallery(getImageUriString());
-            prepareImageUpload(getFullImageUriString());
+        } else{
+            wasResultHandled = false;
         }
+        return wasResultHandled;
     }
 
     public void setImageUri(@NonNull final Uri uri) {
-        this.imageUri = uri;
-        this.tempImageUri = EMPTY_URI_STATE;
+        imageUri = uri;
+        tempImageUri = EMPTY_URI_STATE;
         setFullImageUriString(uri.equals(EMPTY_URI_STATE) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
 
     public Uri getImageUri(){
-        return this.imageUri;
+        return imageUri;
     }
 
-    public String getFullImageUriString() { return this.fullImageUriString; }
+    public String getFullImageUriString() { return fullImageUriString; }
 
-    public void setImageUriWithTemp() {
+    private void setImageUriWithTemp() {
         setImageUri(tempImageUri);
     }
 
@@ -141,15 +151,21 @@ public class ProfileImageManager {
      * Used primarily for giving pictures taken from camera a temporary file location
      */
     private void setTempImageUri(@NonNull final Uri imageUri) {
-        this.tempImageUri = imageUri;
+        tempImageUri = imageUri;
     }
 
     /**
      * Used primarily to upload local files through api requiring full uri path
-     * @param imageUriString
+     * And facebook to override {@link this#setImageUri(Uri)}
      */
     public void setFullImageUriString(@NonNull final String imageUriString) {
-        this.fullImageUriString = imageUriString;
+        fullImageUriString = imageUriString;
+    }
+
+    public void prepareImageUpload() {
+        if(fullImageUriString != null) {
+            prepareImageUpload(fullImageUriString);
+        }
     }
 
     public void prepareImageUpload(@NonNull final String filePath){
@@ -160,6 +176,7 @@ public class ProfileImageManager {
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
                     ((Listener) fragment).onUploadReady(typedFile);
                 })
+                .doOnError(Functions.LOG_ERROR)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Rx.mainThreadScheduler())
                 .subscribe();
@@ -194,14 +211,6 @@ public class ProfileImageManager {
 
     //endregion
 
-    private void checkFragmentInstance(Fragment fragment) {
-        if (!(fragment instanceof Listener)) {
-            throw new ClassCastException(
-                    fragment.toString() + " must implement " + Listener.class.getSimpleName()
-            );
-        }
-    }
-
     public interface Listener {
 
         void onImportFromFacebook();
@@ -213,6 +222,36 @@ public class ProfileImageManager {
         void onUploadReady(final TypedFile imageFile);
 
         void onRemove();
+    }
+
+    public static class Builder {
+
+        private final ImageUtil imageUtil;
+        private final FilePathUtil filePathUtil;
+        private Fragment fragmentListener;
+
+        public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil){
+            this.imageUtil = imageUtil;
+            this.filePathUtil = filePathUtil;
+        }
+
+        public Builder addFragmentListener(@NonNull final Fragment listener){
+            checkFragmentInstance(listener);
+            this.fragmentListener = listener;
+            return this;
+        }
+
+        public ProfileImageManager build(){
+            return new ProfileImageManager(fragmentListener, imageUtil, filePathUtil);
+        }
+
+        private void checkFragmentInstance(@NonNull final Fragment fragment) {
+            if (!(fragment instanceof Listener)) {
+                throw new ClassCastException(
+                        fragment.toString() + " must implement " + Listener.class.getSimpleName()
+                );
+            }
+        }
     }
 
 }

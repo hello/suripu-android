@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
@@ -96,11 +97,8 @@ public class AccountPresenter extends ValuePresenter<Account> {
     //region Updates
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
-        return apiService.updateAccount(updatedAccount)
-                    .doOnNext(ignored -> {
-                        AccountPresenter.this.update();
-                    });
-        //   .doOnNext(account::onNext);
+        return apiService.updateAccount(updatedAccount,true)
+                         .doOnNext(account::onNext);
     }
 
     public Observable<Account> updateEmail(@NonNull String email) {
@@ -125,6 +123,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
     public Observable<MultiDensityImage> updateProfilePicture(@NonNull TypedFile picture){
         return apiService.uploadProfilePhoto(picture)
                 .doOnError(Functions.LOG_ERROR);
+    }
+
+    public Observable<VoidResponse> deleteProfilePicture(){
+        return apiService.deleteProfilePhoto();
     }
 
     //region Preferences

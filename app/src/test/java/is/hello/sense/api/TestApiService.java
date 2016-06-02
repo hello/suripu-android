@@ -122,7 +122,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> updateAccount(@NonNull @Body Account account) {
+    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto) {
         return safeJust(account);
     }
 
@@ -159,6 +159,11 @@ public final class TestApiService implements ApiService {
     @Multipart
     @Override
     public Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("photo") TypedFile profilePhoto) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<VoidResponse> deleteProfilePhoto(){
         return unimplemented();
     }
 

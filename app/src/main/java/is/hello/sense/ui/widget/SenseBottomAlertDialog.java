@@ -22,6 +22,9 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
 
+/**
+ * Instance persists across fragments. Will not be dismissed until clicked.
+ */
 public class SenseBottomAlertDialog extends Dialog {
     private final LinearLayout container;
 
@@ -32,7 +35,11 @@ public class SenseBottomAlertDialog extends Dialog {
     private final Button positiveButton;
 
     public SenseBottomAlertDialog(@NonNull Context context) {
-        super(context, R.style.AppTheme_Dialog_BottomAlert);
+        this(context,R.style.AppTheme_Dialog_BottomAlert);
+    }
+
+    public SenseBottomAlertDialog(@NonNull Context context, final int style){
+        super(context, style);
 
         setContentView(R.layout.dialog_bottom_alert);
         setCancelable(true);
@@ -41,7 +48,7 @@ public class SenseBottomAlertDialog extends Dialog {
         window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
 
         this.container = (LinearLayout) findViewById(R.id.item_bottom_alert);
 
