@@ -25,8 +25,6 @@ import com.squareup.picasso.Picasso;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorTemplate;
@@ -52,12 +50,11 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.StatusBarColorProvider;
-import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.FacebookInfoDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.ProfileImageView;
-import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -167,18 +164,12 @@ public class RegisterFragment extends InjectionFragment
 
             @Override
             public void onClick(View v) {
-                final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>(1);
-                final CharSequence clickableLink = Styles.resolveSupportLinks(getActivity(),getResources().getString(R.string.facebook_oauth_description));
-                options.add(new SenseBottomSheet.Option(OPTION_FACEBOOK_DESCRIPTION)
-                                    .setDescription(clickableLink.toString())
-                           );
-
-                final BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.newInstance(R.string.facebook_oauth_title,options);
-                bottomSheetDialogFragment.setWantsBigTitle(true);
+                if(getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null){
+                    return;
+                }
+                final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
                 bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this,OPTION_FACEBOOK_DESCRIPTION);
-                bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(),BottomSheetDialogFragment.TAG);
-
-
+                bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
             }
         });
 
