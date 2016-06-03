@@ -246,6 +246,15 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            profileImageManager.showPictureOptions();
+        } else {
+            externalStoragePermission.showEnableInstructionsDialogForCamera();
+        }
+    }
+
+    @Override
     public int getStatusBarColor(@NonNull Resources resources) {
         return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
     }
