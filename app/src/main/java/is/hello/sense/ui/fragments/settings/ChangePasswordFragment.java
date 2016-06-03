@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
-import android.widget.EditText;
 
 import javax.inject.Inject;
 
@@ -47,10 +47,10 @@ public class ChangePasswordFragment extends InjectionFragment {
     private LabelEditText newPasswordLET;
     private LabelEditText confirmNewPasswordLET;
 
-    public static ChangePasswordFragment newInstance(@NonNull String email) {
-        ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment();
+    public static ChangePasswordFragment newInstance(@NonNull final String email) {
+        final ChangePasswordFragment changePasswordFragment = new ChangePasswordFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putString(ARG_EMAIL, email);
         changePasswordFragment.setArguments(arguments);
 
@@ -58,7 +58,7 @@ public class ChangePasswordFragment extends InjectionFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.email = getArguments().getString(ARG_EMAIL);
@@ -73,14 +73,14 @@ public class ChangePasswordFragment extends InjectionFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_change_password, container, false);
+        final View view = inflater.inflate(R.layout.fragment_change_password, container, false);
 
         this.currentPasswordLET = (LabelEditText) view.findViewById(R.id.fragment_change_password_current_let);
         this.newPasswordLET = (LabelEditText) view.findViewById(R.id.fragment_change_password_new_let);
         this.confirmNewPasswordLET = (LabelEditText) view.findViewById(R.id.fragment_change_password_new_confirm_let);
         confirmNewPasswordLET.setOnEditorActionListener(new EditorActionHandler(this::changePassword));
 
-        Button submit = (Button) view.findViewById(R.id.fragment_change_password_submit);
+        final Button submit = (Button) view.findViewById(R.id.fragment_change_password_submit);
         Views.setSafeOnClickListener(submit, ignored -> changePassword());
 
         return view;
@@ -95,20 +95,21 @@ public class ChangePasswordFragment extends InjectionFragment {
         this.confirmNewPasswordLET = null;
     }
 
-    private boolean popIfEmpty(LabelEditText... labelEditTexts) {
+    private boolean popIfEmpty(final LabelEditText... labelEditTexts) {
         currentPasswordLET.removeError();
         newPasswordLET.removeError();
         confirmNewPasswordLET.removeError();
-        for (LabelEditText editText : labelEditTexts) {
+        for (final LabelEditText editText : labelEditTexts) {
             if (TextUtils.isEmpty(editText.getInputText())) {
                 editText.setError(R.string.invalid_password);
                 editText.requestFocus();
                 animatorFor(editText)
-                        .scale(1.4f)
+                        .translationY(20)
                         .addOnAnimationCompleted(finished -> {
                             if (finished) {
                                 animatorFor(editText)
-                                        .scale(1.0f)
+                                        .translationY(0)
+                                        .withInterpolator(new OvershootInterpolator())
                                         .start();
                             }
                         })
@@ -126,7 +127,7 @@ public class ChangePasswordFragment extends InjectionFragment {
         }
 
         if (!AccountPresenter.validatePassword(newPasswordLET.getInputText())) {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
                     .withMessage(StringRef.from(R.string.error_account_password_too_short))
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -135,7 +136,7 @@ public class ChangePasswordFragment extends InjectionFragment {
         }
 
         if (!TextUtils.equals(newPasswordLET.getInputText(), confirmNewPasswordLET.getInputText())) {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
                     .withMessage(StringRef.from(R.string.error_mismatching_new_passwords))
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -144,15 +145,15 @@ public class ChangePasswordFragment extends InjectionFragment {
 
         LoadingDialogFragment.show(getFragmentManager(),
                 null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-        PasswordUpdate passwordUpdate = new PasswordUpdate(currentPasswordLET.getInputText(), newPasswordLET.getInputText());
+        final PasswordUpdate passwordUpdate = new PasswordUpdate(currentPasswordLET.getInputText(), newPasswordLET.getInputText());
         bindAndSubscribe(apiService.changePassword(passwordUpdate),
                          ignored -> recreateSession(),
                          this::presentError);
     }
 
     public void recreateSession() {
-        String password = newPasswordLET.getInputText();
-        Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEndpoint, email, password));
+        final String password = newPasswordLET.getInputText();
+        final Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEndpoint, email, password));
         bindAndSubscribe(authorize,
                          session -> {
                              apiSessionManager.setSession(session);
@@ -162,15 +163,15 @@ public class ChangePasswordFragment extends InjectionFragment {
                          this::presentError);
     }
 
-    public void presentError(@Nullable Throwable e) {
+    public void presentError(@Nullable final Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
         if (ApiException.statusEquals(e, 409)) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_current_pw_wrong));
         }
 
-        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 }
