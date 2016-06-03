@@ -20,14 +20,14 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.SleepSoundsPresenter;
+import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.sounds.SoundsFragment;
+import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;
@@ -50,6 +50,9 @@ public class BacksideFragment extends InjectionFragment
 
     @Inject
     UnreadStatePresenter unreadStatePresenter;
+
+    @Inject
+    AccountPresenter accountPresenter;
 
     private SharedPreferences internalPreferences;
 
@@ -78,7 +81,7 @@ public class BacksideFragment extends InjectionFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        addPresenter(accountPresenter);
         this.internalPreferences = getInternalPreferences(getActivity());
 
         if (savedInstanceState == null) {
@@ -151,6 +154,19 @@ public class BacksideFragment extends InjectionFragment
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
+
+        bindAndSubscribe(accountPresenter.account,
+                         (a) -> {
+                             if (pager.getCurrentItem() != ITEM_APP_SETTINGS
+                                     && Tutorial.TAP_NAME.shouldShow(getActivity())
+                                     && a.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
+                                 setHasUnreadAccountItems(true);
+                             } else {
+                                 setHasUnreadAccountItems(false);
+                             }
+                         },
+                         Functions.LOG_ERROR);
+        accountPresenter.update();
     }
 
     @Override
@@ -168,6 +184,7 @@ public class BacksideFragment extends InjectionFragment
         if (fragment != null) {
             fragment.onUpdate();
         }
+        accountPresenter.update();
     }
 
     public boolean onBackPressed() {
@@ -277,6 +294,20 @@ public class BacksideFragment extends InjectionFragment
 
         final ToggleButton button = tabSelector.getButtonAt(ITEM_INSIGHTS);
         final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_INSIGHTS),
+                                                               iconRes);
+        button.setTextOff(inactiveContent);
+        if (!button.isChecked()) {
+            button.setText(inactiveContent);
+        }
+    }
+
+    public void setHasUnreadAccountItems(boolean hasUnreadAccountItems) {
+        final @DrawableRes int iconRes = hasUnreadAccountItems
+                ? R.drawable.backside_icon_settings_unread
+                : R.drawable.backside_icon_settings;
+
+        final ToggleButton button = tabSelector.getButtonAt(ITEM_APP_SETTINGS);
+        final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_APP_SETTINGS),
                                                                iconRes);
         button.setTextOff(inactiveContent);
         if (!button.isChecked()) {
