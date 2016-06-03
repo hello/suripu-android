@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.EnumSet;
@@ -331,10 +330,8 @@ public class AccountSettingsFragment extends InjectionFragment
         if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
             overlayView.setAnchorContainer(getView());
-            getAnimatorContext().runWhenIdle(() -> {
-                overlayView.postShow(R.id.static_recycler_container);
-                Tutorial.TAP_NAME.markShown(getActivity());
-            });
+            getAnimatorContext().runWhenIdle(() -> overlayView.postShow(R.id.static_recycler_container)
+            );
         }
     }
 

@@ -36,7 +36,6 @@ import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.graph.presenters.questions.QuestionProvider;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -339,7 +338,6 @@ public class InsightsFragment extends BacksideTabFragment
         }
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
-        Tutorial.TAP_INSIGHT_CARD.markShown(getActivity());
 
         // InsightsFragment lives inside of a child fragment manager, whose root view is inset
         // on the bottom to make space for the open timeline. We go right to the root fragment
