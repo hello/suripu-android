@@ -4,92 +4,111 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     app:senseFadingEdgeStyle="rounded">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
         android:orientation="vertical">
 
-        <is.hello.sense.ui.widget.RoundedLinearLayout
+        <LinearLayout
+            android:id="@+id/fragment_app_settings_top_container"
+            style="@style/AppTheme.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_medium"
+            android:layout_marginBottom="@dimen/gap_card_inter"
             android:layout_marginLeft="@dimen/gap_card_horizontal"
             android:layout_marginRight="@dimen/gap_card_horizontal"
-            android:layout_marginBottom="@dimen/gap_card_inter"
-            android:orientation="vertical"
-            style="@style/AppTheme.Card">
+            android:layout_marginTop="@dimen/gap_medium"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/fragment_app_settings_account"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_account"
-                style="@style/AppTheme.Card.Item"/>
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/fragment_app_settings_account"
+                    style="@style/AppTheme.Card.Item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_account"/>
+
+                <ImageView
+                    android:id="@+id/fragment_app_settings_breadcrumb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/gap_xsmall_negative"
+                    android:layout_marginTop="@dimen/gap_mlarge"
+                    android:src="@drawable/unread_indicator"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
 
             <View style="@style/Divider.Horizontal"/>
 
             <TextView
                 android:id="@+id/fragment_app_settings_devices"
+                style="@style/AppTheme.Card.Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_devices"
-                style="@style/AppTheme.Card.Item"/>
+                android:text="@string/label_devices"/>
 
             <View style="@style/Divider.Horizontal"/>
 
             <TextView
                 android:id="@+id/fragment_app_settings_notifications"
+                style="@style/AppTheme.Card.Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_notifications"
-                style="@style/AppTheme.Card.Item"/>
+                android:text="@string/label_notifications"/>
 
             <View style="@style/Divider.Horizontal"/>
 
             <TextView
                 android:id="@+id/fragment_app_settings_units"
+                style="@style/AppTheme.Card.Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_units_and_time"
-                style="@style/AppTheme.Card.Item"/>
+                android:text="@string/label_units_and_time"/>
 
-        </is.hello.sense.ui.widget.RoundedLinearLayout>
+        </LinearLayout>
 
         <is.hello.sense.ui.widget.RoundedLinearLayout
+            style="@style/AppTheme.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/gap_card_inter"
             android:layout_marginLeft="@dimen/gap_card_horizontal"
             android:layout_marginRight="@dimen/gap_card_horizontal"
-            android:layout_marginBottom="@dimen/gap_card_inter"
-            android:orientation="vertical"
-            style="@style/AppTheme.Card">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/fragment_app_settings_support"
+                style="@style/AppTheme.Card.Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_support"
-                style="@style/AppTheme.Card.Item"/>
+                android:text="@string/action_support"/>
 
         </is.hello.sense.ui.widget.RoundedLinearLayout>
 
         <is.hello.sense.ui.widget.RoundedLinearLayout
+            style="@style/AppTheme.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/gap_card_horizontal"
             android:layout_marginRight="@dimen/gap_card_horizontal"
-            android:orientation="vertical"
-            style="@style/AppTheme.Card">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/fragment_app_settings_tell_a_friend"
+                style="@style/AppTheme.Card.Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_tell_a_friend"
-                style="@style/AppTheme.Card.Item"/>
+                android:text="@string/label_tell_a_friend"/>
 
         </is.hello.sense.ui.widget.RoundedLinearLayout>
 
@@ -97,10 +116,10 @@
             android:id="@+id/fragment_app_settings_version"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/gap_outer"
             android:gravity="bottom|center_horizontal"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
-            android:text="@string/app_name"/>
+            android:padding="@dimen/gap_outer"
+            android:text="@string/app_name"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"/>
 
     </LinearLayout>
 

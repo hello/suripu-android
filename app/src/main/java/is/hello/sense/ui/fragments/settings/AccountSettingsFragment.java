@@ -55,6 +55,7 @@ import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
@@ -101,14 +102,6 @@ public class AccountSettingsFragment extends InjectionFragment
     Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
 
-    final LocalDate releaseDateForName = new DateTime()
-            .withYear(2016)
-            .withMonthOfYear(5)
-            .withDayOfMonth(25) // todo change this to the release date of 1.4.1
-            .toLocalDate();
-
-    //region Lifecycle
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,7 +146,7 @@ public class AccountSettingsFragment extends InjectionFragment
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
 
         adapter.add(profilePictureItem);
-        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName);
+        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName, R.id.fragment_account_settings_name);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
         emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
@@ -334,8 +327,8 @@ public class AccountSettingsFragment extends InjectionFragment
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
     }
 
-    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt){
-        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(releaseDateForName)) {
+    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt) {
+        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
             overlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
@@ -350,7 +343,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
     private void changePicture() {
-        if(permission.isGranted()){
+        if (permission.isGranted()) {
             profileImageManager.showPictureOptions();
         } else {
             permission.requestPermissionWithDialogForCamera();
@@ -494,20 +487,20 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void handleFacebookError(Throwable error) {
         final String temporaryCopy = "Fetching Facebook profile picture failed. Please check your connection.";
-        Logger.debug(FacebookPresenter.class.getSimpleName(),temporaryCopy, error);
+        Logger.debug(FacebookPresenter.class.getSimpleName(), temporaryCopy, error);
         handleError(error, temporaryCopy);
     }
 
-    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage){
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
             ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
-            Logger.error(getClass().getSimpleName(),errorMessage,error);
+            Logger.error(getClass().getSimpleName(), errorMessage, error);
         });
     }
 
     private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
         final String fbImageUri = profile.getPictureUrl();
-        if(fbImageUri != null){
+        if (fbImageUri != null) {
             profilePictureItem.setValue(fbImageUri);
             profileImageManager.setImageUri(Uri.parse(fbImageUri));
             profileImageManager.prepareImageUpload(fbImageUri);
@@ -541,21 +534,21 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onUploadReady(@NonNull final TypedFile imageFile) {
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
-        try{
+        try {
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
                              photo -> {
                                  Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
                                  //only update the account field but don't refresh view
                                  currentAccount.setProfilePhoto(photo);
                              },
-                             e ->{
+                             e -> {
                                  //restore previous saved photo and refresh view
                                  currentAccount.setProfilePhoto(tempPhoto);
                                  bindAccount(currentAccount);
                                  handleError(e, temporaryCopy);
                              });
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
         }
     }

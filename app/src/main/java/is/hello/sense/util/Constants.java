@@ -1,5 +1,6 @@
 package is.hello.sense.util;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 public final class Constants {
@@ -43,6 +44,13 @@ public final class Constants {
      * production data starts on <code>2015-02-14 21:28:00</code>.
      */
     public static final LocalDate TIMELINE_EPOCH = new LocalDate(2014, 1, 1);
+
+    public static final LocalDate RELEASE_DATE_FOR_LAST_NAME = new DateTime()
+            .withYear(2016)
+            .withMonthOfYear(6)
+            .withDayOfMonth(2) // todo change this to the release date of 1.4.2
+            .toLocalDate();
+
 
 
     // From Retrofit
