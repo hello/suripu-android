@@ -174,7 +174,7 @@ public class ProfileImageManager {
      *
      * @param imageSource Used for Segment.io analytics
      */
-    public void setImageSource(Source imageSource) {
+    public void setImageSource(@NonNull final Source imageSource) {
         this.imageSource = imageSource;
     }
 
