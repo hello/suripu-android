@@ -102,13 +102,6 @@ public class AccountSettingsFragment extends InjectionFragment
     Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
 
-    //region Lifecycle
-    public AccountSettingsFragment(){
-        super();
-        permission = ExternalStoragePermission.forCamera(this);
-        profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -48,7 +48,7 @@ public final class Constants {
     public static final LocalDate RELEASE_DATE_FOR_LAST_NAME = new DateTime()
             .withYear(2016)
             .withMonthOfYear(6)
-            .withDayOfMonth(3) // todo change this to the release date of 1.4.2
+            .withDayOfMonth(2) // todo change this to the release date of 1.4.2
             .toLocalDate();
 
 
