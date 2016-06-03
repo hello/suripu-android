@@ -17,12 +17,17 @@ import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.util.Analytics.ProfilePhoto.Source;
 import is.hello.sense.util.Fetch;
 import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.schedulers.Schedulers;
+
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source.CAMERA;
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source.FACEBOOK;
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source.GALLERY;
 
 /**
  * Must be instantiated by {@link is.hello.sense.ui.common.ProfileImageManager.Builder}
@@ -48,6 +53,7 @@ public class ProfileImageManager {
     private Uri imageUri;
     private String fullImageUriString;
     private Uri tempImageUri;
+    private Source imageSource;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
@@ -116,10 +122,12 @@ public class ProfileImageManager {
             handlePictureOptionSelection(optionID);
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
             setImageUriWithTemp();
+            setImageSource(CAMERA);
             ((Listener) fragment).onFromCamera(getImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
             setImageUri(imageUri);
+            setImageSource(GALLERY);
             ((Listener) fragment).onFromGallery(getImageUriString());
         } else{
             wasResultHandled = false;
@@ -162,6 +170,14 @@ public class ProfileImageManager {
         fullImageUriString = imageUriString;
     }
 
+    /**
+     *
+     * @param imageSource Used for Segment.io analytics
+     */
+    public void setImageSource(Source imageSource) {
+        this.imageSource = imageSource;
+    }
+
     public void prepareImageUpload() {
         if(fullImageUriString != null) {
             prepareImageUpload(fullImageUriString);
@@ -174,7 +190,7 @@ public class ProfileImageManager {
                 .doOnNext(file -> {
                     final TypedFile typedFile = new TypedFile("multipart/form-data", file);
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
-                    ((Listener) fragment).onUploadReady(typedFile);
+                    ((Listener) fragment).onUploadReady(typedFile,imageSource);
                 })
                 .doOnError(Functions.LOG_ERROR)
                 .subscribeOn(Schedulers.io())
@@ -188,6 +204,7 @@ public class ProfileImageManager {
         switch(optionID){
             case OPTION_ID_FROM_FACEBOOK:
                 ((Listener) fragment).onImportFromFacebook();
+                setImageSource(FACEBOOK);
                 break;
             case OPTION_ID_FROM_CAMERA:
                 final File imageFile = imageUtil.createFile(false);
@@ -219,7 +236,7 @@ public class ProfileImageManager {
 
         void onFromGallery(final String imageUriString);
 
-        void onUploadReady(final TypedFile imageFile);
+        void onUploadReady(final TypedFile imageFile, final Source source);
 
         void onRemove();
     }

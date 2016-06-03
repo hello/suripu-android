@@ -193,9 +193,9 @@ public class Analytics {
          */
         String EVENT_ACCOUNT = "Onboarding Account";
 
-        String EVENT_ONBOARDING_CHANGE_PROFILE_PHOTO = "Onboarding Change Profile Photo";
+        String EVENT_CHANGE_PROFILE_PHOTO = "Onboarding Change Profile Photo";
 
-        String EVENT_ONBOARDING_DELETE_PHOTO = "Onboarding Delete Profile Photo";
+        String EVENT_DELETE_PROFILE_PHOTO = "Onboarding Delete Profile Photo";
 
         /**
          * When user taps "I don't have a Sense" button.

@@ -20,6 +20,7 @@ import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Analytics.ProfilePhoto.Source;
 import retrofit.mime.TypedFile;
 import rx.Observable;
 
@@ -93,7 +94,6 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //endregion
 
-
     //region Updates
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
@@ -118,16 +118,23 @@ public class AccountPresenter extends ValuePresenter<Account> {
         return apiService.updateTimeZone(senseTimeZone);
     }
 
-    //endregion
-
-    public Observable<MultiDensityImage> updateProfilePicture(@NonNull TypedFile picture){
+    /**
+     * @param picture that will be uploaded
+     * @param event Should either come from Onboarding or Account interface of Analytics
+     * @param source where the picture came from
+     * @return object with link to fetch image stored on server based on screen density
+     */
+    public Observable<MultiDensityImage> updateProfilePicture(@NonNull final TypedFile picture, @NonNull final String event, @NonNull final Source source){
         return apiService.uploadProfilePhoto(picture)
-                .doOnError(Functions.LOG_ERROR);
+                .doOnNext(ignored -> Analytics.trackEvent(event, Analytics.createProfilePhotoTrackingProperties(source)))
+                         .doOnError(Functions.LOG_ERROR);
     }
 
-    public Observable<VoidResponse> deleteProfilePicture(){
+    public Observable<VoidResponse> deleteProfilePicture() {
         return apiService.deleteProfilePhoto();
     }
+
+    //endregion
 
     //region Preferences
 

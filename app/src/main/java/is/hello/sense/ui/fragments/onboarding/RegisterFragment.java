@@ -509,10 +509,10 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void onUploadReady(@NonNull final TypedFile imageFile) {
+    public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         try{
-            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile),
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO,source),
                              photo -> Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload"),
                              e -> handleError(e, temporaryCopy));
 
@@ -530,6 +530,7 @@ public class RegisterFragment extends InjectionFragment
                 .resizeDimen(defaultDimen, defaultDimen)
                 .into(profileImageView);
         facebookPresenter.logout();
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
     }
 
     //endregion
