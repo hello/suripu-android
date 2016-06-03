@@ -167,6 +167,9 @@ public class TrendFeedView extends LinearLayout {
     }
 
     public boolean isAnimating() {
+        if (welcomeCard != null ){
+            return true;
+        }
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
             if (child instanceof TrendFeedViewItem) {
