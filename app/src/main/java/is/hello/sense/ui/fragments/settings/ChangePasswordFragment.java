@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
 import javax.inject.Inject;
 
@@ -33,7 +32,7 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class ChangePasswordFragment extends InjectionFragment {
+public class ChangePasswordFragment extends InjectionFragment implements Analytics.OnEventListener{
     private static final String ARG_EMAIL = ChangePasswordFragment.class.getName() + ".ARG_EMAIL";
 
     @Inject
@@ -64,10 +63,6 @@ public class ChangePasswordFragment extends InjectionFragment {
         this.email = getArguments().getString(ARG_EMAIL);
 
         setRetainInstance(true);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_PASSWORD, null);
-        }
     }
 
     @Nullable
@@ -155,6 +150,7 @@ public class ChangePasswordFragment extends InjectionFragment {
         Observable<OAuthSession> authorize = apiService.authorize(new OAuthCredentials(apiEndpoint, email, password));
         bindAndSubscribe(authorize,
                          session -> {
+                             onSuccess();
                              apiSessionManager.setSession(session);
                              getFragmentManager().popBackStack();
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
@@ -173,4 +169,11 @@ public class ChangePasswordFragment extends InjectionFragment {
         ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
+
+    //region Analytics.OnEvent Listener Methods
+    @Override
+    public void onSuccess() {
+        Analytics.trackEvent(Analytics.Account.EVENT_CHANGE_PASSWORD, null);
+    }
+    //endregion
 }

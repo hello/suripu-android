@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 
 import javax.inject.Inject;
 
@@ -28,7 +27,7 @@ import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class ChangeEmailFragment extends InjectionFragment {
+public class ChangeEmailFragment extends InjectionFragment implements Analytics.OnEventListener{
     @Inject
     AccountPresenter accountPresenter;
 
@@ -43,10 +42,6 @@ public class ChangeEmailFragment extends InjectionFragment {
         addPresenter(accountPresenter);
 
         setRetainInstance(true);
-
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_EMAIL, null);
-        }
     }
 
     @Nullable
@@ -106,6 +101,7 @@ public class ChangeEmailFragment extends InjectionFragment {
                                    null, LoadingDialogFragment.DEFAULTS);
         bindAndSubscribe(accountPresenter.updateEmail(newEmail),
                          ignored -> {
+                             onSuccess();
                              // After hibernation, finish appears to be synchronous and
                              // as such the fragment manager is immediately nulled out.
                              final FragmentManager fragmentManager = getFragmentManager();
@@ -138,4 +134,11 @@ public class ChangeEmailFragment extends InjectionFragment {
         ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
+
+    //region Analytics.OnEvent Listener Methods
+    @Override
+    public void onSuccess() {
+        Analytics.trackEvent(Analytics.Account.EVENT_CHANGE_EMAIL, null);
+    }
+    //endregion
 }
