@@ -43,7 +43,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     private SelectorView timeScaleSelector;
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
@@ -51,7 +51,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPresenter(trendsPresenter);
@@ -60,7 +60,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_trends, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
@@ -82,7 +82,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         swipeRefreshLayout.setRefreshing(true);
@@ -143,17 +143,17 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
                 .start();
     }
 
-    public void bindTrends(@NonNull Trends trends) {
+    public void bindTrends(@NonNull final Trends trends) {
         trendFeedView.bindTrends(trends);
         swipeRefreshLayout.setRefreshing(false);
         initialActivityIndicator.setVisibility(View.GONE);
 
-        List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
+        final List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
         if (availableTimeScales.size() > 1) {
             if (availableTimeScales.size() != timeScaleSelector.getButtonCount()) {
                 timeScaleSelector.removeAllButtons();
-                for (TimeScale timeScale : availableTimeScales) {
-                    ToggleButton button = timeScaleSelector.addOption(timeScale.titleRes, false);
+                for (final TimeScale timeScale : availableTimeScales) {
+                    final ToggleButton button = timeScaleSelector.addOption(timeScale.titleRes, false);
                     if (timeScale == trendsPresenter.getTimeScale()) {
                         timeScaleSelector.setSelectedButton(button);
                         fetchTrends();
@@ -169,9 +169,10 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
         } else {
             timeScaleSelector.setVisibility(View.GONE);
         }
+        isFinished();
     }
 
-    public void presentError(Throwable e) {
+    public void presentError(final Throwable e) {
         trendFeedView.presentError(this);
         timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
@@ -186,16 +187,16 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     }
 
     @Override
-    public void onSelectionChanged(int newSelectionIndex) {
+    public void onSelectionChanged(final int newSelectionIndex) {
         timeScaleSelector.clicked(newSelectionIndex);
         trendFeedView.setLoading(true);
         final TimeScale newTimeScale =
                 (TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
         trendsPresenter.setTimeScale(newTimeScale);
 
-        String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
+        final String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
                 (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
         Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
 
@@ -203,8 +204,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
 
     @Override
     public void isFinished() {
-        if (trendFeedView != null && timeScaleSelector != null) {
-            timeScaleSelector.setClickable(!trendFeedView.isAnimating());
+        if (trendFeedView != null && timeScaleSelector != null && !trendFeedView.isAnimating()) {
             timeScaleSelector.setEnabled(true);
         }
     }
