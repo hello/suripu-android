@@ -19,7 +19,8 @@
         android:layout_toRightOf="@id/item_profile_picture_image"
         android:layout_alignBottom="@id/item_profile_picture_image"
         android:paddingLeft="-2dp"
-        android:src="@drawable/icon_plus_button"/>
+        android:src="@drawable/icon_plus_button"
+        android:background="@color/transparent"/>
 
     <ProgressBar
         android:id="@+id/item_profile_progress_bar"
