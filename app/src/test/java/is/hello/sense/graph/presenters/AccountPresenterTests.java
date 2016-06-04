@@ -5,11 +5,16 @@ import junit.framework.Assert;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Sync;
+import retrofit.mime.TypedFile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -92,6 +97,23 @@ public class AccountPresenterTests extends InjectionTestCase {
         Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
         assertNotSame(accountBefore.getEmail(), accountAfter.getEmail());
         assertEquals("test@me.com", accountAfter.getEmail());
+    }
+
+    @Test
+    public void updateProfilePhoto() {
+        final File testFile = new File("src/tests/assets/photos/test_profile_photo.jpg");
+        final TypedFile typedFile = new TypedFile("multipart/form-data", testFile);
+        Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        MultiDensityImage imageAfter = Sync.last(accountPresenter
+                                                         .updateProfilePicture(typedFile,
+                                                                               Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO,
+                                                                               Analytics.ProfilePhoto.Source.CAMERA));
+        assertNotSame(accountBefore.getProfilePhoto(), imageAfter);
+
+        Account accountAfter =  Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        accountAfter.setProfilePhoto(imageAfter);
+
+        assertEquals(accountAfter.getProfilePhoto(), imageAfter);
     }
 
     //endregion

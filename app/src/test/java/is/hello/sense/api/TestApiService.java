@@ -159,7 +159,8 @@ public final class TestApiService implements ApiService {
     @Multipart
     @Override
     public Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("photo") TypedFile profilePhoto) {
-        return unimplemented();
+        return loadResponse("profile_photo", new TypeToken<MultiDensityImage>(){}
+                .getType());
     }
 
     @Override
