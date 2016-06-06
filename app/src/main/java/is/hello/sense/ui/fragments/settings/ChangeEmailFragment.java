@@ -35,7 +35,7 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
     private Button submitButton;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         accountPresenter.update();
@@ -46,8 +46,8 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_change_email, container, false);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_change_email, container, false);
 
         this.emailLET = (LabelEditText) view.findViewById(R.id.fragment_change_email_let);
         emailLET.setOnEditorActionListener(new EditorActionHandler(this::save));
@@ -59,7 +59,7 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         emailLET.setEnabled(false);
@@ -77,7 +77,7 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
     }
 
     public void save() {
-        String newEmail = AccountPresenter.normalizeInput(emailLET.getInputText());
+        final String newEmail = AccountPresenter.normalizeInput(emailLET.getInputText());
         emailLET.setInputText(newEmail);
         if (!AccountPresenter.validateEmail(newEmail)) {
             emailLET.setError(R.string.invalid_email);
@@ -112,7 +112,7 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
     }
 
 
-    public void bindAccount(@NonNull Account account) {
+    public void bindAccount(@NonNull final Account account) {
         emailLET.setInputText(account.getEmail());
 
         emailLET.setEnabled(true);
@@ -122,16 +122,16 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
         LoadingDialogFragment.close(getFragmentManager());
     }
 
-    public void presentError(@Nullable Throwable e) {
+    public void presentError(@Nullable final Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
 
         if (ApiException.statusEquals(e, 409)) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken, emailLET.getInputText()));
         }
 
-        ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 

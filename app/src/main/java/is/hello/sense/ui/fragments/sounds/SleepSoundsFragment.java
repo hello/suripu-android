@@ -328,7 +328,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         if (userWants != UserWants.NONE) {
             backOff += backOffIncrements;
             if (backOff > maxBackOff) {
-                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
+                ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getActivity())
                         .withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense))
                         .build();
                 errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -342,7 +342,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
 
     private void presentCommandError(final @Nullable Throwable error) {
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getResources())
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(error, getActivity())
                 .withMessage(StringRef.from(R.string.sleep_sounds_error_commanding))
                 .build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

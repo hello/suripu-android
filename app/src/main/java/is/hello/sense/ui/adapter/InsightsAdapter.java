@@ -26,6 +26,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.ui.widget.ParallaxImageView;
+import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -33,9 +34,14 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
 public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseViewHolder> {
-    @VisibleForTesting static final int TYPE_QUESTION = 0;
-    @VisibleForTesting static final int TYPE_INSIGHT = 1;
-    @VisibleForTesting static final int TYPE_ERROR = 2;
+    @VisibleForTesting
+    static final int TYPE_BANNER = 0;
+    @VisibleForTesting
+    static final int TYPE_QUESTION = 1;
+    @VisibleForTesting
+    static final int TYPE_INSIGHT = 2;
+    @VisibleForTesting
+    static final int TYPE_ERROR = 3;
 
     private final Context context;
     private final Resources resources;
@@ -46,27 +52,32 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     private OnRetry onRetry;
 
-    private @Nullable List<Insight> insights;
+    private
+    @Nullable
+    List<Insight> insights;
     private Question currentQuestion;
     private int loadingInsightPosition = RecyclerView.NO_POSITION;
 
+    private boolean showWhatsNew = false;
 
-    public InsightsAdapter(@NonNull Context context,
-                           @NonNull DateFormatter dateFormatter,
-                           @NonNull InteractionListener interactionListener,
-                           @NonNull Picasso picasso) {
+
+    public InsightsAdapter(@NonNull final Context context,
+                           @NonNull final DateFormatter dateFormatter,
+                           @NonNull final InteractionListener interactionListener,
+                           @NonNull final Picasso picasso) {
         this.context = context;
         this.resources = context.getResources();
         this.dateFormatter = dateFormatter;
         this.picasso = picasso;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
+        this.showWhatsNew = WhatsNewLayout.shouldShow(context);
     }
 
 
     //region Bindings
 
-    public void bindQuestion(@Nullable Question question) {
+    public void bindQuestion(@Nullable final Question question) {
         interactionListener.onDismissLoadingIndicator();
 
         this.currentQuestion = question;
@@ -75,7 +86,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void questionUnavailable(@Nullable Throwable e) {
+    public void questionUnavailable(@Nullable final Throwable e) {
         Analytics.trackError(e, "Loading questions");
         Logger.error(getClass().getSimpleName(), "Could not load questions", e);
 
@@ -85,7 +96,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void bindInsights(@NonNull List<Insight> insights) {
+    public void bindInsights(@NonNull final List<Insight> insights) {
         interactionListener.onDismissLoadingIndicator();
 
         this.insights = insights;
@@ -94,7 +105,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void insightsUnavailable(@Nullable Throwable e, @NonNull InsightsAdapter.OnRetry onRetry) {
+    public void insightsUnavailable(@Nullable final Throwable e, @NonNull final InsightsAdapter.OnRetry onRetry) {
         Analytics.trackError(e, "Loading Insights");
         Logger.error(getClass().getSimpleName(), "Could not load insights", e);
         interactionListener.onDismissLoadingIndicator();
@@ -126,7 +137,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         notifyDataSetChanged();
     }
 
-    public void setLoadingInsightPosition(int loadingInsightPosition) {
+    public void setLoadingInsightPosition(final int loadingInsightPosition) {
         if (this.loadingInsightPosition != RecyclerView.NO_POSITION) {
             notifyItemChanged(this.loadingInsightPosition);
         }
@@ -154,37 +165,67 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             count++;
         }
 
+        if (showWhatsNew) {
+            count++;
+        }
+
         return count;
     }
 
-    public Insight getInsightItem(int position) {
-        if (insights != null) {
-            final int adjustedPosition = currentQuestion != null ? position - 1 : position;
-            return insights.get(adjustedPosition);
+    public Insight getInsightItem(final int position) {
+        if (position == 0) {
+            if (showWhatsNew) {
+                return null;
+            }
+            if (currentQuestion != null) {
+                return null;
+            }
+        } else if (position == 1 && showWhatsNew && currentQuestion != null) {
+            return null;
+        }
+        int offset = 0;
+        if (showWhatsNew) {
+            offset++;
+        }
+        if (currentQuestion != null) {
+            offset++;
+        }
+
+        final int positionOffset = position - offset;
+        if (insights != null && positionOffset < insights.size()) {
+            return insights.get(positionOffset);
         } else {
             return null;
         }
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return position;
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (position == 0 && currentQuestion != null) {
-            return TYPE_QUESTION;
-        } else {
-            if (position == 0 && getInsightItem(0).isError()){
+    public int getItemViewType(final int position) {
+        if (position == 0) {
+            if (insights != null
+                    && insights.size() == 1
+                    && insights.get(0).isError()) {
                 return TYPE_ERROR;
             }
-            return TYPE_INSIGHT;
+            if (showWhatsNew) {
+                return TYPE_BANNER;
+            }
+            if (currentQuestion != null) {
+                return TYPE_QUESTION;
+            }
+        } else if (position == 1 && showWhatsNew && currentQuestion != null) {
+            return TYPE_QUESTION;
         }
+        return TYPE_INSIGHT;
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         for (int i = 0; i < recyclerView.getChildCount(); i++) {
             final View view = recyclerView.getChildAt(i);
@@ -198,8 +239,17 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     //region Views
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
+            case TYPE_BANNER: {
+                final WhatsNewLayout layout = new WhatsNewLayout(context);
+                layout.setId(R.id.insights_adapter_whats_new_layout);
+                layout.setListener(() -> {
+                    showWhatsNew = false;
+                    notifyDataSetChanged();
+                });
+                return new WhatsNewViewHolder(layout);
+            }
             case TYPE_QUESTION: {
                 final View view = inflater.inflate(R.layout.sub_fragment_new_question, parent, false);
                 return new QuestionViewHolder(view);
@@ -219,26 +269,39 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     }
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         holder.bind(position);
     }
 
     @Override
-    public void onViewRecycled(BaseViewHolder holder) {
+    public void onViewRecycled(final BaseViewHolder holder) {
         holder.unbind(false);
     }
 
     abstract class BaseViewHolder extends ParallaxRecyclerViewHolder {
-        BaseViewHolder(@NonNull View itemView) {
+        BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
         }
 
-        abstract void bind(int position);
-        void unbind(boolean isFinal) {
+        abstract void bind(final int position);
+
+        void unbind(final boolean isFinal) {
         }
 
         @Override
-        public void setParallaxPercent(float percent) {
+        public void setParallaxPercent(final float percent) {
+
+        }
+    }
+
+    class WhatsNewViewHolder extends BaseViewHolder {
+
+        WhatsNewViewHolder(@NonNull final View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        void bind(final int position) {
 
         }
     }
@@ -246,7 +309,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     class QuestionViewHolder extends BaseViewHolder {
         final TextView title;
 
-        QuestionViewHolder(@NonNull View view) {
+        QuestionViewHolder(@NonNull final View view) {
             super(view);
 
             this.title = (TextView) view.findViewById(R.id.sub_fragment_new_question_title);
@@ -259,16 +322,16 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
 
-        void skip(@NonNull View ignored) {
+        void skip(@NonNull final View ignored) {
             interactionListener.onSkipQuestion();
         }
 
-        void answer(@NonNull View ignored) {
+        void answer(@NonNull final View ignored) {
             interactionListener.onAnswerQuestion();
         }
 
         @Override
-        void bind(int ignored) {
+        void bind(final int ignored) {
             title.setText(currentQuestion.getText());
         }
     }
@@ -277,7 +340,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView message;
         final Button action;
 
-        ErrorViewHolder(@NonNull View view) {
+        ErrorViewHolder(@NonNull final View view) {
             super(view);
 
             final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
@@ -289,26 +352,27 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             action.setText(R.string.action_retry);
             message.setText(getInsightItem(position).getMessage());
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(final View v) {
             if (onRetry != null) {
                 onRetry.fetchInsights();
             }
         }
 
     }
+
     public class InsightViewHolder extends BaseViewHolder implements View.OnClickListener {
         final TextView body;
         final TextView date;
         final TextView category;
         public final ParallaxImageView image;
 
-        InsightViewHolder(@NonNull View view) {
+        InsightViewHolder(@NonNull final View view) {
             super(view);
             this.body = (TextView) view.findViewById(R.id.item_insight_body);
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
@@ -319,7 +383,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             final Insight insight = getInsightItem(position);
             final DateTime insightCreated = insight.getCreated();
             if (insightCreated == null && Insight.CATEGORY_IN_APP_ERROR.equals(insight.getCategory())) {
@@ -355,7 +419,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        void unbind(boolean isFinal) {
+        void unbind(final boolean isFinal) {
             image.clearAnimation();
 
             if (isFinal) {
@@ -366,7 +430,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        public void onClick(View ignored) {
+        public void onClick(final View ignored) {
             // View dispatches OnClickListener#onClick(View) calls on
             // the next looper cycle. It's possible for the adapter's
             // containing recycler view to update and invalidate a
@@ -382,7 +446,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         }
 
         @Override
-        public void setParallaxPercent(float percent) {
+        public void setParallaxPercent(final float percent) {
             image.setParallaxPercent(percent);
         }
     }
@@ -394,8 +458,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     public interface InteractionListener {
         void onDismissLoadingIndicator();
+
         void onSkipQuestion();
+
         void onAnswerQuestion();
+
         void onInsightClicked(@NonNull InsightViewHolder viewHolder);
     }
 }

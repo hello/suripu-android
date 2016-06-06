@@ -96,7 +96,7 @@ public class AttachmentPicker {
 
             this.pendingCapturePath = imageLocation.getAbsolutePath();
         } catch (IOException | ActivityNotFoundException e) {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, fragment.getResources())
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, fragment.getActivity())
                     .withMessage(StringRef.from(R.string.error_image_capture_failed))
                     .build();
             errorDialogFragment.showAllowingStateLoss(fragment.getFragmentManager(), ErrorDialogFragment.TAG);
@@ -113,7 +113,7 @@ public class AttachmentPicker {
             Intent pickerIntent = Intent.createChooser(getContentIntent, fragment.getString(R.string.action_pick_image));
             fragment.startActivityForResult(pickerIntent, REQUEST_CODE_PICK_IMAGE);
         } catch (ActivityNotFoundException e) {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, fragment.getResources())
+            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, fragment.getActivity())
                     .withMessage(StringRef.from(R.string.error_pick_image_failed))
                     .build();
             errorDialogFragment.showAllowingStateLoss(fragment.getFragmentManager(), ErrorDialogFragment.TAG);

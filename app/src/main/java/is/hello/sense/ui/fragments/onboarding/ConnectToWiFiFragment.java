@@ -422,13 +422,13 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
+            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation(operation);
 
             if (e instanceof SenseSetWifiValidationError &&
                     ((SenseSetWifiValidationError) e).reason == SenseSetWifiValidationError.Reason.MALFORMED_BYTES) {
                 final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
-                final Intent intent = UserSupport.createViewUriIntent(getResources(), uri);
+                final Intent intent = UserSupport.createViewUriIntent(getActivity(), uri);
                 errorDialogBuilder.withAction(intent, R.string.action_support);
             } else {
                 errorDialogBuilder.withSupportLink();

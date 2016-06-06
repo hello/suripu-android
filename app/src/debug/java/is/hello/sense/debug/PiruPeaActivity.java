@@ -181,7 +181,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
 
     public void presentError(Throwable e) {
         hideLoadingIndicator();
-        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources())
+        ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, this)
                 .withSupportLink()
                 .build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

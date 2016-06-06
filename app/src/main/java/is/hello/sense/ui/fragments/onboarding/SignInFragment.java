@@ -223,7 +223,7 @@ public class SignInFragment extends InjectionFragment
             LoadingDialogFragment.close(getFragmentManager());
 
             final ErrorDialogFragment.Builder errorDialogBuilder =
-                    new ErrorDialogFragment.Builder(error, getResources());
+                    new ErrorDialogFragment.Builder(error, getActivity());
             if (ApiException.statusEquals(error, 401)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_invalid_credentials));
             }

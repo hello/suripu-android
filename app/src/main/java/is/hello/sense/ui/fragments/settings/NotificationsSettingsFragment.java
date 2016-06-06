@@ -51,7 +51,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     private SettingsRecyclerAdapter.ToggleItem pushAlertConditionsItem;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -61,7 +61,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.static_recycler, container, false);
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.static_recycler_view_loading);
@@ -86,16 +86,12 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
         this.pushScoreItem =
-                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_sleep_score), () -> {
-                    updatePreference(PreferencesPresenter.PUSH_SCORE_ENABLED, pushScoreItem);
-                });
+                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_sleep_score), () -> updatePreference(PreferencesPresenter.PUSH_SCORE_ENABLED, pushScoreItem));
         adapter.add(pushScoreItem);
 
         decoration.addBottomInset(adapter.getItemCount(), verticalPadding);
         this.pushAlertConditionsItem =
-                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_alert_conditions), () -> {
-                    updatePreference(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, pushAlertConditionsItem);
-                });
+                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_alert_conditions), () -> updatePreference(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, pushAlertConditionsItem));
         adapter.add(pushAlertConditionsItem);
 
         recyclerView.setAdapter(adapter);
@@ -104,7 +100,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         showLoading();
@@ -147,7 +143,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
@@ -166,16 +162,16 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    public void pullingPreferencesFailed(Throwable e) {
+    public void pullingPreferencesFailed(final Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
 
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
 
-    public void updatePreference(@NonNull String key, @NonNull SettingsRecyclerAdapter.ToggleItem item) {
+    public void updatePreference(@NonNull final String key, @NonNull final SettingsRecyclerAdapter.ToggleItem item) {
         final boolean update = !item.getValue();
         preferences.edit()
                    .putBoolean(key, update)
@@ -186,7 +182,7 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     }
 
     @Override
-    public boolean handleMessage(Message msg) {
+    public boolean handleMessage(final Message msg) {
         if (msg.what == MSG_PUSH_PREFERENCES) {
             accountPresenter.pushAccountPreferences();
             return true;

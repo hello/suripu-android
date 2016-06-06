@@ -1,58 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<is.hello.sense.ui.widget.RoundedLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedLinearLayout
     android:id="@+id/sub_fragment_new_question"
-    android:orientation="vertical"
+    style="@style/AppTheme.Card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/AppTheme.Card">
+    android:layout_marginLeft="@dimen/x1"
+    android:layout_marginRight="@dimen/x1"
+    android:layout_marginTop="@dimen/x1"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/gap_outer"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"
-        android:text="@string/label_new_question"/>
+        android:text="@string/label_new_question"
+        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
 
     <TextView
         android:id="@+id/sub_fragment_new_question_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/gap_small"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_small"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Body.New"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body" />
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:textAppearance="@style/AppTheme.Text.Body.New"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/sub_fragment_new_question_skip"
+            style="@style/AppTheme.Button.Dialog"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="@dimen/gap_outer"
-            android:text="@string/action_skip"
-            style="@style/AppTheme.Button.Dialog"/>
+            android:text="@string/action_skip"/>
 
         <View
-            android:layout_marginTop="@dimen/gap_medium"
+            style="@style/Divider.Vertical"
             android:layout_marginBottom="@dimen/gap_medium"
-            style="@style/Divider.Vertical" />
+            android:layout_marginTop="@dimen/gap_medium"/>
 
         <Button
             android:id="@+id/sub_fragment_new_question_answer"
+            style="@style/AppTheme.Button.Dialog.Positive"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="@dimen/gap_outer"
-            android:text="@string/action_answer"
-            style="@style/AppTheme.Button.Dialog.Positive"/>
+            android:text="@string/action_answer"/>
 
     </LinearLayout>
 

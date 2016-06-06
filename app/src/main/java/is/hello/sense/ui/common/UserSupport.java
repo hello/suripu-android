@@ -2,13 +2,16 @@ package is.hello.sense.ui.common;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 
 import com.segment.analytics.Properties;
 
@@ -25,21 +28,21 @@ public class UserSupport {
     public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
 
-    public static Intent createViewUriIntent(@NonNull Resources resources, @NonNull Uri uri) {
+    public static Intent createViewUriIntent(@NonNull final Context context, @NonNull final Uri uri) {
         final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
-        builder.setToolbarColor(resources.getColor(R.color.light_accent));
+        builder.setToolbarColor(ContextCompat.getColor(context, R.color.light_accent));
 
         final Intent intent = builder.build().intent;
         intent.setData(uri);
         return intent;
     }
 
-    public static void openUri(@NonNull Activity from, @NonNull Uri uri) {
+    public static void openUri(@NonNull final Context from, @NonNull final Uri uri) {
         try {
-            final Intent intent = createViewUriIntent(from.getResources(), uri);
+            final Intent intent = createViewUriIntent(from, uri);
             from.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
             alertDialog.setMessage(R.string.error_no_web_browser);
@@ -48,7 +51,7 @@ public class UserSupport {
         }
     }
 
-    public static void showProductPage(@NonNull Activity from) {
+    public static void showProductPage(@NonNull final Activity from) {
         String packageName = BuildConfig.APPLICATION_ID;
         if (BuildConfig.DEBUG) {
             packageName = packageName.replace(".debug", "");
@@ -61,7 +64,7 @@ public class UserSupport {
                     .appendQueryParameter("id", packageName)
                     .build();
             from.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             Logger.info(UserSupport.class.getSimpleName(), "Market unavailable", e);
 
             final Uri webUri = new Uri.Builder()
@@ -76,7 +79,7 @@ public class UserSupport {
         }
     }
 
-    public static void showAmazonReviewPage(@NonNull Activity from) {
+    public static void showAmazonReviewPage(@NonNull final Activity from) {
         final Uri amazonReviewUri = new Uri.Builder()
                 .scheme("https")
                 .authority("www.amazon.com")
@@ -90,14 +93,14 @@ public class UserSupport {
         openUri(from, amazonReviewUri);
     }
 
-    public static void showUserGuide(@NonNull Activity from) {
+    public static void showUserGuide(@NonNull final Activity from) {
         Analytics.trackEvent(Analytics.Backside.EVENT_HELP, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is");
         openUri(from, supportUrl);
     }
 
-    public static void showContactForm(@NonNull Activity from) {
+    public static void showContactForm(@NonNull final Activity from) {
         Analytics.trackEvent(Analytics.Backside.EVENT_CONTACT_SUPPORT, null);
 
         final FragmentNavigationActivity.Builder builder = new FragmentNavigationActivity.Builder(from);
@@ -106,7 +109,7 @@ public class UserSupport {
         from.startActivity(builder.toIntent());
     }
 
-    public static void showForOnboardingStep(@NonNull Activity from, @NonNull OnboardingStep onboardingStep) {
+    public static void showForOnboardingStep(@NonNull final Activity from, @NonNull final OnboardingStep onboardingStep) {
         final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
                                                                  onboardingStep.toProperty());
         Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, properties);
@@ -114,7 +117,7 @@ public class UserSupport {
         openUri(from, onboardingStep.getUri());
     }
 
-    public static void showForDeviceIssue(@NonNull Activity from, @NonNull DeviceIssue issue) {
+    public static void showForDeviceIssue(@NonNull final Activity from, @NonNull final DeviceIssue issue) {
         final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  issue.toProperty());
         Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
@@ -122,7 +125,7 @@ public class UserSupport {
         openUri(from, issue.getUri());
     }
 
-    public static void showReplaceBattery(@NonNull Activity from) {
+    public static void showReplaceBattery(@NonNull final Activity from) {
         final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "replace-battery");
         Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
@@ -131,7 +134,7 @@ public class UserSupport {
         openUri(from, issueUri);
     }
 
-    public static void showSupportedDevices(@NonNull Activity from) {
+    public static void showSupportedDevices(@NonNull final Activity from) {
         final Properties properties = Analytics.createProperties(Analytics.Backside.PROP_TROUBLESHOOTING_ISSUE,
                                                                  "supported-devices");
         Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
@@ -140,14 +143,14 @@ public class UserSupport {
         openUri(from, issueUri);
     }
 
-    public static void showLocationPermissionMoreInfoPage(@NonNull Activity from) {
+    public static void showLocationPermissionMoreInfoPage(@NonNull final Activity from) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_LOCATION_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/207716923");
         openUri(from, supportUrl);
     }
 
-    public static void showStoragePermissionMoreInfoPage(@NonNull Activity from) {
+    public static void showStoragePermissionMoreInfoPage(@NonNull final Activity from) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_STORAGE_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/209777573");
@@ -161,16 +164,21 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
-    public static void showFacebookAutoFillMoreInfoPage(@NonNull Activity from){
+    public static void showFacebookAutoFillMoreInfoPage(@NonNull final Activity from){
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210329423");
         openUri(from, supportUrl);
     }
 
-    public static void showAppSettings(@NonNull Activity from) {
+    public static void showLearnMore(@NonNull final Context from, @StringRes final int stringRes) {
+        final Uri supportUrl = Uri.parse(from.getString(stringRes));
+        openUri(from, supportUrl);
+    }
+
+    public static void showAppSettings(@NonNull final Activity from) {
         try {
             from.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                                           Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)));
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
             alertDialog.setMessage(R.string.error_no_settings_app);
@@ -191,7 +199,8 @@ public class UserSupport {
         TIMELINE_NO_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/205706435");
 
         private final String url;
-        DeviceIssue(@NonNull String url) {
+
+        DeviceIssue(@NonNull final String url) {
             this.url = url;
         }
 
@@ -219,7 +228,8 @@ public class UserSupport {
         ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289");
 
         private final String url;
-        OnboardingStep(@NonNull String url) {
+
+        OnboardingStep(@NonNull final String url) {
             this.url = url;
         }
 
@@ -231,7 +241,7 @@ public class UserSupport {
             return toString().toLowerCase();
         }
 
-        public static OnboardingStep fromString(@Nullable String string) {
+        public static OnboardingStep fromString(@Nullable final String string) {
             return Enums.fromString(string, values(), INFO);
         }
     }

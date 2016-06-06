@@ -310,7 +310,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void accountUnavailable(final Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }

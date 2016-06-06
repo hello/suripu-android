@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,10 +18,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
@@ -29,6 +33,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
@@ -50,6 +55,8 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
+import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -67,36 +74,51 @@ public class InsightsFragment extends BacksideTabFragment
     private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
     private static final float FOCUSED_CONTENT_ALPHA = 1f;
 
-    @Inject InsightsPresenter insightsPresenter;
-    @Inject DateFormatter dateFormatter;
-    @Inject LocalUsageTracker localUsageTracker;
-    @Inject DeviceIssuesPresenter deviceIssuesPresenter;
-    @Inject PreferencesPresenter preferences;
-    @Inject QuestionsPresenter questionsPresenter;
-    @Inject Picasso picasso;
+    @Inject
+    InsightsPresenter insightsPresenter;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    LocalUsageTracker localUsageTracker;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    QuestionsPresenter questionsPresenter;
+    @Inject
+    Picasso picasso;
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
 
-    private @Nullable TutorialOverlayView tutorialOverlayView;
-    private @Nullable InsightsAdapter.InsightViewHolder selectedInsightHolder;
+    private
+    @Nullable
+    TutorialOverlayView tutorialOverlayView;
+    private
+    @Nullable
+    InsightsAdapter.InsightViewHolder selectedInsightHolder;
 
     private boolean questionLoaded = false, insightsLoaded = false;
-    private @Nullable Question currentQuestion;
-    private @NonNull List<Insight> insights = Collections.emptyList();
+    private
+    @Nullable
+    Question currentQuestion;
+    private
+    @NonNull
+    List<Insight> insights = Collections.emptyList();
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
+        if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         deviceIssuesPresenter.bindScope(getScope());
@@ -112,7 +134,7 @@ public class InsightsFragment extends BacksideTabFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_insights, container, false);
 
         this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
@@ -123,24 +145,28 @@ public class InsightsFragment extends BacksideTabFragment
 
         final Resources resources = getResources();
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new CardItemDecoration(resources));
+        recyclerView.setHasFixedSize(false);
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
         recyclerView.setItemAnimator(null);
+        recyclerView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-
+        recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
+        final InsetItemDecoration decoration = new InsetItemDecoration();
+
+        decoration.addBottomInset(insightsAdapter.getItemCount(), resources.getDimensionPixelSize(R.dimen.x2));
+        recyclerView.addItemDecoration(decoration);
 
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Combining these into a single Observable results in error
@@ -226,9 +252,7 @@ public class InsightsFragment extends BacksideTabFragment
                 tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
-            tutorialOverlayView.setOnDismiss(() -> {
-                this.tutorialOverlayView = null;
-            });
+            tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
             tutorialOverlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
                 if (tutorialOverlayView != null && getUserVisibleHint()) {
@@ -238,18 +262,18 @@ public class InsightsFragment extends BacksideTabFragment
         }
     }
 
-    private void bindInsights(@NonNull List<Insight> insights) {
+    private void bindInsights(@NonNull final List<Insight> insights) {
         this.insights = insights;
         this.insightsLoaded = true;
         bindPendingIfReady();
     }
 
-    private void insightsUnavailable(@Nullable Throwable e) {
+    private void insightsUnavailable(@Nullable final Throwable e) {
         progressBar.setVisibility(View.GONE);
         insightsAdapter.insightsUnavailable(e, this);
     }
 
-    private void bindQuestion(@Nullable Question question) {
+    private void bindQuestion(@Nullable final Question question) {
         // Prevent consecutive null question binds from causing redundant reloads.
         if (question == this.currentQuestion && questionLoaded) {
             return;
@@ -260,7 +284,7 @@ public class InsightsFragment extends BacksideTabFragment
         bindPendingIfReady();
     }
 
-    private void questionUnavailable(@Nullable Throwable e) {
+    private void questionUnavailable(@Nullable final Throwable e) {
         progressBar.setVisibility(View.GONE);
         insightsAdapter.questionUnavailable(e);
     }
@@ -301,7 +325,7 @@ public class InsightsFragment extends BacksideTabFragment
 
     @Override
     @Nullable
-    public InsightInfoFragment.SharedState provideSharedState(boolean isEnter) {
+    public InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
             Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
@@ -331,7 +355,7 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
+    public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
         final Insight insight = viewHolder.getInsight();
         if (insight.isError()) {
             return;
@@ -358,11 +382,9 @@ public class InsightsFragment extends BacksideTabFragment
     //region Questions
 
     public void updateQuestion() {
-        final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> {
-            return (issue == DeviceIssuesPresenter.Issue.NONE &&
-                    localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                    !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false));
-        });
+        final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> (issue == DeviceIssuesPresenter.Issue.NONE &&
+                localUsageTracker.isUsageAcceptableForRatingPrompt() &&
+                !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
                                    if (!preferences.getBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false) &&
@@ -392,12 +414,10 @@ public class InsightsFragment extends BacksideTabFragment
     public void onSkipQuestion() {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(questionsPresenter.skipQuestion(false),
-                         ignored -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                         },
+                         ignored -> LoadingDialogFragment.close(getFragmentManager()),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
+                             ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity()).build();
                              errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
                          });
     }
@@ -425,7 +445,7 @@ public class InsightsFragment extends BacksideTabFragment
 
     private final BroadcastReceiver REVIEW_ACTION_RECEIVER = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             final int response = intent.getIntExtra(ReviewQuestionProvider.EXTRA_RESPONSE,
                                                     ReviewQuestionProvider.RESPONSE_SUPPRESS_TEMPORARILY);
             switch (response) {
@@ -470,4 +490,19 @@ public class InsightsFragment extends BacksideTabFragment
         }
     };
 
+    static class BottomInsetDecoration extends RecyclerView.ItemDecoration {
+        private final int bottomPadding;
+
+        public BottomInsetDecoration(@NonNull final Resources resources) {
+            this.bottomPadding = resources.getDimensionPixelSize(R.dimen.x1);
+        }
+
+        @Override
+        public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
+            final int position = parent.getChildAdapterPosition(view);
+            if (position == parent.getAdapter().getItemCount() - 1) {
+                outRect.bottom = bottomPadding;
+            }
+        }
+    }
 }

@@ -367,7 +367,7 @@ public class RegisterFragment extends InjectionFragment
             }
 
             final ErrorDialogFragment.Builder errorDialogBuilder =
-                    new ErrorDialogFragment.Builder(error, getResources());
+                    new ErrorDialogFragment.Builder(error, getActivity());
 
             if (ApiException.statusEquals(error, 409)) {
 

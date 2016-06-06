@@ -84,6 +84,7 @@
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_large</item>
         <item name="android:textColor">@color/standard</item>
     </style>
+
     ​
     ​ ​
 </resources>

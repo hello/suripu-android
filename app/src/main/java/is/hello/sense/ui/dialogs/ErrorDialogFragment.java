@@ -2,6 +2,7 @@ package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -44,7 +45,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     //region Lifecycle
 
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e, @StringRes final int titleRes){
-        final ErrorDialogFragment fragment = new Builder(e, activity.getResources())
+        final ErrorDialogFragment fragment = new Builder(e, activity)
                 .withTitle(titleRes)
                 .build();
         fragment.showAllowingStateLoss(activity.getFragmentManager(), TAG);
@@ -162,14 +163,14 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         public Builder() {
         }
 
-        public Builder(@Nullable Throwable e, @NonNull Resources resources) {
+        public Builder(@Nullable Throwable e, @NonNull Context context) {
             withMessage(Errors.getDisplayMessage(e));
             withErrorType(Errors.getType(e));
             withContextInfo(Errors.getContextInfo(e));
             withWarning(ApiException.isNetworkError(e));
 
             if (BuruberiException.isInstabilityLikely(e)) {
-                withUnstableBluetoothHelp(resources);
+                withUnstableBluetoothHelp(context);
             }
         }
 
@@ -224,9 +225,9 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return this;
         }
 
-        public Builder withUnstableBluetoothHelp(@NonNull Resources resources) {
+        public Builder withUnstableBluetoothHelp(@NonNull Context context) {
             final Uri uri = UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri();
-            final Intent intent = UserSupport.createViewUriIntent(resources, uri);
+            final Intent intent = UserSupport.createViewUriIntent(context, uri);
             withAction(intent, R.string.action_more_info);
             withAddendum(R.string.error_addendum_unstable_stack);
             return this;
