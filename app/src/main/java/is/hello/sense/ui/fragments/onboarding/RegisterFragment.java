@@ -84,7 +84,6 @@ public class RegisterFragment extends InjectionFragment
 
     private ProfileImageView profileImageView;
     private ProfileImageManager profileImageManager;
-    private final ExternalStoragePermission externalStoragePermission = ExternalStoragePermission.forCamera(this);
     private Button autofillFacebookButton;
     private Account account;
     private LabelEditText firstNameTextLET;
@@ -162,11 +161,7 @@ public class RegisterFragment extends InjectionFragment
         profileImageManager = builder.addFragmentListener(this).build();
 
         final View.OnClickListener profileImageOnClickListener = (v) -> {
-            if(externalStoragePermission.isGranted()) {
-                profileImageManager.showPictureOptions();
-            } else {
-                externalStoragePermission.requestPermissionWithDialogForCamera();
-            }
+            profileImageManager.showPictureOptions();
         };
 
         profileImageView.setOnClickListener(profileImageOnClickListener);
@@ -247,11 +242,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            profileImageManager.showPictureOptions();
-        } else {
-            externalStoragePermission.showEnableInstructionsDialogForCamera();
-        }
+        profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -485,6 +476,8 @@ public class RegisterFragment extends InjectionFragment
             autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
         }
         //Todo should? passwordTextLET.requestFocus();
+
+        profileImageManager.setImageSource(Analytics.ProfilePhoto.Source.FACEBOOK);
     }
 
     private void onFacebookProfileError(@NonNull final Throwable throwable) {

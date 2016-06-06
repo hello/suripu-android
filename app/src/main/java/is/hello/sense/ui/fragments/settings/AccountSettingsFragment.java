@@ -80,7 +80,6 @@ public class AccountSettingsFragment extends InjectionFragment
     ProfileImageManager.Builder builder;
 
     private ProfileImageManager profileImageManager;
-    private final ExternalStoragePermission permission = ExternalStoragePermission.forCamera(this);
 
     private ProgressBar loadingIndicator;
 
@@ -259,11 +258,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            profileImageManager.showPictureOptions();
-        } else {
-            permission.showEnableInstructionsDialogForCamera();
-        }
+        profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 
     //endregion
@@ -340,11 +335,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
     private void changePicture() {
-        if (permission.isGranted()) {
-            profileImageManager.showPictureOptions();
-        } else {
-            permission.requestPermissionWithDialogForCamera();
-        }
+        profileImageManager.showPictureOptions();
     }
 
     public void changeName() {

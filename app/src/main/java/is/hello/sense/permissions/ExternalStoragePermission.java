@@ -21,21 +21,24 @@ public class ExternalStoragePermission extends Permission {
         super(fragment, negativeText, positiveText);
     }
 
-    public static ExternalStoragePermission forCamera(@NonNull Fragment fragment) {
-        return new ExternalStoragePermission(fragment, R.string.action_deny, R.string.action_ok);
-    }
-
     public void requestPermissionWithDialogForCamera(){
         requestPermissionWithDialog(
-                SenseAlertDialog.NO_TITLE_ID,
+                R.string.request_permission_write_external_storage_title,
                 R.string.request_permission_write_external_storage_for_profile_picture,
-                (dialog, which) -> dialog.dismiss());
+                (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 
     public void showEnableInstructionsDialogForCamera(){
-        showEnableInstructionsDialog(SenseAlertDialog.NO_TITLE_ID,
-                                     R.string.request_permission_write_external_storage_for_profile_picture,
+        showEnableInstructionsDialog(R.string.request_permission_write_external_storage_required_title,
+                                     R.string.request_permission_write_external_storage_required_message,
                                      (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
+    }
+
+    public void requestPermissionWithDialogForGallery(){
+        requestPermissionWithDialog(
+                R.string.request_permission_write_external_storage_title,
+                R.string.request_permission_write_external_storage_for_profile_picture,
+                (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 
     @Override
