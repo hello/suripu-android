@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Camera;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -66,21 +67,10 @@ public class ImageUtil {
     public @Nullable File createFile(boolean isTemporary){
         final File storageDir = getStorageDirectory();
 
-        try {
-            if(isTemporary){
-                return File.createTempFile(
-                        getFullFileName(imageFileName),
-                        fileFormat,
-                        storageDir);
-            } else{
-                return new File(storageDir,getFullFileName(imageFileName) + fileFormat);
-            }
-        } catch (IOException exception){
-            Logger.error(
-                    ImageUtil.class.getSimpleName(),
-                    "unable to create image file in directory " + storageDir,
-                    exception);
-            return null;
+        if(isTemporary){
+            return getCacheFile(getFullFileName(imageFileName));
+        } else{
+            return new File(storageDir,getFullFileName(imageFileName) + fileFormat);
         }
     }
 
@@ -97,10 +87,10 @@ public class ImageUtil {
                 byte[] compressedByteArray;
                 final File freshTempFile = createFile(true);
                 //final String writePath = freshTempFile != null ? freshTempFile.getAbsolutePath() : "";
-                if(mustDownload){
+                if (mustDownload) {
                     compressedByteArray = compressToByteArray(
                             decodeBitmapFromUrlStream(path));
-                } else{
+                } else {
                     compressedByteArray = compressToByteArray(
                             applyTransformationAndCompression(path));
                 }
@@ -257,4 +247,42 @@ public class ImageUtil {
         }
 
     }
+
+    private File getCacheFile(@NonNull final String url) {
+        final String fileName = Uri.parse(url).getLastPathSegment();
+        final File file = new File(context.getCacheDir(), fileName);
+        file.deleteOnExit();
+        return file;
+    }
+
+
+    public void trimCache() {
+        try {
+            final File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            //todo log?
+        }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            final String[] children = dir.list();
+            for (String child : children) {
+                boolean success = deleteDir(new File(dir, child));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        if (dir == null) {
+            return false;
+        }
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
+
+
 }
