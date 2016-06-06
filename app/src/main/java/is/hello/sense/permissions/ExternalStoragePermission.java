@@ -21,24 +21,10 @@ public class ExternalStoragePermission extends Permission {
         super(fragment, negativeText, positiveText);
     }
 
-    public void requestPermissionWithDialogForCamera(){
-        requestPermissionWithDialog(
-                R.string.request_permission_write_external_storage_title,
-                R.string.request_permission_write_external_storage_for_profile_picture,
-                (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
-    }
-
-    public void showEnableInstructionsDialogForCamera(){
+    public void showEnableInstructionsDialogForGallery(){
         showEnableInstructionsDialog(R.string.request_permission_write_external_storage_required_title,
-                                     R.string.request_permission_write_external_storage_required_message,
+                                     R.string.request_permission_write_external_storage_required_message_gallery,
                                      (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
-    }
-
-    public void requestPermissionWithDialogForGallery(){
-        requestPermissionWithDialog(
-                R.string.request_permission_write_external_storage_title,
-                R.string.request_permission_write_external_storage_for_profile_picture,
-                (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 
     @Override

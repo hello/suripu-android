@@ -214,6 +214,15 @@ public class ProfileImageManager {
 
     //region permission checks
 
+    public void onRequestPermissionResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            handlePictureOptionSelection(optionSelectedId);
+            optionSelectedId = -1;
+        } else {
+            permission.showEnableInstructionsDialogForGallery();
+        }
+    }
+
     //endregion
 
     //region Camera Options
@@ -227,22 +236,18 @@ public class ProfileImageManager {
                 setImageSource(FACEBOOK);
                 break;
             case OPTION_ID_FROM_CAMERA:
-                if(permission.isGranted()){
-                    final File imageFile = imageUtil.createFile(false);
-                    if(imageFile != null){
-                        final Uri imageUri = Uri.fromFile(imageFile);
-                        setTempImageUri(imageUri);
-                        Fetch.imageFromCamera().fetch(fragment, imageUri);
-                    }
-                } else{
-                    permission.requestPermissionWithDialogForCamera();
+                final File imageFile = imageUtil.createFile(false);
+                if(imageFile != null){
+                    final Uri imageUri = Uri.fromFile(imageFile);
+                    setTempImageUri(imageUri);
+                    Fetch.imageFromCamera().fetch(fragment, imageUri);
                 }
                 break;
             case OPTION_ID_FROM_GALLERY:
                 if(permission.isGranted()){
                     Fetch.imageFromGallery().fetch(fragment);
                 } else{
-                    permission.requestPermissionWithDialogForGallery();
+                    permission.requestPermission();
                 }
                 break;
             case OPTION_ID_REMOVE_PICTURE:
@@ -251,15 +256,6 @@ public class ProfileImageManager {
                 break;
             default:
                 Logger.warn(ProfileImageManager.class.getSimpleName(), "unknown picture option selected");
-        }
-    }
-
-    public void onRequestPermissionResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            handlePictureOptionSelection(optionSelectedId);
-            optionSelectedId = -1;
-        } else {
-            permission.showEnableInstructionsDialogForCamera();
         }
     }
 
