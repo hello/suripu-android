@@ -38,13 +38,20 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     private static final String ARG_ACTION_INTENT = ErrorDialogFragment.class.getName() + ".ARG_ACTION_INTENT";
     private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
+    private static final String ARG_TITLE_RES = ErrorDialogFragment.class.getName() +".ARG_TITLE_RES";
 
 
     //region Lifecycle
 
-    public static void presentError(@NonNull Activity activity, @Nullable Throwable e) {
-        final ErrorDialogFragment fragment = new Builder(e, activity.getResources()).build();
+    public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e, @StringRes final int titleRes){
+        final ErrorDialogFragment fragment = new Builder(e, activity.getResources())
+                .withTitle(titleRes)
+                .build();
         fragment.showAllowingStateLoss(activity.getFragmentManager(), TAG);
+    }
+
+    public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e) {
+        presentError(activity, e, R.string.dialog_error_title);
     }
 
     @Override
@@ -56,18 +63,21 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     @Override
     public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
-        SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-        dialog.setTitle(R.string.dialog_error_title);
+        final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
-        CharSequence message = generateDisplayMessage();
+        final CharSequence message = generateDisplayMessage();
         dialog.setMessage(message);
 
-        Bundle arguments = getArguments();
+        final Bundle arguments = getArguments();
 
-        String errorType = arguments.getString(ARG_ERROR_TYPE);
-        String contextInfo = arguments.getString(ARG_CONTEXT_INFO);
-        String operation = arguments.getString(ARG_OPERATION);
-        boolean isWarning  = arguments.getBoolean(ARG_IS_WARNING);
+        final int titleResId = arguments.getInt(ARG_TITLE_RES,R.string.dialog_error_title);
+        dialog.setTitle(titleResId);
+
+
+        final String errorType = arguments.getString(ARG_ERROR_TYPE);
+        final String contextInfo = arguments.getString(ARG_CONTEXT_INFO);
+        final String operation = arguments.getString(ARG_OPERATION);
+        final boolean isWarning  = arguments.getBoolean(ARG_IS_WARNING);
         trackError(message.toString(), errorType, contextInfo, operation, isWarning);
 
         if (getTargetFragment() != null) {
@@ -116,10 +126,10 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     }
 
     @VisibleForTesting CharSequence generateDisplayMessage() {
-        Bundle arguments = getArguments();
+        final Bundle arguments = getArguments();
 
         CharSequence message;
-        StringRef errorMessage = arguments.getParcelable(ARG_MESSAGE);
+        final StringRef errorMessage = arguments.getParcelable(ARG_MESSAGE);
         if (errorMessage != null) {
             message = errorMessage.resolve(getActivity());
         } else {
@@ -161,6 +171,11 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             if (BuruberiException.isInstabilityLikely(e)) {
                 withUnstableBluetoothHelp(resources);
             }
+        }
+
+        public Builder withTitle(@StringRes final int titleRes) {
+            arguments.putInt(ARG_TITLE_RES, titleRes);
+            return this;
         }
 
         public Builder withMessage(@Nullable StringRef message) {

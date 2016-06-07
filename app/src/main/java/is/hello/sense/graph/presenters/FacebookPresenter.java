@@ -102,6 +102,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
                                     // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
                                     // consider presenting an error dialog here.
                                     Logger.debug(FacebookPresenter.class.getSimpleName(), "login failed", exception.fillInStackTrace());
+                                    profile.onError(exception);
                                 }
                             });
     }

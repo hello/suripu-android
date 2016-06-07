@@ -44,7 +44,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -483,13 +482,15 @@ public class RegisterFragment extends InjectionFragment
     }
 
     private void onFacebookProfileError(@NonNull final Throwable throwable) {
-        handleError(throwable, "Unable to fetch facebook profile information. Please check your connection.");
+        handleError(throwable, getString(R.string.error_internet_connection_generic_message));
     }
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
-            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
-            Logger.error(getClass().getSimpleName(), errorMessage, error);
+            if(getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+                Logger.error(getClass().getSimpleName(), errorMessage, error);
+            }
         });
     }
 
