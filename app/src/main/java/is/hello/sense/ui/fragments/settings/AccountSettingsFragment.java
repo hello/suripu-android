@@ -32,7 +32,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
@@ -477,15 +476,15 @@ public class AccountSettingsFragment extends InjectionFragment
     // region Facebook import
 
     private void handleFacebookError(Throwable error) {
-        final String temporaryCopy = "Fetching Facebook profile picture failed. Please check your connection.";
-        Logger.debug(FacebookPresenter.class.getSimpleName(), temporaryCopy, error);
-        handleError(error, temporaryCopy);
+        handleError(error, getString(R.string.error_internet_connection_generic_message));
     }
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
-            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
-            Logger.error(getClass().getSimpleName(), errorMessage, error);
+            if(getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+                Logger.error(getClass().getSimpleName(), errorMessage, error);
+            }
         });
     }
 
