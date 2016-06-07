@@ -552,6 +552,7 @@ public class Analytics {
         String EVENT_WE_NEED_STORAGE = "External Storage Permission Explanation";
         String EVENT_STORAGE_DISABLED = "External Storage Not Granted";
         String EVENT_STORAGE_MORE_INFO = "External Storage Permission More Info";
+        String EVENT_GALLERY_MORE_INFO = "Photo Library More Info";
     }
 
     public interface Account {

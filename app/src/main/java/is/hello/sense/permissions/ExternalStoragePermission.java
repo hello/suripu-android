@@ -22,9 +22,9 @@ public class ExternalStoragePermission extends Permission {
     }
 
     public void showEnableInstructionsDialogForGallery(){
-        showEnableInstructionsDialog(R.string.request_permission_write_external_storage_required_title,
+        showEnableInstructionsDialog(R.string.request_permission_write_external_storage_required_title_gallery,
                                      R.string.request_permission_write_external_storage_required_message_gallery,
-                                     (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(fragment.getActivity()));
+                                     (dialog, which) -> UserSupport.showGalleryStoragePermissionMoreInfoPage(fragment.getActivity()));
     }
 
     @Override
