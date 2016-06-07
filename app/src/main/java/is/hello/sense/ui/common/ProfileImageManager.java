@@ -182,7 +182,6 @@ public class ProfileImageManager {
     public void setImageSource(@NonNull final Source imageSource) {
         this.imageSource = imageSource;
     }
-
     /**
      *
      * @param id Id of selected option from bottom sheet. Used so correct option action will be triggered
@@ -191,13 +190,18 @@ public class ProfileImageManager {
     private void setOptionSelectedId(final int id){
         this.optionSelectedId = id;
     }
-
-    public void prepareImageUpload() {
+    
+    public boolean prepareImageUpload() {
         if(fullImageUriString != null) {
             prepareImageUpload(fullImageUriString);
+            return true;
         }
+        return false;
     }
 
+    public void trimCache(){
+        imageUtil.trimCache();
+    }
     public void prepareImageUpload(@NonNull final String filePath){
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
         imageUtil.provideObservableToCompressFile(filePath, mustDownload)

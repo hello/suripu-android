@@ -531,12 +531,14 @@ public class AccountSettingsFragment extends InjectionFragment
                                  Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
                                  //only update the account field but don't refresh view
                                  currentAccount.setProfilePhoto(photo);
+                                 profileImageManager.trimCache();
                              },
                              e -> {
                                  //restore previous saved photo and refresh view
                                  currentAccount.setProfilePhoto(tempPhoto);
                                  bindAccount(currentAccount);
                                  handleError(e, temporaryCopy);
+                                 profileImageManager.trimCache();
                              });
 
         } catch (Exception e) {
