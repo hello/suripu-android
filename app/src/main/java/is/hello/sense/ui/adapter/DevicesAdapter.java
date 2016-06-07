@@ -1,14 +1,16 @@
 package is.hello.sense.ui.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,7 +25,9 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.Drawables;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdapter.BaseViewHolder>
@@ -34,14 +38,17 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
     private final LayoutInflater inflater;
     private final Resources resources;
+    private final Activity activity;
 
-    private @Nullable OnPairNewDeviceListener onPairNewDeviceListener;
+    private
+    @Nullable
+    OnPairNewDeviceListener onPairNewDeviceListener;
 
-    public DevicesAdapter(@NonNull Context context) {
+    public DevicesAdapter(@NonNull Activity activity) {
         super(new ArrayList<>());
-
-        this.inflater = LayoutInflater.from(context);
-        this.resources = context.getResources();
+        this.activity = activity;
+        this.inflater = LayoutInflater.from(activity);
+        this.resources = activity.getResources();
     }
 
 
@@ -138,7 +145,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 final Drawable chevron = ResourcesCompat.getDrawable(resources,
                                                                      R.drawable.disclosure_chevron,
                                                                      null).mutate();
-                Drawables.setTintColor(chevron, resources.getColor(R.color.light_accent));
+                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
             } else {
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
@@ -178,9 +185,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             title.setText(R.string.device_sense);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(resources.getColor(R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(resources.getColor(R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
             }
 
             status1Label.setText(R.string.label_wifi);
@@ -203,7 +210,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 }
             }
 
-            status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
 
             status2Label.setText(R.string.label_firmware_version);
             status2.setText(device.firmwareVersion);
@@ -227,6 +234,18 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
 
             view.setOnClickListener(this);
+            status2Label.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
+                            WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -237,14 +256,13 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         @Override
         public void bind(int position) {
             super.bind(position);
-
             final SleepPillDevice device = (SleepPillDevice) getItem(position);
             title.setText(R.string.device_pill);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(resources.getColor(R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(resources.getColor(R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
             }
 
             status1Label.setText(R.string.label_battery_level);
@@ -255,11 +273,10 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             }
             status1.setText(state.nameRes);
             if (state == BaseDevice.State.UNKNOWN) {
-                status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body_Bold);
+                Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body_Bold);
             } else {
-                status1.setTextAppearance(status1.getContext(), R.style.AppTheme_Text_Body);
+                Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
             }
-            status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
 
             status2Label.setText(R.string.label_color);
 
@@ -268,6 +285,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 color = SleepPillDevice.Color.UNKNOWN;
             }
             status2.setText(color.nameRes);
+            status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.gap_medium));
+            status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
         }
     }
 

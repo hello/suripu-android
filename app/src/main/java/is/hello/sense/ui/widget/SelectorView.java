@@ -34,15 +34,15 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     //region Lifecycle
 
-    public SelectorView(@NonNull Context context) {
+    public SelectorView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SelectorView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SelectorView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public SelectorView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
 
         this.buttonLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -59,7 +59,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     //region Backgrounds
 
     @Override
-    public void setBackground(Drawable background) {
+    public void setBackground(final Drawable background) {
         super.setBackground(background);
 
         if (background instanceof SelectionAwareDrawable) {
@@ -69,7 +69,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    public void setSelectionAwareDrawable(@Nullable SelectionAwareDrawable drawable) {
+    public void setSelectionAwareDrawable(@Nullable final SelectionAwareDrawable drawable) {
         this.selectionAwareBackground = drawable;
         synchronize();
     }
@@ -81,11 +81,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         super.setEnabled(enabled);
-
-        for (ToggleButton button : buttons) {
+        for (final ToggleButton button : buttons) {
             button.setEnabled(enabled);
+            button.setClickable(enabled);
         }
 
         if (selectionAwareBackground != null) {
@@ -94,10 +94,10 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     }
 
     @Override
-    public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
+    public void addView(@NonNull final View child, final int index,final  ViewGroup.LayoutParams params) {
         if (child instanceof ToggleButton) {
-            ToggleButton button = (ToggleButton) child;
-            int buttonIndex = buttons.size();
+            final ToggleButton button = (ToggleButton) child;
+            final int buttonIndex = buttons.size();
             button.setEnabled(isEnabled());
             button.setOnClickListener(this);
             button.setTag(R.id.view_selector_tag_key_index, buttonIndex);
@@ -111,7 +111,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(@NonNull View view) {
+    public void onClick(@NonNull final View view) {
         this.selectedIndex = (Integer) view.getTag(R.id.view_selector_tag_key_index);
         synchronize();
         if (getOnSelectionChangedListener() != null) {
@@ -120,9 +120,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     }
 
     public void synchronize() {
-        for (ToggleButton button : buttons) {
-            int index = (Integer) button.getTag(R.id.view_selector_tag_key_index);
-            boolean isSelected = (index == selectedIndex);
+        for (final ToggleButton button : buttons) {
+            final int index = (Integer) button.getTag(R.id.view_selector_tag_key_index);
+            final boolean isSelected = (index == selectedIndex);
             applyButtonStyles(button, isSelected);
 
         }
@@ -131,6 +131,21 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             selectionAwareBackground.setEnabled(isEnabled());
             selectionAwareBackground.setNumberOfItems(buttons.size());
             selectionAwareBackground.setSelectedIndex(selectedIndex);
+        }
+    }
+
+    public void clicked(final int index) {
+        for (int i = 0; i < buttons.size(); i++) {
+            final ToggleButton button = buttons.get(i);
+            if (i == index) {
+                button.setClickable(false);
+            } else {
+                button.setEnabled(false);
+            }
+        }
+
+        if (selectionAwareBackground != null) {
+            selectionAwareBackground.setEnabled(false);
         }
     }
 
@@ -143,11 +158,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return buttons.size();
     }
 
-    public @NonNull ToggleButton getButtonAt(int index) {
+    public @NonNull ToggleButton getButtonAt(final int index) {
         return buttons.get(index);
     }
 
-    public int indexOfButton(@NonNull ToggleButton button) {
+    public int indexOfButton(@NonNull final ToggleButton button) {
         final Integer index = (Integer) button.getTag(R.id.view_selector_tag_key_index);
         if (index == null) {
             return -1;
@@ -156,7 +171,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    public void setSelectedButton(@NonNull ToggleButton button) {
+    public void setSelectedButton(@NonNull final ToggleButton button) {
         final int index = indexOfButton(button);
         if (index == -1) {
             throw new IllegalArgumentException("Button " + button + " not in selector view");
@@ -164,7 +179,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         setSelectedIndex(index);
     }
 
-    public void setSelectedIndex(int selectedIndex) {
+    public void setSelectedIndex(final int selectedIndex) {
         this.selectedIndex = selectedIndex;
         synchronize();
     }
@@ -173,11 +188,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return onSelectionChangedListener;
     }
 
-    public void setOnSelectionChangedListener(@Nullable OnSelectionChangedListener onSelectionChangedListener) {
+    public void setOnSelectionChangedListener(@Nullable final OnSelectionChangedListener onSelectionChangedListener) {
         this.onSelectionChangedListener = onSelectionChangedListener;
     }
 
-    public void setButtonLayoutParams(@NonNull LayoutParams buttonLayoutParams) {
+    public void setButtonLayoutParams(@NonNull final LayoutParams buttonLayoutParams) {
         this.buttonLayoutParams = buttonLayoutParams;
     }
 
@@ -186,7 +201,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     //region Button Tags
 
-    public void setButtonTags(Object... tags) {
+    public void setButtonTags(final Object... tags) {
         if (tags.length != buttons.size()) {
             throw new IllegalArgumentException("Expected " + buttons.size() +
                                                        " tags, got " + tags.length);
@@ -197,26 +212,26 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    public void setButtonTagAt(int index, Object tag) {
+    public void setButtonTagAt(final int index, final Object tag) {
         buttons.get(index).setTag(R.id.view_selector_tag_key_user, tag);
     }
 
-    public void setButtonTag(@NonNull ToggleButton button, Object tag) {
+    public void setButtonTag(@NonNull final ToggleButton button, final Object tag) {
         if (indexOfButton(button) == -1) {
             throw new IllegalArgumentException("Button " + button + " not in selector view");
         }
         button.setTag(R.id.view_selector_tag_key_user, tag);
     }
 
-    public Object getButtonTagAt(int index) {
+    public Object getButtonTagAt(final int index) {
         return buttons.get(index).getTag(R.id.view_selector_tag_key_user);
     }
 
-    public Object getButtonTag(@NonNull ToggleButton button) {
+    public Object getButtonTag(@NonNull final ToggleButton button) {
         return button.getTag(R.id.view_selector_tag_key_user);
     }
 
-    public ToggleButton getButtonForTag(Object tag) {
+    public ToggleButton getButtonForTag(final Object tag) {
         for (final ToggleButton button : buttons) {
             if (Objects.equals(getButtonTag(button), tag)) {
                 return button;
@@ -231,9 +246,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     //region Options
 
-    public ToggleButton addOption(@NonNull CharSequence titleOn,
-                                  @NonNull CharSequence titleOff,
-                                  boolean wantsDivider) {
+    public ToggleButton addOption(@NonNull final CharSequence titleOn,
+                                  @NonNull final CharSequence titleOff,
+                                  final boolean wantsDivider) {
         final Resources resources = getResources();
         final Context context = getContext();
 
@@ -266,7 +281,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return optionButton;
     }
 
-    public ToggleButton addOption(@StringRes int titleRes, boolean wantsDivider) {
+    public ToggleButton addOption(@StringRes final int titleRes, final boolean wantsDivider) {
         final String title = getResources().getString(titleRes);
         return addOption(title, title, wantsDivider);
     }
@@ -277,7 +292,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         this.selectedIndex = EMPTY_SELECTION;
     }
 
-    private void applyButtonStyles(@NonNull ToggleButton optionButton, boolean isSelected) {
+    private void applyButtonStyles(@NonNull final ToggleButton optionButton, final boolean isSelected) {
         final Resources resources = getResources();
         if (isSelected) {
             Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
@@ -304,17 +319,17 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             return (numberOfItems > 0 && selectedIndex != EMPTY_SELECTION);
         }
 
-        public void setNumberOfItems(int numberOfItems) {
+        public void setNumberOfItems(final int numberOfItems) {
             this.numberOfItems = numberOfItems;
             invalidateSelf();
         }
 
-        public void setSelectedIndex(int selectedIndex) {
+        public void setSelectedIndex(final int selectedIndex) {
             this.selectedIndex = selectedIndex;
             invalidateSelf();
         }
 
-        public void setEnabled(boolean enabled) {
+        public void setEnabled(final boolean enabled) {
             this.enabled = enabled;
             invalidateSelf();
         }

@@ -1,95 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#ffffff</color>
-    <color name="white_00">#00ffffff</color>
-    <color name="white_40">#66ffffff</color>
-    <color name="white_50">#80ffffff</color>
-    <color name="white_60">#99ffffff</color>
-    <color name="white_75">#bfffffff</color>
+    <!-- start Nathan's official colors -->
+    <color name="dark">@color/gray6</color>
+    <color name="standard">@color/gray5</color>
+    <color name="dim">@color/gray4</color>
+    <color name="primary">@color/blue6</color>
+    <color name="error">@color/red6</color>
+    <color name="warning">@color/yellow6</color>
+    <color name="success">@color/green6</color>
 
-
-    <color name="black">#000000</color>
-    <color name="black_06">#10000000</color>
-    <color name="black_10">#19000000</color>
-    <color name="black_13">#22000000</color>
-    <color name="black_25">#40000000</color>
-    <color name="black_27">#45000000</color>
-    <color name="black_50">#80000000</color>
-    <color name="black_53">#86000000</color>
-    <color name="black_70">#b3000000</color>
-
-    <!-- Gray -->
-    <color name="gray7">#162B48</color>
-    <color name="gray6">#162B48</color>
-    <color name="gray5">#5C6B7F</color>
-    <color name="gray4">#8B95A4</color>
-    <color name="gray4_70">#b38b95a4</color>
-    <color name="gray3">#B9BFC8</color>
-    <color name="gray2">#E8EAED</color>
-    <color name="gray2_00">#00e8eaed</color>
-    <color name="gray2_10">#1ae8eaed</color>
-    <color name="gray2_15">#28e8eaed</color>
-    <color name="gray2_50">#80e8eaed</color>
-    <color name="gray1">#F8F8F9</color>
-
-    <!-- Purple -->
-    <color name="purple7">#764EC9</color>
-    <color name="purple6">#865CDE</color>
-    <color name="purple5">#AB8DE8</color>
-    <color name="purple4">#C3AEEF</color>
-    <color name="purple3">#DBCEF6</color>
-    <color name="purple2">#F3EFFC</color>
-    <color name="purple1">#FCFAFE</color>
-
-
-    <!-- Blue -->
-    <color name="blue7">#0083D9</color>
-    <color name="blue6">#009AFF</color>
-    <color name="blue6_80">#cc009aff</color>
-    <color name="blue6_50">#80009aff</color>
-    <color name="blue6_30">#4d009aff</color>
-    <color name="blue5">#4CB9FF</color>
-    <color name="blue4">#7FCDFF</color>
-    <color name="blue3">#B2E1FF</color>
-    <color name="blue3_93">#eeb2e1ff</color>
-    <color name="blue2">#E5F5FF</color>
-    <color name="blue1">#F7FCFF</color>
-
-    <!-- Green -->
-    <color name="green7">#21BD90</color>
-    <color name="green6">#36D8A9</color>
-    <color name="green5">#72E4C3</color>
-    <color name="green4">#9BECD4</color>
-    <color name="green3">#C3F4E6</color>
-    <color name="green2">#EBFCF7</color>
-    <color name="green1">#F9FEFD</color>
-
-    <!-- Yellow -->
-    <color name="yellow7">#E9AD1A</color>
-    <color name="yellow6">#FFBC17</color>
-    <color name="yellow5">#FFD05D</color>
-    <color name="yellow4">#FFDE8B</color>
-    <color name="yellow3">#FFEBB9</color>
-    <color name="yellow2">#FFF9E8</color>
-    <color name="yellow1">#FFFDF8</color>
-
-    <!-- Orange -->
-    <color name="orange7">#E88A3D</color>
-    <color name="orange6">#FF9742</color>
-    <color name="orange5">#FFB67B</color>
-    <color name="orange4">#FFCBA1</color>
-    <color name="orange3">#FFE0C6</color>
-    <color name="orange2">#FFF5EC</color>
-    <color name="orange1">#FFFCFA</color>
-
-    <!-- Red -->
-    <color name="red7">#E35533</color>
-    <color name="red6">#FF6B47</color>
-    <color name="red5">#FF9177</color>
-    <color name="red4">#FFB2A0</color>
-    <color name="red3">#FFC8BB</color>
-    <color name="red2">#FFF4F2</color>
-    <color name="red1">#FFFCFB</color>
+    <!-- end Nathan's official colors -->
 
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
@@ -139,7 +59,7 @@
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="edit_text_bottom_line_normal">@color/gray5</color>
+    <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
     <color name="text_white_button">@color/white</color>
@@ -171,7 +91,7 @@
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="trends_title">@color/gray4_70</color>
+    <color name="trends_title">@color/gray4</color>
     <color name="trends_line_divider">@color/gray2_50</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>
@@ -187,8 +107,11 @@
     <color name="trends_bubblegraph_text_title">@color/white</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
     <color name="trends_gridgraph">@color/gray3</color>
+    <color name="trends_gridgraph_empty_cell_border">@color/gray3</color>
 
     <color name="timeline_share_text">@color/gray4</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
     <color name="timeline_share_background_gradient_bottom">@color/white</color>
+
+    <color name="facebook_official_color">#3B5998</color>
 </resources>

@@ -154,6 +154,18 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
+    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull Activity from){
+        Analytics.trackEvent(Analytics.Permissions.EVENT_GALLERY_MORE_INFO, null);
+
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210819543");
+        openUri(from, supportUrl);
+    }
+
+    public static void showFacebookAutoFillMoreInfoPage(@NonNull Activity from){
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210329423");
+        openUri(from, supportUrl);
+    }
+
     public static void showAppSettings(@NonNull Activity from) {
         try {
             from.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,

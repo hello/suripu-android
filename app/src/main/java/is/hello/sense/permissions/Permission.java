@@ -14,9 +14,19 @@ import is.hello.sense.util.Analytics;
 
 public abstract class Permission {
     protected final Fragment fragment;
+    protected final int negativeButtonText;
+    protected final int positiveButtonText;
 
     public Permission(@NonNull final Fragment fragment) {
+        this(fragment, R.string.action_more_info, R.string.action_continue);
+    }
+
+    public Permission(@NonNull final Fragment fragment,
+                      @StringRes final int negativeButtonText,
+                      @StringRes final int positiveButtonText){
         this.fragment = fragment;
+        this.negativeButtonText = negativeButtonText;
+        this.positiveButtonText = positiveButtonText;
     }
 
     public boolean isGranted() {
@@ -51,11 +61,11 @@ public abstract class Permission {
         final SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
         dialog.setTitle(titleRes);
         dialog.setMessage(messageRes);
-        dialog.setPositiveButton(R.string.action_continue, (sender, which) -> {
+        dialog.setPositiveButton(positiveButtonText, (sender, which) -> {
             dialog.dismiss();
             Permission.this.requestPermission();
         });
-        dialog.setNegativeButton(R.string.action_more_info, listener);
+        dialog.setNegativeButton(negativeButtonText, listener);
         dialog.show();
     }
 
@@ -74,7 +84,7 @@ public abstract class Permission {
         dialog.setTitle(titleRes);
         dialog.setMessage(Styles.resolveSupportLinks(fragment.getActivity(), clickableText));
         dialog.setPositiveButton(android.R.string.ok, null);
-        dialog.setNegativeButton(R.string.action_more_info, listener);
+        dialog.setNegativeButton(negativeButtonText, listener);
         dialog.show();
     }
 

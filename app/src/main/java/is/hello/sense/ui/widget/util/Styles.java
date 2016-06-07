@@ -299,6 +299,11 @@ public final class Styles {
                     break;
                 }
 
+                case "#facebook-autofill":{
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showFacebookAutoFillMoreInfoPage(activity));
+                    break;
+                }
+
                 default: {
                     throw new IllegalArgumentException("Unknown deep link url " + url);
                 }

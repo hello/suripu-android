@@ -9,6 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
@@ -60,10 +61,20 @@ import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
-    includes = {ApiModule.class, BluetoothModule.class, ZendeskModule.class, DebugModule.class, OnboardingModule.class, SettingsModule.class},
+    includes = {
+            ApiModule.class,
+            BluetoothModule.class,
+            ZendeskModule.class,
+            DebugModule.class,
+            OnboardingModule.class,
+            SettingsModule.class,
+            UtilityModule.class,
+            FacebookApiModule.class
+    },
     injects = {
         SenseApplication.class,
         NotificationReceiver.class,

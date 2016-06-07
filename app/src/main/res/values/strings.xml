@@ -8,6 +8,8 @@
     <string name="label_email">Email</string>
     <string name="label_password">Password</string>
     <string name="label_name">Name</string>
+    <string name="label_first_name">First name</string>
+    <string name="label_last_name">Last name</string>
     <string name="label_gender">Gender</string>
     <string name="label_height">Height</string>
     <string name="label_weight">Weight</string>
@@ -66,6 +68,8 @@
     <string name="title_info">Info</string>
     <string name="title_demographics">Demographics</string>
 
+    <string name="action_ok">OK</string>
+    <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
     <string name="title_setup_sense">Setting up Sense</string>
@@ -198,6 +202,7 @@
     <string name="error_account_name_too_long">The name you entered is too long.</string>
     <string name="error_account_name_too_short">The name you entered is too short.</string>
     <string name="error_account_email_invalid">Please enter a valid email address.</string>
+    <string name="error_account_email_in_use">Email already in use.</string>
     <string name="error_account_password_insecure">Please enter a stronger password.</string>
     <string name="error_account_password_too_short">Passwords must be at least 6 characters.</string>
     <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
@@ -418,6 +423,7 @@
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
     <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
     <string name="tutorial_tap_hamburger">To explore more now, tap the menu icon.</string>
+    <string name="tutorial_tap_name">Verify your name and add a profile photo.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
@@ -529,8 +535,9 @@
     <string name="request_permission_write_external_storage_required_title">We need to ask for access to your photos</string>
     <string name="request_permission_write_external_storage_required_message">In order to create a shareable image of your sleep data, Sense requires access to your photo library. Please enable Storage in <a href="#settings">Settings</a> to continue.</string>
     <string name="request_permission_write_external_storage_required_message_generic">In order to share an attachment, Sense requires access to your photo library. Please enable Storage in <a href="#settings">Settings</a> to continue.</string>
-
     <string name="share_timeline_sleep_time"><![CDATA[It took you <font color=#596980>%1$s</font> to fall asleep. You slept a total <font color=#596980>%2$s</font> and woke up <font color=#596980>%3$s</font> during the night.]]></string>
+    <string name="request_permission_write_external_storage_required_title_gallery">Sense needs to ask for access to your photos</string>
+    <string name="request_permission_write_external_storage_required_message_gallery">In order to select a profile photo, Sense requires access to your photo library. Enable access to photos for Sense in your Device <a href="#settings">Settings</a>. to continue</string>
 
     <string name="alarm_subnavbar_alarm_list">ALARMS</string>
     <string name="alarm_subnavbar_sounds_list">SLEEP SOUNDS</string>
@@ -549,11 +556,14 @@
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
     <string name="sleep_sounds_error_loading">There was a problem loading Sleep Sounds. Please try again.</string>
     <string name="sleep_sounds_error_communicating_with_sense">There was a problem communicating with your Sense. Please try again.</string>
-    <string name="sleep_sounds_error_commanding">There was a problem sending the command to your Sense. Please try again.</string>
+    <string name="sleep_sounds_error_commanding">There was a problem establishing a connection with your Sense. Please ensure your Sense is connected to the internet and try again.</string>
     <string name="sense_offline_title">Sense is offline</string>
     <string name="sense_offline_message">We haven\'t received data from your Sense recently. Make sure Sense is connected to Wi-Fi.</string>
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="invalid_first_name">Invalid first name</string>
+    <string name="invalid_password">Invalid password</string>
 
 
     <plurals name="item_support_comment_detail_attachments">
@@ -578,5 +588,14 @@
     </plurals>
 
     <string name="empty"> </string>
+    <string name="action_autofill_from_facebook">Autofill with Facebook</string>
+    <string name="action_import_from_facebook">Import from Facebook</string>
+    <string name="action_import_from_gallery">Open Gallery</string>
+    <string name="action_remove_picture">Remove picture</string>
+
+    <string name="facebook_oauth_title">Connecting with Facebook</string>
+    <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
+        \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
+    </string>
 
 </resources>

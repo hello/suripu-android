@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -134,7 +135,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             final int start = networkInfoBuilder.length();
             networkInfoBuilder.append(network.getSsid());
             networkInfoBuilder.setSpan(
-                    new ForegroundColorSpan(getResources().getColor(R.color.text_dark)),
+                    new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.text_dark)),
                     start, networkInfoBuilder.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             );
@@ -407,6 +408,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
         hideAllActivityForSuccess(() -> {
             if (useInAppEvents){
+                hardwarePresenter.clearPeripheral();
                 getActivity().finish();
             }else {
                 getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);

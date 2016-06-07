@@ -22,47 +22,73 @@ import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.segment.analytics.Properties;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+
+import static is.hello.sense.util.Analytics.Breadcrumb.Description;
+import static is.hello.sense.util.Analytics.Breadcrumb.EVENT_NAME;
+import static is.hello.sense.util.Analytics.Breadcrumb.Source;
 
 public enum Tutorial {
     SWIPE_TIMELINE(R.string.tutorial_swipe_timeline,
                    Gravity.BOTTOM,
                    R.id.fragment_timeline_recycler,
-                   Interaction.SWIPE_RIGHT),
+                   Interaction.SWIPE_RIGHT,
+                   Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
+                                                                Description.SWIPE_TIMELINE)),
     ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
                       Gravity.BOTTOM,
                       R.id.view_timeline_toolbar_title,
-                      Interaction.TAP),
+                      Interaction.TAP,
+                      Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
+                                                                   Description.ZOOM_OUT_TIMELINE)),
     SCRUB_SENSOR_HISTORY(R.string.tutorial_scrub_sensor_history,
                          Gravity.TOP,
                          R.id.fragment_sensor_history_graph,
-                         Interaction.SWIPE_LEFT),
+                         Interaction.SWIPE_LEFT,
+                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_HISTORY,
+                                                                      Description.SCRUB_SENSOR_HISTORY)),
     TAP_INSIGHT_CARD(R.string.tutorial_tap_insight_card,
                      Gravity.BOTTOM,
                      R.id.item_insight_card,
-                     Interaction.TAP),
+                     Interaction.TAP,
+                     Analytics.createBreadcrumbTrackingProperties(Source.INSIGHTS,
+                                                                  Description.TAP_INSIGHT_CARD)),
     TAP_HAMBURGER(R.string.tutorial_tap_hamburger,
                   Gravity.BOTTOM,
                   R.id.view_timeline_toolbar_overflow,
-                  Interaction.TAP);
+                  Interaction.TAP,
+                  Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
+                                                               Description.TAP_HAMBURGER)),
+    TAP_NAME(R.string.tutorial_tap_name,
+             Gravity.BOTTOM,
+             R.id.fragment_account_settings_name,
+             Interaction.TAP,
+             Analytics.createBreadcrumbTrackingProperties(Source.ACCOUNT,
+                                                          Description.TAP_NAME));
 
     public final @StringRes int descriptionRes;
     public final int descriptionGravity;
     public final @IdRes int anchorId;
     public final Interaction interaction;
+    public final Properties properties;
 
     Tutorial(@StringRes int descriptionRes,
              int descriptionGravity,
              @IdRes int anchorId,
-             @NonNull Interaction interaction) {
+             @NonNull Interaction interaction,
+             @NonNull Properties properties) {
         this.descriptionRes = descriptionRes;
         this.descriptionGravity = descriptionGravity;
         this.anchorId = anchorId;
         this.interaction = interaction;
+        this.properties = properties;
     }
 
 
@@ -83,6 +109,8 @@ public enum Tutorial {
         preferences.edit()
                    .putBoolean(getShownKey(), true)
                    .apply();
+
+        Analytics.trackEvent(EVENT_NAME, properties);
     }
 
 

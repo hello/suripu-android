@@ -1,2 +1,3 @@
 <resources>
+    <dimen name="profile_image_size">208dp</dimen>
 </resources>

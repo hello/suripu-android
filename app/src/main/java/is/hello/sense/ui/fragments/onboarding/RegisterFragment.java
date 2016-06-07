@@ -2,10 +2,12 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,22 +17,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
-import is.hello.commonsense.util.StringRef;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.DynamicApiEndpoint;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
@@ -39,37 +42,60 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.FacebookInfoDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.LabelEditText;
+import is.hello.sense.ui.widget.ProfileImageView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public class RegisterFragment extends InjectionFragment
-        implements StatusBarColorProvider, TextWatcher {
-    @Inject ApiService apiService;
-    @Inject ApiEndpoint apiEndpoint;
-    @Inject ApiSessionManager sessionManager;
-    @Inject AccountPresenter accountPresenter;
-    @Inject PreferencesPresenter preferences;
+        implements StatusBarColorProvider, TextWatcher, ProfileImageManager.Listener {
+    @Inject
+    ApiService apiService;
+    @Inject
+    ApiEndpoint apiEndpoint;
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    FacebookPresenter facebookPresenter;
+    @Inject
+    Picasso picasso;
+    @Inject
+    ProfileImageManager.Builder builder;
 
+    private ProfileImageView profileImageView;
+    private ProfileImageManager profileImageManager;
+    private Button autofillFacebookButton;
     private Account account;
-
-    private EditText nameText;
-    private EditText emailText;
-    private EditText passwordText;
+    private LabelEditText firstNameTextLET;
+    private LabelEditText lastNameTextLET;
+    private LabelEditText emailTextLET;
+    private LabelEditText passwordTextLET;
 
     private Button nextButton;
 
     private LinearLayout credentialsContainer;
-    private TextView registrationErrorText;
 
+    private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
 
     //region Lifecycle
 
@@ -92,29 +118,60 @@ public class RegisterFragment extends InjectionFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_onboarding_register, container, false);
 
-        this.registrationErrorText = (TextView) inflater.inflate(R.layout.item_inline_field_error, container, false);
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
         AnimatorTemplate.DEFAULT.apply(credentialsContainer.getLayoutTransition());
 
-        this.nameText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_name);
-        nameText.addTextChangedListener(this);
+        this.profileImageView = (ProfileImageView) view.findViewById(R.id.fragment_onboarding_register_profile_image);
 
-        this.emailText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email);
-        emailText.addTextChangedListener(this);
+        this.firstNameTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_first_name_let);
+        firstNameTextLET.addTextChangedListener(this);
 
-        this.passwordText = (EditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_password);
-        passwordText.addTextChangedListener(this);
-        passwordText.setOnEditorActionListener(new EditorActionHandler(this::register));
+        this.lastNameTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_last_name_let);
+        lastNameTextLET.addTextChangedListener(this);
+
+        this.emailTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_email_let);
+        emailTextLET.addTextChangedListener(this);
+
+        this.passwordTextLET = (LabelEditText) credentialsContainer.findViewById(R.id.fragment_onboarding_register_password_let);
+        passwordTextLET.addTextChangedListener(this);
+        passwordTextLET.setOnEditorActionListener(new EditorActionHandler(this::register));
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_register_next);
-        nextButton.setEnabled(false);
-        Views.setSafeOnClickListener(nextButton, ignored -> register());
+
+        nextButton.setActivated(false);
+        nextButton.setText(R.string.action_next);
+
+        final FocusClickListener nextButtonClickListener = new FocusClickListener(credentialsContainer, stateSafeExecutor.bind(this::register));
+        Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
+
+        autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
+        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> bindFacebookProfile(false));
+        facebookPresenter.init();
+
+        final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
+        Views.setSafeOnClickListener(facebookInfoButton, (v) -> {
+            if (getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null) {
+                return;
+            }
+            final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
+            bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this, OPTION_FACEBOOK_DESCRIPTION);
+            bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
+        });
+
+        profileImageManager = builder.addFragmentListener(this).build();
+
+        final View.OnClickListener profileImageOnClickListener = (v) -> {
+            profileImageManager.showPictureOptions();
+        };
+
+        profileImageView.setOnClickListener(profileImageOnClickListener);
+        profileImageView.addButtonListener(profileImageOnClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
         if (BuildConfig.DEBUG) {
             final Button selectHost = new Button(getActivity());
-            selectHost.setTextAppearance(getActivity(), R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
@@ -147,18 +204,24 @@ public class RegisterFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
 
-        nameText.removeTextChangedListener(this);
-        this.nameText = null;
+        firstNameTextLET.removeTextChangedListener(this);
+        this.firstNameTextLET = null;
 
-        emailText.removeTextChangedListener(this);
-        this.emailText = null;
+        lastNameTextLET.removeTextChangedListener(this);
+        this.lastNameTextLET = null;
 
-        passwordText.removeTextChangedListener(this);
-        this.passwordText = null;
+        emailTextLET.removeTextChangedListener(this);
+        this.emailTextLET = null;
+
+        passwordTextLET.removeTextChangedListener(this);
+        this.passwordTextLET = null;
 
         this.nextButton = null;
         this.credentialsContainer = null;
-        this.registrationErrorText = null;
+
+        this.profileImageView = null;
+        this.profileImageManager = null;
+        this.autofillFacebookButton = null;
     }
 
     @Override
@@ -169,8 +232,22 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (profileImageManager.onActivityResult(requestCode, resultCode, data)) {
+            return;
+        }
+        facebookPresenter.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public int getStatusBarColor(@NonNull Resources resources) {
-        return resources.getColor(R.color.status_bar_grey);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
     }
 
     @Override
@@ -190,70 +267,72 @@ public class RegisterFragment extends InjectionFragment
         return (OnboardingActivity) getActivity();
     }
 
-    private void displayRegistrationError(@NonNull RegistrationError error) {
+    private void displayRegistrationError(@NonNull final RegistrationError error) {
         clearRegistrationError();
-        registrationErrorText.setText(error.messageRes);
-        final EditText affectedField;
+        final LabelEditText affectedField;
         switch (error) {
             default:
             case UNKNOWN:
             case NAME_TOO_LONG:
             case NAME_TOO_SHORT: {
-                affectedField = nameText;
+                //Todo if last name is to be validated this will need modification
+                affectedField = firstNameTextLET;
                 break;
             }
 
-            case EMAIL_INVALID: {
-                affectedField = emailText;
+            case EMAIL_INVALID:
+            case EMAIL_IN_USE: {
+                affectedField = emailTextLET;
                 break;
             }
 
             case PASSWORD_INSECURE:
             case PASSWORD_TOO_SHORT: {
-                affectedField = passwordText;
+                affectedField = passwordTextLET;
                 break;
             }
         }
-
-        credentialsContainer.addView(registrationErrorText,
-                                     credentialsContainer.indexOfChild(affectedField));
-        affectedField.setBackgroundResource(R.drawable.edit_text_background_error);
+        affectedField.setError(error.messageRes);
         affectedField.requestFocus();
     }
 
     private void clearRegistrationError() {
-        credentialsContainer.removeView(registrationErrorText);
 
-        nameText.setBackgroundResource(R.drawable.edit_text_selector);
-        emailText.setBackgroundResource(R.drawable.edit_text_selector);
-        passwordText.setBackgroundResource(R.drawable.edit_text_selector);
+        firstNameTextLET.removeError();
+        lastNameTextLET.removeError();
+        emailTextLET.removeError();
+        passwordTextLET.removeError();
     }
 
     private boolean doCompleteValidation() {
-        final CharSequence name = AccountPresenter.normalizeInput(nameText.getText());
-        final CharSequence email = AccountPresenter.normalizeInput(emailText.getText());
-        final CharSequence password = passwordText.getText();
+        final CharSequence firstName = AccountPresenter.normalizeInput(firstNameTextLET.getInputText());
+        final CharSequence lastName = AccountPresenter.normalizeInput(lastNameTextLET.getInputText());
+        final CharSequence email = AccountPresenter.normalizeInput(emailTextLET.getInputText());
+        final CharSequence password = passwordTextLET.getInputText();
 
-        if (!AccountPresenter.validateName(name)) {
+        if (!AccountPresenter.validateName(firstName)) {
             displayRegistrationError(RegistrationError.NAME_TOO_SHORT);
-            nameText.requestFocus();
+            firstNameTextLET.requestFocus();
             return false;
         }
 
+        //Currently we do not validate Last Name
+
         if (!AccountPresenter.validateEmail(email)) {
             displayRegistrationError(RegistrationError.EMAIL_INVALID);
-            emailText.requestFocus();
+            emailTextLET.requestFocus();
             return false;
         }
 
         if (!AccountPresenter.validatePassword(password)) {
             displayRegistrationError(RegistrationError.PASSWORD_TOO_SHORT);
-            passwordText.requestFocus();
+            passwordTextLET.requestFocus();
             return false;
         }
 
-        nameText.setText(name);
-        emailText.setText(email);
+        firstNameTextLET.setInputText(firstName.toString());
+        lastNameTextLET.setInputText(lastName.toString());
+        emailTextLET.setInputText(email.toString());
         clearRegistrationError();
 
         return true;
@@ -265,9 +344,10 @@ public class RegisterFragment extends InjectionFragment
             return;
         }
 
-        account.setName(nameText.getText().toString());
-        account.setEmail(emailText.getText().toString());
-        account.setPassword(passwordText.getText().toString());
+        account.setFirstName(firstNameTextLET.getInputText());
+        account.setLastName(lastNameTextLET.getInputText());
+        account.setEmail(emailTextLET.getInputText());
+        account.setPassword(passwordTextLET.getInputText());
 
         LoadingDialogFragment.show(getFragmentManager(),
                                    getString(R.string.dialog_loading_message),
@@ -292,8 +372,10 @@ public class RegisterFragment extends InjectionFragment
                     new ErrorDialogFragment.Builder(error, getResources());
 
             if (ApiException.statusEquals(error, 409)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_account_email_taken,
-                                                              account.getEmail()));
+
+                displayRegistrationError(RegistrationError.EMAIL_IN_USE);
+                emailTextLET.requestFocus();
+                return;
             }
 
             final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
@@ -303,8 +385,8 @@ public class RegisterFragment extends InjectionFragment
 
     public void login(@NonNull Account createdAccount) {
         final OAuthCredentials credentials = new OAuthCredentials(apiEndpoint,
-                                                                  emailText.getText().toString(),
-                                                                  passwordText.getText().toString());
+                                                                  emailTextLET.getInputText(),
+                                                                  passwordTextLET.getInputText());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
 
@@ -313,11 +395,14 @@ public class RegisterFragment extends InjectionFragment
             accountPresenter.pushAccountPreferences();
 
             Analytics.trackRegistration(session.getAccountId(),
-                                        createdAccount.getName(),
+                                        createdAccount.getFirstName(),
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
-            getOnboardingActivity().showBirthday(createdAccount, true);
+            account = createdAccount;
+            if (!profileImageManager.prepareImageUpload()) {
+                getOnboardingActivity().showBirthday(createdAccount, true);
+            }
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getActivity(), error);
@@ -328,11 +413,11 @@ public class RegisterFragment extends InjectionFragment
 
 
     //region Next button state control
-
+    //Todo include lastNameText non empty validation?
     private boolean isInputValidSimple() {
-        return (!TextUtils.isEmpty(nameText.getText()) &&
-                TextUtils.getTrimmedLength(emailText.getText()) > 0 &&
-                !TextUtils.isEmpty(passwordText.getText()));
+        return (!TextUtils.isEmpty(firstNameTextLET.getInputText()) &&
+                TextUtils.getTrimmedLength(emailTextLET.getInputText()) > 0 &&
+                !TextUtils.isEmpty(passwordTextLET.getInputText()));
     }
 
     @Override
@@ -345,8 +430,152 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void afterTextChanged(Editable s) {
-        nextButton.setEnabled(isInputValidSimple());
+        final boolean isValid = isInputValidSimple();
+        nextButton.setActivated(isValid);
+        final int buttonText = isValid ? R.string.action_continue : R.string.action_next;
+        nextButton.setText(buttonText);
     }
 
     //endregion
+
+    //region Profile Image View
+    private void updateProfileImage(@NonNull final String imagePath) {
+        final int resizeDimen = profileImageView.getSizeDimen();
+        picasso.load(imagePath)
+               .resizeDimen(resizeDimen, resizeDimen)
+               .centerCrop()
+               .into(profileImageView);
+    }
+    //endregion
+
+    //region Facebook presenter
+    private void bindFacebookProfile(@NonNull final Boolean onlyPhoto) {
+        bindAndSubscribe(facebookPresenter.profile,
+                         this::onFacebookProfileSuccess,
+                         this::onFacebookProfileError);
+
+        facebookPresenter.login(RegisterFragment.this, onlyPhoto);
+    }
+
+    private void onFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
+        final String facebookImageUrl = profile.getPictureUrl();
+        final String firstName = profile.getFirstName();
+        final String lastName = profile.getLastName();
+        final String email = profile.getEmail();
+        if (facebookImageUrl != null) {
+            updateProfileImage(facebookImageUrl);
+            profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
+            profileImageManager.setFullImageUriString(facebookImageUrl);
+        }
+        if (firstName != null) {
+            firstNameTextLET.setInputText(firstName);
+        }
+        if (lastName != null) {
+            lastNameTextLET.setInputText(lastName);
+        }
+        if (email != null) {
+            emailTextLET.setInputText(email);
+            autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
+        }
+        //Todo should? passwordTextLET.requestFocus();
+
+        profileImageManager.setImageSource(Analytics.ProfilePhoto.Source.FACEBOOK);
+    }
+
+    private void onFacebookProfileError(@NonNull final Throwable throwable) {
+        handleError(throwable, "Unable to fetch facebook profile information. Please check your connection.");
+    }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
+        stateSafeExecutor.execute(() -> {
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
+            Logger.error(getClass().getSimpleName(), errorMessage, error);
+        });
+    }
+
+    //endregion
+
+    //region Profile Image Manager Listener Methods
+
+    @Override
+    public void onImportFromFacebook() {
+        bindFacebookProfile(true);
+    }
+
+    @Override
+    public void onFromCamera(@NonNull final String imageUriString) {
+        updateProfileImage(imageUriString);
+    }
+
+    @Override
+    public void onFromGallery(@NonNull final String imageUriString) {
+        updateProfileImage(imageUriString);
+    }
+
+    @Override
+    public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
+        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        try {
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source),
+                             photo -> {
+                                 Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
+                                 profileImageManager.trimCache();
+                                 getOnboardingActivity().showBirthday(account, true);
+                             },
+                             e -> {
+                                 handleError(e, temporaryCopy);
+                                 profileImageManager.trimCache();
+                             });
+
+        } catch (Exception e) {
+            Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);
+        }
+    }
+
+    @Override
+    public void onRemove() {
+        final int defaultDimen = profileImageView.getSizeDimen();
+        picasso.cancelRequest(profileImageView);
+        picasso.load(profileImageView.getDefaultProfileRes())
+               .centerCrop()
+               .resizeDimen(defaultDimen, defaultDimen)
+               .into(profileImageView);
+        facebookPresenter.logout();
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
+    }
+
+    //endregion
+
+    public static class FocusClickListener implements View.OnClickListener {
+
+        private final ViewGroup container;
+        private final
+        @Nullable
+        Runnable runOnActivatedCommand;
+
+        public FocusClickListener(@NonNull final ViewGroup container) {
+            this(container, null);
+        }
+
+        public FocusClickListener(@NonNull final ViewGroup container, @Nullable final Runnable runOnActivatedCommand) {
+            this.container = container;
+            this.runOnActivatedCommand = runOnActivatedCommand;
+        }
+
+        @Override
+        public void onClick(@NonNull final View v) {
+            if (!v.isActivated()) {
+                final View focusedView = container.getFocusedChild();
+                if (focusedView != null) {
+
+                    final View nextFocusView = container.findViewById(focusedView.getNextFocusForwardId());
+                    if (nextFocusView != null) {
+                        nextFocusView.requestFocus();
+                    }
+                }
+            } else if (runOnActivatedCommand != null) {
+                runOnActivatedCommand.run();
+            }
+        }
+    }
 }

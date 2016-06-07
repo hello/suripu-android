@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,19 +16,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.Picasso;
+
+import org.joda.time.LocalDate;
+
 import java.util.EnumSet;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.permissions.ExternalStoragePermission;
+import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -36,27 +47,46 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Logger;
+import retrofit.mime.TypedFile;
 
-public class AccountSettingsFragment extends InjectionFragment implements AccountEditor.Container {
+public class AccountSettingsFragment extends InjectionFragment
+        implements AccountEditor.Container, ProfileImageManager.Listener{
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
-    @Inject AccountPresenter accountPresenter;
-    @Inject DateFormatter dateFormatter;
-    @Inject UnitFormatter unitFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    Picasso picasso;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    UnitFormatter unitFormatter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    FacebookPresenter facebookPresenter;
+    @Inject
+    ProfileImageManager.Builder builder;
+
+    private ProfileImageManager profileImageManager;
 
     private ProgressBar loadingIndicator;
 
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
+
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
-
     private SettingsRecyclerAdapter.DetailItem birthdayItem;
     private SettingsRecyclerAdapter.DetailItem genderItem;
     private SettingsRecyclerAdapter.DetailItem heightItem;
@@ -65,12 +95,10 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
     private Account currentAccount;
-    private @Nullable Account.Preferences accountPreferences;
+    private
+    @Nullable
+    Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
-    private SettingsRecyclerAdapter adapter;
-
-
-    //region Lifecycle
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +112,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
 
         accountPresenter.update();
         addPresenter(accountPresenter);
+        addPresenter(facebookPresenter);
 
         setRetainInstance(true);
     }
@@ -105,7 +134,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.adapter = new SettingsRecyclerAdapter(getActivity());
+        final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
         final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
@@ -113,12 +142,12 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         recyclerView.addItemDecoration(decoration);
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
-        this.nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                               this::changeName);
+
+        adapter.add(profilePictureItem);
+        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName, R.id.fragment_account_settings_name);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
-        this.emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                                this::changeEmail);
+        emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
         emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
         adapter.add(emailItem);
 
@@ -128,10 +157,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-
-
-        this.birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob),
-                                                                   this::changeBirthDate);
+        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob), this::changeBirthDate);
         birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
@@ -168,6 +194,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         loadingIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
 
+        facebookPresenter.init();
+
         return view;
     }
 
@@ -182,6 +210,8 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         bindAndSubscribe(accountPresenter.preferences(),
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
+
+        profileImageManager = builder.addFragmentListener(this).build();
     }
 
     @Override
@@ -189,19 +219,17 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         super.onDestroyView();
 
         this.loadingIndicator = null;
-
         this.nameItem = null;
         this.emailItem = null;
-
-        this.birthdayItem = null;
         this.genderItem = null;
+        this.birthdayItem = null;
         this.heightItem = null;
         this.weightItem = null;
-
         this.enhancedAudioItem = null;
 
         this.recyclerView = null;
-        this.adapter = null;
+
+        this.profileImageManager = null;
     }
 
     @Override
@@ -214,12 +242,23 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_PASSWORD && resultCode == Activity.RESULT_OK) {
+        if(profileImageManager.onActivityResult(requestCode, resultCode, data)){
+            return;
+        }
+        facebookPresenter.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
+        if (requestCode == REQUEST_CODE_PASSWORD) {
             accountPresenter.update();
-        } else if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 
     //endregion
@@ -247,7 +286,10 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     //region Binding Data
 
     public void bindAccount(@NonNull Account account) {
-        nameItem.setText(account.getName());
+        final String photoUrl = account.getProfilePhotoUrl(getResources());
+        profileImageManager.setImageUri(Uri.parse(photoUrl));
+        profilePictureItem.setValue(photoUrl);
+        nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
 
         birthdayItem.setValue(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
@@ -262,6 +304,9 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         this.currentAccount = account;
 
         hideLoadingIndicator();
+
+        showTutorialHelperIfNeeded(account.getCreated());
+
     }
 
     public void accountUnavailable(Throwable e) {
@@ -276,10 +321,22 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
     }
 
+    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt) {
+        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
+            final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
+            overlayView.setAnchorContainer(getView());
+            getAnimatorContext().runWhenIdle(() -> overlayView.postShow(R.id.static_recycler_container)
+            );
+        }
+    }
+
     //endregion
 
 
     //region Basic Info
+    private void changePicture() {
+        profileImageManager.showPictureOptions();
+    }
 
     public void changeName() {
         final ChangeNameFragment fragment = new ChangeNameFragment();
@@ -378,6 +435,7 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
             recyclerView.post(() -> {
                 getActivity().finish();
                 accountPresenter.logOut();
+                facebookPresenter.logout();
             });
         });
         signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -396,11 +454,14 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     }
 
     @Override
-    public void onAccountUpdated(@NonNull SenseFragment updatedBy) {
+    public void onAccountUpdated(@NonNull final SenseFragment updatedBy) {
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager());
             bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
                              ignored -> {
+                                 if (updatedBy instanceof Analytics.OnEventListener) {
+                                     ((Analytics.OnEventListener) updatedBy).onSuccess();
+                                 }
                                  LoadingDialogFragment.close(getFragmentManager());
                                  updatedBy.getFragmentManager().popBackStackImmediate();
                              },
@@ -412,4 +473,97 @@ public class AccountSettingsFragment extends InjectionFragment implements Accoun
     }
 
     //endregion
+
+    // region Facebook import
+
+    private void handleFacebookError(Throwable error) {
+        final String temporaryCopy = "Fetching Facebook profile picture failed. Please check your connection.";
+        Logger.debug(FacebookPresenter.class.getSimpleName(), temporaryCopy, error);
+        handleError(error, temporaryCopy);
+    }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
+        stateSafeExecutor.execute(() -> {
+            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
+            Logger.error(getClass().getSimpleName(), errorMessage, error);
+        });
+    }
+
+    private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
+        final String fbImageUri = profile.getPictureUrl();
+        if (fbImageUri != null) {
+            profilePictureItem.setValue(fbImageUri);
+            profileImageManager.setImageUri(Uri.parse(fbImageUri));
+            profileImageManager.prepareImageUpload(fbImageUri);
+        }
+    }
+
+    //endregion
+
+    //region ProfileImageManagerListener methods
+
+    @Override
+    public void onImportFromFacebook() {
+        facebookPresenter.login(this);
+
+        bindAndSubscribe(facebookPresenter.profile,
+                         this::changePictureWithFacebook,
+                         this::handleFacebookError);
+    }
+
+    @Override
+    public void onFromCamera(@NonNull final String imageUriString) {
+        updateProfileAndUpload(imageUriString);
+    }
+
+    @Override
+    public void onFromGallery(@NonNull final String imageUriString) {
+        updateProfileAndUpload(imageUriString);
+    }
+
+    @Override
+    public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
+        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
+        try{
+            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
+                             photo -> {
+                                 Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
+                                 //only update the account field but don't refresh view
+                                 currentAccount.setProfilePhoto(photo);
+                                 profileImageManager.trimCache();
+                             },
+                             e -> {
+                                 //restore previous saved photo and refresh view
+                                 currentAccount.setProfilePhoto(tempPhoto);
+                                 bindAccount(currentAccount);
+                                 handleError(e, temporaryCopy);
+                                 profileImageManager.trimCache();
+                             });
+
+        } catch (Exception e) {
+            Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
+        }
+    }
+
+    @Override
+    public void onRemove() {
+        facebookPresenter.logout();
+        bindAndSubscribe(accountPresenter.deleteProfilePicture(),
+                         successResponse -> {
+                             profilePictureItem.setValue(null);
+                             Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
+                         },
+                         error -> handleError(error,"Unable to remove photo. Please check your connection."));
+    }
+
+    private void updateProfileAndUpload(@NonNull final String imageUriString) {
+        //updates view
+        profilePictureItem.setValue(imageUriString);
+        //starts file upload process
+        profileImageManager.prepareImageUpload();
+    }
+
+    // endregion
+
 }

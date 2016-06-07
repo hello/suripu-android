@@ -486,14 +486,23 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             status.setText(R.string.preview);
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
-                playerStatus = PlayerStatus.Loading;
-                enterLoadingState();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         final File file = getCacheFile(item.getPreviewUrl());
                         final boolean saved;
-                        saved = file.exists() || saveAudioToFile(file, item.getPreviewUrl());
+                        if (file.exists()) {
+                            saved = true;
+                        } else {
+                            view.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    playerStatus = PlayerStatus.Loading;
+                                    enterLoadingState();
+                                }
+                            });
+                            saved = saveAudioToFile(file, item.getPreviewUrl());
+                        }
                         if (saved) {
                             player.setDataSource(Uri.fromFile(file), true, 1);
                         } else {

@@ -192,7 +192,6 @@ public class TimelineFragment extends InjectionFragment
         toolbar.setOverflowOpen(overflowOpen);
 
         toolbar.setTitleOnClickListener(ignored -> {
-            Tutorial.ZOOM_OUT_TIMELINE.markShown(getActivity());
             if (infoOverlay != null) {
                 infoOverlay.dismiss(false);
             }
@@ -396,8 +395,6 @@ public class TimelineFragment extends InjectionFragment
             toolbar.setTitleDimmed(true);
             toolbar.setShareVisible(false);
         }
-
-        Tutorial.TAP_HAMBURGER.markShown(getActivity());
     }
 
     @Override
@@ -482,7 +479,6 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public void onSwipeBetweenDatesStarted() {
-        Tutorial.SWIPE_TIMELINE.markShown(homeActivity);
         dismissVisibleOverlaysAndDialogs();
     }
 

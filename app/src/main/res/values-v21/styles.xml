@@ -19,4 +19,11 @@
     <style name="TintOverride.SleepScore.Alert">
         <item name="android:tint">@color/sensor_alert</item>
     </style>
+
+    <style name="FacebookTheme" parent="FacebookTheme.Base">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>

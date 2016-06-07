@@ -285,12 +285,29 @@
     <style name="AppTheme.Button.Gender.Right" parent="AppTheme.Button.Gender">
         <item name="android:background">@drawable/button_selector_gender_right</item>
     </style>
-    
+
     <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/button_selector_number</item>
         <item name="android:hapticFeedbackEnabled">true</item>
     </style>
+
+    <style name="AppTheme.Button.Rounded.Onboarding">
+        <item name="android:background">@drawable/onboarding_button_selector</item>
+    </style>
+
+    <style name="AppTheme.Button.Facebook">
+        <item name="android:paddingTop">@dimen/gap_medium</item>
+        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:paddingLeft">@dimen/gap_outer</item>
+        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:background">@drawable/facebook_autofill_selector</item>
+        <item name="android:textColor">@color/facebook_autofill_text_color_selector</item>
+        <item name="android:drawableLeft">@drawable/facebook_logo_selector</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:text">@string/action_autofill_from_facebook</item>
+    </style>
+
 
     <style name="AppTheme.Button.Raised">
         <item name="android:minHeight">@dimen/button_min_size_small</item>
@@ -390,6 +407,19 @@
     </style>
 
     <!-- EditText -->
+    <style name="EditText" parent="Platform.EditText">
+        <item name="android:paddingTop">@dimen/gap_small</item>
+        <item name="android:paddingBottom">@dimen/gap_small</item>
+        <item name="android:paddingLeft">@dimen/gap_tiny</item>
+        <item name="android:paddingRight">@dimen/gap_tiny</item>
+
+        <item name="android:background">@drawable/edit_text_background_selector</item>
+        <item name="android:fontFamily">sans-serif</item>
+
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@drawable/edit_text_selector</item>
+        <item name="android:minHeight">@dimen/text_body_line_height</item>
+    </style>
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
         <item name="android:minHeight">@dimen/edit_text_min_height</item>
@@ -399,14 +429,15 @@
         <item name="android:paddingLeft">@dimen/gap_tiny</item>
         <item name="android:paddingRight">@dimen/gap_tiny</item>
 
-        <item name="android:background">@drawable/edit_text_selector</item>
-
+        <item name="android:background">@drawable/edit_text_background_selector</item>
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding">
-        <item name="android:textSize">@dimen/text_size_subheading</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@drawable/onboarding_edittext_selector</item>
+        <item name="android:minHeight">@dimen/text_body_line_height</item>
     </style>
 
     <!-- Specific Tinting -->
@@ -484,6 +515,11 @@
         <item name="android:maxWidth">28dp</item>
         <item name="android:minHeight">28dp</item>
         <item name="android:maxHeight">28dp</item>
+    </style>
+
+    <style name="FacebookTheme" parent="FacebookTheme.Base"/>
+    <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
     </style>
 
 </resources>

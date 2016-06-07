@@ -37,27 +37,27 @@ public class TrendFeedView extends LinearLayout {
     View errorCard;
 
 
-    public TrendFeedView(@NonNull Context context) {
+    public TrendFeedView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public TrendFeedView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TrendFeedView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TrendFeedView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TrendFeedView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
+    public void setAnimatorContext(@NonNull final AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
     }
 
-    public void setAnimationCallback(@NonNull TrendGraphView.AnimationCallback animationCallback) {
+    public void setAnimationCallback(@NonNull final TrendGraphView.AnimationCallback animationCallback) {
         this.animationCallback = animationCallback;
     }
 
-    public void setLoading(boolean loading) {
+    public void setLoading(final boolean loading) {
         if (loading != this.loading) {
             this.loading = loading;
 
@@ -67,7 +67,7 @@ public class TrendFeedView extends LinearLayout {
         }
     }
 
-    public void bindTrends(@NonNull Trends trends) {
+    public void bindTrends(@NonNull final Trends trends) {
         setLoading(false);
 
         if (errorCard != null) {
@@ -77,9 +77,10 @@ public class TrendFeedView extends LinearLayout {
 
         this.trends = trends;
         populate();
+        animationCallback.isFinished();
     }
 
-    public void presentError(@NonNull TrendFeedViewItem.OnRetry onRetry) {
+    public void presentError(@NonNull final TrendFeedViewItem.OnRetry onRetry) {
         setLoading(false);
 
         this.trends = null;
@@ -107,6 +108,7 @@ public class TrendFeedView extends LinearLayout {
                     this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
                 }
                 addView(welcomeCard);
+
             }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
@@ -167,8 +169,11 @@ public class TrendFeedView extends LinearLayout {
     }
 
     public boolean isAnimating() {
+        if (welcomeCard != null || errorCard != null) {
+            return false;
+        }
         for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
+            final View child = getChildAt(i);
             if (child instanceof TrendFeedViewItem) {
                 if (((TrendFeedViewItem) child).isAnimating()) {
                     return true;
@@ -178,7 +183,7 @@ public class TrendFeedView extends LinearLayout {
         return false;
     }
 
-    private TrendFeedViewItem createTrendCard(@NonNull Graph graph) {
+    private TrendFeedViewItem createTrendCard(@NonNull final Graph graph) {
         final Context context = getContext();
         switch (graph.getGraphType()) {
             case BAR:

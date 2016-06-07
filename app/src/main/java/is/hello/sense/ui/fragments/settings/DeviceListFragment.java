@@ -25,6 +25,7 @@ import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -35,7 +36,6 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Styles;
@@ -56,6 +56,7 @@ public class DeviceListFragment extends InjectionFragment
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
     private TextView supportInfoFooter;
+    private final LocationPermission locationPermission = new LocationPermission(this);
 
     public static void startStandaloneFrom(@NonNull Activity activity) {
         final FragmentNavigationActivity.Builder builder =
@@ -151,13 +152,20 @@ public class DeviceListFragment extends InjectionFragment
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            onPairNewDevice(PlaceholderDevice.Type.SLEEP_PILL);
+        } else {
+            locationPermission.showEnableInstructionsDialog();
+        }
+    }
 
     public void bindDevices(@NonNull Devices devices) {
         adapter.bindDevices(devices);
         loadingIndicator.setVisibility(View.GONE);
         supportInfoFooter.setVisibility(View.VISIBLE);
 
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_pill_color, true);
     }
 
     public void devicesUnavailable(Throwable e) {
@@ -196,11 +204,16 @@ public class DeviceListFragment extends InjectionFragment
         switch (type) {
             case SENSE: {
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                intent.putExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, false);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
             }
 
             case SLEEP_PILL: {
+                if (!locationPermission.isGranted()) {
+                    locationPermission.requestPermission();
+                    return;
+                }
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;

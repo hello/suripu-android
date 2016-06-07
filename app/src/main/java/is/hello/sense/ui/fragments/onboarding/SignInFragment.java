@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import javax.inject.Inject;
@@ -41,6 +40,8 @@ import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.LabelEditText;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
@@ -50,14 +51,19 @@ import rx.Observable;
 
 public class SignInFragment extends InjectionFragment
         implements StatusBarColorProvider, TextWatcher {
-    @Inject ApiEndpoint apiEndpoint;
-    @Inject ApiSessionManager apiSessionManager;
-    @Inject ApiService apiService;
-    @Inject AccountPresenter accountPresenter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    ApiEndpoint apiEndpoint;
+    @Inject
+    ApiSessionManager apiSessionManager;
+    @Inject
+    ApiService apiService;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    PreferencesPresenter preferences;
 
-    private EditText emailText;
-    private EditText passwordText;
+    private LabelEditText emailTextLET;
+    private LabelEditText passwordTextLET;
     private Button nextButton;
 
 
@@ -76,12 +82,12 @@ public class SignInFragment extends InjectionFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_onboarding_sign_in, container, false);
 
-        this.emailText = (EditText) view.findViewById(R.id.fragment_onboarding_email);
-        emailText.addTextChangedListener(this);
+        this.emailTextLET = (LabelEditText) view.findViewById(R.id.fragment_onboarding_email_let);
+        emailTextLET.addTextChangedListener(this);
 
-        this.passwordText = (EditText) view.findViewById(R.id.fragment_onboarding_password);
-        passwordText.addTextChangedListener(this);
-        passwordText.setOnEditorActionListener(new EditorActionHandler(this::signIn));
+        this.passwordTextLET = (LabelEditText) view.findViewById(R.id.fragment_onboarding_password_let);
+        passwordTextLET.addTextChangedListener(this);
+        passwordTextLET.setOnEditorActionListener(new EditorActionHandler(this::signIn));
 
         this.nextButton = (Button) view.findViewById(R.id.fragment_onboarding_sign_in_go);
         nextButton.setEnabled(false);
@@ -108,7 +114,7 @@ public class SignInFragment extends InjectionFragment
             final LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
 
             final Button selectHost = new Button(getActivity());
-            selectHost.setTextAppearance(getActivity(), R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
@@ -141,18 +147,20 @@ public class SignInFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
 
-        emailText.removeTextChangedListener(this);
-        this.emailText = null;
+        emailTextLET.removeTextChangedListener(this);
+        this.emailTextLET = null;
 
-        passwordText.removeTextChangedListener(this);
-        this.passwordText = null;
+        passwordTextLET.removeTextChangedListener(this);
+        this.passwordTextLET = null;
 
         this.nextButton = null;
     }
 
     @Override
-    public @ColorInt int getStatusBarColor(@NonNull Resources resources) {
-        return resources.getColor(R.color.light_accent_darkened);
+    public
+    @ColorInt
+    int getStatusBarColor(@NonNull Resources resources) {
+        return ContextCompat.getColor(getActivity(), R.color.light_accent_darkened);
     }
 
     @Override
@@ -173,22 +181,21 @@ public class SignInFragment extends InjectionFragment
     }
 
     public void signIn() {
-        if (!isInputValid()) {
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .withMessage(StringRef.from(R.string.error_account_incomplete_credentials))
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        emailTextLET.removeError();
+        passwordTextLET.removeError();
+
+        if (inputIsInvalid(true)) {
             return;
         }
 
-        final String email = AccountPresenter.normalizeInput(emailText.getText());
-        this.emailText.setText(email);
+        final String email = AccountPresenter.normalizeInput(emailTextLET.getInputText());
+        this.emailTextLET.setInputText(email);
 
-        final String password = this.passwordText.getText().toString();
+        final String password = this.passwordTextLET.getInputText();
 
         LoadingDialogFragment.show(getFragmentManager(),
-                getString(R.string.dialog_loading_message),
-                LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                   getString(R.string.dialog_loading_message),
+                                   LoadingDialogFragment.OPAQUE_BACKGROUND);
 
         final OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
@@ -202,7 +209,7 @@ public class SignInFragment extends InjectionFragment
             bindAndSubscribe(initializeLocalState,
                              account -> {
                                  Analytics.trackSignIn(account.getId(),
-                                                       account.getName(),
+                                                       account.getFullName(),
                                                        account.getEmail());
                                  getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_SIGN_IN);
                              },
@@ -235,9 +242,20 @@ public class SignInFragment extends InjectionFragment
 
     //region Next button state control
 
-    private boolean isInputValid() {
-        return (TextUtils.getTrimmedLength(emailText.getText()) > 0 &&
-                !TextUtils.isEmpty(passwordText.getText()));
+    private boolean inputIsInvalid(boolean showErrors) {
+        if (emailTextLET.isInputEmpty() || !AccountPresenter.validateEmail(emailTextLET.getInputText())) {
+            if (showErrors) {
+                emailTextLET.setError(R.string.invalid_email); // todo confirm this error message.
+            }
+            return true;
+        }
+        if (passwordTextLET.isInputEmpty()) {
+            if (showErrors) {
+                passwordTextLET.setError(R.string.invalid_password); // todo confirm this error message.
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -250,7 +268,7 @@ public class SignInFragment extends InjectionFragment
 
     @Override
     public void afterTextChanged(Editable s) {
-        nextButton.setEnabled(isInputValid());
+        nextButton.setEnabled(!inputIsInvalid(false));
     }
 
     //endregion

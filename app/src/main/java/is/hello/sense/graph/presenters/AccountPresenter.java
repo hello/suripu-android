@@ -12,26 +12,36 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Analytics.ProfilePhoto.Source;
+import retrofit.mime.TypedFile;
 import rx.Observable;
 
 public class AccountPresenter extends ValuePresenter<Account> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^.+@.+\\..+$");
     private static final int MIN_PASSWORD_LENGTH = 6;
 
-    @Inject ApiService apiService;
-    @Inject ApiSessionManager sessionManager;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    ApiService apiService;
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    PreferencesPresenter preferences;
 
     public final PresenterSubject<Account> account = this.subject;
-    @NonNull private final Context context;
+    @NonNull
+    private final Context context;
 
-    public @Inject AccountPresenter(@NonNull Context context){
+    public
+    @Inject
+    AccountPresenter(@NonNull Context context) {
         this.context = context;
     }
 
@@ -47,7 +57,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     @Override
     protected Observable<Account> provideUpdateObservable() {
-        return apiService.getAccount()
+        return apiService.getAccount(true)
                          .doOnNext(account -> {
                              logEvent("updated account creation date preference");
                              preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
@@ -58,7 +68,9 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //region Validation
 
-    public static @NonNull String normalizeInput(@Nullable CharSequence value) {
+    public static
+    @NonNull
+    String normalizeInput(@Nullable CharSequence value) {
         if (TextUtils.isEmpty(value)) {
             return "";
         } else {
@@ -82,11 +94,10 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     //endregion
 
-
     //region Updates
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
-        return apiService.updateAccount(updatedAccount)
+        return apiService.updateAccount(updatedAccount,true)
                          .doOnNext(account::onNext);
     }
 
@@ -107,8 +118,23 @@ public class AccountPresenter extends ValuePresenter<Account> {
         return apiService.updateTimeZone(senseTimeZone);
     }
 
-    //endregion
+    /**
+     * @param picture that will be uploaded
+     * @param event Should either come from Onboarding or Account interface of Analytics
+     * @param source where the picture came from
+     * @return object with link to fetch image stored on server based on screen density
+     */
+    public Observable<MultiDensityImage> updateProfilePicture(@NonNull final TypedFile picture, @NonNull final String event, @NonNull final Source source){
+        return apiService.uploadProfilePhoto(picture)
+                .doOnNext(ignored -> Analytics.trackEvent(event, Analytics.createProfilePhotoTrackingProperties(source)))
+                         .doOnError(Functions.LOG_ERROR);
+    }
 
+    public Observable<VoidResponse> deleteProfilePicture() {
+        return apiService.deleteProfilePhoto();
+    }
+
+    //endregion
 
     //region Preferences
 
