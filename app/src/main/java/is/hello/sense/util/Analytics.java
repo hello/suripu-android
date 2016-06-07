@@ -578,7 +578,7 @@ public class Analytics {
     }
 
     /**
-     * Breadcrumb end events are tracked when {@link is.hello.sense.ui.handholding.Tutorial#markShown(Context)}
+     * Breadcrumb end events are tracked when {@link is.hello.sense.ui.handholding.Tutorial#wasDismissed(Context)}
      * usually during {@link is.hello.sense.ui.handholding.TutorialOverlayView} on interation complete.
      */
     public interface Breadcrumb {

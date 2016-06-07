@@ -318,7 +318,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             scrollView.setScrollingEnabled(false);
             this.savedScrollY = scrollView.getScrollY();
 
-            Tutorial.SCRUB_SENSOR_HISTORY.markShown(getActivity());
+            Tutorial.SCRUB_SENSOR_HISTORY.wasDismissed(getActivity());
         }
 
         @Override
