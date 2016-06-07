@@ -284,7 +284,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private void interactionCompleted() {
         Log.i(getClass().getSimpleName(), "interactionCompleted()");
 
-        tutorial.markShown(getContext());
+        tutorial.wasDismissed(getContext());
 
         dismiss(true);
     }

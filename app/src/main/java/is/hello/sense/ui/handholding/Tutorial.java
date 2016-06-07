@@ -73,17 +73,21 @@ public enum Tutorial {
              Analytics.createBreadcrumbTrackingProperties(Source.ACCOUNT,
                                                           Description.TAP_NAME));
 
-    public final @StringRes int descriptionRes;
+    public final
+    @StringRes
+    int descriptionRes;
     public final int descriptionGravity;
-    public final @IdRes int anchorId;
+    public final
+    @IdRes
+    int anchorId;
     public final Interaction interaction;
     public final Properties properties;
 
-    Tutorial(@StringRes int descriptionRes,
-             int descriptionGravity,
-             @IdRes int anchorId,
-             @NonNull Interaction interaction,
-             @NonNull Properties properties) {
+    Tutorial(@StringRes final int descriptionRes,
+             final int descriptionGravity,
+             @IdRes final int anchorId,
+             @NonNull final Interaction interaction,
+             @NonNull final Properties properties) {
         this.descriptionRes = descriptionRes;
         this.descriptionGravity = descriptionGravity;
         this.anchorId = anchorId;
@@ -96,27 +100,30 @@ public enum Tutorial {
         return "tutorial_" + toString().toLowerCase() + "_shown";
     }
 
-    public boolean shouldShow(@NonNull Activity activity) {
+    public boolean shouldShow(@NonNull final Activity activity) {
         final SharedPreferences preferences =
                 activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         return (!preferences.getBoolean(getShownKey(), false) &&
                 activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null);
     }
 
-    public void markShown(@NonNull Context context) {
+    public void wasDismissed(@NonNull final Context context) {
+        markShown(context);
+        Analytics.trackEvent(EVENT_NAME, properties);
+    }
+
+    public void markShown(@NonNull final Context context) {
         final SharedPreferences preferences =
                 context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
         preferences.edit()
                    .putBoolean(getShownKey(), true)
                    .apply();
-
-        Analytics.trackEvent(EVENT_NAME, properties);
     }
 
 
     //region Vending Animations
 
-    public static Animator createPulseAnimation(@NonNull View view) {
+    public static Animator createPulseAnimation(@NonNull final View view) {
         final ValueAnimator animator = ValueAnimator.ofFloat(1f, 0.8f, 1f);
         animator.setStartDelay(350);
         animator.setDuration(1250);
@@ -130,12 +137,12 @@ public enum Tutorial {
             boolean canceled = false;
 
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(final Animator animation) {
                 this.canceled = true;
             }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(final Animator animation) {
                 if (!canceled) {
                     animation.start();
                 }
@@ -144,9 +151,9 @@ public enum Tutorial {
         return animator;
     }
 
-    public static Animator createSlideAnimation(@NonNull View view,
-                                                @DimenRes int deltaRes,
-                                                boolean isVertical) {
+    public static Animator createSlideAnimation(@NonNull final View view,
+                                                @DimenRes final int deltaRes,
+                                                final boolean isVertical) {
         final Property<View, Float> property;
         if (isVertical) {
             property = Property.of(View.class, float.class, "translationY");
@@ -158,7 +165,7 @@ public enum Tutorial {
         final TimeInterpolator interpolator = new AccelerateDecelerateInterpolator();
 
         final float delta = view.getResources().getDimension(deltaRes);
-        ObjectAnimator slide = ObjectAnimator.ofFloat(view, property, 0f, delta);
+        final ObjectAnimator slide = ObjectAnimator.ofFloat(view, property, 0f, delta);
         slide.setInterpolator(interpolator);
         slide.setDuration(duration);
 
@@ -173,13 +180,13 @@ public enum Tutorial {
         final AnimatorSet slideAndFadeIn = new AnimatorSet();
         slideAndFadeIn.setStartDelay(150);
         slideAndFadeIn.play(slide)
-                .with(fadeOut)
-                .before(fadeIn);
+                      .with(fadeOut)
+                      .before(fadeIn);
 
         final AtomicBoolean canceled = new AtomicBoolean(false);
         slideAndFadeIn.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(final Animator animation) {
                 canceled.set(true);
                 fadeIn.cancel();
             }
@@ -187,14 +194,14 @@ public enum Tutorial {
 
         fadeIn.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(final Animator animation) {
                 if (!canceled.get()) {
                     slideAndFadeIn.start();
                 }
             }
 
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationStart(final Animator animation) {
                 property.set(view, 0f);
             }
         });
@@ -202,7 +209,7 @@ public enum Tutorial {
         return slideAndFadeIn;
     }
 
-    public Animator createAnimation(@NonNull View view) {
+    public Animator createAnimation(@NonNull final View view) {
         switch (interaction) {
             case TAP:
                 return createPulseAnimation(view);
