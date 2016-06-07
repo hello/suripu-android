@@ -19,9 +19,9 @@
     <color name="black_70">#b3000000</color>
 
     <!-- Gray -->
-    <color name="gray7_70">#b3162B48</color>
-    <color name="gray7">#162B48</color>
+    <color name="gray7">#0C1B30</color>
     <color name="gray6">#162B48</color>
+    <color name="gray6_70">#b3162B48</color>
     <color name="gray5">#5C6B7F</color>
     <color name="gray4">#8B95A4</color>
     <color name="gray4_70">#b38b95a4</color>
