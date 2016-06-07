@@ -178,12 +178,17 @@ public class ProfileImageManager {
         this.imageSource = imageSource;
     }
 
-    public void prepareImageUpload() {
+    public boolean prepareImageUpload() {
         if(fullImageUriString != null) {
             prepareImageUpload(fullImageUriString);
+            return true;
         }
+        return false;
     }
 
+    public void trimCache(){
+        imageUtil.trimCache();
+    }
     public void prepareImageUpload(@NonNull final String filePath){
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
         imageUtil.provideObservableToCompressFile(filePath, mustDownload)
