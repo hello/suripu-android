@@ -192,7 +192,7 @@ public class ProfileImageManager {
     }
     
     public boolean prepareImageUpload() {
-        if(fullImageUriString != null) {
+        if(fullImageUriString != null && !fullImageUriString.isEmpty()) {
             prepareImageUpload(fullImageUriString);
             return true;
         }
