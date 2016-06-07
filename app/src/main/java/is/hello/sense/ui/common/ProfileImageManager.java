@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics.ProfilePhoto.Source;
@@ -50,10 +51,12 @@ public class ProfileImageManager {
     private final Fragment fragment;
     private final ImageUtil imageUtil;
     private final FilePathUtil filePathUtil;
+    private final ExternalStoragePermission permission;
     private Uri imageUri;
     private String fullImageUriString;
     private Uri tempImageUri;
     private Source imageSource;
+    private int optionSelectedId;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
@@ -62,8 +65,10 @@ public class ProfileImageManager {
         this.fragment = fragment;
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
+        this.permission = new ExternalStoragePermission(fragment);
         this.imageUri = EMPTY_URI_STATE;
         this.fullImageUriString = EMPTY_URI_STATE_STRING;
+        this.optionSelectedId = -1;
     }
 
     public void showPictureOptions() {
@@ -177,7 +182,15 @@ public class ProfileImageManager {
     public void setImageSource(@NonNull final Source imageSource) {
         this.imageSource = imageSource;
     }
-
+    /**
+     *
+     * @param id Id of selected option from bottom sheet. Used so correct option action will be triggered
+     *           after obtaining permission.
+     */
+    private void setOptionSelectedId(final int id){
+        this.optionSelectedId = id;
+    }
+    
     public boolean prepareImageUpload() {
         if(fullImageUriString != null) {
             prepareImageUpload(fullImageUriString);
@@ -203,9 +216,24 @@ public class ProfileImageManager {
                 .subscribe();
     }
 
+    //region permission checks
+
+    public void onRequestPermissionResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+            handlePictureOptionSelection(optionSelectedId);
+            optionSelectedId = -1;
+        } else {
+            permission.showEnableInstructionsDialogForGallery();
+        }
+    }
+
+    //endregion
+
     //region Camera Options
 
     private void handlePictureOptionSelection(final int optionID){
+        setOptionSelectedId(optionID);
+
         switch(optionID){
             case OPTION_ID_FROM_FACEBOOK:
                 ((Listener) fragment).onImportFromFacebook();
@@ -220,7 +248,11 @@ public class ProfileImageManager {
                 }
                 break;
             case OPTION_ID_FROM_GALLERY:
-                Fetch.imageFromGallery().fetch(fragment);
+                if(permission.isGranted()){
+                    Fetch.imageFromGallery().fetch(fragment);
+                } else{
+                    permission.requestPermission();
+                }
                 break;
             case OPTION_ID_REMOVE_PICTURE:
                 setImageUri(EMPTY_URI_STATE);
