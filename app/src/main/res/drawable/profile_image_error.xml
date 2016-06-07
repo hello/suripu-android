@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/default_profile_picture" />
+    <item android:drawable="@color/gray7_70"
+          android:height="@dimen/profile_image_size"
+          android:width="@dimen/profile_image_size"/>
+    <item android:drawable="@drawable/error_white"
+          android:gravity="center"/>
+</layer-list>
