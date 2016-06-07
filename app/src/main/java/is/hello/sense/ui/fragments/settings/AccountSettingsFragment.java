@@ -100,7 +100,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private RecyclerView recyclerView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -118,7 +118,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.static_recycler, container, false);
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.static_recycler_view_loading);
@@ -199,7 +199,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(accountPresenter.account,
@@ -232,14 +232,14 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("currentAccount", currentAccount);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(profileImageManager.onActivityResult(requestCode, resultCode, data)){
             return;
@@ -256,7 +256,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 
@@ -284,7 +284,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Binding Data
 
-    public void bindAccount(@NonNull Account account) {
+    public void bindAccount(@NonNull final Account account) {
         final String photoUrl = account.getProfilePhotoUrl(getResources());
         profileImageManager.setImageUri(Uri.parse(photoUrl));
         profilePictureItem.setValue(photoUrl);
@@ -308,19 +308,19 @@ public class AccountSettingsFragment extends InjectionFragment
 
     }
 
-    public void accountUnavailable(Throwable e) {
+    public void accountUnavailable(final Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
         final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void bindAccountPreferences(@NonNull Account.Preferences preferences) {
+    public void bindAccountPreferences(@NonNull final Account.Preferences preferences) {
         this.accountPreferences = preferences;
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
     }
 
-    private void showTutorialHelperIfNeeded(@NonNull LocalDate createdAt) {
+    private void showTutorialHelperIfNeeded(@NonNull final LocalDate createdAt) {
         if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
             overlayView.setAnchorContainer(getView());
@@ -475,7 +475,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     // region Facebook import
 
-    private void handleFacebookError(Throwable error) {
+    private void handleFacebookError(final Throwable error) {
         handleError(error, getString(R.string.error_internet_connection_generic_message));
     }
 
@@ -540,7 +540,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                  profileImageManager.trimCache();
                              });
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
         }
     }
@@ -551,6 +551,7 @@ public class AccountSettingsFragment extends InjectionFragment
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
                          successResponse -> {
                              profilePictureItem.setValue(null);
+                             profileImageManager.setImageUri(Uri.EMPTY);
                              Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
                          },
                          error -> handleError(error,"Unable to remove photo. Please check your connection."));

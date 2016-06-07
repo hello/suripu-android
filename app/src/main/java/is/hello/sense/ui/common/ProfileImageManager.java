@@ -255,7 +255,6 @@ public class ProfileImageManager {
                 }
                 break;
             case OPTION_ID_REMOVE_PICTURE:
-                setImageUri(EMPTY_URI_STATE);
                 ((Listener) fragment).onRemove();
                 break;
             default:
