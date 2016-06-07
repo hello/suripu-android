@@ -551,7 +551,7 @@ public class AccountSettingsFragment extends InjectionFragment
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
                          successResponse -> {
                              profilePictureItem.setValue(null);
-                             profileImageManager.setImageUri(Uri.EMPTY);
+                             profileImageManager.setEmptyUriState();
                              Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
                          },
                          error -> handleError(error,"Unable to remove photo. Please check your connection."));
