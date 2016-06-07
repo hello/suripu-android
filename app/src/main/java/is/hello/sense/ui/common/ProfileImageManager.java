@@ -145,6 +145,9 @@ public class ProfileImageManager {
         tempImageUri = EMPTY_URI_STATE;
         setFullImageUriString(uri.equals(EMPTY_URI_STATE) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
+    public void setEmptyUriState(){
+        setImageUri(EMPTY_URI_STATE);
+    }
 
     public Uri getImageUri(){
         return imageUri;
@@ -255,7 +258,6 @@ public class ProfileImageManager {
                 }
                 break;
             case OPTION_ID_REMOVE_PICTURE:
-                setImageUri(EMPTY_URI_STATE);
                 ((Listener) fragment).onRemove();
                 break;
             default:
