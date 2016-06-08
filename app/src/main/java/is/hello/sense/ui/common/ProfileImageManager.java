@@ -141,6 +141,10 @@ public class ProfileImageManager {
         return wasResultHandled;
     }
 
+    /**
+     * TODO decouple {@link this#fullImageUriString}
+     * @param uri
+     */
     public void setImageUri(@NonNull final Uri uri) {
         imageUri = uri;
         tempImageUri = EMPTY_URI_STATE;
@@ -173,9 +177,8 @@ public class ProfileImageManager {
 
     /**
      * Used primarily to upload local files through api requiring full uri path
-     * And facebook to override {@link this#setImageUri(Uri)}
      */
-    public void setFullImageUriString(@NonNull final String imageUriString) {
+    private void setFullImageUriString(@NonNull final String imageUriString) {
         fullImageUriString = imageUriString;
     }
 
@@ -202,6 +205,7 @@ public class ProfileImageManager {
     public void trimCache(){
         imageUtil.trimCache();
     }
+
     public Observable<ProfileImage> prepareImageUpload(@NonNull final String filePath){
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
         return imageUtil.provideObservableToCompressFile(filePath, mustDownload)

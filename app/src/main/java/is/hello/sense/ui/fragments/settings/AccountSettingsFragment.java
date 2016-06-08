@@ -520,7 +520,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
-        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
+        final String temporaryCopy = getString(R.string.error_account_upload_photo_message);
         final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
         try {
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
@@ -548,11 +548,12 @@ public class AccountSettingsFragment extends InjectionFragment
         facebookPresenter.logout();
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
                          successResponse -> {
-                             profilePictureItem.setValue(null);
+                             currentAccount.setProfilePhoto(null);
+                             bindAccount(currentAccount);
                              profileImageManager.setEmptyUriState();
                              Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
                          },
-                         error -> handleError(error, "Unable to remove photo. Please check your connection."));
+                         error -> handleError(error, getString(R.string.error_account_remove_photo_message)));
     }
 
     private void updateProfileAndUpload(@NonNull final String imageUriString) {

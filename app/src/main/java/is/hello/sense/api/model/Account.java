@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -190,7 +191,7 @@ public class Account extends ApiResponse implements Cloneable {
         return profilePhoto;
     }
 
-    public void setProfilePhoto(@NonNull MultiDensityImage profilePhoto) {
+    public void setProfilePhoto(@Nullable MultiDensityImage profilePhoto) {
         this.profilePhoto = profilePhoto;
     }
 

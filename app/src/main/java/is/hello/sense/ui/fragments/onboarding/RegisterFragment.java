@@ -467,7 +467,6 @@ public class RegisterFragment extends InjectionFragment
         if (facebookImageUrl != null) {
             updateProfileImage(facebookImageUrl);
             profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
-            profileImageManager.setFullImageUriString(facebookImageUrl);
         }
         if (firstName != null) {
             firstNameTextLET.setInputText(firstName);
