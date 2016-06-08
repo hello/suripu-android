@@ -556,7 +556,7 @@ public class Analytics {
     }
 
     public interface Account {
-        String EVENT_CHANGE_EMAIL = "Change email";
+        String EVENT_CHANGE_EMAIL = "Change Email";
         String EVENT_CHANGE_PASSWORD = "Change password";
         String EVENT_CHANGE_NAME = "Change Name";
         String EVENT_CHANGE_PROFILE_PHOTO = "Change Profile Photo";
