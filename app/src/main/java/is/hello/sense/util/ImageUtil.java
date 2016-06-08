@@ -89,7 +89,6 @@ public class ImageUtil {
                 }
                 byte[] compressedByteArray;
                 final File freshTempFile = createFile(true);
-                //final String writePath = freshTempFile != null ? freshTempFile.getAbsolutePath() : "";
                 if (mustDownload) {
                     compressedByteArray = compressToByteArray(
                             decodeBitmapFromUrlStream(path));
