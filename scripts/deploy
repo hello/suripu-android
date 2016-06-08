@@ -15,9 +15,11 @@ if ENV["HELLO_DEPLOY_HOCKEY_TOKEN"].nil?
 end
 
 options = OpenStruct.new
-options.clean = false
+options.clean = true
 options.tests = false
 options.tag = nil
+options.dry_run = false
+
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename $0} [options] flavors...".green
 
@@ -31,6 +33,10 @@ OptionParser.new do |opts|
   
   opts.on("-sTAG", "--save-tag=TAG", "Tag the current branch contents") do |t|
     options.tag = t
+  end
+
+  opts.on("-d","--dry-run", "Do not perform upload operation.") do |d|
+    options.dry_run = d
   end
   
   opts.on_tail("-h", "--help", "Show this message") do
@@ -73,6 +79,14 @@ end
 
 #endregion
 
+#region Dry Run
+
+if options.dry_run
+  puts "-- Finished dry run".green
+  exit
+end
+
+#endregion
 
 #region Building
 
