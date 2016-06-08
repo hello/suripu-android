@@ -24,6 +24,7 @@ import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
 import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.CAMERA;
@@ -194,29 +195,24 @@ public class ProfileImageManager {
         this.optionSelectedId = id;
     }
     
-    public boolean prepareImageUpload() {
-        if(fullImageUriString != null && !fullImageUriString.equals(EMPTY_URI_STATE_STRING)) {
-            prepareImageUpload(fullImageUriString);
-            return true;
-        }
-        return false;
+    public Observable<ProfileImage> prepareImageUpload() {
+        return prepareImageUpload(fullImageUriString);
     }
 
     public void trimCache(){
         imageUtil.trimCache();
     }
-    public void prepareImageUpload(@NonNull final String filePath){
+    public Observable<ProfileImage> prepareImageUpload(@NonNull final String filePath){
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
-        imageUtil.provideObservableToCompressFile(filePath, mustDownload)
-                .doOnNext(file -> {
+        return imageUtil.provideObservableToCompressFile(filePath, mustDownload)
+                .map( file -> {
                     final TypedFile typedFile = new TypedFile("multipart/form-data", file);
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
-                    ((Listener) fragment).onUploadReady(typedFile,imageSource);
+                    return new ProfileImage(typedFile, imageSource);
                 })
                 .doOnError(Functions.LOG_ERROR)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Rx.mainThreadScheduler())
-                .subscribe();
+                .observeOn(Rx.mainThreadScheduler());
     }
 
     //region permission checks
@@ -267,6 +263,25 @@ public class ProfileImageManager {
 
     //endregion
 
+    public static class ProfileImage {
+
+        private final TypedFile file;
+        private final Source source;
+
+        public ProfileImage(@NonNull final TypedFile file, @NonNull final Source source){
+            this.file = file;
+            this.source = source;
+        }
+
+        public TypedFile getFile() {
+            return file;
+        }
+
+        public Source getSource() {
+            return source;
+        }
+    }
+
     public interface Listener {
 
         void onImportFromFacebook();
@@ -274,8 +289,6 @@ public class ProfileImageManager {
         void onFromCamera(final String imageUriString);
 
         void onFromGallery(final String imageUriString);
-
-        void onUploadReady(final TypedFile imageFile, final Source source);
 
         void onRemove();
     }

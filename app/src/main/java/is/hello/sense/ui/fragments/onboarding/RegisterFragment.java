@@ -397,13 +397,18 @@ public class RegisterFragment extends InjectionFragment
                                         DateTime.now());
 
             account = createdAccount;
-            if (!profileImageManager.prepareImageUpload()) {
-                getOnboardingActivity().showBirthday(createdAccount, true);
-            }
+            bindAndSubscribe(profileImageManager.prepareImageUpload(),
+                             image -> onUploadReady(image.getFile(), image.getSource()),
+                             e -> goToNextScreen());
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getActivity(), error);
         });
+    }
+
+    private void goToNextScreen(){
+        getOnboardingActivity().showBirthday(
+                account,true);
     }
 
     //endregion
@@ -511,7 +516,6 @@ public class RegisterFragment extends InjectionFragment
         updateProfileImage(imageUriString);
     }
 
-    @Override
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         try {
@@ -519,11 +523,12 @@ public class RegisterFragment extends InjectionFragment
                              photo -> {
                                  Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
                                  profileImageManager.trimCache();
-                                 getOnboardingActivity().showBirthday(account, true);
+                                 goToNextScreen();
                              },
                              e -> {
                                  handleError(e, temporaryCopy);
                                  profileImageManager.trimCache();
+                                 goToNextScreen();
                              });
 
         } catch (final Exception e) {
