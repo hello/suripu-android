@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Camera;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -29,7 +28,7 @@ import rx.Observable;
 public class ImageUtil {
 
     @VisibleForTesting
-    final int FILE_SIZE_LIMIT =  5000 * 1024; //5MB
+    final int FILE_SIZE_LIMIT = 5000 * 1024; //5MB
     @VisibleForTesting
     final int COMPRESSION_QUALITY = 100;
     @VisibleForTesting
@@ -48,42 +47,46 @@ public class ImageUtil {
 
     private final Context context;
 
-    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso){
+    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso) {
         this.context = context;
         this.storageUtil = storageUtil;
         this.picasso = picasso;
     }
 
-    public boolean hasDeviceCamera(){
+    public boolean hasDeviceCamera() {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
     /**
      * @param isTemporary determines whether or not to make temporary file
      *                    using {@link File#createTempFile(String, String, File)}
-     * @return
-     * Returns <code>null</code> if exception occurs.
+     * @return Returns <code>null</code> if exception occurs.
      */
-    public @Nullable File createFile(boolean isTemporary){
+    public
+    @Nullable
+    File createFile(boolean isTemporary) {
         final File storageDir = getStorageDirectory();
 
-        if(isTemporary){
+        if (isTemporary) {
             return getCacheFile(getFullFileName(imageFileName));
-        } else{
-            return new File(storageDir,getFullFileName(imageFileName) + fileFormat);
+        } else {
+            return new File(storageDir, getFullFileName(imageFileName) + fileFormat);
         }
     }
 
     /**
-     *
-     * @param path of file or stream to download from
+     * @param path         of file or stream to download from
      * @param mustDownload if <code>true</code> will open connection to download url
      *                     to a new file path made by {@link ImageUtil#createFile(boolean)}
      * @return an {@link Observable<File>} to send and manipulate that has been compressed and down sampled.
      */
-    public Observable<File> provideObservableToCompressFile(@NonNull final String path, final boolean mustDownload){
+    public Observable<File> provideObservableToCompressFile(@NonNull final String path, final boolean mustDownload) {
         return Observable.create((subscriber) -> {
             try {
+                if (path.isEmpty()) {
+                    subscriber.onNext(null);
+                    return;
+                }
                 byte[] compressedByteArray;
                 final File freshTempFile = createFile(true);
                 //final String writePath = freshTempFile != null ? freshTempFile.getAbsolutePath() : "";
@@ -96,6 +99,7 @@ public class ImageUtil {
                 }
                 final File compressedFile = writeToFile(freshTempFile, compressedByteArray);
                 subscriber.onNext(compressedFile);
+
             } catch (IOException e) {
                 subscriber.onError(e);
             } finally {
@@ -105,7 +109,7 @@ public class ImageUtil {
         });
     }
 
-    public Bitmap downSampleBitmapFromFile(@NonNull final String path){
+    public Bitmap downSampleBitmapFromFile(@NonNull final String path) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         decodeBitmapFromFile(path, options);
@@ -114,8 +118,8 @@ public class ImageUtil {
         return decodeBitmapFromFile(path, options);
     }
 
-    public Bitmap rotateBitmap(@NonNull final Bitmap source, final float rotateDegrees){
-        if(rotateDegrees % 360 == 0) {
+    public Bitmap rotateBitmap(@NonNull final Bitmap source, final float rotateDegrees) {
+        if (rotateDegrees % 360 == 0) {
             return source;
         }
         final Matrix rotationMatrix = new Matrix();
@@ -124,45 +128,50 @@ public class ImageUtil {
     }
 
     /**
-     *  First tries public external storage for pictures then private external storage for pictures.
-     *  Last attempt will try to access internal app storage.
+     * First tries public external storage for pictures then private external storage for pictures.
+     * Last attempt will try to access internal app storage.
+     *
      * @return File directory to write image file.
      */
-    protected @Nullable File getStorageDirectory(){
+    protected
+    @Nullable
+    File getStorageDirectory() {
         File storageDir;
         final long memoryRequirement = FILE_SIZE_LIMIT;
         final Queue<File> storageOptions = new LinkedList<>();
 
-        if(storageUtil.isExternalStorageAvailableAndWriteable()){
+        if (storageUtil.isExternalStorageAvailableAndWriteable()) {
             storageOptions.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
             storageOptions.add(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES));
         }
         //internal storage directory
         storageOptions.add(context.getFilesDir());
-        do{storageDir = storageUtil.createDirectory(storageOptions.poll(),DIRECTORY_NAME);}
-        while(!(storageUtil.canUse(storageDir, memoryRequirement) || storageOptions.isEmpty()));
+        do {
+            storageDir = storageUtil.createDirectory(storageOptions.poll(), DIRECTORY_NAME);
+        }
+        while (!(storageUtil.canUse(storageDir, memoryRequirement) || storageOptions.isEmpty()));
         return storageDir;
     }
 
-    protected String getFullFileName(@NonNull final String fileName){
+    protected String getFullFileName(@NonNull final String fileName) {
         return String.format("%s_%s", fileName, timestampFormat.format(new Date()));
     }
 
-    private File writeToFile(@NonNull final File file, @NonNull final byte[] byteArray) throws IOException{
-        try(final FileOutputStream fos = new FileOutputStream(file)){
+    private File writeToFile(@NonNull final File file, @NonNull final byte[] byteArray) throws IOException {
+        try (final FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(byteArray);
         }
         return file;
     }
 
-    private Bitmap applyTransformationAndCompression(@NonNull final String path) throws IOException{
+    private Bitmap applyTransformationAndCompression(@NonNull final String path) throws IOException {
         return rotateBitmap(
                 downSampleBitmapFromFile(path),
                 getRotationFromExifData(path));
     }
 
-    private byte[] compressToByteArray(@NonNull final Bitmap bitmap) throws IOException{
-        try(final ByteArrayOutputStream bos = new ByteArrayOutputStream()){
+    private byte[] compressToByteArray(@NonNull final Bitmap bitmap) throws IOException {
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             bitmap.compress(COMPRESSION_FORMAT, COMPRESSION_QUALITY, bos);
             bitmap.recycle();
             final byte[] byteArray = bos.toByteArray();
@@ -172,21 +181,23 @@ public class ImageUtil {
     }
 
     /**
-     * @param options contains bitmap info to determine how much down sampling is required
+     * @param options     contains bitmap info to determine how much down sampling is required
      * @param memoryLimit references {@link ImageUtil#FILE_SIZE_LIMIT}
      * @return largest inSampleSize that meets minimum required width and height.
      */
-    private int calculateInSampleSize(@NonNull final BitmapFactory.Options options, final int memoryLimit){
+    private int calculateInSampleSize(@NonNull final BitmapFactory.Options options, final int memoryLimit) {
         final int pixelByteDensity = getPixelByteDensity(options.inPreferredConfig);
         final int rawHeight = options.outHeight;
         final int rawWidth = options.outWidth;
         int inSampleSize = 1;
 
-        if( getSizeInMemory(rawWidth,rawHeight,pixelByteDensity) <= memoryLimit){
+        if (getSizeInMemory(rawWidth, rawHeight, pixelByteDensity) <= memoryLimit) {
             return inSampleSize;
-        } else{
-            do{ inSampleSize *= 2;}
-            while(getSizeInMemory((rawHeight / inSampleSize), (rawWidth / inSampleSize), pixelByteDensity) > memoryLimit);
+        } else {
+            do {
+                inSampleSize *= 2;
+            }
+            while (getSizeInMemory((rawHeight / inSampleSize), (rawWidth / inSampleSize), pixelByteDensity) > memoryLimit);
             return inSampleSize;
         }
     }
@@ -196,8 +207,8 @@ public class ImageUtil {
      * @return Returns number of bytes per pixel given a {@link android.graphics.Bitmap.Config}.
      * If unknown config, returns {@link Bitmap#DENSITY_NONE}.
      */
-    private int getPixelByteDensity(@NonNull final Bitmap.Config config){
-        switch (config){
+    private int getPixelByteDensity(@NonNull final Bitmap.Config config) {
+        switch (config) {
             case ARGB_8888:
                 return 4;
             case RGB_565:
@@ -212,15 +223,15 @@ public class ImageUtil {
         }
     }
 
-    private int getSizeInMemory(final int width, final int height, final int pixelByteDensity){
+    private int getSizeInMemory(final int width, final int height, final int pixelByteDensity) {
         return width * height * pixelByteDensity;
     }
 
-    private Bitmap decodeBitmapFromFile(@NonNull final String path, @NonNull final BitmapFactory.Options options){
+    private Bitmap decodeBitmapFromFile(@NonNull final String path, @NonNull final BitmapFactory.Options options) {
         return BitmapFactory.decodeFile(path, options);
     }
 
-    private Bitmap decodeBitmapFromUrlStream(@NonNull final String path) throws IOException{
+    private Bitmap decodeBitmapFromUrlStream(@NonNull final String path) throws IOException {
         /*final URL url = new URL(path);
         final InputStream fis = url.openStream();
         final Bitmap bitmap = BitmapFactory.decodeStream(fis);
@@ -229,11 +240,11 @@ public class ImageUtil {
         return picasso.load(Uri.parse(path)).get();
     }
 
-    private int getRotationFromExifData(@NonNull final String path) throws IOException{
+    private int getRotationFromExifData(@NonNull final String path) throws IOException {
         final ExifInterface exif = new ExifInterface(path);
         final int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                                                      ExifInterface.ORIENTATION_NORMAL);
-        switch (orientation){
+        switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
                 return 90;
             case ExifInterface.ORIENTATION_ROTATE_180:

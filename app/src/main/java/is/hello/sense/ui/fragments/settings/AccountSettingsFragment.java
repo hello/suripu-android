@@ -491,9 +491,8 @@ public class AccountSettingsFragment extends InjectionFragment
     private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
         final String fbImageUri = profile.getPictureUrl();
         if (fbImageUri != null) {
-            profilePictureItem.setValue(fbImageUri);
             profileImageManager.setImageUri(Uri.parse(fbImageUri));
-            profileImageManager.prepareImageUpload(fbImageUri);
+            updateProfileAndUpload(fbImageUri);
         }
     }
 
@@ -520,7 +519,6 @@ public class AccountSettingsFragment extends InjectionFragment
         updateProfileAndUpload(imageUriString);
     }
 
-    @Override
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
@@ -561,7 +559,10 @@ public class AccountSettingsFragment extends InjectionFragment
         //updates view
         profilePictureItem.setValue(imageUriString);
         //starts file upload process
-        profileImageManager.prepareImageUpload();
+        bindAndSubscribe(profileImageManager.prepareImageUpload(),
+                         profileImage -> onUploadReady(profileImage.getFile(), profileImage.getSource()),
+                         //TODO check if error message does not match connection error
+                         e -> handleError(e, getString(R.string.error_internet_connection_generic_message)));
     }
 
     // endregion
