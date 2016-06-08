@@ -36,7 +36,7 @@ import rx.functions.Action1;
 public class TimelineInfoOverlay implements Handler.Callback {
     private static final long DISPLAY_DURATION = 3000;
     private static final int MSG_DISMISS = 0x1;
-
+    private final int backgroundColor;
     private final Activity activity;
     private final AnimatorContext animatorContext;
 
@@ -84,6 +84,8 @@ public class TimelineInfoOverlay implements Handler.Callback {
                                                            Gravity.BOTTOM | Gravity.LEFT);
         layoutParams.leftMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_left_inset);
         contents.addView(tooltip, layoutParams);
+
+        this.backgroundColor = ContextCompat.getColor(activity, R.color.background_light_overlay);
     }
 
     public void bindEvent(@NonNull TimelineEvent event) {
@@ -128,7 +130,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
                                                                          screenSize.x,
                                                                          screenSize.y));
         background.getPaint()
-                  .setColor(resources.getColor(R.color.background_light_overlay));
+                  .setColor(backgroundColor);
 
         if (darkenOverlayColor == Color.TRANSPARENT) {
             return background;
@@ -159,10 +161,10 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
-
         final Point screenSize = new Point();
         final View contentRoot = activity.findViewById(Window.ID_ANDROID_CONTENT);
-        screenSize.x = contentRoot.getWidth();
+        //TODO
+        screenSize.x = (int) Math.round(contentRoot.getWidth() * 0.825);
         screenSize.y = contentRoot.getHeight();
 
         viewFrame.top -= contentRoot.getTop();
