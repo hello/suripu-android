@@ -35,7 +35,10 @@ public class FilePathUtil {
     }
 
     public String getRealPath(@NonNull final Uri uri){
-        if(apiLevel >= Build.VERSION_CODES.KITKAT){
+        if(isWebUri(uri)){
+            return uri.toString(); //entire string
+        }
+        else if(apiLevel >= Build.VERSION_CODES.KITKAT){
             return getRealPathApi19AndUp(uri);
         } else if(apiLevel >= Build.VERSION_CODES.HONEYCOMB){
             return getRealPathApi18To11(uri);
@@ -69,6 +72,13 @@ public class FilePathUtil {
         return result;
     }
 
+    /**
+     *  Do not remove this method despite supporting only devices api 19+
+     *  Many times the uri is not {@link DocumentsContract#isDocumentUri(Context, Uri)}
+     *  and so {@link this#getRealPathApi18To11(Uri)} will handle it.
+     * @param uri
+     * @return
+     */
     private String getRealPathApi19AndUp(@NonNull final Uri uri){
         String filePath = EMPTY_URI_STATE_STRING;
         if(!DocumentsContract.isDocumentUri(context, uri)){
@@ -102,5 +112,9 @@ public class FilePathUtil {
 
     public boolean isFoundOnDevice(@NonNull final String filePath) {
         return new File(filePath).exists();
+    }
+
+    public boolean isWebUri(@NonNull final Uri uri){
+        return uri.getScheme().contains("http");
     }
 }
