@@ -38,24 +38,36 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 @SuppressLint("ViewConstructor")
 public class TutorialOverlayView extends RelativeLayout {
-    public static final @IdRes int ROOT_CONTAINER_ID = R.id.item_tutorial_description;
+    public static final
+    @IdRes
+    int ROOT_CONTAINER_ID = R.id.item_tutorial_description;
 
     private final Activity activity;
     private final Tutorial tutorial;
     private final TextView descriptionText;
 
-    private @Nullable InteractionView interactionView;
-    private @Nullable View anchorView;
+    private
+    @Nullable
+    InteractionView interactionView;
+    private
+    @Nullable
+    View anchorView;
     private float interactionStartX = 0f, interactionStartY = 0f;
     private boolean trackingInteraction = false;
 
-    private @Nullable View anchorContainer;
-    private @Nullable ViewGroup container;
-    private @Nullable Runnable onDismiss;
+    private
+    @Nullable
+    View anchorContainer;
+    private
+    @Nullable
+    ViewGroup container;
+    private
+    @Nullable
+    Runnable onDismiss;
 
     //region Creation
 
-    public TutorialOverlayView(@NonNull Activity activity, @NonNull Tutorial tutorial) {
+    public TutorialOverlayView(@NonNull final Activity activity, @NonNull final Tutorial tutorial) {
         super(activity);
 
         this.activity = activity;
@@ -103,7 +115,9 @@ public class TutorialOverlayView extends RelativeLayout {
 
     //region Lifecycle
 
-    private @Nullable Window getWindow() {
+    private
+    @Nullable
+    Window getWindow() {
         return activity.getWindow();
     }
 
@@ -149,15 +163,16 @@ public class TutorialOverlayView extends RelativeLayout {
 
     //region Showing
 
-    public void setOnDismiss(@Nullable Runnable onDismiss) {
+    public void setOnDismiss(@Nullable final Runnable onDismiss) {
         this.onDismiss = onDismiss;
     }
 
-    public void setAnchorContainer(@Nullable View anchorContainer) {
+    public void setAnchorContainer(@Nullable final View anchorContainer) {
         this.anchorContainer = anchorContainer;
     }
 
-    public void show(@IdRes int containerRes) {
+    public void show(@IdRes final int containerRes) {
+        tutorial.markShown(getContext());
         this.container = (ViewGroup) activity.findViewById(containerRes);
         if (container == null) {
             final String idName = getResources().getResourceName(containerRes);
@@ -167,18 +182,16 @@ public class TutorialOverlayView extends RelativeLayout {
         setAlpha(0f);
         container.addView(this);
 
-        Views.runWhenLaidOut(this, () -> {
-            animatorFor(this)
-                    .alpha(1f)
-                    .start();
-        });
+        Views.runWhenLaidOut(this, () -> animatorFor(this)
+                .alpha(1f)
+                .start());
     }
 
-    public void postShow(@IdRes int containerRes) {
+    public void postShow(@IdRes final int containerRes) {
         post(() -> show(containerRes));
     }
 
-    public void dismiss(boolean animate) {
+    public void dismiss(final boolean animate) {
         if (container != null) {
             if (animate) {
                 final ViewGroup oldContainer = container;
@@ -271,7 +284,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private void interactionCompleted() {
         Log.i(getClass().getSimpleName(), "interactionCompleted()");
 
-        tutorial.markShown(getContext());
+        tutorial.wasDismissed(getContext());
 
         dismiss(true);
     }
@@ -281,7 +294,7 @@ public class TutorialOverlayView extends RelativeLayout {
 
     //region Event Handling
 
-    private boolean interceptTouchEvent(@NonNull MotionEvent event) {
+    private boolean interceptTouchEvent(@NonNull final MotionEvent event) {
         if (!trackingInteraction && Views.isMotionEventInside(descriptionText, event)) {
             return false;
         }
@@ -307,14 +320,14 @@ public class TutorialOverlayView extends RelativeLayout {
                     }
                 } else {
                     if (tutorial.interaction.isVertical) {
-                        float deltaY = Math.abs(interactionStartY - event.getRawY());
+                        final float deltaY = Math.abs(interactionStartY - event.getRawY());
                         if (deltaY >= getResources().getDimensionPixelSize(R.dimen.interaction_slide_positive)) {
                             interactionCompleted();
                         } else {
                             interactionCanceled();
                         }
                     } else {
-                        float deltaX = Math.abs(interactionStartX - event.getRawX());
+                        final float deltaX = Math.abs(interactionStartX - event.getRawX());
                         if (deltaX >= getResources().getDimensionPixelSize(R.dimen.interaction_slide_positive)) {
                             interactionCompleted();
                         } else {
@@ -339,7 +352,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private class EventInterceptor implements Window.Callback {
         private final Window.Callback target;
 
-        private EventInterceptor(@NonNull Window.Callback target) {
+        private EventInterceptor(@NonNull final Window.Callback target) {
             this.target = target;
         }
 
@@ -348,7 +361,7 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         @Override
-        public boolean dispatchTouchEvent(MotionEvent event) {
+        public boolean dispatchTouchEvent(final MotionEvent event) {
             return ((ViewCompat.isAttachedToWindow(TutorialOverlayView.this) && interceptTouchEvent(event)) ||
                     target.dispatchTouchEvent(event));
         }
@@ -356,47 +369,47 @@ public class TutorialOverlayView extends RelativeLayout {
         //region Forwarded
 
         @Override
-        public boolean dispatchTrackballEvent(MotionEvent event) {
+        public boolean dispatchTrackballEvent(final MotionEvent event) {
             return target.dispatchTrackballEvent(event);
         }
 
         @Override
-        public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        public boolean dispatchGenericMotionEvent(final MotionEvent event) {
             return target.dispatchGenericMotionEvent(event);
         }
 
         @Override
-        public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
+        public boolean dispatchPopulateAccessibilityEvent(final AccessibilityEvent event) {
             return target.dispatchPopulateAccessibilityEvent(event);
         }
 
         @Override
-        public View onCreatePanelView(int featureId) {
+        public View onCreatePanelView(final int featureId) {
             return target.onCreatePanelView(featureId);
         }
 
         @Override
-        public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        public boolean onCreatePanelMenu(final int featureId, final Menu menu) {
             return target.onCreatePanelMenu(featureId, menu);
         }
 
         @Override
-        public boolean onPreparePanel(int featureId, View view, Menu menu) {
+        public boolean onPreparePanel(final int featureId, final View view, final Menu menu) {
             return target.onPreparePanel(featureId, view, menu);
         }
 
         @Override
-        public boolean onMenuOpened(int featureId, Menu menu) {
+        public boolean onMenuOpened(final int featureId, final Menu menu) {
             return target.onMenuOpened(featureId, menu);
         }
 
         @Override
-        public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
             return target.onMenuItemSelected(featureId, item);
         }
 
         @Override
-        public void onWindowAttributesChanged(WindowManager.LayoutParams attrs) {
+        public void onWindowAttributesChanged(final WindowManager.LayoutParams attrs) {
             target.onWindowAttributesChanged(attrs);
         }
 
@@ -406,7 +419,7 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         @Override
-        public void onWindowFocusChanged(boolean hasFocus) {
+        public void onWindowFocusChanged(final boolean hasFocus) {
             target.onWindowFocusChanged(hasFocus);
         }
 
@@ -421,7 +434,7 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         @Override
-        public void onPanelClosed(int featureId, Menu menu) {
+        public void onPanelClosed(final int featureId, final Menu menu) {
             target.onPanelClosed(featureId, menu);
         }
 
@@ -431,38 +444,38 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         @Override
-        public boolean onSearchRequested(SearchEvent searchEvent) {
+        public boolean onSearchRequested(final SearchEvent searchEvent) {
             return false;
         }
 
         @Override
-        public ActionMode onWindowStartingActionMode(ActionMode.Callback callback) {
+        public ActionMode onWindowStartingActionMode(final ActionMode.Callback callback) {
             return target.onWindowStartingActionMode(callback);
         }
 
         @Nullable
         @Override
-        public ActionMode onWindowStartingActionMode(ActionMode.Callback callback, int type) {
+        public ActionMode onWindowStartingActionMode(final ActionMode.Callback callback, final int type) {
             return null;
         }
 
         @Override
-        public void onActionModeStarted(ActionMode mode) {
+        public void onActionModeStarted(final ActionMode mode) {
             target.onActionModeStarted(mode);
         }
 
         @Override
-        public void onActionModeFinished(ActionMode mode) {
+        public void onActionModeFinished(final ActionMode mode) {
             target.onActionModeFinished(mode);
         }
 
         @Override
-        public boolean dispatchKeyEvent(KeyEvent event) {
+        public boolean dispatchKeyEvent(final KeyEvent event) {
             return target.dispatchKeyEvent(event);
         }
 
         @Override
-        public boolean dispatchKeyShortcutEvent(KeyEvent event) {
+        public boolean dispatchKeyShortcutEvent(final KeyEvent event) {
             return target.dispatchKeyShortcutEvent(event);
         }
 

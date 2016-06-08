@@ -44,7 +44,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.FacebookPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -100,7 +99,7 @@ public class RegisterFragment extends InjectionFragment
     //region Lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -115,7 +114,7 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_onboarding_register, container, false);
 
         this.credentialsContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_register_credentials);
@@ -160,9 +159,7 @@ public class RegisterFragment extends InjectionFragment
 
         profileImageManager = builder.addFragmentListener(this).build();
 
-        final View.OnClickListener profileImageOnClickListener = (v) -> {
-            profileImageManager.showPictureOptions();
-        };
+        final View.OnClickListener profileImageOnClickListener = (v) -> profileImageManager.showPictureOptions();
 
         profileImageView.setOnClickListener(profileImageOnClickListener);
         profileImageView.addButtonListener(profileImageOnClickListener);
@@ -225,14 +222,14 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("account", account);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (profileImageManager.onActivityResult(requestCode, resultCode, data)) {
             return;
@@ -241,21 +238,21 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 
     @Override
-    public int getStatusBarColor(@NonNull Resources resources) {
+    public int getStatusBarColor(@NonNull final Resources resources) {
         return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
     }
 
     @Override
-    public void onStatusBarTransitionBegan(@ColorInt int targetColor) {
+    public void onStatusBarTransitionBegan(@ColorInt final int targetColor) {
     }
 
     @Override
-    public void onStatusBarTransitionEnded(@ColorInt int finalColor) {
+    public void onStatusBarTransitionEnded(@ColorInt final int finalColor) {
     }
 
     //endregion
@@ -383,7 +380,7 @@ public class RegisterFragment extends InjectionFragment
         });
     }
 
-    public void login(@NonNull Account createdAccount) {
+    public void login(@NonNull final Account createdAccount) {
         final OAuthCredentials credentials = new OAuthCredentials(apiEndpoint,
                                                                   emailTextLET.getInputText(),
                                                                   passwordTextLET.getInputText());
@@ -400,13 +397,18 @@ public class RegisterFragment extends InjectionFragment
                                         DateTime.now());
 
             account = createdAccount;
-            if (!profileImageManager.prepareImageUpload()) {
-                getOnboardingActivity().showBirthday(createdAccount, true);
-            }
+            bindAndSubscribe(profileImageManager.prepareImageUpload(),
+                             image -> onUploadReady(image.getFile(), image.getSource()),
+                             e -> goToNextScreen());
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getActivity(), error);
         });
+    }
+
+    private void goToNextScreen(){
+        getOnboardingActivity().showBirthday(
+                account,true);
     }
 
     //endregion
@@ -421,15 +423,15 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
+    public void afterTextChanged(final Editable s) {
         final boolean isValid = isInputValidSimple();
         nextButton.setActivated(isValid);
         final int buttonText = isValid ? R.string.action_continue : R.string.action_next;
@@ -483,13 +485,15 @@ public class RegisterFragment extends InjectionFragment
     }
 
     private void onFacebookProfileError(@NonNull final Throwable throwable) {
-        handleError(throwable, "Unable to fetch facebook profile information. Please check your connection.");
+        handleError(throwable, getString(R.string.error_internet_connection_generic_message));
     }
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
-            ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage));
-            Logger.error(getClass().getSimpleName(), errorMessage, error);
+            if(getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+                Logger.error(getClass().getSimpleName(), errorMessage, error);
+            }
         });
     }
 
@@ -512,7 +516,6 @@ public class RegisterFragment extends InjectionFragment
         updateProfileImage(imageUriString);
     }
 
-    @Override
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
         final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         try {
@@ -520,14 +523,15 @@ public class RegisterFragment extends InjectionFragment
                              photo -> {
                                  Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
                                  profileImageManager.trimCache();
-                                 getOnboardingActivity().showBirthday(account, true);
+                                 goToNextScreen();
                              },
                              e -> {
                                  handleError(e, temporaryCopy);
                                  profileImageManager.trimCache();
+                                 goToNextScreen();
                              });
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);
         }
     }
@@ -541,6 +545,7 @@ public class RegisterFragment extends InjectionFragment
                .resizeDimen(defaultDimen, defaultDimen)
                .into(profileImageView);
         facebookPresenter.logout();
+        profileImageManager.setEmptyUriState();
         Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
     }
 

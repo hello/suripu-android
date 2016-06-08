@@ -537,7 +537,7 @@
     <string name="request_permission_write_external_storage_required_message_generic">In order to share an attachment, Sense requires access to your photo library. Please enable Storage in <a href="#settings">Settings</a> to continue.</string>
     <string name="share_timeline_sleep_time"><![CDATA[It took you <font color=#596980>%1$s</font> to fall asleep. You slept a total <font color=#596980>%2$s</font> and woke up <font color=#596980>%3$s</font> during the night.]]></string>
     <string name="request_permission_write_external_storage_required_title_gallery">Sense needs to ask for access to your photos</string>
-    <string name="request_permission_write_external_storage_required_message_gallery">In order to select a profile photo, Sense requires access to your photo library. Enable access to photos for Sense in your Device <a href="#settings">Settings</a>. to continue</string>
+    <string name="request_permission_write_external_storage_required_message_gallery">In order to select a profile photo, Sense requires access to your photo library. Enable access to photos for Sense in your Device <a href="#settings">Settings</a> to continue</string>
 
     <string name="alarm_subnavbar_alarm_list">ALARMS</string>
     <string name="alarm_subnavbar_sounds_list">SLEEP SOUNDS</string>
@@ -597,5 +597,6 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
-
+    <string name="error_internet_connection_generic_title">No connection</string>
+    <string name="error_internet_connection_generic_message">We\'re having trouble connecting to the internet. Please check your connection or try again in a few minutes.</string>
 </resources>
