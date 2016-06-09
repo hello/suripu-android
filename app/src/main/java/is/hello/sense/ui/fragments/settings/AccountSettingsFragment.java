@@ -547,6 +547,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
         } catch (final Exception e) {
             Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
+            profileImageManager.setShowOptions(true);
         }
     }
 
