@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class ProfileImageManager {
         this.fullImageUriString = EMPTY_URI_STATE_STRING;
         this.optionSelectedId = -1;
         this.showOptions = true;
+        this.tempImageUri = EMPTY_URI_STATE;
     }
 
     public void showPictureOptions() {
@@ -107,7 +109,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(!imageUri.equals(EMPTY_URI_STATE)){
+        if(!EMPTY_URI_STATE.equals(imageUri)){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -158,17 +160,11 @@ public class ProfileImageManager {
     public void setImageUri(@NonNull final Uri uri) {
         imageUri = uri;
         tempImageUri = EMPTY_URI_STATE;
-        setFullImageUriString(uri.equals(EMPTY_URI_STATE) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
+        setFullImageUriString(EMPTY_URI_STATE.equals(uri) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
     public void setEmptyUriState(){
         setImageUri(EMPTY_URI_STATE);
     }
-
-    public Uri getImageUri(){
-        return imageUri;
-    }
-
-    public String getFullImageUriString() { return fullImageUriString; }
 
     private void setImageUriWithTemp() {
         setImageUri(tempImageUri);
