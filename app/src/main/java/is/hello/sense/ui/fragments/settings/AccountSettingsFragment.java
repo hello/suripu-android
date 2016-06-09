@@ -476,6 +476,7 @@ public class AccountSettingsFragment extends InjectionFragment
     // region Facebook import
 
     private void handleFacebookError(final Throwable error) {
+        profileImageManager.setShowOptions(true);
         handleError(error, getString(R.string.error_internet_connection_generic_message));
     }
 
@@ -502,6 +503,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onImportFromFacebook() {
+        profileImageManager.setShowOptions(false);
         if(!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,
                              this::changePictureWithFacebook,
@@ -512,11 +514,13 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onFromCamera(@NonNull final String imageUriString) {
+        profileImageManager.setShowOptions(false);
         updateProfileAndUpload(imageUriString);
     }
 
     @Override
     public void onFromGallery(@NonNull final String imageUriString) {
+        profileImageManager.setShowOptions(false);
         updateProfileAndUpload(imageUriString);
     }
 
@@ -530,6 +534,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                  //only update the account field but don't refresh view
                                  currentAccount.setProfilePhoto(photo);
                                  profileImageManager.trimCache();
+                                 profileImageManager.setShowOptions(true);
                              },
                              e -> {
                                  //restore previous saved photo and refresh view
@@ -537,23 +542,30 @@ public class AccountSettingsFragment extends InjectionFragment
                                  bindAccount(currentAccount);
                                  handleError(e, temporaryCopy);
                                  profileImageManager.trimCache();
+                                 profileImageManager.setShowOptions(true);
                              });
 
         } catch (final Exception e) {
             Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
+            profileImageManager.setShowOptions(true);
         }
     }
 
     @Override
     public void onRemove() {
+        profileImageManager.setShowOptions(false);
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
                          successResponse -> {
                              currentAccount.setProfilePhoto(null);
                              bindAccount(currentAccount);
                              profileImageManager.setEmptyUriState();
                              Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
+                             profileImageManager.setShowOptions(true);
                          },
-                         error -> handleError(error, getString(R.string.error_account_remove_photo_message)));
+                         error -> {
+                             handleError(error, getString(R.string.error_account_remove_photo_message));
+                             profileImageManager.setShowOptions(true);
+                         });
     }
 
     private void updateProfileAndUpload(@NonNull final String imageUriString) {
@@ -563,7 +575,10 @@ public class AccountSettingsFragment extends InjectionFragment
         bindAndSubscribe(profileImageManager.prepareImageUpload(),
                          profileImage -> onUploadReady(profileImage.getFile(), profileImage.getSource()),
                          //TODO check if error message does not match connection error
-                         e -> handleError(e, getString(R.string.error_internet_connection_generic_message)));
+                         e -> {
+                             handleError(e, getString(R.string.error_internet_connection_generic_message));
+                             profileImageManager.setShowOptions(true);
+                         });
     }
 
     // endregion

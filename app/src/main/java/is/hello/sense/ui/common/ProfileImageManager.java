@@ -58,6 +58,7 @@ public class ProfileImageManager {
     private Uri tempImageUri;
     private Source imageSource;
     private int optionSelectedId;
+    private boolean showOptions;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
@@ -70,10 +71,15 @@ public class ProfileImageManager {
         this.imageUri = EMPTY_URI_STATE;
         this.fullImageUriString = EMPTY_URI_STATE_STRING;
         this.optionSelectedId = -1;
+        this.showOptions = true;
     }
 
     public void showPictureOptions() {
         //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
+
+        if(!showOptions){
+            return;
+        }
 
         final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>(4);
 
@@ -139,6 +145,10 @@ public class ProfileImageManager {
             wasResultHandled = false;
         }
         return wasResultHandled;
+    }
+
+    public void setShowOptions(final boolean showOptions) {
+        this.showOptions = showOptions;
     }
 
     /**
