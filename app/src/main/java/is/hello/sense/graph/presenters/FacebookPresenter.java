@@ -138,7 +138,8 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
 
     private String getAuthTokenString(){
-        return String.format("Bearer %s", AccessToken.getCurrentAccessToken().getToken());
+        final AccessToken token = AccessToken.getCurrentAccessToken();
+        return String.format("Bearer %s", token != null ? token.getToken() : "");
     }
 
     /**
