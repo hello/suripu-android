@@ -64,7 +64,7 @@ public class ImageUtil {
      */
     public
     @Nullable
-    File createFile(boolean isTemporary) {
+    File createFile(final boolean isTemporary) {
         final File storageDir = getStorageDirectory();
 
         if (isTemporary) {
@@ -83,6 +83,10 @@ public class ImageUtil {
     public Observable<File> provideObservableToCompressFile(@NonNull final String path, final boolean mustDownload) {
         return Observable.create((subscriber) -> {
             try {
+                if(subscriber.isUnsubscribed()){
+                    return;
+                }
+
                 if (path.isEmpty()) {
                     subscriber.onNext(null);
                     return;
@@ -98,11 +102,11 @@ public class ImageUtil {
                 }
                 final File compressedFile = writeToFile(freshTempFile, compressedByteArray);
                 subscriber.onNext(compressedFile);
+                subscriber.onCompleted();
 
             } catch (IOException e) {
                 subscriber.onError(e);
             } finally {
-                subscriber.onCompleted();
                 subscriber.unsubscribe();
             }
         });

@@ -452,9 +452,11 @@ public class RegisterFragment extends InjectionFragment
 
     //region Facebook presenter
     private void bindFacebookProfile(@NonNull final Boolean onlyPhoto) {
-        bindAndSubscribe(facebookPresenter.profile,
-                         this::onFacebookProfileSuccess,
-                         this::onFacebookProfileError);
+        if(!facebookPresenter.profile.hasObservers()) {
+            bindAndSubscribe(facebookPresenter.profile,
+                             this::onFacebookProfileSuccess,
+                             this::onFacebookProfileError);
+        }
 
         facebookPresenter.login(RegisterFragment.this, onlyPhoto);
     }
