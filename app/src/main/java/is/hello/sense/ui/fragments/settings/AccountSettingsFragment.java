@@ -502,11 +502,12 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onImportFromFacebook() {
+        if(!facebookPresenter.profile.hasObservers()) {
+            bindAndSubscribe(facebookPresenter.profile,
+                             this::changePictureWithFacebook,
+                             this::handleFacebookError);
+        }
         facebookPresenter.login(this);
-
-        bindAndSubscribe(facebookPresenter.profile,
-                         this::changePictureWithFacebook,
-                         this::handleFacebookError);
     }
 
     @Override
@@ -545,7 +546,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onRemove() {
-        facebookPresenter.logout();
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
                          successResponse -> {
                              currentAccount.setProfilePhoto(null);
