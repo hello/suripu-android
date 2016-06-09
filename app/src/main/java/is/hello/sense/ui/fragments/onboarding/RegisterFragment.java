@@ -219,6 +219,7 @@ public class RegisterFragment extends InjectionFragment
         this.profileImageView = null;
         this.profileImageManager = null;
         this.autofillFacebookButton = null;
+        this.facebookPresenter.logout();
     }
 
     @Override
@@ -545,7 +546,6 @@ public class RegisterFragment extends InjectionFragment
                .centerCrop()
                .resizeDimen(defaultDimen, defaultDimen)
                .into(profileImageView);
-        facebookPresenter.logout();
         profileImageManager.setEmptyUriState();
         Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
     }
