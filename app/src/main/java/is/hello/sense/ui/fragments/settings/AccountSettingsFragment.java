@@ -546,7 +546,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onRemove() {
-        facebookPresenter.logout();
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
                          successResponse -> {
                              currentAccount.setProfilePhoto(null);

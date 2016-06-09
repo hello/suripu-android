@@ -130,7 +130,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     }
 
     public void logout() {
-        //setAuthToken(null);
+        setAuthToken(null);
         profile.forget();
     }
 

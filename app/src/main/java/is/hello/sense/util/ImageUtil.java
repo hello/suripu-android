@@ -85,10 +85,9 @@ public class ImageUtil {
             try {
                 if(subscriber.isUnsubscribed()){
                     return;
-                }
-
-                if (path.isEmpty()) {
+                } else if (path.isEmpty()) {
                     subscriber.onNext(null);
+                    subscriber.onCompleted();
                     return;
                 }
                 byte[] compressedByteArray;
