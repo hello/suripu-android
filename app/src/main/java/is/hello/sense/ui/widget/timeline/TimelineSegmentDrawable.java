@@ -22,7 +22,7 @@ public class TimelineSegmentDrawable extends Drawable {
     private final Resources resources;
     private final Paint fillPaint = new Paint();
     private final Paint stripePaint = new Paint();
-    private final double maxContentRightFraction;
+    private final double maxContentWidthFraction;
     private final int rightInset;
     private final int dividerHeight;
     private final int stolenScoreHeight;
@@ -47,7 +47,7 @@ public class TimelineSegmentDrawable extends Drawable {
         this.resources = context.getResources();
         final TypedValue typedValue = new TypedValue();
         resources.getValue(R.dimen.timeline_segment_item_end_max_fraction, typedValue, true);
-        this.maxContentRightFraction = typedValue.getFloat();
+        this.maxContentWidthFraction = typedValue.getFloat();
         this.rightInset = resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.bottom_line);
 
@@ -66,7 +66,7 @@ public class TimelineSegmentDrawable extends Drawable {
         final int canvasRight = canvas.getWidth(),
             canvasBottom = canvas.getHeight();
 
-        final long contentRight = Math.round(canvasRight * maxContentRightFraction);
+        final long contentRight = Math.round(canvasRight * maxContentWidthFraction);
 
         final int timestampRight = canvasRight - rightInset;
 
