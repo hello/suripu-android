@@ -52,6 +52,8 @@ public class ProfileImageView extends FrameLayout implements Target {
         return R.drawable.default_profile_picture;
     }
 
+    public int getDefaultErrorRes() { return R.drawable.profile_image_error; }
+
     public void addButtonListener(@NonNull final OnClickListener listener){
         plusButton.setHapticFeedbackEnabled(true);
         plusButton.setOnClickListener(v -> {
@@ -69,7 +71,7 @@ public class ProfileImageView extends FrameLayout implements Target {
     @Override
     public void onBitmapFailed(@NonNull final Drawable errorDrawable) {
         progressBar.setVisibility(GONE);
-        profileImage.setImageResource(getDefaultProfileRes());
+        profileImage.setImageResource(getDefaultErrorRes());
         Logger.error(ProfileImageView.class.getSimpleName(), "failed to load bitmap.");
     }
 

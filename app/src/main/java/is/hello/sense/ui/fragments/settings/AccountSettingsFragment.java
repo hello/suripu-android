@@ -523,7 +523,7 @@ public class AccountSettingsFragment extends InjectionFragment
         profileImageManager.setShowOptions(false);
         updateProfileAndUpload(imageUriString);
     }
-
+    
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
         final String temporaryCopy = getString(R.string.error_account_upload_photo_message);
         final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
