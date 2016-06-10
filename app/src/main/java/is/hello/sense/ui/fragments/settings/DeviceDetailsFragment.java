@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,7 +31,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     public static final String ARG_DEVICE = SenseDetailsFragment.class.getName() + ".ARG_DEVICE";
 
     private LinearLayout alertContainer;
-    private ImageView alertIcon;
     private ProgressBar alertBusy;
     private TextView alertText;
     private Button primaryAlertAction;
@@ -68,7 +66,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         View view = inflater.inflate(R.layout.fragment_device_details, container, false);
 
         this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
-        this.alertIcon = (ImageView) alertContainer.findViewById(R.id.fragment_device_details_alert_icon);
         this.alertBusy = (ProgressBar) alertContainer.findViewById(R.id.fragment_device_details_alert_busy);
         this.alertText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_text);
         this.alertTitleText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_title_text);
@@ -88,7 +85,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         super.onDestroyView();
 
         this.alertContainer = null;
-        this.alertIcon = null;
         this.alertBusy = null;
         this.alertText = null;
         this.alertTitleText = null;
@@ -157,7 +153,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
     protected void showBlockingAlert(@StringRes int messageRes) {
         if (getView() != null) {
-            alertIcon.setVisibility(View.GONE);
             alertTitleText.setVisibility(View.GONE);
             alertBusy.setVisibility(View.VISIBLE);
             primaryAlertAction.setVisibility(View.GONE);
@@ -173,7 +168,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     }
 
     protected void showTroubleshootingAlert(@NonNull TroubleshootingAlert alert) {
-        alertIcon.setVisibility(View.VISIBLE);
         alertBusy.setVisibility(View.GONE);
         primaryAlertAction.setVisibility(View.VISIBLE);
 

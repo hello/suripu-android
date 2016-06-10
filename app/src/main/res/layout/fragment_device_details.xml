@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/background_light">
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:background="@color/background_light">
 
     <LinearLayout
         android:id="@+id/fragment_device_details_container"
@@ -18,45 +17,31 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
-            <LinearLayout
-                android:layout_width="match_parent"
+            android:layout_marginStart="@dimen/gap_outer"
+            android:layout_marginEnd="@dimen/gap_outer"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/fragment_device_details_alert_title_text"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="@dimen/gap_outer"
-                android:layout_marginEnd="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+                android:text="@string/app_name"
+                android:drawableLeft="@drawable/icon_warning"
+                android:drawablePadding="@dimen/gap_small"
+                android:gravity="center"
                 android:layout_marginTop="@dimen/device_detail_progress_margin"
-                android:layout_marginBottom="@dimen/device_detail_text_margin">
-
-                <ImageView
-                    android:id="@+id/fragment_device_details_alert_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_warning"
-                    android:layout_gravity="center_vertical"
-                    tools:ignore="ContentDescription" />
-
-                <TextView
-                    android:id="@+id/fragment_device_details_alert_title_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-                    android:text="@string/app_name"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/gap_xsmall"
-                    android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
-
-            </LinearLayout>
+                android:layout_marginLeft="@dimen/gap_xsmall"
+                android:layout_marginBottom="@dimen/device_detail_text_margin"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
             <ProgressBar
                 android:id="@+id/fragment_device_details_alert_busy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/gap_outer"
-                android:layout_marginEnd="@dimen/gap_outer"
                 android:layout_marginTop="@dimen/device_detail_progress_margin"
                 android:layout_marginBottom="@dimen/device_detail_text_margin"
-                android:layout_gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:visibility="gone"
                 style="@style/AppTheme.ProgressBar.Small" />
 
@@ -64,8 +49,6 @@
                 android:id="@+id/fragment_device_details_alert_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
                 android:gravity="center"
                 android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                 android:text="@string/app_name"
@@ -76,8 +59,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap_small"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
                 android:layout_marginBottom="@dimen/gap_small"
                 android:text="@string/action_troubleshoot"
                 style="@style/AppTheme.Button.Rounded" />
@@ -86,8 +67,6 @@
                 android:id="@+id/fragment_device_details_alert_action_secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
                 android:text="@string/action_retry"
                 android:visibility="gone"
                 style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
