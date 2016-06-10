@@ -112,13 +112,17 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
      * Use {@link FacebookPresenter#login(Fragment, Boolean)} for more profile permissions
      */
     public void login(@NonNull final Fragment container) {
-        requestInfo(true);
-        LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
+        login(container, true);
     }
 
     public void login(@NonNull final Fragment container, @NonNull final Boolean requestOnlyPhoto) {
         requestInfo(requestOnlyPhoto);
-        LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
+        if(isLoggedIn()){
+            this.update();
+        } else{
+            LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
+        }
+
     }
 
     public boolean isLoggedIn(){
@@ -134,7 +138,8 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
 
     private String getAuthTokenString(){
-        return String.format("Bearer %s", AccessToken.getCurrentAccessToken().getToken());
+        final AccessToken token = AccessToken.getCurrentAccessToken();
+        return String.format("Bearer %s", token != null ? token.getToken() : "");
     }
 
     /**

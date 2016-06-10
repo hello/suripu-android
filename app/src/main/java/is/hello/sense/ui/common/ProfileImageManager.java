@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public class ProfileImageManager {
     private Uri tempImageUri;
     private Source imageSource;
     private int optionSelectedId;
+    private boolean showOptions;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
                                @NonNull final ImageUtil imageUtil,
@@ -70,10 +72,16 @@ public class ProfileImageManager {
         this.imageUri = EMPTY_URI_STATE;
         this.fullImageUriString = EMPTY_URI_STATE_STRING;
         this.optionSelectedId = -1;
+        this.showOptions = true;
+        this.tempImageUri = EMPTY_URI_STATE;
     }
 
     public void showPictureOptions() {
         //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
+
+        if(!showOptions){
+            return;
+        }
 
         final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>(4);
 
@@ -101,7 +109,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(!imageUri.equals(EMPTY_URI_STATE)){
+        if(!EMPTY_URI_STATE.equals(imageUri)){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -141,6 +149,10 @@ public class ProfileImageManager {
         return wasResultHandled;
     }
 
+    public void setShowOptions(final boolean showOptions) {
+        this.showOptions = showOptions;
+    }
+
     /**
      * TODO decouple {@link this#fullImageUriString}
      * @param uri
@@ -148,17 +160,11 @@ public class ProfileImageManager {
     public void setImageUri(@NonNull final Uri uri) {
         imageUri = uri;
         tempImageUri = EMPTY_URI_STATE;
-        setFullImageUriString(uri.equals(EMPTY_URI_STATE) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
+        setFullImageUriString(EMPTY_URI_STATE.equals(uri) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
     public void setEmptyUriState(){
         setImageUri(EMPTY_URI_STATE);
     }
-
-    public Uri getImageUri(){
-        return imageUri;
-    }
-
-    public String getFullImageUriString() { return fullImageUriString; }
 
     private void setImageUriWithTemp() {
         setImageUri(tempImageUri);

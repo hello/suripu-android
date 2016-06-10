@@ -219,6 +219,7 @@ public class RegisterFragment extends InjectionFragment
         this.profileImageView = null;
         this.profileImageManager = null;
         this.autofillFacebookButton = null;
+        this.facebookPresenter.logout();
     }
 
     @Override
@@ -452,9 +453,11 @@ public class RegisterFragment extends InjectionFragment
 
     //region Facebook presenter
     private void bindFacebookProfile(@NonNull final Boolean onlyPhoto) {
-        bindAndSubscribe(facebookPresenter.profile,
-                         this::onFacebookProfileSuccess,
-                         this::onFacebookProfileError);
+        if(!facebookPresenter.profile.hasObservers()) {
+            bindAndSubscribe(facebookPresenter.profile,
+                             this::onFacebookProfileSuccess,
+                             this::onFacebookProfileError);
+        }
 
         facebookPresenter.login(RegisterFragment.this, onlyPhoto);
     }
@@ -543,7 +546,6 @@ public class RegisterFragment extends InjectionFragment
                .centerCrop()
                .resizeDimen(defaultDimen, defaultDimen)
                .into(profileImageView);
-        facebookPresenter.logout();
         profileImageManager.setEmptyUriState();
         Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
     }
