@@ -39,8 +39,10 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     private static final int DELAY_PUSH_PREFERENCES = 3000;
     private static final int MSG_PUSH_PREFERENCES = 0x5;
 
-    @Inject AccountPresenter accountPresenter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    PreferencesPresenter preferences;
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
 

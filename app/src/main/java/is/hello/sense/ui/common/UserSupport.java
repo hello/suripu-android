@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -157,7 +156,7 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
-    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull Activity from){
+    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull final Activity from){
         Analytics.trackEvent(Analytics.Permissions.EVENT_GALLERY_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210819543");

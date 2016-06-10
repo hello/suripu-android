@@ -22,6 +22,7 @@ public class WhatsNewLayout extends FrameLayout {
         if (lastVersion != null && lastVersion.equals(desiredVersion)) {
             return false;
         }
+        //todo change these values before release 1.4.3
         return !(context.getString(R.string.whats_new_title_text).isEmpty()
                 || context.getString(R.string.whats_new_message_text).isEmpty()
                 || context.getString(R.string.whats_new_button_text).isEmpty()
@@ -65,9 +66,7 @@ public class WhatsNewLayout extends FrameLayout {
             }
             markShown(context);
         });
-        findViewById(R.id.view_whats_new_learn_more).setOnClickListener((ignored) -> {
-            UserSupport.showLearnMore(context, R.string.whats_new_button_link);
-        });
+        findViewById(R.id.view_whats_new_learn_more).setOnClickListener((ignored) -> UserSupport.showLearnMore(context, R.string.whats_new_button_link));
     }
 
 

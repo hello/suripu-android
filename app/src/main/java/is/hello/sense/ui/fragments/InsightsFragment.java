@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -18,7 +17,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +31,6 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
@@ -53,10 +50,8 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
-import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
-import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;

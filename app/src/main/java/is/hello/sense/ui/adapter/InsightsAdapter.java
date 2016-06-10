@@ -243,7 +243,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         switch (viewType) {
             case TYPE_BANNER: {
                 final WhatsNewLayout layout = new WhatsNewLayout(context);
-                layout.setId(R.id.insights_adapter_whats_new_layout);
                 layout.setListener(() -> {
                     showWhatsNew = false;
                     notifyDataSetChanged();

@@ -11,5 +11,4 @@
     <item name="fragment_timeline_before_sleep_item_tag_insight" type="id" />
 
     <item name="fragment_account_settings_name" type="id" />
-    <item name="insights_adapter_whats_new_layout" type="id" />
 </resources>
