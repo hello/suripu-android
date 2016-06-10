@@ -76,8 +76,6 @@
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
-    <string name="title_sense_pairing_mode_help">Pairing Mode</string>
-    <string name="info_sense_pairing_mode_help">Before you connect your phone, Sense needs to be put into Pairing Mode.\n\nPlace your hand directly on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
     <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
