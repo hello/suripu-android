@@ -13,7 +13,7 @@ public class PasswordEditText extends EditText
         implements View.OnTouchListener, View.OnFocusChangeListener{
     private boolean isPasswordMasked = true;
     private final int HIDDEN_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
-    private final int VISIBLE_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+    private final int VISIBLE_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     private final int HIDDEN_ICON = R.drawable.secreteye;
     private final int VISIBLE_ICON = R.drawable.secreteyehighlighted;
 
@@ -69,7 +69,7 @@ public class PasswordEditText extends EditText
     }
 
 
-    private void setIsPasswordMasked(boolean isPasswordMasked){
+    private void setIsPasswordMasked(final boolean isPasswordMasked){
         this.isPasswordMasked = isPasswordMasked;
         setInputType();
         setDrawableIcon();
