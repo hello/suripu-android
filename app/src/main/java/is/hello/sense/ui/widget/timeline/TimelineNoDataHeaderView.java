@@ -23,22 +23,22 @@ public class TimelineNoDataHeaderView extends LinearLayout {
 
     //region Lifecycle
 
-    public TimelineNoDataHeaderView(@NonNull Context context) {
+    public TimelineNoDataHeaderView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public TimelineNoDataHeaderView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TimelineNoDataHeaderView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TimelineNoDataHeaderView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TimelineNoDataHeaderView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         setOrientation(VERTICAL);
         setBackgroundResource(R.color.background_timeline);
 
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        final LayoutInflater layoutInflater = LayoutInflater.from(context);
         layoutInflater.inflate(R.layout.view_timeline_no_data_header, this, true);
 
         this.diagram = (ImageView) findViewById(R.id.view_timeline_no_data_header_diagram);
@@ -52,23 +52,23 @@ public class TimelineNoDataHeaderView extends LinearLayout {
 
     //region Attributes
 
-    public void setDiagramResource(@DrawableRes int diagramRes) {
+    public void setDiagramResource(@DrawableRes final int diagramRes) {
         diagram.setImageResource(diagramRes);
     }
 
-    public void setTitle(@StringRes int titleRes) {
+    public void setTitle(@StringRes final int titleRes) {
         title.setText(titleRes);
     }
 
-    public void setMessage(@StringRes int messageRes) {
+    public void setMessage(@StringRes final int messageRes) {
         message.setText(messageRes);
     }
 
-    public void setMessage(@Nullable CharSequence newMessage) {
+    public void setMessage(@Nullable final CharSequence newMessage) {
         message.setText(newMessage);
     }
 
-    public void setAction(@StringRes int titleRes, @NonNull OnClickListener onClick) {
+    public void setAction(@StringRes final int titleRes, @NonNull final OnClickListener onClick) {
         action.setText(titleRes);
         Views.setSafeOnClickListener(action, onClick);
         action.setVisibility(VISIBLE);
