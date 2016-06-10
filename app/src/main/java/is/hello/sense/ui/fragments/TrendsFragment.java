@@ -173,6 +173,7 @@ public class TrendsFragment extends BacksideTabFragment implements TrendFeedView
     }
 
     public void presentError(final Throwable e) {
+        timeScaleSelector.setVisibility(View.GONE);
         trendFeedView.presentError(this);
         timeScaleSelector.setEnabled(true);
         swipeRefreshLayout.setRefreshing(false);
