@@ -393,7 +393,7 @@ public class RegisterFragment extends InjectionFragment
             accountPresenter.pushAccountPreferences();
 
             Analytics.trackRegistration(session.getAccountId(),
-                                        createdAccount.getFirstName(),
+                                        createdAccount.getFullName(),
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
@@ -519,7 +519,6 @@ public class RegisterFragment extends InjectionFragment
     }
 
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
-        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
         try {
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source),
                              photo -> {
@@ -528,13 +527,13 @@ public class RegisterFragment extends InjectionFragment
                                  goToNextScreen();
                              },
                              e -> {
-                                 handleError(e, temporaryCopy);
+                                 Analytics.trackError(e, "Onboarding photo upload api");
                                  profileImageManager.trimCache();
                                  goToNextScreen();
                              });
 
         } catch (final Exception e) {
-            Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);
+            Logger.error(RegisterFragment.class.getSimpleName(), getString(R.string.error_account_upload_photo_message), e);
         }
     }
 
