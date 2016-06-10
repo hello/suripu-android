@@ -18,6 +18,8 @@
         android:gravity="center"
         android:textAppearance="?attr/senseTextAppearanceSubheading"
         android:text="@string/onboarding_done_message_1"
-        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"/>
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+        android:visibility="invisible"
+        android:alpha="0"/>
 
 </FrameLayout>
