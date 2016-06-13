@@ -648,11 +648,11 @@ public class TimelineFragment extends InjectionFragment
                         preferences.getLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE);
                 final boolean isAccountNew = (creationDate == null ||
                         creationDate.equals(LocalDate.now()));
-                if (homeActivity.getOnboardingFlow() == OnboardingActivity.FLOW_REGISTER
-                        && isAccountNew) {
+                if (isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
+                    header.setAction(R.string.action_timeline_bad_data_support,null);
 
                     final Activity activity = getActivity();
                     if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
@@ -662,12 +662,12 @@ public class TimelineFragment extends InjectionFragment
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
-                    header.setMessage(timeline.getMessage());
+                    header.setMessage(getString(R.string.title_timeline_not_enough_data_message));
                     header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NOT_ENOUGH_SLEEP_DATA));
                 } else {
                     header.setDiagramResource(R.drawable.timeline_state_no_data);
                     header.setTitle(R.string.title_timeline_no_data);
-                    header.setMessage(timeline.getMessage());
+                    header.setMessage(getString(R.string.title_timeline_no_data_message));
                     header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NO_SLEEP_DATA));
                 }
             });

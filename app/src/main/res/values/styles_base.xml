@@ -84,6 +84,21 @@
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_large</item>
         <item name="android:textColor">@color/standard</item>
     </style>
+
+
+    <style name="AppTheme.Button.Primary">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:background">@drawable/button_rounded_normal</item>
+        <item name="android:textColor">@color/text_white_button</item>
+        <item name="android:textSize">@dimen/text_h7</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">normal</item>
+    </style>
     ​
     ​ ​
 </resources>

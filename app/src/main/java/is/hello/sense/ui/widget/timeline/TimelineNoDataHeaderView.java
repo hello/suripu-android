@@ -68,10 +68,12 @@ public class TimelineNoDataHeaderView extends LinearLayout {
         message.setText(newMessage);
     }
 
-    public void setAction(@StringRes final int titleRes, @NonNull final OnClickListener onClick) {
+    public void setAction(@StringRes final int titleRes, @Nullable final OnClickListener onClick) {
         action.setText(titleRes);
-        Views.setSafeOnClickListener(action, onClick);
-        action.setVisibility(VISIBLE);
+        if (onClick != null) {
+            Views.setSafeOnClickListener(action, onClick);
+            action.setVisibility(VISIBLE);
+        }
     }
 
     //endregion

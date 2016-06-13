@@ -480,7 +480,9 @@
     <string name="action_set_this_time_zone">Use current</string>
     <string name="action_select_time_zone_from_list">View list</string>
     <string name="title_timeline_not_enough_data">Not enough motion data</string>
+    <string name="title_timeline_not_enough_data_message">If your Sleep Pill is not attached properly, it may not register enough motion data to generate a Timeline. \n\nTap below for instructions on how to clip your Sleep Pill to your pillow.</string>
     <string name="title_timeline_no_data">No sleep data recorded</string>
+    <string name="title_timeline_no_data_message">This is normal if you were out of town, or away from your bed. \n\nOtherwise, you may want to check your Sleep Pill’s battery level, and make sure that Sense is connected to the internet.</string>
     <string name="title_timeline_first_night">See you in the morning</string>
     <string name="message_timeline_first_night">In the morning, you‘ll see your first Sleep Timeline here. There are no modes to set - Sense will automatically know when you go to bed. All you need to do is sleep.</string>
     <string name="action_timeline_bad_data_support">Learn more</string>
