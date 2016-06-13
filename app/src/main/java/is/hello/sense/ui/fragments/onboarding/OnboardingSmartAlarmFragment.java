@@ -48,17 +48,25 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
 
         if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             complete();
+        } else {
+            final View view = this.getView();
+            if(view != null){
+                view.setVisibility(View.VISIBLE);
+            }
         }
     }
 
-
-    public void createNewAlarm(@NonNull View sender) {
-        Intent newAlarm = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+    public void createNewAlarm(@NonNull final View sender) {
+        final Intent newAlarm = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+        final View view = this.getView();
+        if(view != null){
+            view.setVisibility(View.INVISIBLE);
+        }
         startActivityForResult(newAlarm, EDIT_REQUEST_CODE);
     }
 
     public void complete() {
         LoadingDialogFragment.close(getFragmentManager());
-        ((OnboardingActivity) getActivity()).showDone();
+        ((OnboardingActivity) getActivity()).showDone(isVisible());
     }
 }

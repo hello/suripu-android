@@ -75,16 +75,24 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
     public FragmentTransaction createTransaction(@NonNull Fragment fragment,
                                                  @Nullable String title,
                                                  boolean wantsBackStackEntry) {
+        return this.createTransaction(fragment, title,
+                               wantsBackStackEntry, new CustomAnimation());
+    }
+
+    public FragmentTransaction createTransaction(@NonNull Fragment fragment,
+                                                 @Nullable String title,
+                                                 boolean wantsBackStackEntry,
+                                                 @NonNull CustomAnimation customAnimation) {
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         final String tag = fragment.getClass().getSimpleName();
         if (getTopFragment() == null) {
             transaction.add(containerId, fragment, tag);
         } else {
             transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-            transaction.setCustomAnimations(R.animator.fragment_fade_in,
-                                            R.animator.fragment_fade_out,
-                                            R.animator.fragment_fade_in,
-                                            R.animator.fragment_fade_out);
+            transaction.setCustomAnimations(customAnimation.onEnter,
+                                            customAnimation.onExit,
+                                            customAnimation.onPopEnter,
+                                            customAnimation.onPopExit);
             transaction.replace(containerId, fragment, tag);
         }
 
@@ -94,13 +102,21 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         }
 
         return transaction;
+
     }
 
     public void pushFragment(@NonNull Fragment fragment,
                              @Nullable String title,
                              boolean wantsBackStackEntry) {
+        this.pushFragment(fragment, title, wantsBackStackEntry, new CustomAnimation());
+    }
+
+    public void pushFragment(@NonNull Fragment fragment,
+                             @Nullable String title,
+                             boolean wantsBackStackEntry,
+                             @NonNull CustomAnimation customAnimation) {
         final FragmentTransaction transaction = createTransaction(fragment, title,
-                                                                  wantsBackStackEntry);
+                                                                  wantsBackStackEntry, customAnimation);
         final FragmentManager fragmentManager = getFragmentManager();
         if (stateSafeExecutor != null) {
             stateSafeExecutor.execute(() -> {
@@ -207,4 +223,26 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
     }
 
     //endregion
+
+    public static class CustomAnimation {
+        final int onEnter;
+        final int onExit;
+        final int onPopEnter;
+        final int onPopExit;
+
+        public CustomAnimation(){
+            this(R.animator.fragment_fade_in, R.animator.fragment_fade_out);
+        }
+
+        public CustomAnimation(final int onEnter, final int onExit){
+            this.onEnter = onEnter;
+            this.onExit = onExit;
+            this.onPopEnter = onEnter;
+            this.onPopExit = onExit;
+        }
+
+        public static CustomAnimation hideFadeOutAnimation(){
+            return new CustomAnimation(R.animator.fragment_fade_in, R.animator.fragment_hide);
+        }
+    }
 }

@@ -71,6 +71,8 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Share Log", this::sendLog));
 
         adapter.add(new DetailItem("Show Room Check", this::showRoomCheck));
+        adapter.add(new DetailItem("Show Onboarding Smart Alarm", this::showOnboardingSmartAlarm));
+
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
@@ -103,6 +105,12 @@ public class DebugActivity extends InjectionActivity {
     public void showRoomCheck() {
         Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
+        startActivity(onboarding);
+    }
+
+    public void showOnboardingSmartAlarm() {
+        Intent onboarding = new Intent(this, OnboardingActivity.class);
+        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
         startActivity(onboarding);
     }
 
