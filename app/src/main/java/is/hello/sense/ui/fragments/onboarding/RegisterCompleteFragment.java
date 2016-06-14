@@ -22,7 +22,6 @@ import java.lang.ref.WeakReference;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.Anime.cancelAll;
@@ -104,6 +103,7 @@ public class RegisterCompleteFragment extends Fragment {
     private void init() {
         if (wantsAlarm) {
             container.setVisibility(View.INVISIBLE);
+            message.setVisibility(View.INVISIBLE);
             final Intent newAlarm = new Intent(getActivity(), SmartAlarmDetailActivity.class);
             startActivityForResult(newAlarm, EDIT_REQUEST_CODE);
             return;
@@ -113,7 +113,6 @@ public class RegisterCompleteFragment extends Fragment {
         message.setVisibility(View.VISIBLE);
         message.setAlpha(1f);
         stepHandler.postShowSecond();
-        LoadingDialogFragment.close(getFragmentManager());
 
     }
 
