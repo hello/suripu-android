@@ -74,7 +74,7 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Test
     public void whatsNewCardNotRendering() throws Exception {
-        WhatsNewLayout.markShown(getContext());
+        WhatsNewLayout.markClosed(getContext());
         setUp();
         try {
             final InsightsAdapter.WhatsNewViewHolder holder =
@@ -89,7 +89,7 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Test
     public void questionRendering() throws Exception {
-        WhatsNewLayout.markShown(getContext());
+        WhatsNewLayout.markClosed(getContext());
         setUp();
         final Question question = Question.create(0, 0, "Do you like to travel through space and time?",
                                                   Question.Type.CHOICE, DateTime.now(), Question.AskTime.ANYTIME, null);
@@ -137,7 +137,7 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Test
     public void insightRendering() throws Exception {
-        WhatsNewLayout.markShown(getContext());
+        WhatsNewLayout.markClosed(getContext());
         setUp();
         final Insight insight = Insight.create(0, "Light is bad",
                                                new MarkupString("You should have less of it"),
@@ -177,7 +177,7 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     @Test
     public void loadingInsights() throws Exception {
-        WhatsNewLayout.markShown(getContext());
+        WhatsNewLayout.markClosed(getContext());
         setUp();
         final Insight insight = Insight.create(0, "Light is bad",
                                                new MarkupString("You should have less of it"),
@@ -230,7 +230,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
+        public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
             callbacks.add(Callback.INSIGHT_CLICKED);
         }
 
@@ -238,7 +238,7 @@ public class InsightsAdapterTests extends SenseTestCase {
             callbacks.clear();
         }
 
-        boolean wasCallbackCalled(@NonNull Callback callback) {
+        boolean wasCallbackCalled(@NonNull final Callback callback) {
             return callbacks.contains(callback);
         }
 

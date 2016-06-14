@@ -261,10 +261,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 final View view = inflater.inflate(R.layout.item_message_card, parent, false);
                 final int margin = context.getResources().getDimensionPixelSize(R.dimen.x1);
                 final RecyclerView.LayoutParams lp = ((RecyclerView.LayoutParams) view.getLayoutParams());
-                lp.topMargin = margin;
-                lp.bottomMargin = margin;
-                lp.leftMargin = margin;
-                lp.rightMargin = margin;
+                lp.setMargins(margin, margin, margin, margin);
                 return new ErrorViewHolder(view);
             }
             default: {
