@@ -174,6 +174,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     public Insight getInsightItem(final int position) {
         if (position == 0) {
+            if (insights != null
+                    && insights.size() == 1
+                    && insights.get(0).isError()) {
+                return insights.get(0);
+            }
             if (showWhatsNew) {
                 return null;
             }
