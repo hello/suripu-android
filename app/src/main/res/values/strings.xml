@@ -597,7 +597,7 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
-    <string name="error_internet_connection_generic_title">No connection</string>
+    <string name="error_internet_connection_generic_title">Failed to upload photo</string>
     <string name="error_internet_connection_generic_message">We\'re having trouble connecting to the internet. Please check your connection or try again in a few minutes.</string>
     <string name="error_account_upload_photo_message">There were issues uploading your profile photo. Please check your connection or try again in a few minutes.</string>
     <string name="error_account_remove_photo_message">There were issues removing your profile photo. Please check your connection or try again in a few minutes.</string>
