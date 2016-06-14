@@ -456,8 +456,12 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
-    public void showDone() {
-        pushFragment(new RegisterCompleteFragment(), null, false);
+    public void showDone(final boolean withAlarm) {
+        final Fragment fragment = new RegisterCompleteFragment();
+        final Bundle bundle = new Bundle();
+        bundle.putBoolean(RegisterCompleteFragment.ARG_WITH_ALARM, withAlarm);
+        fragment.setArguments(bundle);
+        pushFragment(fragment, null, false);
     }
 
     //endregion

@@ -1,6 +1,8 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.segment.analytics.Properties;
@@ -18,15 +21,23 @@ import java.lang.ref.WeakReference;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class RegisterCompleteFragment extends Fragment {
+    public static final String ARG_WITH_ALARM = RegisterCompleteFragment.class.getName() + ".ARG_WITH_ALARM";
+    private static final int EDIT_REQUEST_CODE = 0x31;
+
     private final StepHandler stepHandler = new StepHandler(this);
 
     private TextView message;
+    private FrameLayout container;
+
+    private boolean wantsAlarm = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,20 +53,43 @@ public class RegisterCompleteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_register_complete, container, false);
-
+        this.container = (FrameLayout) view.findViewById(R.id.fragment_dialog_loading_container);
         this.message = (TextView) view.findViewById(R.id.fragment_onboarding_done_message);
 
         return view;
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EDIT_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                wantsAlarm = false;
+                init();
+            } else {
+                ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
+            }
+        }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final Bundle arguments = getArguments();
+        if (arguments != null) {
+            if (arguments.containsKey(ARG_WITH_ALARM)) {
+                wantsAlarm = arguments.getBoolean(ARG_WITH_ALARM, false);
+                container.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-
-        message.setVisibility(View.VISIBLE);
-        message.setAlpha(1f);
-
-        stepHandler.postShowSecond();
+        init();
     }
 
     @Override
@@ -65,6 +99,22 @@ public class RegisterCompleteFragment extends Fragment {
         stepHandler.cancelPending();
 
         cancelAll(message);
+    }
+
+    private void init() {
+        if (wantsAlarm) {
+            container.setVisibility(View.INVISIBLE);
+            final Intent newAlarm = new Intent(getActivity(), SmartAlarmDetailActivity.class);
+            startActivityForResult(newAlarm, EDIT_REQUEST_CODE);
+            return;
+        }
+
+        container.setVisibility(View.VISIBLE);
+        message.setVisibility(View.VISIBLE);
+        message.setAlpha(1f);
+        stepHandler.postShowSecond();
+        LoadingDialogFragment.close(getFragmentManager());
+
     }
 
     public void showSecondMessage() {
