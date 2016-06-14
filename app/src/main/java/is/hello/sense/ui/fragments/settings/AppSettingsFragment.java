@@ -37,7 +37,7 @@ public class AppSettingsFragment extends BacksideTabFragment {
     AccountPresenter accountPresenter;
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SETTINGS, null);
@@ -45,39 +45,31 @@ public class AppSettingsFragment extends BacksideTabFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(accountPresenter);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
         breadcrumb = (ImageView) view.findViewById(R.id.fragment_app_settings_breadcrumb);
 
         final View accountItem = view.findViewById(R.id.fragment_app_settings_account);
-        Views.setSafeOnClickListener(accountItem, ignored -> {
-            showFragment(AccountSettingsFragment.class, R.string.label_account, true);
-        });
+        Views.setSafeOnClickListener(accountItem, ignored -> showFragment(AccountSettingsFragment.class, R.string.label_account, true));
 
         final View devicesItem = view.findViewById(R.id.fragment_app_settings_devices);
         Views.setSafeOnClickListener(devicesItem, this::showDeviceList);
 
         final View notificationsItem = view.findViewById(R.id.fragment_app_settings_notifications);
-        Views.setSafeOnClickListener(notificationsItem, ignored -> {
-            showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, false);
-        });
+        Views.setSafeOnClickListener(notificationsItem, ignored -> showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, false));
 
         final View unitsItem = view.findViewById(R.id.fragment_app_settings_units);
-        Views.setSafeOnClickListener(unitsItem, ignored -> {
-            showFragment(UnitSettingsFragment.class, R.string.label_units_and_time, false);
-        });
+        Views.setSafeOnClickListener(unitsItem, ignored -> showFragment(UnitSettingsFragment.class, R.string.label_units_and_time, false));
 
         final View supportItem = view.findViewById(R.id.fragment_app_settings_support);
-        Views.setSafeOnClickListener(supportItem, ignored -> {
-            showFragment(SupportFragment.class, R.string.action_support, false);
-        });
+        Views.setSafeOnClickListener(supportItem, ignored -> showFragment(SupportFragment.class, R.string.action_support, false));
 
         final View tellAFriendItem = view.findViewById(R.id.fragment_app_settings_tell_a_friend);
         Views.setSafeOnClickListener(tellAFriendItem, ignored -> tellAFriend());
@@ -85,9 +77,7 @@ public class AppSettingsFragment extends BacksideTabFragment {
         final TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
         version.setText(getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            Views.setSafeOnClickListener(version, ignored -> {
-                Distribution.startDebugActivity(getActivity());
-            });
+            Views.setSafeOnClickListener(version, ignored -> Distribution.startDebugActivity(getActivity()));
         }
 
         return view;
@@ -95,7 +85,7 @@ public class AppSettingsFragment extends BacksideTabFragment {
 
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(accountPresenter.account, this::bindAccount, Functions.LOG_ERROR);
         accountPresenter.update();
@@ -109,7 +99,7 @@ public class AppSettingsFragment extends BacksideTabFragment {
     public void onUpdate() {
     }
 
-    private void bindAccount(@NonNull Account account) {
+    private void bindAccount(@NonNull final Account account) {
         if (Tutorial.TAP_NAME.shouldShow(getActivity()) && account.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
             breadcrumb.setVisibility(View.VISIBLE);
         } else {
@@ -125,12 +115,18 @@ public class AppSettingsFragment extends BacksideTabFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        breadcrumb.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         breadcrumb = null;
     }
 
-    private void showDeviceList(@NonNull View ignored) {
+    private void showDeviceList(@NonNull final View ignored) {
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
         builder.setDefaultTitle(R.string.label_devices);
@@ -138,9 +134,9 @@ public class AppSettingsFragment extends BacksideTabFragment {
         startActivity(builder.toIntent());
     }
 
-    private void showFragment(@NonNull Class<? extends Fragment> fragmentClass,
-                              @StringRes int titleRes,
-                              boolean lockOrientation) {
+    private void showFragment(@NonNull final Class<? extends Fragment> fragmentClass,
+                              @StringRes final int titleRes,
+                              final boolean lockOrientation) {
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
         builder.setDefaultTitle(titleRes);
