@@ -52,6 +52,7 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -109,6 +110,9 @@ public class InsightsFragment extends BacksideTabFragment
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
+            if (insightsAdapter != null) {
+                insightsAdapter.updateWhatsNewState();
+            }
         }
     }
 
@@ -152,10 +156,10 @@ public class InsightsFragment extends BacksideTabFragment
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
-        final InsetItemDecoration decoration = new InsetItemDecoration();
+        // final InsetItemDecoration decoration = new InsetItemDecoration();
 
-        decoration.addBottomInset(insightsAdapter.getItemCount(), resources.getDimensionPixelSize(R.dimen.x2));
-        recyclerView.addItemDecoration(decoration);
+        //  decoration.addBottomInset(insightsAdapter.getItemCount(), resources.getDimensionPixelSize(R.dimen.x2));
+        // recyclerView.addItemDecoration(decoration);
 
         return view;
     }

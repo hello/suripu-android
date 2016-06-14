@@ -65,9 +65,7 @@ public class WhatsNewLayout extends FrameLayout {
                .apply();
     }
 
-
     private Listener listener;
-
 
     public WhatsNewLayout(@NonNull final Context context) {
         this(context, null);
@@ -89,7 +87,6 @@ public class WhatsNewLayout extends FrameLayout {
             markClosed(context);
         });
         Views.setSafeOnClickListener(findViewById(R.id.view_whats_new_learn_more), ((ignored) -> UserSupport.showLearnMore(context, R.string.whats_new_button_link)));
-        markShown(context);
     }
 
 

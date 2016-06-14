@@ -74,6 +74,21 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         this.showWhatsNew = WhatsNewLayout.shouldShow(context);
     }
 
+    public void updateWhatsNewState() {
+        if (isErrorState()) {
+            return;
+        }
+        WhatsNewLayout.markShown(context);
+        this.showWhatsNew = WhatsNewLayout.shouldShow(context);
+        notifyDataSetChanged();
+    }
+
+    private boolean isErrorState() {
+        return insights != null
+                && insights.size() == 1
+                && insights.get(0).isError();
+    }
+
 
     //region Bindings
 
@@ -156,6 +171,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     @Override
     public int getItemCount() {
+        if (isErrorState()) {
+            return 1;
+        }
         int count = 0;
         if (insights != null) {
             count += insights.size();
@@ -174,9 +192,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     public Insight getInsightItem(final int position) {
         if (position == 0) {
-            if (insights != null
-                    && insights.size() == 1
-                    && insights.get(0).isError()) {
+            if (isErrorState() && insights != null) { // extra check to suppress warning.
                 return insights.get(0);
             }
             if (showWhatsNew) {
@@ -212,9 +228,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     @Override
     public int getItemViewType(final int position) {
         if (position == 0) {
-            if (insights != null
-                    && insights.size() == 1
-                    && insights.get(0).isError()) {
+            if (isErrorState()) {
                 return TYPE_ERROR;
             }
             if (showWhatsNew) {
