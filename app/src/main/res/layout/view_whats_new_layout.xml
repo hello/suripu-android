@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/view_whats_new_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:minHeight="@dimen/x2"
+        android:minWidth="@dimen/x2"
+        android:paddingLeft="@dimen/x4"
+        android:paddingRight="@dimen/x4"
+        android:paddingTop="@dimen/x3"
+        android:paddingBottom="@dimen/x1"
+        android:src="@drawable/close"/>
+
+    <TextView
+        style="@style/AppTheme.Text.Header.H5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/x4"
+        android:paddingRight="@dimen/x4"
+        android:text="@string/whats_new_title_text"
+        android:gravity="center_horizontal"/>
+
+    <TextView
+        style="@style/Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x2"
+        android:paddingLeft="@dimen/x4"
+        android:paddingRight="@dimen/x4"
+        android:text="@string/whats_new_message_text"
+        android:gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/view_whats_new_learn_more"
+        style="@style/Body.Link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x2"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/x3"
+        android:paddingLeft="@dimen/x4"
+        android:paddingRight="@dimen/x4"
+        android:text="@string/whats_new_button_text"/>
+
+</LinearLayout>

@@ -219,7 +219,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     public void presentError(Throwable e) {
         finishLoading();
 
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         }

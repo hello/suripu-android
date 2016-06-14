@@ -23,6 +23,10 @@ public final class Constants {
     public static final String SLEEP_SOUNDS_DURATION_ID = "sleep_sounds_duration_id";
     public static final String SLEEP_SOUNDS_VOLUME_ID = "sleep_sounds_volume_id";
 
+    public static final String WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS = "WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS";
+    public static final String WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN = "WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN";
+    public static final String WHATS_NEW_LAYOUT_TIMES_SHOWN = "WHATS_NEW_LAYOUT_TIMES_SHOWN";
+
     /**
      * The point at which a gesture's velocity dictates that
      * it be completed regardless of relative position.

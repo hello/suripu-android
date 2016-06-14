@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <is.hello.sense.ui.widget.RoundedRelativeLayout
+    android:id="@+id/item_insight_card"
+    style="@style/AppTheme.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/item_insight_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    style="@style/AppTheme.Card.Clickable">
+    android:layout_marginLeft="@dimen/x1"
+    android:layout_marginRight="@dimen/x1"
+    android:layout_marginTop="@dimen/x1"
+    android:orientation="vertical">
 
     <is.hello.sense.ui.widget.ParallaxImageView
         android:id="@+id/item_insight_image"
@@ -18,10 +21,10 @@
 
         <ProgressBar
             android:id="@+id/item_insight_image_loading"
+            style="@style/AppTheme.ProgressBar.White"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@style/AppTheme.ProgressBar.White" />
+            android:layout_gravity="center"/>
 
     </is.hello.sense.ui.widget.ParallaxImageView>
 
@@ -32,7 +35,7 @@
         android:layout_below="@+id/item_insight_image"
         android:layout_margin="@dimen/gap_card_content"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New" />
+        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"/>
 
     <View
         android:id="@+id/item_insight_preview_divider"
@@ -48,10 +51,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_preview_divider"
+        android:layout_marginBottom="@dimen/gap_small"
         android:layout_marginLeft="@dimen/gap_card_content"
         android:layout_marginRight="@dimen/gap_card_content"
         android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginBottom="@dimen/gap_small"
         android:singleLine="true"
         android:textAllCaps="true"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
@@ -61,13 +64,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_preview_divider"
-        android:layout_toEndOf="@id/item_insight_category"
-        android:layout_marginTop="@dimen/gap_small"
         android:layout_marginBottom="@dimen/gap_small"
         android:layout_marginLeft="@dimen/gap_card_content"
         android:layout_marginRight="@dimen/gap_card_content"
-        android:singleLine="true"
+        android:layout_marginTop="@dimen/gap_small"
+        android:layout_toEndOf="@id/item_insight_category"
         android:gravity="end"
+        android:singleLine="true"
         android:textAllCaps="true"
         android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
 

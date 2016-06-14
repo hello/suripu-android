@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="whats_new_title_text">Title for this new feature is long</string>
+    <string name="whats_new_message_text">You can now add a photo to your profile so people will recognize you when you share</string>
+    <string name="whats_new_button_text">LEARN MORE</string>
+    <string name="whats_new_button_link">http://www.hello.is</string>
+    <string name="whats_new_version">1.4.3</string>
+</resources>

@@ -26,6 +26,13 @@
     <!-- Text -->
 
     <!-- Official text sizes provided by Nathan -->
+    <dimen name="x.5">4dp</dimen>
+    <dimen name="x1">8dp</dimen>
+    <dimen name="x2">16dp</dimen>
+    <dimen name="x3">24dp</dimen>
+    <dimen name="x4">32dp</dimen>
+
+
     <dimen name="text_body">15sp</dimen>
     <dimen name="text_h1">64sp</dimen>
     <dimen name="text_h2">40sp</dimen>
@@ -116,7 +123,7 @@
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
     <dimen name="onboarding_sense_inset_bottom">25dp</dimen>
-    
+
     <dimen name="view_sensor_ticker_letter_spacing">3dp</dimen>
     <dimen name="view_sensor_ticker_fade_height">10dp</dimen>
 

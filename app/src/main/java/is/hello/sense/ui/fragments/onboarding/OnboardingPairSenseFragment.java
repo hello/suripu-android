@@ -299,8 +299,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
                 Analytics.trackError(e, operation);
             } else {
-                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getResources())
-                        .withUnstableBluetoothHelp(getResources())
+                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                        .withUnstableBluetoothHelp(getActivity())
                         .withOperation(operation)
                         .build();
                 dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

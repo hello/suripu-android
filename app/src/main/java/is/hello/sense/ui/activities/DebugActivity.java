@@ -27,6 +27,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.SessionLogger;
 
@@ -83,6 +84,7 @@ public class DebugActivity extends InjectionActivity {
         } catch (ClassNotFoundException ignored) {
             // Do nothing.
         }
+        adapter.add(new DetailItem("View What's New Card", this::viewWhatsNewCard));
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
 
@@ -145,6 +147,11 @@ public class DebugActivity extends InjectionActivity {
     public void simulatePicassoLowMemory() {
         SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);
         Toast.makeText(getApplicationContext(), "Simulated", Toast.LENGTH_SHORT).show();
+    }
+
+    public void viewWhatsNewCard() {
+        WhatsNewLayout.clearState(this);
+        Toast.makeText(getApplicationContext(), "Forgot What's New card", Toast.LENGTH_SHORT).show();
     }
 
     public void resetAppUsage() {
