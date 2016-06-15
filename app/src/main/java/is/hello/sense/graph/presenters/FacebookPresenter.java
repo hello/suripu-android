@@ -2,6 +2,8 @@ package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -30,6 +32,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     @Inject FacebookApiService apiService;
     @Inject CallbackManager callbackManager;
+    @Inject ConnectivityManager connectivityManager;
 
     public final PresenterSubject<FacebookProfile> profile = this.subject;
     private static final String IMAGE_PARAM = "picture.type(large)";
@@ -116,6 +119,11 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     }
 
     public void login(@NonNull final Fragment container, @NonNull final Boolean requestOnlyPhoto) {
+        if(!isConnected()){
+            //Which exception would be more helpful to throw here?
+            profile.onError(new Exception("No internet connection found"));
+            return;
+        }
         requestInfo(requestOnlyPhoto);
         if(isLoggedIn()){
             this.update();
@@ -132,6 +140,12 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     public void logout() {
         setAuthToken(null);
         profile.forget();
+    }
+
+    public boolean isConnected(){
+        final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnected();
     }
 
     //endregion

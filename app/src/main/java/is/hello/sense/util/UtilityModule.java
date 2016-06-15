@@ -1,6 +1,7 @@
 package is.hello.sense.util;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 
 import com.squareup.picasso.Picasso;
@@ -35,6 +36,12 @@ public class UtilityModule {
     @Provides
     @Singleton FilePathUtil providesFilePathUtil(@NonNull final Context context){
         return new FilePathUtil(context);
+    }
+
+    @Provides
+    @Singleton
+    ConnectivityManager providesConnectivityManager(@NonNull final Context context){
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Provides
