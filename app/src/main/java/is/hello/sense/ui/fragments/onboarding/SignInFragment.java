@@ -46,6 +46,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -70,7 +71,7 @@ public class SignInFragment extends InjectionFragment
     //region Lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -79,7 +80,7 @@ public class SignInFragment extends InjectionFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_onboarding_sign_in, container, false);
 
         this.emailTextLET = (LabelEditText) view.findViewById(R.id.fragment_onboarding_email_let);
@@ -159,16 +160,16 @@ public class SignInFragment extends InjectionFragment
     @Override
     public
     @ColorInt
-    int getStatusBarColor(@NonNull Resources resources) {
+    int getStatusBarColor(@NonNull final Resources resources) {
         return ContextCompat.getColor(getActivity(), R.color.light_accent_darkened);
     }
 
     @Override
-    public void onStatusBarTransitionBegan(@ColorInt int targetColor) {
+    public void onStatusBarTransitionBegan(@ColorInt final int targetColor) {
     }
 
     @Override
-    public void onStatusBarTransitionEnded(@ColorInt int finalColor) {
+    public void onStatusBarTransitionEnded(@ColorInt final int finalColor) {
     }
 
     //endregion
@@ -208,6 +209,7 @@ public class SignInFragment extends InjectionFragment
 
             bindAndSubscribe(initializeLocalState,
                              account -> {
+                                 InternalPrefManager.setAccountId(getActivity(), account.getId());
                                  Analytics.trackSignIn(account.getId(),
                                                        account.getFullName(),
                                                        account.getEmail());
@@ -233,7 +235,7 @@ public class SignInFragment extends InjectionFragment
         });
     }
 
-    public void forgotPassword(@NonNull View sender) {
+    public void forgotPassword(@NonNull final View sender) {
         UserSupport.openUri(getActivity(), Uri.parse(UserSupport.FORGOT_PASSWORD_URL));
     }
 
@@ -242,7 +244,7 @@ public class SignInFragment extends InjectionFragment
 
     //region Next button state control
 
-    private boolean inputIsInvalid(boolean showErrors) {
+    private boolean inputIsInvalid(final boolean showErrors) {
         if (emailTextLET.isInputEmpty() || !AccountPresenter.validateEmail(emailTextLET.getInputText())) {
             if (showErrors) {
                 emailTextLET.setError(R.string.invalid_email); // todo confirm this error message.
@@ -259,15 +261,15 @@ public class SignInFragment extends InjectionFragment
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
+    public void afterTextChanged(final Editable s) {
         nextButton.setEnabled(!inputIsInvalid(false));
     }
 
