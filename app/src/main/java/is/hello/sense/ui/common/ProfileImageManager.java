@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -203,7 +203,7 @@ public class ProfileImageManager {
     private void setOptionSelectedId(final int id){
         this.optionSelectedId = id;
     }
-    
+
     public Observable<ProfileImage> prepareImageUpload() {
         return prepareImageUpload(fullImageUriString);
     }
@@ -212,7 +212,12 @@ public class ProfileImageManager {
         imageUtil.trimCache();
     }
 
-    public Observable<ProfileImage> prepareImageUpload(@NonNull final String filePath){
+    public Observable<ProfileImage> prepareImageUpload(@Nullable final String filePath){
+        if (filePath == null) {
+            return Observable.create((subscriber) -> {
+               subscriber.onError(new Throwable("No local file"));
+            });
+        }
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
         return imageUtil.provideObservableToCompressFile(filePath, mustDownload)
                 .map( file -> {

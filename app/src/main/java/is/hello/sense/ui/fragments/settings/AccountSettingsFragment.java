@@ -482,9 +482,10 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
-            if(getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+            if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
                 Logger.error(getClass().getSimpleName(), errorMessage, error);
+                profileImageManager.setEmptyUriState(); // todo remove this in 1.4.3
             }
         });
     }
@@ -493,7 +494,7 @@ public class AccountSettingsFragment extends InjectionFragment
         final String fbImageUri = profile.getPictureUrl();
         if (fbImageUri != null) {
             profileImageManager.setImageUri(Uri.parse(fbImageUri));
-            updateProfileAndUpload(fbImageUri);
+            updateProfileAndUpload();
         }
     }
 
@@ -504,7 +505,7 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onImportFromFacebook() {
         profileImageManager.setShowOptions(false);
-        if(!facebookPresenter.profile.hasObservers()) {
+        if (!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,
                              this::changePictureWithFacebook,
                              this::handleFacebookError);
@@ -515,13 +516,13 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onFromCamera(@NonNull final String imageUriString) {
         profileImageManager.setShowOptions(false);
-        updateProfileAndUpload(imageUriString);
+        updateProfileAndUpload();
     }
 
     @Override
     public void onFromGallery(@NonNull final String imageUriString) {
         profileImageManager.setShowOptions(false);
-        updateProfileAndUpload(imageUriString);
+        updateProfileAndUpload();
     }
     
     public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
@@ -535,6 +536,8 @@ public class AccountSettingsFragment extends InjectionFragment
                                  currentAccount.setProfilePhoto(photo);
                                  profileImageManager.trimCache();
                                  profileImageManager.setShowOptions(true);
+                                 profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
+                                 showLoading(false);
                              },
                              e -> {
                                  //restore previous saved photo and refresh view
@@ -543,11 +546,13 @@ public class AccountSettingsFragment extends InjectionFragment
                                  handleError(e, temporaryCopy);
                                  profileImageManager.trimCache();
                                  profileImageManager.setShowOptions(true);
+                                 showLoading(false);
                              });
 
         } catch (final Exception e) {
             Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
             profileImageManager.setShowOptions(true);
+            showLoading(false);
         }
     }
 
@@ -568,19 +573,30 @@ public class AccountSettingsFragment extends InjectionFragment
                          });
     }
 
-    private void updateProfileAndUpload(@NonNull final String imageUriString) {
-        //updates view
-        profilePictureItem.setValue(imageUriString);
+
+    private void updateProfileAndUpload() {
         //starts file upload process
+        showLoading(true);
         bindAndSubscribe(profileImageManager.prepareImageUpload(),
                          profileImage -> onUploadReady(profileImage.getFile(), profileImage.getSource()),
                          //TODO check if error message does not match connection error
                          e -> {
-                             handleError(e, getString(R.string.error_internet_connection_generic_message));
+                             showLoading(false);
+                             handleError(e, getString(R.string.error_account_upload_photo_message));
                              profileImageManager.setShowOptions(true);
                          });
     }
 
     // endregion
+
+    //todo delete this method in 1.4.3
+    private void showLoading(final boolean show) {
+        if (getView() != null) {
+            final View progressBar = getView().findViewById(R.id.item_profile_progress_bar);
+            if (progressBar != null) {
+                progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        }
+    }
 
 }
