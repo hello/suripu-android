@@ -34,6 +34,7 @@ public final class Constants {
     public static final int ONBOARDING_CHECKPOINT_QUESTIONS = 2;
     public static final int ONBOARDING_CHECKPOINT_SENSE = 3;
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
+    public static final int ONBOARDING_CHECKPOINT_SMART_ALARM = 5;
 
     public static final long STALE_INTERVAL_MS = (10 * 60 * 1000); // 10 minutes
 

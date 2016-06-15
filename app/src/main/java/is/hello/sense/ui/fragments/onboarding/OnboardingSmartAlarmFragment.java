@@ -14,7 +14,7 @@ import is.hello.sense.util.Analytics;
 
 public class OnboardingSmartAlarmFragment extends SenseFragment {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Analytics.trackEvent(Analytics.Onboarding.EVENT_FIRST_ALARM, null);
@@ -22,7 +22,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_title_smart_alarm)
                 .setSubheadingText(R.string.onboarding_info_smart_alarm)
@@ -37,6 +37,10 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
 
 
     public void complete(final boolean withAlarm) {
-        ((OnboardingActivity) getActivity()).showDone(withAlarm);
+        if(withAlarm){
+            ((OnboardingActivity) getActivity()).showSetAlarmDetail();
+        } else{
+            ((OnboardingActivity) getActivity()).showDone();
+        }
     }
 }
