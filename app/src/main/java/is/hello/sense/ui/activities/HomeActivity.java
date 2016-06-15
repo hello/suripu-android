@@ -60,6 +60,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Distribution;
+import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
@@ -101,7 +102,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             final LocalDate newToday = DateFormatter.todayForTimeline();
             final LocalDate selectedDate = viewPagerAdapter.getItemDate(viewPager.getCurrentItem());
             if (newToday.isBefore(selectedDate)) {
@@ -128,7 +129,7 @@ public class HomeActivity extends ScopedInjectionActivity
     //region Lifecycle
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -171,9 +172,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
 
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
-        Views.setSafeOnClickListener(smartAlarmButton, ignored -> {
-            showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, true);
-        });
+        Views.setSafeOnClickListener(smartAlarmButton, ignored -> showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, true));
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
         viewPager.addOnPageChangeListener(this);
@@ -209,7 +208,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
 
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(intent.getAction())) {
@@ -224,7 +223,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
         final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
@@ -247,7 +246,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putLong("lastUpdated", lastUpdated);
@@ -293,7 +292,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public void onTrimMemory(int level) {
+    public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
 
         presenterContainer.onTrimMemory(level);
@@ -316,7 +315,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Notifications
 
-    private void dispatchNotification(@NonNull Bundle notification, boolean animate) {
+    private void dispatchNotification(@NonNull final Bundle notification, final boolean animate) {
         stateSafeExecutor.execute(() -> {
             Logger.info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
@@ -400,7 +399,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 slidingLayersView.isInMotion());
     }
 
-    public void setChromeTranslationAmount(float translationAmount) {
+    public void setChromeTranslationAmount(final float translationAmount) {
         slidingLayersView.setTopExtraTranslationAmount(translationAmount);
     }
 
@@ -410,7 +409,7 @@ public class HomeActivity extends ScopedInjectionActivity
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
-    public void jumpToLastNight(boolean animate) {
+    public void jumpToLastNight(final boolean animate) {
         viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), animate);
     }
 
@@ -436,15 +435,15 @@ public class HomeActivity extends ScopedInjectionActivity
     //region Fragment Adapter
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
     }
 
     @Override
-    public void onPageSelected(int position) {
+    public void onPageSelected(final int position) {
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
         if (lastPagerScrollState == ViewPager.SCROLL_STATE_IDLE &&
                 state != ViewPager.SCROLL_STATE_IDLE) {
             animatorContext.beginAnimation("Timeline swipe");
@@ -470,7 +469,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Nullable
     @Override
-    public View findAnimationAnchorView(@IdRes int viewId) {
+    public View findAnimationAnchorView(@IdRes final int viewId) {
         final Fragment currentFragment = viewPagerAdapter.getCurrentFragment();
         if (currentFragment != null && currentFragment.getView() != null) {
             return currentFragment.getView().findViewById(viewId);
@@ -523,7 +522,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Device Issues
 
-    public void bindDeviceIssue(@NonNull DeviceIssuesPresenter.Issue issue) {
+    public void bindDeviceIssue(@NonNull final DeviceIssuesPresenter.Issue issue) {
         if (issue == DeviceIssuesPresenter.Issue.NONE ||
                 getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
             return;
@@ -574,12 +573,10 @@ public class HomeActivity extends ScopedInjectionActivity
 
         final BacksideFragment backside = getBacksideFragment();
         if (backside != null) {
-            stateSafeExecutor.execute(() -> {
-                getFragmentManager()
-                        .beginTransaction()
-                        .remove(backside)
-                        .commit();
-            });
+            stateSafeExecutor.execute(() -> getFragmentManager()
+                    .beginTransaction()
+                    .remove(backside)
+                    .commit());
         }
 
         final TimelineFragment currentFragment =
@@ -589,14 +586,14 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void showBacksideWithItem(int item, boolean animate) {
+    public void showBacksideWithItem(final int item, final boolean animate) {
         if (slidingLayersView.isOpen()) {
             final BacksideFragment backside = getBacksideFragment();
             if (backside != null) {
                 backside.setCurrentItem(item, BacksideFragment.OPTION_ANIMATE);
             }
         } else {
-            BacksideFragment.saveCurrentItem(this, item);
+            InternalPrefManager.saveCurrentItem(this, item);
             if (animate) {
                 slidingLayersView.open();
             } else {
@@ -630,7 +627,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         @Override
-        public void frame(float frameValue) {
+        public void frame(final float frameValue) {
             final float scale = Anime.interpolateFloats(frameValue, MIN_SCALE, MAX_SCALE);
             backsideContainer.setScaleX(scale);
             backsideContainer.setScaleY(scale);
@@ -640,10 +637,10 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         @Override
-        public void finish(float finalFrameValue,
-                           long duration,
-                           @NonNull Interpolator interpolator,
-                           @Nullable AnimatorContext animatorContext) {
+        public void finish(final float finalFrameValue,
+                           final long duration,
+                           @NonNull final Interpolator interpolator,
+                           @Nullable final AnimatorContext animatorContext) {
             final float finalScale = Anime.interpolateFloats(finalFrameValue, MIN_SCALE, MAX_SCALE);
             final float finalAlpha = Anime.interpolateFloats(finalFrameValue, MIN_ALPHA, MAX_ALPHA);
             animatorFor(backsideContainer, animatorContext)
@@ -669,7 +666,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Timeline Navigation
 
-    public void showTimelineNavigator(@NonNull LocalDate startDate, @Nullable Timeline timeline) {
+    public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
         final ZoomedOutTimelineFragment navigatorFragment =
@@ -683,7 +680,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public void onTimelineSelected(@NonNull LocalDate date, @Nullable Timeline timeline) {
+    public void onTimelineSelected(@NonNull final LocalDate date, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
         final int datePosition = viewPagerAdapter.getDatePosition(date);

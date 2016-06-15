@@ -23,7 +23,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
+import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
 import is.hello.sense.zendesk.ZendeskModule;
@@ -77,22 +77,19 @@ public class SenseApplication extends Application {
             localUsageTracker.deleteOldUsageStatsAsync();
         }
 
-        Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         onLogOut.observeOn(Rx.mainThreadScheduler())
                 .subscribe(ignored -> {
                     Logger.info(getClass().getSimpleName(), "Clearing internal preferences.");
 
-                    getSharedPreferences(Constants.INTERNAL_PREFS, 0)
-                            .edit()
-                            .clear()
-                            .apply();
+                    InternalPrefManager.clearPrefs(this);
 
                     localUsageTracker.resetAsync();
                 }, Functions.LOG_ERROR);
     }
 
     @Override
-    public void onTrimMemory(int level) {
+    public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
 
         if (level >= TRIM_MEMORY_MODERATE) {
@@ -113,7 +110,7 @@ public class SenseApplication extends Application {
         graph.inject(this);
     }
 
-    public <T> void inject(T target) {
+    public <T> void inject(final T target) {
         graph.inject(target);
     }
 }
