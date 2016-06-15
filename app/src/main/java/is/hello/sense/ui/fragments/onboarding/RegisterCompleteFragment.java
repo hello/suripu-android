@@ -52,10 +52,7 @@ public class RegisterCompleteFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        message.setVisibility(View.VISIBLE);
-        message.setAlpha(1f);
-
-        stepHandler.postShowSecond();
+        stepHandler.postShowFirst();
     }
 
     @Override
@@ -65,6 +62,17 @@ public class RegisterCompleteFragment extends Fragment {
         stepHandler.cancelPending();
 
         cancelAll(message);
+    }
+
+    public void showFirstMessage(){
+        animatorFor(message)
+                .fadeIn()
+                .addOnAnimationCompleted( finished -> {
+                    if(finished){
+                        stepHandler.postShowSecond();
+                    }
+                })
+                .start();
     }
 
     public void showSecondMessage() {
@@ -96,9 +104,11 @@ public class RegisterCompleteFragment extends Fragment {
 
 
     static class StepHandler extends Handler {
+        static final int MSG_SHOW_FIRST = 1;
         static final int MSG_SHOW_SECOND = 2;
         static final int SHOW_COMPLETE_MESSAGE = 3;
         static final int DELAY = 2 * 1000;
+        static final int DELAY_SHORT = 1000;
 
         private final WeakReference<RegisterCompleteFragment> fragment;
 
@@ -108,8 +118,13 @@ public class RegisterCompleteFragment extends Fragment {
         }
 
         void cancelPending() {
+            removeMessages(MSG_SHOW_FIRST);
             removeMessages(MSG_SHOW_SECOND);
             removeMessages(SHOW_COMPLETE_MESSAGE);
+        }
+
+        void postShowFirst() {
+            sendEmptyMessageDelayed(MSG_SHOW_FIRST, DELAY_SHORT);
         }
 
         void postShowSecond() {
@@ -121,8 +136,15 @@ public class RegisterCompleteFragment extends Fragment {
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             switch (msg.what) {
+                case MSG_SHOW_FIRST: {
+                    final RegisterCompleteFragment fragment = this.fragment.get();
+                    if (fragment != null) {
+                        fragment.showFirstMessage();
+                    }
+                    break;
+                }
                 case MSG_SHOW_SECOND: {
                     final RegisterCompleteFragment fragment = this.fragment.get();
                     if (fragment != null) {

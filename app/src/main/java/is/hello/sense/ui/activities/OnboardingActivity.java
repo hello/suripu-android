@@ -156,6 +156,9 @@ public class OnboardingActivity extends InjectionActivity
                     case Constants.ONBOARDING_CHECKPOINT_PILL:
                         showSenseColorsInfo();
                         break;
+                    case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
+                        showSmartAlarmInfo();
+                        break;
                 }
             }
         }
@@ -190,6 +193,10 @@ public class OnboardingActivity extends InjectionActivity
     @Override
     public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
+    }
+
+    public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry, @NonNull final FragmentNavigationDelegate.CustomAnimation customAnimation) {
+        navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry, customAnimation);
     }
 
     @Override
@@ -456,8 +463,12 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
-    public void showDone() {
-        pushFragment(new RegisterCompleteFragment(), null, false);
+    public void showDone(final boolean shouldFadeOut) {
+        if(shouldFadeOut){
+            pushFragment(new RegisterCompleteFragment(), null, false);
+        } else {
+            pushFragment(new RegisterCompleteFragment(), null, false, FragmentNavigationDelegate.CustomAnimation.hideFadeOutAnimation());
+        }
     }
 
     //endregion
