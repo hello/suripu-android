@@ -31,6 +31,9 @@
     <dimen name="x2">16dp</dimen>
     <dimen name="x3">24dp</dimen>
     <dimen name="x4">32dp</dimen>
+    <dimen name="x5">40dp</dimen>
+    <dimen name="x6">48dp</dimen>
+    <dimen name="x7">56dp</dimen>
 
 
     <dimen name="text_body">15sp</dimen>

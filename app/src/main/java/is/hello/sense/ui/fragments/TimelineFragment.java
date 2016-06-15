@@ -127,14 +127,14 @@ public class TimelineFragment extends InjectionFragment
     WeakReference<Dialog> activeDialog;
 
     private TimelineInfoOverlay infoOverlay;
-    private ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
+    private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
 
 
     //region Lifecycle
 
-    public static TimelineFragment newInstance(@NonNull LocalDate date,
-                                               @Nullable Timeline cachedTimeline,
-                                               boolean isFirstTimeline) {
+    public static TimelineFragment newInstance(@NonNull final LocalDate date,
+                                               @Nullable final Timeline cachedTimeline,
+                                               final boolean isFirstTimeline) {
         final TimelineFragment fragment = new TimelineFragment();
 
         final Bundle arguments = new Bundle();
@@ -147,14 +147,14 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(final Activity activity) {
         super.onAttach(activity);
 
         this.homeActivity = (HomeActivity) activity;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final LocalDate date = getDate();
@@ -172,7 +172,7 @@ public class TimelineFragment extends InjectionFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
         final Resources resources = getResources();
@@ -230,7 +230,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // For the first fragment
@@ -238,7 +238,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
@@ -292,7 +292,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onTrimMemory(int level) {
+    public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
 
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW &&
@@ -310,7 +310,7 @@ public class TimelineFragment extends InjectionFragment
         }
 
         adapter.stopSoundPlayer();
-        Timeline timeline = timelinePresenter.timeline.getValue();
+        final Timeline timeline = timelinePresenter.timeline.getValue();
         if (timeline != null && timeline.getScore() != null && timeline.getScore() > 0) {
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
@@ -363,7 +363,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_CHANGE_SRC && resultCode == Activity.RESULT_OK) {
@@ -372,7 +372,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,@NonNull final String[] permissions, @NonNull final int[] grantResults) {
         if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             share();
         } else {
@@ -412,7 +412,7 @@ public class TimelineFragment extends InjectionFragment
         }
     }
 
-    public void share(@NonNull View sensder) {
+    public void share(@NonNull final View sender) {
         share();
     }
 
@@ -424,18 +424,14 @@ public class TimelineFragment extends InjectionFragment
         }
 
         bindAndSubscribe(timelinePresenter.latest(),
-                         timeline -> {
-                             Share.image(
-                                     TimelineImageGenerator
-                                             .createShareableTimeline(getActivity(), timeline))
-                                  .send(this);
-                         },
-                         e -> {
-                             Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e);
-                         });
+                         timeline -> Share.image(
+                                 TimelineImageGenerator
+                                         .createShareableTimeline(getActivity(), timeline))
+                              .send(this),
+                         e -> Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e));
     }
 
-    public void showBreakdown(@NonNull View sender) {
+    public void showBreakdown(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
 
         if (infoOverlay != null) {
@@ -496,15 +492,13 @@ public class TimelineFragment extends InjectionFragment
 
     //region Handholding
 
-    private void showTutorial(@NonNull Tutorial tutorial) {
+    private void showTutorial(@NonNull final Tutorial tutorial) {
         if (tutorialOverlay != null) {
             return;
         }
 
         this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
-        tutorialOverlay.setOnDismiss(() -> {
-            this.tutorialOverlay = null;
-        });
+        tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
         tutorialOverlay.setAnchorContainer(getView());
         tutorialOverlay.show(R.id.activity_home_container);
     }
@@ -549,11 +543,11 @@ public class TimelineFragment extends InjectionFragment
 
     private class HandholdingOneShotListener implements StaggeredFadeItemAnimator.Listener {
         @Override
-        public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
+        public void onItemAnimatorWillStart(@NonNull final AnimatorContext.Transaction transaction) {
         }
 
         @Override
-        public void onItemAnimatorDidStop(boolean finished) {
+        public void onItemAnimatorDidStop(final boolean finished) {
             if (finished) {
                 showHandholdingIfAppropriate();
             }
@@ -567,7 +561,7 @@ public class TimelineFragment extends InjectionFragment
 
     //region Binding
 
-    private void transitionIntoNoDataState(@NonNull Action1<TimelineNoDataHeaderView> configurer) {
+    private void transitionIntoNoDataState(@NonNull final Action1<TimelineNoDataHeaderView> configurer) {
         final TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getActivity());
         configurer.call(newHeader);
 
@@ -580,12 +574,12 @@ public class TimelineFragment extends InjectionFragment
                 final Animator crossFade = backgroundFill.colorAnimator(ContextCompat.getColor(getActivity(), R.color.background_timeline));
 
                 @Override
-                public void onItemAnimatorWillStart(@NonNull AnimatorContext.Transaction transaction) {
+                public void onItemAnimatorWillStart(@NonNull final AnimatorContext.Transaction transaction) {
                     transaction.takeOwnership(crossFade, "TimelineFragment#backgroundFill#crossFade");
                 }
 
                 @Override
-                public void onItemAnimatorDidStop(boolean finished) {
+                public void onItemAnimatorDidStop(final boolean finished) {
                     if (!finished) {
                         crossFade.cancel();
                     }
@@ -623,12 +617,12 @@ public class TimelineFragment extends InjectionFragment
         });
     }
 
-    public void bindTimeline(@NonNull Timeline timeline) {
+    public void bindTimeline(@NonNull final Timeline timeline) {
         final boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         if (hasEvents) {
             final Runnable backgroundAnimations = stateSafeExecutor.bind(() -> {
-                int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
-                Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
+                final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
+                final Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
 
                 toolbar.setShareVisible(!homeActivity.isBacksideOpen());
@@ -654,11 +648,11 @@ public class TimelineFragment extends InjectionFragment
                         preferences.getLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE);
                 final boolean isAccountNew = (creationDate == null ||
                         creationDate.equals(LocalDate.now()));
-                if (homeActivity.getOnboardingFlow() == OnboardingActivity.FLOW_REGISTER
-                        && isAccountNew) {
+                if (isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
+                    header.setAction(R.string.action_timeline_bad_data_support,null);
 
                     final Activity activity = getActivity();
                     if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
@@ -668,17 +662,13 @@ public class TimelineFragment extends InjectionFragment
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
-                    header.setMessage(timeline.getMessage());
-                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> {
-                        UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NOT_ENOUGH_SLEEP_DATA);
-                    });
+                    header.setMessage(getString(R.string.title_timeline_not_enough_data_message));
+                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NOT_ENOUGH_SLEEP_DATA));
                 } else {
                     header.setDiagramResource(R.drawable.timeline_state_no_data);
                     header.setTitle(R.string.title_timeline_no_data);
-                    header.setMessage(timeline.getMessage());
-                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> {
-                        UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NO_SLEEP_DATA);
-                    });
+                    header.setMessage(getString(R.string.title_timeline_no_data_message));
+                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NO_SLEEP_DATA));
                 }
             });
         }
@@ -686,7 +676,7 @@ public class TimelineFragment extends InjectionFragment
         headerView.setScoreClickEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
-    public void timelineUnavailable(Throwable e) {
+    public void timelineUnavailable(final Throwable e) {
         Analytics.trackError(e, "Loading Timeline");
         final CharSequence message = getString(R.string.timeline_error_message);
         if (adapter.hasEvents()) {
@@ -713,7 +703,7 @@ public class TimelineFragment extends InjectionFragment
     //region Acting on Items
 
     @Override
-    public void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event) {
+    public void onSegmentItemClicked(final int position, final View view, @NonNull final TimelineEvent event) {
         boolean animateShow = true;
         if (infoOverlay != null) {
             animateShow = false;
@@ -734,7 +724,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onEventItemClicked(int eventPosition, @NonNull TimelineEvent event) {
+    public void onEventItemClicked(final int eventPosition, @NonNull final TimelineEvent event) {
         if (infoOverlay != null) {
             infoOverlay.dismiss(true);
         }
@@ -758,7 +748,7 @@ public class TimelineFragment extends InjectionFragment
         this.activeDialog = new WeakReference<>(noActions);
     }
 
-    private void showAvailableActions(@NonNull TimelineEvent event) {
+    private void showAvailableActions(@NonNull final TimelineEvent event) {
         final SharedPreferences preferences =
                 homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
 
@@ -830,7 +820,7 @@ public class TimelineFragment extends InjectionFragment
         this.activeDialog = new WeakReference<>(actions);
     }
 
-    private void adjustTime(@NonNull TimelineEvent event) {
+    private void adjustTime(@NonNull final TimelineEvent event) {
         final DateTime initialTime = event.getShiftedTimestamp();
         final RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
             final LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
@@ -848,22 +838,20 @@ public class TimelineFragment extends InjectionFragment
         this.activeDialog = new WeakReference<>(timePicker);
     }
 
-    private void completeAdjustTime(@NonNull TimelineEvent event, @NonNull LocalTime newTime) {
-        LoadingDialogFragment dialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+    private void completeAdjustTime(@NonNull final TimelineEvent event, @NonNull final LocalTime newTime) {
+        final LoadingDialogFragment dialogFragment = LoadingDialogFragment.show(getFragmentManager(),
                                                                           getString(R.string.dialog_loading_message),
                                                                           LoadingDialogFragment.OPAQUE_BACKGROUND);
         dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
-                         ignored -> {
-                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
-                         },
+                         ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
                              ErrorDialogFragment.presentError(getActivity(), e);
                          });
     }
 
-    private void doEventAction(@NonNull SenseBottomSheet bottomSheet, @NonNull Observable<Void> action) {
+    private void doEventAction(@NonNull final SenseBottomSheet bottomSheet, @NonNull final Observable<Void> action) {
         if (homeActivity != null) {
             Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
         }
@@ -872,9 +860,7 @@ public class TimelineFragment extends InjectionFragment
         bottomSheet.replaceContent(loadingView, null);
         bottomSheet.setCancelable(false);
         bindAndSubscribe(action,
-                         ignored -> {
-                             loadingView.playDoneTransition(R.string.title_thank_you, bottomSheet::dismiss);
-                         },
+                         ignored -> loadingView.playDoneTransition(R.string.title_thank_you, bottomSheet::dismiss),
                          e -> {
                              bottomSheet.dismiss();
                              ErrorDialogFragment.presentError(getActivity(), e);
@@ -886,14 +872,14 @@ public class TimelineFragment extends InjectionFragment
 
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
             if (newState != RecyclerView.SCROLL_STATE_IDLE && infoOverlay != null) {
                 infoOverlay.dismiss(false);
             }
         }
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
             if (!itemAnimator.isRunning()) {
                 final int recyclerHeight = recyclerView.getMeasuredHeight(),
                         recyclerCenter = recyclerHeight / 2;
@@ -901,7 +887,7 @@ public class TimelineFragment extends InjectionFragment
                     final View view = recyclerView.getChildAt(i);
                     final RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
                     if (viewHolder instanceof TimelineAdapter.EventViewHolder) {
-                        TimelineAdapter.EventViewHolder eventViewHolder = (TimelineAdapter.EventViewHolder) viewHolder;
+                        final TimelineAdapter.EventViewHolder eventViewHolder = (TimelineAdapter.EventViewHolder) viewHolder;
                         final int viewTop = view.getTop(),
                                 viewBottom = view.getBottom(),
                                 viewHeight = viewBottom - viewTop,
@@ -912,7 +898,7 @@ public class TimelineFragment extends InjectionFragment
                         if (viewBottom < recyclerHeight) {
                             bottomDistanceAmount = 1f;
                         } else {
-                            float offScreen = viewBottom - recyclerHeight;
+                            final float offScreen = viewBottom - recyclerHeight;
                             bottomDistanceAmount = 1f - (offScreen / viewHeight);
                         }
                         eventViewHolder.setDistanceAmounts(bottomDistanceAmount, centerDistanceAmount);
@@ -934,13 +920,13 @@ public class TimelineFragment extends InjectionFragment
         private final int bottomPadding;
         private final int headerCount;
 
-        public BottomInsetDecoration(@NonNull Resources resources, int headerCount) {
+        public BottomInsetDecoration(@NonNull final Resources resources, final int headerCount) {
             this.bottomPadding = resources.getDimensionPixelSize(R.dimen.timeline_gap_bottom);
             this.headerCount = headerCount;
         }
 
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
             final int position = parent.getChildAdapterPosition(view);
             if (position >= headerCount && position == parent.getAdapter().getItemCount() - 1) {
                 outRect.bottom = bottomPadding;
