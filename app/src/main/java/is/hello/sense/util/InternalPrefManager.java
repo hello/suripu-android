@@ -13,11 +13,11 @@ public class InternalPrefManager {
     }
 
     public static void saveCurrentItem(@NonNull final Context context, final int currentItem) {
-        final SharedPreferences preferences = InternalPrefManager.getInternalPrefs(context);
-        preferences.edit()
-                   .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
-                   .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
-                   .apply();
+        getInternalPrefs(context)
+                .edit()
+                .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
+                .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
+                .apply();
     }
 
     public static void clearPrefs(@NonNull final Context context) {
