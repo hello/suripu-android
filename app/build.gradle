@@ -63,6 +63,7 @@ android {
         def HOCKEY_API_KEY = "HOCKEY_API_KEY"
         def SEGMENT_API_KEY = "SEGMENT_API_KEY"
         def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
+        def GCM_AUTH_ENTITY_IDS = "GCM_AUTH_TOKEN_IDS"
         def IS_BETA = "IS_BETA"
 
         def TRUE = "true"
@@ -78,6 +79,7 @@ android {
             buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "805427569ce2035dcda0b99e4d984256" + '"'
             buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "AnMchQr1VXQhPKjeYuoEEQ7pPRlow9SO" + '"'
             resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
+            buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
 
             signingConfig signingConfigs.debug
@@ -94,6 +96,7 @@ android {
             buildConfigField TYPE_STRING, BASE_URL, '"' + "https://api.hello.is" + '"'
             buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "UiFCuqdEpi6STaMCx3bo70Hii0XvWnOK" + '"'
             resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
+            buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, FALSE
 
             signingConfig signingConfigs.release
