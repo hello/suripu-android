@@ -13,7 +13,6 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.util.Log;
 import android.util.Property;
 import android.view.Gravity;
 import android.view.View;
