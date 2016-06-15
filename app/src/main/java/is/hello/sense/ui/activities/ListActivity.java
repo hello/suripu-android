@@ -30,9 +30,12 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
+import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
+    private static final String TAG = InjectionActivity.class.getName() + ".TAG";
+
     private enum PlayerStatus {
         Idle, Loading, Playing
     }
@@ -97,7 +100,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               @StringRes final int title,
                                               @NonNull final ArrayList<Integer> selectedIds,
                                               @NonNull final IListObject IListObject) {
-        Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
+        final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
         intent.putExtra(ARG_TITLE, title);
         intent.putIntegerArrayListExtra(ARG_SELECTED_IDS, selectedIds);
@@ -176,7 +179,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             try {
                 trimCache();
             } catch (Exception e) {
-                //todo log?
+                Logger.error(ListActivity.TAG, "error trimming cache", e.getCause());
             }
         }
     }
@@ -188,7 +191,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
 
     @Override
-    public void onPlaybackReady(@NonNull Player player) {
+    public void onPlaybackReady(@NonNull final Player player) {
     }
 
     @Override
@@ -312,7 +315,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         final IListObject IListObject;
         final boolean wantsPlayer;
 
-        public ListAdapter(@NonNull final IListObject IListObject, boolean wantsPlayer) {
+        public ListAdapter(@NonNull final IListObject IListObject, final boolean wantsPlayer) {
             this.IListObject = IListObject;
             this.wantsPlayer = wantsPlayer;
         }
@@ -321,11 +324,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         public BaseViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
             if (viewType != VIEW_TITLE) {
                 if (wantsPlayer) {
-                    return new PlayerViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
+                    return new PlayerViewHolder(getLayoutInflater().inflate(R.layout.item_list, parent, false));
                 }
-                return new SimpleViewHolder(getLayoutInflater().inflate(R.layout.item_list, null));
+                return new SimpleViewHolder(getLayoutInflater().inflate(R.layout.item_list, parent, false));
             }
-            return new TitleViewHolder(getLayoutInflater().inflate(R.layout.item_section_title, null));
+            return new TitleViewHolder(getLayoutInflater().inflate(R.layout.item_section_title, parent, false));
 
         }
 
@@ -486,28 +489,22 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             status.setText(R.string.preview);
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final File file = getCacheFile(item.getPreviewUrl());
-                        final boolean saved;
-                        if (file.exists()) {
-                            saved = true;
-                        } else {
-                            view.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    playerStatus = PlayerStatus.Loading;
-                                    enterLoadingState();
-                                }
-                            });
-                            saved = saveAudioToFile(file, item.getPreviewUrl());
-                        }
-                        if (saved) {
-                            player.setDataSource(Uri.fromFile(file), true, 1);
-                        } else {
-                            player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
-                        }
+                new Thread(() -> {
+                    final File file = getCacheFile(item.getPreviewUrl());
+                    final boolean saved;
+                    if (file.exists()) {
+                        saved = true;
+                    } else {
+                        view.post(() -> {
+                            playerStatus = PlayerStatus.Loading;
+                            enterLoadingState();
+                        });
+                        saved = saveAudioToFile(file, item.getPreviewUrl());
+                    }
+                    if (saved) {
+                        player.setDataSource(Uri.fromFile(file), true, 1);
+                    } else {
+                        player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
                     }
                 }).start();
 

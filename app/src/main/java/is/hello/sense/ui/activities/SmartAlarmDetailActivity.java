@@ -42,7 +42,7 @@ public class SmartAlarmDetailActivity extends InjectionActivity {
     //endregion
 
     public static Bundle getArguments(@NonNull Alarm alarm, int index) {
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putSerializable(EXTRA_ALARM, alarm);
         arguments.putInt(EXTRA_INDEX, index);
         return arguments;
@@ -69,7 +69,7 @@ public class SmartAlarmDetailActivity extends InjectionActivity {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             if (AlarmClock.ACTION_SET_ALARM.equals(getIntent().getAction())) {
-                Properties properties = Analytics.createProperties(
+                final Properties properties = Analytics.createProperties(
                     Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME, "ACTION_SET_ALARM"
                 );
                 Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
@@ -130,7 +130,7 @@ public class SmartAlarmDetailActivity extends InjectionActivity {
     @Override
     public void onBackPressed() {
         if (detailFragment.isDirty()) {
-            SenseAlertDialog backConfirmation = new SenseAlertDialog(this);
+            final SenseAlertDialog backConfirmation = new SenseAlertDialog(this);
             if (index == INDEX_NEW) {
                 backConfirmation.setTitle(R.string.dialog_title_smart_alarm_new_cancel);
                 backConfirmation.setMessage(R.string.dialog_message_smart_alarm_new_cancel);
@@ -169,7 +169,7 @@ public class SmartAlarmDetailActivity extends InjectionActivity {
 
     private void processSetAlarmIntent() {
         final Intent intent = getIntent();
-        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 6);
+        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 7);
         final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
         final List<Integer> calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
 

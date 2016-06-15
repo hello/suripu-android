@@ -292,6 +292,10 @@ public class Alarm extends ApiResponse {
         return this.alarmTones;
     }
 
+    public Alarm.Sound getAlarmSoundWithId(final int id){
+        return alarmTones != null ? alarmTones.getSoundWithId(id) : null;
+    }
+
     @Override
     public String toString() {
         return "Alarm{" +
