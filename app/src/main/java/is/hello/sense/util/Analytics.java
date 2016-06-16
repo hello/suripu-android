@@ -30,6 +30,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
@@ -577,6 +578,28 @@ public class Analytics {
                 this.src = source;
             }
 
+            public static final Creator<Source> CREATOR = new Creator<Source>() {
+                @Override
+                public Source createFromParcel(final Parcel in) {
+                    final Source source;
+                    final String src = in.readString();
+                    if(src.equals(FACEBOOK.src)){
+                        source = FACEBOOK;
+                    } else if(src.equals(CAMERA.src)){
+                        source = CAMERA;
+                    } else{
+                        source = GALLERY;
+                    }
+
+                    return source;
+                }
+
+                @Override
+                public Source[] newArray(final int size) {
+                    return new Source[size];
+                }
+            };
+
             @Override
             public int describeContents() {
                 return 0;
@@ -584,7 +607,7 @@ public class Analytics {
 
             @Override
             public void writeToParcel(final Parcel dest, final int flags) {
-                dest.writeString(PROP_SOURCE);
+                dest.writeString(src);
             }
         }
 
@@ -592,7 +615,7 @@ public class Analytics {
 
     /**
      * Breadcrumb end events are tracked when {@link is.hello.sense.ui.handholding.Tutorial#wasDismissed(Context)}
-     * usually during {@link is.hello.sense.ui.handholding.TutorialOverlayView} on interation complete.
+     * usually during {@link TutorialOverlayView#interactionCompleted()}
      */
     public interface Breadcrumb {
         String PROP_SOURCE = "source";
