@@ -480,18 +480,18 @@ public class RegisterFragment extends InjectionFragment
         final String firstName = profile.getFirstName();
         final String lastName = profile.getLastName();
         final String email = profile.getEmail();
-        if (facebookImageUrl != null) {
+        if (!(facebookImageUrl == null || facebookImageUrl.isEmpty())) {
             updateProfileImage(Uri.parse(facebookImageUrl));
         }
         if (firstName != null) {
             firstNameTextLET.setInputText(firstName);
+            autofillFacebookButton.setEnabled(false);
         }
         if (lastName != null) {
             lastNameTextLET.setInputText(lastName);
         }
         if (email != null) {
             emailTextLET.setInputText(email);
-            autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
         }
         //Todo should? passwordTextLET.requestFocus();
 

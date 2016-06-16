@@ -60,9 +60,12 @@ public class FacebookProfile extends ApiResponse{
     }
 
     public static class EmptyProfile extends FacebookProfile{
-        private final static String empty = "";
 
-        public EmptyProfile(){
+        public static EmptyProfile newInstance() {
+            return new EmptyProfile("");
+        }
+
+        private EmptyProfile(@NonNull final String empty){
             super(new FacebookProfilePicture(empty),
                   empty, empty, empty, empty);
         }
