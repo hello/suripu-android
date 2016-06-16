@@ -14,11 +14,11 @@ public abstract class Fetch {
 
     protected final int requestCode;
 
-    protected Fetch(@NonNull String action) {
+    protected Fetch(@NonNull final String action) {
         this(action, 0);
     }
 
-    protected Fetch(@NonNull String action, int requestCode) {
+    protected Fetch(@NonNull final String action, final int requestCode) {
         this.intent = new Intent(action);
         this.requestCode = requestCode;
     }
@@ -46,7 +46,6 @@ public abstract class Fetch {
         // Sticking with ACTION_PICK for now.
         final Image image = new Image(Intent.ACTION_PICK, Image.REQUEST_CODE_GALLERY);
         image.intent.setType(Image.type);
-        image.intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         return image;
     }
@@ -56,22 +55,22 @@ public abstract class Fetch {
         public static final int REQUEST_CODE_GALLERY = 0x12;
         public static final String type = "image/*";
 
-        protected Image(@NonNull String action, int requestCode) {
+        protected Image(@NonNull final String action, final int requestCode) {
             super(action, requestCode);
         }
 
-        public void fetch(@NonNull Fragment to, @NonNull Uri imageUri) {
+        public void fetch(@NonNull final Fragment to, @NonNull final Uri imageUri) {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             fetch(to);
         }
 
         @Override
-        public void fetch(@NonNull Activity to) {
+        public void fetch(@NonNull final Activity to) {
             to.startActivityForResult(intent, requestCode);
         }
 
         @Override
-        public void fetch(@NonNull Fragment to) {
+        public void fetch(@NonNull final Fragment to) {
             to.startActivityForResult(intent, requestCode);
         }
     }

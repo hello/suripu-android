@@ -5,12 +5,19 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
@@ -62,8 +69,8 @@ public class ProfileImageManager {
     private boolean showOptions;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
-                               @NonNull final ImageUtil imageUtil,
-                               @NonNull final FilePathUtil filePathUtil){
+                                @NonNull final ImageUtil imageUtil,
+                                @NonNull final FilePathUtil filePathUtil) {
         this.context = fragment.getActivity();
         this.fragment = fragment;
         this.imageUtil = imageUtil;
@@ -79,7 +86,7 @@ public class ProfileImageManager {
     public void showPictureOptions() {
         //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
 
-        if(!showOptions){
+        if (!showOptions) {
             return;
         }
 
@@ -93,7 +100,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.facebook_logo)
                    );
 
-        if(imageUtil.hasDeviceCamera()){
+        if (imageUtil.hasDeviceCamera()) {
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
                             .setTitle(R.string.action_take_photo)
@@ -109,7 +116,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(!EMPTY_URI_STATE.equals(imageUri)){
+        if (!EMPTY_URI_STATE.equals(imageUri)) {
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -127,26 +134,60 @@ public class ProfileImageManager {
      * @return true if requestCode matched and resultCode was Activity.RESULT_OK else false.
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
-        if(resultCode != Activity.RESULT_OK){
+        if (resultCode != Activity.RESULT_OK) {
             return false;
         }
         boolean wasResultHandled = true;
-        if(requestCode == REQUEST_CODE_PICTURE){
+        if (requestCode == REQUEST_CODE_PICTURE) {
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
+        } else if (requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
             setImageUriWithTemp();
             setImageSource(CAMERA);
             ((Listener) fragment).onFromCamera(getImageUriString());
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
+        } else if (requestCode == Fetch.Image.REQUEST_CODE_GALLERY) {
             final Uri imageUri = data.getData();
-            setImageUri(imageUri);
+            final String path = filePathUtil.getRealPath(imageUri);
+            if (path == null) {
+                setImageUri(Uri.parse(getImageUrlWithAuthority(context, imageUri)));
+            } else {
+                setImageUri(imageUri);
+            }
             setImageSource(GALLERY);
             ((Listener) fragment).onFromGallery(getImageUriString());
-        } else{
+        } else {
             wasResultHandled = false;
         }
         return wasResultHandled;
+    }
+
+    public static String getImageUrlWithAuthority(final Context context, final Uri uri) {
+        InputStream is = null;
+        if (uri.getAuthority() != null) {
+            try {
+                is = context.getContentResolver().openInputStream(uri);
+                final Bitmap bmp = BitmapFactory.decodeStream(is);
+                return writeToTempImageAndGetPathUri(context, bmp).toString();
+            } catch (final FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Uri writeToTempImageAndGetPathUri(final Context inContext, final Bitmap inImage) {
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        final  String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
     public void setShowOptions(final boolean showOptions) {
@@ -155,6 +196,7 @@ public class ProfileImageManager {
 
     /**
      * TODO decouple {@link this#fullImageUriString}
+     *
      * @param uri
      */
     public void setImageUri(@NonNull final Uri uri) {
@@ -162,7 +204,8 @@ public class ProfileImageManager {
         tempImageUri = EMPTY_URI_STATE;
         setFullImageUriString(EMPTY_URI_STATE.equals(uri) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
     }
-    public void setEmptyUriState(){
+
+    public void setEmptyUriState() {
         setImageUri(EMPTY_URI_STATE);
     }
 
@@ -189,18 +232,17 @@ public class ProfileImageManager {
     }
 
     /**
-     *
      * @param imageSource Used for Segment.io analytics
      */
     public void setImageSource(@NonNull final Source imageSource) {
         this.imageSource = imageSource;
     }
+
     /**
-     *
      * @param id Id of selected option from bottom sheet. Used so correct option action will be triggered
      *           after obtaining permission.
      */
-    private void setOptionSelectedId(final int id){
+    private void setOptionSelectedId(final int id) {
         this.optionSelectedId = id;
     }
 
@@ -208,26 +250,24 @@ public class ProfileImageManager {
         return prepareImageUpload(fullImageUriString);
     }
 
-    public void trimCache(){
+    public void trimCache() {
         imageUtil.trimCache();
     }
 
-    public Observable<ProfileImage> prepareImageUpload(@Nullable final String filePath){
+    public Observable<ProfileImage> prepareImageUpload(@Nullable final String filePath) {
         if (filePath == null) {
-            return Observable.create((subscriber) -> {
-               subscriber.onError(new Throwable("No local file"));
-            });
+            return Observable.create((subscriber) -> subscriber.onError(new Throwable("No local file")));
         }
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
         return imageUtil.provideObservableToCompressFile(filePath, mustDownload)
-                .map( file -> {
-                    final TypedFile typedFile = new TypedFile("multipart/form-data", file);
-                    Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
-                    return new ProfileImage(typedFile, imageSource);
-                })
-                .doOnError(Functions.LOG_ERROR)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Rx.mainThreadScheduler());
+                        .map(file -> {
+                            final TypedFile typedFile = new TypedFile("multipart/form-data", file);
+                            Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
+                            return new ProfileImage(typedFile, imageSource);
+                        })
+                        .doOnError(Functions.LOG_ERROR)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Rx.mainThreadScheduler());
     }
 
     //region permission checks
@@ -245,26 +285,26 @@ public class ProfileImageManager {
 
     //region Camera Options
 
-    private void handlePictureOptionSelection(final int optionID){
+    private void handlePictureOptionSelection(final int optionID) {
         setOptionSelectedId(optionID);
 
-        switch(optionID){
+        switch (optionID) {
             case OPTION_ID_FROM_FACEBOOK:
                 ((Listener) fragment).onImportFromFacebook();
                 setImageSource(FACEBOOK);
                 break;
             case OPTION_ID_FROM_CAMERA:
                 final File imageFile = imageUtil.createFile(false);
-                if(imageFile != null){
+                if (imageFile != null) {
                     final Uri imageUri = Uri.fromFile(imageFile);
                     setTempImageUri(imageUri);
                     Fetch.imageFromCamera().fetch(fragment, imageUri);
                 }
                 break;
             case OPTION_ID_FROM_GALLERY:
-                if(permission.isGranted()){
+                if (permission.isGranted()) {
                     Fetch.imageFromGallery().fetch(fragment);
-                } else{
+                } else {
                     permission.requestPermission();
                 }
                 break;
@@ -283,7 +323,7 @@ public class ProfileImageManager {
         private final TypedFile file;
         private final Source source;
 
-        public ProfileImage(@NonNull final TypedFile file, @NonNull final Source source){
+        public ProfileImage(@NonNull final TypedFile file, @NonNull final Source source) {
             this.file = file;
             this.source = source;
         }
@@ -314,18 +354,18 @@ public class ProfileImageManager {
         private final FilePathUtil filePathUtil;
         private Fragment fragmentListener;
 
-        public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil){
+        public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil) {
             this.imageUtil = imageUtil;
             this.filePathUtil = filePathUtil;
         }
 
-        public Builder addFragmentListener(@NonNull final Fragment listener){
+        public Builder addFragmentListener(@NonNull final Fragment listener) {
             checkFragmentInstance(listener);
             this.fragmentListener = listener;
             return this;
         }
 
-        public ProfileImageManager build(){
+        public ProfileImageManager build() {
             return new ProfileImageManager(fragmentListener, imageUtil, filePathUtil);
         }
 
