@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.ProfileImage;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -62,6 +63,8 @@ public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
+    private static final String CURRENT_PROFILE_IMAGE_INSTANCE_KEY = "currentProfileImage";
+    private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
 
     @Inject
     Picasso picasso;
@@ -98,15 +101,18 @@ public class AccountSettingsFragment extends InjectionFragment
     @Nullable
     Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
+    private ProfileImage currentProfileImage;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            this.currentAccount = (Account) savedInstanceState.getSerializable("currentAccount");
+            this.currentAccount = (Account) savedInstanceState.getSerializable(CURRENT_ACCOUNT_INSTANCE_KEY);
+            this.currentProfileImage = savedInstanceState.getParcelable(CURRENT_PROFILE_IMAGE_INSTANCE_KEY);
         } else {
             Analytics.trackEvent(Analytics.Backside.EVENT_ACCOUNT, null);
+            currentProfileImage = ProfileImage.createDefault();
         }
 
         accountPresenter.update();
@@ -210,7 +216,9 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = builder.addFragmentListener(this).build();
+        profileImageManager = builder.addFragmentListener(this)
+                                     .build();
+        profileImageManager.setProfileImage(currentProfileImage);
     }
 
     @Override
@@ -235,7 +243,8 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("currentAccount", currentAccount);
+        outState.putSerializable(CURRENT_ACCOUNT_INSTANCE_KEY, currentAccount);
+        outState.putParcelable(CURRENT_PROFILE_IMAGE_INSTANCE_KEY, currentProfileImage);
     }
 
     @Override
@@ -286,7 +295,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void bindAccount(@NonNull final Account account) {
         final String photoUrl = account.getProfilePhotoUrl(getResources());
-        profileImageManager.setImageUri(Uri.parse(photoUrl));
+        this.currentProfileImage.setImageUri(Uri.parse(photoUrl));
         profilePictureItem.setValue(photoUrl);
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
@@ -485,7 +494,6 @@ public class AccountSettingsFragment extends InjectionFragment
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
                 Logger.error(getClass().getSimpleName(), errorMessage, error);
-                profileImageManager.setEmptyUriState(); // todo remove this in 1.4.3
             }
         });
     }
@@ -493,7 +501,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
         final String fbImageUri = profile.getPictureUrl();
         if (fbImageUri != null) {
-            profileImageManager.setImageUri(Uri.parse(fbImageUri));
+            this.currentProfileImage.setImageUri(Uri.parse(fbImageUri));
             updateProfileAndUpload();
         }
     }
@@ -532,7 +540,6 @@ public class AccountSettingsFragment extends InjectionFragment
             bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
                              photo -> {
                                  Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
-                                 //only update the account field but don't refresh view
                                  currentAccount.setProfilePhoto(photo);
                                  profileImageManager.trimCache();
                                  profileImageManager.setShowOptions(true);
@@ -563,7 +570,6 @@ public class AccountSettingsFragment extends InjectionFragment
                          successResponse -> {
                              currentAccount.setProfilePhoto(null);
                              bindAccount(currentAccount);
-                             profileImageManager.setEmptyUriState();
                              Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
                              profileImageManager.setShowOptions(true);
                          },
@@ -579,7 +585,6 @@ public class AccountSettingsFragment extends InjectionFragment
         showLoading(true);
         bindAndSubscribe(profileImageManager.prepareImageUpload(),
                          profileImage -> onUploadReady(profileImage.getFile(), profileImage.getSource()),
-                         //TODO check if error message does not match connection error
                          e -> {
                              showLoading(false);
                              handleError(e, getString(R.string.error_account_upload_photo_message));

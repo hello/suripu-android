@@ -8,6 +8,8 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -565,13 +567,24 @@ public class Analytics {
 
     public interface ProfilePhoto {
         String PROP_SOURCE = "source";
-        enum Source{
+
+        enum Source implements Parcelable {
             FACEBOOK("facebook"),
             CAMERA("camera"),
             GALLERY("photo library");
             private final String src;
             Source(@NonNull final String source){
                 this.src = source;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(final Parcel dest, final int flags) {
+                dest.writeString(PROP_SOURCE);
             }
         }
 

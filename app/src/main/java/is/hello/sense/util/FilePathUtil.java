@@ -35,7 +35,7 @@ public class FilePathUtil {
     }
 
     public String getRealPath(@NonNull final Uri uri){
-        if(isWebUri(uri)){
+        if(uri.equals(EMPTY_URI_STATE) || isWebUri(uri)){
             return uri.toString(); //entire string
         }
         else if(apiLevel >= Build.VERSION_CODES.KITKAT){
