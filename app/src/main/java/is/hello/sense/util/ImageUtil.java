@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 
 public class ImageUtil {
@@ -47,10 +49,13 @@ public class ImageUtil {
 
     private final Context context;
 
-    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso) {
+    private final SenseCache.ImageCache imageCache;
+
+    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso, @NonNull final SenseCache.ImageCache imageCache) {
         this.context = context;
         this.storageUtil = storageUtil;
         this.picasso = picasso;
+        this.imageCache = imageCache;
     }
 
     public boolean hasDeviceCamera() {
@@ -66,9 +71,8 @@ public class ImageUtil {
     @Nullable
     File createFile(final boolean isTemporary) {
         final File storageDir = getStorageDirectory();
-
         if (isTemporary) {
-            return getCacheFile(getFullFileName(imageFileName));
+            return imageCache.getCacheFile(getFullFileName(imageFileName));
         } else {
             return new File(storageDir, getFullFileName(imageFileName) + fileFormat);
         }
@@ -83,7 +87,7 @@ public class ImageUtil {
     public Observable<File> provideObservableToCompressFile(@NonNull final String path, final boolean mustDownload) {
         return Observable.create((subscriber) -> {
             try {
-                if(subscriber.isUnsubscribed()){
+                if (subscriber.isUnsubscribed()) {
                     return;
                 } else if (path.isEmpty()) {
                     subscriber.onNext(null);
@@ -261,40 +265,8 @@ public class ImageUtil {
 
     }
 
-    private File getCacheFile(@NonNull final String url) {
-        final String fileName = Uri.parse(url).getLastPathSegment();
-        final File file = new File(context.getCacheDir(), fileName);
-        file.deleteOnExit();
-        return file;
-    }
-
-
     public void trimCache() {
-        try {
-            final File dir = context.getCacheDir();
-            if (dir != null && dir.isDirectory()) {
-                deleteDir(dir);
-            }
-        } catch (Exception e) {
-            //todo log?
-        }
-    }
-
-    private boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            final String[] children = dir.list();
-            for (String child : children) {
-                boolean success = deleteDir(new File(dir, child));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        if (dir == null) {
-            return false;
-        }
-        // The directory is now empty so delete it
-        return dir.delete();
+        imageCache.trimCache();
     }
 
 

@@ -24,14 +24,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
+import is.hello.sense.util.SenseCache.AudioCache;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
     private static final String TAG = InjectionActivity.class.getName() + ".TAG";
@@ -62,6 +66,9 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     @StringRes
     int titleRes;
 
+    @Inject
+    AudioCache audioCache;
+
     /**
      * Display with radios.
      *
@@ -77,7 +84,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               final int selectedId,
                                               @NonNull final IListObject IListObject,
                                               final boolean wantsPlayer) {
-        Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
+        final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
         intent.putExtra(ARG_TITLE, title);
         intent.putExtra(ARG_SELECTED_ID, selectedId);
@@ -176,11 +183,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         listAdapter = null;
         selectionTracker = null;
         if (isFinishing()) {
-            try {
-                trimCache();
-            } catch (Exception e) {
-                Logger.error(ListActivity.TAG, "error trimming cache", e.getCause());
-            }
+            audioCache.trimCache();
         }
     }
 
@@ -230,13 +233,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
     }
 
-    private File getCacheFile(@NonNull final String url) {
-        final String fileName = Uri.parse(url).getLastPathSegment();
-        final File file = new File(this.getCacheDir(), fileName);
-        file.deleteOnExit();
-        return file;
-    }
-
     private boolean saveAudioToFile(@NonNull final File file, @NonNull final String urlLocation) {
         InputStream input = null;
         OutputStream output = null;
@@ -258,11 +254,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 }
                 output.write(data, 0, count);
             }
-        } catch (MalformedURLException e) {
-            //todo log?
+        } catch (final MalformedURLException e) {
+            Logger.error(TAG, e.getLocalizedMessage());
             return false;
-        } catch (IOException e) {
-            //todo log?
+        } catch (final IOException e) {
+            Logger.error(TAG, e.getLocalizedMessage());
             return false;
         } finally {
             try {
@@ -272,42 +268,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 if (output != null) {
                     output.close();
                 }
-            } catch (IOException e) {
-                //todo log?
+            } catch (final IOException e) {
+                Logger.error(TAG, e.getLocalizedMessage());
             }
             if (connection != null) {
                 connection.disconnect();
             }
         }
         return true;
-    }
-
-    private void trimCache() {
-        try {
-            final File dir = getCacheDir();
-            if (dir != null && dir.isDirectory()) {
-                deleteDir(dir);
-            }
-        } catch (Exception e) {
-            //todo log?
-        }
-    }
-
-    private boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            final String[] children = dir.list();
-            for (String child : children) {
-                boolean success = deleteDir(new File(dir, child));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        if (dir == null) {
-            return false;
-        }
-        // The directory is now empty so delete it
-        return dir.delete();
     }
 
 
@@ -346,14 +314,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         @Override
-        public int getItemViewType(int position) {
+        public int getItemViewType(final int position) {
             return position == 0 ? VIEW_TITLE : VIEW_NOT_TITLE;
         }
     }
 
     public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
 
-        public BaseViewHolder(View itemView) {
+        public BaseViewHolder(final View itemView) {
             super(itemView);
         }
 
@@ -370,7 +338,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         @Override
-        void bind(@NonNull IListItem item) {
+        void bind(@NonNull final IListItem item) {
 
         }
     }
@@ -449,7 +417,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         @DrawableRes
         private final static int stopIcon = R.drawable.sound_preview_stop;
 
-        PlayerViewHolder(@NonNull View view) {
+        PlayerViewHolder(@NonNull final View view) {
             super(view);
             image.stopSpinning();
         }
@@ -490,7 +458,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
                 new Thread(() -> {
-                    final File file = getCacheFile(item.getPreviewUrl());
+                    final File file = audioCache.getCacheFile(item.getPreviewUrl());
                     final boolean saved;
                     if (file.exists()) {
                         saved = true;
@@ -547,7 +515,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             selectionIds.add(NONE);
         }
 
-        private void setMultiple(boolean isMultiple) {
+        private void setMultiple(final boolean isMultiple) {
             if (isSet) {
                 return;
             }
@@ -580,7 +548,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             return intent;
         }
 
-        public void trackSelection(int id) {
+        public void trackSelection(final int id) {
             if (isMultiple) {
                 if (!selectionIds.contains(id)) {
                     selectionIds.add(id);
@@ -592,7 +560,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             }
         }
 
-        public void trackSelection(ArrayList<Integer> ids) {
+        public void trackSelection(final ArrayList<Integer> ids) {
             if (isMultiple) {
                 selectionIds.clear();
                 selectionIds.addAll(ids);
