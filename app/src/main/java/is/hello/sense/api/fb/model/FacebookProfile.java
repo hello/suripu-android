@@ -59,4 +59,14 @@ public class FacebookProfile extends ApiResponse{
         return picture.getImageUrl();
     }
 
+    public static class EmptyProfile extends FacebookProfile{
+        private final static String empty = "";
+
+        public EmptyProfile(){
+            super(new FacebookProfilePicture(empty),
+                  empty, empty, empty, empty);
+        }
+
+    }
+
 }

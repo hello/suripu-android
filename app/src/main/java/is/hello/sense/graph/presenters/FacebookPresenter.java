@@ -90,14 +90,13 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
                             new FacebookCallback<LoginResult>() {
                                 @Override
                                 public void onSuccess(LoginResult loginResult) {
-                                    // App code
                                     setAuthToken(loginResult.getAccessToken());
                                     FacebookPresenter.this.update();
                                 }
 
                                 @Override
                                 public void onCancel() {
-                                    // App code
+                                    profile.onNext(new FacebookProfile.EmptyProfile());
                                 }
 
                                 @Override
