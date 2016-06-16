@@ -100,20 +100,20 @@ public class AccountPresenterTests extends InjectionTestCase {
     }
 
     @Test
-    public void updateProfilePhoto() {
+    public void updateProfilePhoto() throws Exception {
         final File testFile = new File("src/tests/assets/photos/test_profile_photo.jpg");
         final TypedFile typedFile = new TypedFile("multipart/form-data", testFile);
+        accountPresenter.setWithPhoto(false);
         Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
         MultiDensityImage imageAfter = Sync.last(accountPresenter
                                                          .updateProfilePicture(typedFile,
                                                                                Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO,
                                                                                Analytics.ProfilePhoto.Source.CAMERA));
-        assertNotSame(accountBefore.getProfilePhoto(), imageAfter);
-
+        accountPresenter.setWithPhoto(true);
         Account accountAfter =  Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
-        accountAfter.setProfilePhoto(imageAfter);
 
-        assertEquals(accountAfter.getProfilePhoto(), imageAfter);
+        assertNotSame(imageAfter, accountBefore.getProfilePhoto());
+        assertEquals(imageAfter, accountAfter.getProfilePhoto());
     }
 
     //endregion

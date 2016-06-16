@@ -111,8 +111,9 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> getAccount(@Query("photo") Boolean includePhoto) {
-        return loadResponse("account", new TypeToken<Account>() {
+    public Observable<Account> getAccount(@Query("photo") final Boolean includePhoto) {
+        final String accountJson = includePhoto ? "account_with_photo" : "account";
+        return loadResponse(accountJson, new TypeToken<Account>() {
         }.getType());
     }
 
@@ -122,7 +123,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto) {
+    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") final Boolean includePhoto) {
         return safeJust(account);
     }
 
@@ -165,7 +166,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> deleteProfilePhoto(){
-        return unimplemented();
+        return safeJust(new VoidResponse());
     }
 
     @Override

@@ -5,11 +5,7 @@
     "height": 168,
     "id": "e8a3e9a64a096a01b9b74ae3d4591698",
     "last_modified": 1413322830181,
-    "profile_photo": {
-        "phone_1x": "https://s3.amazonaws.com/hello-accounts/photos/profile/39e26090eb504fabb70339ad0e23bd3d.jpg",
-        "phone_2x": "https://s3.amazonaws.com/hello-accounts/photos/profile/39e26090eb504fabb70339ad0e23bd3d.jpg",
-        "phone_3x": "https://s3.amazonaws.com/hello-accounts/photos/profile/39e26090eb504fabb70339ad0e23bd3d.jpg"
-    },
+    "profile_photo": null,
     "name": "sasha fierce",
     "firstname": "sasha",
     "lastname": "fierce",
