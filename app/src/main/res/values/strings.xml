@@ -221,6 +221,7 @@
     <string name="action_discard">Discard</string>
     <string name="action_keep_editing">Keep Editing</string>
     <string name="action_answer">Answer</string>
+    <string name="video_playback_connectivity_error_title">Failed to stream video</string>
     <string name="video_playback_generic_error">Could not play video.</string>
     <string name="title_turning_on">Turning On</string>
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
