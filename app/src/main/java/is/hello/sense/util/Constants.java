@@ -27,6 +27,7 @@ public final class Constants {
     public static final String WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS = "WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS";
     public static final String WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN = "WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN";
     public static final String WHATS_NEW_LAYOUT_TIMES_SHOWN = "WHATS_NEW_LAYOUT_TIMES_SHOWN";
+    public static final String WHATS_NEW_LAYOUT_FORCE_SHOW = "WHATS_NEW_LAYOUT_FORCE_SHOW";
 
     /**
      * The point at which a gesture's velocity dictates that

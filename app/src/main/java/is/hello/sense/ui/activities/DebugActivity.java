@@ -157,7 +157,8 @@ public class DebugActivity extends InjectionActivity {
     }
 
     public void viewWhatsNewCard() {
-        WhatsNewLayout.clearState(this);
+       // WhatsNewLayout.clearState(this); todo add back when we support this.
+        WhatsNewLayout.forceShow(this);
         Toast.makeText(getApplicationContext(), "Forgot What's New card", Toast.LENGTH_SHORT).show();
     }
 
