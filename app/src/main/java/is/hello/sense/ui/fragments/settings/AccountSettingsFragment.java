@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.ProfileImage;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -56,14 +57,12 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 
 public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
-    private static final String CURRENT_PROFILE_IMAGE_INSTANCE_KEY = "currentProfileImage";
     private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
 
     @Inject
@@ -81,10 +80,6 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     ProfileImageManager.Builder builder;
 
-    private ProfileImageManager profileImageManager;
-
-    private ProgressBar loadingIndicator;
-
     private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
@@ -96,12 +91,14 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
-    private Account currentAccount;
-    private
+
     @Nullable
-    Account.Preferences accountPreferences;
+    private Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
-    private ProfileImage currentProfileImage;
+    private ProfileImageManager profileImageManager;
+    private Account currentAccount;
+    private ProgressBar loadingIndicator;
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -109,10 +106,8 @@ public class AccountSettingsFragment extends InjectionFragment
 
         if (savedInstanceState != null) {
             this.currentAccount = (Account) savedInstanceState.getSerializable(CURRENT_ACCOUNT_INSTANCE_KEY);
-            this.currentProfileImage = savedInstanceState.getParcelable(CURRENT_PROFILE_IMAGE_INSTANCE_KEY);
         } else {
             Analytics.trackEvent(Analytics.Backside.EVENT_ACCOUNT, null);
-            currentProfileImage = ProfileImage.createDefault();
         }
 
         accountPresenter.update();
@@ -218,7 +213,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
         profileImageManager = builder.addFragmentListener(this)
                                      .build();
-        profileImageManager.setProfileImage(currentProfileImage);
     }
 
     @Override
@@ -244,7 +238,6 @@ public class AccountSettingsFragment extends InjectionFragment
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(CURRENT_ACCOUNT_INSTANCE_KEY, currentAccount);
-        outState.putParcelable(CURRENT_PROFILE_IMAGE_INSTANCE_KEY, currentProfileImage);
     }
 
     @Override
@@ -295,7 +288,11 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void bindAccount(@NonNull final Account account) {
         final String photoUrl = account.getProfilePhotoUrl(getResources());
-        this.currentProfileImage.setImageUri(Uri.parse(photoUrl));
+        if (photoUrl.isEmpty()) {
+            profileImageManager.removeDeleteOption();
+        } else {
+            profileImageManager.addDeleteOption();
+        }
         profilePictureItem.setValue(photoUrl);
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
@@ -482,31 +479,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //endregion
 
-    // region Facebook import
-
-    private void handleFacebookError(final Throwable error) {
-        profileImageManager.setShowOptions(true);
-        handleError(error, getString(R.string.error_internet_connection_generic_message));
-    }
-
-    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
-        stateSafeExecutor.execute(() -> {
-            if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
-                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
-                Logger.error(getClass().getSimpleName(), errorMessage, error);
-            }
-        });
-    }
-
-    private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
-        final String fbImageUri = profile.getPictureUrl();
-        if (fbImageUri != null) {
-            this.currentProfileImage.setImageUri(Uri.parse(fbImageUri));
-            updateProfileAndUpload();
-        }
-    }
-
-    //endregion
 
     //region ProfileImageManagerListener methods
 
@@ -515,93 +487,105 @@ public class AccountSettingsFragment extends InjectionFragment
         profileImageManager.setShowOptions(false);
         if (!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,
-                             this::changePictureWithFacebook,
-                             this::handleFacebookError);
+                             this::getFacebookProfileSuccess,
+                             this::getFacebookProfileError);
         }
         facebookPresenter.login(this);
     }
 
     @Override
-    public void onFromCamera(@NonNull final String imageUriString) {
-        profileImageManager.setShowOptions(false);
-        updateProfileAndUpload();
+    public void onFromCamera(@NonNull final Uri imageUri) {
+        showLoading(true);
+        profileImageManager.compressImage(imageUri);
     }
 
     @Override
-    public void onFromGallery(@NonNull final String imageUriString) {
-        profileImageManager.setShowOptions(false);
-        updateProfileAndUpload();
+    public void onFromGallery(@NonNull final Uri imageUri) {
+        showLoading(true);
+        profileImageManager.compressImage(imageUri);
     }
-    
-    public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
-        final String temporaryCopy = getString(R.string.error_account_upload_photo_message);
-        final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
-        try {
-            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
-                             photo -> {
-                                 Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
-                                 currentAccount.setProfilePhoto(photo);
-                                 profileImageManager.trimCache();
-                                 profileImageManager.setShowOptions(true);
-                                 profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
-                                 showLoading(false);
-                             },
-                             e -> {
-                                 //restore previous saved photo and refresh view
-                                 currentAccount.setProfilePhoto(tempPhoto);
-                                 bindAccount(currentAccount);
-                                 handleError(e, temporaryCopy);
-                                 profileImageManager.trimCache();
-                                 profileImageManager.setShowOptions(true);
-                                 showLoading(false);
-                             });
 
-        } catch (final Exception e) {
-            Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
-            profileImageManager.setShowOptions(true);
-            showLoading(false);
-        }
+    @Override
+    public void onImageCompressedSuccess(@NonNull final TypedFile compressedImage, @NonNull final Analytics.ProfilePhoto.Source source) {
+        bindAndSubscribe(accountPresenter.updateProfilePicture(compressedImage, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
+                         this::updateProfilePictureSuccess,
+                         this::updateProfilePictureError);
+    }
+
+    @Override
+    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int stringRes) {
+        handleError(e, getString(stringRes));
     }
 
     @Override
     public void onRemove() {
-        profileImageManager.setShowOptions(false);
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
-                         successResponse -> {
-                             currentAccount.setProfilePhoto(null);
-                             bindAccount(currentAccount);
-                             Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
-                             profileImageManager.setShowOptions(true);
-                         },
-                         error -> {
-                             handleError(error, getString(R.string.error_account_remove_photo_message));
-                             profileImageManager.setShowOptions(true);
-                         });
+                         this::removePhotoSuccess,
+                         this::removePhotoError);
     }
 
-
-    private void updateProfileAndUpload() {
-        //starts file upload process
+    private void getFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
         showLoading(true);
-        bindAndSubscribe(profileImageManager.prepareImageUpload(),
-                         profileImage -> onUploadReady(profileImage.getFile(), profileImage.getSource()),
-                         e -> {
-                             showLoading(false);
-                             handleError(e, getString(R.string.error_account_upload_photo_message));
-                             profileImageManager.setShowOptions(true);
-                         });
+        final String fbImageUri = profile.getPictureUrl();
+        if (fbImageUri != null) {
+            final Uri newUri = Uri.parse(fbImageUri);
+            profileImageManager.compressImage(newUri);
+        }
     }
 
+    private void getFacebookProfileError(final Throwable error) {
+        handleError(error, getString(R.string.error_internet_connection_generic_message));
+    }
+
+    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+        showLoading(false);
+        currentAccount.setProfilePhoto(compressedPhoto);
+        profileImageManager.addDeleteOption();
+        profileImageManager.trimCache();
+        profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
+    }
+
+    private void updateProfilePictureError(@NonNull final Throwable e) {
+        //restore previous saved photo and refresh view
+        currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
+        bindAccount(currentAccount);
+        onImageCompressedError(e, R.string.error_account_upload_photo_message);
+        profileImageManager.trimCache();
+    }
+
+    private void removePhotoSuccess(final VoidResponse response) {
+        showLoading(false);
+        profileImageManager.removeDeleteOption();
+        currentAccount.setProfilePhoto(null);
+        bindAccount(currentAccount);
+        Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
+
+    }
+
+    private void removePhotoError(@NonNull final Throwable e) {
+        handleError(e, getString(R.string.error_account_remove_photo_message));
+    }
+
+    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
+        stateSafeExecutor.execute(() -> {
+            showLoading(false);
+            if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+            }
+        });
+    }
     // endregion
 
-    //todo delete this method in 1.4.3
     private void showLoading(final boolean show) {
         if (getView() != null) {
             final View progressBar = getView().findViewById(R.id.item_profile_progress_bar);
             if (progressBar != null) {
                 progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                profileImageManager.setShowOptions(!show);
+                return;
             }
         }
+        profileImageManager.setShowOptions(show);
     }
 
 }
