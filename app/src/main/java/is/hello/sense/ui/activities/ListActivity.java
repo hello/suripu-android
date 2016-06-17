@@ -26,11 +26,12 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Logger;
@@ -62,6 +63,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
     private boolean cancelled = false;
+    private RecyclerView recyclerView;
     private
     @StringRes
     int titleRes;
@@ -151,7 +153,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         if (wantsPlayer) {
             player = new Player(this, this, null);
         }
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_list_recycler);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listAdapter = new ListAdapter(IListObject, wantsPlayer);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, getResources(),
@@ -217,6 +219,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
         playerStatus = PlayerStatus.Idle;
         notifyAdapter();
+        showError();
     }
 
     private void setResultAndFinish() {
@@ -228,9 +231,27 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     private void notifyAdapter() {
-        if (listAdapter != null) {
-            listAdapter.notifyDataSetChanged();
+        if (recyclerView == null) {
+            return;
         }
+        recyclerView.post(() -> {
+            if (listAdapter != null) {
+                listAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void showError() {
+        if (recyclerView == null) {
+            return;
+        }
+        recyclerView.post(() -> {
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+                    .withMessage(StringRef.from(R.string.error_playing_sound))
+                    .build();
+
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        });
     }
 
     private boolean saveAudioToFile(@NonNull final File file, @NonNull final String urlLocation) {
