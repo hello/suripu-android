@@ -26,7 +26,6 @@ import com.squareup.picasso.Picasso;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import java.net.URI;
 
 import javax.inject.Inject;
 
@@ -62,7 +61,6 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.Observable;
 
@@ -507,7 +505,6 @@ public class RegisterFragment extends InjectionFragment
         stateSafeExecutor.execute(() -> {
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
-                Logger.error(getClass().getSimpleName(), errorMessage, error);
             }
         });
     }
@@ -533,8 +530,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void onImageCompressedSuccess(@NonNull final TypedFile compressImage, @NonNull final Analytics.ProfilePhoto.Source source) {
-        bindAndSubscribe(accountPresenter.updateProfilePicture(compressImage, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source)
-                                         .doOnNext((s) -> Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload")),
+        bindAndSubscribe(accountPresenter.updateProfilePicture(compressImage, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source),
                          this::updateProfilePictureSuccess,
                          this::updateProfilePictureError);
 

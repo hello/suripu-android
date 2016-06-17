@@ -57,7 +57,6 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 
 public class AccountSettingsFragment extends InjectionFragment
@@ -540,7 +539,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
         showLoading(false);
-        Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();
         profileImageManager.trimCache();
@@ -573,7 +571,6 @@ public class AccountSettingsFragment extends InjectionFragment
             showLoading(false);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
-                Logger.error(getClass().getSimpleName(), errorMessage, error);
             }
         });
     }
