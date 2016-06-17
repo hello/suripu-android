@@ -157,21 +157,24 @@ public class ProfileImageManager {
     }
 
     public Observable<ProfileImage.UploadReady> prepareImageUpload() {
-        final String path = filePathUtil.getRealPath(profileImage.getImageUri());
-        return prepareImageUpload(path);
+        return prepareImageUpload(profileImage.getImageUri());
     }
 
     public void trimCache(){
         imageUtil.trimCache();
     }
 
-    public Observable<ProfileImage.UploadReady> prepareImageUpload(@Nullable final String filePath){
-        if (filePath == null || filePath.isEmpty()) {
+    public Observable<ProfileImage.UploadReady> prepareImageUpload(@Nullable final Uri filePath){
+        if (filePath == null || filePath.equals(Uri.EMPTY)) {
             return Observable.create((subscriber) -> subscriber.onError(new Throwable("No valid filePath given"))
             );
         }
-        final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
-        return imageUtil.provideObservableToCompressFile(filePath, mustDownload)
+
+        final String localPath = filePathUtil.getLocalPath(filePath);
+        final boolean mustDownload = !filePathUtil.isFoundOnDevice(localPath);
+        final String path = mustDownload ? filePath.toString() : localPath;
+
+        return imageUtil.provideObservableToCompressFile(path, mustDownload)
                 .map( file -> {
                     final TypedFile typedFile = new TypedFile("multipart/form-data", file);
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
