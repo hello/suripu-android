@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +13,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
@@ -44,6 +44,9 @@ public class ProfileImageManager {
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
+    private static final String PREFS = "profile_image_manager_prefs";
+    private static final String PHOTO_URI = "PHOTO_URI";
+
     private final int minOptions;
     private final Fragment fragment;
     private final ImageUtil imageUtil;
@@ -51,15 +54,16 @@ public class ProfileImageManager {
     private final ExternalStoragePermission permission;
     private final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
     private final SenseBottomSheet.Option deleteOption;
+    private final SharedPreferences sharedPreferences;
 
     private boolean showOptions;
-    private Uri takePhotoUri = null;
     private Analytics.ProfilePhoto.Source source = null;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
                                 @NonNull final ImageUtil imageUtil,
                                 @NonNull final FilePathUtil filePathUtil) {
         final Context context = fragment.getActivity();
+        this.sharedPreferences = context.getSharedPreferences(PREFS, 0);
         this.fragment = fragment;
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
@@ -95,7 +99,6 @@ public class ProfileImageManager {
     }
 
     public void showPictureOptions() {
-        //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
         if (!showOptions) {
             return;
         }
@@ -129,13 +132,16 @@ public class ProfileImageManager {
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
         } else if (requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            if (takePhotoUri == null) {
+            final String photoUriString = sharedPreferences.getString(PHOTO_URI, null);
+            if (photoUriString == null) {
                 return false;
             }
+            source = CAMERA; // incase the user took a few days to return.
+            final Uri takePhotoUri = Uri.parse(photoUriString);
             getListener().onFromCamera(takePhotoUri);
         } else if (requestCode == Fetch.Image.REQUEST_CODE_GALLERY) {
+            source = GALLERY; // doesn't hurt to be safe
             final Uri imageUri = data.getData();
-            //todo check if remote photo and download.
             getListener().onFromGallery(imageUri);
         } else {
             return false;
@@ -149,16 +155,13 @@ public class ProfileImageManager {
 
     private Observable<TypedFile> compressImageObservable(@Nullable final Uri imageUri) {
         if (imageUri == null || imageUri.equals(Uri.EMPTY)) {
-            return getObservableForNoImage();
+            return Observable.create((subscriber) -> subscriber.onError(new Throwable("No valid filePath given")));
         }
 
         final String localPath = filePathUtil.getLocalPath(imageUri);
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(localPath);
         final String path = mustDownload ? imageUri.toString() : localPath;
 
-        if (path == null || path.isEmpty()) {
-            return getObservableForNoImage();
-        }
         return imageUtil.provideObservableToCompressFile(path, mustDownload)
                         .map(file -> new TypedFile("multipart/form-data", file))
                         .doOnError(Functions.LOG_ERROR)
@@ -166,10 +169,6 @@ public class ProfileImageManager {
                         .observeOn(Rx.mainThreadScheduler());
     }
 
-    private Observable<TypedFile> getObservableForNoImage() {
-        return Observable.create((subscriber) -> subscriber.onError(new Throwable("No valid filePath given")));
-    }
-    
     public void trimCache() {
         imageUtil.trimCache();
     }
@@ -216,7 +215,8 @@ public class ProfileImageManager {
         final File imageFile = imageUtil.createFile(false);
         if (imageFile != null) {
             source = CAMERA;
-            takePhotoUri = Uri.fromFile(imageFile);
+            final Uri takePhotoUri = Uri.fromFile(imageFile);
+            sharedPreferences.edit().putString(PHOTO_URI, takePhotoUri.toString()).apply();
             Fetch.imageFromCamera().fetch(fragment, takePhotoUri);
         }
     }

@@ -26,6 +26,8 @@ import com.squareup.picasso.Picasso;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import java.net.URI;
+
 import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorTemplate;
@@ -99,6 +101,7 @@ public class RegisterFragment extends InjectionFragment
 
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
     private final static String ACCOUNT_INSTANCE_KEY = "account";
+    private final static String URI_INSTANCE_KEY = "uri";
     // private ProfileImage profileImage;
 
     //region Lifecycle
@@ -112,7 +115,12 @@ public class RegisterFragment extends InjectionFragment
 
             this.account = Account.createDefault();
         } else {
-            this.account = (Account) savedInstanceState.getSerializable(ACCOUNT_INSTANCE_KEY);
+            if (savedInstanceState.containsKey(ACCOUNT_INSTANCE_KEY)) {
+                this.account = (Account) savedInstanceState.getSerializable(ACCOUNT_INSTANCE_KEY);
+            }
+            if (savedInstanceState.containsKey(URI_INSTANCE_KEY)) {
+                this.imageUri = Uri.parse(savedInstanceState.getString(URI_INSTANCE_KEY));
+            }
         }
 
         setRetainInstance(true);
@@ -231,6 +239,7 @@ public class RegisterFragment extends InjectionFragment
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(ACCOUNT_INSTANCE_KEY, account);
+        outState.putString(URI_INSTANCE_KEY, imageUri.toString());
     }
 
     @Override
@@ -524,7 +533,8 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public void onImageCompressedSuccess(@NonNull final TypedFile compressImage, @NonNull final Analytics.ProfilePhoto.Source source) {
-        bindAndSubscribe(accountPresenter.updateProfilePicture(compressImage, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source),
+        bindAndSubscribe(accountPresenter.updateProfilePicture(compressImage, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source)
+                                         .doOnNext((s) -> Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload")),
                          this::updateProfilePictureSuccess,
                          this::updateProfilePictureError);
 
@@ -552,7 +562,6 @@ public class RegisterFragment extends InjectionFragment
 
 
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
-        Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
         profileImageManager.trimCache();
         goToNextScreen();
     }
