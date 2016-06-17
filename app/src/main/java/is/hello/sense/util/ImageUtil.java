@@ -64,7 +64,7 @@ public class ImageUtil {
 
     /**
      * @param isTemporary determines whether or not to make temporary file
-     *                    using {@link File#createTempFile(String, String, File)}
+     *                    using {@link this#getCacheFile(String)}
      * @return Returns <code>null</code> if exception occurs.
      */
     public

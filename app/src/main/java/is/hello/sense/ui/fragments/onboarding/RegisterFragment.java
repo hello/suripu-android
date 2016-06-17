@@ -37,6 +37,7 @@ import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
+import is.hello.sense.api.model.ProfileImage;
 import is.hello.sense.api.model.RegistrationError;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
@@ -95,6 +96,9 @@ public class RegisterFragment extends InjectionFragment
     private LinearLayout credentialsContainer;
 
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
+    private final static String ACCOUNT_INSTANCE_KEY = "account";
+    private final static String PROFILE_IMAGE_INSTANCE_KEY = "profileImage";
+    private ProfileImage profileImage;
 
     //region Lifecycle
 
@@ -106,8 +110,10 @@ public class RegisterFragment extends InjectionFragment
             Analytics.trackEvent(Analytics.Onboarding.EVENT_ACCOUNT, null);
 
             this.account = Account.createDefault();
+            this.profileImage = ProfileImage.createDefault();
         } else {
-            this.account = (Account) savedInstanceState.getSerializable("account");
+            this.account = (Account) savedInstanceState.getSerializable(ACCOUNT_INSTANCE_KEY);
+            this.profileImage = savedInstanceState.getParcelable(PROFILE_IMAGE_INSTANCE_KEY);
         }
 
         setRetainInstance(true);
@@ -158,10 +164,10 @@ public class RegisterFragment extends InjectionFragment
         });
 
         profileImageManager = builder.addFragmentListener(this).build();
+        profileImageManager.setProfileImage(profileImage);
 
         final View.OnClickListener profileImageOnClickListener = (v) -> profileImageManager.showPictureOptions();
-
-        profileImageView.setOnClickListener(profileImageOnClickListener);
+        Views.setSafeOnClickListener(profileImageView, profileImageOnClickListener);
         profileImageView.addButtonListener(profileImageOnClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
@@ -226,7 +232,8 @@ public class RegisterFragment extends InjectionFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("account", account);
+        outState.putSerializable(ACCOUNT_INSTANCE_KEY, account);
+        outState.putParcelable(PROFILE_IMAGE_INSTANCE_KEY, profileImage);
     }
 
     @Override
@@ -469,7 +476,7 @@ public class RegisterFragment extends InjectionFragment
         final String email = profile.getEmail();
         if (facebookImageUrl != null) {
             updateProfileImage(facebookImageUrl);
-            profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
+            profileImage.setImageUri(Uri.parse(facebookImageUrl));
         }
         if (firstName != null) {
             firstNameTextLET.setInputText(firstName);
@@ -483,7 +490,7 @@ public class RegisterFragment extends InjectionFragment
         }
         //Todo should? passwordTextLET.requestFocus();
 
-        profileImageManager.setImageSource(Analytics.ProfilePhoto.Source.FACEBOOK);
+        profileImage.setImageSource(Analytics.ProfilePhoto.Source.FACEBOOK);
     }
 
     private void onFacebookProfileError(@NonNull final Throwable throwable) {
@@ -545,7 +552,7 @@ public class RegisterFragment extends InjectionFragment
                .centerCrop()
                .resizeDimen(defaultDimen, defaultDimen)
                .into(profileImageView);
-        profileImageManager.setEmptyUriState();
+        profileImage.setEmptyUriState();
         Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
     }
 

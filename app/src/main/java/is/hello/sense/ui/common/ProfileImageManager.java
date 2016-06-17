@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ProfileImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.util.Analytics.ProfilePhoto.Source;
 import is.hello.sense.util.Fetch;
 import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
@@ -42,22 +42,12 @@ public class ProfileImageManager {
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
-    /**
-     * Used instead of null to make Uri <code> @NonNull </code>.
-     * It is the equivalent of empty string "".
-     */
-    private static final Uri EMPTY_URI_STATE = Uri.EMPTY;
-    private static final String EMPTY_URI_STATE_STRING = EMPTY_URI_STATE.toString();
-
     private final Context context;
     private final Fragment fragment;
     private final ImageUtil imageUtil;
     private final FilePathUtil filePathUtil;
     private final ExternalStoragePermission permission;
-    private Uri imageUri;
-    private String fullImageUriString;
-    private Uri tempImageUri;
-    private Source imageSource;
+    private ProfileImage profileImage;
     private int optionSelectedId;
     private boolean showOptions;
 
@@ -69,11 +59,9 @@ public class ProfileImageManager {
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
         this.permission = new ExternalStoragePermission(fragment);
-        this.imageUri = EMPTY_URI_STATE;
-        this.fullImageUriString = EMPTY_URI_STATE_STRING;
+        this.profileImage = ProfileImage.createDefault();
         this.optionSelectedId = -1;
         this.showOptions = true;
-        this.tempImageUri = EMPTY_URI_STATE;
     }
 
     public void showPictureOptions() {
@@ -109,7 +97,7 @@ public class ProfileImageManager {
                         .setIcon(R.drawable.settings_photo_library)
                    );
 
-        if(!EMPTY_URI_STATE.equals(imageUri)){
+        if(profileImage.hasImageUri()){
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                             .setTitle(R.string.action_remove_picture)
@@ -135,66 +123,30 @@ public class ProfileImageManager {
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
         } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            setImageUriWithTemp();
-            setImageSource(CAMERA);
-            ((Listener) fragment).onFromCamera(getImageUriString());
+            profileImage.setImageUriWithTemp();
+            profileImage.setImageSource(CAMERA);
+            ((Listener) fragment).onFromCamera(
+                    profileImage.getImageUriString());
         } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
             final Uri imageUri = data.getData();
-            setImageUri(imageUri);
-            setImageSource(GALLERY);
-            ((Listener) fragment).onFromGallery(getImageUriString());
+            profileImage.setImageUri(imageUri);
+            profileImage.setImageSource(GALLERY);
+            ((Listener) fragment).onFromGallery(
+                    profileImage.getImageUriString());
         } else{
             wasResultHandled = false;
         }
         return wasResultHandled;
     }
 
+    public void setProfileImage(ProfileImage profileImage) {
+        this.profileImage = profileImage;
+    }
+
     public void setShowOptions(final boolean showOptions) {
         this.showOptions = showOptions;
     }
 
-    /**
-     * TODO decouple {@link this#fullImageUriString}
-     * @param uri
-     */
-    public void setImageUri(@NonNull final Uri uri) {
-        imageUri = uri;
-        tempImageUri = EMPTY_URI_STATE;
-        setFullImageUriString(EMPTY_URI_STATE.equals(uri) ? EMPTY_URI_STATE_STRING : filePathUtil.getRealPath(uri));
-    }
-    public void setEmptyUriState(){
-        setImageUri(EMPTY_URI_STATE);
-    }
-
-    private void setImageUriWithTemp() {
-        setImageUri(tempImageUri);
-    }
-
-    public String getImageUriString() {
-        return imageUri.toString();
-    }
-
-    /**
-     * Used primarily for giving pictures taken from camera a temporary file location
-     */
-    private void setTempImageUri(@NonNull final Uri imageUri) {
-        tempImageUri = imageUri;
-    }
-
-    /**
-     * Used primarily to upload local files through api requiring full uri path
-     */
-    private void setFullImageUriString(@NonNull final String imageUriString) {
-        fullImageUriString = imageUriString;
-    }
-
-    /**
-     *
-     * @param imageSource Used for Segment.io analytics
-     */
-    public void setImageSource(@NonNull final Source imageSource) {
-        this.imageSource = imageSource;
-    }
     /**
      *
      * @param id Id of selected option from bottom sheet. Used so correct option action will be triggered
@@ -204,26 +156,26 @@ public class ProfileImageManager {
         this.optionSelectedId = id;
     }
 
-    public Observable<ProfileImage> prepareImageUpload() {
-        return prepareImageUpload(fullImageUriString);
+    public Observable<ProfileImage.UploadReady> prepareImageUpload() {
+        final String path = filePathUtil.getRealPath(profileImage.getImageUri());
+        return prepareImageUpload(path);
     }
 
     public void trimCache(){
         imageUtil.trimCache();
     }
 
-    public Observable<ProfileImage> prepareImageUpload(@Nullable final String filePath){
-        if (filePath == null) {
-            return Observable.create((subscriber) -> {
-               subscriber.onError(new Throwable("No local file"));
-            });
+    public Observable<ProfileImage.UploadReady> prepareImageUpload(@Nullable final String filePath){
+        if (filePath == null || filePath.isEmpty()) {
+            return Observable.create((subscriber) -> subscriber.onError(new Throwable("No valid filePath given"))
+            );
         }
         final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
         return imageUtil.provideObservableToCompressFile(filePath, mustDownload)
                 .map( file -> {
                     final TypedFile typedFile = new TypedFile("multipart/form-data", file);
                     Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
-                    return new ProfileImage(typedFile, imageSource);
+                    return new ProfileImage.UploadReady(typedFile, profileImage.getSource());
                 })
                 .doOnError(Functions.LOG_ERROR)
                 .subscribeOn(Schedulers.io())
@@ -251,13 +203,13 @@ public class ProfileImageManager {
         switch(optionID){
             case OPTION_ID_FROM_FACEBOOK:
                 ((Listener) fragment).onImportFromFacebook();
-                setImageSource(FACEBOOK);
+                profileImage.setImageSource(FACEBOOK);
                 break;
             case OPTION_ID_FROM_CAMERA:
                 final File imageFile = imageUtil.createFile(false);
                 if(imageFile != null){
                     final Uri imageUri = Uri.fromFile(imageFile);
-                    setTempImageUri(imageUri);
+                    profileImage.setTempImageUri(imageUri);
                     Fetch.imageFromCamera().fetch(fragment, imageUri);
                 }
                 break;
@@ -277,25 +229,6 @@ public class ProfileImageManager {
     }
 
     //endregion
-
-    public static class ProfileImage {
-
-        private final TypedFile file;
-        private final Source source;
-
-        public ProfileImage(@NonNull final TypedFile file, @NonNull final Source source){
-            this.file = file;
-            this.source = source;
-        }
-
-        public TypedFile getFile() {
-            return file;
-        }
-
-        public Source getSource() {
-            return source;
-        }
-    }
 
     public interface Listener {
 
