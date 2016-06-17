@@ -9,7 +9,7 @@ public final class Constants {
     public static final String INTERNAL_PREFS = "internal_prefs";
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM = "underside_current_item";
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
-    public static final String INTERNAL_PREF_ACCOUNT_ID= "INTERNAL_PREF_ACCOUNT_ID";
+    public static final String INTERNAL_PREF_ACCOUNT_ID = "INTERNAL_PREF_ACCOUNT_ID";
 
     public static final String NOTIFICATION_PREFS = "notification_prefs";
     public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";
@@ -54,9 +54,8 @@ public final class Constants {
     public static final LocalDate RELEASE_DATE_FOR_LAST_NAME = new DateTime()
             .withYear(2016)
             .withMonthOfYear(6)
-            .withDayOfMonth(2) // todo change this to the release date of 1.4.2
+            .withDayOfMonth(15)
             .toLocalDate();
-
 
 
     // From Retrofit
