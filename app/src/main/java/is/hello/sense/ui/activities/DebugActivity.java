@@ -88,7 +88,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("View What's New Card", this::viewWhatsNewCard));
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
-
+        adapter.add(new DetailItem("Re-enable Amazon review prompt", this::reEnableAmazonReviewPrompt));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Reset app usage stats", this::resetAppUsage));
 
@@ -149,6 +149,14 @@ public class DebugActivity extends InjectionActivity {
                    .apply();
         localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         Toast.makeText(getApplicationContext(), "Review prompt re-enabled", Toast.LENGTH_SHORT).show();
+    }
+
+    public void reEnableAmazonReviewPrompt() {
+        preferences.edit()
+                   .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false)
+                   .apply();
+        localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        Toast.makeText(getApplicationContext(), "Amazon Review prompt re-enabled", Toast.LENGTH_SHORT).show();
     }
 
     public void simulatePicassoLowMemory() {

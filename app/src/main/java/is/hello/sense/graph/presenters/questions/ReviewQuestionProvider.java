@@ -32,6 +32,7 @@ public class ReviewQuestionProvider implements QuestionProvider {
     public static final int RESPONSE_SUPPRESS_TEMPORARILY = 3;
     public static final int RESPONSE_SUPPRESS_PERMANENTLY = 4;
     public static final int RESPONSE_WRITE_REVIEW_AMAZON = 5;
+    public static final int RESPONSE_WRITE_REVIEW_AMAZON_UK = 6;
 
 
     @VisibleForTesting static final long QUESTION_ID_NONE = -1;
@@ -265,7 +266,11 @@ public class ReviewQuestionProvider implements QuestionProvider {
 
         Amazon (R.string.question_text_rating_prompt_good_amazon,
                 RESPONSE_WRITE_REVIEW_AMAZON,
-                Analytics.StoreReview.RATE_APP_AMAZON);
+                Analytics.StoreReview.RATE_APP_AMAZON),
+
+        AmazonUK(R.string.question_text_rating_prompt_good_amazon,
+                 RESPONSE_WRITE_REVIEW_AMAZON_UK,
+                 Analytics.StoreReview.RATE_APP_AMAZON);
 
         final int questionTextId;
         final int responseId;

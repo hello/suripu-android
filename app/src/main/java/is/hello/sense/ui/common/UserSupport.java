@@ -78,10 +78,10 @@ public class UserSupport {
         }
     }
 
-    public static void showAmazonReviewPage(@NonNull final Activity from) {
+    public static void showAmazonReviewPage(@NonNull final Activity from, @NonNull final String authority) {
         final Uri amazonReviewUri = new Uri.Builder()
                 .scheme("https")
-                .authority("www.amazon.com")
+                .authority(authority)
                 .appendPath("review")
                 .appendPath("create-review")
                 .appendQueryParameter("ie", "UTF8")
