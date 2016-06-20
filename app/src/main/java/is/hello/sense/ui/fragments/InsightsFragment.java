@@ -383,7 +383,7 @@ public class InsightsFragment extends BacksideTabFragment
                 localUsageTracker.isUsageAcceptableForRatingPrompt() &&
                 !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
-                               if (!showReview) {
+                               if (showReview) {
                                    if (!preferences.getBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false)) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
@@ -458,7 +458,7 @@ public class InsightsFragment extends BacksideTabFragment
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity()));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
                                .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
@@ -466,7 +466,7 @@ public class InsightsFragment extends BacksideTabFragment
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonUkReviewPage(getActivity()));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
                                .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
