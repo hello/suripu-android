@@ -340,7 +340,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
     private void changePicture() {
-        if(profileImageManager != null) {
+        if (profileImageManager != null) {
             profileImageManager.showPictureOptions();
         }
     }
@@ -515,8 +515,8 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int stringRes) {
-        handleError(e, getString(stringRes));
+    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int titleRes, @StringRes final int messageRes) {
+        handleError(e, titleRes, messageRes);
     }
 
     @Override
@@ -532,13 +532,13 @@ public class AccountSettingsFragment extends InjectionFragment
         if (!(fbImageUri == null || fbImageUri.isEmpty())) {
             final Uri newUri = Uri.parse(fbImageUri);
             profileImageManager.compressImage(newUri);
-        } else{
+        } else {
             profileImageManager.setShowOptions(true);
         }
     }
 
     private void getFacebookProfileError(final Throwable error) {
-        handleError(error, getString(R.string.error_internet_connection_generic_message));
+        handleError(error, R.string.error_internet_connection_generic_title, R.string.error_internet_connection_generic_message);
     }
 
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
@@ -553,7 +553,7 @@ public class AccountSettingsFragment extends InjectionFragment
         //restore previous saved photo and refresh view
         currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
         bindAccount(currentAccount);
-        onImageCompressedError(e, R.string.error_account_upload_photo_message);
+        onImageCompressedError(e, R.string.error_internet_connection_generic_title, R.string.error_account_upload_photo_message);
         profileImageManager.trimCache();
     }
 
@@ -567,14 +567,15 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void removePhotoError(@NonNull final Throwable e) {
-        handleError(e, getString(R.string.error_account_remove_photo_message));
+        handleError(e, R.string.error_account_remove_photo_title, R.string.error_account_remove_photo_message);
     }
 
-    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
+
+    private void handleError(@NonNull final Throwable error, @StringRes final int titleRes, @StringRes final int messageRes) {
         stateSafeExecutor.execute(() -> {
             showLoading(false);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
-                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(getString(messageRes)), titleRes);
             }
         });
     }

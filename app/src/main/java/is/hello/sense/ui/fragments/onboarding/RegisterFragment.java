@@ -537,7 +537,7 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int stringRes) {
+    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int titleRes, @StringRes final int messageRes) {
         goToNextScreen();
     }
 
