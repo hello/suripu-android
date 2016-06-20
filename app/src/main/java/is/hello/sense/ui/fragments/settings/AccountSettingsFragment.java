@@ -340,7 +340,9 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
     private void changePicture() {
-        profileImageManager.showPictureOptions();
+        if(profileImageManager != null) {
+            profileImageManager.showPictureOptions();
+        }
     }
 
     public void changeName() {

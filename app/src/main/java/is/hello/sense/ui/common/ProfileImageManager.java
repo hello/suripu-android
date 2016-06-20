@@ -33,12 +33,14 @@ import rx.schedulers.Schedulers;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.CAMERA;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.FACEBOOK;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.GALLERY;
+import static is.hello.sense.util.Fetch.Image.REQUEST_CODE_CAMERA;
+import static is.hello.sense.util.Fetch.Image.REQUEST_CODE_GALLERY;
 
 /**
  * Must be instantiated by {@link is.hello.sense.ui.common.ProfileImageManager.Builder}
  */
 public class ProfileImageManager {
-    private static final int REQUEST_CODE_PICTURE = 0x30;
+    private static final int REQUEST_CODE_OPTIONS = 5;
     private static final int OPTION_ID_FROM_FACEBOOK = 0;
     private static final int OPTION_ID_FROM_CAMERA = 1;
     private static final int OPTION_ID_FROM_GALLERY = 2;
@@ -103,7 +105,7 @@ public class ProfileImageManager {
             return;
         }
         final BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
-        advancedOptions.setTargetFragment(fragment, REQUEST_CODE_PICTURE);
+        advancedOptions.setTargetFragment(fragment, REQUEST_CODE_OPTIONS);
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
@@ -120,18 +122,23 @@ public class ProfileImageManager {
     }
 
     /**
-     * @return true if requestCode matched and resultCode was Activity.RESULT_OK else false.
+     * @return true if requestCode matched and resultCode.
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
         if (resultCode != Activity.RESULT_OK) {
-            return false;
+            if (requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_GALLERY){
+                setShowOptions(true);
+                return true;
+            } else{
+                return false;
+            }
         }
 
-        if (requestCode == REQUEST_CODE_PICTURE) {
+        if (requestCode == REQUEST_CODE_OPTIONS) {
             setShowOptions(false);
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
-        } else if (requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
+        } else if (requestCode == REQUEST_CODE_CAMERA) {
             final String photoUriString = sharedPreferences.getString(PHOTO_URI, null);
             if (photoUriString == null) {
                 return false;
@@ -139,7 +146,7 @@ public class ProfileImageManager {
             source = CAMERA; // incase the user took a few days to return.
             final Uri takePhotoUri = Uri.parse(photoUriString);
             getListener().onFromCamera(takePhotoUri);
-        } else if (requestCode == Fetch.Image.REQUEST_CODE_GALLERY) {
+        } else if (requestCode == REQUEST_CODE_GALLERY) {
             source = GALLERY; // doesn't hurt to be safe
             final Uri imageUri = data.getData();
             getListener().onFromGallery(imageUri);
