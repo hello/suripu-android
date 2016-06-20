@@ -26,10 +26,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:clickable="true"
         android:gravity="end"
-        android:paddingTop="@dimen/x1"
-        android:paddingBottom="@dimen/x1"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/x2"
+        android:paddingTop="@dimen/x2">
 
         <TextView
             android:id="@+id/item_list_player_status"
@@ -44,15 +45,13 @@
             android:id="@+id/item_list_play_holder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/x2"
-            android:clickable="true">
+            android:layout_marginEnd="@dimen/x2">
 
             <is.hello.sense.ui.widget.SpinnerImageView
                 android:id="@+id/item_list_play_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:clickable="true"
                 android:src="@drawable/sound_preview_play"
                 android:visibility="invisible"
                 />
