@@ -391,6 +391,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
+        final TextView share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -399,6 +400,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
+            this.share = (TextView)view.findViewById(R.id.item_insight_share);
 
             view.setOnClickListener(this);
         }
@@ -426,6 +428,9 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 }
                 image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategoryName());
+                share.setOnClickListener(v -> {
+                    //todo get content and send to be shared.
+                });
             }
 
             body.setText(Styles.darkenEmphasis(resources, insight.getMessage()));
