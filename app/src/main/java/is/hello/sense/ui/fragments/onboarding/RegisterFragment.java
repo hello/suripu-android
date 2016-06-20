@@ -95,7 +95,7 @@ public class RegisterFragment extends InjectionFragment
     private Button nextButton;
 
     private LinearLayout credentialsContainer;
-    private Uri imageUri = null;
+    private Uri imageUri = Uri.EMPTY;
 
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
     private final static String ACCOUNT_INSTANCE_KEY = "account";
