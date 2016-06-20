@@ -89,19 +89,18 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
                             callbackManager,
                             new FacebookCallback<LoginResult>() {
                                 @Override
-                                public void onSuccess(LoginResult loginResult) {
-                                    // App code
+                                public void onSuccess(final LoginResult loginResult) {
                                     setAuthToken(loginResult.getAccessToken());
                                     FacebookPresenter.this.update();
                                 }
 
                                 @Override
                                 public void onCancel() {
-                                    // App code
+                                    profile.onNext(FacebookProfile.EmptyProfile.newInstance());
                                 }
 
                                 @Override
-                                public void onError(FacebookException exception) {
+                                public void onError(final FacebookException exception) {
                                     // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
                                     // consider presenting an error dialog here.
                                     Logger.debug(FacebookPresenter.class.getSimpleName(), "login failed", exception.fillInStackTrace());
