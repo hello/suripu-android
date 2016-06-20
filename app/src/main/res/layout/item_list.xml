@@ -12,13 +12,13 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/item_list_player_holder"
-        android:drawablePadding="@dimen/gap_large"
+        android:drawablePadding="@dimen/x3"
         android:drawableStart="@drawable/radio_off"
         android:gravity="center_vertical"
-        android:paddingBottom="@dimen/gap_medium"
-        android:paddingLeft="@dimen/gap_outer"
-        android:paddingRight="@dimen/gap_outer"
-        android:paddingTop="@dimen/gap_medium"/>
+        android:paddingBottom="@dimen/x2"
+        android:paddingLeft="@dimen/x3"
+        android:paddingRight="@dimen/x3"
+        android:paddingTop="@dimen/x2"/>
 
     <LinearLayout
         android:id="@+id/item_list_player_holder"
@@ -26,7 +26,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:gravity="right"
+        android:gravity="end"
+        android:paddingTop="@dimen/x1"
+        android:paddingBottom="@dimen/x1"
         android:orientation="horizontal">
 
         <TextView
@@ -34,15 +36,15 @@
             style="@style/AppTheme.Text.Player.Preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/gap_small"
             android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/x1"
             android:gravity="center_vertical"/>
 
         <FrameLayout
             android:id="@+id/item_list_play_holder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/gap_medium"
+            android:layout_marginEnd="@dimen/x2"
             android:clickable="true">
 
             <is.hello.sense.ui.widget.SpinnerImageView
