@@ -126,10 +126,10 @@ public class ProfileImageManager {
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
         if (resultCode != Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_GALLERY){
+            if (requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_GALLERY) {
                 setShowOptions(true);
                 return true;
-            } else{
+            } else {
                 return false;
             }
         }
@@ -255,7 +255,7 @@ public class ProfileImageManager {
     }
 
     private void compressImageError(@NonNull final Throwable e) {
-        getListener().onImageCompressedError(e, R.string.error_account_upload_photo_message);
+        getListener().onImageCompressedError(e, R.string.error_internet_connection_generic_title,  R.string.error_account_upload_photo_message);
     }
 
     private Listener getListener() {
@@ -274,7 +274,7 @@ public class ProfileImageManager {
 
         void onImageCompressedSuccess(@NonNull TypedFile compressedImage, @NonNull Analytics.ProfilePhoto.Source source);
 
-        void onImageCompressedError(@NonNull Throwable e, @StringRes int stringRes);
+        void onImageCompressedError(@NonNull Throwable e, @StringRes int titleRes, @StringRes int messageRes);
 
     }
 
