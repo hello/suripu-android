@@ -458,7 +458,7 @@ public class InsightsFragment extends BacksideTabFragment
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity()));
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
                                .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
@@ -466,7 +466,7 @@ public class InsightsFragment extends BacksideTabFragment
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonUkReviewPage(getActivity()));
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
                                .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)

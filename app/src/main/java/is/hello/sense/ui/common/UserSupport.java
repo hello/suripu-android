@@ -78,29 +78,13 @@ public class UserSupport {
         }
     }
 
-    public static void showAmazonReviewPage(@NonNull final Activity from) {
+    public static void showAmazonReviewPage(@NonNull final Activity from, @NonNull final String authority) {
         final Uri amazonReviewUri = new Uri.Builder()
                 .scheme("https")
-                .authority("www.amazon.com")
+                .authority(authority)
                 .appendPath("review")
                 .appendPath("create-review")
-                .appendQueryParameter("ie", "UTF8")
                 .appendQueryParameter("asin", "B016XBL2RE")
-                .appendQueryParameter("channel", "awUDPv3")
-                .appendQueryParameter("ref_", "cm_cr_dp_aw_wr_but#")
-                .build();
-        openUri(from, amazonReviewUri);
-    }
-
-    public static void showAmazonUkReviewPage(@NonNull final Activity from) {
-        final Uri amazonReviewUri = new Uri.Builder()
-                .scheme("https")
-                .authority("www.amazon.co.uk")
-                .appendPath("review")
-                .appendPath("create-review")
-                .appendQueryParameter("ie", "UTF8")
-                .appendQueryParameter("asin", "B016XBL2RE")
-                .appendQueryParameter("ref", "cm_cr_dp_no_rvw_e")
                 .build();
         openUri(from, amazonReviewUri);
     }
