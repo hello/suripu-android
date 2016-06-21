@@ -124,9 +124,8 @@ public class InsightsFragment extends BacksideTabFragment
         addPresenter(deviceIssuesPresenter);
         addPresenter(insightsPresenter);
         addPresenter(questionsPresenter);
-
-        this.toastFactory = new ToastFactory(getActivity());
-        toastFactory.setLayoutInflater(getActivity().getLayoutInflater());
+        final Activity activity = getActivity();
+        this.toastFactory = new ToastFactory(activity, activity.getLayoutInflater());
 
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
@@ -361,7 +360,7 @@ public class InsightsFragment extends BacksideTabFragment
     @Override
     public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
         final Insight insight = viewHolder.getInsight();
-        if (insight.isError()) {
+        if (!insight.isError()) {
             return;
         }
 

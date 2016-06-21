@@ -46,7 +46,6 @@ import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -61,6 +60,7 @@ import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.ToastFactory;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
@@ -119,6 +119,8 @@ public class TimelineFragment extends InjectionFragment
     private StaggeredFadeItemAnimator itemAnimator;
     private ColorDrawableCompat backgroundFill;
 
+    private ToastFactory toastFactory;
+
     private
     @Nullable
     TutorialOverlayView tutorialOverlay;
@@ -151,6 +153,7 @@ public class TimelineFragment extends InjectionFragment
         super.onAttach(activity);
 
         this.homeActivity = (HomeActivity) activity;
+        this.toastFactory = new ToastFactory(homeActivity, homeActivity.getLayoutInflater());
     }
 
     @Override
@@ -360,6 +363,7 @@ public class TimelineFragment extends InjectionFragment
         super.onDetach();
 
         this.homeActivity = null;
+        this.toastFactory = null;
     }
 
     @Override
