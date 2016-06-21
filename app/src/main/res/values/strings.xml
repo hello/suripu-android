@@ -567,6 +567,8 @@
     <string name="invalid_first_name">Invalid first name</string>
     <string name="invalid_password">Invalid password</string>
     <string name="error_playing_sound">An error occurred. Please try again.</string>
+    <string name="error_share_insights_title">Unable to copy link.</string>
+    <string name="error_share_insights_message">Sense was unable to pull a link for sharing. Please try again in a few moments.</string>
 
 
     <plurals name="item_support_comment_detail_attachments">

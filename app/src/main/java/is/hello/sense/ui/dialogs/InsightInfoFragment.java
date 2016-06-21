@@ -203,7 +203,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                                          Share.text(shareUrl.getUrl()).send(activity);
                                      },
                                      throwable -> {
-                                         //todo error state
+                                         ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+                                                 .withTitle(R.string.error_share_insights_title)
+                                                 .withMessage(StringRef.from(R.string.error_share_insights_message))
+                                                 .build();
+                                         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
                                      });
             });
 

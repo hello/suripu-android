@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
@@ -385,10 +386,13 @@ public class InsightsFragment extends BacksideTabFragment
                   .doOnTerminate(() -> showProgress(false))
                   .subscribe(shareUrl -> {
                                  Share.text(shareUrl.getUrl()).send(getActivity());
-
                              },
                              throwable -> {
-                                 //todo error state
+                                 ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+                                         .withTitle(R.string.error_share_insights_title)
+                                         .withMessage(StringRef.from(R.string.error_share_insights_message))
+                                         .build();
+                                 errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
                              });
     }
 
