@@ -15,10 +15,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import is.hello.sense.api.ApiService;
-import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.functional.Lists;
@@ -41,8 +37,6 @@ public class InsightsAdapterTests extends SenseTestCase {
     private final FakeInteractionListener listener = new FakeInteractionListener();
     private final DateFormatter dateFormatter = new DateFormatter(getContext());
     private InsightsAdapter adapter;
-    @Inject
-    TestApiService testApiService;
 
     //region Lifecycle
 
@@ -52,8 +46,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         this.adapter = new InsightsAdapter(context,
                                            dateFormatter,
                                            listener,
-                                           Picasso.with(context),
-                                           testApiService);
+                                           Picasso.with(context));
     }
 
     @After
@@ -245,15 +238,10 @@ public class InsightsAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void onShareUrl(@NonNull final String url) {
-            callbacks.add(Callback.SHARE_URL);
+        public void shareInsight(@NonNull final String insightId) {
+            callbacks.add(Callback.SHARE_INSIGHT);
         }
 
-        @Override
-        public void showProgress(final boolean show) {
-            callbacks.add(Callback.SHOW_PROGRESS);
-
-        }
 
         void clear() {
             callbacks.clear();
@@ -269,8 +257,7 @@ public class InsightsAdapterTests extends SenseTestCase {
             SKIP_QUESTION,
             ANSWER_QUESTION,
             INSIGHT_CLICKED,
-            SHARE_URL,
-            SHOW_PROGRESS
+            SHARE_INSIGHT
         }
     }
 }

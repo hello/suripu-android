@@ -23,7 +23,6 @@ import java.util.List;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
@@ -48,7 +47,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     private final Context context;
     private final Resources resources;
     private final LayoutInflater inflater;
-    private final ApiService apiService;
     private final DateFormatter dateFormatter;
     private final InteractionListener interactionListener;
     private final Picasso picasso;
@@ -66,13 +64,11 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
     public InsightsAdapter(@NonNull final Context context,
                            @NonNull final DateFormatter dateFormatter,
                            @NonNull final InteractionListener interactionListener,
-                           @NonNull final Picasso picasso,
-                           @NonNull final ApiService apiService) {
+                           @NonNull final Picasso picasso) {
         this.context = context;
         this.resources = context.getResources();
         this.dateFormatter = dateFormatter;
         this.picasso = picasso;
-        this.apiService = apiService;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
         this.showWhatsNew = WhatsNewLayout.shouldShow(context);
@@ -437,17 +433,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     share.setOnClickListener(null);
                 } else {
                     share.setVisibility(View.VISIBLE);
-                    share.setOnClickListener(v -> {
-                        interactionListener.showProgress(true);
-                        apiService.shareInsight(insight.getInsightType())
-                                  .doOnTerminate(() -> interactionListener.showProgress(false))
-                                  .subscribe(shareUrl -> {
-                                                 interactionListener.onShareUrl(shareUrl.getUrl());
-                                             },
-                                             throwable -> {
-                                                 //todo error state
-                                             });
-                    });
+                    share.setOnClickListener(v -> interactionListener.shareInsight(insight.getId()));
                 }
             }
 
@@ -509,8 +495,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         void onInsightClicked(@NonNull InsightViewHolder viewHolder);
 
-        void onShareUrl(@NonNull String url);
+        void shareInsight(@NonNull String insightId);
 
-        void showProgress(boolean show);
     }
 }

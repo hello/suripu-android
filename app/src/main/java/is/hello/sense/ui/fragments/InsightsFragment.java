@@ -35,6 +35,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -161,7 +162,7 @@ public class InsightsFragment extends BacksideTabFragment
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
-        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso, apiService);
+        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
         return view;
     }
@@ -378,12 +379,20 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void onShareUrl(@NonNull final String url) {
-        Share.text(url).send(getActivity());
+    public void shareInsight(@NonNull final String insightId) {
+        showProgress(true);
+        apiService.shareInsight(new InsightType(insightId))
+                  .doOnTerminate(() -> showProgress(false))
+                  .subscribe(shareUrl -> {
+                                 Share.text(shareUrl.getUrl()).send(getActivity());
+
+                             },
+                             throwable -> {
+                                 //todo error state
+                             });
     }
 
-    @Override
-    public void showProgress(final boolean show) {
+    private void showProgress(final boolean show) {
         if (activity != null) {
             activity.showProgressOverlay(show);
         }
