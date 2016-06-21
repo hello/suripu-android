@@ -32,6 +32,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
@@ -51,13 +52,12 @@ import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.recycler.InsetItemDecoration;
-import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.Share;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -84,26 +84,29 @@ public class InsightsFragment extends BacksideTabFragment
     QuestionsPresenter questionsPresenter;
     @Inject
     Picasso picasso;
+    @Inject
+    ApiService apiService;
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
 
-    private
     @Nullable
-    TutorialOverlayView tutorialOverlayView;
-    private
-    @Nullable
-    InsightsAdapter.InsightViewHolder selectedInsightHolder;
+    private TutorialOverlayView tutorialOverlayView;
 
-    private boolean questionLoaded = false, insightsLoaded = false;
-    private
     @Nullable
-    Question currentQuestion;
-    private
+    private InsightsAdapter.InsightViewHolder selectedInsightHolder;
+
+    @Nullable
+    private Question currentQuestion;
+
     @NonNull
-    List<Insight> insights = Collections.emptyList();
+    private List<Insight> insights = Collections.emptyList();
+
+    private boolean questionLoaded = false;
+    private boolean insightsLoaded = false;
+    private View progressOverlay;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
@@ -128,6 +131,7 @@ public class InsightsFragment extends BacksideTabFragment
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
+       progressOverlay = getActivity().findViewById(R.id.activity_home_progress_overlay);
 
     }
 
@@ -154,13 +158,8 @@ public class InsightsFragment extends BacksideTabFragment
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
-        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
+        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso, apiService);
         recyclerView.setAdapter(insightsAdapter);
-        // final InsetItemDecoration decoration = new InsetItemDecoration();
-
-        //  decoration.addBottomInset(insightsAdapter.getItemCount(), resources.getDimensionPixelSize(R.dimen.x2));
-        // recyclerView.addItemDecoration(decoration);
-
         return view;
     }
 
@@ -373,6 +372,19 @@ public class InsightsFragment extends BacksideTabFragment
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;
+    }
+
+    @Override
+    public void onShareUrl(@NonNull final String url) {
+        Share.text(url).send(getActivity());
+    }
+
+    @Override
+    public void showProgress(final boolean show) {
+        if (progressOverlay == null) {
+            return;
+        }
+        progressOverlay.post(() -> progressOverlay.setVisibility(show ? View.VISIBLE : View.GONE));
     }
 
     //endregion

@@ -96,6 +96,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private int lastPagerScrollState = ViewPager.SCROLL_STATE_IDLE;
     private ImageButton smartAlarmButton;
 
+    private View progressOverlay;
     private boolean isFirstActivityRun;
     private boolean showBackside;
 
@@ -205,6 +206,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
+        this.progressOverlay = findViewById(R.id.activity_home_progress_overlay);
     }
 
     @Override
@@ -367,6 +369,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public void onBackPressed() {
+        if (progressOverlay.getVisibility() == View.VISIBLE) {
+            return;
+        }
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             if (slidingLayersView.isOpen()) {
                 if (!slidingLayersView.isInMotion()) {
