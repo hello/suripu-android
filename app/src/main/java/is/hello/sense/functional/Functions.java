@@ -27,6 +27,9 @@ public final class Functions {
             return false;
         }
     }
+    public static boolean isNotNullOrEmpty(@Nullable final String str){
+        return !( str == null || str.isEmpty());
+    }
     public static int compareInts(int a, int b) {
         return (a < b) ? -1 : ((a > b) ? 1 : 0);
     }

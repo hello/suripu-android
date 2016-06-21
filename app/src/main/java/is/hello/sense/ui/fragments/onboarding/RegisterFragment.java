@@ -26,7 +26,6 @@ import com.squareup.picasso.Picasso;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-
 import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorTemplate;
@@ -480,10 +479,11 @@ public class RegisterFragment extends InjectionFragment
         final String firstName = profile.getFirstName();
         final String lastName = profile.getLastName();
         final String email = profile.getEmail();
-        if (!(facebookImageUrl == null || facebookImageUrl.isEmpty())) {
+        if (Functions.isNotNullOrEmpty(facebookImageUrl)) {
             updateProfileImage(Uri.parse(facebookImageUrl));
         }
-        if (firstName != null) {
+
+        if (Functions.isNotNullOrEmpty(firstName)) {
             firstNameTextLET.setInputText(firstName);
             autofillFacebookButton.setEnabled(false);
         }
@@ -494,6 +494,7 @@ public class RegisterFragment extends InjectionFragment
             emailTextLET.setInputText(email);
         }
         //Todo should? passwordTextLET.requestFocus();
+        profileImageManager.setShowOptions(true);
 
     }
 
@@ -503,6 +504,7 @@ public class RegisterFragment extends InjectionFragment
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
+            profileImageManager.setShowOptions(true);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
             }
