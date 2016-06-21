@@ -25,7 +25,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class OnboardingRegisterWeightFragment extends SenseFragment {
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesPresenter preferences;
 
     private ScaleView scale;
     private TextView scaleReading;
@@ -37,7 +38,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -52,39 +53,42 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_register_weight, container, false);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_onboarding_register_weight, container, false);
 
         this.scale = (ScaleView) view.findViewById(R.id.fragment_onboarding_register_weight_scale);
         this.scaleReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_weight_scale_reading);
 
-        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        boolean useGrams = preferences.getBoolean(PreferencesPresenter.USE_GRAMS, defaultMetric);
+        final boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
+        final boolean useGrams = preferences.getBoolean(PreferencesPresenter.USE_GRAMS, defaultMetric);
         if (useGrams) {
             scale.setOnValueChangedListener(pounds -> {
-                int kilograms = (int) UnitOperations.poundsToKilograms(pounds);
+                final int kilograms = (int) UnitOperations.poundsToKilograms(pounds);
                 scaleReading.setText(getString(R.string.weight_kg_fmt, kilograms));
             });
         } else {
-            scale.setOnValueChangedListener(pounds -> {
-                scaleReading.setText(getString(R.string.weight_pounds_fmt, pounds));
-            });
+            scale.setOnValueChangedListener(pounds -> scaleReading.setText(getString(R.string.weight_pounds_fmt, pounds)));
         }
 
-        Account account = AccountEditor.getContainer(this).getAccount();
+        final Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getWeight() != null) {
-            int weightInGrams = account.getWeight();
-            int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
+            final int weightInGrams = account.getWeight();
+            final int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
             scale.setValue(pounds, true);
         }
 
-        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        Views.setSafeOnClickListener(nextButton, ignored -> next());
+        final Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        final Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
+        Views.setSafeOnClickListener(nextButton, ignored -> {
+            skipButton.setEnabled(false);
+            nextButton.setEnabled(false);
+            next();
+        });
 
-        Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (AccountEditor.getWantsSkipButton(this)) {
             Views.setSafeOnClickListener(skipButton, ignored -> {
                 skipButton.setEnabled(false);
+                nextButton.setEnabled(false);
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "weight"));
                 AccountEditor.getContainer(this).onAccountUpdated(this);
             });
@@ -100,7 +104,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
     public void onResume() {
         super.onResume();
 
-        Account account = AccountEditor.getContainer(this).getAccount();
+        final Account account = AccountEditor.getContainer(this).getAccount();
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
@@ -113,7 +117,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasAnimated", true);
@@ -124,12 +128,12 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
         try {
             final AccountEditor.Container container = AccountEditor.getContainer(this);
             if (!scale.isAnimating()) {
-                int pounds = scale.getValue();
-                int grams = (int) UnitOperations.poundsToGrams(pounds);
+                final int pounds = scale.getValue();
+                final int grams = (int) UnitOperations.poundsToGrams(pounds);
                 container.getAccount().setWeight(grams);
             }
             container.onAccountUpdated(this);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);
         }
     }
