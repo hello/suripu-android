@@ -527,10 +527,10 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void getFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
-        showProfileLoadingIndicator(true);
         final String fbImageUri = profile.getPictureUrl();
-        if (!(fbImageUri == null || fbImageUri.isEmpty())) {
+        if (Functions.isNotNullOrEmpty(fbImageUri)) {
             final Uri newUri = Uri.parse(fbImageUri);
+            showProfileLoadingIndicator(true);
             profileImageManager.compressImage(newUri);
         } else {
             profileImageManager.setShowOptions(true);

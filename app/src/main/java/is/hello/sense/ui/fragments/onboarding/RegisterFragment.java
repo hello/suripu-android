@@ -504,6 +504,7 @@ public class RegisterFragment extends InjectionFragment
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
+            profileImageManager.setShowOptions(true);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
             }
