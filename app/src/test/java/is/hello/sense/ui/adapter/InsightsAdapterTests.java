@@ -15,6 +15,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.functional.Lists;
@@ -30,12 +34,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+
 //todo uncommment tests when we use whatsnewlayout in production
 public class InsightsAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private final FakeInteractionListener listener = new FakeInteractionListener();
     private final DateFormatter dateFormatter = new DateFormatter(getContext());
     private InsightsAdapter adapter;
+    @Inject
+    TestApiService testApiService;
 
     //region Lifecycle
 
@@ -45,7 +52,8 @@ public class InsightsAdapterTests extends SenseTestCase {
         this.adapter = new InsightsAdapter(context,
                                            dateFormatter,
                                            listener,
-                                           Picasso.with(context));
+                                           Picasso.with(context),
+                                           testApiService);
     }
 
     @After
@@ -236,6 +244,17 @@ public class InsightsAdapterTests extends SenseTestCase {
             callbacks.add(Callback.INSIGHT_CLICKED);
         }
 
+        @Override
+        public void onShareUrl(@NonNull final String url) {
+            callbacks.add(Callback.SHARE_URL);
+        }
+
+        @Override
+        public void showProgress(final boolean show) {
+            callbacks.add(Callback.SHOW_PROGRESS);
+
+        }
+
         void clear() {
             callbacks.clear();
         }
@@ -250,6 +269,8 @@ public class InsightsAdapterTests extends SenseTestCase {
             SKIP_QUESTION,
             ANSWER_QUESTION,
             INSIGHT_CLICKED,
+            SHARE_URL,
+            SHOW_PROGRESS
         }
     }
 }

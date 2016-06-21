@@ -39,8 +39,10 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -398,5 +400,10 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<Void> trackStoreReview(@NonNull @Body StoreReview review) {
         return safeJust(null);
+    }
+
+    @Override
+    public Observable<ShareUrl> shareInsight(@NonNull @Body InsightType insightType) {
+        return unimplemented();
     }
 }
