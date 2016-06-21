@@ -101,7 +101,7 @@ public class ProfileImageManager {
     }
 
     public void showPictureOptions() {
-        if (!showOptions) {
+        if (!showOptions || fragment.isDetached() || fragment.isRemoving() || fragment.isHidden()) {
             return;
         }
         final BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);

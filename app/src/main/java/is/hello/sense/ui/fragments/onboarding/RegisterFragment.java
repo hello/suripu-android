@@ -99,7 +99,6 @@ public class RegisterFragment extends InjectionFragment
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
     private final static String ACCOUNT_INSTANCE_KEY = "account";
     private final static String URI_INSTANCE_KEY = "uri";
-    // private ProfileImage profileImage;
 
     //region Lifecycle
 
@@ -151,14 +150,14 @@ public class RegisterFragment extends InjectionFragment
         nextButton.setText(R.string.action_next);
 
         final FocusClickListener nextButtonClickListener = new FocusClickListener(credentialsContainer, stateSafeExecutor.bind(this::register));
-        Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
+        Views.setSafeOnClickListener(nextButton, stateSafeExecutor, nextButtonClickListener);
 
         autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
-        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> bindFacebookProfile(false));
+        Views.setSafeOnClickListener(autofillFacebookButton, stateSafeExecutor, (v) -> bindFacebookProfile(false));
         facebookPresenter.init();
 
         final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
-        Views.setSafeOnClickListener(facebookInfoButton, (v) -> {
+        Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, (v) -> {
             if (getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null) {
                 return;
             }
@@ -170,8 +169,8 @@ public class RegisterFragment extends InjectionFragment
         profileImageManager = builder.addFragmentListener(this).build();
 
         final View.OnClickListener profileImageOnClickListener = (v) -> profileImageManager.showPictureOptions();
-        Views.setSafeOnClickListener(profileImageView, profileImageOnClickListener);
-        profileImageView.addButtonListener(profileImageOnClickListener);
+        Views.setSafeOnClickListener(profileImageView, stateSafeExecutor, profileImageOnClickListener);
+        profileImageView.setButtonClickListener(stateSafeExecutor, profileImageOnClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
@@ -220,11 +219,16 @@ public class RegisterFragment extends InjectionFragment
         this.emailTextLET = null;
 
         passwordTextLET.removeTextChangedListener(this);
+        passwordTextLET.setOnEditorActionListener(null);
         this.passwordTextLET = null;
 
+        this.nextButton.setOnClickListener(null);
         this.nextButton = null;
         this.credentialsContainer = null;
 
+        this.profileImageView.setOnClickListener(null);
+        this.profileImageView.setButtonClickListener(null);
+        this.autofillFacebookButton.setOnClickListener(null);
         this.profileImageView = null;
         this.profileImageManager = null;
         this.autofillFacebookButton = null;
@@ -479,18 +483,17 @@ public class RegisterFragment extends InjectionFragment
         final String firstName = profile.getFirstName();
         final String lastName = profile.getLastName();
         final String email = profile.getEmail();
-        if (Functions.isNotNullOrEmpty(facebookImageUrl)) {
+        if (!TextUtils.isEmpty(facebookImageUrl)) {
             updateProfileImage(Uri.parse(facebookImageUrl));
         }
-
-        if (Functions.isNotNullOrEmpty(firstName)) {
+        if (!TextUtils.isEmpty(firstName)) {
             firstNameTextLET.setInputText(firstName);
             autofillFacebookButton.setEnabled(false);
         }
-        if (lastName != null) {
+        if (!TextUtils.isEmpty(lastName)) {
             lastNameTextLET.setInputText(lastName);
         }
-        if (email != null) {
+        if (!TextUtils.isEmpty(email)) {
             emailTextLET.setInputText(email);
         }
         //Todo should? passwordTextLET.requestFocus();

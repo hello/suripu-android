@@ -42,7 +42,7 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
         CircleViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
-            this.imageView.addButtonListener(this);
+            this.imageView.setButtonClickListener(this);
             this.imageView.setOnClickListener(this);
             itemView.setOnClickListener(null);
             itemView.setClickable(false);
