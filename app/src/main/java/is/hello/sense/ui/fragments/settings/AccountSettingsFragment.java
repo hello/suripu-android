@@ -497,13 +497,13 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onFromCamera(@NonNull final Uri imageUri) {
-        showLoading(true);
+        showProfileLoadingIndicator(true);
         profileImageManager.compressImage(imageUri);
     }
 
     @Override
     public void onFromGallery(@NonNull final Uri imageUri) {
-        showLoading(true);
+        showProfileLoadingIndicator(true);
         profileImageManager.compressImage(imageUri);
     }
 
@@ -527,7 +527,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void getFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
-        showLoading(true);
+        showProfileLoadingIndicator(true);
         final String fbImageUri = profile.getPictureUrl();
         if (!(fbImageUri == null || fbImageUri.isEmpty())) {
             final Uri newUri = Uri.parse(fbImageUri);
@@ -542,7 +542,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
-        showLoading(false);
+        showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();
         profileImageManager.trimCache();
@@ -558,7 +558,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void removePhotoSuccess(final VoidResponse response) {
-        showLoading(false);
+        showProfileLoadingIndicator(false);
         profileImageManager.removeDeleteOption();
         currentAccount.setProfilePhoto(null);
         bindAccount(currentAccount);
@@ -573,7 +573,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void handleError(@NonNull final Throwable error, @StringRes final int titleRes, @StringRes final int messageRes) {
         stateSafeExecutor.execute(() -> {
-            showLoading(false);
+            showProfileLoadingIndicator(false);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(getString(messageRes)), titleRes);
             }
@@ -581,7 +581,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
     // endregion
 
-    private void showLoading(final boolean show) {
+    private void showProfileLoadingIndicator(final boolean show) {
         if (getView() != null) {
             final View progressBar = getView().findViewById(R.id.item_profile_progress_bar);
             if (progressBar != null) {

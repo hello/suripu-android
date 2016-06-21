@@ -75,10 +75,6 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void setAuthToken(@Nullable final AccessToken token){
-        AccessToken.setCurrentAccessToken(token);
-    }
-
     /**
      * Required to run before binding and subscribing to {@link FacebookPresenter#profile}
      * Otherwise, updates will fail because login callbacks are not handled.
@@ -126,14 +122,17 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
         requestInfo(requestOnlyPhoto);
         if(isLoggedIn()){
             this.update();
-        } else{
+        } else {
             LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
         }
-
     }
 
     public boolean isLoggedIn(){
-        return profile.hasValue() && AccessToken.getCurrentAccessToken() != null;
+        final AccessToken currentToken = AccessToken.getCurrentAccessToken();
+        return profile.hasValue() &&
+                currentToken != null &&
+                !currentToken.isExpired() &&
+                currentToken.getPermissions().containsAll(permissionList);
     }
 
     public void logout() {
@@ -149,6 +148,9 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     //endregion
 
+    private void setAuthToken(@Nullable final AccessToken token){
+        AccessToken.setCurrentAccessToken(token);
+    }
 
     private String getAuthTokenString(){
         final AccessToken token = AccessToken.getCurrentAccessToken();
@@ -159,7 +161,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
      *
      * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
      */
-    private void requestInfo(boolean requestOnlyPhoto){
+    private void requestInfo(final boolean requestOnlyPhoto){
         if(requestOnlyPhoto){
             queryParams = IMAGE_PARAM;
             permissionList = Collections.singletonList("public_profile");
