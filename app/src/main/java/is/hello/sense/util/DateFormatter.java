@@ -348,31 +348,6 @@ import is.hello.sense.ui.widget.util.Styles;
                 typeRes = R.string.format_year;
             }
             return context.getResources().getString(R.string.format_ago, count, context.getString(typeRes));
-        /*
-
-            if (Minutes.minutesIn(interval).isLessThan(Minutes.ONE)) {
-                count = Seconds.secondsIn(interval).getSeconds();
-                pluralRes = R.plurals.format_relative_time_seconds;
-            } else if (Hours.hoursIn(interval).isLessThan(Hours.ONE)) {
-                count = Minutes.minutesIn(interval).getMinutes();
-                pluralRes = R.plurals.format_relative_time_minutes;
-            } else if (Days.daysIn(interval).isLessThan(Days.ONE)) {
-                count = Hours.hoursIn(interval).getHours();
-                pluralRes = R.plurals.format_relative_time_hours;
-            } else if (Weeks.weeksIn(interval).isLessThan(Weeks.ONE)) {
-                count = Days.daysIn(interval).getDays();
-                pluralRes = R.plurals.format_relative_time_days;
-            } else if (Months.monthsIn(interval).isLessThan(Months.ONE)) {
-                count = Weeks.weeksIn(interval).getWeeks();
-                pluralRes = R.plurals.format_relative_time_weeks;
-            } else if (Years.yearsIn(interval).isLessThan(Years.ONE)) {
-                count = Months.monthsIn(interval).getMonths();
-                pluralRes = R.plurals.format_relative_time_months;
-            } else {
-                return formatAsLocalizedDate(roundTime.toLocalDate());
-            }
-
-            return context.getResources().getQuantityString(pluralRes, count, count);*/
         } else {
             return context.getString(R.string.format_date_placeholder);
         }
