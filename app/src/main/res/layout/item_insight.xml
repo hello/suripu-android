@@ -51,7 +51,6 @@
         android:layout_toEndOf="@id/item_insight_category"
         android:gravity="end"
         android:singleLine="true"
-        android:textAllCaps="true"
         android:textColor="@color/gray3"/>
 
     <TextView

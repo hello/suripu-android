@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -314,19 +315,41 @@ import is.hello.sense.ui.widget.util.Styles;
      * except supporting a few more time interval types, and omitting
      * support for dates in the future.
      */
-    public @NonNull String formatAsRelativeTime(@Nullable DateTime time) {
+    @NonNull
+    public String formatAsRelativeTime(@Nullable final DateTime time) {
         if (time != null) {
-            DateTime now = DateTime.now(time.getZone()).withMillisOfSecond(0);
-            DateTime roundTime = time.withMillisOfSecond(0);
+            final DateTime now = DateTime.now(time.getZone()).withMillisOfSecond(0);
+            final DateTime roundTime = time.withMillisOfSecond(0);
             if (now.isBefore(roundTime)) {
                 Logger.warn(getClass().getSimpleName(), "formatAsRelativeTime not meant to be used with dates in the past");
                 return formatAsLocalizedDate(roundTime.toLocalDate());
             }
 
-            Interval interval = new Interval(roundTime, now);
+            final Interval interval = new Interval(roundTime, now);
+            final int count;
+            final @StringRes int typeRes;
+            if (Days.daysIn(interval).isLessThan(Days.ONE)) {
+                return context.getResources().getString(R.string.action_today);
+            }
+            if (Days.daysIn(interval).isLessThan(Days.TWO)) {
+                return context.getResources().getString(R.string.action_yesterday);
+            }
+            if (Days.daysIn(interval).isLessThan(Days.SEVEN)) {
+                count = Days.daysIn(interval).getDays();
+                typeRes = R.string.format_day;
+            } else if (Weeks.weeksIn(interval).isLessThan(Weeks.weeks(9))) {
+                count = Weeks.weeksIn(interval).getWeeks();
+                typeRes = R.string.format_week;
+            } else if (Months.monthsIn(interval).isLessThan(Months.TWELVE)) {
+                count = Months.monthsIn(interval).getMonths();
+                typeRes = R.string.format_month;
+            } else {
+                count = Years.yearsIn(interval).getYears();
+                typeRes = R.string.format_year;
+            }
+            return context.getResources().getString(R.string.format_ago, count, context.getString(typeRes));
+        /*
 
-            int pluralRes;
-            int count;
             if (Minutes.minutesIn(interval).isLessThan(Minutes.ONE)) {
                 count = Seconds.secondsIn(interval).getSeconds();
                 pluralRes = R.plurals.format_relative_time_seconds;
@@ -349,7 +372,7 @@ import is.hello.sense.ui.widget.util.Styles;
                 return formatAsLocalizedDate(roundTime.toLocalDate());
             }
 
-            return context.getResources().getQuantityString(pluralRes, count, count);
+            return context.getResources().getQuantityString(pluralRes, count, count);*/
         } else {
             return context.getString(R.string.format_date_placeholder);
         }

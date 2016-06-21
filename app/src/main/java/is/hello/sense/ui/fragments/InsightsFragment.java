@@ -41,6 +41,7 @@ import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
@@ -106,7 +107,7 @@ public class InsightsFragment extends BacksideTabFragment
 
     private boolean questionLoaded = false;
     private boolean insightsLoaded = false;
-    private View progressOverlay;
+    private HomeActivity activity;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
@@ -131,7 +132,9 @@ public class InsightsFragment extends BacksideTabFragment
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
-       progressOverlay = getActivity().findViewById(R.id.activity_home_progress_overlay);
+        if (getActivity() instanceof HomeActivity) {
+            activity = (HomeActivity) getActivity();
+        }
 
     }
 
@@ -381,10 +384,9 @@ public class InsightsFragment extends BacksideTabFragment
 
     @Override
     public void showProgress(final boolean show) {
-        if (progressOverlay == null) {
-            return;
+        if (activity != null) {
+            activity.showProgressOverlay(show);
         }
-        progressOverlay.post(() -> progressOverlay.setVisibility(show ? View.VISIBLE : View.GONE));
     }
 
     //endregion

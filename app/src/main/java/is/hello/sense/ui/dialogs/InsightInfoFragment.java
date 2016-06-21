@@ -35,9 +35,12 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
+import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.ParallaxImageView;
@@ -45,6 +48,7 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
+import is.hello.sense.util.Share;
 import is.hello.sense.util.markup.text.MarkupString;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -65,14 +69,18 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private static final String ARG_CATEGORY = InsightInfoFragment.class.getName() + ".ARG_CATEGORY";
     private static final String ARG_SUMMARY = InsightInfoFragment.class.getName() + ".ARG_SUMMARY";
     private static final String ARG_IMAGE_URL = InsightInfoFragment.class.getName() + ".ARG_IMAGE_URL";
+    private static final String ARG_ID = InsightInfoFragment.class.getName() + ".ARG_ID";
 
     @Inject
     Picasso picasso;
     @Inject
     InsightInfoPresenter presenter;
+    @Inject
+    ApiService apiService;
 
     private String imageUrl;
     private CharSequence summary;
+    private String insightId = null;
 
     @UsedInTransition
     private View rootView;
@@ -89,7 +97,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private View[] contentViews;
     private TextView titleText;
     private TextView messageText;
-    @UsedInTransition
     private Button doneButton;
     @UsedInTransition
     private RelativeLayout bottomContainer;
@@ -117,6 +124,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         if (insight.shouldDisplaySummary()) {
             arguments.putParcelable(ARG_SUMMARY, insight.getMessage());
         }
+        arguments.putString(ARG_ID, insight.getId());
         arguments.putString(ARG_IMAGE_URL, insight.getImageUrl(resources));
         fragment.setArguments(arguments);
 
@@ -134,6 +142,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
 
         this.imageUrl = arguments.getString(ARG_IMAGE_URL);
+        this.insightId = arguments.getString(ARG_ID);
 
         final MarkupString message = arguments.getParcelable(ARG_SUMMARY);
         this.summary = Styles.darkenEmphasis(getResources(), message);
@@ -176,7 +185,39 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
 
         this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
-        Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored -> getFragmentManager().popBackStack());
+        final Button shareButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_share);
+        final View verticalDivider = this.rootView.findViewById(R.id.fragment_insight_info_divider_vertical);
+        if (insightId == null) {
+            shareButton.setVisibility(View.GONE);
+            verticalDivider.setVisibility(View.GONE);
+            final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.addRule(RelativeLayout.BELOW, R.id.fragment_insight_info_divider_horizontal);
+            doneButton.setLayoutParams(params);
+        } else if (getActivity() instanceof HomeActivity) {
+            final HomeActivity activity = (HomeActivity) getActivity();
+            shareButton.setOnClickListener((v) -> {
+                activity.showProgressOverlay(true);
+                apiService.shareInsight(new InsightType(insightId))
+                          .doOnTerminate(() -> activity.showProgressOverlay(false))
+                          .subscribe(shareUrl -> {
+                                         Share.text(shareUrl.getUrl()).send(activity);
+                                     },
+                                     throwable -> {
+                                         //todo error state
+                                     });
+            });
+
+        }
+
+        Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored ->
+
+                                             getFragmentManager()
+
+                                                     .
+
+                                                             popBackStack()
+
+                                    );
 
         this.topShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_top_shadow);
         this.bottomShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_bottom_shadow);
@@ -187,9 +228,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Drawable existingImage = parent != null
                 ? parent.getInsightImage()
                 : null;
-        if (existingImage != null) {
+        if (existingImage != null)
+
+        {
             illustrationImage.setDrawable(existingImage, false);
-        } else if (!TextUtils.isEmpty(imageUrl)) {
+        } else if (!TextUtils.isEmpty(imageUrl))
+
+        {
             final int maxWidth = getResources().getDisplayMetrics().widthPixels;
             final int maxHeight = Math.round(maxWidth * illustrationImage.getAspectRatioScale());
             picasso.load(imageUrl)
@@ -227,10 +272,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         outState.putInt("defaultStatusBarColor", defaultStatusBarColor);
     }
 
-    //endregion
+//endregion
 
 
-    //region Animation
+//region Animation
 
     @Override
     protected Animator onProvideEnterAnimator() {
@@ -331,10 +376,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return scene;
     }
 
-    //endregion
+//endregion
 
 
-    //region Enter Animations
+//region Enter Animations
 
     private Animator createContentEnter() {
         final AnimatorSet subscene = new AnimatorSet();
@@ -410,9 +455,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                 .translationY(0f);
     }
 
-    //endregion
+//endregion
 
-    //region Exit Animations
+//region Exit Animations
 
     private Animator createDoneExit() {
         return animatorFor(bottomContainer)
@@ -465,10 +510,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return Views.createFrameAnimator(fillView, fillRect, insightCardRect);
     }
 
-    //endregion
+//endregion
 
 
-    //region Utilities
+//region Utilities
 
     private
     @ColorInt
@@ -493,10 +538,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
     }
 
-    //endregion
+//endregion
 
 
-    //region Data Bindings
+//region Data Bindings
 
     public void bindInsightInfo(@NonNull final InsightInfo info) {
         titleText.setText(info.getTitle());
@@ -525,10 +570,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public void onBitmapFailed() {
     }
 
-    //endregion
+//endregion
 
 
-    //region Scroll handling
+//region Scroll handling
 
     @Override
     public void onScrollChanged(final int scrollX, final int scrollY,
@@ -546,7 +591,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         }
     }
 
-    //endregion
+//endregion
 
     public interface Parent {
         @Nullable

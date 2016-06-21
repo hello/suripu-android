@@ -161,7 +161,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         final InsightsAdapter.InsightViewHolder holder =
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
-        assertThat(holder.date.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(holder.date.getText().toString(), is(equalTo("5d ago")));
         assertThat(holder.category.getText().toString(), is(equalTo("Light")));
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
     }
