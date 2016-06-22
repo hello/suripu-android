@@ -17,6 +17,7 @@ import android.widget.TextView;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.StateSafeExecutor;
+import is.hello.sense.util.TimeOffsetOnClickListener;
 
 public final class Views {
     /**
@@ -138,6 +139,10 @@ public final class Views {
                                               @Nullable StateSafeExecutor stateSafeExecutor,
                                               @NonNull View.OnClickListener onClickListener) {
         view.setOnClickListener(new SafeOnClickListener(stateSafeExecutor, onClickListener));
+    }
+
+    public static void setTimeOffsetOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener){
+        view.setOnClickListener(new TimeOffsetOnClickListener(onClickListener));
     }
 
 

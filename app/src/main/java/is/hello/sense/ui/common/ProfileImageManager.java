@@ -101,12 +101,20 @@ public class ProfileImageManager {
     }
 
     public void showPictureOptions() {
-        if (!showOptions || fragment.isDetached() || fragment.isRemoving() || fragment.isHidden()) {
+        if (!showOptions) {
             return;
         }
         final BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
         advancedOptions.setTargetFragment(fragment, REQUEST_CODE_OPTIONS);
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
+    }
+
+    public void hidePictureOptions(){
+        final BottomSheetDialogFragment bottomSheet = (BottomSheetDialogFragment) fragment.getFragmentManager()
+                                                    .findFragmentByTag(BottomSheetDialogFragment.TAG);
+        if(bottomSheet != null){
+            bottomSheet.dismissSafely();
+        }
     }
 
     public void addDeleteOption() {

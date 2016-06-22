@@ -10,6 +10,8 @@ import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.ProfileImageView;
+import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.TimeOffsetOnClickListener;
 
 public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
 
@@ -42,8 +44,8 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
         CircleViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
-            this.imageView.setButtonClickListener(this);
-            this.imageView.setOnClickListener(this);
+            Views.setTimeOffsetOnClickListener(imageView, this);
+            imageView.setButtonClickListener(new TimeOffsetOnClickListener(this));
             itemView.setOnClickListener(null);
             itemView.setClickable(false);
         }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Views;
 
 public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.Item,
         SettingsRecyclerAdapter.ViewHolder> {
@@ -97,12 +98,12 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     //region View Holders
 
     abstract class ViewHolder<T extends Item> extends RecyclerView.ViewHolder
-            implements View.OnClickListener {
+        implements View.OnClickListener{
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
-            itemView.setOnClickListener(this);
+            Views.setTimeOffsetOnClickListener(itemView, this);
         }
 
         abstract void bind(T item);

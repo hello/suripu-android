@@ -118,7 +118,7 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
 
-        setRetainInstance(true);
+        //setRetainInstance(true);
     }
 
     @Nullable
@@ -222,6 +222,8 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        profileImageManager.hidePictureOptions();
 
         this.loadingIndicator = null;
         this.nameItem = null;

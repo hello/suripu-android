@@ -157,14 +157,7 @@ public class RegisterFragment extends InjectionFragment
         facebookPresenter.init();
 
         final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
-        Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, (v) -> {
-            if (getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null) {
-                return;
-            }
-            final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
-            bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this, OPTION_FACEBOOK_DESCRIPTION);
-            bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
-        });
+        Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, v -> this.showFacebookInfoBottomSheet(true));
 
         profileImageManager = builder.addFragmentListener(this).build();
 
@@ -208,6 +201,9 @@ public class RegisterFragment extends InjectionFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        this.showFacebookInfoBottomSheet(false);
+        this.profileImageManager.hidePictureOptions();
 
         firstNameTextLET.removeTextChangedListener(this);
         this.firstNameTextLET = null;
@@ -512,6 +508,17 @@ public class RegisterFragment extends InjectionFragment
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
             }
         });
+    }
+
+    private void showFacebookInfoBottomSheet(final boolean shouldShow) {
+        FacebookInfoDialogFragment bottomSheet = (FacebookInfoDialogFragment) getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG);
+        if (bottomSheet != null && !shouldShow) {
+            bottomSheet.dismissSafely();
+        } else if(bottomSheet == null && shouldShow){
+            bottomSheet = FacebookInfoDialogFragment.newInstance();
+            bottomSheet.setTargetFragment(RegisterFragment.this, OPTION_FACEBOOK_DESCRIPTION);
+            bottomSheet.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
+        }
     }
 
     //endregion
