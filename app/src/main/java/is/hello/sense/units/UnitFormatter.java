@@ -123,7 +123,8 @@ public class UnitFormatter {
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
     }
 
-    public @NonNull UnitConverter getUnitConverterForSensor(@NonNull String sensor) {
+    public @NonNull
+    IUnitConverter getUnitConverterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
                 if (preferences.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultMetric)) {
@@ -138,7 +139,8 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull UnitPrinter getUnitPrinterForSensor(@NonNull String sensor) {
+    public @NonNull
+    IUnitPrinter getUnitPrinterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
