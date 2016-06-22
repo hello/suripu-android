@@ -114,7 +114,7 @@ public final class Views {
      * @param view      The view that needs to be laid out before the runnable can be run.
      * @param runnable  The runnable to execute when the view is laid out.
      */
-    public static void runWhenLaidOut(@NonNull View view, @NonNull Runnable runnable) {
+    public static void runWhenLaidOut(@NonNull final View view, @NonNull final Runnable runnable) {
         if (ViewCompat.isLaidOut(view)) {
             runnable.run();
         } else if (view.isInLayout()) {
@@ -131,17 +131,17 @@ public final class Views {
         }
     }
 
-    public static void setSafeOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener) {
+    public static void setSafeOnClickListener(@NonNull final View view, @NonNull final View.OnClickListener onClickListener) {
         view.setOnClickListener(new SafeOnClickListener(null, onClickListener));
     }
 
-    public static void setSafeOnClickListener(@NonNull View view,
-                                              @Nullable StateSafeExecutor stateSafeExecutor,
-                                              @NonNull View.OnClickListener onClickListener) {
+    public static void setSafeOnClickListener(@NonNull final View view,
+                                              @Nullable final StateSafeExecutor stateSafeExecutor,
+                                              @NonNull final View.OnClickListener onClickListener) {
         view.setOnClickListener(new SafeOnClickListener(stateSafeExecutor, onClickListener));
     }
 
-    public static void setTimeOffsetOnClickListener(@NonNull View view, @NonNull View.OnClickListener onClickListener){
+    public static void setTimeOffsetOnClickListener(@NonNull final View view, @NonNull final View.OnClickListener onClickListener){
         view.setOnClickListener(new TimeOffsetOnClickListener(onClickListener));
     }
 
