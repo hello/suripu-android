@@ -80,7 +80,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     //region Lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
@@ -92,7 +92,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
 
-        Properties properties = Analytics.createProperties(
+        final Properties properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_IS_OTHER, (network == null)
                                                           );
 
@@ -113,7 +113,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_connect_to_wifi, container, false);
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_network);
@@ -170,9 +170,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             setHasOptionsMenu(true);
         } else {
             toolbar.setWantsBackButton(true)
-                   .setOnHelpClickListener(ignored -> {
-                       UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI);
-                   })
+                   .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI))
                    .setOnHelpLongClickListener(ignored -> {
                        showSupportOptions();
                        return true;
@@ -183,7 +181,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (network != null && network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
@@ -192,7 +190,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasConnectedToNetwork", hasConnectedToNetwork);
@@ -200,7 +198,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ERROR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -209,12 +207,12 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.help, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_help: {
                 UserSupport.showForOnboardingStep(getActivity(),
@@ -255,7 +253,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
         }
     }
 
-    private boolean validatePasswordAsWepKey(@NonNull String password) {
+    private boolean validatePasswordAsWepKey(@NonNull final String password) {
         for (int i = 0, length = password.length(); i < length; i++) {
             final char c = Character.toLowerCase(password.charAt(i));
             if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
@@ -267,12 +265,12 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
         updatePasswordField();
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+    public void onNothingSelected(final AdapterView<?> parent) {
         updatePasswordField();
     }
 
@@ -308,8 +306,9 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
         if (!hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != ConnectProgress.CONNECTED)
+                if (status != ConnectProgress.CONNECTED) {
                     return;
+                }
 
                 sendWifiCredentials();
             }, e -> presentError(e, "Connecting to Sense"));
@@ -421,7 +420,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
 
-    public void presentError(Throwable e, @NonNull String operation) {
+    public void presentError(final Throwable e, @NonNull final String operation) {
         hideAllActivityForFailure(() -> {
             final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation(operation);
@@ -432,6 +431,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
                 final Intent intent = UserSupport.createViewUriIntent(getActivity(), uri);
                 errorDialogBuilder.withAction(intent, R.string.action_support);
             } else {
+                errorDialogBuilder.withTitle(R.string.failed_to_link_account);
                 errorDialogBuilder.withSupportLink();
             }
 
@@ -441,11 +441,11 @@ public class ConnectToWiFiFragment extends HardwareFragment
     }
 
     private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {
-        private SecurityTypeAdapter(Context context) {
+        private SecurityTypeAdapter(final Context context) {
             super(context, R.layout.item_sec_type, sec_type.values());
         }
 
-        private @StringRes int getTitle(int position) {
+        private @StringRes int getTitle(final int position) {
             switch (getItem(position)) {
                 case SL_SCAN_SEC_TYPE_OPEN:
                     return R.string.sec_type_open;
@@ -465,14 +465,14 @@ public class ConnectToWiFiFragment extends HardwareFragment
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
             final TextView text = (TextView) super.getView(position, convertView, parent);
             text.setText(getTitle(position));
             return text;
         }
 
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
             final TextView text = (TextView) super.getDropDownView(position, convertView, parent);
             text.setText(getTitle(position));
             return text;
