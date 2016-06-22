@@ -7,4 +7,4 @@
           android:textColor="@color/white"
           android:textAppearance="@style/AppTheme.Text.Body"
           android:lineSpacingMultiplier="@dimen/line_multiple_body"
-          android:background="@color/text_dark" />
+          android:background="@drawable/toast_rounded_normal"/>

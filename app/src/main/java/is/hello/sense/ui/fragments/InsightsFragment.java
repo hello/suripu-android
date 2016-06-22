@@ -51,8 +51,7 @@ import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.recycler.InsetItemDecoration;
-import is.hello.sense.ui.widget.WhatsNewLayout;
+import is.hello.sense.ui.widget.ToastFactory;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -85,6 +84,7 @@ public class InsightsFragment extends BacksideTabFragment
     @Inject
     Picasso picasso;
 
+    private ToastFactory toastFactory;
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
@@ -124,6 +124,8 @@ public class InsightsFragment extends BacksideTabFragment
         addPresenter(deviceIssuesPresenter);
         addPresenter(insightsPresenter);
         addPresenter(questionsPresenter);
+        final Activity activity = getActivity();
+        this.toastFactory = new ToastFactory(activity, activity.getLayoutInflater());
 
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
@@ -204,6 +206,8 @@ public class InsightsFragment extends BacksideTabFragment
 
         LocalBroadcastManager.getInstance(getActivity())
                              .unregisterReceiver(REVIEW_ACTION_RECEIVER);
+
+        toastFactory = null;
     }
 
     @Override
@@ -356,7 +360,7 @@ public class InsightsFragment extends BacksideTabFragment
     @Override
     public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
         final Insight insight = viewHolder.getInsight();
-        if (insight.isError()) {
+        if (!insight.isError()) {
             return;
         }
 
