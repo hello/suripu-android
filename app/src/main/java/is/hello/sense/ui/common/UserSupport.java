@@ -41,7 +41,7 @@ public class UserSupport {
         try {
             final Intent intent = createViewUriIntent(from, uri);
             from.startActivity(intent);
-        } catch (final ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException | NullPointerException e) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
             alertDialog.setMessage(R.string.error_no_web_browser);
