@@ -68,6 +68,13 @@ public class AccountPresenter extends ValuePresenter<Account> {
                          });
     }
 
+    /**
+     * @param withPhoto determines if {@link Account#profilePhoto} is included in api response
+     */
+    public void setWithPhoto(@NonNull final Boolean withPhoto){
+        this.withPhoto = withPhoto;
+    }
+
 
     //region Validation
 
@@ -197,11 +204,4 @@ public class AccountPresenter extends ValuePresenter<Account> {
     }
 
     //endregion
-
-    /**
-     * @param withPhoto determines if {@link Account#profilePhoto} is included in api response
-     */
-    public void setWithPhoto(@NonNull final Boolean withPhoto){
-        this.withPhoto = withPhoto;
-    }
 }
