@@ -125,16 +125,17 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
 
 
     public void next() {
+        final AccountEditor.Container container = AccountEditor.getContainer(this);
         try {
-            final AccountEditor.Container container = AccountEditor.getContainer(this);
             if (!scale.isAnimating()) {
                 final int pounds = scale.getValue();
                 final int grams = (int) UnitOperations.poundsToGrams(pounds);
                 container.getAccount().setWeight(grams);
             }
-            container.onAccountUpdated(this);
         } catch (final NumberFormatException e) {
             Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);
+        } finally {
+            container.onAccountUpdated(this);
         }
     }
 }
