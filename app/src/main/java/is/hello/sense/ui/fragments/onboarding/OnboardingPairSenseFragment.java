@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -212,16 +211,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     }
 
     public void showPairingModeHelp(@NonNull View sender) {
-        OnboardingSimpleStepFragment fragment = new OnboardingSimpleStepFragment.Builder(getActivity())
-                .setHeadingText(R.string.title_sense_pairing_mode_help)
-                .setSubheadingText(R.string.info_sense_pairing_mode_help)
-                .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_pairing_mode)))
-                .setDiagramImage(R.drawable.onboarding_pairing_mode_help)
-                .setWantsBack(true)
-                .setAnalyticsEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP)
-                .setHelpStep(UserSupport.OnboardingStep.PAIRING_MODE)
-                .toFragment();
-        getOnboardingActivity().pushFragment(fragment, null, true);
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
+        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
     }
 
     public void next() {
@@ -308,8 +299,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
                 Analytics.trackError(e, operation);
             } else {
-                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getResources())
-                        .withUnstableBluetoothHelp(getResources())
+                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                        .withUnstableBluetoothHelp(getActivity())
                         .withOperation(operation)
                         .build();
                 dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

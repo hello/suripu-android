@@ -30,6 +30,7 @@ import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.InternalPrefManager;
 
 import static is.hello.sense.util.Analytics.Breadcrumb.Description;
 import static is.hello.sense.util.Analytics.Breadcrumb.EVENT_NAME;
@@ -102,7 +103,7 @@ public enum Tutorial {
 
     public boolean shouldShow(@NonNull final Activity activity) {
         final SharedPreferences preferences =
-                activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+                activity.getSharedPreferences(getPrefName(activity), 0);
         return (!preferences.getBoolean(getShownKey(), false) &&
                 activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null);
     }
@@ -114,10 +115,14 @@ public enum Tutorial {
 
     public void markShown(@NonNull final Context context) {
         final SharedPreferences preferences =
-                context.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+                context.getSharedPreferences(getPrefName(context), 0);
         preferences.edit()
                    .putBoolean(getShownKey(), true)
                    .apply();
+    }
+
+    private static String getPrefName(@NonNull final Context context) {
+        return Constants.HANDHOLDING_PREFS + InternalPrefManager.getAccountId(context);
     }
 
 

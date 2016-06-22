@@ -1,6 +1,5 @@
 package is.hello.sense.ui.widget.timeline;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.res.Resources;
@@ -19,7 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -36,7 +35,7 @@ import rx.functions.Action1;
 public class TimelineInfoOverlay implements Handler.Callback {
     private static final long DISPLAY_DURATION = 3000;
     private static final int MSG_DISMISS = 0x1;
-
+    private final int backgroundColor;
     private final Activity activity;
     private final AnimatorContext animatorContext;
 
@@ -46,14 +45,15 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
     private final FrameLayout contents;
     private final TextView tooltip;
+    private final float maxBackgroundWidthFraction;
 
     private int darkenOverlayColor = Color.TRANSPARENT;
     private float overlaySleepDepthPercentage;
 
     private @Nullable Action1<TimelineInfoOverlay> onDismiss;
 
-    public TimelineInfoOverlay(@NonNull Activity activity,
-                               @NonNull AnimatorContext animatorContext) {
+    public TimelineInfoOverlay(@NonNull final Activity activity,
+                               @NonNull final AnimatorContext animatorContext) {
         this.activity = activity;
         this.animatorContext = animatorContext;
 
@@ -66,27 +66,16 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.contents = new FrameLayout(activity);
         dialog.setContentView(contents);
 
-        this.tooltip = new TextView(activity);
-        tooltip.setTextAppearance(activity, R.style.AppTheme_Text_Timeline);
-        tooltip.setTextColor(ContextCompat.getColor(activity,R.color.white));
-        tooltip.setBackgroundResource(R.drawable.background_timeline_info_popup);
+        this.tooltip = (TextView) activity.getLayoutInflater().inflate(R.layout.timeline_tooltip_textview, contents, false);
+        contents.addView(tooltip);
 
-        final int paddingHorizontal = resources.getDimensionPixelSize(R.dimen.gap_medium),
-                  paddingVertical = resources.getDimensionPixelSize(R.dimen.gap_small);
-        tooltip.setPadding(tooltip.getPaddingLeft() + paddingHorizontal,
-                           tooltip.getPaddingTop() + paddingVertical,
-                           tooltip.getPaddingRight() + paddingHorizontal,
-                           tooltip.getPaddingBottom() + paddingVertical);
-
-        @SuppressLint("RtlHardcoded")
-        final LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                                           LayoutParams.WRAP_CONTENT,
-                                                           Gravity.BOTTOM | Gravity.LEFT);
-        layoutParams.leftMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_left_inset);
-        contents.addView(tooltip, layoutParams);
+        this.backgroundColor = ContextCompat.getColor(activity, R.color.background_light_overlay);
+        final TypedValue typedValue = new TypedValue();
+        resources.getValue(R.dimen.timeline_segment_item_end_max_fraction, typedValue, true);
+        this.maxBackgroundWidthFraction = typedValue.getFloat();
     }
 
-    public void bindEvent(@NonNull TimelineEvent event) {
+    public void bindEvent(@NonNull final TimelineEvent event) {
         final TimelineEvent.SleepState sleepState = event.getSleepState();
 
         final CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
@@ -102,24 +91,26 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.overlaySleepDepthPercentage = Math.min(1f, event.getSleepDepth() / 100f);
     }
 
-    public void setOnDismiss(@Nullable Action1<TimelineInfoOverlay> onDismiss) {
+    public void setOnDismiss(@Nullable final Action1<TimelineInfoOverlay> onDismiss) {
         this.onDismiss = onDismiss;
     }
 
-    private Drawable createBackground(@NonNull Point screenSize,
-                                      int viewTop,
-                                      int viewBottom) {
+    private Drawable createBackground(@NonNull final Point screenSize,
+                                      final int viewTop,
+                                      final int viewBottom) {
         final Path backgroundPath = new Path();
+
+        final int contentRight = Math.round(screenSize.x * maxBackgroundWidthFraction);
+
         backgroundPath.addRect(0, 0,
                                screenSize.x, viewTop,
                                Path.Direction.CW);
 
-        final int gutterSize =
-                resources.getDimensionPixelSize(R.dimen.timeline_segment_item_end_inset);
-        backgroundPath.addRect(screenSize.x - gutterSize, viewTop,
+        //from top of view to bottom of view
+        backgroundPath.addRect(contentRight, viewTop,
                                screenSize.x, viewBottom,
                                Path.Direction.CW);
-
+        //from bottom of view to bottom of screen
         backgroundPath.addRect(0, viewBottom,
                                screenSize.x, screenSize.y,
                                Path.Direction.CW);
@@ -128,7 +119,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
                                                                          screenSize.x,
                                                                          screenSize.y));
         background.getPaint()
-                  .setColor(resources.getColor(R.color.background_light_overlay));
+                  .setColor(backgroundColor);
 
         if (darkenOverlayColor == Color.TRANSPARENT) {
             return background;
@@ -137,7 +128,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
             overlayPath.addRect(0f,
                                 viewTop,
-                                (screenSize.x - gutterSize) * overlaySleepDepthPercentage,
+                                contentRight * overlaySleepDepthPercentage,
                                 viewBottom,
                                 Path.Direction.CW);
 
@@ -146,20 +137,18 @@ public class TimelineInfoOverlay implements Handler.Callback {
                                                                           screenSize.y));
             overlay.getPaint().setColor(darkenOverlayColor);
 
-
             final Drawable[] layers = {background, overlay};
             return new LayerDrawable(layers);
         }
     }
 
-    public void show(@NonNull View fromView, boolean animate) {
+    public void show(@NonNull final View fromView, final boolean animate) {
         if (dialog.isShowing()) {
             return;
         }
 
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
-
         final Point screenSize = new Point();
         final View contentRoot = activity.findViewById(Window.ID_ANDROID_CONTENT);
         screenSize.x = contentRoot.getWidth();
@@ -170,9 +159,9 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
 
-        final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.timeline_event_popup_bottom_inset);
         final LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
-        layoutParams.bottomMargin = (screenSize.y - viewFrame.top) + tooltipBottomMargin;
+        final int tooltipBottomMargin = layoutParams.bottomMargin;
+        layoutParams.bottomMargin += (screenSize.y - viewFrame.top);
         tooltip.requestLayout();
 
         dialog.show();
@@ -204,7 +193,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         }
     }
 
-    public void dismiss(boolean animate) {
+    public void dismiss(final boolean animate) {
         delayHandler.removeMessages(MSG_DISMISS);
 
         if (animate) {
@@ -235,7 +224,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
 
     @Override
-    public boolean handleMessage(Message msg) {
+    public boolean handleMessage(final Message msg) {
         if (msg.what == MSG_DISMISS) {
             dismiss(true);
             return true;

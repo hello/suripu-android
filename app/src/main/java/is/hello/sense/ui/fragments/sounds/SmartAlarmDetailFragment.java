@@ -129,12 +129,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
 
         final View soundRow = view.findViewById(R.id.fragment_smart_alarm_detail_tone);
-        Views.setSafeOnClickListener(soundRow, stateSafeExecutor, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectTone();
-            }
-        });
+        Views.setSafeOnClickListener(soundRow, stateSafeExecutor, v -> selectTone());
 
         this.toneName = (TextView) soundRow.findViewById(R.id.fragment_smart_alarm_detail_tone_name);
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
@@ -176,6 +171,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         bindAndSubscribe(smartAlarmPresenter.availableAlarmSounds(),
                          sounds -> {
                              if (!sounds.isEmpty()) {
+                                 alarm.setAlarmTones(sounds);
                                  if (alarm.getSound() == null) {
                                      final Alarm.Sound sound = sounds.get(0);
                                      alarm.setSound(sound);
@@ -184,7 +180,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                                          saveAlarm();
                                      }
                                  }
-                                 alarm.setAlarmTones(sounds);
                              }
                              if (wantsTone) {
                                  selectTone();
@@ -206,27 +201,29 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == TIME_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if(resultCode != Activity.RESULT_OK){
+            return;
+        }
+        if (requestCode == TIME_REQUEST_CODE) {
             final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 7);
             final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
             alarm.setTime(new LocalTime(hour, minute));
             updateTime();
 
             markDirty();
-        } else if (requestCode == SOUND_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == SOUND_REQUEST_CODE) {
             final int soundId = data.getIntExtra(ListActivity.VALUE_ID, -1);
             if (soundId != -1) {
-                final Alarm.Sound selectedSound = alarm.getAlarmTones().getSoundWithId(soundId);
+                final Alarm.Sound selectedSound = alarm.getAlarmSoundWithId(soundId);
                 if (selectedSound != null) {
                     alarm.setSound(selectedSound);
                     toneName.setText(selectedSound.name);
                 }
             }
             markDirty();
-        } else if (requestCode == REPEAT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REPEAT_REQUEST_CODE) {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             alarm.setDaysOfWeek(selectedDays);
             repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
@@ -258,7 +255,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         time.setText(formattedTime);
     }
 
-    public void selectNewTime(@NonNull View sender) {
+    public void selectNewTime(@NonNull final View sender) {
         final TimePickerDialogFragment picker = TimePickerDialogFragment.newInstance(alarm.getTime(),
                                                                                      use24Time);
         picker.setTargetFragment(this, TIME_REQUEST_CODE);
@@ -281,20 +278,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         wantsTone = false;
     }
 
-    public void selectRepeatDays(@NonNull View sender) {
-
+    public void selectRepeatDays(@NonNull final View sender) {
 
         final int firstCalendarDayOfWeek = Calendar.getInstance().getFirstDayOfWeek();
         final int firstJodaTimeDayOfWeek = DateFormatter.calendarDayToJodaTimeDay(firstCalendarDayOfWeek);
         final List<Integer> daysOfWeek = DateFormatter.getDaysOfWeek(firstJodaTimeDayOfWeek);
-        final GenericListObject.GenericItemConverter converter = new GenericListObject.GenericItemConverter() {
-            @Override
-            public String getNameFor(int value) {
-                return new DateTime().withDayOfWeek(value).toString("EEEE");
-            }
-        };
-        ArrayList<Integer> list = new ArrayList<>();
-        list.addAll(alarm.getDaysOfWeek());
+        final GenericListObject.GenericItemConverter converter = value -> new DateTime().withDayOfWeek(value).toString("EEEE");
+        final ArrayList<Integer> list = new ArrayList<>(alarm.getDaysOfWeek());
         ListActivity.startActivityForResult(
                 this,
                 REPEAT_REQUEST_CODE,
@@ -303,12 +293,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 new GenericListObject(converter, daysOfWeek));
     }
 
-    public void showSmartAlarmIntro(@NonNull View sender) {
+    public void showSmartAlarmIntro(@NonNull final View sender) {
         WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm, false);
     }
 
 
-    public void deleteAlarm(@NonNull View sender) {
+    public void deleteAlarm(@NonNull final View sender) {
         final SenseAlertDialog confirmDelete = new SenseAlertDialog(getActivity());
         confirmDelete.setMessage(R.string.dialog_message_confirm_delete_alarm);
         confirmDelete.setPositiveButton(R.string.action_delete, (dialog, which) -> {
@@ -389,10 +379,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         getActivity().finish();
     }
 
-    public void presentError(Throwable e) {
+    public void presentError(@NonNull final Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
         if (e instanceof SmartAlarmPresenter.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         } else if (ApiException.statusEquals(e, 412)) {

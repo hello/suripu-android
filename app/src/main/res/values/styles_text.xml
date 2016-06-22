@@ -11,6 +11,10 @@
         <item name="android:textColor">@color/error</item>
     </style>
 
+    <style name="Body.Link">
+        <item name="android:textColor">@color/blue6</item>
+    </style>
+
 
 
     ​<!-- Generic -->

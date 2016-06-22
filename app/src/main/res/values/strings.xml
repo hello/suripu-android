@@ -76,8 +76,6 @@
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
-    <string name="title_sense_pairing_mode_help">Pairing Mode</string>
-    <string name="info_sense_pairing_mode_help">Before you connect your phone, Sense needs to be put into Pairing Mode.\n\nPlace your hand directly on top of Sense for seven seconds, and then remove it.\n\nSense will glow purple when it is in Pairing Mode.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
     <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
@@ -223,6 +221,7 @@
     <string name="action_discard">Discard</string>
     <string name="action_keep_editing">Keep Editing</string>
     <string name="action_answer">Answer</string>
+    <string name="video_playback_connectivity_error_title">Failed to stream video</string>
     <string name="video_playback_generic_error">Could not play video.</string>
     <string name="title_turning_on">Turning On</string>
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
@@ -482,7 +481,9 @@
     <string name="action_set_this_time_zone">Use current</string>
     <string name="action_select_time_zone_from_list">View list</string>
     <string name="title_timeline_not_enough_data">Not enough motion data</string>
+    <string name="title_timeline_not_enough_data_message">If your Sleep Pill is not attached properly, it may not register enough motion data to generate a Timeline. \n\nTap below for instructions on how to clip your Sleep Pill to your pillow.</string>
     <string name="title_timeline_no_data">No sleep data recorded</string>
+    <string name="title_timeline_no_data_message">This is normal if you were out of town, or away from your bed. \n\nOtherwise, you may want to check your Sleep Pill’s battery level, and make sure that Sense is connected to the internet.</string>
     <string name="title_timeline_first_night">See you in the morning</string>
     <string name="message_timeline_first_night">In the morning, you‘ll see your first Sleep Timeline here. There are no modes to set - Sense will automatically know when you go to bed. All you need to do is sleep.</string>
     <string name="action_timeline_bad_data_support">Learn more</string>
@@ -537,7 +538,7 @@
     <string name="request_permission_write_external_storage_required_message_generic">In order to share an attachment, Sense requires access to your photo library. Please enable Storage in <a href="#settings">Settings</a> to continue.</string>
     <string name="share_timeline_sleep_time"><![CDATA[It took you <font color=#596980>%1$s</font> to fall asleep. You slept a total <font color=#596980>%2$s</font> and woke up <font color=#596980>%3$s</font> during the night.]]></string>
     <string name="request_permission_write_external_storage_required_title_gallery">Sense needs to ask for access to your photos</string>
-    <string name="request_permission_write_external_storage_required_message_gallery">In order to select a profile photo, Sense requires access to your photo library. Enable access to photos for Sense in your Device <a href="#settings">Settings</a> to continue</string>
+    <string name="request_permission_write_external_storage_required_message_gallery">In order to select a profile photo, Sense requires access to your photo library. Enable access to photos for Sense in your Device <a href="#settings">Settings</a> to continue.</string>
 
     <string name="alarm_subnavbar_alarm_list">ALARMS</string>
     <string name="alarm_subnavbar_sounds_list">SLEEP SOUNDS</string>
@@ -564,6 +565,7 @@
     <string name="invalid_email">Invalid email address</string>
     <string name="invalid_first_name">Invalid first name</string>
     <string name="invalid_password">Invalid password</string>
+    <string name="error_playing_sound">An error occurred. Please try again.</string>
 
 
     <plurals name="item_support_comment_detail_attachments">
@@ -600,5 +602,6 @@
     <string name="error_internet_connection_generic_title">Failed to upload photo</string>
     <string name="error_internet_connection_generic_message">We\'re having trouble connecting to the internet. Please check your connection or try again in a few minutes.</string>
     <string name="error_account_upload_photo_message">There were issues uploading your profile photo. Please check your connection or try again in a few minutes.</string>
+    <string name="error_account_remove_photo_title">Failed to remove photo</string>
     <string name="error_account_remove_photo_message">There were issues removing your profile photo. Please check your connection or try again in a few minutes.</string>
 </resources>

@@ -9,6 +9,7 @@ public final class Constants {
     public static final String INTERNAL_PREFS = "internal_prefs";
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM = "underside_current_item";
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
+    public static final String INTERNAL_PREF_ACCOUNT_ID = "INTERNAL_PREF_ACCOUNT_ID";
 
     public static final String NOTIFICATION_PREFS = "notification_prefs";
     public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";
@@ -23,6 +24,11 @@ public final class Constants {
     public static final String SLEEP_SOUNDS_DURATION_ID = "sleep_sounds_duration_id";
     public static final String SLEEP_SOUNDS_VOLUME_ID = "sleep_sounds_volume_id";
 
+    public static final String WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS = "WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS";
+    public static final String WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN = "WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN";
+    public static final String WHATS_NEW_LAYOUT_TIMES_SHOWN = "WHATS_NEW_LAYOUT_TIMES_SHOWN";
+    public static final String WHATS_NEW_LAYOUT_FORCE_SHOW = "WHATS_NEW_LAYOUT_FORCE_SHOW";
+
     /**
      * The point at which a gesture's velocity dictates that
      * it be completed regardless of relative position.
@@ -34,6 +40,7 @@ public final class Constants {
     public static final int ONBOARDING_CHECKPOINT_QUESTIONS = 2;
     public static final int ONBOARDING_CHECKPOINT_SENSE = 3;
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
+    public static final int ONBOARDING_CHECKPOINT_SMART_ALARM = 5;
 
     public static final long STALE_INTERVAL_MS = (10 * 60 * 1000); // 10 minutes
 
@@ -48,9 +55,8 @@ public final class Constants {
     public static final LocalDate RELEASE_DATE_FOR_LAST_NAME = new DateTime()
             .withYear(2016)
             .withMonthOfYear(6)
-            .withDayOfMonth(2) // todo change this to the release date of 1.4.2
+            .withDayOfMonth(15)
             .toLocalDate();
-
 
 
     // From Retrofit

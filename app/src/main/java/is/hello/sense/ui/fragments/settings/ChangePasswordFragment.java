@@ -68,7 +68,7 @@ public class ChangePasswordFragment extends InjectionFragment implements Analyti
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_change_password, container, false);
 
         this.currentPasswordLET = (LabelEditText) view.findViewById(R.id.fragment_change_password_current_let);
@@ -163,7 +163,7 @@ public class ChangePasswordFragment extends InjectionFragment implements Analyti
     public void presentError(@Nullable final Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources());
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
         if (ApiException.statusEquals(e, 409)) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_current_pw_wrong));
         }

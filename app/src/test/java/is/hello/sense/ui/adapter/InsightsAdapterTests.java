@@ -19,6 +19,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
+import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.RecyclerAdapterTesting;
 import is.hello.sense.util.RecyclerAdapterTesting.Observer;
@@ -26,8 +27,10 @@ import is.hello.sense.util.markup.text.MarkupString;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-
+//todo uncommment tests when we use whatsnewlayout in production
 public class InsightsAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private final FakeInteractionListener listener = new FakeInteractionListener();
@@ -62,10 +65,34 @@ public class InsightsAdapterTests extends SenseTestCase {
                    is(true));
     }
 
+/*
+    @Test
+    public void whatsNewCardRendering() throws Exception {
+        final InsightsAdapter.WhatsNewViewHolder holder =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
+        assertNotNull(holder);
+    }
+    @Test
+    public void whatsNewCardNotRendering() throws Exception {
+        WhatsNewLayout.markClosed(getContext());
+        setUp();
+        try {
+            final InsightsAdapter.WhatsNewViewHolder holder =
+                    RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
+            assertNull(holder); // should fail before this is called.
+        } catch (final NullPointerException e) {
+            assertNotNull(e);
+            return;
+        }
+        throw new Exception("This shouldn't happen");
+    }*/
+
     @Test
     public void questionRendering() throws Exception {
-        Question question = Question.create(0, 0, "Do you like to travel through space and time?",
-                                            Question.Type.CHOICE, DateTime.now(), Question.AskTime.ANYTIME, null);
+        WhatsNewLayout.markClosed(getContext());
+        setUp();
+        final Question question = Question.create(0, 0, "Do you like to travel through space and time?",
+                                                  Question.Type.CHOICE, DateTime.now(), Question.AskTime.ANYTIME, null);
 
         adapter.bindQuestion(question);
 
@@ -84,9 +111,36 @@ public class InsightsAdapterTests extends SenseTestCase {
         assertThat(listener.wasCallbackCalled(FakeInteractionListener.Callback.ANSWER_QUESTION),
                    is(true));
     }
+/*
+
+    @Test
+    public void questionRenderingWithWhatsNewCard() throws Exception {
+        final Question question = Question.create(0, 0, "Do you like to travel through space and time?",
+                                                  Question.Type.CHOICE, DateTime.now(), Question.AskTime.ANYTIME, null);
+
+        adapter.bindQuestion(question);
+
+        assertThat(adapter.getItemCount(), is(equalTo(2)));
+
+        final InsightsAdapter.QuestionViewHolder holder =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
+
+        assertThat(holder.title.getText().toString(), is(equalTo("Do you like to travel through space and time?")));
+
+        holder.skip(fakeParent);
+        assertThat(listener.wasCallbackCalled(FakeInteractionListener.Callback.SKIP_QUESTION),
+                   is(true));
+
+        holder.answer(fakeParent);
+        assertThat(listener.wasCallbackCalled(FakeInteractionListener.Callback.ANSWER_QUESTION),
+                   is(true));
+    }
+*/
 
     @Test
     public void insightRendering() throws Exception {
+        WhatsNewLayout.markClosed(getContext());
+        setUp();
         final Insight insight = Insight.create(0, "Light is bad",
                                                new MarkupString("You should have less of it"),
                                                DateTime.now().minusDays(5),
@@ -104,8 +158,29 @@ public class InsightsAdapterTests extends SenseTestCase {
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
     }
 
+    /*@Test
+    public void insightRenderingWithWhatsNewCard() throws Exception {
+        final Insight insight = Insight.create(1, "Light is bad",
+                                               new MarkupString("You should have less of it"),
+                                               DateTime.now().minusDays(5),
+                                               "LIGHT", "Light");
+
+        adapter.bindInsights(Lists.newArrayList(insight));
+
+        assertThat(adapter.getItemCount(), is(equalTo(2)));
+
+        final InsightsAdapter.InsightViewHolder holder =
+                RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
+
+        assertThat(holder.date.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(holder.category.getText().toString(), is(equalTo("Light")));
+        assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
+    }
+*/
     @Test
     public void loadingInsights() throws Exception {
+        WhatsNewLayout.markClosed(getContext());
+        setUp();
         final Insight insight = Insight.create(0, "Light is bad",
                                                new MarkupString("You should have less of it"),
                                                DateTime.now().minusDays(5),
@@ -138,7 +213,6 @@ public class InsightsAdapterTests extends SenseTestCase {
 
     //endregion
 
-
     static class FakeInteractionListener implements InsightsAdapter.InteractionListener {
         final List<Callback> callbacks = new ArrayList<>();
 
@@ -158,7 +232,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void onInsightClicked(@NonNull InsightsAdapter.InsightViewHolder viewHolder) {
+        public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
             callbacks.add(Callback.INSIGHT_CLICKED);
         }
 
@@ -166,7 +240,7 @@ public class InsightsAdapterTests extends SenseTestCase {
             callbacks.clear();
         }
 
-        boolean wasCallbackCalled(@NonNull Callback callback) {
+        boolean wasCallbackCalled(@NonNull final Callback callback) {
             return callbacks.contains(callback);
         }
 

@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -71,6 +72,7 @@ public class OnboardingActivity extends InjectionActivity
     public static final int FLOW_NONE = -1;
     public static final int FLOW_REGISTER = 0;
     public static final int FLOW_SIGN_IN = 1;
+    private static final int EDIT_ALARM_REQUEST_CODE = 0x31;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FLOW_NONE, FLOW_REGISTER, FLOW_SIGN_IN})
@@ -156,6 +158,10 @@ public class OnboardingActivity extends InjectionActivity
                     case Constants.ONBOARDING_CHECKPOINT_PILL:
                         showSenseColorsInfo();
                         break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
+                        showSmartAlarmInfo();
+                        break;
                 }
             }
         }
@@ -178,6 +184,19 @@ public class OnboardingActivity extends InjectionActivity
 
         outState.putSerializable("account", account);
         navigationDelegate.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EDIT_ALARM_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                showDone();
+            } else {
+                showSmartAlarmInfo();
+            }
+        }
     }
 
     @Override
@@ -263,7 +282,7 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void passedCheckPoint(int checkPoint) {
+    public void passedCheckPoint(final int checkPoint) {
         preferences
                 .edit()
                 .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, checkPoint)
@@ -288,7 +307,7 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showGetStarted(boolean overrideDeviceUnsupported) {
+    public void showGetStarted(final boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && !hardwarePresenter.isDeviceSupported()) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
         } else {
@@ -296,7 +315,7 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showBirthday(@Nullable Account account, boolean withDoneTransition) {
+    public void showBirthday(@Nullable final Account account, final boolean withDoneTransition) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
         if (account != null) {
@@ -334,7 +353,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     @Override
-    public void onAccountUpdated(@NonNull SenseFragment updatedBy) {
+    public void onAccountUpdated(@NonNull final SenseFragment updatedBy) {
         if (updatedBy instanceof OnboardingRegisterBirthdayFragment) {
             pushFragment(new OnboardingRegisterGenderFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterGenderFragment) {
@@ -342,7 +361,7 @@ public class OnboardingActivity extends InjectionActivity
         } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
             pushFragment(new OnboardingRegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
-            Account account = getAccount();
+            final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 showEnhancedAudio();
@@ -380,11 +399,11 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+        final boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
         pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(pairOnly), null, true);
     }
 
-    public void showPairPill(boolean showIntroduction) {
+    public void showPairPill(final boolean showIntroduction) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SENSE);
 
         if (showIntroduction) {
@@ -456,14 +475,22 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
+    public void showSetAlarmDetail(){
+        pushFragment(new Fragment(),null,false);
+        final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
+        startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
+    }
+
     public void showDone() {
-        pushFragment(new RegisterCompleteFragment(), null, false);
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
+        final Fragment fragment = new RegisterCompleteFragment();
+        pushFragment(fragment, null, false);
     }
 
     //endregion
 
 
-    public void showHomeActivity(@Flow int fromFlow) {
+    public void showHomeActivity(@Flow final int fromFlow) {
         preferences.edit()
                    .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
                    .apply();
@@ -483,7 +510,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public
     @Nullable
-    OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull String name) {
+    OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull final String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (view, onCompletion) -> {

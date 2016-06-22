@@ -19,7 +19,9 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.StateSafeExecutor;
 
 public class ProfileImageView extends FrameLayout implements Target {
 
@@ -52,9 +54,19 @@ public class ProfileImageView extends FrameLayout implements Target {
         return R.drawable.default_profile_picture;
     }
 
-    public void addButtonListener(@NonNull final OnClickListener listener){
+    public int getDefaultErrorRes() { return R.drawable.profile_image_error; }
+
+    public void setButtonClickListener(@Nullable final OnClickListener listener){
+        if(listener == null){
+            plusButton.setOnClickListener(null);
+            return;
+        }
+        setButtonClickListener(null, listener);
+    }
+
+    public void setButtonClickListener(@Nullable final StateSafeExecutor stateSafeExecutor, @NonNull final OnClickListener listener){
         plusButton.setHapticFeedbackEnabled(true);
-        plusButton.setOnClickListener(v -> {
+        Views.setSafeOnClickListener(plusButton, stateSafeExecutor, v -> {
             v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             listener.onClick(v);
         });
@@ -69,7 +81,7 @@ public class ProfileImageView extends FrameLayout implements Target {
     @Override
     public void onBitmapFailed(@NonNull final Drawable errorDrawable) {
         progressBar.setVisibility(GONE);
-        profileImage.setImageResource(getDefaultProfileRes());
+        profileImage.setImageResource(getDefaultErrorRes());
         Logger.error(ProfileImageView.class.getSimpleName(), "failed to load bitmap.");
     }
 

@@ -18,13 +18,17 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
 
 
 public class LaunchActivity extends InjectionActivity {
-    @Inject ApiSessionManager sessionManager;
-    @Inject PreferencesPresenter preferences;
-    @Inject LocalUsageTracker localUsageTracker;
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    LocalUsageTracker localUsageTracker;
 
     /**
      * Included to force {@link ApiService} to be initialized before
@@ -32,16 +36,18 @@ public class LaunchActivity extends InjectionActivity {
      * file system cache more time to complete set up.
      */
     @SuppressWarnings("unused")
-    @Inject ApiService apiService;
+    @Inject
+    ApiService apiService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
             if (sessionManager.hasSession()) {
                 apiService.getAccount(false).subscribe(account -> {
+                    InternalPrefManager.setAccountId(this, account.getId());
                     Analytics.backFillUserInfo(account.getFullName(), account.getEmail());
                     Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
                 }, e -> {
@@ -55,6 +61,7 @@ public class LaunchActivity extends InjectionActivity {
 
         if (sessionManager.getSession() != null) {
             final String accountId = sessionManager.getSession().getAccountId();
+            InternalPrefManager.setAccountId(this, accountId);
             Analytics.trackUserIdentifier(accountId, true);
         }
     }

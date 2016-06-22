@@ -391,7 +391,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
             Analytics.trackError(e, "Sense Details");
         } else {
-            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
+            ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation("Sense Details")
                     .withSupportLink();
 

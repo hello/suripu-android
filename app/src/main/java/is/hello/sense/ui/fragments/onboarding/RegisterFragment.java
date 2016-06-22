@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -38,6 +39,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.model.RegistrationError;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
@@ -58,7 +60,6 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 import rx.Observable;
 
@@ -93,8 +94,11 @@ public class RegisterFragment extends InjectionFragment
     private Button nextButton;
 
     private LinearLayout credentialsContainer;
+    private Uri imageUri = Uri.EMPTY;
 
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
+    private final static String ACCOUNT_INSTANCE_KEY = "account";
+    private final static String URI_INSTANCE_KEY = "uri";
 
     //region Lifecycle
 
@@ -107,7 +111,12 @@ public class RegisterFragment extends InjectionFragment
 
             this.account = Account.createDefault();
         } else {
-            this.account = (Account) savedInstanceState.getSerializable("account");
+            if (savedInstanceState.containsKey(ACCOUNT_INSTANCE_KEY)) {
+                this.account = (Account) savedInstanceState.getSerializable(ACCOUNT_INSTANCE_KEY);
+            }
+            if (savedInstanceState.containsKey(URI_INSTANCE_KEY)) {
+                this.imageUri = Uri.parse(savedInstanceState.getString(URI_INSTANCE_KEY));
+            }
         }
 
         setRetainInstance(true);
@@ -141,28 +150,20 @@ public class RegisterFragment extends InjectionFragment
         nextButton.setText(R.string.action_next);
 
         final FocusClickListener nextButtonClickListener = new FocusClickListener(credentialsContainer, stateSafeExecutor.bind(this::register));
-        Views.setSafeOnClickListener(nextButton, nextButtonClickListener);
+        Views.setSafeOnClickListener(nextButton, stateSafeExecutor, nextButtonClickListener);
 
         autofillFacebookButton = (Button) view.findViewById(R.id.fragment_onboarding_register_import_facebook_button);
-        Views.setSafeOnClickListener(autofillFacebookButton, (v) -> bindFacebookProfile(false));
+        Views.setSafeOnClickListener(autofillFacebookButton, stateSafeExecutor, (v) -> bindFacebookProfile(false));
         facebookPresenter.init();
 
         final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
-        Views.setSafeOnClickListener(facebookInfoButton, (v) -> {
-            if (getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG) != null) {
-                return;
-            }
-            final FacebookInfoDialogFragment bottomSheetDialogFragment = FacebookInfoDialogFragment.newInstance();
-            bottomSheetDialogFragment.setTargetFragment(RegisterFragment.this, OPTION_FACEBOOK_DESCRIPTION);
-            bottomSheetDialogFragment.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
-        });
+        Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, v -> this.showFacebookInfoBottomSheet(true));
 
         profileImageManager = builder.addFragmentListener(this).build();
 
         final View.OnClickListener profileImageOnClickListener = (v) -> profileImageManager.showPictureOptions();
-
-        profileImageView.setOnClickListener(profileImageOnClickListener);
-        profileImageView.addButtonListener(profileImageOnClickListener);
+        Views.setSafeOnClickListener(profileImageView, stateSafeExecutor, profileImageOnClickListener);
+        profileImageView.setButtonClickListener(stateSafeExecutor, profileImageOnClickListener);
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
@@ -201,6 +202,9 @@ public class RegisterFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
 
+        this.showFacebookInfoBottomSheet(false);
+        this.profileImageManager.hidePictureOptions();
+
         firstNameTextLET.removeTextChangedListener(this);
         this.firstNameTextLET = null;
 
@@ -211,11 +215,16 @@ public class RegisterFragment extends InjectionFragment
         this.emailTextLET = null;
 
         passwordTextLET.removeTextChangedListener(this);
+        passwordTextLET.setOnEditorActionListener(null);
         this.passwordTextLET = null;
 
+        this.nextButton.setOnClickListener(null);
         this.nextButton = null;
         this.credentialsContainer = null;
 
+        this.profileImageView.setOnClickListener(null);
+        this.profileImageView.setButtonClickListener(null);
+        this.autofillFacebookButton.setOnClickListener(null);
         this.profileImageView = null;
         this.profileImageManager = null;
         this.autofillFacebookButton = null;
@@ -226,7 +235,8 @@ public class RegisterFragment extends InjectionFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("account", account);
+        outState.putSerializable(ACCOUNT_INSTANCE_KEY, account);
+        outState.putString(URI_INSTANCE_KEY, imageUri.toString());
     }
 
     @Override
@@ -367,7 +377,7 @@ public class RegisterFragment extends InjectionFragment
             }
 
             final ErrorDialogFragment.Builder errorDialogBuilder =
-                    new ErrorDialogFragment.Builder(error, getResources());
+                    new ErrorDialogFragment.Builder(error, getActivity());
 
             if (ApiException.statusEquals(error, 409)) {
 
@@ -393,23 +403,22 @@ public class RegisterFragment extends InjectionFragment
             accountPresenter.pushAccountPreferences();
 
             Analytics.trackRegistration(session.getAccountId(),
-                                        createdAccount.getFirstName(),
+                                        createdAccount.getFullName(),
                                         createdAccount.getEmail(),
                                         DateTime.now());
 
             account = createdAccount;
-            bindAndSubscribe(profileImageManager.prepareImageUpload(),
-                             image -> onUploadReady(image.getFile(), image.getSource()),
-                             e -> goToNextScreen());
+            profileImageManager.compressImage(imageUri);
+
         }, error -> {
             LoadingDialogFragment.close(getFragmentManager());
             ErrorDialogFragment.presentError(getActivity(), error);
         });
     }
 
-    private void goToNextScreen(){
+    private void goToNextScreen() {
         getOnboardingActivity().showBirthday(
-                account,true);
+                account, true);
     }
 
     //endregion
@@ -442,18 +451,21 @@ public class RegisterFragment extends InjectionFragment
     //endregion
 
     //region Profile Image View
-    private void updateProfileImage(@NonNull final String imagePath) {
+    private void updateProfileImage(@NonNull final Uri imageUri) {
+        this.imageUri = imageUri;
         final int resizeDimen = profileImageView.getSizeDimen();
-        picasso.load(imagePath)
+        picasso.load(imageUri)
                .resizeDimen(resizeDimen, resizeDimen)
                .centerCrop()
                .into(profileImageView);
+        profileImageManager.addDeleteOption();
+        profileImageManager.setShowOptions(true);
     }
     //endregion
 
     //region Facebook presenter
     private void bindFacebookProfile(@NonNull final Boolean onlyPhoto) {
-        if(!facebookPresenter.profile.hasObservers()) {
+        if (!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,
                              this::onFacebookProfileSuccess,
                              this::onFacebookProfileError);
@@ -467,23 +479,22 @@ public class RegisterFragment extends InjectionFragment
         final String firstName = profile.getFirstName();
         final String lastName = profile.getLastName();
         final String email = profile.getEmail();
-        if (facebookImageUrl != null) {
-            updateProfileImage(facebookImageUrl);
-            profileImageManager.setImageUri(Uri.parse(facebookImageUrl));
+        if (!TextUtils.isEmpty(facebookImageUrl)) {
+            updateProfileImage(Uri.parse(facebookImageUrl));
         }
-        if (firstName != null) {
+        if (!TextUtils.isEmpty(firstName)) {
             firstNameTextLET.setInputText(firstName);
+            autofillFacebookButton.setEnabled(false);
         }
-        if (lastName != null) {
+        if (!TextUtils.isEmpty(lastName)) {
             lastNameTextLET.setInputText(lastName);
         }
-        if (email != null) {
+        if (!TextUtils.isEmpty(email)) {
             emailTextLET.setInputText(email);
-            autofillFacebookButton.setEnabled(false); //we know this was through autofill profile button
         }
         //Todo should? passwordTextLET.requestFocus();
+        profileImageManager.setShowOptions(true);
 
-        profileImageManager.setImageSource(Analytics.ProfilePhoto.Source.FACEBOOK);
     }
 
     private void onFacebookProfileError(@NonNull final Throwable throwable) {
@@ -492,11 +503,22 @@ public class RegisterFragment extends InjectionFragment
 
     private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
         stateSafeExecutor.execute(() -> {
-            if(getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+            profileImageManager.setShowOptions(true);
+            if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
                 ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
-                Logger.error(getClass().getSimpleName(), errorMessage, error);
             }
         });
+    }
+
+    private void showFacebookInfoBottomSheet(final boolean shouldShow) {
+        FacebookInfoDialogFragment bottomSheet = (FacebookInfoDialogFragment) getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG);
+        if (bottomSheet != null && !shouldShow) {
+            bottomSheet.dismissSafely();
+        } else if(bottomSheet == null && shouldShow){
+            bottomSheet = FacebookInfoDialogFragment.newInstance();
+            bottomSheet.setTargetFragment(RegisterFragment.this, OPTION_FACEBOOK_DESCRIPTION);
+            bottomSheet.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
+        }
     }
 
     //endregion
@@ -509,33 +531,26 @@ public class RegisterFragment extends InjectionFragment
     }
 
     @Override
-    public void onFromCamera(@NonNull final String imageUriString) {
-        updateProfileImage(imageUriString);
+    public void onFromCamera(@NonNull final Uri imageUri) {
+        updateProfileImage(imageUri);
     }
 
     @Override
-    public void onFromGallery(@NonNull final String imageUriString) {
-        updateProfileImage(imageUriString);
+    public void onFromGallery(@NonNull final Uri imageUri) {
+        updateProfileImage(imageUri);
     }
 
-    public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
-        final String temporaryCopy = "There were issues uploading your profile photo. Please check your connection.";
-        try {
-            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source),
-                             photo -> {
-                                 Logger.debug(RegisterFragment.class.getSimpleName(), "successful file upload");
-                                 profileImageManager.trimCache();
-                                 goToNextScreen();
-                             },
-                             e -> {
-                                 handleError(e, temporaryCopy);
-                                 profileImageManager.trimCache();
-                                 goToNextScreen();
-                             });
+    @Override
+    public void onImageCompressedSuccess(@NonNull final TypedFile compressImage, @NonNull final Analytics.ProfilePhoto.Source source) {
+        bindAndSubscribe(accountPresenter.updateProfilePicture(compressImage, Analytics.Onboarding.EVENT_CHANGE_PROFILE_PHOTO, source),
+                         this::updateProfilePictureSuccess,
+                         this::updateProfilePictureError);
 
-        } catch (final Exception e) {
-            Logger.error(RegisterFragment.class.getSimpleName(), temporaryCopy, e);
-        }
+    }
+
+    @Override
+    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int titleRes, @StringRes final int messageRes) {
+        goToNextScreen();
     }
 
     @Override
@@ -546,11 +561,24 @@ public class RegisterFragment extends InjectionFragment
                .centerCrop()
                .resizeDimen(defaultDimen, defaultDimen)
                .into(profileImageView);
-        profileImageManager.setEmptyUriState();
         Analytics.trackEvent(Analytics.Onboarding.EVENT_DELETE_PROFILE_PHOTO, null);
+        profileImageManager.removeDeleteOption();
+        profileImageManager.setShowOptions(true);
     }
 
     //endregion
+
+
+    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+        profileImageManager.trimCache();
+        goToNextScreen();
+    }
+
+    private void updateProfilePictureError(@NonNull final Throwable e) {
+        Analytics.trackError(e, "Onboarding photo upload api");
+        profileImageManager.trimCache();
+        goToNextScreen();
+    }
 
     public static class FocusClickListener implements View.OnClickListener {
 

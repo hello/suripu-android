@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/AppTheme.Text.Timeline"
+    android:textColor="@color/white"
+    android:background="@drawable/background_timeline_info_popup"
+    android:paddingTop="@dimen/gap_small"
+    android:paddingBottom="@dimen/gap_medium"
+    android:paddingLeft="@dimen/gap_medium"
+    android:paddingRight="@dimen/gap_medium"
+    android:layout_gravity="bottom|left"
+    android:layout_marginLeft="@dimen/timeline_event_popup_left_inset"
+    android:layout_marginBottom="@dimen/timeline_event_popup_bottom_inset"
+    />

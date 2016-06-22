@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
@@ -46,7 +45,7 @@ public abstract class Fetch {
         // Sticking with ACTION_PICK for now.
         final Image image = new Image(Intent.ACTION_PICK, Image.REQUEST_CODE_GALLERY);
         image.intent.setType(Image.type);
-        image.intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        //image.intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         image.intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         return image;
     }

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 
@@ -31,17 +32,17 @@ public class FilePathUtil {
     }
 
     public Uri getRealUriPath(@NonNull final Uri uri){
-        return Uri.parse(getRealPath(uri));
+        return Uri.parse(getLocalPath(uri));
     }
 
-    public String getRealPath(@NonNull final Uri uri){
-        if(isWebUri(uri)){
-            return uri.toString(); //entire string
+    public String getLocalPath(@NonNull final Uri uri){
+        if(uri.equals(EMPTY_URI_STATE)){
+            return uri.toString();
         }
         else if(apiLevel >= Build.VERSION_CODES.KITKAT){
-            return getRealPathApi19AndUp(uri);
+            return getLocalPathApi19AndUp(uri);
         } else if(apiLevel >= Build.VERSION_CODES.HONEYCOMB){
-            return getRealPathApi18To11(uri);
+            return getLocalPathApi18To11(uri);
         } else {
             throw new RuntimeException("unsupported api level" + apiLevel);
         }
@@ -54,7 +55,7 @@ public class FilePathUtil {
      * @param uri
      * @return
      */
-    private String getRealPathApi18To11(@NonNull final Uri uri) {
+    private String getLocalPathApi18To11(@NonNull final Uri uri) {
         final String result;
         final String[] proj = { MediaStore.Images.Media.DATA };
 
@@ -66,8 +67,10 @@ public class FilePathUtil {
             final int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             result = cursor.getString(column_index);
-        } else {
+        } else if(uri.isHierarchical()){
             result = uri.getPath();
+        } else{
+            result = uri.toString();
         }
         return result;
     }
@@ -75,14 +78,14 @@ public class FilePathUtil {
     /**
      *  Do not remove this method despite supporting only devices api 19+
      *  Many times the uri is not {@link DocumentsContract#isDocumentUri(Context, Uri)}
-     *  and so {@link this#getRealPathApi18To11(Uri)} will handle it.
+     *  and so {@link this#getLocalPathApi18To11(Uri)} will handle it.
      * @param uri
      * @return
      */
-    private String getRealPathApi19AndUp(@NonNull final Uri uri){
+    private String getLocalPathApi19AndUp(@NonNull final Uri uri){
         String filePath = EMPTY_URI_STATE_STRING;
         if(!DocumentsContract.isDocumentUri(context, uri)){
-            return getRealPathApi18To11(uri);
+            return getLocalPathApi18To11(uri);
         }
         final String wholeID = DocumentsContract.getDocumentId(uri);
 
@@ -110,11 +113,7 @@ public class FilePathUtil {
         return filePath;
     }
 
-    public boolean isFoundOnDevice(@NonNull final String filePath) {
-        return new File(filePath).exists();
-    }
-
-    public boolean isWebUri(@NonNull final Uri uri){
-        return uri.getScheme().contains("http");
+    public boolean isFoundOnDevice(@Nullable final String filePath) {
+        return filePath != null && new File(filePath).exists();
     }
 }

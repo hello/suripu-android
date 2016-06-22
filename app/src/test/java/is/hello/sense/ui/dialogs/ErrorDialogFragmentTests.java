@@ -1,6 +1,7 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
@@ -41,8 +42,8 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
         return new TestErrorDialogFragment.Builder();
     }
 
-    private static ErrorDialogFragment.Builder newBuilder(@Nullable Throwable e, @NonNull Resources resources) {
-        return new TestErrorDialogFragment.Builder(e, resources);
+    private static ErrorDialogFragment.Builder newBuilder(@Nullable Throwable e, @NonNull Context context) {
+        return new TestErrorDialogFragment.Builder(e, context);
     }
 
     private SenseAlertDialog show(@NonNull ErrorDialogFragment fragment) {
@@ -82,7 +83,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void simpleError() throws Exception {
         final IllegalStateException e = new IllegalStateException(MESSAGE);
-        final ErrorDialogFragment dialogFragment = newBuilder(e, getResources()).build();
+        final ErrorDialogFragment dialogFragment = newBuilder(e, getContext()).build();
         final SenseAlertDialog dialog = show(dialogFragment);
         assertThat(dialog.getMessage().toString(), is(equalTo(MESSAGE)));
         assertThat(getTrackedError(dialogFragment), is(equalTo(new String[] {
@@ -96,7 +97,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void errorWithReporting() throws Exception {
         final ReportingException e = new ReportingException(MESSAGE);
-        final ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
+        final ErrorDialogFragment dialogFragment = newBuilder(e, getContext())
                 .withOperation("Testing")
                 .build();
         final SenseAlertDialog dialog = show(dialogFragment);
@@ -111,7 +112,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
 
     @Test
     public void nullError() throws Exception {
-        final ErrorDialogFragment dialogFragment = newBuilder(null, getResources()).build();
+        final ErrorDialogFragment dialogFragment = newBuilder(null, getContext()).build();
         final SenseAlertDialog dialog = show(dialogFragment);
         assertThat(dialog.getMessage().toString(), is(equalTo("An unknown error has occurred.")));
         assertThat(getTrackedError(dialogFragment), is(equalTo(new String[] {
@@ -126,7 +127,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     public void fatalBluetoothError() throws Exception {
         final GattException e = new GattException(GattException.GATT_STACK_ERROR,
                                                   Operation.CONNECT);
-        final ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
+        final ErrorDialogFragment dialogFragment = newBuilder(e, getContext())
                 .withOperation("Testing")
                 .build();
         final SenseAlertDialog dialog = show(dialogFragment);
@@ -149,7 +150,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void addendum() throws Exception {
         final IllegalStateException e = new IllegalStateException(MESSAGE);
-        final ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
+        final ErrorDialogFragment dialogFragment = newBuilder(e, getContext())
                 .withAddendum(R.string.error_addendum_unstable_stack)
                 .build();
         final SenseAlertDialog dialog = show(dialogFragment);
@@ -167,7 +168,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     @Test
     public void supportLink() throws Exception {
         IllegalStateException e = new IllegalStateException(MESSAGE);
-        ErrorDialogFragment dialogFragment = newBuilder(e, getResources())
+        ErrorDialogFragment dialogFragment = newBuilder(e, getContext())
                 .withSupportLink()
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
@@ -216,8 +217,8 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
             public Builder() {
             }
 
-            public Builder(@Nullable Throwable e, @NonNull Resources resources) {
-                super(e, resources);
+            public Builder(@Nullable Throwable e, @NonNull Context context) {
+                super(e, context);
             }
 
             @Override

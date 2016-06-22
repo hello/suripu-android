@@ -2,6 +2,8 @@ package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -30,6 +32,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     @Inject FacebookApiService apiService;
     @Inject CallbackManager callbackManager;
+    @Inject ConnectivityManager connectivityManager;
 
     public final PresenterSubject<FacebookProfile> profile = this.subject;
     private static final String IMAGE_PARAM = "picture.type(large)";
@@ -72,10 +75,6 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void setAuthToken(@Nullable final AccessToken token){
-        AccessToken.setCurrentAccessToken(token);
-    }
-
     /**
      * Required to run before binding and subscribing to {@link FacebookPresenter#profile}
      * Otherwise, updates will fail because login callbacks are not handled.
@@ -86,19 +85,18 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
                             callbackManager,
                             new FacebookCallback<LoginResult>() {
                                 @Override
-                                public void onSuccess(LoginResult loginResult) {
-                                    // App code
+                                public void onSuccess(final LoginResult loginResult) {
                                     setAuthToken(loginResult.getAccessToken());
                                     FacebookPresenter.this.update();
                                 }
 
                                 @Override
                                 public void onCancel() {
-                                    // App code
+                                    profile.onNext(FacebookProfile.EmptyProfile.newInstance());
                                 }
 
                                 @Override
-                                public void onError(FacebookException exception) {
+                                public void onError(final FacebookException exception) {
                                     // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
                                     // consider presenting an error dialog here.
                                     Logger.debug(FacebookPresenter.class.getSimpleName(), "login failed", exception.fillInStackTrace());
@@ -116,17 +114,25 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     }
 
     public void login(@NonNull final Fragment container, @NonNull final Boolean requestOnlyPhoto) {
+        if(!isConnected()){
+            //Which exception would be more helpful to throw here?
+            profile.onError(new Exception("No internet connection found"));
+            return;
+        }
         requestInfo(requestOnlyPhoto);
         if(isLoggedIn()){
             this.update();
-        } else{
+        } else {
             LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
         }
-
     }
 
     public boolean isLoggedIn(){
-        return profile.hasValue() && AccessToken.getCurrentAccessToken() != null;
+        final AccessToken currentToken = AccessToken.getCurrentAccessToken();
+        return profile.hasValue() &&
+                currentToken != null &&
+                !currentToken.isExpired() &&
+                currentToken.getPermissions().containsAll(permissionList);
     }
 
     public void logout() {
@@ -134,8 +140,17 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
         profile.forget();
     }
 
+    public boolean isConnected(){
+        final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnected();
+    }
+
     //endregion
 
+    private void setAuthToken(@Nullable final AccessToken token){
+        AccessToken.setCurrentAccessToken(token);
+    }
 
     private String getAuthTokenString(){
         final AccessToken token = AccessToken.getCurrentAccessToken();
@@ -146,7 +161,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
      *
      * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
      */
-    private void requestInfo(boolean requestOnlyPhoto){
+    private void requestInfo(final boolean requestOnlyPhoto){
         if(requestOnlyPhoto){
             queryParams = IMAGE_PARAM;
             permissionList = Collections.singletonList("public_profile");

@@ -24,12 +24,13 @@ import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class RegisterCompleteFragment extends Fragment {
+
     private final StepHandler stepHandler = new StepHandler(this);
 
     private TextView message;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -40,9 +41,8 @@ public class RegisterCompleteFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_register_complete, container, false);
-
         this.message = (TextView) view.findViewById(R.id.fragment_onboarding_done_message);
 
         return view;
@@ -51,11 +51,7 @@ public class RegisterCompleteFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        message.setVisibility(View.VISIBLE);
-        message.setAlpha(1f);
-
-        stepHandler.postShowSecond();
+        init();
     }
 
     @Override
@@ -65,6 +61,13 @@ public class RegisterCompleteFragment extends Fragment {
         stepHandler.cancelPending();
 
         cancelAll(message);
+    }
+
+    private void init() {
+        message.setVisibility(View.VISIBLE);
+        message.setAlpha(1f);
+        stepHandler.postShowSecond();
+
     }
 
     public void showSecondMessage() {
@@ -102,7 +105,7 @@ public class RegisterCompleteFragment extends Fragment {
 
         private final WeakReference<RegisterCompleteFragment> fragment;
 
-        public StepHandler(@NonNull RegisterCompleteFragment fragment) {
+        public StepHandler(@NonNull final RegisterCompleteFragment fragment) {
             super(Looper.getMainLooper());
             this.fragment = new WeakReference<>(fragment);
         }
@@ -121,7 +124,7 @@ public class RegisterCompleteFragment extends Fragment {
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             switch (msg.what) {
                 case MSG_SHOW_SECOND: {
                     final RegisterCompleteFragment fragment = this.fragment.get();

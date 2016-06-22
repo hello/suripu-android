@@ -26,6 +26,16 @@
     <!-- Text -->
 
     <!-- Official text sizes provided by Nathan -->
+    <dimen name="x.5">4dp</dimen>
+    <dimen name="x1">8dp</dimen>
+    <dimen name="x2">16dp</dimen>
+    <dimen name="x3">24dp</dimen>
+    <dimen name="x4">32dp</dimen>
+    <dimen name="x5">40dp</dimen>
+    <dimen name="x6">48dp</dimen>
+    <dimen name="x7">56dp</dimen>
+
+
     <dimen name="text_body">15sp</dimen>
     <dimen name="text_h1">64sp</dimen>
     <dimen name="text_h2">40sp</dimen>
@@ -116,7 +126,7 @@
     <dimen name="grand_sleep_summary_height">175dp</dimen>
 
     <dimen name="onboarding_sense_inset_bottom">25dp</dimen>
-    
+
     <dimen name="view_sensor_ticker_letter_spacing">3dp</dimen>
     <dimen name="view_sensor_ticker_fade_height">10dp</dimen>
 
@@ -209,6 +219,8 @@
     <dimen name="timeline_shareable_sensor_marginTop">40dp</dimen>
     <dimen name="timeline_shareable_sensor_horizontal_margin">10dp</dimen>
     <dimen name="timeline_shareable_score_top_margin">@dimen/gap_mlarge</dimen>
+
+    <item name="timeline_segment_item_end_max_fraction" format="float" type="dimen">0.825</item>
 
 
     <!-- Buttons -->

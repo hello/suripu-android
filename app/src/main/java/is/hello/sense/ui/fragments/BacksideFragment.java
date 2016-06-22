@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -32,6 +31,7 @@ import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.InternalPrefManager;
 
 import static is.hello.sense.ui.adapter.StaticFragmentAdapter.Item;
 
@@ -64,25 +64,11 @@ public class BacksideFragment extends InjectionFragment
     private boolean suppressNextSwipeEvent = false;
     private int lastState = ViewPager.SCROLL_STATE_IDLE;
 
-
-    private static SharedPreferences getInternalPreferences(@NonNull Context context) {
-        return context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
-    }
-
-    public static void saveCurrentItem(@NonNull Context context, int currentItem) {
-        final SharedPreferences preferences = getInternalPreferences(context);
-        preferences.edit()
-                   .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
-                   .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
-                   .apply();
-    }
-
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(accountPresenter);
-        this.internalPreferences = getInternalPreferences(getActivity());
+        this.internalPreferences = InternalPrefManager.getInternalPrefs(getActivity());
 
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SHOWN, null);
@@ -91,7 +77,7 @@ public class BacksideFragment extends InjectionFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_backside, container, false);
 
         final Resources resources = getResources();
@@ -149,7 +135,7 @@ public class BacksideFragment extends InjectionFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                          this::setHasUnreadInsightItems,
@@ -196,7 +182,7 @@ public class BacksideFragment extends InjectionFragment
         }
     }
 
-    private SpannableString createIconSpan(@NonNull CharSequence title, @DrawableRes int iconRes) {
+    private SpannableString createIconSpan(@NonNull final CharSequence title, @DrawableRes final int iconRes) {
         final ImageSpan image = new ImageSpan(getActivity(), iconRes);
         final SpannableString span = new SpannableString(title);
         span.setSpan(image, 0, span.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -216,12 +202,12 @@ public class BacksideFragment extends InjectionFragment
         }
     }
 
-    public void setCurrentItem(int currentItem, int options) {
-        boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
+    public void setCurrentItem(final int currentItem, final int options) {
+        final boolean animate = ((options & OPTION_ANIMATE) == OPTION_ANIMATE);
         pager.setCurrentItem(currentItem, animate);
     }
 
-    public void saveCurrentItem(int currentItem) {
+    public void saveCurrentItem(final int currentItem) {
         internalPreferences.edit()
                            .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
                            .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED,
@@ -236,7 +222,7 @@ public class BacksideFragment extends InjectionFragment
         return "android:switcher:" + pager.getId() + ":" + adapter.getItemId(position);
     }
 
-    public void setChromeTranslationAmount(float amount) {
+    public void setChromeTranslationAmount(final float amount) {
         final float tabsTranslationY = Anime.interpolateFloats(amount, 0f, -tabSelectorHeight);
         tabSelector.setTranslationY(tabsTranslationY);
 
@@ -251,17 +237,17 @@ public class BacksideFragment extends InjectionFragment
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
     }
 
     @Override
-    public void onPageSelected(int position) {
+    public void onPageSelected(final int position) {
         tabSelector.setSelectedIndex(position);
         saveCurrentItem(position);
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
         if (lastState == ViewPager.SCROLL_STATE_IDLE &&
                 state != ViewPager.SCROLL_STATE_IDLE) {
             getAnimatorContext().beginAnimation("Backside swipe");
@@ -279,7 +265,7 @@ public class BacksideFragment extends InjectionFragment
     }
 
     @Override
-    public void onSelectionChanged(int newSelectionIndex) {
+    public void onSelectionChanged(final int newSelectionIndex) {
         Analytics.trackEvent(Analytics.Backside.EVENT_TAB_TAPPED, null);
         this.suppressNextSwipeEvent = true;
 
@@ -287,7 +273,7 @@ public class BacksideFragment extends InjectionFragment
     }
 
 
-    public void setHasUnreadInsightItems(boolean hasUnreadInsightItems) {
+    public void setHasUnreadInsightItems(final boolean hasUnreadInsightItems) {
         final @DrawableRes int iconRes = hasUnreadInsightItems
                 ? R.drawable.backside_icon_insights_unread
                 : R.drawable.backside_icon_insights;
@@ -301,7 +287,7 @@ public class BacksideFragment extends InjectionFragment
         }
     }
 
-    public void setHasUnreadAccountItems(boolean hasUnreadAccountItems) {
+    public void setHasUnreadAccountItems(final boolean hasUnreadAccountItems) {
         final @DrawableRes int iconRes = hasUnreadAccountItems
                 ? R.drawable.backside_icon_settings_unread
                 : R.drawable.backside_icon_settings;

@@ -261,7 +261,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
             rescanButton.setVisibility(View.VISIBLE);
             rescanButton.setEnabled(true);
 
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
+            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation("Scan for networks")
                     .withSupportLink();
 
@@ -280,7 +280,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
         rescanButton.setVisibility(View.VISIBLE);
         rescanButton.setEnabled(true);
 
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                 .withOperation("Scan for networks")
                 .withSupportLink();
 

@@ -27,6 +27,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.SessionLogger;
 
@@ -71,6 +72,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Share Log", this::sendLog));
 
         adapter.add(new DetailItem("Show Room Check", this::showRoomCheck));
+        adapter.add(new DetailItem("Show Onboarding Smart Alarm", this::showOnboardingSmartAlarm));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
@@ -83,6 +85,7 @@ public class DebugActivity extends InjectionActivity {
         } catch (ClassNotFoundException ignored) {
             // Do nothing.
         }
+        adapter.add(new DetailItem("View What's New Card", this::viewWhatsNewCard));
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
 
@@ -103,6 +106,12 @@ public class DebugActivity extends InjectionActivity {
     public void showRoomCheck() {
         Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
+        startActivity(onboarding);
+    }
+
+    public void showOnboardingSmartAlarm() {
+        Intent onboarding = new Intent(this, OnboardingActivity.class);
+        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
         startActivity(onboarding);
     }
 
@@ -145,6 +154,12 @@ public class DebugActivity extends InjectionActivity {
     public void simulatePicassoLowMemory() {
         SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);
         Toast.makeText(getApplicationContext(), "Simulated", Toast.LENGTH_SHORT).show();
+    }
+
+    public void viewWhatsNewCard() {
+       // WhatsNewLayout.clearState(this); todo add back when we support this.
+        WhatsNewLayout.forceShow(this);
+        Toast.makeText(getApplicationContext(), "Forgot What's New card", Toast.LENGTH_SHORT).show();
     }
 
     public void resetAppUsage() {

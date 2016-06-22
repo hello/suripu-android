@@ -45,6 +45,7 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -67,7 +68,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
     private boolean sendAccessToken;
 
     private EditText networkName;
-    private EditText networkPassword;
+    private LabelEditText networkPassword;
     private Spinner networkSecurity;
 
     private @Nullable wifi_endpoint network;
@@ -116,7 +117,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
         final View view = inflater.inflate(R.layout.fragment_connect_to_wifi, container, false);
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_network);
-        this.networkPassword = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_password);
+        this.networkPassword = (LabelEditText) view.findViewById(R.id.fragment_connect_to_wifi_password);
         networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
 
         final Button continueButton = (Button) view.findViewById(R.id.fragment_connect_to_wifi_continue);
@@ -246,7 +247,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             networkPassword.requestFocus();
         } else if (securityType == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             networkPassword.setVisibility(View.GONE);
-            networkPassword.setText(null);
+            networkPassword.setInputText(null);
             networkPassword.clearFocus();
         } else {
             networkPassword.setVisibility(View.VISIBLE);
@@ -280,7 +281,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
     private void sendWifiCredentials() {
         final String networkName = this.networkName.getText().toString();
-        final String password = this.networkPassword.getText().toString();
+        final String password = this.networkPassword.getInputText();
 
         final sec_type securityType = getSecurityType();
         if (TextUtils.isEmpty(networkName) ||
@@ -422,13 +423,13 @@ public class ConnectToWiFiFragment extends HardwareFragment
 
     public void presentError(Throwable e, @NonNull String operation) {
         hideAllActivityForFailure(() -> {
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getResources())
+            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation(operation);
 
             if (e instanceof SenseSetWifiValidationError &&
                     ((SenseSetWifiValidationError) e).reason == SenseSetWifiValidationError.Reason.MALFORMED_BYTES) {
                 final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
-                final Intent intent = UserSupport.createViewUriIntent(getResources(), uri);
+                final Intent intent = UserSupport.createViewUriIntent(getActivity(), uri);
                 errorDialogBuilder.withAction(intent, R.string.action_support);
             } else {
                 errorDialogBuilder.withSupportLink();

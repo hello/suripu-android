@@ -10,9 +10,11 @@ import android.support.annotation.Nullable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 
 import javax.inject.Inject;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.PushRegistration;
@@ -25,11 +27,11 @@ public final class NotificationRegistration {
     private final Activity activity;
     @Inject ApiService apiService;
 
-    private static @NonNull SharedPreferences getNotificationPreferences(@NonNull Context context) {
+    private static @NonNull SharedPreferences getNotificationPreferences(@NonNull final Context context) {
         return context.getSharedPreferences(Constants.NOTIFICATION_PREFS, 0);
     }
 
-    private static int getPackageVersionCode(@NonNull Context context) {
+    private static int getPackageVersionCode(@NonNull final Context context) {
         try {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
         } catch (PackageManager.NameNotFoundException e) {
@@ -37,7 +39,7 @@ public final class NotificationRegistration {
         }
     }
 
-    private static String getPackageVersionName(@NonNull Context context) {
+    private static String getPackageVersionName(@NonNull final Context context) {
         try {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
@@ -45,21 +47,21 @@ public final class NotificationRegistration {
         }
     }
 
-    public static boolean shouldRegister(@NonNull Context context) {
-        SharedPreferences preferences = getNotificationPreferences(context);
-        int versionCode = getPackageVersionCode(context);
+    public static boolean shouldRegister(@NonNull final Context context) {
+        final SharedPreferences preferences = getNotificationPreferences(context);
+        final int versionCode = getPackageVersionCode(context);
         return (preferences.getInt(Constants.NOTIFICATION_PREF_APP_VERSION, -1) != versionCode ||
                 preferences.getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, null) == null);
     }
 
-    public static void resetAppVersion(@NonNull Context context){
+    public static void resetAppVersion(@NonNull final Context context){
         getNotificationPreferences(context).edit()
                 .putInt(Constants.NOTIFICATION_PREF_APP_VERSION, 0)
                 .apply();
 
     }
 
-    public NotificationRegistration(@NonNull Activity activity) {
+    public NotificationRegistration(@NonNull final Activity activity) {
         this.activity = activity;
         SenseApplication.getInstance().inject(this);
     }
@@ -68,7 +70,7 @@ public final class NotificationRegistration {
         if (!checkPlayServices())
             return;
 
-        String preexistingRegistrationId = retrieveRegistrationId();
+        final String preexistingRegistrationId = retrieveRegistrationId();
         if (preexistingRegistrationId != null) {
             registerWithBackend(preexistingRegistrationId);
         } else {
@@ -78,7 +80,7 @@ public final class NotificationRegistration {
     }
 
     private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+        final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, activity, 0).show();
@@ -94,8 +96,8 @@ public final class NotificationRegistration {
         return getNotificationPreferences(activity).getString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, null);
     }
 
-    private void saveRegistrationId(@NonNull String registrationId) {
-        SharedPreferences preferences = getNotificationPreferences(activity);
+    private void saveRegistrationId(@NonNull final String registrationId) {
+        final SharedPreferences preferences = getNotificationPreferences(activity);
         preferences.edit()
                 .putString(Constants.NOTIFICATION_PREF_REGISTRATION_ID, registrationId)
                 .apply();
@@ -103,7 +105,7 @@ public final class NotificationRegistration {
 
     private void saveAppVersionCode() {
         SharedPreferences preferences = getNotificationPreferences(activity);
-        int versionCode = getPackageVersionCode(activity);
+        final int versionCode = getPackageVersionCode(activity);
         preferences.edit()
                 .putInt(Constants.NOTIFICATION_PREF_APP_VERSION, versionCode)
                 .apply();
@@ -111,11 +113,12 @@ public final class NotificationRegistration {
 
     private Observable<String> registerWithGCM() {
         return Observable.create((Observable.OnSubscribe<String>) subscriber -> {
-            GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
             Logger.info(NotificationRegistration.class.getSimpleName(), "Registering for notifications.");
 
             try {
-                String registrationId = gcm.register("88512303154", "222711285636");
+                final String registrationId = InstanceID.getInstance(activity)
+                                                  .getToken(BuildConfig.GCM_AUTH_TOKEN_IDS,
+                                                            GoogleCloudMessaging.INSTANCE_ID_SCOPE);
                 saveRegistrationId(registrationId);
                 Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with GCM: " + registrationId);
 
@@ -127,8 +130,8 @@ public final class NotificationRegistration {
         }).subscribeOn(Schedulers.newThread());
     }
 
-    private void registerWithBackend(@NonNull String registrationId) {
-        PushRegistration registration = new PushRegistration(getPackageVersionName(activity), registrationId);
+    private void registerWithBackend(@NonNull final String registrationId) {
+        final PushRegistration registration = new PushRegistration(getPackageVersionName(activity), registrationId);
         apiService.registerForNotifications(registration)
                   .subscribe(ignored -> {
                               Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with backend.");

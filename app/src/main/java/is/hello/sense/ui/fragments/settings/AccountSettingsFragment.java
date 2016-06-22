@@ -9,8 +9,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -55,13 +58,13 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.Logger;
 import retrofit.mime.TypedFile;
 
 public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
+    private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
 
     @Inject
     Picasso picasso;
@@ -78,11 +81,10 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     ProfileImageManager.Builder builder;
 
-    private ProfileImageManager profileImageManager;
-
-    private ProgressBar loadingIndicator;
-
-    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem =
+            new AccountSettingsRecyclerAdapter.CircleItem(
+                stateSafeExecutor.bind(this::changePicture)
+            );
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
@@ -93,18 +95,21 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
-    private Account currentAccount;
-    private
+
     @Nullable
-    Account.Preferences accountPreferences;
+    private Account.Preferences accountPreferences;
     private RecyclerView recyclerView;
+    private ProfileImageManager profileImageManager;
+    private Account currentAccount;
+    private ProgressBar loadingIndicator;
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            this.currentAccount = (Account) savedInstanceState.getSerializable("currentAccount");
+            this.currentAccount = (Account) savedInstanceState.getSerializable(CURRENT_ACCOUNT_INSTANCE_KEY);
         } else {
             Analytics.trackEvent(Analytics.Backside.EVENT_ACCOUNT, null);
         }
@@ -113,7 +118,7 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
 
-        setRetainInstance(true);
+        //setRetainInstance(true);
     }
 
     @Nullable
@@ -210,12 +215,15 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = builder.addFragmentListener(this).build();
+        profileImageManager = builder.addFragmentListener(this)
+                                     .build();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        profileImageManager.hidePictureOptions();
 
         this.loadingIndicator = null;
         this.nameItem = null;
@@ -235,7 +243,7 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("currentAccount", currentAccount);
+        outState.putSerializable(CURRENT_ACCOUNT_INSTANCE_KEY, currentAccount);
     }
 
     @Override
@@ -286,7 +294,11 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void bindAccount(@NonNull final Account account) {
         final String photoUrl = account.getProfilePhotoUrl(getResources());
-        profileImageManager.setImageUri(Uri.parse(photoUrl));
+        if (photoUrl.isEmpty()) {
+            profileImageManager.removeDeleteOption();
+        } else {
+            profileImageManager.addDeleteOption();
+        }
         profilePictureItem.setValue(photoUrl);
         nameItem.setText(account.getFullName());
         emailItem.setText(account.getEmail());
@@ -310,7 +322,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void accountUnavailable(final Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getResources()).build();
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity()).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
@@ -334,7 +346,9 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
     private void changePicture() {
-        profileImageManager.showPictureOptions();
+        if (profileImageManager != null) {
+            profileImageManager.showPictureOptions();
+        }
     }
 
     public void changeName() {
@@ -473,32 +487,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //endregion
 
-    // region Facebook import
-
-    private void handleFacebookError(final Throwable error) {
-        profileImageManager.setShowOptions(true);
-        handleError(error, getString(R.string.error_internet_connection_generic_message));
-    }
-
-    private void handleError(@NonNull final Throwable error, @NonNull final String errorMessage) {
-        stateSafeExecutor.execute(() -> {
-            if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
-                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
-                Logger.error(getClass().getSimpleName(), errorMessage, error);
-                profileImageManager.setEmptyUriState(); // todo remove this in 1.4.3
-            }
-        });
-    }
-
-    private void changePictureWithFacebook(@NonNull final FacebookProfile profile) {
-        final String fbImageUri = profile.getPictureUrl();
-        if (fbImageUri != null) {
-            profileImageManager.setImageUri(Uri.parse(fbImageUri));
-            updateProfileAndUpload();
-        }
-    }
-
-    //endregion
 
     //region ProfileImageManagerListener methods
 
@@ -507,96 +495,108 @@ public class AccountSettingsFragment extends InjectionFragment
         profileImageManager.setShowOptions(false);
         if (!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,
-                             this::changePictureWithFacebook,
-                             this::handleFacebookError);
+                             this::getFacebookProfileSuccess,
+                             this::getFacebookProfileError);
         }
         facebookPresenter.login(this);
     }
 
     @Override
-    public void onFromCamera(@NonNull final String imageUriString) {
-        profileImageManager.setShowOptions(false);
-        updateProfileAndUpload();
+    public void onFromCamera(@NonNull final Uri imageUri) {
+        showProfileLoadingIndicator(true);
+        profileImageManager.compressImage(imageUri);
     }
 
     @Override
-    public void onFromGallery(@NonNull final String imageUriString) {
-        profileImageManager.setShowOptions(false);
-        updateProfileAndUpload();
+    public void onFromGallery(@NonNull final Uri imageUri) {
+        showProfileLoadingIndicator(true);
+        profileImageManager.compressImage(imageUri);
     }
 
-    public void onUploadReady(@NonNull final TypedFile imageFile, @NonNull final Analytics.ProfilePhoto.Source source) {
-        final String temporaryCopy = getString(R.string.error_account_upload_photo_message);
-        final MultiDensityImage tempPhoto = currentAccount.getProfilePhoto();
-        try {
-            bindAndSubscribe(accountPresenter.updateProfilePicture(imageFile, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
-                             photo -> {
-                                 Logger.debug(AccountSettingsFragment.class.getSimpleName(), "successful file upload");
-                                 //only update the account field but don't refresh view
-                                 currentAccount.setProfilePhoto(photo);
-                                 profileImageManager.trimCache();
-                                 profileImageManager.setShowOptions(true);
-                                 profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
-                                 showLoading(false);
-                             },
-                             e -> {
-                                 //restore previous saved photo and refresh view
-                                 currentAccount.setProfilePhoto(tempPhoto);
-                                 bindAccount(currentAccount);
-                                 handleError(e, temporaryCopy);
-                                 profileImageManager.trimCache();
-                                 profileImageManager.setShowOptions(true);
-                                 showLoading(false);
-                             });
+    @Override
+    public void onImageCompressedSuccess(@NonNull final TypedFile compressedImage, @NonNull final Analytics.ProfilePhoto.Source source) {
+        bindAndSubscribe(accountPresenter.updateProfilePicture(compressedImage, Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO, source),
+                         this::updateProfilePictureSuccess,
+                         this::updateProfilePictureError);
+    }
 
-        } catch (final Exception e) {
-            Logger.error(AccountSettingsFragment.class.getSimpleName(), temporaryCopy, e);
-            profileImageManager.setShowOptions(true);
-            showLoading(false);
-        }
+    @Override
+    public void onImageCompressedError(@NonNull final Throwable e, @StringRes final int titleRes, @StringRes final int messageRes) {
+        handleError(e, titleRes, messageRes);
     }
 
     @Override
     public void onRemove() {
-        profileImageManager.setShowOptions(false);
         bindAndSubscribe(accountPresenter.deleteProfilePicture(),
-                         successResponse -> {
-                             currentAccount.setProfilePhoto(null);
-                             bindAccount(currentAccount);
-                             profileImageManager.setEmptyUriState();
-                             Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
-                             profileImageManager.setShowOptions(true);
-                         },
-                         error -> {
-                             handleError(error, getString(R.string.error_account_remove_photo_message));
-                             profileImageManager.setShowOptions(true);
-                         });
+                         this::removePhotoSuccess,
+                         this::removePhotoError);
+    }
+
+    private void getFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
+        final String fbImageUri = profile.getPictureUrl();
+        if (!TextUtils.isEmpty(fbImageUri)) {
+            final Uri newUri = Uri.parse(fbImageUri);
+            showProfileLoadingIndicator(true);
+            profileImageManager.compressImage(newUri);
+        } else {
+            profileImageManager.setShowOptions(true);
+        }
+    }
+
+    private void getFacebookProfileError(final Throwable error) {
+        handleError(error, R.string.error_internet_connection_generic_title, R.string.error_internet_connection_generic_message);
+    }
+
+    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+        showProfileLoadingIndicator(false);
+        currentAccount.setProfilePhoto(compressedPhoto);
+        profileImageManager.addDeleteOption();
+        profileImageManager.trimCache();
+        profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
+    }
+
+    private void updateProfilePictureError(@NonNull final Throwable e) {
+        //restore previous saved photo and refresh view
+        currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
+        bindAccount(currentAccount);
+        onImageCompressedError(e, R.string.error_internet_connection_generic_title, R.string.error_account_upload_photo_message);
+        profileImageManager.trimCache();
+    }
+
+    private void removePhotoSuccess(final VoidResponse response) {
+        showProfileLoadingIndicator(false);
+        profileImageManager.removeDeleteOption();
+        currentAccount.setProfilePhoto(null);
+        bindAccount(currentAccount);
+        Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
+
+    }
+
+    private void removePhotoError(@NonNull final Throwable e) {
+        handleError(e, R.string.error_account_remove_photo_title, R.string.error_account_remove_photo_message);
     }
 
 
-    private void updateProfileAndUpload() {
-        //starts file upload process
-        showLoading(true);
-        bindAndSubscribe(profileImageManager.prepareImageUpload(),
-                         profileImage -> onUploadReady(profileImage.getFile(), profileImage.getSource()),
-                         //TODO check if error message does not match connection error
-                         e -> {
-                             showLoading(false);
-                             handleError(e, getString(R.string.error_account_upload_photo_message));
-                             profileImageManager.setShowOptions(true);
-                         });
+    private void handleError(@NonNull final Throwable error, @StringRes final int titleRes, @StringRes final int messageRes) {
+        stateSafeExecutor.execute(() -> {
+            showProfileLoadingIndicator(false);
+            if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(getString(messageRes)), titleRes);
+            }
+        });
     }
-
     // endregion
 
-    //todo delete this method in 1.4.3
-    private void showLoading(final boolean show) {
+    private void showProfileLoadingIndicator(final boolean show) {
         if (getView() != null) {
             final View progressBar = getView().findViewById(R.id.item_profile_progress_bar);
             if (progressBar != null) {
                 progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                profileImageManager.setShowOptions(!show);
+                return;
             }
         }
+        profileImageManager.setShowOptions(show);
     }
 
 }

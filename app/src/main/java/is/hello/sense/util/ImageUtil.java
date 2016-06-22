@@ -47,10 +47,13 @@ public class ImageUtil {
 
     private final Context context;
 
-    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso) {
+    private final SenseCache.ImageCache imageCache;
+
+    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso, @NonNull final SenseCache.ImageCache imageCache) {
         this.context = context;
         this.storageUtil = storageUtil;
         this.picasso = picasso;
+        this.imageCache = imageCache;
     }
 
     public boolean hasDeviceCamera() {
@@ -59,16 +62,15 @@ public class ImageUtil {
 
     /**
      * @param isTemporary determines whether or not to make temporary file
-     *                    using {@link File#createTempFile(String, String, File)}
+     *                    using {@link is.hello.sense.util.SenseCache.ImageCache#getCacheFile(String)}
      * @return Returns <code>null</code> if exception occurs.
      */
     public
     @Nullable
     File createFile(final boolean isTemporary) {
         final File storageDir = getStorageDirectory();
-
         if (isTemporary) {
-            return getCacheFile(getFullFileName(imageFileName));
+            return imageCache.getCacheFile(getFullFileName(imageFileName));
         } else {
             return new File(storageDir, getFullFileName(imageFileName) + fileFormat);
         }
@@ -83,7 +85,7 @@ public class ImageUtil {
     public Observable<File> provideObservableToCompressFile(@NonNull final String path, final boolean mustDownload) {
         return Observable.create((subscriber) -> {
             try {
-                if(subscriber.isUnsubscribed()){
+                if (subscriber.isUnsubscribed()) {
                     return;
                 } else if (path.isEmpty()) {
                     subscriber.onNext(null);
@@ -236,10 +238,16 @@ public class ImageUtil {
     private Bitmap decodeBitmapFromUrlStream(@NonNull final String path) throws IOException {
         /*final URL url = new URL(path);
         final InputStream fis = url.openStream();
-        final Bitmap bitmap = BitmapFactory.decodeStream(fis);
+        final Bitmap bitmap = BitmapFactory.decodeStream(fis, new Rect(0,0,0,0), options);
         fis.close();
         return bitmap;*/
-        return picasso.load(Uri.parse(path)).get();
+        //TODO hardcoded to resize to 1000. Tested 1100 but is rejected by server
+        return picasso.load(Uri.parse(path))
+                .resize(1000,1000)
+                .config(Bitmap.Config.ARGB_8888)
+                .centerInside()
+                .onlyScaleDown()
+                .get();
     }
 
     private int getRotationFromExifData(@NonNull final String path) throws IOException {
@@ -261,40 +269,8 @@ public class ImageUtil {
 
     }
 
-    private File getCacheFile(@NonNull final String url) {
-        final String fileName = Uri.parse(url).getLastPathSegment();
-        final File file = new File(context.getCacheDir(), fileName);
-        file.deleteOnExit();
-        return file;
-    }
-
-
     public void trimCache() {
-        try {
-            final File dir = context.getCacheDir();
-            if (dir != null && dir.isDirectory()) {
-                deleteDir(dir);
-            }
-        } catch (Exception e) {
-            //todo log?
-        }
-    }
-
-    private boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            final String[] children = dir.list();
-            for (String child : children) {
-                boolean success = deleteDir(new File(dir, child));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        if (dir == null) {
-            return false;
-        }
-        // The directory is now empty so delete it
-        return dir.delete();
+        imageCache.trimCache();
     }
 
 
