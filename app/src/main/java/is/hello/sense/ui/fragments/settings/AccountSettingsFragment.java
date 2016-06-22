@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +81,10 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     ProfileImageManager.Builder builder;
 
-    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem = new AccountSettingsRecyclerAdapter.CircleItem(this::changePicture);
+    private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem =
+            new AccountSettingsRecyclerAdapter.CircleItem(
+                stateSafeExecutor.bind(this::changePicture)
+            );
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
     private SettingsRecyclerAdapter.DetailItem emailItem;
@@ -114,7 +118,7 @@ public class AccountSettingsFragment extends InjectionFragment
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
 
-        setRetainInstance(true);
+        //setRetainInstance(true);
     }
 
     @Nullable
@@ -218,6 +222,8 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        profileImageManager.hidePictureOptions();
 
         this.loadingIndicator = null;
         this.nameItem = null;
@@ -528,7 +534,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private void getFacebookProfileSuccess(@NonNull final FacebookProfile profile) {
         final String fbImageUri = profile.getPictureUrl();
-        if (Functions.isNotNullOrEmpty(fbImageUri)) {
+        if (!TextUtils.isEmpty(fbImageUri)) {
             final Uri newUri = Uri.parse(fbImageUri);
             showProfileLoadingIndicator(true);
             profileImageManager.compressImage(newUri);

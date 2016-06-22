@@ -109,6 +109,14 @@ public class ProfileImageManager {
         advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
+    public void hidePictureOptions(){
+        final BottomSheetDialogFragment bottomSheet = (BottomSheetDialogFragment) fragment.getFragmentManager()
+                                                    .findFragmentByTag(BottomSheetDialogFragment.TAG);
+        if(bottomSheet != null){
+            bottomSheet.dismissSafely();
+        }
+    }
+
     public void addDeleteOption() {
         if (options.size() == minOptions) {
             options.add(deleteOption);
