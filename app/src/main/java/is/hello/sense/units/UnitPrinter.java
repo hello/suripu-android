@@ -1,9 +1,6 @@
 package is.hello.sense.units;
 
-import android.support.annotation.NonNull;
+public class UnitPrinter {
 
-public interface UnitPrinter {
-    UnitPrinter SIMPLE = v -> String.format("%.0f", v);
-
-    @NonNull CharSequence print(double value);
+    public static IUnitPrinter SIMPLE = v -> String.format("%.0f", v);
 }
