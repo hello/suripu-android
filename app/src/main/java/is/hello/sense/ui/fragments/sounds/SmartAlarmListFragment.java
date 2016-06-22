@@ -38,7 +38,6 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -52,9 +51,12 @@ import rx.Observable;
 public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
-    @Inject SmartAlarmPresenter smartAlarmPresenter;
-    @Inject PreferencesPresenter preferences;
-    @Inject DateFormatter dateFormatter;
+    @Inject
+    SmartAlarmPresenter smartAlarmPresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    DateFormatter dateFormatter;
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
@@ -64,23 +66,23 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     private SmartAlarmAdapter adapter;
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
+        if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
             update();
         }
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(smartAlarmPresenter);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_smart_alarm_list, container, false);
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
@@ -110,7 +112,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         onUpdate();
@@ -137,7 +139,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == DELETE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -145,8 +147,8 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
 
             startLoading();
             bindAndSubscribe(smartAlarmPresenter.deleteSmartAlarm(position),
-                    ignored -> activityIndicator.setVisibility(View.GONE),
-                    this::presentError);
+                             ignored -> activityIndicator.setVisibility(View.GONE),
+                             this::presentError);
         }
     }
 
@@ -163,37 +165,37 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         activityIndicator.setVisibility(View.GONE);
     }
 
-    public void bindAlarms(@NonNull ArrayList<Alarm> alarms) {
+    public void bindAlarms(@NonNull final ArrayList<Alarm> alarms) {
         this.currentAlarms = alarms;
 
         adapter.bindAlarms(alarms);
         if (alarms.isEmpty()) {
             final SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(0,
-                    StringRef.from(R.string.message_smart_alarm_placeholder));
+                                                                                    StringRef.from(R.string.message_smart_alarm_placeholder));
             message.actionRes = R.string.action_new_alarm;
             message.titleIconRes = R.drawable.illustration_no_alarm;
             message.onClickListener = this::newAlarm;
             adapter.bindMessage(message);
             addButton.setVisibility(View.GONE);
-        }else {
+        } else {
             addButton.setVisibility(View.VISIBLE);
         }
 
         finishLoading();
     }
 
-    public void alarmsUnavailable(Throwable e) {
+    public void alarmsUnavailable(final Throwable e) {
         Logger.error(getClass().getSimpleName(), "Could not load smart alarms.", e);
 
         final SmartAlarmAdapter.Message message;
         if (ApiException.isNetworkError(e)) {
             message = new SmartAlarmAdapter.Message(0,
-                    StringRef.from(R.string.error_smart_alarms_unavailable));
+                                                    StringRef.from(R.string.error_smart_alarms_unavailable));
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::retry;
         } else if (ApiException.statusEquals(e, 412)) {
             message = new SmartAlarmAdapter.Message(0,
-                    StringRef.from(R.string.error_smart_alarm_requires_device));
+                                                    StringRef.from(R.string.error_smart_alarm_requires_device));
             message.titleIconRes = R.drawable.illustration_no_sense;
             message.actionRes = R.string.action_pair_new_sense;
             message.onClickListener = ignored -> {
@@ -216,7 +218,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         finishLoading();
     }
 
-    public void presentError(Throwable e) {
+    public void presentError(final Throwable e) {
         finishLoading();
 
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
@@ -228,7 +230,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     }
 
 
-    private void editAlarm(@NonNull Alarm alarm, int index) {
+    private void editAlarm(@NonNull final Alarm alarm, final int index) {
         final Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
         final Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
         intent.putExtras(arguments);
@@ -236,13 +238,13 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     }
 
     @Override
-    public void onAlarmClicked(int position, @NonNull Alarm alarm) {
+    public void onAlarmClicked(final int position, @NonNull final Alarm alarm) {
         Analytics.trackEvent(Analytics.Backside.EVENT_EDIT_ALARM, null);
         editAlarm(alarm, position);
     }
 
     @Override
-    public boolean onAlarmLongClicked(int position, @NonNull Alarm alarm) {
+    public boolean onAlarmLongClicked(final int position, @NonNull final Alarm alarm) {
         final DeleteAlarmDialogFragment deleteDialog = DeleteAlarmDialogFragment.newInstance(position);
         deleteDialog.setTargetFragment(this, DELETE_REQUEST_CODE);
         deleteDialog.showAllowingStateLoss(getFragmentManager(), DeleteAlarmDialogFragment.TAG);
@@ -250,7 +252,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     }
 
     @Override
-    public void onAlarmEnabledChanged(int position, boolean enabled) {
+    public void onAlarmEnabledChanged(final int position, final boolean enabled) {
         final Alarm smartAlarm = currentAlarms.get(position);
         smartAlarm.setEnabled(enabled);
         if (enabled && smartAlarm.getDaysOfWeek().isEmpty()) {
@@ -278,12 +280,20 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
                          });
     }
 
-    public void newAlarm(@NonNull View sender) {
+    public void newAlarm(@NonNull final View sender) {
+        if (this.currentAlarms.size() >= 30) {
+            final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+            dialog.setTitle(R.string.error_to_many_alarms_title);
+            dialog.setMessage(R.string.error_to_many_alarms_message);
+            dialog.setPositiveButton(R.string.action_ok, null);
+            dialog.show();
+            return;
+        }
         Analytics.trackEvent(Analytics.Backside.EVENT_NEW_ALARM, null);
         editAlarm(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW);
     }
 
-    public void retry(@NonNull View sender) {
+    public void retry(@NonNull final View sender) {
         startLoading();
         onUpdate();
     }
@@ -298,7 +308,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         public static final String ARG_INDEX = DeleteAlarmDialogFragment.class.getName() + ".ARG_ALARM";
         public static final String TAG = DeleteAlarmDialogFragment.class.getSimpleName();
 
-        public static DeleteAlarmDialogFragment newInstance(int index) {
+        public static DeleteAlarmDialogFragment newInstance(final int index) {
             final DeleteAlarmDialogFragment fragment = new DeleteAlarmDialogFragment();
 
             final Bundle arguments = new Bundle();
@@ -309,7 +319,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         }
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
             final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
             dialog.setTitle(R.string.label_delete_alarm);
