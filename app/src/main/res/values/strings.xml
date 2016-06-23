@@ -253,6 +253,7 @@
     <string name="dialog_message_replace_sense">Are you sure you want to remove this Sense from your account? Only do this if you are replacing it with a different Sense unit. You will need to pair with another Sense to continue using the application.</string>
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
+    <string name="action_last_night">Last Night</string>
     <string name="action_today">Today</string>
     <string name="action_yesterday">Yesterday</string>
     <string name="title_setting_time_zone">Finishing up</string>
