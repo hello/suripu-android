@@ -254,6 +254,7 @@
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
     <string name="action_today">Today</string>
+    <string name="action_yesterday">Yesterday</string>
     <string name="title_setting_time_zone">Finishing up</string>
     <string name="title_pushing_data">Finishing up</string>
     <string name="action_change_email">Change Email</string>
@@ -566,6 +567,8 @@
     <string name="invalid_first_name">Invalid first name</string>
     <string name="invalid_password">Invalid password</string>
     <string name="error_playing_sound">An error occurred. Please try again.</string>
+    <string name="error_share_insights_title">Unable to copy link.</string>
+    <string name="error_share_insights_message">Sense was unable to pull a link for sharing. Please try again in a few moments.</string>
 
 
     <plurals name="item_support_comment_detail_attachments">

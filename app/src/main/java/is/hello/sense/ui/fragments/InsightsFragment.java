@@ -31,15 +31,19 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
@@ -51,13 +55,12 @@ import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.recycler.InsetItemDecoration;
-import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.Share;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -84,26 +87,29 @@ public class InsightsFragment extends BacksideTabFragment
     QuestionsPresenter questionsPresenter;
     @Inject
     Picasso picasso;
+    @Inject
+    ApiService apiService;
 
     private InsightsAdapter insightsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
 
-    private
     @Nullable
-    TutorialOverlayView tutorialOverlayView;
-    private
-    @Nullable
-    InsightsAdapter.InsightViewHolder selectedInsightHolder;
+    private TutorialOverlayView tutorialOverlayView;
 
-    private boolean questionLoaded = false, insightsLoaded = false;
-    private
     @Nullable
-    Question currentQuestion;
-    private
+    private InsightsAdapter.InsightViewHolder selectedInsightHolder;
+
+    @Nullable
+    private Question currentQuestion;
+
     @NonNull
-    List<Insight> insights = Collections.emptyList();
+    private List<Insight> insights = Collections.emptyList();
+
+    private boolean questionLoaded = false;
+    private boolean insightsLoaded = false;
+    private HomeActivity activity;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
@@ -128,6 +134,9 @@ public class InsightsFragment extends BacksideTabFragment
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
+        if (getActivity() instanceof HomeActivity) {
+            activity = (HomeActivity) getActivity();
+        }
 
     }
 
@@ -156,11 +165,6 @@ public class InsightsFragment extends BacksideTabFragment
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
         this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
         recyclerView.setAdapter(insightsAdapter);
-        // final InsetItemDecoration decoration = new InsetItemDecoration();
-
-        //  decoration.addBottomInset(insightsAdapter.getItemCount(), resources.getDimensionPixelSize(R.dimen.x2));
-        // recyclerView.addItemDecoration(decoration);
-
         return view;
     }
 
@@ -373,6 +377,29 @@ public class InsightsFragment extends BacksideTabFragment
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;
+    }
+
+    @Override
+    public void shareInsight(@NonNull final String insightId) {
+        showProgress(true);
+        apiService.shareInsight(new InsightType(insightId))
+                  .doOnTerminate(() -> showProgress(false))
+                  .subscribe(shareUrl -> {
+                                 Share.text(shareUrl.getUrl()).send(getActivity());
+                             },
+                             throwable -> {
+                                 ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+                                         .withTitle(R.string.error_share_insights_title)
+                                         .withMessage(StringRef.from(R.string.error_share_insights_message))
+                                         .build();
+                                 errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+                             });
+    }
+
+    private void showProgress(final boolean show) {
+        if (activity != null) {
+            activity.showProgressOverlay(show);
+        }
     }
 
     //endregion

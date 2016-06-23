@@ -34,7 +34,7 @@ public abstract class Share {
 
     protected final Intent intent;
 
-    protected Share(@NonNull String action) {
+    protected Share(@NonNull final String action) {
         this.intent = new Intent(action);
     }
 
@@ -47,15 +47,15 @@ public abstract class Share {
 
     //region Factories
 
-    public static Text text(@NonNull String text) {
+    public static Text text(@NonNull final String text) {
         return new Text(text);
     }
 
-    public static Image image(@NonNull Bitmap bitmap) {
+    public static Image image(@NonNull final Bitmap bitmap) {
         return new Image(bitmap);
     }
 
-    public static Email email(@NonNull String address) {
+    public static Email email(@NonNull final String address) {
         return new Email(address);
     }
 
@@ -65,56 +65,60 @@ public abstract class Share {
     //region Implementations
 
     public static class Text extends Share {
-        public Text(@NonNull String text) {
+        public Text(@NonNull final String text) {
             super(Intent.ACTION_SEND);
             intent.setType("text/plain");
 
             intent.putExtra(Intent.EXTRA_TEXT, text);
         }
 
-        public Text withSubject(@NonNull String subject) {
+        public Text withSubject(@NonNull final String subject) {
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             return this;
         }
 
         @Override
-        public void send(@NonNull Activity from) {
+        public void send(@Nullable final Activity from) {
+            if (from == null){
+                return;
+            }
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
         }
 
         @Override
-        public void send(@NonNull Fragment from) {
+        public void send(@NonNull final Fragment from) {
+            send(from.getActivity());
 
         }
     }
 
     public static class Email extends Share {
-        public Email(@NonNull String emailAddress) {
+        public Email(@NonNull final String emailAddress) {
             super(Intent.ACTION_SENDTO);
             intent.setData(Uri.fromParts("mailto", emailAddress, null));
         }
 
-        public Email withSubject(@NonNull String subject) {
+        public Email withSubject(@NonNull final String subject) {
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             return this;
         }
 
-        public Email withBody(@NonNull String body) {
+        public Email withBody(@NonNull final String body) {
             intent.putExtra(Intent.EXTRA_TEXT, body);
             return this;
         }
 
-        public Email withAttachment(@NonNull Uri attachment) {
+        public Email withAttachment(@NonNull final Uri attachment) {
             intent.putExtra(Intent.EXTRA_STREAM, attachment);
             return this;
         }
 
         @Override
-        public void send(@NonNull Activity from) {
+        public void send(@NonNull final Activity from) {
             try {
                 from.startActivity(intent);
-            } catch (ActivityNotFoundException e) {
-                SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            } catch (final ActivityNotFoundException e) {
+                final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
                 alertDialog.setTitle(R.string.dialog_error_title);
                 alertDialog.setMessage(R.string.error_no_email_client);
                 alertDialog.setPositiveButton(android.R.string.ok, null);
@@ -123,7 +127,7 @@ public abstract class Share {
         }
 
         @Override
-        public void send(@NonNull Fragment from) {
+        public void send(@NonNull final Fragment from) {
 
         }
     }
@@ -134,43 +138,43 @@ public abstract class Share {
         @Nullable
         SenseDialogFragment loadingDialogFragment;
 
-        private Image(@NonNull Bitmap bitmap) {
+        private Image(@NonNull final Bitmap bitmap) {
             super(Intent.ACTION_SEND);
             intent.setType("image/jpeg");
 
             this.bitmap = bitmap;
         }
 
-        public Image withTitle(@Nullable String title) {
+        public Image withTitle(@Nullable final String title) {
             intent.putExtra(Intent.EXTRA_SUBJECT, title);
             return this;
         }
 
-        public Image withDescription(@Nullable String description) {
+        public Image withDescription(@Nullable final String description) {
             intent.putExtra(Intent.EXTRA_TEXT, description);
             return this;
         }
 
-        public Image withLoadingDialog(@NonNull SenseDialogFragment loadingDialogFragment) {
+        public Image withLoadingDialog(@NonNull final SenseDialogFragment loadingDialogFragment) {
             this.loadingDialogFragment = loadingDialogFragment;
             return this;
         }
 
         @Override
-        public void send(@NonNull Fragment from) {
-            ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(from);
+        public void send(@NonNull final Fragment from) {
+            final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(from);
             if (!externalStoragePermission.isGranted()) {
                 externalStoragePermission.requestPermissionWithDialog();
                 return;
             }
-            ContentResolver contentResolver = from.getActivity().getContentResolver();
-            ContentValues values = new ContentValues();
+            final ContentResolver contentResolver = from.getActivity().getContentResolver();
+            final ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, intent.getStringExtra(Intent.EXTRA_SUBJECT));
             values.put(MediaStore.Images.Media.DESCRIPTION, intent.getStringExtra(Intent.EXTRA_TEXT));
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-            Uri imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            final Uri imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-            Observable<Void> writeImage = Observable.create(s -> {
+            final Observable<Void> writeImage = Observable.create(s -> {
                 OutputStream imageOut = null;
                 try {
                     imageOut = contentResolver.openOutputStream(imageUri);
@@ -207,7 +211,7 @@ public abstract class Share {
 
 
         @Override
-        public void send(@NonNull Activity from) {
+        public void send(@NonNull final Activity from) {
 
         }
     }

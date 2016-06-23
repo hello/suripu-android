@@ -8,7 +8,6 @@
 
     <style name="AppTheme.Text.Header">
         <item name="android:fontFamily">sans-serif-regular</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_small</item>
         <item name="android:textColor">@color/dark</item>
     </style>
 

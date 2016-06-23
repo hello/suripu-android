@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
@@ -52,9 +53,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     private OnRetry onRetry;
 
-    private
     @Nullable
-    List<Insight> insights;
+    private List<Insight> insights;
     private Question currentQuestion;
     private int loadingInsightPosition = RecyclerView.NO_POSITION;
 
@@ -391,6 +391,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
+        final TextView share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -399,6 +400,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
+            this.share = (TextView) view.findViewById(R.id.item_insight_share);
 
             view.setOnClickListener(this);
         }
@@ -426,6 +428,13 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 }
                 image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategoryName());
+                if (insight.isShareable()) {
+                    share.setVisibility(View.VISIBLE);
+                    share.setOnClickListener(v -> interactionListener.shareInsight(insight.getId()));
+                } else {
+                    share.setVisibility(View.GONE);
+                    share.setOnClickListener(null);
+                }
             }
 
             body.setText(Styles.darkenEmphasis(resources, insight.getMessage()));
@@ -485,5 +494,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onAnswerQuestion();
 
         void onInsightClicked(@NonNull InsightViewHolder viewHolder);
+
+        void shareInsight(@NonNull String insightId);
+
     }
 }

@@ -24,7 +24,9 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
+import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -181,6 +183,9 @@ public interface ApiService {
 
     @GET("/v2/insights/info/{category}")
     Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") String category);
+
+    @POST("/v2/sharing/insight")
+    Observable<ShareUrl> shareInsight(@NonNull @Body InsightType insightType);
 
     //endregion
 

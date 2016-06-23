@@ -36,6 +36,11 @@
 
     <string name="format_duration_abbrev_minutes">min</string>
     <string name="format_duration_abbrev_hours">hr</string>
+    <string name="format_ago">%1$d%2$s ago</string>
+    <string name="format_day">d</string>
+    <string name="format_week">w</string>
+    <string name="format_month">m</string>
+    <string name="format_year">y</string>
 
     <plurals name="format_relative_time_seconds">
         <item quantity="one">%1$d second ago</item>
