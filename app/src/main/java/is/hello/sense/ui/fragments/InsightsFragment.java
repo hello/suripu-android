@@ -413,9 +413,13 @@ public class InsightsFragment extends BacksideTabFragment
                 !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
-                                   if (!preferences.getBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false) &&
-                                           Locale.getDefault().getCountry().equalsIgnoreCase("US")) { // only for US users
-                                       questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW_AMAZON);
+                                   if (!preferences.getBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false)) {
+                                       final String country = Locale.getDefault().getCountry();
+                                       if (country.equalsIgnoreCase(Locale.US.getCountry())) {
+                                           questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW_AMAZON);
+                                       } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
+                                           questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW_AMAZON_UK);
+                                       }
                                    } else {
                                        questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW);
                                    }
@@ -483,9 +487,15 @@ public class InsightsFragment extends BacksideTabFragment
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity()));
-                    // mark amazon review done AND skip the review prompt until next cycle so regular
-                    // app review prompt may be asked again
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
+                    localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+                    preferences.edit()
+                               .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
+                               .apply();
+                    break;
+
+                case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
                                .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)

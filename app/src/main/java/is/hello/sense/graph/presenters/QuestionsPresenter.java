@@ -224,6 +224,21 @@ import rx.Scheduler;
                                                   apiService,
                                                   ReviewQuestionProvider.Destination.Amazon);
             }
+        },
+        REVIEW_AMAZON_UK {
+            @Override
+            String getName() {
+                return "AmazonUKReviewQuestionProvider";
+            }
+
+            @Override
+            QuestionProvider createQuestionProvider(@NonNull final ApiService apiService,
+                                                    @NonNull final Context context,
+                                                    @NonNull final Scheduler scheduler) {
+                return new ReviewQuestionProvider(context,
+                                                  apiService,
+                                                  ReviewQuestionProvider.Destination.AmazonUK);
+            }
         };
 
         /**
@@ -232,9 +247,9 @@ import rx.Scheduler;
          */
         abstract String getName();
 
-        abstract QuestionProvider createQuestionProvider(@NonNull ApiService apiService,
-                                                         @NonNull Context context,
-                                                         @NonNull Scheduler scheduler);
+        abstract QuestionProvider createQuestionProvider(final @NonNull ApiService apiService,
+                                                         final @NonNull Context context,
+                                                         final @NonNull Scheduler scheduler);
 
         /**
          * Searches for a <code>Source</code> matching the given name.
