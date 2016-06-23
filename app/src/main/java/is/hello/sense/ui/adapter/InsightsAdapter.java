@@ -428,12 +428,12 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 }
                 image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategoryName());
-                if (insight.getId() == null) {
-                    share.setVisibility(View.GONE);
-                    share.setOnClickListener(null);
-                } else {
+                if (insight.isShareable()) {
                     share.setVisibility(View.VISIBLE);
                     share.setOnClickListener(v -> interactionListener.shareInsight(insight.getId()));
+                } else {
+                    share.setVisibility(View.GONE);
+                    share.setOnClickListener(null);
                 }
             }
 

@@ -127,6 +127,10 @@ public class Insight extends ApiResponse {
         return (insightType != Type.BASIC);
     }
 
+    public boolean isShareable() {
+        return id != null;
+    }
+
     @Override
     public String toString() {
         return "Insight{" +

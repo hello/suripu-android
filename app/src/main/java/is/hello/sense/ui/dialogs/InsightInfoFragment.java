@@ -210,18 +210,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                                          errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
                                      });
             });
-
         }
 
-        Views.setSafeOnClickListener(doneButton, stateSafeExecutor, ignored ->
-
-                                             getFragmentManager()
-
-                                                     .
-
-                                                             popBackStack()
-
-                                    );
+        Views.setSafeOnClickListener(doneButton,
+                                     stateSafeExecutor,
+                                     ignored -> getFragmentManager().popBackStack());
 
         this.topShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_top_shadow);
         this.bottomShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_bottom_shadow);
