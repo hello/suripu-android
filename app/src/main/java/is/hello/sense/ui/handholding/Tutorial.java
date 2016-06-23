@@ -102,6 +102,21 @@ public enum Tutorial {
     }
 
     public boolean shouldShow(@NonNull final Activity activity) {
+        // Check if this device has ever seen the desired tutorial. If so mark it as seen for the user
+        // and reset the pref so another account on the device will not suppress the breadcrumb too.
+        final SharedPreferences genericPreferences = activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        if (genericPreferences.getBoolean(getShownKey(), false)){
+            genericPreferences
+                    .edit()
+                    .putBoolean(getShownKey(), false)
+                    .apply();
+
+            // Mark shown for this user and don't show the breadcrumb.
+            markShown(activity);
+            return false;
+        }
+
+
         final SharedPreferences preferences =
                 activity.getSharedPreferences(getPrefName(activity), 0);
         return (!preferences.getBoolean(getShownKey(), false) &&
