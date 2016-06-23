@@ -64,9 +64,9 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private SelectionTracker selectionTracker = new SelectionTracker();
     private boolean cancelled = false;
     private RecyclerView recyclerView;
-    private
+
     @StringRes
-    int titleRes;
+    private int titleRes;
 
     @Inject
     AudioCache audioCache;
@@ -369,6 +369,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         protected final TextView status;
         protected final SpinnerImageView image;
         protected final View view;
+        protected final View playerHolder;
 
         @DrawableRes
         protected final int onImage;
@@ -383,6 +384,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             this.title = (TextView) view.findViewById(R.id.item_list_name);
             this.image = (SpinnerImageView) view.findViewById(R.id.item_list_play_image);
             this.status = (TextView) view.findViewById(R.id.item_list_player_status);
+            this.playerHolder = view.findViewById(R.id.item_list_player_holder);
 
             if (selectionTracker.isMultiple) {
                 this.onImage = R.drawable.holo_check_on;
@@ -476,7 +478,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         private void enterIdleState(@NonNull final IListItem item) {
             status.setText(R.string.preview);
-            image.setOnClickListener(v -> {
+            playerHolder.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
                 new Thread(() -> {
                     final File file = audioCache.getCacheFile(item.getPreviewUrl());
@@ -506,7 +508,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         private void enterPlayingState() {
             status.setText(R.string.stop);
-            image.setOnClickListener(v -> {
+            playerHolder.setOnClickListener(v -> {
                 player.stopPlayback();
                 playerStatus = PlayerStatus.Idle;
                 notifyAdapter();
@@ -520,7 +522,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
         private void enterLoadingState() {
             status.setText(null);
-            image.setOnClickListener(null);
+            playerHolder.setOnClickListener(null);
             image.setImageResource(loadingIcon);
             image.startSpinning();
         }
