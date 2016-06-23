@@ -54,6 +54,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -102,6 +103,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private ImageButton smartAlarmButton;
 
     private View progressOverlay;
+    private SpinnerImageView spinner;
     private boolean isFirstActivityRun;
     private boolean showBackside;
 
@@ -212,6 +214,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
         registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
         this.progressOverlay = findViewById(R.id.activity_home_progress_overlay);
+        this.spinner = (SpinnerImageView) findViewById(R.id.activity_home_spinner);
     }
 
     @Override
@@ -717,8 +720,14 @@ public class HomeActivity extends ScopedInjectionActivity
 
     public void showProgressOverlay(final boolean show) {
         progressOverlay.post(() -> {
-            progressOverlay.bringToFront();
-            progressOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+            if (show) {
+                progressOverlay.bringToFront();
+                spinner.startSpinning();
+                progressOverlay.setVisibility(View.VISIBLE);
+            } else {
+                spinner.stopSpinning();
+                progressOverlay.setVisibility(View.GONE);
+            }
         });
     }
 }

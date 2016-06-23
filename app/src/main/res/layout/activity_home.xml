@@ -57,7 +57,9 @@
         android:focusable="true"
         android:visibility="gone">
 
-        <ProgressBar
+        <is.hello.sense.ui.widget.SpinnerImageView
+            android:id="@+id/activity_home_spinner"
+            android:background="@drawable/animated_progress_bar_white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"/>
