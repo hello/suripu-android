@@ -1,7 +1,10 @@
 /local.properties
+
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
+/.idea/*
+*.iml
 
 # Built application files
 *.apk
