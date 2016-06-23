@@ -197,3 +197,4 @@ dependencies {
 
     compile 'com.bugsnag:bugsnag-android:3.2.6'
 }
+
