@@ -22,8 +22,9 @@ public class SplitButtonLayout extends FrameLayout{
     private final View centerDivider;
     private final View topHorizontalDivider;
 
-    public SplitButtonLayout(final Context context, final AttributeSet attrs, final int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+
+    public SplitButtonLayout(final Context context, final AttributeSet attrs) {
+        super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.split_button_layout, this);
         leftButton = (Button) findViewById(R.id.button_left);
         rightButton = (Button) findViewById(R.id.button_right);
@@ -47,10 +48,6 @@ public class SplitButtonLayout extends FrameLayout{
         } finally {
             ta.recycle();
         }
-    }
-
-    public SplitButtonLayout(final Context context, final AttributeSet attrs) {
-        this(context, attrs, 0);
     }
 
     public SplitButtonLayout(final Context context) {
