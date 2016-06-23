@@ -99,7 +99,7 @@ public final class Sync<T> implements Iterable<T> {
      * Calls a given action for each value emitted by the wrapped
      * observable, blocking until the observable completes.
      */
-    public void forEach(@NonNull Action1<T> action) {
+    public void forEachAction(@NonNull Action1<T> action) {
         observable.forEach(action);
     }
 
