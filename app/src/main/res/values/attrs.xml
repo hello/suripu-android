@@ -72,4 +72,9 @@
         <attr name="inputText" format="string"/>
         <attr name="isPassword" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="SplitButtonLayout">
+        <attr name="leftButtonText" format="string"/>
+        <attr name="rightButtonText" format="string"/>
+    </declare-styleable>
 </resources>
