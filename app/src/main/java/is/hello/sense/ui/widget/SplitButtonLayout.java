@@ -64,6 +64,14 @@ public class SplitButtonLayout extends FrameLayout{
         expandButton(leftButton);
     }
 
+    public void setLeftButtonText(@Nullable final CharSequence text){
+        this.leftButton.setText(text);
+    }
+
+    public void setRightButtonText(@Nullable final CharSequence text){
+        this.rightButton.setText(text);
+    }
+
     public void setLeftButtonOnClickListener(@Nullable final OnClickListener listener){
         setButtonOnClickListener(leftButton, listener);
     }

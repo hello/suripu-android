@@ -10,55 +10,6 @@
         android:layout_height="match_parent"
         android:background="@color/background_light"/>
 
-    <RelativeLayout
-        android:id="@+id/fragment_insight_info_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x7"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_vertical">
-
-        <View
-            android:id="@+id/fragment_insight_info_divider_horizontal"
-            style="@style/Divider.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_size"
-            android:layout_alignParentTop="true"/>
-
-        <Button
-            android:id="@+id/fragment_insight_info_done"
-            style="@style/Body"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/fragment_insight_info_divider_horizontal"
-            android:layout_toStartOf="@+id/fragment_insight_info_divider_vertical"
-            android:gravity="center"
-            android:text="@string/action_close"
-            android:textAllCaps="true"/>
-
-        <View
-            android:id="@+id/fragment_insight_info_divider_vertical"
-            style="@style/Divider.Vertical"
-            android:layout_width="@dimen/divider_size"
-            android:layout_height="match_parent"
-            android:layout_below="@id/fragment_insight_info_divider_horizontal"
-            android:layout_centerInParent="true"
-            android:layout_margin="@dimen/x1"/>
-
-
-        <Button
-            android:id="@+id/fragment_insight_info_share"
-            style="@style/Body.Link"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/fragment_insight_info_divider_horizontal"
-            android:layout_toEndOf="@+id/fragment_insight_info_divider_vertical"
-            android:gravity="center"
-            android:text="@string/action_share"
-            android:textAllCaps="true"/>
-    </RelativeLayout>
-
     <is.hello.sense.ui.widget.ExtendedScrollView
         android:id="@+id/fragment_insight_info_scroll"
         android:layout_width="match_parent"
@@ -136,6 +87,14 @@
         </LinearLayout>
 
     </is.hello.sense.ui.widget.ExtendedScrollView>
+
+    <is.hello.sense.ui.widget.SplitButtonLayout
+        android:id="@+id/fragment_insight_info_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x7"
+        android:layout_alignParentBottom="true"
+        app:leftButtonText="@string/action_close"
+        app:rightButtonText="@string/action_share"/>
 
     <ImageView
         android:id="@+id/fragment_insight_info_top_shadow"
