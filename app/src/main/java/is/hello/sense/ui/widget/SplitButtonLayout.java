@@ -88,7 +88,7 @@ public class SplitButtonLayout extends FrameLayout{
         if(listener == null){
             button.setOnClickListener(null);
         } else{
-            Views.setSafeOnClickListener(button, listener);
+            Views.setTimeOffsetOnClickListener(button, listener);
         }
     }
 }
