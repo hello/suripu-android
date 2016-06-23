@@ -78,7 +78,10 @@ public abstract class Share {
         }
 
         @Override
-        public void send(@NonNull final Activity from) {
+        public void send(@Nullable final Activity from) {
+            if (from == null){
+                return;
+            }
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
         }
 

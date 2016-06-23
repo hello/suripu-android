@@ -39,6 +39,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
+import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.graph.presenters.InsightInfoPresenter;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
@@ -193,22 +194,14 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             params.addRule(RelativeLayout.BELOW, R.id.fragment_insight_info_divider_horizontal);
             doneButton.setLayoutParams(params);
-        } else if (getActivity() instanceof HomeActivity) {
+        } else if (getActivity() != null && getActivity() instanceof HomeActivity) {
             final HomeActivity activity = (HomeActivity) getActivity();
             shareButton.setOnClickListener((v) -> {
-                activity.showProgressOverlay(true);
+                ((HomeActivity) getActivity()).showProgressOverlay(true);
                 apiService.shareInsight(new InsightType(insightId))
-                          .doOnTerminate(() -> activity.showProgressOverlay(false))
-                          .subscribe(shareUrl -> {
-                                         Share.text(shareUrl.getUrl()).send(activity);
-                                     },
-                                     throwable -> {
-                                         ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
-                                                 .withTitle(R.string.error_share_insights_title)
-                                                 .withMessage(StringRef.from(R.string.error_share_insights_message))
-                                                 .build();
-                                         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-                                     });
+                          .doOnTerminate(() -> shareInsightTerminate((HomeActivity) getActivity()))
+                          .subscribe(this::shareInsightSuccess,
+                                     this::shareInsightError);
             });
         }
 
@@ -569,6 +562,24 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
 //endregion
 
+    private void shareInsightSuccess(@NonNull final ShareUrl shareUrl) {
+        Share.text(shareUrl.getUrl()).send(getActivity());
+    }
+
+    private void shareInsightError(@NonNull final Throwable throwable) {
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+                .withTitle(R.string.error_share_insights_title)
+                .withMessage(StringRef.from(R.string.error_share_insights_message))
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    private void shareInsightTerminate(@Nullable final HomeActivity activity) {
+        if (activity == null) {
+            return;
+        }
+        activity.showProgressOverlay(false);
+    }
 
 //region Scroll handling
 
