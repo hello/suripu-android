@@ -5,15 +5,22 @@ import junit.framework.Assert;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Sync;
+import retrofit.mime.TypedFile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class AccountPresenterTests extends InjectionTestCase {
@@ -92,6 +99,36 @@ public class AccountPresenterTests extends InjectionTestCase {
         Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
         assertNotSame(accountBefore.getEmail(), accountAfter.getEmail());
         assertEquals("test@me.com", accountAfter.getEmail());
+    }
+
+    @Test
+    public void updateProfilePhoto() throws Exception {
+        final File testFile = new File("src/tests/assets/photos/test_profile_photo.jpg");
+        final TypedFile typedFile = new TypedFile("multipart/form-data", testFile);
+        accountPresenter.setWithPhoto(false);
+        Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        MultiDensityImage imageUploaded = Sync.last(accountPresenter
+                                                         .updateProfilePicture(typedFile,
+                                                                               Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO,
+                                                                               Analytics.ProfilePhoto.Source.CAMERA));
+        accountPresenter.setWithPhoto(true);
+        Account accountAfter =  Sync.last(accountPresenter.provideUpdateObservable());
+
+        assertNotSame(accountAfter.getProfilePhoto(), accountBefore.getProfilePhoto());
+        assertEquals(imageUploaded, accountAfter.getProfilePhoto());
+    }
+
+    @Test
+    public void deleteProfilePhoto() throws Exception {
+        accountPresenter.setWithPhoto(true);
+        Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        accountPresenter.deleteProfilePicture().doOnNext(ignore -> {
+            accountPresenter.setWithPhoto(false);
+            Account accountAfter = Sync.last(accountPresenter.provideUpdateObservable());
+            assertNull(accountAfter.getProfilePhoto());
+        });
+
+        assertNotNull(accountBefore.getProfilePhoto());
     }
 
     //endregion
