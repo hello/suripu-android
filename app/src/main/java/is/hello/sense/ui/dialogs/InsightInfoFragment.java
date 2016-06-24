@@ -20,9 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -45,10 +43,12 @@ import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.ParallaxImageView;
+import is.hello.sense.ui.widget.SplitButtonLayout;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
+import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.Share;
 import is.hello.sense.util.markup.text.MarkupString;
 
@@ -98,9 +98,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private View[] contentViews;
     private TextView titleText;
     private TextView messageText;
-    private Button doneButton;
     @UsedInTransition
-    private RelativeLayout bottomContainer;
+    private SplitButtonLayout bottomContainer;
 
     private
     @ColorInt
@@ -170,7 +169,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         illustrationImage.setPicassoListener(this);
 
         this.titleText = (TextView) rootView.findViewById(R.id.fragment_insight_info_title);
-        this.bottomContainer = (RelativeLayout) rootView.findViewById(R.id.fragment_insight_info_bottom);
+        this.bottomContainer = (SplitButtonLayout) rootView.findViewById(R.id.fragment_insight_info_bottom);
 
         this.messageText = (TextView) rootView.findViewById(R.id.fragment_insight_info_message);
         final TextView summaryHeaderText = (TextView) rootView.findViewById(R.id.fragment_insight_info_summary_header);
@@ -185,18 +184,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             this.contentViews = new View[]{titleText, messageText, summaryHeaderText, summaryText};
         }
 
-        this.doneButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_done);
-        final Button shareButton = (Button) this.rootView.findViewById(R.id.fragment_insight_info_share);
-        final View verticalDivider = this.rootView.findViewById(R.id.fragment_insight_info_divider_vertical);
         if (insightId == null) {
-            shareButton.setVisibility(View.GONE);
-            verticalDivider.setVisibility(View.GONE);
-            final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            params.addRule(RelativeLayout.BELOW, R.id.fragment_insight_info_divider_horizontal);
-            doneButton.setLayoutParams(params);
+            //hide share button
+            bottomContainer.hideRightButton();
         } else if (getActivity() != null && getActivity() instanceof HomeActivity) {
-            final HomeActivity activity = (HomeActivity) getActivity();
-            shareButton.setOnClickListener((v) -> {
+            bottomContainer.setRightButtonOnClickListener((v) -> {
                 ((HomeActivity) getActivity()).showProgressOverlay(true);
                 apiService.shareInsight(new InsightType(insightId))
                           .doOnTerminate(() -> shareInsightTerminate((HomeActivity) getActivity()))
@@ -205,9 +197,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             });
         }
 
-        Views.setSafeOnClickListener(doneButton,
-                                     stateSafeExecutor,
-                                     ignored -> getFragmentManager().popBackStack());
+        bottomContainer.setLeftButtonOnClickListener(
+                new SafeOnClickListener(stateSafeExecutor, ignored -> getFragmentManager().popBackStack()));
 
         this.topShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_top_shadow);
         this.bottomShadow = (ImageView) this.rootView.findViewById(R.id.fragment_insight_info_bottom_shadow);
@@ -253,6 +244,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         this.titleText = null;
         this.messageText = null;
+        if(bottomContainer != null){
+            this.bottomContainer.setLeftButtonOnClickListener(null);
+            this.bottomContainer.setRightButtonOnClickListener(null);
+        }
     }
 
     @Override
@@ -325,7 +320,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.bottomShadow = null;
         this.illustrationImage = null;
         this.contentViews = null;
-        this.doneButton = null;
+        if(bottomContainer != null){
+            this.bottomContainer.setLeftButtonOnClickListener(null);
+            this.bottomContainer.setRightButtonOnClickListener(null);
+            this.bottomContainer = null;
+        }
     }
 
     @Override
