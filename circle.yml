@@ -12,7 +12,7 @@ dependencies:
     - ~/.android
     - ~/android
   override:
-    - ./circle_dependencies
+    - ./circle_dep.sh
     - echo y | ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
 test:
   override:
