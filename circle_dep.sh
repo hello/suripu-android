@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Fix the CircleCI path
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
 
