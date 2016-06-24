@@ -1,19 +1,14 @@
 machine:
   java:
     version: oraclejdk8
-  environment:
-    ANDROID_HOME: /home/ubuntu/android
 general:
   branches:
     ignore:
       - /no\-test\-.*/
 dependencies:
-  cache_directories:
-    - ~/.android
-    - ~/android
   override:
-    - ./circle_dep.sh
-    - echo y | ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
+    - echo y | android update sdk -u -a -t extra-android-m2repository,extra-google-m2repository,extra-android-support,android-24,build-tools-24.0.0
+    - ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
 test:
   override:
     - ./gradlew clean testDebug -PdisablePreDex -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
