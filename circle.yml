@@ -6,10 +6,11 @@ general:
     ignore:
       - /no\-test\-.*/
 dependencies:
-  pre:
+  override:
     - echo y | android update sdk -u -a -t extra-android-m2repository
     - echo y | android update sdk -u -a -t extra-google-m2repository
     - echo y | android update sdk -u -a -t extra-android-support
+    - echo y | android update sdk --no-ui --all --filter "build-tools-24.0.0"
     - echo y | ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
 test:
   override:
