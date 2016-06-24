@@ -1,6 +1,8 @@
 machine:
   java:
     version: oraclejdk8
+  environment:
+    ANDROID_HOME: /home/ubuntu/android
 general:
   branches:
     ignore:
