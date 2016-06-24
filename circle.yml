@@ -1,8 +1,6 @@
 machine:
   java:
     version: oraclejdk8
-  environment:
-    ANDROID_HOME: /user/local/android-sdk-linux
 general:
   branches:
     ignore:
