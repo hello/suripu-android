@@ -11,8 +11,6 @@ dependencies:
   cache_directories:
     - ~/.android
     - ~/android
-    - /usr/local/android-sdk-linux/build-tools
-    - /usr/local/android-sdk-linux/extras
   override:
     - ./circle_dep.sh
     - echo y | ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
