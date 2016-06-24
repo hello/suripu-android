@@ -3,6 +3,7 @@
 # Fix the CircleCI path
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
 
+
 DEPS="$ANDROID_HOME/installed-dependencies"
 
 if [ ! -e $DEPS ]; then
