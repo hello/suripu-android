@@ -6,7 +6,7 @@ general:
     ignore:
       - /no\-test\-.*/
 dependencies:
-  override:
+  pre:
     - echo y | android update sdk -u -a -t extra-android-m2repository
     - echo y | android update sdk -u -a -t extra-google-m2repository
     - echo y | android update sdk -u -a -t extra-android-support
