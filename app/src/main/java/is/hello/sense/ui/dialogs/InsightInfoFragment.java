@@ -82,6 +82,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private String imageUrl;
     private CharSequence summary;
     private String insightId = null;
+    private String category = null;
 
     @UsedInTransition
     private View rootView;
@@ -244,7 +245,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         this.titleText = null;
         this.messageText = null;
-        if(bottomContainer != null){
+        if (bottomContainer != null) {
             this.bottomContainer.setLeftButtonOnClickListener(null);
             this.bottomContainer.setRightButtonOnClickListener(null);
         }
@@ -320,7 +321,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         this.bottomShadow = null;
         this.illustrationImage = null;
         this.contentViews = null;
-        if(bottomContainer != null){
+        if (bottomContainer != null) {
             this.bottomContainer.setLeftButtonOnClickListener(null);
             this.bottomContainer.setRightButtonOnClickListener(null);
             this.bottomContainer = null;
@@ -535,6 +536,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public void bindInsightInfo(@NonNull final InsightInfo info) {
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
+        category = info.getCategory();
     }
 
     public void insightInfoUnavailable(final Throwable e) {
@@ -562,7 +564,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 //endregion
 
     private void shareInsightSuccess(@NonNull final ShareUrl shareUrl) {
-        Share.text(shareUrl.getUrlForSharing(getActivity())).send(getActivity());
+        final Share.Text text = Share.text(shareUrl.getUrlForSharing(getActivity()));
+        if (category != null) {
+            text.withProperties(Share.getInsightProperties(category));
+        }
+        text.send(getActivity());
     }
 
     private void shareInsightError(@NonNull final Throwable throwable) {

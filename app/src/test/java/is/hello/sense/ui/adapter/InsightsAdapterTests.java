@@ -238,7 +238,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void shareInsight(@NonNull final String insightId) {
+        public void shareInsight(@NonNull final Insight insightId) {
             callbacks.add(Callback.SHARE_INSIGHT);
         }
 

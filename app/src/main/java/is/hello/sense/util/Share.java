@@ -12,6 +12,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.segment.analytics.Properties;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -65,11 +67,18 @@ public abstract class Share {
     //region Implementations
 
     public static class Text extends Share {
+        private Properties properties = null;
+
         public Text(@NonNull final String text) {
             super(Intent.ACTION_SEND);
             intent.setType("text/plain");
 
             intent.putExtra(Intent.EXTRA_TEXT, text);
+        }
+
+        public Text withProperties(@NonNull final Properties properties) {
+            this.properties = properties;
+            return this;
         }
 
         public Text withSubject(@NonNull final String subject) {
@@ -79,10 +88,13 @@ public abstract class Share {
 
         @Override
         public void send(@Nullable final Activity from) {
-            if (from == null){
+            if (from == null) {
                 return;
             }
             from.startActivity(Intent.createChooser(intent, from.getString(R.string.action_share)));
+            if (properties != null) {
+                Analytics.trackEvent(Analytics.Global.EVENT_SHARE, properties);
+            }
         }
 
         @Override
@@ -217,4 +229,10 @@ public abstract class Share {
     }
 
     //endregion
+    public static Properties getInsightProperties(@NonNull final String category) {
+        final Properties properties = new Properties();
+        properties.put(Analytics.Global.PROP_TYPE, Analytics.Global.PROP_INSIGHT);
+        properties.put(Analytics.Global.PROP_INSIGHT_CATEGORY, category);
+        return properties;
+    }
 }
