@@ -573,6 +573,7 @@
     <string name="error_to_many_alarms_title">Alarm could not be saved</string>
     <string name="error_to_many_alarms_message">You can not set more than 30 alarms.</string>
     <string name="failed_to_link_account">Failed to Link Account</string>
+    <string name="share_text">See how i\'m improving my sleep with insights from Sense. %1$s #MySense</string>
 
 
     <plurals name="item_support_comment_detail_attachments">

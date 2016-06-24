@@ -385,7 +385,7 @@ public class InsightsFragment extends BacksideTabFragment
         apiService.shareInsight(new InsightType(insightId))
                   .doOnTerminate(() -> showProgress(false))
                   .subscribe(shareUrl -> {
-                                 Share.text(shareUrl.getUrl()).send(getActivity());
+                                 Share.text(shareUrl.getUrlForSharing(getActivity())).send(getActivity());
                              },
                              throwable -> {
                                  ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())

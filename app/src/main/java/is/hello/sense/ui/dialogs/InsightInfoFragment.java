@@ -563,7 +563,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 //endregion
 
     private void shareInsightSuccess(@NonNull final ShareUrl shareUrl) {
-        Share.text(shareUrl.getUrl()).send(getActivity());
+        Share.text(shareUrl.getUrlForSharing(getActivity())).send(getActivity());
     }
 
     private void shareInsightError(@NonNull final Throwable throwable) {

@@ -80,7 +80,6 @@
     <style name="AppTheme.Text.Body">
         <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_large</item>
         <item name="android:textColor">@color/standard</item>
     </style>
 
