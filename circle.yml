@@ -1,12 +1,18 @@
 machine:
   java:
     version: oraclejdk8
+  environment:
+    ANDROID_HOME: /user/local/android-sdk-linux
 general:
   branches:
     ignore:
       - /no\-test\-.*/
 dependencies:
+  cache_directories:
+    - ~/.android
+    - ~/android
   override:
+    - /scripts/circle_dependencies.sh
     - echo y | ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
 test:
   override:
