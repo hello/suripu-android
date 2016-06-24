@@ -544,7 +544,7 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void getFacebookProfileError(final Throwable error) {
-        handleError(error, R.string.error_internet_connection_generic_title, R.string.error_internet_connection_generic_message);
+        handleError(error, R.string.error_account_upload_photo_title, R.string.error_internet_connection_generic_message);
     }
 
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
@@ -559,7 +559,7 @@ public class AccountSettingsFragment extends InjectionFragment
         //restore previous saved photo and refresh view
         currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
         bindAccount(currentAccount);
-        onImageCompressedError(e, R.string.error_internet_connection_generic_title, R.string.error_account_upload_photo_message);
+        onImageCompressedError(e, R.string.error_account_upload_photo_title, R.string.error_account_upload_photo_message);
         profileImageManager.trimCache();
     }
 

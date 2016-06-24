@@ -513,7 +513,7 @@
     <string name="sleep_sounds_state_no_sounds_message">Sleep Sounds will be available once Sense has finished updating. Note that this may take up to an hour.</string>
     <string name="sleep_sounds_state_fw_update_title">Sense needs to update</string>
     <string name="sleep_sounds_state_fw_update_message">Sense will update automatically when plugged in and connected to Wi-Fi. This may take a few moments.</string>
-    <string name="sleep_sounds_error_generic">There was a problem loading Sleep Sounds. Please try again.</string>
+
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
