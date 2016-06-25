@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/static_recycler_container"
+<FrameLayout android:id="@+id/static_recycler_container"
+             style="@style/AppTheme.Light"
+             xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/background_light">
+             android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/static_recycler_view"

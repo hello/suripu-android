@@ -4,7 +4,7 @@
         android:id="@+id/action_add_attachment"
         android:title="@string/action_add_attachment"
         android:icon="@drawable/action_attach"
-        android:showAsAction="always" />
+        android:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_send"
         android:title="@string/action_send"

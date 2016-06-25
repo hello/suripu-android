@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Commented resources are for suppressing UnusedResource inspection with lint and reducing build time.
+Uncomment a resource when it's needed.
+-->
 <resources>
     <!-- start Nathan's official colors -->
     <color name="dark">@color/gray6</color>
     <color name="standard">@color/gray5</color>
     <color name="dim">@color/gray4</color>
-    <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
+    <!--
+    <color name="primary">@color/blue6</color>
     <color name="warning">@color/yellow6</color>
     <color name="success">@color/green6</color>
+    -->
 
     <!-- end Nathan's official colors -->
 
     <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/black_25</color>
+    <!-- <color name="transparent_overlay">@color/black_25</color> -->
     <color name="light_accent">@color/blue6</color>
     <color name="light_accent_dimmed">@color/blue4</color>
     <color name="light_accent_extra_dimmed">@color/blue2</color>
@@ -83,8 +89,7 @@
     <color name="graph_fill_gradient_top">@color/black_13</color>
     <color name="graph_fill_gradient_bottom">@color/black_06</color>
     <color name="graph_fill_solid">@color/gray2_15</color>
-    <color name="graph_fill_empty">@color/gray2_00</color>
-
+    <!--  <color name="graph_fill_empty">@color/gray2_00</color> -->
     <color name="graph_grid_empty_cell">@color/white</color>
     <color name="graph_grid_empty_missing">@color/gray2</color>
 
@@ -94,7 +99,6 @@
     <color name="trends_title">@color/gray4</color>
     <color name="trends_line_divider">@color/gray2_50</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
-    <color name="trends_bargraph_dashedline">@color/gray7</color>
     <color name="trends_bargraph">@color/gray3</color>
     <color name="trends_bargraph_bar">@color/blue3</color>
     <color name="trends_bargraph_annotation_text">@color/blue6</color>

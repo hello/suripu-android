@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/AppTheme.Light"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/timeline_shareable_view_width"
     android:layout_height="@dimen/timeline_shareable_view_height"
-    android:padding="@dimen/gap_medium"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:padding="@dimen/gap_medium">
 
 
     <LinearLayout
@@ -62,6 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:letterSpacing=".065"
         android:textAppearance="@style/AppTheme.Text.Score.Share.Date"
         tools:ignore="RelativeOverlap"/>
 </RelativeLayout>

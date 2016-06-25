@@ -37,11 +37,12 @@
                     android:text="@string/label_account"/>
 
                 <ImageView
+                    android:contentDescription="@string/content_description_click_here"
                     android:id="@+id/fragment_app_settings_breadcrumb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/gap_xsmall_negative"
+                    android:layout_marginStart="@dimen/gap_xsmall_negative"
                     android:layout_marginTop="@dimen/gap_mlarge"
                     android:src="@drawable/unread_indicator"
                     android:visibility="gone"/>

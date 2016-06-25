@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Queue;
 
 import rx.Observable;
@@ -34,7 +35,7 @@ public class ImageUtil {
     @VisibleForTesting
     final Bitmap.CompressFormat COMPRESSION_FORMAT = Bitmap.CompressFormat.JPEG;
     @VisibleForTesting
-    final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
     @VisibleForTesting
     final String imageFileName = "HelloProfile";
     @VisibleForTesting

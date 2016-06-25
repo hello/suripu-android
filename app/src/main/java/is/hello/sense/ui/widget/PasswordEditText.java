@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -32,6 +33,7 @@ public class PasswordEditText extends EditText
         init();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() != MotionEvent.ACTION_DOWN) {

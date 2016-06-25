@@ -1,5 +1,6 @@
 package is.hello.sense.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -217,6 +218,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     class SleepPillViewHolder extends BaseViewHolder {
         final TextView lastSeen;
         final TextView status1;

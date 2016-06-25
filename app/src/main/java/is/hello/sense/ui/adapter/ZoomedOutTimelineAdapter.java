@@ -15,6 +15,8 @@ import android.widget.TextView;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import java.util.Locale;
+
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
@@ -179,7 +181,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                 } else {
                     int sleepScore = timeline.getScore();
                     int sleepScoreColor = resources.getColor(timeline.getScoreCondition().colorRes);
-                    score.setText(Integer.toString(sleepScore));
+                    score.setText(String.format(Locale.getDefault(), "%d", sleepScore));
                     score.setTextColor(sleepScoreColor);
                     scoreDrawable.setFillColor(sleepScoreColor);
                     scoreDrawable.setValue(sleepScore);

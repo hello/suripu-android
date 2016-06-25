@@ -1,5 +1,6 @@
 package is.hello.sense.ui.activities;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,6 +32,7 @@ import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.SessionLogger;
 
+@SuppressLint("Registered")
 public class DebugActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;

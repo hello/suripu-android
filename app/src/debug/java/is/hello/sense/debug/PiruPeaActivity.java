@@ -1,5 +1,6 @@
 package is.hello.sense.debug;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,9 +46,12 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
-    @Inject BluetoothStack stack;
-    @Inject ApiSessionManager apiSessionManager;
-    @Inject HardwarePresenter hardwarePresenter;
+    @Inject
+    BluetoothStack stack;
+    @Inject
+    ApiSessionManager apiSessionManager;
+    @Inject
+    HardwarePresenter hardwarePresenter;
 
     private SensePeripheral selectedPeripheral;
 
@@ -104,7 +108,8 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         super.onDestroy();
 
         if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            selectedPeripheral.disconnect().subscribe(ignored -> {
+            }, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
         }
     }
@@ -201,7 +206,8 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
 
     public void disconnect() {
         if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            selectedPeripheral.disconnect().subscribe(ignored -> {
+            }, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
             this.selectedPeripheral = null;
         }
@@ -316,6 +322,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
             return new ViewHolder(view);
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             final SensePeripheral peripheral = getItem(position);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout style="@style/AppTheme.Light"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/white"
               android:orientation="vertical">
 
     <ImageView
@@ -10,32 +10,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:contentDescription="@string/action_close"
         android:minHeight="@dimen/x2"
         android:minWidth="@dimen/x2"
+        android:paddingBottom="@dimen/x1"
         android:paddingLeft="@dimen/x4"
         android:paddingRight="@dimen/x4"
         android:paddingTop="@dimen/x3"
-        android:paddingBottom="@dimen/x1"
         android:src="@drawable/close"/>
 
     <TextView
         style="@style/AppTheme.Text.Header.H5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:paddingLeft="@dimen/x4"
         android:paddingRight="@dimen/x4"
-        android:text="@string/whats_new_title_text"
-        android:gravity="center_horizontal"/>
+        android:text="@string/whats_new_title_text"/>
 
     <TextView
         style="@style/Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/x2"
+        android:gravity="center_horizontal"
         android:paddingLeft="@dimen/x4"
         android:paddingRight="@dimen/x4"
-        android:text="@string/whats_new_message_text"
-        android:gravity="center_horizontal"/>
+        android:text="@string/whats_new_message_text"/>
 
     <TextView
         android:id="@+id/view_whats_new_learn_more"

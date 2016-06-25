@@ -363,9 +363,9 @@ import is.hello.sense.ui.widget.util.Styles;
 
             String reading;
             if (leftOverMinutes == 0) {
-                reading = String.format("%.0f", hours);
+                reading = String.format(Locale.getDefault(), "%.0f", hours);
             } else {
-                reading = String.format("%.1f", hours);
+                reading = String.format(Locale.getDefault(), "%.1f", hours);
             }
 
             return Styles.assembleReadingAndUnit(reading, context.getString(R.string.format_duration_abbrev_hours), Styles.UNIT_STYLE_SUBSCRIPT);

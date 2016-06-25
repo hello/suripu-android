@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget.graphing;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -512,6 +513,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         return message;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         if (ignoreTouchUntilEnd) {

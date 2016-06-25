@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -354,7 +355,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         TitleViewHolder(@NonNull final View view) {
             super(view);
             final String title = getString(titleRes);
-            ((TextView) view.findViewById(R.id.item_section_title_text)).setText(title.toUpperCase());
+            ((TextView) view.findViewById(R.id.item_section_title_text)).setText(title.toUpperCase(Locale.getDefault()));
             view.findViewById(R.id.item_section_title_divider).setVisibility(View.GONE);
         }
 

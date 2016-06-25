@@ -48,7 +48,7 @@
         android:textAppearance="@style/AppTheme.Text.Body.MidSized"
         android:textColor="@color/text_dim"
         android:text="@string/missing_data_placeholder"
-        android:singleLine="true"
+        android:maxLines="1"
         android:ellipsize="end" />
 
     <View

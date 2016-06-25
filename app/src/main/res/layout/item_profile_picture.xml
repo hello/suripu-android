@@ -16,11 +16,12 @@
         android:id="@+id/item_profile_picture_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/item_profile_picture_image"
         android:layout_alignBottom="@id/item_profile_picture_image"
+        android:layout_toEndOf="@id/item_profile_picture_image"
+        android:background="@color/transparent"
+        android:contentDescription="@string/content_description_profile_picture"
         android:paddingLeft="-2dp"
-        android:src="@drawable/icon_plus_button"
-        android:background="@color/transparent"/>
+        android:src="@drawable/icon_plus_button"/>
 
     <ProgressBar
         android:id="@+id/item_profile_progress_bar"

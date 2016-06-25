@@ -2,12 +2,12 @@
 
 <!-- Must have android:clickable="true" to work with
      FragmentNavigationFragment#overlayFragmentAllowingStateLoss(...) -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_onboarding"
-    android:clickable="true">
+<RelativeLayout style="@style/AppTheme.Light"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:orientation="vertical">
 
     <Button
         android:id="@+id/fragment_onboarding_next"

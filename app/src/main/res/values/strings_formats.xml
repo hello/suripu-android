@@ -41,29 +41,4 @@
     <string name="format_week">w</string>
     <string name="format_month">m</string>
     <string name="format_year">y</string>
-
-    <plurals name="format_relative_time_seconds">
-        <item quantity="one">%1$d second ago</item>
-        <item quantity="other">%1$d seconds ago</item>
-    </plurals>
-    <plurals name="format_relative_time_minutes">
-        <item quantity="one">%1$d minute ago</item>
-        <item quantity="other">%1$d minutes ago</item>
-    </plurals>
-    <plurals name="format_relative_time_hours">
-        <item quantity="one">%1$d hour ago</item>
-        <item quantity="other">%1$d hours ago</item>
-    </plurals>
-    <plurals name="format_relative_time_days">
-        <item quantity="one">%1$d day ago</item>
-        <item quantity="other">%1$d days ago</item>
-    </plurals>
-    <plurals name="format_relative_time_weeks">
-        <item quantity="one">%1$d week ago</item>
-        <item quantity="other">%1$d weeks ago</item>
-    </plurals>
-    <plurals name="format_relative_time_months">
-        <item quantity="one">%1$d month ago</item>
-        <item quantity="other">%1$d months ago</item>
-    </plurals>
 </resources>

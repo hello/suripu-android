@@ -15,7 +15,8 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/gap_medium"
-        android:layout_marginRight="@dimen/gap_medium"/>
+        android:layout_marginRight="@dimen/gap_medium"
+        android:contentDescription="@string/content_description_sleep_sounds"/>
 
     <TextView
         android:id="@+id/item_sleep_sounds_label"

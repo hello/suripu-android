@@ -26,6 +26,8 @@ import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
@@ -332,7 +334,7 @@ public class TimelineHeaderView extends RelativeLayout {
             color = getResources().getColor(condition.colorRes);
 
             scoreDrawable.setValue(score);
-            scoreText.setText(Integer.toString(score));
+            scoreText.setText(String.format(Locale.getDefault(), "%d", score));
             scoreContainer.setContentDescription(getResources().getString(R.string.accessibility_sleep_score_fmt, score));
 
             setWillNotDraw(false);
@@ -379,7 +381,7 @@ public class TimelineHeaderView extends RelativeLayout {
                 scoreDrawable.setValue(newScore);
                 scoreDrawable.setFillColor(color);
 
-                scoreText.setText(newScore.toString());
+                scoreText.setText(String.format(Locale.getDefault(), "%d", newScore));
                 scoreText.setTextColor(color);
             });
             scoreAnimator.addListener(new AnimatorListenerAdapter() {
@@ -390,7 +392,7 @@ public class TimelineHeaderView extends RelativeLayout {
                     scoreDrawable.setValue(score);
                     scoreDrawable.setFillColor(endColor);
 
-                    scoreText.setText(Integer.toString(score));
+                    scoreText.setText(String.format(Locale.getDefault(), "%d", score));
                     scoreText.setTextColor(endColor);
 
                     this.wasCanceled = true;

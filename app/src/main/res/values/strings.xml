@@ -16,7 +16,6 @@
     <string name="label_dob">Date of Birth</string>
 
     <string name="action_log_in">Log in</string>
-    <string name="action_set_up_sense">Set up Sense</string>
 
     <string name="device_sense">Sense</string>
     <string name="device_pill">Sleep Pill</string>
@@ -65,11 +64,8 @@
     <string name="tell_a_friend_body">Sense tracks your sleep, monitors the environment of your bedroom, and helps you wake up feeling great: https://hello.is</string>
     <string name="title_time_frame_24_hrs">Last Day</string>
     <string name="title_time_frame_week">Past Week</string>
-    <string name="title_info">Info</string>
-    <string name="title_demographics">Demographics</string>
 
     <string name="action_ok">OK</string>
-    <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
     <string name="title_setup_sense">Setting up Sense</string>
@@ -94,11 +90,9 @@
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
     <string name="action_skip">Skip</string>
-    <string name="action_play_video">Play</string>
     <string name="action_get_started">Get Started</string>
     <string name="action_buy_sense">Order a Sense</string>
     <string name="action_pair_your_sense">Pair your Sense</string>
-    <string name="welcome">Welcome</string>
     <string name="title_register_birthday">What is your birthday?</string>
     <string name="action_next">Next</string>
     <string name="title_register_gender">Are you male or female?</string>
@@ -204,9 +198,7 @@
     <string name="error_account_password_insecure">Please enter a stronger password.</string>
     <string name="error_account_password_too_short">Passwords must be at least 6 characters.</string>
     <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
-    <string name="error_account_incomplete_credentials">Please enter your email address and password.</string>
     <string name="title_checking_connectivity">Checking connectivity</string>
-    <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
     <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
     <string name="error_sense_not_found_title">​Could not connect over Bluetooth</string>
     <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
@@ -228,10 +220,8 @@
     <string name="debug_title_confirm_sense_pair">Pair With Sense</string>
     <string name="debug_message_confirm_sense_pair_fmt">Are you sure you want to pair with ‘%1$s’?</string>
     <string name="title_change_password">Password</string>
-    <string name="detail_change_password">••••••••</string>
     <string name="label_current_password">Current Password</string>
     <string name="label_new_password">New Password</string>
-    <string name="label_confirm_new_password">Confirm New Password</string>
     <string name="action_change_password">Change Password</string>
     <string name="onboarding_title_smart_alarm">Set a Smart Alarm</string>
     <string name="onboarding_info_smart_alarm">Sense\'s Smart Alarm knows where you are in your sleep cycle and will wake you up at the right time for you. To dismiss the alarm, just wave your hand over Sense.</string>
@@ -267,8 +257,6 @@
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
-    <string name="title_onboarding_register_location">What\'s your location?</string>
-    <string name="action_set_location">Set Location</string>
     <string name="action_back">Back</string>
     <string name="label_last_seen">Last Seen</string>
     <string name="label_wifi">Wi-Fi</string>
@@ -296,13 +284,10 @@
     <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep talking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
     <string name="onboarding_title_enhanced_audio">Enable Enhanced Audio</string>
     <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
-    <string name="title_enabled">Enabled</string>
     <string name="dialog_title_new_version">New version</string>
     <string name="dialog_message_new_version">A new version of Sense is available.</string>
     <string name="action_update">Update</string>
-    <string name="title_smart_alarms">Smart Alarms</string>
     <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at the lightest point in your natural sleep cycle, so you wake feeling rested. Once set, your alarms will appear here.</string>
-    <string name="prompt_set_your_first_alarm">Set your first Smart Alarm</string>
     <string name="number_1">1</string>
     <string name="number_2">2</string>
     <string name="number_3">3</string>
@@ -319,7 +304,6 @@
     <string name="hint_year">YYYY</string>
     <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
     <string name="label_notifications">Notifications</string>
-    <string name="label_options">Options</string>
     <string name="label_enhanced_audio">Enhanced Audio</string>
     <string name="info_enhanced_audio">Enhanced audio allows Sense to pick up snoring, sleep talking, and other noise disturbances.</string>
     <string name="label_sleep_summary">Sleep Summary</string>
@@ -375,7 +359,6 @@
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
     <string name="sensor_history_message_error">Could not load graph.</string>
-    <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
     <string name="title_trends_welcome_back">Welcome Back</string>
     <string name="message_trends_welcome_back">We\’re collecting the data needed to show your Trends. Check back soon for more.</string>
     <string name="title_trends_welcome">Welcome to Trends</string>
@@ -410,7 +393,6 @@
     <string name="sleep_depth_light">in <b>light sleep</b>.</string>
     <string name="sleep_depth_medium">in <b>medium sleep</b>.</string>
     <string name="timeline_popup_info_prefix">"You were "</string>
-    <string name="debug_action_scan">Scan</string>
     <string name="device_color_red">Red</string>
     <string name="device_color_blue">Blue</string>
     <string name="device_color_black">Charcoal</string>
@@ -430,7 +412,6 @@
     <string name="action_show_alarms">Alarms</string>
     <string name="title_alarm">Alarm</string>
     <string name="action_change_time_zone">Change Time Zone</string>
-    <string name="action_refresh">Refresh</string>
     <string name="action_user_guide">User Guide</string>
     <string name="title_advanced">Advanced</string>
     <string name="description_replace_this_sense">If you have a new Sense you want to pair with this account.</string>
@@ -440,7 +421,6 @@
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
-    <string name="title_acknowledgements">Acknowledgements</string>
     <string name="action_timeline_mark_event_correct">Mark as correct</string>
     <string name="action_timeline_event_adjust_time">Adjust time</string>
     <string name="action_timeline_event_remove">Remove this event</string>
@@ -557,7 +537,6 @@
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
-    <string name="sleep_sounds_error_loading">There was a problem loading Sleep Sounds. Please try again.</string>
     <string name="sleep_sounds_error_communicating_with_sense">There was a problem communicating with your Sense. Please try again.</string>
     <string name="sleep_sounds_error_commanding">There was a problem establishing a connection with your Sense. Please ensure your Sense is connected to the internet and try again.</string>
     <string name="sense_offline_title">Sense is offline</string>
@@ -572,7 +551,12 @@
     <string name="error_share_insights_message">Sense was unable to pull a link for sharing. Please try again in a few moments.</string>
     <string name="error_to_many_alarms_title">Alarm could not be saved</string>
     <string name="error_to_many_alarms_message">You can not set more than 30 alarms.</string>
-
+    <string name="content_description_click_here">Click here</string>
+    <string name="content_description_facebook">Import with Facebook</string>
+    <string name="content_description_player">Playing</string>
+    <string name="content_description_profile_picture">Profile picture</string>
+    <string name="content_description_sleep_sounds">Sleep Sounds</string>
+    <string name="content_description_hello">Hello</string>
 
     <plurals name="item_support_comment_detail_attachments">
         <item quantity="one">%1$s – %2$d attachment</item>

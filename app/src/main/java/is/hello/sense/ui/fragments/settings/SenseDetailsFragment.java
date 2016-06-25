@@ -135,7 +135,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
         this.pairingMode = addDeviceAction(R.drawable.icon_settings_pairing_mode, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
         setEnabled(pairingMode, false);
-        this.changeWiFi = addDeviceAction(R.drawable.icon_settings_wifi, R.string.action_select_wifi_network, this::changeWifiNetwork);
+        this.changeWiFi = addDeviceAction(R.drawable.icon_wifi_good, R.string.action_select_wifi_network, this::changeWifiNetwork);
         setEnabled(changeWiFi, false);
         addDeviceAction(R.drawable.icon_settings_timezone, R.string.action_change_time_zone, this::changeTimeZone);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
@@ -531,7 +531,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                         .setTitle(R.string.action_replace_this_sense)
                         .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
                         .setDescription(R.string.description_replace_this_sense)
-                        .setIcon(R.drawable.settings_advanced)
+                        .setIcon(R.drawable.icon_settings_advanced)
                    );
         if (hardwarePresenter.isConnected()) {
             options.add(

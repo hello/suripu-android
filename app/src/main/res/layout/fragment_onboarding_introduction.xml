@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/action_log_in"
-            android:singleLine="true"
+            android:maxLines="1"
             android:ellipsize="none"
             style="@style/AppTheme.Button.Borderless.White" />
 
@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/action_get_started"
-            android:singleLine="true"
+            android:maxLines="1"
             android:ellipsize="none"
             style="@style/AppTheme.Button.Borderless.White" />
 

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <is.hello.sense.ui.widget.RoundedLinearLayout
-    style="@style/AppTheme.Card"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
     android:clipChildren="true"
     android:orientation="vertical"
     app:senseCornerRadius="@dimen/card_large_corner_radius">
@@ -20,24 +18,25 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:gravity="center"
-            android:layout_toLeftOf="@+id/item_centered_title_text">
+            android:layout_toStartOf="@+id/item_centered_title_text"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/item_centered_image_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/content_description_player"
                 android:src="@drawable/music_left"
                 android:visibility="invisible"/>
         </RelativeLayout>
 
         <TextView
             android:id="@+id/item_centered_title_text"
+            style="@style/AppTheme.Text.Player.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
-            style="@style/AppTheme.Text.Player.Title"
             android:paddingBottom="@dimen/gap_card_content"
             android:paddingTop="@dimen/gap_card_content"
             />
@@ -48,13 +47,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:gravity="center"
-            android:layout_toRightOf="@+id/item_centered_title_text">
+            android:layout_toRightOf="@+id/item_centered_title_text"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/item_centered_image_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/content_description_player"
                 android:src="@drawable/music_right"
                 android:visibility="invisible"/>
         </RelativeLayout>
