@@ -30,8 +30,10 @@ public class Windows {
     public static AnimatorUpdateListener createStatusBarUpdateListener(@NonNull Window forWindow) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return animator -> {
-                final @ColorInt int color = (int) animator.getAnimatedValue();
-                forWindow.setStatusBarColor(color);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // added to pass lint
+                    final @ColorInt int color = (int) animator.getAnimatedValue();
+                    forWindow.setStatusBarColor(color);
+                }
             };
         } else {
             return ignored -> {};

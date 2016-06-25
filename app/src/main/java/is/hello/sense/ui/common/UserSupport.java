@@ -14,6 +14,8 @@ import android.support.v4.content.ContextCompat;
 
 import com.segment.analytics.Properties;
 
+import java.util.Locale;
+
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -205,7 +207,7 @@ public class UserSupport {
         }
 
         public String toProperty() {
-            return toString().toLowerCase();
+            return toString().toLowerCase(Locale.getDefault());
         }
     }
 
@@ -234,7 +236,7 @@ public class UserSupport {
         }
 
         public String toProperty() {
-            return toString().toLowerCase();
+            return toString().toLowerCase(Locale.getDefault());
         }
 
         public static OnboardingStep fromString(@Nullable final String string) {

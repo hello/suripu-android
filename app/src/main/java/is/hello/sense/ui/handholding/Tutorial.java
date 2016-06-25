@@ -24,6 +24,7 @@ import android.widget.RelativeLayout.LayoutParams;
 
 import com.segment.analytics.Properties;
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import is.hello.go99.Anime;
@@ -98,7 +99,7 @@ public enum Tutorial {
 
 
     public String getShownKey() {
-        return "tutorial_" + toString().toLowerCase() + "_shown";
+        return "tutorial_" + toString().toLowerCase(Locale.getDefault()) + "_shown";
     }
 
     public boolean shouldShow(@NonNull final Activity activity) {

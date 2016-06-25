@@ -17,6 +17,8 @@ import android.widget.TextView;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import java.util.Locale;
+
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -111,9 +113,9 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         final Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getBirthDate() != null) {
             final LocalDate birthDate = account.getBirthDate();
-            monthText.setHint(String.format("%02d", birthDate.getMonthOfYear()));
-            dayText.setHint(String.format("%02d", birthDate.getDayOfMonth()));
-            yearText.setHint(String.format("%04d", birthDate.getYear()));
+            monthText.setHint(String.format(Locale.getDefault(), "%02d", birthDate.getMonthOfYear()));
+            dayText.setHint(String.format(Locale.getDefault(), "%02d", birthDate.getDayOfMonth()));
+            yearText.setHint(String.format(Locale.getDefault(), "%04d", birthDate.getYear()));
         }
 
 
@@ -199,7 +201,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
 
     private void setActiveField(int activeField) {
         int activeColor = getResources().getColor(R.color.light_accent),
-            inactiveColor = getResources().getColor(R.color.text_dark);
+                inactiveColor = getResources().getColor(R.color.text_dark);
         for (int i = 0; i < fields.length; i++) {
             TextView field = fields[i];
             int padding = field.getPaddingTop();
