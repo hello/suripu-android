@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
@@ -302,7 +303,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
                 public Bubble(float value, float radius, int position, String textTitle) {
                     this.radius = radius;
                     this.value = value;
-                    this.textTitle = textTitle.toUpperCase();
+                    this.textTitle = textTitle.toUpperCase(Locale.getDefault());
 
                     if (position == LEFT_BUBBLE) {
                         this.paint = lightPaint;

@@ -39,6 +39,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.util.ConnectProgress;
@@ -199,7 +200,7 @@ public final class Styles {
     public static
     @NonNull
     CharSequence assembleReadingAndUnit(double value, @NonNull String suffix) {
-        return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
+        return assembleReadingAndUnit(String.format(Locale.getDefault(), "%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
     public static

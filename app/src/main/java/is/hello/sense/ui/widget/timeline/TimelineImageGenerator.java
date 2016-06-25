@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import java.util.Locale;
+
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -108,7 +110,7 @@ public class TimelineImageGenerator {
         scoreTextView.setText(scoreText);
         scoreTextView.setTextColor(color);
 
-        dateTextView.setText(timeline.getDate().toString("MMMM dd, yyyy").toUpperCase());
+        dateTextView.setText(timeline.getDate().toString("MMMM dd, yyyy").toUpperCase(Locale.getDefault()));
 
 
         // Draw it
@@ -154,7 +156,7 @@ public class TimelineImageGenerator {
             minutes = minutes / 60;
             unitRes = R.plurals.hours;
         }
-        String result = String.format("%.01f", minutes);
+        String result = String.format(Locale.getDefault(), "%.01f", minutes);
         result = Styles.stripTrailingPeriods(Styles.stripTrailingZeros(result));
         return result + " " + resources.getQuantityString(unitRes, (int) Math.ceil(minutes));
     }

@@ -83,9 +83,9 @@ public class UnitFormatter {
             long feet = totalInches / 12;
             long inches = totalInches % 12;
             if (inches > 0) {
-                return String.format("%d' %d''", feet, inches);
+                return String.format(Locale.getDefault(), "%d' %d''", feet, inches);
             } else {
-                return String.format("%d'", feet);
+                return String.format(Locale.getDefault(), "%d'", feet);
             }
         }
     }
@@ -94,7 +94,7 @@ public class UnitFormatter {
         if (value == -1){
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_LIGHT);
         }else if (value < 10.0) {
-            return Styles.assembleReadingAndUnit(String.format("%.1f", value),
+            return Styles.assembleReadingAndUnit(String.format(Locale.getDefault(), "%.1f", value),
                                                  UNIT_SUFFIX_LIGHT,
                                                  Styles.UNIT_STYLE_SUPERSCRIPT);
         } else {

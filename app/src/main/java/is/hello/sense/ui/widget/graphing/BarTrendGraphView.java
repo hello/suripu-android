@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
@@ -170,7 +171,7 @@ public class BarTrendGraphView extends TrendGraphView {
                 // Draw Text Labels
                 List<String> titles = graphSection.getTitles();
                 for (int j = 0; j < titles.size(); j++) {
-                    String title = titles.get(j).toUpperCase();
+                    String title =  titles.get(j).toUpperCase(Locale.getDefault());
                     calculateTitleTextBounds(j, leftSpace, title, textBounds);
                     if (textBounds.left + textBounds.width() + 10 > graphSection.getValues().size() * (canvasValues.barWidth + canvasValues.barSpace)) {
                         continue;
