@@ -1,3 +1,7 @@
+<!--
+Commented resources are for suppressing UnusedResource inspection with lint and reducing build time.
+Uncomment a resource when it's needed.
+-->
 <resources>
     <!-- Standard Sizing -->
 
@@ -21,18 +25,19 @@
     <dimen name="gap_card_horizontal">@dimen/gap_outer_half</dimen>
     <dimen name="gap_card_vertical">@dimen/gap_outer_half</dimen>
     <dimen name="gap_card_inter">8dp</dimen>
-    <dimen name="parallax_clip">30dp</dimen>
 
     <!-- Text -->
 
     <!-- Official text sizes provided by Nathan -->
-    <dimen name="x.5">4dp</dimen>
+    <!--<dimen name="x.5">4dp</dimen>-->
     <dimen name="x1">8dp</dimen>
     <dimen name="x2">16dp</dimen>
     <dimen name="x3">24dp</dimen>
     <dimen name="x4">32dp</dimen>
+    <!--
     <dimen name="x5">40dp</dimen>
     <dimen name="x6">48dp</dimen>
+    -->
     <dimen name="x7">56dp</dimen>
 
 
@@ -48,8 +53,6 @@
 
     <dimen name="text_body_line_height">24px</dimen>
 
-    <item name="line_multiple_small" format="float" type="dimen">1.4</item>
-    <item name="line_multiple_medium" format="float" type="dimen">1.5</item>
     <item name="line_multiple_large" format="float" type="dimen">1.6</item>
 
 
@@ -89,8 +92,6 @@
     <dimen name="text_size_trends_gridgraph_cell">11sp</dimen>
     <dimen name="player_preview_text_size">12sp</dimen>
 
-    <item name="line_multiple_none" format="float" type="dimen">0</item>
-    <item name="line_multiple_normal" format="float" type="dimen">1</item>
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_paragraph_heading" format="float" type="dimen">1.2</item>
@@ -101,7 +102,6 @@
     <dimen name="edit_text_min_height">45dp</dimen>
     <dimen name="edit_text_dash_width">4dp</dimen>
     <dimen name="edit_text_dash_gap">4dp</dimen>
-    <dimen name="edit_text_stroke_size">1dp</dimen>
 
     <!-- Divisions and Borders -->
 
@@ -132,7 +132,6 @@
 
     <dimen name="item_room_sensor_condition_min_height">80dp</dimen>
     <dimen name="item_room_sensor_condition_reading_min_width">100dp</dimen>
-    <dimen name="item_room_sensor_condition_graph_inset">8dp</dimen>
     <dimen name="item_room_sensor_condition_view_width">42dp</dimen>
     <dimen name="item_room_sensor_condition_view_height">42dp</dimen>
 
@@ -150,7 +149,6 @@
     <dimen name="interaction_slide_negative">-70dp</dimen>
     <dimen name="interaction_slide_positive">70dp</dimen>
 
-    <dimen name="view_rotary_picker_width">95sp</dimen>
     <dimen name="view_rotary_picker_item_height">55sp</dimen>
     <dimen name="view_rotary_picker_text">32sp</dimen>
 
@@ -173,7 +171,6 @@
     <dimen name="condition_graph_height">30dp</dimen>
     <dimen name="history_graph_height">175dp</dimen>
 
-    <dimen name="series_graph_min_height">200dp</dimen>
     <dimen name="series_graph_line_size">1dp</dimen>
     <dimen name="series_graph_shadow_radius">4dp</dimen>
     <dimen name="series_graph_offscreen_inset">8dp</dimen>
@@ -188,8 +185,6 @@
     <dimen name="trends_bubblegraph_title_top_margin">10dp</dimen>
     <dimen name="trends_bubblegraph_percent_offset">4dp</dimen>
     <dimen name="trends_gridgraph_border_inset">1dp</dimen>
-    <dimen name="trends_gridgraph_border_quarter_vertical_margins">10dp</dimen>
-    <dimen name="trends_gridgraph_border_quarter_horizontal_margins">3dp</dimen>
 
     <!-- Timeline -->
 
@@ -209,14 +204,8 @@
     <dimen name="timeline_event_text_top_inset">7dp</dimen>
     <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
 
-    <dimen name="view_grid_graph_cell_width">32dp</dimen>
-    <dimen name="view_grid_graph_cell_height">32dp</dimen>
-    <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
-    <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
-
     <dimen name="timeline_shareable_view_width">470dp</dimen>
     <dimen name="timeline_shareable_view_height">470dp</dimen>
-    <dimen name="timeline_shareable_sensor_marginTop">40dp</dimen>
     <dimen name="timeline_shareable_sensor_horizontal_margin">10dp</dimen>
     <dimen name="timeline_shareable_score_top_margin">@dimen/gap_mlarge</dimen>
 
