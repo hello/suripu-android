@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <TextView

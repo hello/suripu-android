@@ -179,6 +179,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 measuredWidth = Math.min(width, itemWidth);
                 break;
             }
+            case MeasureSpec.UNSPECIFIED:
             default: {
                 measuredWidth = getSuggestedMinimumWidth();
                 break;
@@ -197,6 +198,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 measuredHeight = Math.min(height, itemHeight * visibleItemCount);
                 break;
             }
+            case MeasureSpec.UNSPECIFIED:
             default: {
                 measuredHeight = getSuggestedMinimumHeight();
                 break;

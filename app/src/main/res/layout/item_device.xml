@@ -17,7 +17,7 @@
         android:textColor="@color/light_accent"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/app_name"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_last_seen_label"
@@ -40,7 +40,7 @@
         android:gravity="end|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/missing_data_placeholder"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_status_label"
@@ -64,7 +64,7 @@
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="end|center_vertical"
         android:text="@string/device_unknown"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_status2_label"
@@ -88,6 +88,6 @@
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="end|center_vertical"
         android:text="@string/missing_data_placeholder"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
 </RelativeLayout>

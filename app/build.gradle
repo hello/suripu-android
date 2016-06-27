@@ -46,6 +46,9 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 
     buildTypes {
         def TYPE_INT = "int"

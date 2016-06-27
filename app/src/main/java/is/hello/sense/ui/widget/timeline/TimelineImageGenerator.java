@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget.timeline;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -48,7 +50,7 @@ public class TimelineImageGenerator {
         // Initiate views
         final int width = resources.getDimensionPixelSize(R.dimen.timeline_shareable_view_width);
         final int height = resources.getDimensionPixelSize(R.dimen.timeline_shareable_view_height);
-        final View cluster = LayoutInflater.from(activity).inflate(R.layout.view_share_timeline, null);
+        final View cluster = LayoutInflater.from(activity).inflate(R.layout.view_share_timeline, new FrameLayout(activity));
         final View container = cluster.findViewById(R.id.view_share_timeline_container);
         final TextView sleptForTextView = (TextView) cluster.findViewById(R.id.view_share_timeline_slept_for_time);
         final TextView dateTextView = (TextView) cluster.findViewById(R.id.view_share_timeline_date);
