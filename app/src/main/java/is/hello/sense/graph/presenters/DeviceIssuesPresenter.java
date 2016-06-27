@@ -62,6 +62,8 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.SLEEP_PILL_LOW_BATTERY;
         } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
             return Issue.SLEEP_PILL_MISSING;
+        } else if (pill.shouldUpdate()){
+            return Issue.SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE;
         }
 
         return Issue.NONE;
