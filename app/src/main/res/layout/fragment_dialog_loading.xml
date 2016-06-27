@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_dialog_loading_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_light_overlay"
-    android:keepScreenOn="true">
+<RelativeLayout android:id="@+id/fragment_dialog_loading_container"
+                style="@style/AppTheme.LightOverlay"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:keepScreenOn="true">
 
     <ImageView
         android:id="@+id/fragment_dialog_loading_check_mark"

@@ -40,9 +40,26 @@
         <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
     </style>
 
+    <style name="AppTheme.Light">
+        <item name="android:background">@color/background_light</item>
+    </style>
+    <style name="AppTheme.Dark">
+        <item name="android:background">@color/black</item>
+    </style>
+    <style name="AppTheme.LightOverlay">
+        <item name="android:background">@color/background_light_overlay</item>
+    </style>
+    <style name="AppTheme.DarkOverlay">
+        <item name="android:background">@color/background_dark_overlay</item>
+    </style>
+    <style name="AppTheme.PopUp">
+        <item name="android:background">@drawable/background_timeline_info_popup</item>
+    </style>
+
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@color/background_onboarding</item>
     </style>
+
 
     <style name="AppTheme.NoActionBar">
         <item name="android:windowActionBar">false</item>
