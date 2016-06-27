@@ -1,9 +1,8 @@
 package is.hello.sense.units;
 
-import android.support.annotation.NonNull;
+import java.util.Locale;
 
-public interface UnitPrinter {
-    UnitPrinter SIMPLE = v -> String.format("%.0f", v);
+public class UnitPrinter {
 
-    @NonNull CharSequence print(double value);
+    public static IUnitPrinter SIMPLE = v -> String.format(Locale.getDefault(), "%.0f", v);
 }

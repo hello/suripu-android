@@ -1,13 +1,9 @@
 package is.hello.sense.units;
 
-/**
- * A functor that converts a raw value into the user's unit system.
- */
-public interface UnitConverter {
+public class UnitConverter {
+
     /**
      * The identity converter. Returns a value unmodified.
      */
-    UnitConverter IDENTITY = v -> v;
-
-    double convert(double value);
+    static IUnitConverter IDENTITY = v -> v;
 }

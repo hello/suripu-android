@@ -9,6 +9,8 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Locale;
+
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
@@ -130,7 +132,7 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
 
         @Override
         public String toString() {
-            return name().toLowerCase();
+            return name().toLowerCase(Locale.getDefault());
         }
     }
 

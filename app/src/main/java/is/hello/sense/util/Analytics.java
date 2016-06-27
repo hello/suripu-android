@@ -35,8 +35,8 @@ import is.hello.sense.ui.handholding.TutorialOverlayView;
 public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
-
-    private static @Nullable com.segment.analytics.Analytics segment;
+    private static Analytics analytics = null;
+    private @Nullable com.segment.analytics.Analytics segment;
 
     public interface OnEventListener {
         void onSuccess();
@@ -664,8 +664,9 @@ public class Analytics {
         if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
-        Analytics.segment = builder.build();
-        com.segment.analytics.Analytics.setSingletonInstance(segment);
+        Analytics.analytics = new Analytics();
+        Analytics.analytics.segment = builder.build();
+        com.segment.analytics.Analytics.setSingletonInstance(Analytics.analytics.segment);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -674,11 +675,13 @@ public class Analytics {
 
     @SuppressWarnings("UnusedParameters")
     public static void onPause(@NonNull Activity activity) {
-        if (segment == null) {
+        if (segmentIsNull()) {
             return;
         }
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
 
-        segment.flush();
+        Analytics.analytics.segment.flush();
     }
 
     //endregion
@@ -705,9 +708,11 @@ public class Analytics {
         if (!SenseApplication.isRunningInRobolectric()) {
             Bugsnag.setUserId(accountId);
 
-            if (includeSegment && segment != null) {
-                segment.identify(accountId);
-                segment.flush();
+            if (includeSegment && !segmentIsNull()) {
+                assert Analytics.analytics != null;
+                assert Analytics.analytics.segment != null;
+                Analytics.analytics.segment.identify(accountId);
+                Analytics.analytics.segment.flush();
             }
         }
     }
@@ -718,21 +723,23 @@ public class Analytics {
                                          @NonNull final DateTime created) {
         Logger.info(LOG_TAG, "Tracking user sign up { accountId: '" + accountId +
                 "', name: '" + name + "', email: '" + email + "', created: '" + created + "' }");
-        if (segment == null) {
+        if (segmentIsNull()) {
             return;
         }
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
 
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
 
-        segment.alias(accountId);
+        Analytics.analytics.segment.alias(accountId);
 
         final Traits traits = createBaseTraits();
         traits.putCreatedAt(created.toString());
         traits.putName(name);
         traits.put(Global.TRAIT_ACCOUNT_ID, accountId);
         traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
-        segment.identify(traits);
-        segment.flush();
+        Analytics.analytics.segment.identify(traits);
+        Analytics.analytics.segment.flush();
 
         trackUserIdentifier(accountId, false);
     }
@@ -740,9 +747,11 @@ public class Analytics {
     public static void trackSignIn(@NonNull final String accountId,
                                    @Nullable final String name,
                                    @Nullable final String email) {
-        if (segment == null) {
+        if (segmentIsNull()) {
             return;
         }
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
 
         trackUserIdentifier(accountId, true);
         Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_IN, null);
@@ -758,14 +767,16 @@ public class Analytics {
             traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
-        segment.identify(traits);
-        segment.flush();
+        Analytics.analytics.segment.identify(traits);
+        Analytics.analytics.segment.flush();
     }
 
     public static void backFillUserInfo(@Nullable String name, @Nullable String email) {
-        if (segment == null) {
+        if (segmentIsNull()) {
             return;
         }
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
 
         final Traits traits = createBaseTraits();
         if (name != null) {
@@ -776,27 +787,30 @@ public class Analytics {
             traits.put(Global.TRAIT_ACCOUNT_EMAIL, email);
         }
 
-        segment.identify(traits);
-        segment.flush();
+        Analytics.analytics.segment.identify(traits);
+        Analytics.analytics.segment.flush();
     }
 
     public static void signOut() {
-        if (segment == null) {
+        if (segmentIsNull()) {
             return;
         }
-
-        segment.reset();
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
+        Analytics.analytics.segment.reset();
     }
 
     public static void setSenseId(@Nullable String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-        if (segment == null || senseId == null) {
+        if (segmentIsNull() || senseId == null) {
             return;
         }
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
 
         final Traits traits = new Traits();
         traits.put(Global.TRAIT_SENSE_ID, senseId);
-        segment.identify(traits);
+        Analytics.analytics.segment.identify(traits);
 
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -881,11 +895,13 @@ public class Analytics {
     }
 
     public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
-        if (segment == null) {
+        if (segmentIsNull()) {
             return;
         }
+        assert Analytics.analytics != null;
+        assert Analytics.analytics.segment != null;
 
-        segment.track(event, properties);
+        Analytics.analytics.segment.track(event, properties);
 
         Logger.analytic(event, properties);
     }
@@ -922,6 +938,10 @@ public class Analytics {
         if (e != null && !SenseApplication.isRunningInRobolectric()) {
             Bugsnag.notify(e, Severity.WARNING);
         }
+    }
+
+    private static boolean segmentIsNull() {
+        return Analytics.analytics == null || Analytics.analytics.segment == null;
     }
 
     //endregion

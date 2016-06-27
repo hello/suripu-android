@@ -28,8 +28,8 @@ public class ValuePresenterTests extends SenseTestCase {
 
         LambdaVar<Integer> lastValue = LambdaVar.of(0);
         LambdaVar<Integer> numberOfCalls = LambdaVar.of(0);
-        Sync.wrapAfter(presenter::update, presenter.value)
-            .forEach(value -> {
+        (Sync.wrapAfter(presenter::update, presenter.value))
+            .forEachAction(value -> {
                 presenter.update();
                 lastValue.set(value);
                 numberOfCalls.getAndMutate(i -> i + 1);

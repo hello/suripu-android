@@ -41,7 +41,7 @@ import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.GraphView;
 import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitPrinter;
+import is.hello.sense.units.IUnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
@@ -184,7 +184,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         } else {
             final SensorState condition = result.conditions.getSensorStateWithName(sensor);
             if (condition != null) {
-                final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+                final IUnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
 
                 final CharSequence formattedValue = condition.getFormattedValue(printer);
                 if (formattedValue != null) {
@@ -324,7 +324,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         @Override
         public void onGraphValueHighlighted(int section, int position) {
             final SensorGraphSample instant = getSection(section).get(position);
-            final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
+            final IUnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor);
             final CharSequence reading = printer.print(instant.getValue());
             readingText.setText(reading);
 

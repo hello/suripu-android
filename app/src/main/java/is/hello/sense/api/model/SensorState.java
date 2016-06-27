@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import org.joda.time.DateTime;
 
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitPrinter;
+import is.hello.sense.units.IUnitPrinter;
 import is.hello.sense.util.markup.text.MarkupString;
 
 public class SensorState extends ApiResponse {
@@ -131,7 +131,7 @@ public class SensorState extends ApiResponse {
         return idealConditions;
     }
 
-    public @Nullable CharSequence getFormattedValue(@Nullable UnitPrinter printer) {
+    public @Nullable CharSequence getFormattedValue(@Nullable IUnitPrinter printer) {
         if (getValue() == null) {
             return null;
         } else if (printer != null) {

@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -177,6 +179,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 measuredWidth = Math.min(width, itemWidth);
                 break;
             }
+            case MeasureSpec.UNSPECIFIED:
             default: {
                 measuredWidth = getSuggestedMinimumWidth();
                 break;
@@ -195,6 +198,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
                 measuredHeight = Math.min(height, itemHeight * visibleItemCount);
                 break;
             }
+            case MeasureSpec.UNSPECIFIED:
             default: {
                 measuredHeight = getSuggestedMinimumHeight();
                 break;
@@ -559,7 +563,7 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
             if (valueStrings != null) {
                 return valueStrings[position];
             } else if (wantsLeadingZeros) {
-                return String.format("%02d", getItem(position));
+                return String.format(Locale.getDefault(), "%02d", getItem(position));
             } else {
                 return Integer.toString(getItem(position));
             }

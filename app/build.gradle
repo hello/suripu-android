@@ -1,18 +1,7 @@
 import java.text.SimpleDateFormat
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.1'
-    }
-}
 
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     maven { url 'https://zendesk.artifactoryonline.com/zendesk/repo' }
@@ -26,15 +15,20 @@ def generateVersionCode() {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
 
     defaultConfig {
         applicationId "is.hello.sense"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode generateVersionCode()
         versionName "1.4.4"
+        jackOptions {
+            enabled true
+        }
+        multiDexEnabled true
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         debug {
@@ -49,6 +43,13 @@ android {
             keyPassword "hellogoodbye"
         }
     }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
     buildTypes {
         def TYPE_INT = "int"
         def TYPE_BOOLEAN = "boolean"
@@ -119,20 +120,6 @@ android {
     }
 }
 
-retrolambda {
-    def javaHome = System.getenv('JAVA_HOME')
-    if (javaHome != null) { // Manual, cross-platform
-        jdk javaHome.trim()
-    } else { // Magic, OS X only
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine "/usr/libexec/java_home", "-v", "1.8"
-            standardOutput = stdout
-        }
-        jdk "$stdout".trim()
-    }
-}
-
 /**
  * Zendesk doesn't pass Java 7 validation, so we have to turn off
  * verification on the JVM in order to run tests. If we remove
@@ -155,46 +142,47 @@ tasks.whenTaskAdded { theTask ->
 
 dependencies {
 
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     // Is there anything we don't depend on?
-    provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
+    annotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.2'
+    //provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'io.reactivex:rxjava:1.0.9'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.code.gson:gson:2.6.2'
     compile 'net.danlew:android.joda:2.7.2'
-
     compile 'com.segment.analytics.android:analytics:4.1.0'
-
-    compile 'com.android.support:support-v4:23.1.1'
-    compile 'com.android.support:support-v13:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:customtabs:23.1.1'
-    compile 'com.google.android.gms:play-services-gcm:8.4.0'
-    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:support-v13:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:customtabs:24.0.0'
+    compile 'com.google.android.gms:play-services-gcm:9.0.0'
+    compile 'com.google.android.gms:play-services-location:9.0.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.13.1'
     compile 'is.hello.commonsense:ble:2016.3.3.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
-    compile 'com.facebook.android:facebook-android-sdk:4.13.1'
-    // !! If you remove this, remove the above workaround.
+    // !! If you remove this, remove the above workaround.ac
     compile('com.zendesk:sdk:1.4.1.1') {
         // When you remove this rule, you will also need to remove
         // `styles_zendesk.xml` and the first attr in `attrs.xml`.
         exclude group: 'com.android.support'
     }
+    compile 'com.bugsnag:bugsnag-android:3.2.6'
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
-    // Necessary to be able to compile and run tests with
-
-    // Android Studio 1.3 + build tools 1.3. Remove when
-
-    // retrolambda releases an update.
     testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
-    compile 'com.bugsnag:bugsnag-android:3.2.6'
+    testCompile 'com.squareup.dagger:dagger:1.2.2'
+    testCompile "org.robolectric:shadows-multidex:3.0"
+    testAnnotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.2'
+    //testProvide 'com.squareup.dagger:dagger-compiler:1.2.2'
+    compile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    compile 'com.android.support.test:runner:0.5'
 }
+
