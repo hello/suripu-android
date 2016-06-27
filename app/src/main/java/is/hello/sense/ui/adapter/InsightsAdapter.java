@@ -430,7 +430,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 category.setText(insight.getCategoryName());
                 if (insight.isShareable()) {
                     share.setVisibility(View.VISIBLE);
-                    share.setOnClickListener(v -> interactionListener.shareInsight(insight.getId()));
+                    share.setOnClickListener(v -> interactionListener.shareInsight(insight));
                 } else {
                     share.setVisibility(View.GONE);
                     share.setOnClickListener(null);
@@ -495,7 +495,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         void onInsightClicked(@NonNull InsightViewHolder viewHolder);
 
-        void shareInsight(@NonNull String insightId);
+        void shareInsight(@NonNull Insight insight);
 
     }
 }

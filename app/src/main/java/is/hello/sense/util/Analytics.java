@@ -144,6 +144,11 @@ public class Analytics {
         String PROP_BLUETOOTH_HEADSET_CONNECTED = "Headset connected";
         String PROP_BLUETOOTH_A2DP_CONNECTED = "A2DP connected";
         String PROP_BLUETOOTH_HEALTH_DEVICE_CONNECTED = "Health device connected";
+
+        String EVENT_SHARE= "Share";
+        String PROP_INSIGHT= "Insight";
+        String PROP_INSIGHT_CATEGORY= "Category";
+        String PROP_TYPE = "Type";
     }
 
     public interface Onboarding {

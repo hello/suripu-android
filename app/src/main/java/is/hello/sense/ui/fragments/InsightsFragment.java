@@ -380,15 +380,17 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void shareInsight(@NonNull final String insightId) {
+    public void shareInsight(@NonNull final Insight insight) {
         showProgress(true);
-        apiService.shareInsight(new InsightType(insightId))
+        apiService.shareInsight(new InsightType(insight.getId()))
                   .doOnTerminate(() -> showProgress(false))
                   .subscribe(shareUrl -> {
-                                 Share.text(shareUrl.getUrlForSharing(getActivity())).send(getActivity());
+                                 Share.text(shareUrl.getUrlForSharing(getActivity()))
+                                      .withProperties(Share.getInsightProperties(insight.getCategory()))
+                                      .send(getActivity());
                              },
                              throwable -> {
-                                 ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+                                 final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
                                          .withTitle(R.string.error_share_insights_title)
                                          .withMessage(StringRef.from(R.string.error_share_insights_message))
                                          .build();
