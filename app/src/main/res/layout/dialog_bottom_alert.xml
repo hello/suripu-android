@@ -31,12 +31,18 @@
             android:layout_weight="1"
             android:layout_marginLeft="@dimen/gap_outer"
             android:layout_marginRight="@dimen/gap_outer"
-            android:layout_marginBottom="@dimen/gap_xsmall"
+            android:layout_marginBottom="@dimen/gap_outer"
             android:gravity="center"
             android:scrollbars="vertical"
             android:overScrollMode="ifContentScrolls"
             android:textAppearance="@style/AppTheme.Text.Body"
             android:lineSpacingMultiplier="@dimen/line_multiple_body" />
+
+        <View
+            android:id="@+id/top_divider_horizontal"
+            style="@style/Divider.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_size"/>
 
         <LinearLayout
             android:layout_width="match_parent"

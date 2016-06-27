@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.segment.analytics.Properties;
 
-import org.json.JSONObject;
-
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -30,21 +28,17 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
 
     //region Lifecycle
 
-    public static DeviceIssueDialogFragment newInstance(@NonNull DeviceIssuesPresenter.Issue issue) {
+    public static DeviceIssueDialogFragment newInstance(@NonNull final DeviceIssuesPresenter.Issue issue) {
         if (issue == DeviceIssuesPresenter.Issue.NONE) {
             throw new IllegalArgumentException("Cannot create issue dialog for NONE");
         }
 
-        DeviceIssueDialogFragment dialogFragment = new DeviceIssueDialogFragment();
+        final DeviceIssueDialogFragment dialogFragment = new DeviceIssueDialogFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         arguments.putInt(ARG_TITLE_RES, issue.titleRes);
         arguments.putInt(ARG_MESSAGE_RES, issue.messageRes);
-        if (issue == DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY) {
-            arguments.putInt(ARG_ACTION_RES, R.string.action_replace);
-        } else {
-            arguments.putInt(ARG_ACTION_RES, R.string.action_fix_now);
-        }
+        arguments.putInt(ARG_ACTION_RES, issue.buttonActionRes);
         arguments.putInt(ARG_ISSUE_ORDINAL, issue.ordinal());
         dialogFragment.setArguments(arguments);
 
@@ -52,14 +46,14 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int issueOrdinal = getArguments().getInt(ARG_ISSUE_ORDINAL);
+        final int issueOrdinal = getArguments().getInt(ARG_ISSUE_ORDINAL);
         this.issue = DeviceIssuesPresenter.Issue.values()[issueOrdinal];
 
         if (savedInstanceState == null) {
-            Properties properties = Analytics.createProperties(
+            final Properties properties = Analytics.createProperties(
                 Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, issue.systemAlertType
             );
             Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
@@ -67,10 +61,10 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        SenseBottomAlertDialog alertDialog = new SenseBottomAlertDialog(getActivity());
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
+        final SenseBottomAlertDialog alertDialog = new SenseBottomAlertDialog(getActivity());
 
-        Bundle arguments = getArguments();
+        final Bundle arguments = getArguments();
         alertDialog.setTitle(arguments.getInt(ARG_TITLE_RES));
         alertDialog.setMessage(arguments.getInt(ARG_MESSAGE_RES));
 
@@ -86,21 +80,23 @@ public class DeviceIssueDialogFragment extends SenseDialogFragment {
     //region Actions
 
     private void dispatchLater() {
-        Properties properties = Analytics.createProperties(
+        final Properties properties = Analytics.createProperties(
             Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_LATER
         );
         Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
     }
 
     private void dispatchIssue() {
-        Properties properties = Analytics.createProperties(
+        final Properties properties = Analytics.createProperties(
             Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION, Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW
         );
         Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
 
-        if (issue == DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY) {
+        if (issue.equals(DeviceIssuesPresenter.Issue.SLEEP_PILL_LOW_BATTERY)) {
             UserSupport.showReplaceBattery(getActivity());
-        } else {
+        } else if(issue.equals(DeviceIssuesPresenter.Issue.SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE)){
+            UserSupport.showUpdatePill(getActivity());
+        }else {
             DeviceListFragment.startStandaloneFrom(getActivity());
         }
     }

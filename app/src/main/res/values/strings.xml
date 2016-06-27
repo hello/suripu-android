@@ -265,6 +265,7 @@
     <string name="dialog_title_new_version">New version</string>
     <string name="dialog_message_new_version">A new version of Sense is available.</string>
     <string name="action_update">Update</string>
+    <string name="action_update_now">Update now</string>
     <string name="title_smart_alarms">Smart Alarms</string>
     <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at the lightest point in your natural sleep cycle, so you wake feeling rested. Once set, your alarms will appear here.</string>
     <string name="prompt_set_your_first_alarm">Set your first Smart Alarm</string>
@@ -301,6 +302,8 @@
     <string name="issue_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
     <string name="issue_title_low_battery">Low Battery</string>
     <string name="issue_message_low_battery">Your Sleep Pill battery is low, and will need to be replaced soon.</string>
+    <string name="issue_title_pill_firmware_update_available">Sleep Pill update</string>
+    <string name="issue_message_pill_firmware_update_available">An update for your Sleep Pill is available. You can update now, or visit settings to update later.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom and recognizes your movements during the night, giving you a full picture of your sleep.\n\nSense takes all this data and builds a Sleep Timeline of your sleep for each night. Swipe left to learn more.</string>

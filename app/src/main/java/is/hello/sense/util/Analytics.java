@@ -455,6 +455,7 @@ public class Analytics {
         int SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY = 5;
         int SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN = 6;
         int SYSTEM_ALERT_TYPE_PILL_NOT_SEEN = 7;
+        int SYSTEM_ALERT_TYPE_PILL_FIRMWARE_UPDATE_AVAILABLE = 8;
 
         String EVENT_SYSTEM_ALERT_ACTION = "System Alert Action";
 
