@@ -505,7 +505,7 @@ public class RegisterFragment extends InjectionFragment
         stateSafeExecutor.execute(() -> {
             profileImageManager.setShowOptions(true);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
-                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_account_upload_photo_title);
             }
         });
     }

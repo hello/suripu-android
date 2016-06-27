@@ -28,12 +28,6 @@
     <string name="device_state_low_battery">Low</string>
     <string name="device_state_unknown">Unknown</string>
 
-    <string name="dialog_error_title">Error</string>
-    <string name="dialog_error_generic_message">An unknown error has occurred.</string>
-    <string name="dialog_loading_message">Loading…</string>
-    <string name="timeline_error_title">There was an error</string>
-    <string name="timeline_error_message">There was a problem retrieving your Sleep Timeline. Please try again in a few moments.</string>
-
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
     <string name="condition_humidity">Humidity</string>
@@ -125,11 +119,7 @@
     <string name="checking_condition_airquality">Checking Air Quality</string>
     <string name="checking_condition_sound">Checking Noise</string>
     <string name="checking_condition_light">Checking Light</string>
-    <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
-    <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
-    <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
-    <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#contact">Contact support</a></b></string>
-    <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#contact">Contact support</a></b></string>
+
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
@@ -195,25 +185,10 @@
     <string name="sec_type_wep">WEP</string>
     <string name="sec_type_open">Open</string>
     <string name="title_smart_alarm">Smart Alarm</string>
-    <string name="error_account_generic">Invalid registration credentials.</string>
-    <string name="error_account_email_taken">An account with the email address %1$s already exists.</string>
-    <string name="error_account_name_too_long">The name you entered is too long.</string>
-    <string name="error_account_name_too_short">The name you entered is too short.</string>
-    <string name="error_account_email_invalid">Please enter a valid email address.</string>
-    <string name="error_account_email_in_use">Email already in use.</string>
-    <string name="error_account_password_insecure">Please enter a stronger password.</string>
-    <string name="error_account_password_too_short">Passwords must be at least 6 characters.</string>
-    <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
-    <string name="error_account_incomplete_credentials">Please enter your email address and password.</string>
     <string name="title_checking_connectivity">Checking connectivity</string>
-    <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
-    <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
-    <string name="error_sense_not_found_title">​Could not connect over Bluetooth</string>
-    <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
-    <string name="error_peripheral_connection_lost_title">Connection lost</string>
-    <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
+
     <string name="onboarding_register_info_explanation">This is used to provide you with more personalized sleep insights.</string>
-    <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
+
     <string name="dialog_title_smart_alarm_new_cancel">Discard Alarm</string>
     <string name="dialog_message_smart_alarm_new_cancel">Are you sure you want to discard this alarm?</string>
     <string name="dialog_title_smart_alarm_edit_cancel">Discard Changes</string>
@@ -221,8 +196,7 @@
     <string name="action_discard">Discard</string>
     <string name="action_keep_editing">Keep Editing</string>
     <string name="action_answer">Answer</string>
-    <string name="video_playback_connectivity_error_title">Failed to stream video</string>
-    <string name="video_playback_generic_error">Could not play video.</string>
+
     <string name="title_turning_on">Turning On</string>
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
     <string name="debug_title_confirm_sense_pair">Pair With Sense</string>
@@ -244,8 +218,7 @@
     <string name="onboarding_room_check_info_success">Everything looks great.\nNow let’s set your first Smart Alarm.</string>
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in your bedroom.</string>
-    <string name="error_smart_alarm_day_overlap">You cannot set more than one Smart Alarm per day of the week.</string>
-    <string name="error_smart_alarm_requires_device">You don‘t currently have a Sense connected to your account. Please pair with Sense to set alarms.</string>
+
     <string name="action_replace_device">Replace</string>
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
     <string name="dialog_message_replace_sleep_pill">Are you sure you want to remove this Sleep Pill from your account? You will not be able to track your sleep until you pair another Sleep Pill.</string>
@@ -262,8 +235,7 @@
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
     <string name="action_change_name">Change Name</string>
-    <string name="error_failed_to_play_alarm_tone">Could not play preview.</string>
-    <string name="error_no_smart_alarm_tone">Please select a tone for this alarm.</string>
+
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
@@ -282,14 +254,7 @@
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
-    <string name="error_no_bluetooth_connectivity_title">Could not connect over Bluetooth</string>
-    <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense.</string>
-    <string name="error_sense_no_connectivity_title">Sense not connected</string>
-    <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
-    <string name="error_sense_missing_title">Sense not seen recently</string>
-    <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
-    <string name="error_sleep_pill_missing_title">Sleep Pill not seen recently</string>
-    <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
+
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
     <string name="label_wifi_network_name">"Wi-Fi network: "</string>
@@ -317,7 +282,7 @@
     <string name="hint_month">MM</string>
     <string name="hint_day">DD</string>
     <string name="hint_year">YYYY</string>
-    <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
+
     <string name="label_notifications">Notifications</string>
     <string name="label_options">Options</string>
     <string name="label_enhanced_audio">Enhanced Audio</string>
@@ -374,7 +339,7 @@
     <string name="onboarding_message_unsupported_device">The device you‘re using has been known to have issues setting up Sense for the first time. If you have a different device available that meets the requirements on our <a href="#supported-devices">Supported Devices</a> list, we recommend you use it to perform the following setup steps.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
-    <string name="sensor_history_message_error">Could not load graph.</string>
+
     <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
     <string name="title_trends_welcome_back">Welcome Back</string>
     <string name="message_trends_welcome_back">We\’re collecting the data needed to show your Trends. Check back soon for more.</string>
@@ -395,13 +360,9 @@
     <string name="timeline_info_label_wake_up_time">Woke up</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
-    <string name="error_network_unavailable">Check your connection and try again.</string>
-    <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
+
     <string name="action_reconnect">Reconnect</string>
-    <string name="error_no_web_browser">Could not find a web browser.</string>
-    <string name="error_no_settings_app">Could not find app settings.</string>
-    <string name="error_no_email_client">Could not find an email app.</string>
-    <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
+
     <string name="action_more_info">More info</string>
     <string name="action_submit">Submit</string>
     <string name="action_enable_location">Enable Location Services</string>
@@ -437,7 +398,7 @@
     <string name="description_factory_reset">If you want to reset Sense to factory settings, and remove it from this account.</string>
     <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
     <string name="description_recovery_factory_reset">If you want to reset Sense to factory settings.</string>
-    <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
+
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
     <string name="title_acknowledgements">Acknowledgements</string>
@@ -459,10 +420,10 @@
     <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm tone preview. Would you like us to turn it up?</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
     <string name="dialog_negative_alarm_sound_volume_low">No, thanks</string>
-    <string name="error_timeline_sound_playback_failed">Could not play sound</string>
+
     <string name="timeline_actions_intro_title">Sense Learns</string>
     <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms that Sense uses to detect and analyze your sleep.</string>
-    <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair with Sense to view current conditions.</string>
+
     <string name="message_timeline_no_actions_title">No Actions Available</string>
     <string name="message_timeline_no_actions_body">The event you selected does not have any actions available.</string>
     <string name="action_send">Send</string>
@@ -471,8 +432,7 @@
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
-    <string name="error_image_capture_failed">Could not start camera.</string>
-    <string name="error_pick_image_failed">Could not start photo picker.</string>
+
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
     <string name="title_comment">Comment</string>
@@ -553,26 +513,16 @@
     <string name="sleep_sounds_state_no_sounds_message">Sleep Sounds will be available once Sense has finished updating. Note that this may take up to an hour.</string>
     <string name="sleep_sounds_state_fw_update_title">Sense needs to update</string>
     <string name="sleep_sounds_state_fw_update_message">Sense will update automatically when plugged in and connected to Wi-Fi. This may take a few moments.</string>
-    <string name="sleep_sounds_error_generic">There was a problem loading Sleep Sounds. Please try again.</string>
+
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
-    <string name="sleep_sounds_error_loading">There was a problem loading Sleep Sounds. Please try again.</string>
-    <string name="sleep_sounds_error_communicating_with_sense">There was a problem communicating with your Sense. Please try again.</string>
-    <string name="sleep_sounds_error_commanding">There was a problem establishing a connection with your Sense. Please ensure your Sense is connected to the internet and try again.</string>
+
     <string name="sense_offline_title">Sense is offline</string>
     <string name="sense_offline_message">We haven\'t received data from your Sense recently. Make sure Sense is connected to Wi-Fi.</string>
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
-    <string name="invalid_email">Invalid email address</string>
-    <string name="invalid_first_name">Invalid first name</string>
-    <string name="invalid_password">Invalid password</string>
-    <string name="error_playing_sound">An error occurred. Please try again.</string>
-    <string name="error_share_insights_title">Unable to copy link.</string>
-    <string name="error_share_insights_message">Sense was unable to pull a link for sharing. Please try again in a few moments.</string>
-    <string name="error_to_many_alarms_title">Alarm could not be saved</string>
-    <string name="error_to_many_alarms_message">You can not set more than 30 alarms.</string>
-    <string name="failed_to_link_account">Failed to Link Account</string>
+
     <string name="share_text">See how i\'m improving my sleep with insights from Sense. %1$s #MySense</string>
 
 
@@ -607,9 +557,5 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
-    <string name="error_internet_connection_generic_title">Failed to upload photo</string>
-    <string name="error_internet_connection_generic_message">We\'re having trouble connecting to the internet. Please check your connection or try again in a few minutes.</string>
-    <string name="error_account_upload_photo_message">There were issues uploading your profile photo. Please check your connection or try again in a few minutes.</string>
-    <string name="error_account_remove_photo_title">Failed to remove photo</string>
-    <string name="error_account_remove_photo_message">There were issues removing your profile photo. Please check your connection or try again in a few minutes.</string>
+
 </resources>

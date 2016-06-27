@@ -263,7 +263,7 @@ public class ProfileImageManager {
     }
 
     private void compressImageError(@NonNull final Throwable e) {
-        getListener().onImageCompressedError(e, R.string.error_internet_connection_generic_title,  R.string.error_account_upload_photo_message);
+        getListener().onImageCompressedError(e, R.string.error_account_upload_photo_title,  R.string.error_account_upload_photo_message);
     }
 
     private Listener getListener() {
