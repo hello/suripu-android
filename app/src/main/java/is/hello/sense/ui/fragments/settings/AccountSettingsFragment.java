@@ -215,7 +215,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = builder.addFragmentListener(this)
+        profileImageManager = builder.setFragmentListener(this)
                                      .build();
     }
 
@@ -547,7 +547,7 @@ public class AccountSettingsFragment extends InjectionFragment
         handleError(error, R.string.error_account_upload_photo_title, R.string.error_internet_connection_generic_message);
     }
 
-    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+    private void  updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
         showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();
