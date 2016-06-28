@@ -184,8 +184,8 @@ public class UserSupport {
     }
 
     public static void showUpdatePill(@NonNull final Activity from) {
-        // Start activity intent here to open updating your sleep pill screen
-        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill method called");
+        // TODO Start activity intent here to open updating your sleep pill screen
+        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
     }
 
     public enum DeviceIssue {

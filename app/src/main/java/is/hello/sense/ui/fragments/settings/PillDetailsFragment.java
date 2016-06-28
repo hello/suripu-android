@@ -55,6 +55,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
+
+        if(device.shouldUpdate()){
+            addDeviceAction(R.drawable.icon_settings_update, R.string.action_update_firmware, this::updateFirmware);
+        }
         addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
 
@@ -102,6 +106,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
 
 
     //region Pill Actions
+
+    public void updateFirmware(){
+        UserSupport.showUpdatePill(getActivity());
+    }
 
     public void replaceDevice() {
         Analytics.trackEvent(Analytics.Backside.EVENT_REPLACE_PILL, null);

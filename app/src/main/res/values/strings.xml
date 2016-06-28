@@ -250,6 +250,7 @@
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
     <string name="action_replace_this_sense">Replace this Sense</string>
     <string name="action_replace_sleep_pill">Replace this Sleep Pill</string>
+    <string name ="action_update_firmware">Update Firmware</string>
     <string name="action_replace_battery">Replace Battery</string>
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
