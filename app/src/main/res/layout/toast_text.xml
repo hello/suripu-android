@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView style="@style/AppTheme.Dark"
+          xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:padding="@dimen/gap_medium"
           android:gravity="center"
-          android:textColor="@color/white"
-          android:textAppearance="@style/AppTheme.Text.Body"
           android:lineSpacingMultiplier="@dimen/line_multiple_body"
-          android:background="@color/text_dark" />
+          android:padding="@dimen/gap_medium"
+          android:textAppearance="@style/AppTheme.Text.Body"
+          android:textColor="@color/white"/>

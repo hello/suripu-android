@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.res.ColorStateList;
@@ -221,7 +222,6 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
 
     //region Showing
-
     private Animator createFadeIn() {
         final ValueAnimator fadeIn = ValueAnimator.ofFloat(0f, 1f);
 
@@ -235,7 +235,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 final int statusBar = Anime.interpolateColors(fraction,
                                                               savedStatusBarColor,
                                                               darkenedScoreColor);
-                window.setStatusBarColor(statusBar);
+                if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.LOLLIPOP) { // added to pass lint
+                    window.setStatusBarColor(statusBar);
+                }
             });
         } else {
             fadeIn.addUpdateListener(animator -> {
@@ -357,7 +359,9 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
                 final int statusBar = Anime.interpolateColors(fraction,
                                                               oldStatusBarColor,
                                                               newStatusBarColor);
-                window.setStatusBarColor(statusBar);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // added to pass lint
+                    window.setStatusBarColor(statusBar);
+                }
             });
         } else {
             fadeOut.addUpdateListener(animator -> {
@@ -417,7 +421,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             summaryText.setAlpha(amount);
         }
     }
-    
+
     private class Decoration extends RecyclerView.ItemDecoration {
         private final Rect lineRect = new Rect();
         private final Paint linePaint = new Paint();

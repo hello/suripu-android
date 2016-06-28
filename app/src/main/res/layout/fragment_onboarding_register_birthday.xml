@@ -2,13 +2,13 @@
 
 <!-- Must have android:clickable="true" to work with
      FragmentNavigationFragment#overlayFragmentAllowingStateLoss(...) -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/gap_outer"
-    android:background="@color/background_onboarding"
-    android:clickable="true">
+<LinearLayout style="@style/AppTheme.Light"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:clickable="true"
+              android:orientation="vertical"
+              android:padding="@dimen/gap_outer">
 
     <TextView
         android:layout_width="match_parent"

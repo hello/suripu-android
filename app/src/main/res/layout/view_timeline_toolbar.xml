@@ -29,7 +29,7 @@
         android:layout_toEndOf="@id/view_timeline_toolbar_overflow"
         android:layout_toStartOf="@id/view_timeline_toolbar_share"
         android:gravity="center"
-        android:singleLine="true"
+        android:maxLines="1"
         android:ellipsize="end"
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"
         android:background="@drawable/selectable_dark_bounded"/>

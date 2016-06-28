@@ -146,7 +146,7 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
     //endregion
 
     public static class UnitItem {
-        @StringRes public final String key;
+        public final String key;
         @StringRes public int titleRes;
         @StringRes public int leftValueRes;
         @StringRes public int rightValueRes;

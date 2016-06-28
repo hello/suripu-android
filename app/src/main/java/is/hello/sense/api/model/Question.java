@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 
 import is.hello.sense.api.gson.Enums;
 
@@ -143,7 +144,7 @@ public class Question extends ApiResponse {
         UNKNOWN;
 
         public static Type fromString(@NonNull String string) {
-            return Enums.fromString(string.toUpperCase(), values(), UNKNOWN);
+            return Enums.fromString(string.toUpperCase(Locale.getDefault()), values(), UNKNOWN);
         }
     }
 
@@ -155,7 +156,7 @@ public class Question extends ApiResponse {
         UNKNOWN;
 
         public static AskTime fromString(@NonNull String string) {
-            return Enums.fromString(string.toUpperCase(), values(), UNKNOWN);
+            return Enums.fromString(string.toUpperCase(Locale.getDefault()), values(), UNKNOWN);
         }
     }
 }

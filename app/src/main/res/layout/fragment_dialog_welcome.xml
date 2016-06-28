@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/fragment_dialog_welcome_root"
+    style="@style/AppTheme.DarkOverlay"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_dialog_welcome_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_dark_overlay">
+    android:layout_height="match_parent">
 
     <is.hello.sense.ui.widget.PageDots
         android:id="@+id/fragment_dialog_welcome_page_dots"

@@ -16,7 +16,7 @@
         android:textColor="@color/light_accent"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/app_name"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_placeholder_message"

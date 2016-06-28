@@ -12,6 +12,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
 
+import java.util.Locale;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Drawing;
 
@@ -59,7 +61,7 @@ public class SleepScoreDrawable extends Drawable {
             labelPaint.setColor(resources.getColor(R.color.text_section_header));
             labelPaint.setTextAlign(Paint.Align.CENTER);
 
-            this.label = resources.getString(R.string.sleep_score).toUpperCase();
+            this.label = resources.getString(R.string.sleep_score).toUpperCase(Locale.getDefault());
 
             int offset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
             this.labelHeight = Drawing.getEstimatedLineHeight(labelPaint, false) + offset;
