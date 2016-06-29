@@ -40,6 +40,7 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -55,6 +56,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragmen
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
+import is.hello.sense.ui.fragments.onboarding.UpdatePillCompleteFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -162,6 +164,8 @@ public class OnboardingActivity extends InjectionActivity
                     case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
                         showSmartAlarmInfo();
                         break;
+                    case Constants.ONBOARDING_CHECKPOINT_UPDATE_PILL:
+                        showUpdatePill();
                 }
             }
         }
@@ -303,7 +307,8 @@ public class OnboardingActivity extends InjectionActivity
         if (bluetoothStack.isEnabled()) {
             pushFragment(new OnboardingPairSenseFragment(), null, false);
         } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
+            pushFragment(OnboardingBluetoothFragment.newInstance(
+                    OnboardingBluetoothFragment.SETUP_SENSE_SCREEN), null, false);
         }
     }
 
@@ -331,7 +336,8 @@ public class OnboardingActivity extends InjectionActivity
 
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(true), null, false);
+            pushFragment(OnboardingBluetoothFragment.newInstance(
+                    OnboardingBluetoothFragment.BIRTHDAY_SCREEN), null, false);
         }
 
         if (withDoneTransition) {
@@ -394,7 +400,8 @@ public class OnboardingActivity extends InjectionActivity
             builder.setHelpStep(UserSupport.OnboardingStep.SETTING_UP_SENSE);
             pushFragment(builder.toFragment(), null, false);
         } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(false), null, false);
+            pushFragment(OnboardingBluetoothFragment.newInstance(
+                    OnboardingBluetoothFragment.SETUP_SENSE_SCREEN), null, false);
         }
     }
 
@@ -451,6 +458,27 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(builder.toFragment(), null, true);
     }
 
+    public void showUpdatePill(){
+        if (bluetoothStack.isEnabled()) {
+            final OnboardingSimpleStepFragment.Builder builder =
+                    new OnboardingSimpleStepFragment.Builder(this);
+            builder.setHeadingText(R.string.title_update_sleep_pill);
+            builder.setSubheadingText(R.string.info_update_sleep_pill);
+            builder.setDiagramImage(R.drawable.sleep_pill_ota);
+            builder.setNextFragmentClass(OnboardingConnectPillFragment.class);
+            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
+            builder.setHelpStep(UserSupport.OnboardingStep.UPDATE_PILL);
+            pushFragment(builder.toFragment(), null, false);
+        } else {
+            pushFragment(OnboardingBluetoothFragment.newInstance(
+                    OnboardingBluetoothFragment.UPDATE_PILL_SCREEN), null, false);
+        }
+    }
+
+    public void showUpdatePillComplete(){
+        pushFragment(UpdatePillCompleteFragment.newInstance(), null, false);
+    }
+
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
@@ -501,6 +529,11 @@ public class OnboardingActivity extends InjectionActivity
         intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
         startActivity(intent);
         finish();
+    }
+
+    public void showNextScreen(final int nextScreenId) {
+
+
     }
 
 

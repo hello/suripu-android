@@ -15,13 +15,16 @@ import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingBluetoothFragment extends HardwareFragment {
-    private static final String ARG_IS_BEFORE_BIRTHDAY = OnboardingBluetoothFragment.class.getName() + ".ARG_IS_BEFORE_BIRTHDAY";
+    private static final String ARG_NEXT_SCREEN_ID = OnboardingBluetoothFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
+    public static final int BIRTHDAY_SCREEN = 1;
+    public static final int SETUP_SENSE_SCREEN = 2;
+    public static final int UPDATE_PILL_SCREEN = 3;
 
-    public static OnboardingBluetoothFragment newInstance(boolean isBeforeBirthday) {
-        OnboardingBluetoothFragment fragment = new OnboardingBluetoothFragment();
+    public static OnboardingBluetoothFragment newInstance(final int nextScreenId) {
+        final OnboardingBluetoothFragment fragment = new OnboardingBluetoothFragment();
 
-        Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_IS_BEFORE_BIRTHDAY, isBeforeBirthday);
+        final Bundle arguments = new Bundle();
+        arguments.putInt(ARG_NEXT_SCREEN_ID, nextScreenId);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -60,10 +63,20 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
 
     public void done() {
         hideBlockingActivity(true, () -> {
-            if (getArguments().getBoolean(ARG_IS_BEFORE_BIRTHDAY, false)) {
-                getOnboardingActivity().showBirthday(null, true);
-            } else {
-                getOnboardingActivity().showSetupSense();
+            final int nextScreenId = getArguments().getInt(ARG_NEXT_SCREEN_ID,-1);
+            //Todo refactor so onboarding activity can execute an int action mapped to a runnable instead.
+            switch(nextScreenId){
+                case BIRTHDAY_SCREEN:
+                    getOnboardingActivity().showBirthday(null, true);
+                    break;
+                case SETUP_SENSE_SCREEN:
+                    getOnboardingActivity().showSetupSense();
+                    break;
+                case UPDATE_PILL_SCREEN:
+                    getOnboardingActivity().showUpdatePill();
+                    break;
+                default:
+                    getOnboardingActivity().showSetupSense();
             }
         });
     }
