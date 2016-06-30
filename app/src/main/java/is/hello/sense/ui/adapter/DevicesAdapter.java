@@ -25,6 +25,7 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Styles;
@@ -223,6 +224,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status1Label;
         final TextView status2;
         final TextView status2Label;
+        final TextView status3;
+        final TextView status3Label;
+        final Button actionButton;
 
         SleepPillViewHolder(@NonNull View view) {
             super(view);
@@ -232,19 +236,25 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status1Label = (TextView) view.findViewById(R.id.item_device_status_label);
             this.status2 = (TextView) view.findViewById(R.id.item_device_status2);
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
+            this.status3 = (TextView) view.findViewById(R.id.item_device_status3);
+            this.status3Label = (TextView) view.findViewById(R.id.item_device_status3_label);
+            this.actionButton = (Button) view.findViewById(R.id.item_device_action_button);
 
-            view.setOnClickListener(this);
-            status2Label.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
-                            WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
-                            return true;
-                        }
+            this.status3Label.setVisibility(View.VISIBLE);
+            this.status3.setVisibility(View.VISIBLE);
+
+            Views.setTimeOffsetOnClickListener(view, this);
+            Views.setTimeOffsetOnClickListener(actionButton, v -> {
+                UserSupport.showUpdatePill(activity);
+            });
+            status2Label.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
+                        WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
+                        return true;
                     }
-                    return false;
                 }
+                return false;
             });
         }
 
@@ -254,7 +264,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
             final SleepPillDevice device = (SleepPillDevice) getItem(position);
             title.setText(R.string.device_pill);
@@ -287,6 +297,15 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status2.setText(color.nameRes);
             status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.gap_medium));
             status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
+
+            status3Label.setText(R.string.label_firmware_version);
+            status3.setText(device.firmwareVersion);
+
+            if(device.shouldUpdate()){
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.warning));
+                actionButton.setText(R.string.action_update);
+                actionButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 

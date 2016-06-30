@@ -183,6 +183,11 @@ public class UserSupport {
         }
     }
 
+    public static void showUpdatePill(@NonNull final Activity from) {
+        // TODO Start activity intent here to open updating your sleep pill screen
+        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
+    }
+
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),

@@ -44,7 +44,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     }
 
 
-    public Issue getTopIssue(@NonNull Devices devices) {
+    public Issue getTopIssue(@NonNull final Devices devices) {
         final SenseDevice sense = devices.getSense();
         final SleepPillDevice pill = devices.getSleepPill();
 
@@ -62,6 +62,8 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.SLEEP_PILL_LOW_BATTERY;
         } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
             return Issue.SLEEP_PILL_MISSING;
+        } else if (pill.shouldUpdate()){
+            return Issue.SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE;
         }
 
         return Issue.NONE;
@@ -107,7 +109,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
     }
 
-    public void updateLastShown(@NonNull Issue issue){
+    public void updateLastShown(@NonNull final Issue issue){
         switch (issue) {
             case SENSE_MISSING:
                 preferences.edit()
@@ -132,33 +134,45 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     }
 
     public enum Issue {
-        NONE(0, 0, 0),
+        NONE(0, 0, 0, 0),
         NO_SENSE_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED,
                         R.string.issue_title_no_sense,
-                        R.string.issue_message_no_sense),
+                        R.string.issue_message_no_sense,
+                        R.string.action_fix_now),
         SENSE_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN,
                       R.string.issue_title_missing_sense,
-                      R.string.issue_message_missing_sense),
+                      R.string.issue_message_missing_sense,
+                      R.string.action_fix_now),
         NO_SLEEP_PILL_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED,
                              R.string.issue_title_no_pill,
-                             R.string.issue_message_no_pill),
+                             R.string.issue_message_no_pill,
+                             R.string.action_fix_now),
         SLEEP_PILL_LOW_BATTERY(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY,
                                R.string.issue_title_low_battery,
-                               R.string.issue_message_low_battery),
+                               R.string.issue_message_low_battery,
+                               R.string.action_replace),
         SLEEP_PILL_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN,
                            R.string.issue_title_missing_pill,
-                           R.string.issue_message_missing_pill);
+                           R.string.issue_message_missing_pill,
+                           R.string.action_fix_now),
+        SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_FIRMWARE_UPDATE_AVAILABLE,
+                                             R.string.issue_title_pill_firmware_update_available,
+                                             R.string.issue_message_pill_firmware_update_available,
+                                             R.string.action_update_now);
 
         public final int systemAlertType;
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;
+        public final @StringRes int buttonActionRes;
 
-        Issue(int systemAlertType,
-              @StringRes int titleRes,
-              @StringRes int messageRes) {
+        Issue(final int systemAlertType,
+              @StringRes final int titleRes,
+              @StringRes final int messageRes,
+              @StringRes final int buttonActionRes) {
             this.systemAlertType = systemAlertType;
             this.titleRes = titleRes;
             this.messageRes = messageRes;
+            this.buttonActionRes = buttonActionRes;
         }
     }
 }
