@@ -61,6 +61,14 @@
             android:layout_gravity="center"
             style="@style/AppTheme.ProgressBar.Small" />
 
+        <ProgressBar
+            android:id="@+id/fragment_onboarding_pair_pill_progress_determinate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@style/AppTheme.ProgressBar.Horizontal"
+            android:visibility="gone"/>
+
         <TextView
             android:id="@+id/fragment_onboarding_pair_pill_status"
             android:layout_width="match_parent"

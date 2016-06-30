@@ -517,6 +517,11 @@
         <item name="android:maxHeight">28dp</item>
     </style>
 
+    <style name="AppTheme.ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:minWidth">110dp</item>
+        <item name="android:maxWidth">110dp</item>
+    </style>
+
     <style name="FacebookTheme" parent="FacebookTheme.Base"/>
     <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>

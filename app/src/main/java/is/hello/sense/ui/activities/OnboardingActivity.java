@@ -56,7 +56,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragmen
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
-import is.hello.sense.ui.fragments.onboarding.UpdatePillCompleteFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -475,10 +474,6 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
-    public void showUpdatePillComplete(){
-        pushFragment(UpdatePillCompleteFragment.newInstance(), null, false);
-    }
-
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
@@ -530,12 +525,6 @@ public class OnboardingActivity extends InjectionActivity
         startActivity(intent);
         finish();
     }
-
-    public void showNextScreen(final int nextScreenId) {
-
-
-    }
-
 
     //region Static Step Animation
 

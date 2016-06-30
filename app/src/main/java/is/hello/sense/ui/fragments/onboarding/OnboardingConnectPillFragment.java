@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
@@ -17,6 +20,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -26,8 +30,10 @@ import is.hello.sense.ui.widget.util.Views;
 
 public class OnboardingConnectPillFragment extends HardwareFragment {
     private ProgressBar activityIndicator;
+    private ProgressBar updateIndicator;
     private TextView activityStatus;
-
+    private TextView titleTextView;
+    private TextView infoTextView;
     private DiagramVideoView diagram;
 
     private Button retryButton;
@@ -45,14 +51,15 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
         final View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
 
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
+        this.updateIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_progress_determinate);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
 
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
 
 
-        final TextView titleTextView = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_title);
-        final TextView infoTextView = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_subhead);
-        //skipping this is not an option currently so we don't try to keep reference to skip button
+        this.titleTextView = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_title);
+        this.infoTextView = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_subhead);
+        //skipping this is not an option currently so we don't keep reference to skip button
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
 
 
@@ -100,54 +107,23 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
         this.retryButton = null;
     }
 
-    private void skipConnectingPill() {
-        onFinish(false);
-    }
-
-    private void onBegin() {
-        this.isConnecting = true;
-
-        activityIndicator.setVisibility(View.VISIBLE);
-        activityStatus.setVisibility(View.VISIBLE);
-
-        retryButton.setVisibility(View.GONE);
-    }
-
-    private void onFinish(final boolean success) {
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-        getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-            stateSafeExecutor.execute(() -> {
-                hardwarePresenter.clearPeripheral();
-                if (success) {
-                    getOnboardingActivity().showUpdatePillComplete();
-                } else {
-                    getOnboardingActivity().finish();
-                }
-            });
-        });
-    }
-
-    private void help(final View view) {
-        //Todo point to user support page
-    }
-
     public void connectPill() {
         onBegin();
 
         if (!hardwarePresenter.hasPeripheral())
 
         {
-            showBlockingActivity(R.string.title_scanning_for_sense);
+            //Todo replace with phone battery level checks
+            showBlockingActivity(R.string.title_checking_connectivity);
             bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> connectPill(), this::presentError);
             return;
         }
-        //Todo check with Jimmy if Sense needs to be connected with app to trigger dfu
+        //Todo replace hardwarePresenter with pillHardwarePresenter
         if (!hardwarePresenter.isConnected())
 
         {
-            showBlockingActivity(R.string.title_scanning_for_sense);
+            //Todo replace with pill battery level and bluetooth connectivity strength checks
+            showBlockingActivity(R.string.title_checking_connectivity);
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                 if (status == ConnectProgress.CONNECTED) {
                     connectPill();
@@ -158,19 +134,15 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
             return;
         }
 
-        showBlockingActivity(R.string.title_waiting_for_sense);
+        diagram.startPlayback();
+        hideBlockingActivity(false, () -> {
+            onConnected();
+            //Todo replace with connectPill to dfu mode
+                                 /*bindAndSubscribe(hardwarePresenter.linkPill(),
+                                                  ignored -> completeHardwareActivity(() -> onFinish(true)),
+                                                  this::presentError);*/
+        });
 
-        showHardwareActivity(() -> {
-                                 diagram.startPlayback();
-                                 hideBlockingActivity(false, () -> {
-                                     onFinish(true);
-                                     //Todo replace with connectPill to dfu mode
-                                     /*bindAndSubscribe(hardwarePresenter.linkPill(),
-                                                      ignored -> completeHardwareActivity(() -> onFinish(true)),
-                                                      this::presentError);*/
-                                 });
-                             }
-                , this::presentError);
     }
 
     public void presentError(final Throwable e) {
@@ -185,15 +157,12 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
             //Todo update error strings
             final ErrorDialogFragment.Builder errorDialogBuilder =
                     new ErrorDialogFragment.Builder(e, getActivity());
-            errorDialogBuilder.withOperation("Pair Pill");
+            errorDialogBuilder.withOperation("Connect Pill");
             if (e instanceof OperationTimeoutException ||
                     SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
-                errorDialogBuilder.withSupportLink();
-            } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.DEVICE_ALREADY_PAIRED)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_pill_already_paired));
                 errorDialogBuilder.withSupportLink();
             } else {
                 errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
@@ -202,5 +171,75 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
             final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
+    }
+
+    private void skipConnectingPill() {
+        onFinish(false);
+    }
+
+    private void onBegin() {
+        this.isConnecting = true;
+
+        activityIndicator.setVisibility(View.VISIBLE);
+        activityStatus.setVisibility(View.VISIBLE);
+
+        retryButton.setVisibility(View.GONE);
+    }
+
+    private void onConnected(){
+        stateSafeExecutor.execute(() -> {
+            diagram.destroy();
+            //Todo distorts the drawable because different size layout
+            diagram.setPlaceholder(R.drawable.sleep_pill_ota);
+            diagram.invalidate();
+            activityIndicator.setVisibility(View.GONE);
+            updateIndicator.setVisibility(View.VISIBLE);
+            activityStatus.setText(R.string.message_sleep_pill_updating);
+            titleTextView.setText(R.string.title_update_sleep_pill);
+            infoTextView.setText(R.string.info_update_sleep_pill);
+
+            //Todo replace mock of progress with real hardware pill presenter work update
+            stateSafeExecutor.execute( () -> {
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(updateIndicator == null){
+                            this.cancel();
+                        }
+                        int progress = updateIndicator.getProgress();
+                        if (progress < updateIndicator.getMax()) {
+                            updateIndicator.setProgress(++progress);
+                        } else{
+                            this.cancel();
+                            updateIndicator.post(() -> {
+                                OnboardingConnectPillFragment.this.onFinish(true);
+                            });
+                        }
+                    }
+                }, 1000, 200);
+
+            });
+        });
+    }
+
+    private void onFinish(final boolean success) {
+        LoadingDialogFragment.show(getFragmentManager(),
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+        getFragmentManager().executePendingTransactions();
+        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
+            stateSafeExecutor.execute(() -> {
+                hardwarePresenter.clearPeripheral();
+                if (success) {
+                    //Todo see if able to fade out
+                    getOnboardingActivity().finish();
+                } else {
+                    getOnboardingActivity().finish();
+                }
+            });
+        }, R.string.message_sleep_pill_updated);
+    }
+
+    private void help(final View view) {
+        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL);
     }
 }
