@@ -439,6 +439,7 @@
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
+    <string name="label_having_trouble">I\’m having trouble</string>
 
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
@@ -564,8 +565,5 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

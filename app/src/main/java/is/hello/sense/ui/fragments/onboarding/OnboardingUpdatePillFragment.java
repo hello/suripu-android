@@ -130,15 +130,19 @@ public class OnboardingUpdatePillFragment extends HardwareFragment {
             activityStatus.setVisibility(View.GONE);
             retryButton.setVisibility(View.VISIBLE);
 
-            //Todo update error strings
+            //Todo update error checks
             final ErrorDialogFragment.Builder errorDialogBuilder =
                     new ErrorDialogFragment.Builder(e, getActivity());
-            errorDialogBuilder.withOperation("Connect Pill");
+            errorDialogBuilder.withOperation("Update Pill");
             if (e instanceof OperationTimeoutException ||
                     SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
+                errorDialogBuilder
+                        .withTitle(R.string.error_sleep_pill_title_update_fail)
+                        .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_fail));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
+                errorDialogBuilder
+                        .withTitle(R.string.error_sleep_pill_title_update_fail)
+                        .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_fail));
                 errorDialogBuilder.withSupportLink();
             } else {
                 errorDialogBuilder.withUnstableBluetoothHelp(getActivity());

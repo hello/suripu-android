@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
+import is.hello.buruberi.util.Operation;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
@@ -128,15 +129,17 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
         }
 
         diagram.startPlayback();
-        //Todo the loading done drawable is not displayed quick enough before fragment is closeds
+        //Todo remove after test
+        presentError(new OperationTimeoutException(Operation.CONNECT));
+        //Todo the loading done drawable is not displayed quick enough before fragment is closed
         activityIndicator.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.loading_done, null));
         activityStatus.setText(R.string.message_sleep_pill_connected);
         hideBlockingActivity(false, () -> {
             onFinish(true);
             //Todo replace with updatePill to dfu mode
-                                 /*bindAndSubscribe(hardwarePresenter.linkPill(),
-                                                  ignored -> completeHardwareActivity(() -> onFinish(true)),
-                                                  this::presentError);*/
+            /*bindAndSubscribe(hardwarePresenter.linkPill(),
+                          ignored -> completeHardwareActivity(() -> onFinish(true)),
+                          this::presentError);*/
         });
 
     }
@@ -150,21 +153,27 @@ public class OnboardingConnectPillFragment extends HardwareFragment {
             activityStatus.setVisibility(View.GONE);
             retryButton.setVisibility(View.VISIBLE);
 
-            //Todo update error strings
+            //Todo update error checks
             final ErrorDialogFragment.Builder errorDialogBuilder =
                     new ErrorDialogFragment.Builder(e, getActivity());
             errorDialogBuilder.withOperation("Connect Pill");
             if (e instanceof OperationTimeoutException ||
                     SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
+                errorDialogBuilder
+                        .withTitle(R.string.error_sleep_pill_title_update_missing)
+                        .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_missing));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
+                errorDialogBuilder
+                        .withTitle(R.string.error_sleep_pill_title_update_missing)
+                        .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_missing));
                 errorDialogBuilder.withSupportLink();
             } else {
                 errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
             }
 
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+            final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
+            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.withAction(helpUriString, R.string.label_having_trouble)
+                                                                              .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
