@@ -523,7 +523,7 @@
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
 
-    <string name="share_text">See how i\'m improving my sleep with insights from Sense. %1$s #MySense</string>
+    <string name="share_text">See how I\'m improving my sleep with Insights from Sense. %1$s #MySense</string>
 
 
     <plurals name="item_support_comment_detail_attachments">
