@@ -73,7 +73,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
                     getOnboardingActivity().showSetupSense();
                     break;
                 case UPDATE_PILL_SCREEN:
-                    getOnboardingActivity().showUpdatePill();
+                    getOnboardingActivity().showUpdateIntroPill();
                     break;
                 default:
                     getOnboardingActivity().showSetupSense();

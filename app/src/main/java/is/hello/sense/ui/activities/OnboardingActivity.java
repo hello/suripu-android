@@ -53,6 +53,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingUpdatePillFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -164,7 +165,7 @@ public class OnboardingActivity extends InjectionActivity
                         showSmartAlarmInfo();
                         break;
                     case Constants.ONBOARDING_CHECKPOINT_UPDATE_PILL:
-                        showUpdatePill();
+                        showUpdateIntroPill();
                 }
             }
         }
@@ -457,7 +458,7 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(builder.toFragment(), null, true);
     }
 
-    public void showUpdatePill(){
+    public void showUpdateIntroPill(){
         if (bluetoothStack.isEnabled()) {
             final OnboardingSimpleStepFragment.Builder builder =
                     new OnboardingSimpleStepFragment.Builder(this);
@@ -472,6 +473,10 @@ public class OnboardingActivity extends InjectionActivity
             pushFragment(OnboardingBluetoothFragment.newInstance(
                     OnboardingBluetoothFragment.UPDATE_PILL_SCREEN), null, false);
         }
+    }
+
+    public void showUpdateReadyPill(){
+        pushFragment(OnboardingUpdatePillFragment.newInstance(), null, false);
     }
 
     public void showSenseColorsInfo() {
@@ -499,7 +504,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSetAlarmDetail(){
-        pushFragment(new Fragment(),null,false);
+        pushFragment(new Fragment(), null, false);
         final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
     }
