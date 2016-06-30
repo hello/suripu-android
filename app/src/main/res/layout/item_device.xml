@@ -10,14 +10,14 @@
         android:id="@+id/item_device_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_margin="@dimen/x3"
         android:drawableEnd="@drawable/disclosure_chevron"
-        android:drawablePadding="@dimen/gap_small"
+        android:drawablePadding="@dimen/x1"
         android:gravity="start|center_vertical"
         android:textColor="@color/light_accent"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/app_name"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_last_seen_label"
@@ -25,8 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@id/item_device_name"
-        android:layout_marginStart="@dimen/gap_outer"
-        android:layout_marginEnd="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginEnd="@dimen/x2"
         android:textAppearance="@style/AppTheme.Text.Body.Dim"
         android:text="@string/label_last_seen"/>
 
@@ -36,20 +36,20 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_last_seen_label"
         android:layout_toEndOf="@id/item_device_last_seen_label"
-        android:layout_marginEnd="@dimen/gap_outer"
+        android:layout_marginEnd="@dimen/x3"
         android:gravity="end|center_vertical"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:text="@string/missing_data_placeholder"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_status_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_last_seen_label"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginStart="@dimen/gap_outer"
-        android:layout_marginEnd="@dimen/gap_medium"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginEnd="@dimen/x2"
         android:textAppearance="@style/AppTheme.Text.Body.Dim"
         android:text="@string/label_wifi"/>
 
@@ -59,22 +59,21 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status_label"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/gap_outer"
-        android:drawablePadding="@dimen/gap_small"
+        android:layout_marginEnd="@dimen/x3"
+        android:drawablePadding="@dimen/x1"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="end|center_vertical"
         android:text="@string/device_unknown"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
 
     <TextView
         android:id="@+id/item_device_status2_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_status_label"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginStart="@dimen/gap_outer"
-        android:layout_marginEnd="@dimen/gap_small"
-        android:layout_marginBottom="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginEnd="@dimen/x1"
         android:textAppearance="@style/AppTheme.Text.Body.Dim"
         android:text="@string/label_firmware_version"/>
 
@@ -84,10 +83,48 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status2_label"
         android:layout_toEndOf="@id/item_device_status2_label"
-        android:layout_marginEnd="@dimen/gap_outer"
+        android:layout_marginEnd="@dimen/x3"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="end|center_vertical"
         android:text="@string/missing_data_placeholder"
-        android:singleLine="true"/>
+        android:maxLines="1"/>
+
+    <TextView
+        android:id="@+id/item_device_status3_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_device_status2_label"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginEnd="@dimen/x1"
+        android:layout_marginBottom="@dimen/x3"
+        android:textAppearance="@style/AppTheme.Text.Body.Dim"
+        android:text="@string/label_firmware_version"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/item_device_status3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/item_device_status3_label"
+        android:layout_toEndOf="@id/item_device_status3_label"
+        android:layout_marginEnd="@dimen/x3"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:gravity="end|center_vertical"
+        android:text="@string/missing_data_placeholder"
+        android:maxLines="1"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/item_device_action_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginEnd="@dimen/x3"
+        android:layout_marginBottom="@dimen/x3"
+        android:layout_below="@id/item_device_status3_label"
+        android:text="@string/missing_data_placeholder"
+        style="@style/AppTheme.Button.Rounded"
+        android:visibility="gone"/>
 
 </RelativeLayout>
