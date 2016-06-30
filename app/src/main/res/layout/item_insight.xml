@@ -85,7 +85,7 @@
         android:singleLine="true"
         android:text="@string/action_share"
         android:textAllCaps="true"
-        android:textColor="@color/gray3"/>
+        android:textColor="@color/item_insight_share_text_color"/>
 
 
 </is.hello.sense.ui.widget.RoundedRelativeLayout>
