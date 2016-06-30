@@ -20,7 +20,7 @@
             android:id="@+id/dialog_bottom_alert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_outer"
+            android:layout_margin="@dimen/x3"
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.SectionHeading" />
 
@@ -29,9 +29,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer"
-            android:layout_marginBottom="@dimen/gap_outer"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginBottom="@dimen/x3"
             android:gravity="center"
             android:scrollbars="vertical"
             android:overScrollMode="ifContentScrolls"
@@ -59,8 +59,8 @@
                 style="@style/AppTheme.Button.Dialog.Positive"/>
 
             <View
-                android:layout_marginTop="@dimen/gap_medium"
-                android:layout_marginBottom="@dimen/gap_medium"
+                android:layout_marginTop="@dimen/x2"
+                android:layout_marginBottom="@dimen/x2"
                 style="@style/Divider.Vertical" />
 
             <Button
