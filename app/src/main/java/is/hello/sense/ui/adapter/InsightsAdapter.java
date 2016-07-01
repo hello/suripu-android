@@ -5,11 +5,13 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -391,7 +393,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
-        final TextView share;
+        final LinearLayout share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -400,7 +402,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
-            this.share = (TextView) view.findViewById(R.id.item_insight_share);
+            this.share = (LinearLayout) view.findViewById(R.id.item_insight_share);
 
             view.setOnClickListener(this);
         }

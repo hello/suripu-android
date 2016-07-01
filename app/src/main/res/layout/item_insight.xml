@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <is.hello.sense.ui.widget.RoundedRelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_insight_card"
     style="@style/AppTheme.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -71,21 +72,33 @@
         android:layout_marginLeft="@dimen/x2"
         android:layout_marginRight="@dimen/x2"/>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/item_insight_share"
-        style="@style/AppTheme.Text.Header.H7"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_preview_divider"
-        android:layout_centerHorizontal="true"
-        android:drawableStart="@drawable/share"
-        android:drawablePadding="@dimen/x1"
         android:gravity="center"
+        android:orientation="horizontal"
         android:padding="@dimen/x2"
-        android:singleLine="true"
-        android:text="@string/action_share"
-        android:textAllCaps="true"
-        android:textColor="@color/item_insight_share_text_color"/>
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:contentDescription="@string/action_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/share"/>
+
+        <TextView
+            android:layout_marginStart="@dimen/x2"
+            style="@style/AppTheme.Text.Header.H7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/action_share"
+            android:textAllCaps="true"
+            android:textColor="@color/item_insight_share_text_color"/>
+    </LinearLayout>
 
 
 </is.hello.sense.ui.widget.RoundedRelativeLayout>

@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/action_bar_height"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/icon_share_enabled"
+        android:src="@drawable/share_active"
         android:scaleType="center"
         android:contentDescription="@string/action_share" />
 
