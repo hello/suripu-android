@@ -27,14 +27,12 @@ import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Rx;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -63,7 +61,6 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
-import rx.Observable;
 
 import static is.hello.go99.Anime.isAnimating;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -235,16 +232,6 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
-        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(),
-                                                                  loggedOutIntent);
-        bindAndSubscribe(onLogOut,
-                         ignored -> {
-                             startActivity(new Intent(this, LaunchActivity.class));
-                             finish();
-                         },
-                         Functions.LOG_ERROR);
 
         if (isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE) {
             bindAndSubscribe(deviceIssuesPresenter.latest(),
