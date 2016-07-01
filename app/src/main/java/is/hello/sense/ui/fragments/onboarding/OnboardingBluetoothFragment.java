@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -73,7 +74,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
                     getOnboardingActivity().showSetupSense();
                     break;
                 case UPDATE_PILL_SCREEN:
-                    getOnboardingActivity().showUpdateIntroPill();
+                    ((PillUpdateActivity) getActivity()).showUpdateIntroPill();
                     break;
                 default:
                     getOnboardingActivity().showSetupSense();

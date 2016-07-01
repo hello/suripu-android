@@ -16,7 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Analytics;
@@ -54,9 +54,8 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
         }
 
         String animationName = getArguments().getString(ARG_EXIT_ANIMATION_NAME);
-        if (!TextUtils.isEmpty(animationName)) {
-            OnboardingActivity onboardingActivity = (OnboardingActivity) getActivity();
-            this.exitAnimationProvider = onboardingActivity.getExitAnimationProviderNamed(animationName);
+        if (!TextUtils.isEmpty(animationName) && (getActivity() instanceof ExitAnimationProviderActivity)) {
+            this.exitAnimationProvider = ((ExitAnimationProviderActivity) getActivity()).getExitAnimationProviderNamed(animationName);
         }
 
         String helpStepName = getArguments().getString(ARG_HELP_STEP);
@@ -131,7 +130,7 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
             fragment.setArguments(nextArguments);
 
             boolean wantsBackStackEntry = arguments.getBoolean(ARG_NEXT_WANTS_BACK_STACK, true);
-            ((OnboardingActivity) getActivity()).pushFragment(fragment, null, wantsBackStackEntry);
+            ((FragmentNavigation) getActivity()).pushFragment(fragment, null, wantsBackStackEntry);
         } catch (Exception e) {
             throw new RuntimeException("Could not resolve next step fragment class", e);
         }
@@ -289,6 +288,12 @@ public final class OnboardingSimpleStepFragment extends SenseFragment {
         }
     }
 
+    /**
+     * To handle variety of ExitAnimations based on name
+     */
+    public interface ExitAnimationProviderActivity {
+        OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull final String name);
+    }
 
     /**
      * Provides a dynamic animation on a static step's contents

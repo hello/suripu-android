@@ -3,6 +3,7 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -93,6 +94,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         if (arguments.containsKey(ARG_ACTION_TITLE_RES)) {
             final int titleRes = arguments.getInt(ARG_ACTION_TITLE_RES);
+            dialog.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
             if (arguments.containsKey(ARG_ACTION_INTENT)) {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
                     final Intent intent = arguments.getParcelable(ARG_ACTION_INTENT);

@@ -117,8 +117,7 @@ public class DebugActivity extends InjectionActivity {
     }
 
     public void showUpdatePill(){
-        final Intent onboarding = new Intent(this, OnboardingActivity.class);
-        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_UPDATE_PILL);
+        final Intent onboarding = new Intent(this, PillUpdateActivity.class);
         startActivity(onboarding);
     }
 

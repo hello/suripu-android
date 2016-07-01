@@ -40,7 +40,6 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -53,7 +52,6 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingUpdatePillFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -66,7 +64,9 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class OnboardingActivity extends InjectionActivity
-        implements FragmentNavigation, AccountEditor.Container {
+        implements FragmentNavigation,
+        OnboardingSimpleStepFragment.ExitAnimationProviderActivity,
+        AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
     public static final String EXTRA_RELEASE_PERIPHERAL_ON_PAIR = OnboardingActivity.class.getName() + ".EXTRA_RELEASE_PERIPHERAL_ON_PAIR";
@@ -164,8 +164,6 @@ public class OnboardingActivity extends InjectionActivity
                     case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
                         showSmartAlarmInfo();
                         break;
-                    case Constants.ONBOARDING_CHECKPOINT_UPDATE_PILL:
-                        showUpdateIntroPill();
                 }
             }
         }
@@ -458,27 +456,6 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(builder.toFragment(), null, true);
     }
 
-    public void showUpdateIntroPill(){
-        if (bluetoothStack.isEnabled()) {
-            final OnboardingSimpleStepFragment.Builder builder =
-                    new OnboardingSimpleStepFragment.Builder(this);
-            builder.setHeadingText(R.string.title_update_sleep_pill);
-            builder.setSubheadingText(R.string.info_update_sleep_pill);
-            builder.setDiagramImage(R.drawable.sleep_pill_ota);
-            builder.setNextFragmentClass(OnboardingConnectPillFragment.class);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
-            builder.setHelpStep(UserSupport.OnboardingStep.UPDATE_PILL);
-            pushFragment(builder.toFragment(), null, false);
-        } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(
-                    OnboardingBluetoothFragment.UPDATE_PILL_SCREEN), null, false);
-        }
-    }
-
-    public void showUpdateReadyPill(){
-        pushFragment(OnboardingUpdatePillFragment.newInstance(), null, false);
-    }
-
     public void showSenseColorsInfo() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
@@ -535,6 +512,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public static final String ANIMATION_ROOM_CHECK = "room_check";
 
+    @Override
     public
     @Nullable
     OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull final String name) {

@@ -2,8 +2,8 @@ package is.hello.sense.onboarding;
 
 import dagger.Module;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.fragments.onboarding.ConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -12,7 +12,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingUpdatePillFragment;
+import is.hello.sense.ui.fragments.onboarding.UpdateReadyPillFragment;
 
 @Module(complete = false, injects = {
         OnboardingActivity.class,
@@ -23,8 +23,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingUpdatePillFragment;
         OnboardingUnsupportedDeviceFragment.class,
         OnboardingPairSenseFragment.class,
         OnboardingPairPillFragment.class,
-        OnboardingConnectPillFragment.class,
-        OnboardingUpdatePillFragment.class,
+        ConnectPillFragment.class,
+        UpdateReadyPillFragment.class,
         OnboardingSenseColorsFragment.class,
         OnboardingRoomCheckFragment.class,
 
