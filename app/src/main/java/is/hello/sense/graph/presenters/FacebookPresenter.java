@@ -1,7 +1,9 @@
 package is.hello.sense.graph.presenters;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
@@ -20,9 +22,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.fb.FacebookApiService;
 import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.fb.model.FacebookProfilePicture;
+import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -40,9 +45,12 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     private String queryParams;
     private List<String> permissionList;
 
-    public @Inject FacebookPresenter(){
+    public @Inject FacebookPresenter(@NonNull final Context context){
         this.queryParams = getDefaultQueryParams();
         this.permissionList = getDefaultPermissions();
+
+        Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT))
+        .subscribe( ignored -> logout(), Functions.LOG_ERROR);
     }
 
     @Override

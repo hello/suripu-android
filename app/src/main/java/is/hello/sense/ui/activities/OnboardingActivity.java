@@ -166,6 +166,8 @@ public class OnboardingActivity extends InjectionActivity
             }
         }
 
+        //Really not sure why this would ever be needed unless for debugging
+        // This is the only place that would be problematic with starting Launch Activity from Sense Application
         final Observable<Intent> onLogOut =
                 Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         subscribe(onLogOut,

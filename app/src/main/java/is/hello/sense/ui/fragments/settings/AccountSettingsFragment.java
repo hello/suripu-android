@@ -117,8 +117,8 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
-
-        //setRetainInstance(true);
+        //Required so that it is retained after exiting on home button
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -448,7 +448,6 @@ public class AccountSettingsFragment extends InjectionFragment
             recyclerView.post(() -> {
                 getActivity().finish();
                 accountPresenter.logOut();
-                facebookPresenter.logout();
             });
         });
         signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
