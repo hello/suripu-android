@@ -94,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="@string/action_share"
             android:textAllCaps="true"
             android:textColor="@color/item_insight_share_text_color"/>
