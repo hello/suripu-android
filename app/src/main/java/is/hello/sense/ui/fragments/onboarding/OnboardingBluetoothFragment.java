@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,7 +10,7 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.activities.PillUpdateActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
@@ -17,9 +18,6 @@ import is.hello.sense.util.Analytics;
 
 public class OnboardingBluetoothFragment extends HardwareFragment {
     private static final String ARG_NEXT_SCREEN_ID = OnboardingBluetoothFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
-    public static final int BIRTHDAY_SCREEN = 1;
-    public static final int SETUP_SENSE_SCREEN = 2;
-    public static final int UPDATE_PILL_SCREEN = 3;
 
     public static OnboardingBluetoothFragment newInstance(final int nextScreenId) {
         final OnboardingBluetoothFragment fragment = new OnboardingBluetoothFragment();
@@ -62,22 +60,15 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
                          Functions.LOG_ERROR);
     }
 
+
+
     public void done() {
         hideBlockingActivity(true, () -> {
             final int nextScreenId = getArguments().getInt(ARG_NEXT_SCREEN_ID,-1);
-            //Todo refactor so onboarding activity can execute an int action mapped to a runnable instead.
-            switch(nextScreenId){
-                case BIRTHDAY_SCREEN:
-                    getOnboardingActivity().showBirthday(null, true);
-                    break;
-                case SETUP_SENSE_SCREEN:
-                    getOnboardingActivity().showSetupSense();
-                    break;
-                case UPDATE_PILL_SCREEN:
-                    ((PillUpdateActivity) getActivity()).showUpdateIntroPill();
-                    break;
-                default:
-                    getOnboardingActivity().showSetupSense();
+            if(nextScreenId != -1 && getActivity() instanceof FragmentNavigation){
+                ((FragmentNavigation) getActivity()).flowFinished(this, nextScreenId, null);
+            } else{
+                finishWithResult(Activity.RESULT_CANCELED, null);
             }
         });
     }

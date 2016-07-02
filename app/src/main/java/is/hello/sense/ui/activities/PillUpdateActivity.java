@@ -24,6 +24,7 @@ import is.hello.sense.util.Analytics;
 public class PillUpdateActivity extends InjectionActivity
 implements FragmentNavigation{
 
+    private static final int RESPONSE_UPDATE_PILL_SCREEN = 0;
     private FragmentNavigationDelegate navigationDelegate;
     @Inject
     BluetoothStack bluetoothStack;
@@ -45,7 +46,7 @@ implements FragmentNavigation{
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         navigationDelegate.onSaveInstanceState(outState);
     }
@@ -74,7 +75,11 @@ implements FragmentNavigation{
 
     @Override
     public void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-        //
+        if(fragment instanceof OnboardingBluetoothFragment){
+            if(responseCode == RESPONSE_UPDATE_PILL_SCREEN){
+                showUpdateIntroPill();
+            }
+        }
     }
 
     @Nullable
@@ -85,7 +90,7 @@ implements FragmentNavigation{
 
     @Override
     public void onBackPressed() {
-        Fragment topFragment = getTopFragment();
+        final Fragment topFragment = getTopFragment();
         if (topFragment instanceof OnBackPressedInterceptor) {
             if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
                 return;
@@ -96,21 +101,21 @@ implements FragmentNavigation{
     }
 
     public void showUpdateIntroPill(){
-        if (bluetoothStack.isEnabled()) {
-            //Todo if this activity ever needs to show exitAnimation should implement ExitAnimationProviderActivity
-            final OnboardingSimpleStepFragment.Builder builder =
-                    new OnboardingSimpleStepFragment.Builder(this);
-            builder.setHeadingText(R.string.title_update_sleep_pill);
-            builder.setSubheadingText(R.string.info_update_sleep_pill);
-            builder.setDiagramImage(R.drawable.sleep_pill_ota);
-            builder.setNextFragmentClass(ConnectPillFragment.class);
-            builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
-            builder.setHelpStep(UserSupport.OnboardingStep.UPDATE_PILL);
-            pushFragment(builder.toFragment(), null, false);
-        } else {
+        if (!bluetoothStack.isEnabled()) {
             pushFragment(OnboardingBluetoothFragment.newInstance(
-                    OnboardingBluetoothFragment.UPDATE_PILL_SCREEN), null, false);
+                    PillUpdateActivity.RESPONSE_UPDATE_PILL_SCREEN), null, false);
+            return;
         }
+        //Todo if this activity ever needs to show exitAnimation should implement ExitAnimationProviderActivity
+        final OnboardingSimpleStepFragment.Builder builder =
+                new OnboardingSimpleStepFragment.Builder(this);
+        builder.setHeadingText(R.string.title_update_sleep_pill);
+        builder.setSubheadingText(R.string.info_update_sleep_pill);
+        builder.setDiagramImage(R.drawable.sleep_pill_ota);
+        builder.setNextFragmentClass(ConnectPillFragment.class);
+        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
+        builder.setHelpStep(UserSupport.OnboardingStep.UPDATE_PILL);
+        pushFragment(builder.toFragment(), null, false);
     }
 
     public void showUpdateReadyPill(){

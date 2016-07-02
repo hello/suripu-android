@@ -76,6 +76,9 @@ public class OnboardingActivity extends InjectionActivity
     public static final int FLOW_SIGN_IN = 1;
     private static final int EDIT_ALARM_REQUEST_CODE = 0x31;
 
+    private static final int RESPONSE_SETUP_SENSE = 0;
+    private static final int RESPONSE_SHOW_BIRTHDAY = 1;
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FLOW_NONE, FLOW_REGISTER, FLOW_SIGN_IN})
     @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
@@ -225,9 +228,9 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     @Override
-    public void flowFinished(@NonNull Fragment fragment,
-                             int responseCode,
-                             @Nullable Intent result) {
+    public void flowFinished(@NonNull final Fragment fragment,
+                             final int responseCode,
+                             @Nullable final Intent result) {
         if (fragment instanceof IntroductionFragment) {
             if (responseCode == IntroductionFragment.RESPONSE_SIGN_IN) {
                 showSignIn();
@@ -236,6 +239,12 @@ public class OnboardingActivity extends InjectionActivity
             }
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
+        } else if (fragment instanceof OnboardingBluetoothFragment) {
+            if(responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE){
+                showSetupSense();
+            } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
+                showBirthday(null, true);
+            }
         }
     }
 
@@ -306,7 +315,7 @@ public class OnboardingActivity extends InjectionActivity
             pushFragment(new OnboardingPairSenseFragment(), null, false);
         } else {
             pushFragment(OnboardingBluetoothFragment.newInstance(
-                    OnboardingBluetoothFragment.SETUP_SENSE_SCREEN), null, false);
+                    OnboardingActivity.RESPONSE_SETUP_SENSE), null, false);
         }
     }
 
@@ -335,7 +344,7 @@ public class OnboardingActivity extends InjectionActivity
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
             pushFragment(OnboardingBluetoothFragment.newInstance(
-                    OnboardingBluetoothFragment.BIRTHDAY_SCREEN), null, false);
+                    OnboardingActivity.RESPONSE_SHOW_BIRTHDAY), null, false);
         }
 
         if (withDoneTransition) {
@@ -399,7 +408,7 @@ public class OnboardingActivity extends InjectionActivity
             pushFragment(builder.toFragment(), null, false);
         } else {
             pushFragment(OnboardingBluetoothFragment.newInstance(
-                    OnboardingBluetoothFragment.SETUP_SENSE_SCREEN), null, false);
+                    OnboardingActivity.RESPONSE_SETUP_SENSE), null, false);
         }
     }
 
