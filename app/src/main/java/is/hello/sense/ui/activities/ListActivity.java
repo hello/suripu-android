@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,13 +16,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -34,12 +28,11 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
+import is.hello.sense.util.SenseCache;
 import is.hello.sense.util.SenseCache.AudioCache;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
-    private static final String TAG = InjectionActivity.class.getName() + ".TAG";
 
     private enum PlayerStatus {
         Idle, Loading, Playing
@@ -62,7 +55,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
-    private boolean cancelled = false;
     private RecyclerView recyclerView;
 
     @StringRes
@@ -119,6 +111,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         fragment.startActivityForResult(intent, requestCode);
     }
 
+    //region lifecycle
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,37 +186,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         selectionTracker.writeSaveInstanceState(outState);
     }
+    //endregion
 
-
-    @Override
-    public void onPlaybackReady(@NonNull final Player player) {
-    }
-
-    @Override
-    public void onPlaybackStarted(@NonNull final Player player) {
-        if (selectionTracker.contains(requestedSoundId)) {
-            playerStatus = PlayerStatus.Playing;
-            notifyAdapter();
-        } else {
-            player.stopPlayback();
-        }
-    }
-
-    @Override
-    public void onPlaybackStopped(@NonNull final Player player, final boolean finished) {
-        playerStatus = PlayerStatus.Idle;
-        notifyAdapter();
-    }
-
-    @Override
-    public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
-        playerStatus = PlayerStatus.Idle;
-        notifyAdapter();
-        showError();
-    }
-
+    //region class methods
     private void setResultAndFinish() {
-        cancelled = true;
+        audioCache.cancelDownload();
         final Intent intent = new Intent();
         selectionTracker.writeValue(intent);
         setResult(RESULT_OK, intent);
@@ -254,51 +221,37 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         });
     }
 
-    private boolean saveAudioToFile(@NonNull final File file, @NonNull final String urlLocation) {
-        InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        try {
-            final URL url = new URL(urlLocation);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return false;
-            }
-            input = connection.getInputStream();
-            output = new FileOutputStream(file);
-            final byte data[] = new byte[4096];
-            int count;
-            while ((count = input.read(data)) != -1) {
-                if (cancelled) {
-                    return false;
-                }
-                output.write(data, 0, count);
-            }
-        } catch (final MalformedURLException e) {
-            Logger.error(TAG, e.getLocalizedMessage());
-            return false;
-        } catch (final IOException e) {
-            Logger.error(TAG, e.getLocalizedMessage());
-            return false;
-        } finally {
-            try {
-                if (input != null) {
-                    input.close();
-                }
-                if (output != null) {
-                    output.close();
-                }
-            } catch (final IOException e) {
-                Logger.error(TAG, e.getLocalizedMessage());
-            }
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return true;
+    //endregion
+
+    //region player listener
+
+    @Override
+    public void onPlaybackReady(@NonNull final Player player) {
     }
 
+    @Override
+    public void onPlaybackStarted(@NonNull final Player player) {
+        if (selectionTracker.contains(requestedSoundId)) {
+            playerStatus = PlayerStatus.Playing;
+            notifyAdapter();
+        } else {
+            player.stopPlayback();
+        }
+    }
+
+    @Override
+    public void onPlaybackStopped(@NonNull final Player player, final boolean finished) {
+        playerStatus = PlayerStatus.Idle;
+        notifyAdapter();
+    }
+
+    @Override
+    public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
+        playerStatus = PlayerStatus.Idle;
+        notifyAdapter();
+        showError();
+    }
+    //endregion
 
     private class ListAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         final IListObject IListObject;
@@ -429,7 +382,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
     }
 
-    public class PlayerViewHolder extends SimpleViewHolder {
+    public class PlayerViewHolder extends SimpleViewHolder implements SenseCache.DownloadListener {
 
         @DrawableRes
         private final static int playIcon = R.drawable.sound_preview_play;
@@ -444,6 +397,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             super(view);
             image.stopSpinning();
         }
+
 
         @Override
         public void bind(@NonNull final IListItem item) {
@@ -480,25 +434,17 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             status.setText(R.string.preview);
             playerHolder.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
-                new Thread(() -> {
-                    final File file = audioCache.getCacheFile(item.getPreviewUrl());
-                    final boolean saved;
-                    if (file.exists()) {
-                        saved = true;
-                    } else {
-                        view.post(() -> {
-                            playerStatus = PlayerStatus.Loading;
-                            enterLoadingState();
-                        });
-                        saved = saveAudioToFile(file, item.getPreviewUrl());
-                    }
-                    if (saved) {
-                        player.setDataSource(Uri.fromFile(file), true, 1);
-                    } else {
-                        player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
-                    }
-                }).start();
+                final File cacheFile = audioCache.getCacheFile(item.getPreviewUrl());
 
+                if (cacheFile.exists()) {
+                    player.setDataSource(Uri.fromFile(cacheFile), true, 1);
+                } else {
+                    view.post(() -> {
+                        playerStatus = PlayerStatus.Loading;
+                        enterLoadingState();
+                    });
+                    audioCache.downloadFile(item.getPreviewUrl(), this);
+                }
             });
 
             image.setImageResource(playIcon);
@@ -526,6 +472,28 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.setImageResource(loadingIcon);
             image.startSpinning();
         }
+
+        //region download listener
+
+        @Override
+        public void onDownloadCompleted(@NonNull final File file) {
+            player.setDataSource(Uri.fromFile(file), true, 1);
+        }
+
+        @Override
+        public void onDownloadFailed(@Nullable final String reason) {
+            playerStatus = PlayerStatus.Idle;
+            notifyAdapter();
+            showError();
+
+        }
+
+        @Override
+        public void onDownloadCanceled() {
+            //ignored only cancelled when back is pushed, so the view will be gone.
+        }
+
+        //endregion
 
     }
 
