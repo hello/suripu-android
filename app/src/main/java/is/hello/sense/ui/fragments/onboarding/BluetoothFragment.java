@@ -16,11 +16,11 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingBluetoothFragment extends HardwareFragment {
-    private static final String ARG_NEXT_SCREEN_ID = OnboardingBluetoothFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
+public class BluetoothFragment extends HardwareFragment {
+    private static final String ARG_NEXT_SCREEN_ID = BluetoothFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
 
-    public static OnboardingBluetoothFragment newInstance(final int nextScreenId) {
-        final OnboardingBluetoothFragment fragment = new OnboardingBluetoothFragment();
+    public static BluetoothFragment newInstance(final int nextScreenId) {
+        final BluetoothFragment fragment = new BluetoothFragment();
 
         final Bundle arguments = new Bundle();
         arguments.putInt(ARG_NEXT_SCREEN_ID, nextScreenId);
@@ -30,7 +30,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_BLE, null);
@@ -40,7 +40,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.action_turn_on_ble)
                 .setSubheadingText(R.string.info_turn_on_bluetooth)
@@ -52,7 +52,7 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(hardwarePresenter.bluetoothEnabled.filter(Functions.IS_TRUE),
@@ -73,14 +73,14 @@ public class OnboardingBluetoothFragment extends HardwareFragment {
         });
     }
 
-    public void turnOn(@NonNull View sender) {
+    public void turnOn(@NonNull final View sender) {
         showBlockingActivity(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {}, this::presentError);
     }
 
     public void presentError(Throwable e) {
         hideBlockingActivity(false, () -> {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
                     .withSupportLink()
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);

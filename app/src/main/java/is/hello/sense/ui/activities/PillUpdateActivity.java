@@ -15,9 +15,9 @@ import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectPillFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
+import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.UpdateReadyPillFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -45,6 +45,14 @@ implements FragmentNavigation{
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if(navigationDelegate.getTopFragment() == null){
+            showUpdateIntroPill();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
+        if(this.navigationDelegate == null || this.navigationDelegate.getTopFragment() == null){
             showUpdateIntroPill();
         }
     }
@@ -90,7 +98,7 @@ implements FragmentNavigation{
                showUpdateReadyPill();
                break;
            case FLOW_FINISHED:
-               pushFragment(new Fragment(), null, false);
+               //Todo add fade out transition
                finish();
                break;
            default:
@@ -118,13 +126,13 @@ implements FragmentNavigation{
 
     public void showUpdateIntroPill(){
         if (!bluetoothStack.isEnabled()) {
-            pushFragment(OnboardingBluetoothFragment.newInstance(
+            pushFragment(BluetoothFragment.newInstance(
                     PillUpdateActivity.FLOW_UPDATE_PILL_INTRO_SCREEN), null, false);
             return;
         }
         //Todo if this activity ever needs to show exitAnimation should implement ExitAnimationProviderActivity
-        final OnboardingSimpleStepFragment.Builder builder =
-                new OnboardingSimpleStepFragment.Builder(this);
+        final SimpleStepFragment.Builder builder =
+                new SimpleStepFragment.Builder(this);
         builder.setHeadingText(R.string.title_update_sleep_pill);
         builder.setSubheadingText(R.string.info_update_sleep_pill);
         builder.setDiagramImage(R.drawable.sleep_pill_ota);

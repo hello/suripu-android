@@ -36,10 +36,10 @@ import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -49,12 +49,12 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
+import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -65,7 +65,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation,
-        OnboardingSimpleStepFragment.ExitAnimationProviderActivity,
+        SimpleStepFragment.ExitAnimationProviderActivity,
         AccountEditor.Container {
     public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
@@ -101,7 +101,7 @@ public class OnboardingActivity extends InjectionActivity
     Account account;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
@@ -116,7 +116,7 @@ public class OnboardingActivity extends InjectionActivity
         }
 
         if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
-            int lastCheckPoint = getLastCheckPoint();
+            final int lastCheckPoint = getLastCheckPoint();
             switch (lastCheckPoint) {
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
                     showPairSense();
@@ -128,7 +128,7 @@ public class OnboardingActivity extends InjectionActivity
         } else {
 
             if (navigationDelegate.getTopFragment() == null) {
-                int lastCheckpoint = getLastCheckPoint();
+                final int lastCheckpoint = getLastCheckPoint();
                 switch (lastCheckpoint) {
                     case Constants.ONBOARDING_CHECKPOINT_NONE:
                         showIntroductionFragment();
@@ -184,7 +184,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putSerializable("account", account);
@@ -192,7 +192,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == EDIT_ALARM_REQUEST_CODE) {
@@ -212,18 +212,18 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     @Override
-    public void pushFragment(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
+    public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
 
     @Override
-    public void pushFragmentAllowingStateLoss(@NonNull Fragment fragment, @Nullable String title, boolean wantsBackStackEntry) {
+    public void pushFragmentAllowingStateLoss(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
     }
 
     @Override
-    public void popFragment(@NonNull Fragment fragment,
-                            boolean immediate) {
+    public void popFragment(@NonNull final Fragment fragment,
+                            final boolean immediate) {
         navigationDelegate.popFragment(fragment, immediate);
     }
 
@@ -239,7 +239,7 @@ public class OnboardingActivity extends InjectionActivity
             }
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
-        } else if (fragment instanceof OnboardingBluetoothFragment) {
+        } else if (fragment instanceof BluetoothFragment) {
             if(responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE){
                 showSetupSense();
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
@@ -267,11 +267,11 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void back() {
-        boolean hasStartCheckPoint = getIntent().hasExtra(EXTRA_START_CHECKPOINT);
-        boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
-        boolean wantsDialog = (!hasStartCheckPoint && !pairOnly);
+        final boolean hasStartCheckPoint = getIntent().hasExtra(EXTRA_START_CHECKPOINT);
+        final boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+        final boolean wantsDialog = (!hasStartCheckPoint && !pairOnly);
         if (wantsDialog && getFragmentManager().getBackStackEntryCount() == 0) {
-            SenseAlertDialog builder = new SenseAlertDialog(this);
+            final SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
             builder.setMessage(R.string.dialog_message_confirm_leave_onboarding);
             builder.setPositiveButton(android.R.string.ok, (dialog, which) -> stateSafeExecutor.execute(super::onBackPressed));
@@ -314,7 +314,7 @@ public class OnboardingActivity extends InjectionActivity
         if (bluetoothStack.isEnabled()) {
             pushFragment(new OnboardingPairSenseFragment(), null, false);
         } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(
+            pushFragment(BluetoothFragment.newInstance(
                     OnboardingActivity.RESPONSE_SETUP_SENSE), null, false);
         }
     }
@@ -343,7 +343,7 @@ public class OnboardingActivity extends InjectionActivity
 
             pushFragment(new OnboardingRegisterBirthdayFragment(), null, false);
         } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(
+            pushFragment(BluetoothFragment.newInstance(
                     OnboardingActivity.RESPONSE_SHOW_BIRTHDAY), null, false);
         }
 
@@ -393,8 +393,8 @@ public class OnboardingActivity extends InjectionActivity
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_QUESTIONS);
 
         if (bluetoothStack.isEnabled()) {
-            final OnboardingSimpleStepFragment.Builder builder =
-                    new OnboardingSimpleStepFragment.Builder(this);
+            final SimpleStepFragment.Builder builder =
+                    new SimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.title_setup_sense);
             builder.setSubheadingText(R.string.info_setup_sense);
             builder.setDiagramImage(R.drawable.onboarding_sense_intro);
@@ -407,7 +407,7 @@ public class OnboardingActivity extends InjectionActivity
             builder.setHelpStep(UserSupport.OnboardingStep.SETTING_UP_SENSE);
             pushFragment(builder.toFragment(), null, false);
         } else {
-            pushFragment(OnboardingBluetoothFragment.newInstance(
+            pushFragment(BluetoothFragment.newInstance(
                     OnboardingActivity.RESPONSE_SETUP_SENSE), null, false);
         }
     }
@@ -429,8 +429,8 @@ public class OnboardingActivity extends InjectionActivity
                         Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
                     });
 
-            final OnboardingSimpleStepFragment.Builder builder =
-                    new OnboardingSimpleStepFragment.Builder(this);
+            final SimpleStepFragment.Builder builder =
+                    new SimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
@@ -450,8 +450,8 @@ public class OnboardingActivity extends InjectionActivity
     public void showPillInstructions() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_PILL);
 
-        final OnboardingSimpleStepFragment.Builder builder =
-                new OnboardingSimpleStepFragment.Builder(this);
+        final SimpleStepFragment.Builder builder =
+                new SimpleStepFragment.Builder(this);
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
         builder.setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)));
@@ -472,8 +472,8 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showRoomCheckIntro() {
-        final OnboardingSimpleStepFragment.Builder introBuilder =
-                new OnboardingSimpleStepFragment.Builder(this);
+        final SimpleStepFragment.Builder introBuilder =
+                new SimpleStepFragment.Builder(this);
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
@@ -524,7 +524,7 @@ public class OnboardingActivity extends InjectionActivity
     @Override
     public
     @Nullable
-    OnboardingSimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull final String name) {
+    SimpleStepFragment.ExitAnimationProvider getExitAnimationProviderNamed(@NonNull final String name) {
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (view, onCompletion) -> {

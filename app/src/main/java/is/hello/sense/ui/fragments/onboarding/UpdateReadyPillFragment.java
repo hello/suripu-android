@@ -2,10 +2,14 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,21 +28,25 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 
-public class UpdateReadyPillFragment extends HardwareFragment {
+public class UpdateReadyPillFragment extends HardwareFragment
+implements OnBackPressedInterceptor {
     private ProgressBar updateIndicator;
     private TextView activityStatus;
     private DiagramVideoView diagram;
     private Button retryButton;
 
     private boolean isUpdating = false;
+    private SenseAlertDialog backPressedDialog;
 
 
     public static Fragment newInstance() {
@@ -71,7 +79,6 @@ public class UpdateReadyPillFragment extends HardwareFragment {
         infoTextView.setText(R.string.info_update_sleep_pill);
 
         diagram.destroy();
-        //Todo distorts the drawable because different size layout
         diagram.setPlaceholder(R.drawable.sleep_pill_ota);
         diagram.invalidate();
 
@@ -112,6 +119,7 @@ public class UpdateReadyPillFragment extends HardwareFragment {
         this.diagram = null;
         this.retryButton.setOnClickListener(null);
         this.retryButton = null;
+        this.backPressedDialog = null;
     }
 
     public void updatePill() {
@@ -176,10 +184,16 @@ public class UpdateReadyPillFragment extends HardwareFragment {
             final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             final int notificationId = 1;
             final String onCompleteTitle = getString(R.string.notification_update_successful);
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
+            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
             notificationBuilder.setContentTitle(getString(R.string.notification_title_update_sleep_pill));
             notificationBuilder.setContentText(getString(R.string.notification_update_progress));
+            notificationBuilder.setColor(ContextCompat.getColor(getActivity(), R.color.primary));
             notificationBuilder.setSmallIcon(R.drawable.pill_icon);
+
+            final Intent intent = new Intent(getActivity(), PillUpdateActivity.class);
+            final PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(),0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notificationBuilder.setContentIntent(pendingIntent);
             //Todo replace mock of progress with real hardware pill presenter work update
             new Timer().scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -198,6 +212,11 @@ public class UpdateReadyPillFragment extends HardwareFragment {
                         notificationBuilder.setContentText(onCompleteTitle);
                         notificationBuilder.setAutoCancel(true);
                         notificationManager.notify(notificationId, notificationBuilder.build());
+
+                        stateSafeExecutor.execute(() -> {
+                            notificationManager.cancel(notificationId);
+                        });
+
                         updateIndicator.post(() -> {
                             UpdateReadyPillFragment.this.onFinish(true);
                         });
@@ -217,7 +236,6 @@ public class UpdateReadyPillFragment extends HardwareFragment {
                 stateSafeExecutor.execute(() -> {
                     hardwarePresenter.clearPeripheral();
                     if (success) {
-                        //Todo see if able to fade out
                         ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, null);
                     } else {
                         getActivity().finish();
@@ -229,5 +247,21 @@ public class UpdateReadyPillFragment extends HardwareFragment {
 
     private void help(final View view) {
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL);
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if(this.backPressedDialog == null) {
+            this.backPressedDialog = new SenseAlertDialog(getActivity());
+            backPressedDialog.setCanceledOnTouchOutside(true);
+            backPressedDialog.setTitle(R.string.dialog_title_confirm_leave_app);
+            backPressedDialog.setMessage(R.string.dialog_message_confirm_leave_update_pill);
+            backPressedDialog.setPositiveButton(R.string.action_ok, (which, ignored) -> {
+                startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME));
+            });
+            backPressedDialog.setNegativeButton(android.R.string.cancel, null);
+        }
+        backPressedDialog.show();
+        return true;
     }
 }

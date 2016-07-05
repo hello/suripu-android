@@ -129,6 +129,8 @@
     <string name="dialog_message_put_into_pairing_mode">Are you sure you want to put Sense into Pairing Mode? You should use this option only if you have another mobile device you wish to pair with Sense. If you‘re having trouble, visit <a href="#user-guide">https://support.hello.is/</a> for support.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
+    <string name="dialog_title_confirm_leave_app">Leaving Sense App</string>
+    <string name="dialog_message_confirm_leave_update_pill">Sleep Pill will continue updating in the background. Please note your Sleep Pill will not function until the update is successful.</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>

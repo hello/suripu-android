@@ -99,6 +99,7 @@ public class ConnectPillFragment extends HardwareFragment {
 
         this.diagram = null;
 
+        retryButton.setOnClickListener(null);
         this.retryButton = null;
     }
 
