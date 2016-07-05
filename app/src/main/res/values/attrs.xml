@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Workaround preventing Zendesk from bringing in AppCompat -->
-    <attr name="showAsAction" format="string"/>
+    <attr name="showAsAction" format="string"
+        tools:override="true"/>
     <!-- end workaround -->
 
     <attr name="senseTextAppearanceHeading" format="reference"/>
@@ -71,5 +72,10 @@
         <attr name="labelText" format="string"/>
         <attr name="inputText" format="string"/>
         <attr name="isPassword" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="SplitButtonLayout">
+        <attr name="leftButtonText" format="string"/>
+        <attr name="rightButtonText" format="string"/>
     </declare-styleable>
 </resources>

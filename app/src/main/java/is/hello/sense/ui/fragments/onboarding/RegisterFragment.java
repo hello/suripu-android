@@ -159,7 +159,7 @@ public class RegisterFragment extends InjectionFragment
         final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
         Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, v -> this.showFacebookInfoBottomSheet(true));
 
-        profileImageManager = builder.addFragmentListener(this).build();
+        profileImageManager = builder.setFragmentListener(this).build();
 
         final View.OnClickListener profileImageOnClickListener = (v) -> profileImageManager.showPictureOptions();
         Views.setSafeOnClickListener(profileImageView, stateSafeExecutor, profileImageOnClickListener);
@@ -505,7 +505,7 @@ public class RegisterFragment extends InjectionFragment
         stateSafeExecutor.execute(() -> {
             profileImageManager.setShowOptions(true);
             if (getFragmentManager().findFragmentByTag(ErrorDialogFragment.TAG) == null) {
-                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_internet_connection_generic_title);
+                ErrorDialogFragment.presentError(getActivity(), new Throwable(errorMessage), R.string.error_account_upload_photo_title);
             }
         });
     }

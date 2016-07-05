@@ -20,10 +20,13 @@ public class Insight extends ApiResponse {
         DEFAULT,
         BASIC;
 
-        public static Type fromString(@Nullable String string) {
+        public static Type fromString(@Nullable final String string) {
             return Enums.fromString(string, values(), DEFAULT);
         }
     }
+
+    @SerializedName("id")
+    private String id;
 
     @SerializedName("account_id")
     private long accountId;
@@ -50,20 +53,20 @@ public class Insight extends ApiResponse {
     private Type insightType;
 
 
-    public static Insight createError(@NonNull String message) {
-        Insight insight = new Insight();
+    public static Insight createError(@NonNull final String message) {
+        final Insight insight = new Insight();
         insight.message = new MarkupString(message);
         insight.category = CATEGORY_IN_APP_ERROR;
         return insight;
     }
 
     @VisibleForTesting
-    public static Insight create(long accountId,
-                                 String title,
-                                 MarkupString message,
-                                 DateTime created,
-                                 String category,
-                                 String categoryName) {
+    public static Insight create(final long accountId,
+                                 final String title,
+                                 final MarkupString message,
+                                 final DateTime created,
+                                 final String category,
+                                 final String categoryName) {
         final Insight insight = new Insight();
         insight.accountId = accountId;
         insight.title = title;
@@ -100,12 +103,20 @@ public class Insight extends ApiResponse {
         return categoryName;
     }
 
-    public String getImageUrl(@NonNull Resources resources) {
+    public String getImageUrl(@NonNull final Resources resources) {
         if (image == null) {
             return null;
         } else {
             return image.getUrl(resources);
         }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public InsightType getInsightType() {
+        return new InsightType(id);
     }
 
     public boolean isError() {
@@ -114,6 +125,10 @@ public class Insight extends ApiResponse {
 
     public boolean shouldDisplaySummary() {
         return (insightType != Type.BASIC);
+    }
+
+    public boolean isShareable() {
+        return id != null;
     }
 
     @Override

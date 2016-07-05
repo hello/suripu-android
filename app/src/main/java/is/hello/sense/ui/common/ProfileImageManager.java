@@ -149,7 +149,10 @@ public class ProfileImageManager {
         } else if (requestCode == REQUEST_CODE_CAMERA) {
             final String photoUriString = sharedPreferences.getString(PHOTO_URI, null);
             if (photoUriString == null) {
-                return false;
+                setShowOptions(true);
+                //Todo display error that the image uri was lost somehow
+                //getListener().onImageUriFetchError(new Throwable(), R.string.error_account_fetch_image_uri_message, R.string.error_account_fetch_image_uri_title );
+                return true;
             }
             source = CAMERA; // incase the user took a few days to return.
             final Uri takePhotoUri = Uri.parse(photoUriString);
@@ -195,6 +198,7 @@ public class ProfileImageManager {
             handleGalleryOption();
         } else {
             permission.showEnableInstructionsDialogForGallery();
+            setShowOptions(true);
         }
     }
 
@@ -263,7 +267,8 @@ public class ProfileImageManager {
     }
 
     private void compressImageError(@NonNull final Throwable e) {
-        getListener().onImageCompressedError(e, R.string.error_internet_connection_generic_title,  R.string.error_account_upload_photo_message);
+        setShowOptions(true);
+        getListener().onImageCompressedError(e, R.string.error_account_upload_photo_title,  R.string.error_account_upload_photo_message);
     }
 
     private Listener getListener() {
@@ -297,7 +302,7 @@ public class ProfileImageManager {
             this.filePathUtil = filePathUtil;
         }
 
-        public Builder addFragmentListener(@NonNull final Fragment listener) {
+        public Builder setFragmentListener(@NonNull final Fragment listener) {
             checkFragmentInstance(listener);
             this.fragmentListener = listener;
             return this;

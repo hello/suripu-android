@@ -117,8 +117,8 @@ public class AccountSettingsFragment extends InjectionFragment
         accountPresenter.update();
         addPresenter(accountPresenter);
         addPresenter(facebookPresenter);
-
-        //setRetainInstance(true);
+        //Required so that it is retained after exiting on home button
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -215,7 +215,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = builder.addFragmentListener(this)
+        profileImageManager = builder.setFragmentListener(this)
                                      .build();
     }
 
@@ -448,7 +448,6 @@ public class AccountSettingsFragment extends InjectionFragment
             recyclerView.post(() -> {
                 getActivity().finish();
                 accountPresenter.logOut();
-                facebookPresenter.logout();
             });
         });
         signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -544,10 +543,10 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void getFacebookProfileError(final Throwable error) {
-        handleError(error, R.string.error_internet_connection_generic_title, R.string.error_internet_connection_generic_message);
+        handleError(error, R.string.error_account_upload_photo_title, R.string.error_internet_connection_generic_message);
     }
 
-    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+    private void  updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
         showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();
@@ -559,7 +558,7 @@ public class AccountSettingsFragment extends InjectionFragment
         //restore previous saved photo and refresh view
         currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
         bindAccount(currentAccount);
-        onImageCompressedError(e, R.string.error_internet_connection_generic_title, R.string.error_account_upload_photo_message);
+        onImageCompressedError(e, R.string.error_account_upload_photo_title, R.string.error_account_upload_photo_message);
         profileImageManager.trimCache();
     }
 

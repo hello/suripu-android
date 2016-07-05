@@ -29,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/gap_outer"
-        android:text="@string/action_today"
+        android:text="@string/action_last_night"
         style="@style/AppTheme.Button.Raised" />
 
 </RelativeLayout>

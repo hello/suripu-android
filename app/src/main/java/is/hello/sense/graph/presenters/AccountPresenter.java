@@ -35,6 +35,8 @@ public class AccountPresenter extends ValuePresenter<Account> {
     @Inject
     PreferencesPresenter preferences;
 
+    private Boolean withPhoto;
+
     public final PresenterSubject<Account> account = this.subject;
     @NonNull
     private final Context context;
@@ -43,6 +45,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
     @Inject
     AccountPresenter(@NonNull Context context) {
         this.context = context;
+        this.withPhoto = true;
     }
 
     @Override
@@ -57,12 +60,19 @@ public class AccountPresenter extends ValuePresenter<Account> {
 
     @Override
     protected Observable<Account> provideUpdateObservable() {
-        return apiService.getAccount(true)
+        return apiService.getAccount(withPhoto)
                          .doOnNext(account -> {
                              logEvent("updated account creation date preference");
                              preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
                                                       account.getCreated());
                          });
+    }
+
+    /**
+     * @param withPhoto determines if {@link Account#profilePhoto} is included in api response
+     */
+    public void setWithPhoto(@NonNull final Boolean withPhoto){
+        this.withPhoto = withPhoto;
     }
 
 
@@ -97,7 +107,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
     //region Updates
 
     public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
-        return apiService.updateAccount(updatedAccount,true)
+        return apiService.updateAccount(updatedAccount,withPhoto)
                          .doOnNext(account::onNext);
     }
 

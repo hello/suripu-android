@@ -39,8 +39,10 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -111,8 +113,9 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> getAccount(@Query("photo") Boolean includePhoto) {
-        return loadResponse("account", new TypeToken<Account>() {
+    public Observable<Account> getAccount(@Query("photo") final Boolean includePhoto) {
+        final String accountJson = includePhoto ? "account_with_photo" : "account";
+        return loadResponse(accountJson, new TypeToken<Account>() {
         }.getType());
     }
 
@@ -122,7 +125,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto) {
+    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") final Boolean includePhoto) {
         return safeJust(account);
     }
 
@@ -159,12 +162,13 @@ public final class TestApiService implements ApiService {
     @Multipart
     @Override
     public Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("photo") TypedFile profilePhoto) {
-        return unimplemented();
+        return loadResponse("profile_photo", new TypeToken<MultiDensityImage>(){}
+                .getType());
     }
 
     @Override
     public Observable<VoidResponse> deleteProfilePhoto(){
-        return unimplemented();
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -398,5 +402,10 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<Void> trackStoreReview(@NonNull @Body StoreReview review) {
         return safeJust(null);
+    }
+
+    @Override
+    public Observable<ShareUrl> shareInsight(@NonNull @Body InsightType insightType) {
+        return unimplemented();
     }
 }

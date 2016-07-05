@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/x7"
+    android:background="@color/white"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/top_divider_horizontal"
+        style="@style/Divider.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size"
+        android:layout_alignParentTop="true"/>
+
+    <Button
+        android:id="@+id/button_left"
+        style="@style/Body"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/top_divider_horizontal"
+        android:layout_toStartOf="@+id/center_divider_vertical"
+        android:gravity="center"
+        android:text="@string/action_close"
+        android:textAllCaps="true"
+        android:textColor="@color/split_button_left_text_color"/>
+
+    <View
+        android:id="@+id/center_divider_vertical"
+        style="@style/Divider.Vertical"
+        android:layout_width="@dimen/divider_size"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_divider_horizontal"
+        android:layout_centerInParent="true"
+        android:layout_margin="@dimen/x1"/>
+
+    <Button
+        android:id="@+id/button_right"
+        style="@style/Body.Link"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/top_divider_horizontal"
+        android:layout_toEndOf="@+id/center_divider_vertical"
+        android:gravity="center"
+        android:text="@string/action_ok"
+        android:textAllCaps="true"
+        android:textColor="@color/split_button_right_text_color"/>
+
+</RelativeLayout>

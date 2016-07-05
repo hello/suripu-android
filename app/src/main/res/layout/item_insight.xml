@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <is.hello.sense.ui.widget.RoundedRelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_insight_card"
     style="@style/AppTheme.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,13 +30,38 @@
     </is.hello.sense.ui.widget.ParallaxImageView>
 
     <TextView
-        android:id="@+id/item_insight_body"
+        android:id="@+id/item_insight_category"
+        style="@style/AppTheme.Text.Header.H7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_insight_image"
+        android:layout_marginStart="@dimen/x2"
+        android:layout_marginTop="@dimen/x2"
+        android:singleLine="true"
+        android:textAllCaps="true"
+        android:textColor="@color/gray6"/>
+
+    <TextView
+        android:id="@+id/item_insight_date"
+        style="@style/AppTheme.Text.Header.H7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_image"
-        android:layout_margin="@dimen/gap_card_content"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"/>
+        android:layout_marginEnd="@dimen/x2"
+        android:layout_marginTop="@dimen/x2"
+        android:layout_toEndOf="@id/item_insight_category"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textColor="@color/gray3"/>
+
+    <TextView
+        android:id="@+id/item_insight_body"
+        style="@style/Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_insight_category"
+        android:layout_margin="@dimen/x2"
+        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
     <View
         android:id="@+id/item_insight_preview_divider"
@@ -43,35 +69,36 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_below="@+id/item_insight_body"
-        android:layout_marginLeft="@dimen/gap_card_content"
-        android:layout_marginRight="@dimen/gap_card_content"/>
+        android:layout_marginLeft="@dimen/x2"
+        android:layout_marginRight="@dimen/x2"/>
 
-    <TextView
-        android:id="@+id/item_insight_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/item_insight_preview_divider"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_card_content"
-        android:layout_marginRight="@dimen/gap_card_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:singleLine="true"
-        android:textAllCaps="true"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
-
-    <TextView
-        android:id="@+id/item_insight_date"
+    <LinearLayout
+        android:id="@+id/item_insight_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_preview_divider"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_card_content"
-        android:layout_marginRight="@dimen/gap_card_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_toEndOf="@id/item_insight_category"
-        android:gravity="end"
-        android:singleLine="true"
-        android:textAllCaps="true"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/x2"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:contentDescription="@string/action_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/share"/>
+
+        <TextView
+            android:layout_marginStart="@dimen/x2"
+            style="@style/AppTheme.Text.Header.H7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/action_share"
+            android:textAllCaps="true"
+            android:textColor="@color/item_insight_share_text_color"/>
+    </LinearLayout>
+
 
 </is.hello.sense.ui.widget.RoundedRelativeLayout>

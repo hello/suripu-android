@@ -22,6 +22,7 @@ import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
@@ -85,6 +86,10 @@ public class SenseApplication extends Application {
                     InternalPrefManager.clearPrefs(this);
 
                     localUsageTracker.resetAsync();
+
+                    final Intent launchIntent = new Intent(this,LaunchActivity.class);
+                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(launchIntent);
                 }, Functions.LOG_ERROR);
     }
 

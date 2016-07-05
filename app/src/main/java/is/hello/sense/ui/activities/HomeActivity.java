@@ -27,14 +27,12 @@ import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.util.Rx;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -54,6 +52,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
+import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -62,7 +61,6 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
-import rx.Observable;
 
 import static is.hello.go99.Anime.isAnimating;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -79,11 +77,16 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private final PresenterContainer presenterContainer = new PresenterContainer();
 
-    @Inject ApiService apiService;
-    @Inject DeviceIssuesPresenter deviceIssuesPresenter;
-    @Inject PreferencesPresenter preferences;
-    @Inject UnreadStatePresenter unreadStatePresenter;
-    @Inject LocalUsageTracker localUsageTracker;
+    @Inject
+    ApiService apiService;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
+    @Inject
+    PreferencesPresenter preferences;
+    @Inject
+    UnreadStatePresenter unreadStatePresenter;
+    @Inject
+    LocalUsageTracker localUsageTracker;
 
     private long lastUpdated = System.currentTimeMillis();
 
@@ -96,6 +99,8 @@ public class HomeActivity extends ScopedInjectionActivity
     private int lastPagerScrollState = ViewPager.SCROLL_STATE_IDLE;
     private ImageButton smartAlarmButton;
 
+    private View progressOverlay;
+    private SpinnerImageView spinner;
     private boolean isFirstActivityRun;
     private boolean showBackside;
 
@@ -205,6 +210,8 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
+        this.progressOverlay = findViewById(R.id.activity_home_progress_overlay);
+        this.spinner = (SpinnerImageView) findViewById(R.id.activity_home_spinner);
     }
 
     @Override
@@ -225,16 +232,6 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
-        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(),
-                                                                  loggedOutIntent);
-        bindAndSubscribe(onLogOut,
-                         ignored -> {
-                             startActivity(new Intent(this, LaunchActivity.class));
-                             finish();
-                         },
-                         Functions.LOG_ERROR);
 
         if (isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE) {
             bindAndSubscribe(deviceIssuesPresenter.latest(),
@@ -367,6 +364,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public void onBackPressed() {
+        if (progressOverlay.getVisibility() == View.VISIBLE) {
+            return;
+        }
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             if (slidingLayersView.isOpen()) {
                 if (!slidingLayersView.isInMotion()) {
@@ -387,7 +387,9 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onBackPressed();
     }
 
-    public @OnboardingActivity.Flow int getOnboardingFlow() {
+    public
+    @OnboardingActivity.Flow
+    int getOnboardingFlow() {
         final @OnboardingActivity.Flow int flow =
                 getIntent().getIntExtra(EXTRA_ONBOARDING_FLOW,
                                         OnboardingActivity.FLOW_NONE);
@@ -415,7 +417,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
 
     @Override
-    public @NonNull AnimatorContext getAnimatorContext() {
+    public
+    @NonNull
+    AnimatorContext getAnimatorContext() {
         return animatorContext;
     }
 
@@ -543,7 +547,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Sliding Layers
 
-    private @Nullable BacksideFragment getBacksideFragment() {
+    private
+    @Nullable
+    BacksideFragment getBacksideFragment() {
         return (BacksideFragment) getFragmentManager().findFragmentById(R.id.activity_home_backside_container);
     }
 
@@ -698,4 +704,17 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     //endregion
+
+    public void showProgressOverlay(final boolean show) {
+        progressOverlay.post(() -> {
+            if (show) {
+                progressOverlay.bringToFront();
+                spinner.startSpinning();
+                progressOverlay.setVisibility(View.VISIBLE);
+            } else {
+                spinner.stopSpinning();
+                progressOverlay.setVisibility(View.GONE);
+            }
+        });
+    }
 }

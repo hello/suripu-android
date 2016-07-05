@@ -290,21 +290,21 @@ public class DateFormatterTests extends InjectionTestCase {
     @Test
     public void formatAsRelativeTime() {
         assertThat(formatter.formatAsRelativeTime(DateTime.now().minusSeconds(10)),
-                   is(equalTo("10 seconds ago")));
+                   is(equalTo("Today")));
         assertThat(formatter.formatAsRelativeTime(DateTime.now().minusMinutes(10)),
-                   is(equalTo("10 minutes ago")));
-        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusHours(10)),
-                   is(equalTo("10 hours ago")));
+                   is(equalTo("Today")));
+        assertThat(formatter.formatAsRelativeTime(DateTime.now().minusHours(24)),
+                   is(equalTo("Yesterday")));
         assertThat(formatter.formatAsRelativeTime(DateTime.now().minusDays(5)),
-                   is(equalTo("5 days ago")));
+                   is(equalTo("5d ago")));
         assertThat(formatter.formatAsRelativeTime(DateTime.now().minusDays(10)),
-                   is(equalTo("1 week ago")));
+                   is(equalTo("1w ago")));
         assertThat(formatter.formatAsRelativeTime(DateTime.now().minusMonths(10)),
-                   is(equalTo("10 months ago")));
+                   is(equalTo("10m ago")));
 
         DateTime twoYearsAgo = DateTime.now().minusYears(2);
         assertThat(formatter.formatAsRelativeTime(twoYearsAgo),
-                   is(equalTo(formatter.formatAsLocalizedDate(twoYearsAgo.toLocalDate()))));
+                   is(equalTo("2y ago")));
     }
 
     @Test

@@ -1,9 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_home_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".HomeActivity">
+<RelativeLayout android:id="@+id/activity_home_container"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".HomeActivity">
 
     <is.hello.sense.ui.widget.SlidingLayersView
         android:id="@+id/activity_home_sliding_layers"
@@ -15,7 +15,7 @@
             android:id="@+id/activity_home_backside_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/background" />
+            android:background="@color/background"/>
 
         <FrameLayout
             android:id="@+id/activity_home_content_container"
@@ -27,25 +27,43 @@
                 android:id="@+id/activity_home_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/divider_size" />
+                android:layout_marginTop="@dimen/divider_size"/>
 
             <View
-                android:layout_gravity="top"
-                style="@style/Divider.Horizontal" />
+                style="@style/Divider.Horizontal"
+                android:layout_gravity="top"/>
 
             <ImageButton
                 android:id="@+id/fragment_timeline_smart_alarm"
+                style="@style/AppTheme.Button.Circular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/gap_small"
                 android:layout_gravity="end|bottom"
-                android:src="@drawable/timeline_smart_alarm"
+                android:layout_margin="@dimen/gap_small"
                 android:contentDescription="@string/action_show_alarms"
-                android:visibility="invisible"
-                style="@style/AppTheme.Button.Circular"/>
+                android:src="@drawable/timeline_smart_alarm"
+                android:visibility="invisible"/>
 
         </FrameLayout>
 
     </is.hello.sense.ui.widget.SlidingLayersView>
+
+    <RelativeLayout
+        android:id="@+id/activity_home_progress_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray6_70"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <is.hello.sense.ui.widget.SpinnerImageView
+            android:id="@+id/activity_home_spinner"
+            android:background="@drawable/animated_progress_bar_white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>
