@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
-import is.hello.buruberi.util.Operation;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
@@ -19,6 +18,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.PillUpdateActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -130,8 +130,7 @@ public class ConnectPillFragment extends HardwareFragment {
         }
 
         diagram.startPlayback();
-        //Todo remove after test
-        presentError(new OperationTimeoutException(Operation.CONNECT));
+
         //Todo the loading done drawable is not displayed quick enough before fragment is closed
         activityIndicator.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.loading_done, null));
         activityStatus.setText(R.string.message_sleep_pill_connected);
@@ -201,8 +200,7 @@ public class ConnectPillFragment extends HardwareFragment {
             stateSafeExecutor.execute(() -> {
                 hardwarePresenter.clearPeripheral();
                 if (success) {
-                    //Todo see if able to fade out
-                    ((PillUpdateActivity) getActivity()).showUpdateReadyPill();
+                    ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_UPDATE_PILL_SCREEN, null);
                 } else {
                     getActivity().finish();
                 }

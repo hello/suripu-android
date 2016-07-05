@@ -352,6 +352,10 @@
     </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
+    <string name="notification_title_update_sleep_pill">Sleep Pill Update</string>
+    <string name="notification_update_progress">In progress</string>
+    <string name="notification_update_successful">Update successful</string>
+    <string name="notification_update_failed">Update failed. Please try again.</string>
     <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
     <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
     <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>

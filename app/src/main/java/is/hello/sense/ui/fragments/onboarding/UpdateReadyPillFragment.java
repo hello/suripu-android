@@ -1,8 +1,11 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Fragment;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,8 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.ui.activities.PillUpdateActivity;
+import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -167,45 +172,59 @@ public class UpdateReadyPillFragment extends HardwareFragment {
 
     private void onUpdating(){
         stateSafeExecutor.execute(() -> {
-            //Todo replace mock of progress with real hardware pill presenter work update
-            stateSafeExecutor.execute(() -> {
-                new Timer().scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (updateIndicator == null) {
-                            this.cancel();
-                        }
-                        int progress = updateIndicator.getProgress();
-                        if (progress < updateIndicator.getMax()) {
-                            updateIndicator.setProgress(++progress);
-                        } else {
-                            this.cancel();
-                            updateIndicator.post(() -> {
-                                UpdateReadyPillFragment.this.onFinish(true);
-                            });
-                        }
-                    }
-                }, 1000, 200);
 
-            });
+            final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            final int notificationId = 1;
+            final String onCompleteTitle = getString(R.string.notification_update_successful);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
+            notificationBuilder.setContentTitle(getString(R.string.notification_title_update_sleep_pill));
+            notificationBuilder.setContentText(getString(R.string.notification_update_progress));
+            notificationBuilder.setSmallIcon(R.drawable.pill_icon);
+            //Todo replace mock of progress with real hardware pill presenter work update
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (updateIndicator == null) {
+                        this.cancel();
+                    }
+                    int progress = updateIndicator.getProgress();
+                    if (progress < updateIndicator.getMax()) {
+                        updateIndicator.setProgress(++progress);
+                        notificationBuilder.setProgress(updateIndicator.getMax(), progress, false);
+                        notificationManager.notify(notificationId, notificationBuilder.build());
+                    } else {
+                        this.cancel();
+                        notificationBuilder.setProgress(0, 0, false);
+                        notificationBuilder.setContentText(onCompleteTitle);
+                        notificationBuilder.setAutoCancel(true);
+                        notificationManager.notify(notificationId, notificationBuilder.build());
+                        updateIndicator.post(() -> {
+                            UpdateReadyPillFragment.this.onFinish(true);
+                        });
+                    }
+                }
+            }, 1000, 200);
+
         });
     }
 
     private void onFinish(final boolean success) {
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-        getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
-            stateSafeExecutor.execute(() -> {
-                hardwarePresenter.clearPeripheral();
-                if (success) {
-                    //Todo see if able to fade out
-                    getActivity().finish();
-                } else {
-                    getActivity().finish();
-                }
-            });
-        }, R.string.message_sleep_pill_updated);
+        stateSafeExecutor.execute(() -> {
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+            getFragmentManager().executePendingTransactions();
+            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
+                stateSafeExecutor.execute(() -> {
+                    hardwarePresenter.clearPeripheral();
+                    if (success) {
+                        //Todo see if able to fade out
+                        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, null);
+                    } else {
+                        getActivity().finish();
+                    }
+                });
+            }, R.string.message_sleep_pill_updated);
+        });
     }
 
     private void help(final View view) {

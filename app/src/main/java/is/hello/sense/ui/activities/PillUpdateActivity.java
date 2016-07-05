@@ -20,11 +20,15 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.UpdateReadyPillFragment;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 
 public class PillUpdateActivity extends InjectionActivity
 implements FragmentNavigation{
 
-    private static final int RESPONSE_UPDATE_PILL_SCREEN = 0;
+    public static final int FLOW_UPDATE_PILL_INTRO_SCREEN = 3;
+    public static final int FLOW_CONNECT_PILL_SCREEN = 4;
+    public static final int FLOW_UPDATE_PILL_SCREEN = 5;
+    public static final int FLOW_FINISHED = 6;
     private FragmentNavigationDelegate navigationDelegate;
     @Inject
     BluetoothStack bluetoothStack;
@@ -75,11 +79,23 @@ implements FragmentNavigation{
 
     @Override
     public void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-        if(fragment instanceof OnboardingBluetoothFragment){
-            if(responseCode == RESPONSE_UPDATE_PILL_SCREEN){
-                showUpdateIntroPill();
-            }
-        }
+       switch (responseCode){
+           case FLOW_UPDATE_PILL_INTRO_SCREEN:
+               showUpdateIntroPill();
+               break;
+           case FLOW_CONNECT_PILL_SCREEN:
+               showConnectPillScreen();
+               break;
+           case FLOW_UPDATE_PILL_SCREEN:
+               showUpdateReadyPill();
+               break;
+           case FLOW_FINISHED:
+               pushFragment(new Fragment(), null, false);
+               finish();
+               break;
+           default:
+               Logger.debug(PillUpdateActivity.class.getSimpleName(),"unknown response code for flow finished.");
+       }
     }
 
     @Nullable
@@ -103,7 +119,7 @@ implements FragmentNavigation{
     public void showUpdateIntroPill(){
         if (!bluetoothStack.isEnabled()) {
             pushFragment(OnboardingBluetoothFragment.newInstance(
-                    PillUpdateActivity.RESPONSE_UPDATE_PILL_SCREEN), null, false);
+                    PillUpdateActivity.FLOW_UPDATE_PILL_INTRO_SCREEN), null, false);
             return;
         }
         //Todo if this activity ever needs to show exitAnimation should implement ExitAnimationProviderActivity
@@ -116,6 +132,11 @@ implements FragmentNavigation{
         builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
         builder.setHelpStep(UserSupport.OnboardingStep.UPDATE_PILL);
         pushFragment(builder.toFragment(), null, false);
+    }
+
+    //unused but for testing or debug
+    public void showConnectPillScreen(){
+        pushFragment(new ConnectPillFragment(), null, false);
     }
 
     public void showUpdateReadyPill(){
