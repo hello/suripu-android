@@ -39,6 +39,13 @@ public class SleepPillDevice extends BaseDevice {
         this.shouldUpdateOverride = false;
     }
 
+    public String getSimpleName() {
+        if (deviceId != null && !deviceId.isEmpty()) {
+            return "Pill-" + deviceId.charAt(0) + "" + deviceId.charAt(deviceId.length() - 1);
+        }
+        return null;
+    }
+
     public boolean shouldUpdate() {
         return firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
     }
@@ -62,7 +69,8 @@ public class SleepPillDevice extends BaseDevice {
         RED(R.string.device_color_red),
         UNKNOWN(R.string.missing_data_placeholder);
 
-        public final @StringRes
+        @StringRes
+        public final
         int nameRes;
 
         Color(int nameRes) {

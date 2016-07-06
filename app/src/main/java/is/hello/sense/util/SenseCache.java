@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 
 import java.io.BufferedInputStream;
@@ -15,14 +16,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.presenters.ValuePresenter;
+import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public abstract class SenseCache {
+public abstract class SenseCache extends ValuePresenter<File> {
     private static final String TAG = SenseCache.class.getName() + ".TAG";
 
     private final File cache;
+    private String urlLocation;
+    public final PresenterSubject<File> file = this.subject;
 
     SenseCache(@NonNull final Context context, @NonNull final String directoryName) {
         if (directoryName.isEmpty() || directoryName.charAt(0) != '/') {
@@ -36,6 +42,10 @@ public abstract class SenseCache {
         }
     }
 
+    public void setUrlLocation(@NonNull final String urlLocation) {
+        this.urlLocation = urlLocation;
+    }
+
     public File getCacheFile(@NonNull final String urlLocation) {
         final String fileName = Uri.parse(urlLocation).getLastPathSegment();
         final File file = new File(cache, fileName);
@@ -47,11 +57,28 @@ public abstract class SenseCache {
         for (final String child : cache.list()) {
             new File(cache, child).delete();
         }
+        file.forget();
     }
 
-    public rx.Observable<File> downloadFileObservable(@NonNull final String urlLocation) {
-        return rx.Observable
-                .create((rx.Observable.OnSubscribe<File>) subscriber -> {
+    @Override
+    protected boolean isDataDisposable() {
+        return false;
+    }
+
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    protected Observable<File> provideUpdateObservable() {
+        Log.e(TAG, "Url: " + urlLocation);
+        if (urlLocation == null) {
+            throw new Error("Cache UrlLocation is null");
+        }
+        return Observable
+                .create((Observable.OnSubscribe<File>) subscriber -> {
+                    Log.e("Sense Cache", "Updating");
                     final boolean[] cancelDownload = {false};
                     subscriber.add(new Subscription() {
                         @Override
@@ -75,6 +102,10 @@ public abstract class SenseCache {
                         connection.connect();
                         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                             downloadFailedReason = connection.getResponseCode() + ", " + connection.getResponseMessage(); //todo change
+                            return;
+                        }
+                        if (connection.getContentLength() == cacheFile.length()) {
+                            Log.e("File Already Found", "Length: " + cacheFile.length());
                             return;
                         }
                         input = new BufferedInputStream(url.openStream());

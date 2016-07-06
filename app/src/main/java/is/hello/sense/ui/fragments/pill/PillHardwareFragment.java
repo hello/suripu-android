@@ -7,7 +7,10 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
+import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -21,6 +24,12 @@ public abstract class PillHardwareFragment extends InjectionFragment {
     DevicesPresenter devicesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
+
+    /**
+     * @return the name of the operation for the fragments error dialog.
+     */
+    @StringRes
+    abstract String operationString();
 
     private final LocationPermission locationPermission = new LocationPermission(this);
 
@@ -95,4 +104,30 @@ public abstract class PillHardwareFragment extends InjectionFragment {
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
+    public PillUpdateActivity getPillUpdateActivity() {
+        return ((PillUpdateActivity) getActivity());
+    }
+
+    protected void presentError(final Throwable e) {
+        //todo confirm all error states.
+        @StringRes int title = R.string.error_sleep_pill_title_update_missing;
+        final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
+        errorDialogBuilder.withOperation(operationString());
+
+        if (e instanceof RssiException) {
+            title = R.string.error_pill_too_far;
+        } else if (e instanceof PillNotFoundException) {
+            title = R.string.error_pill_not_found;
+        } else {
+            errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
+        }
+        errorDialogBuilder
+                .withTitle(title)
+                .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_missing))
+                .withAction(helpUriString, R.string.label_having_trouble)
+                .build()
+                .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
+    }
 }

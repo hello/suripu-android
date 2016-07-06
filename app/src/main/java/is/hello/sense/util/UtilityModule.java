@@ -14,6 +14,7 @@ import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
+import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
 @Module(complete = false, injects = {
@@ -75,11 +76,9 @@ public class UtilityModule {
         return new BatteryUtil(context);
     }
 
-   /*
-    failing for tests because it isn't being used yet.
-   @Provides
+    @Provides
     @Singleton
     SenseCache.FirmwareCache providesFirmwareCache(@NonNull final Context context) {
         return new SenseCache.FirmwareCache(context);
-    }*/
+    }
 }
