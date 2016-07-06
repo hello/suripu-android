@@ -47,7 +47,7 @@
     <string name="error_trends_unavailable">There was a problem displaying your trends. Please try again.</string>
 
     <string name="error_insights_unavailable">There was a problem displaying your insights. Please try again.</string>
-    <string name="error_share_insights_title">Unable to copy link.</string>
+    <string name="error_share_insights_title">Unable to copy link</string>
     <string name="error_share_insights_message">Sense was unable to pull a link for sharing. Please try again in a few moments.</string>
 
     <string name="error_room_conditions_unavailable">There was a problem displaying your sensor data. Please try again.</string>
