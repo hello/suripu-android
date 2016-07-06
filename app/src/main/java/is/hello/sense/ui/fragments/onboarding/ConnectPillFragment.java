@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,7 +132,7 @@ public class ConnectPillFragment extends HardwareFragment {
         diagram.startPlayback();
 
         //Todo the loading done drawable is not displayed quick enough before fragment is closed
-        activityIndicator.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.loading_done, null));
+        activityIndicator.setActivated(true);
         activityStatus.setText(R.string.message_sleep_pill_connected);
         hideBlockingActivity(false, () -> {
             onFinish(true);
