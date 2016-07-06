@@ -156,7 +156,7 @@ public class ConnectPillFragment extends HardwareFragment {
             //Todo update error checks
             final ErrorDialogFragment.Builder errorDialogBuilder =
                     new ErrorDialogFragment.Builder(e, getActivity());
-            errorDialogBuilder.withOperation("Connect Pill");
+
             if (e instanceof OperationTimeoutException ||
                     SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
                 errorDialogBuilder
@@ -173,6 +173,7 @@ public class ConnectPillFragment extends HardwareFragment {
 
             final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
             final ErrorDialogFragment errorDialogFragment = errorDialogBuilder
+                    .withOperation("Connect Pill")
                     .withAction(helpUriString, R.string.label_having_trouble)
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
