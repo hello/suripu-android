@@ -64,4 +64,5 @@ public final class Constants {
     public static final int HTTP_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
     public static final String HTTP_CACHE_NAME = "is.hello.sense.okhttp.cache";
     public static final int HTTP_CACHE_SIZE = 2024 * 10;
+
 }

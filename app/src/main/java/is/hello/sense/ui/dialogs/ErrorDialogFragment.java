@@ -3,6 +3,7 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
     private static final String ARG_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_TITLE_RES";
+    private static final String ARG_ACTION_URI_STRING = ErrorDialogFragment.class.getName() + ".ARG_ACTION_URI_STRING";
 
 
     //region Lifecycle
@@ -92,12 +94,18 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         if (arguments.containsKey(ARG_ACTION_TITLE_RES)) {
             final int titleRes = arguments.getInt(ARG_ACTION_TITLE_RES);
+            dialog.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
             if (arguments.containsKey(ARG_ACTION_INTENT)) {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
                     final Intent intent = arguments.getParcelable(ARG_ACTION_INTENT);
                     startActivity(intent);
                 });
-            } else {
+            } else if( arguments.containsKey(ARG_ACTION_URI_STRING)) {
+                dialog.setNegativeButton(titleRes, (button, which) -> {
+                    final Uri uri = Uri.parse(arguments.getString(ARG_ACTION_URI_STRING));
+                    UserSupport.openUri(getActivity(), uri);
+                });
+            }else {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
                     if (getTargetFragment() != null) {
                         final int resultCode = arguments.getInt(ARG_ACTION_RESULT_CODE);
@@ -225,6 +233,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         public Builder withAction(final int resultCode, @StringRes final int titleRes) {
             arguments.putInt(ARG_ACTION_RESULT_CODE, resultCode);
+            arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
+            return this;
+        }
+
+        public Builder withAction(@NonNull final String uriString, @StringRes final int titleRes){
+            arguments.putString(ARG_ACTION_URI_STRING, uriString);
             arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
             return this;
         }

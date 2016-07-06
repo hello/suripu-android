@@ -129,6 +129,8 @@
     <string name="dialog_message_put_into_pairing_mode">Are you sure you want to put Sense into Pairing Mode? You should use this option only if you have another mobile device you wish to pair with Sense. If you‘re having trouble, visit <a href="#user-guide">https://support.hello.is/</a> for support.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
+    <string name="dialog_title_confirm_leave_app">Leaving Sense App</string>
+    <string name="dialog_message_confirm_leave_update_pill">Sleep Pill will continue updating in the background. Please note your Sleep Pill will not function until the update is successful.</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
@@ -356,6 +358,17 @@
     </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
+    <string name="notification_title_update_sleep_pill">Sleep Pill Update</string>
+    <string name="notification_update_progress">In progress</string>
+    <string name="notification_update_successful">Update successful</string>
+    <string name="notification_update_failed">Update failed. Please try again.</string>
+    <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
+    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
+    <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
+    <string name="info_connect_sleep_pill">Hold your Sleep Pill near your mobile device, and then quickly shake it for three seconds to begin the update.</string>
+    <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
+    <string name="message_sleep_pill_updating">Sleep Pill Updating</string>
+    <string name="message_sleep_pill_updated">Sleep Pill Updated</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
     <string name="timeline_info_label_sound_sleep">Deep sleep</string>
@@ -436,6 +449,7 @@
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
+    <string name="label_having_trouble">I\’m having trouble</string>
 
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>

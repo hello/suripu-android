@@ -36,6 +36,8 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     private LoadingDialogFragment loadingDialogFragment;
 
+
+
     protected boolean isPairOnlySession() {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
     }
