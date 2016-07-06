@@ -44,7 +44,7 @@ import is.hello.sense.ui.widget.SensorTickerView;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitConverter;
+import is.hello.sense.units.IUnitConverter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -159,7 +159,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         sensorView.fadeInProgressIndicator(() -> {
             int convertedValue = 0;
             if (sensor.getValue() != null) {
-                UnitConverter converter = unitFormatter.getUnitConverterForSensor(sensorName);
+                IUnitConverter converter = unitFormatter.getUnitConverterForSensor(sensorName);
                 convertedValue = (int) converter.convert(sensor.getValue().longValue());
             }
             final String unitSuffix = unitFormatter.getUnitSuffixForSensor(sensorName);

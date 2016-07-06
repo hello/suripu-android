@@ -30,8 +30,8 @@ public class AccountPresenterTests extends InjectionTestCase {
     public void update() throws Exception {
         accountPresenter.update();
 
-        Sync.wrap(accountPresenter.account)
-            .forEach(Assert::assertNotNull);
+        (Sync.wrap(accountPresenter.account))
+            .forEachAction(Assert::assertNotNull);
     }
 
     //region Validation

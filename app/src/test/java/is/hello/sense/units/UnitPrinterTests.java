@@ -9,7 +9,7 @@ import static org.junit.Assert.assertThat;
 public class UnitPrinterTests {
     @Test
     public void simple() {
-        UnitPrinter printer = UnitPrinter.SIMPLE;
+        IUnitPrinter printer = UnitPrinter.SIMPLE;
         assertThat(printer.print(42.0), is(equalTo("42")));
     }
 }

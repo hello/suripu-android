@@ -44,7 +44,6 @@ import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
-import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
@@ -53,6 +52,7 @@ import is.hello.sense.ui.widget.graphing.drawables.LineGraphDrawable;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.IUnitPrinter;
 import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -368,7 +368,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
                 final String sensorName = sensorState.getName();
                 final int sensorColor = ContextCompat.getColor(getActivity(), sensorState.getCondition().colorRes);
 
-                final UnitPrinter printer;
+                final IUnitPrinter printer;
                 if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensorName)) {
                     printer = UnitPrinter.SIMPLE;
                 } else {
