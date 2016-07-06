@@ -31,7 +31,7 @@ public class AccountPresenterTests extends InjectionTestCase {
         accountPresenter.update();
 
         Sync.wrap(accountPresenter.account)
-            .forEach(Assert::assertNotNull);
+            .forEachAction(Assert::assertNotNull);
     }
 
     //region Validation
@@ -82,12 +82,12 @@ public class AccountPresenterTests extends InjectionTestCase {
 
     @Test
     public void saveAccount() throws Exception {
-        Account updatedAccount = new Account();
+        final Account updatedAccount = new Account();
         updatedAccount.setWeight(120);
         updatedAccount.setHeight(2000);
         updatedAccount.setBirthDate(LocalDate.now());
 
-        Account savedAccount = Sync.last(accountPresenter.saveAccount(updatedAccount));
+        final Account savedAccount = Sync.last(accountPresenter.saveAccount(updatedAccount));
         assertEquals(updatedAccount.getWeight(), savedAccount.getWeight());
         assertEquals(updatedAccount.getHeight(), savedAccount.getHeight());
         assertEquals(updatedAccount.getBirthDate(), savedAccount.getBirthDate());
@@ -95,8 +95,8 @@ public class AccountPresenterTests extends InjectionTestCase {
 
     @Test
     public void updateEmail() throws Exception {
-        Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
-        Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
+        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        final Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
         assertNotSame(accountBefore.getEmail(), accountAfter.getEmail());
         assertEquals("test@me.com", accountAfter.getEmail());
     }
@@ -106,13 +106,13 @@ public class AccountPresenterTests extends InjectionTestCase {
         final File testFile = new File("src/tests/assets/photos/test_profile_photo.jpg");
         final TypedFile typedFile = new TypedFile("multipart/form-data", testFile);
         accountPresenter.setWithPhoto(false);
-        Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
-        MultiDensityImage imageUploaded = Sync.last(accountPresenter
+        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        final MultiDensityImage imageUploaded = Sync.last(accountPresenter
                                                          .updateProfilePicture(typedFile,
                                                                                Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO,
                                                                                Analytics.ProfilePhoto.Source.CAMERA));
         accountPresenter.setWithPhoto(true);
-        Account accountAfter =  Sync.last(accountPresenter.provideUpdateObservable());
+        final Account accountAfter =  Sync.last(accountPresenter.provideUpdateObservable());
 
         assertNotSame(accountAfter.getProfilePhoto(), accountBefore.getProfilePhoto());
         assertEquals(imageUploaded, accountAfter.getProfilePhoto());
@@ -121,10 +121,10 @@ public class AccountPresenterTests extends InjectionTestCase {
     @Test
     public void deleteProfilePhoto() throws Exception {
         accountPresenter.setWithPhoto(true);
-        Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
         accountPresenter.deleteProfilePicture().doOnNext(ignore -> {
             accountPresenter.setWithPhoto(false);
-            Account accountAfter = Sync.last(accountPresenter.provideUpdateObservable());
+            final Account accountAfter = Sync.last(accountPresenter.provideUpdateObservable());
             assertNull(accountAfter.getProfilePhoto());
         });
 

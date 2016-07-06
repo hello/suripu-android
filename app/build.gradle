@@ -26,16 +26,9 @@ def generateVersionCode() {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
-    defaultConfig {
-        applicationId "is.hello.sense"
-        minSdkVersion 19
-        targetSdkVersion 23
-        versionCode generateVersionCode()
-        versionName "1.5.0"
-    }
     signingConfigs {
         debug {
             keyAlias "androiddebugkey"
@@ -49,6 +42,29 @@ android {
             keyPassword "hellogoodbye"
         }
     }
+
+    defaultConfig {
+        applicationId "is.hello.sense"
+        minSdkVersion 19
+        targetSdkVersion 24
+        versionCode generateVersionCode()
+        versionName "1.5.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'LICENSE'
+        exclude 'LICENSE.txt'
+    }
+
     buildTypes {
         def TYPE_INT = "int"
         def TYPE_BOOLEAN = "boolean"
@@ -105,18 +121,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'LICENSE'
-        exclude 'LICENSE.txt'
-    }
 }
 
 retrolambda {
@@ -162,17 +166,17 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.code.gson:gson:2.4'
     compile 'net.danlew:android.joda:2.7.2'
 
     compile 'com.segment.analytics.android:analytics:4.1.0'
 
-    compile 'com.android.support:support-v4:23.1.1'
-    compile 'com.android.support:support-v13:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-    compile 'com.android.support:customtabs:23.1.1'
-    compile 'com.google.android.gms:play-services-gcm:8.4.0'
-    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:support-v13:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:customtabs:24.0.0'
+    compile 'com.google.android.gms:play-services-gcm:9.2.0'
+    compile 'com.google.android.gms:play-services-location:9.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'
@@ -180,6 +184,8 @@ dependencies {
     compile 'is.hello.commonsense:ble:2016.3.3.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
     compile 'com.facebook.android:facebook-android-sdk:4.13.1'
+    compile 'no.nordicsemi.android:dfu:0.6.2'
+    compile 'no.nordicsemi.android.support.v18:scanner:0.2.0'
     // !! If you remove this, remove the above workaround.
     compile('com.zendesk:sdk:1.4.1.1') {
         // When you remove this rule, you will also need to remove

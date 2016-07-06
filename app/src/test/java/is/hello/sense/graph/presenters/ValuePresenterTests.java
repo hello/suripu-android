@@ -22,14 +22,14 @@ public class ValuePresenterTests extends SenseTestCase {
 
     @Test
     public void overlappingUpdates() throws Exception {
-        CounterPresenter presenter = new CounterPresenter();
+       final CounterPresenter presenter = new CounterPresenter();
 
         presenter.update();
 
-        LambdaVar<Integer> lastValue = LambdaVar.of(0);
-        LambdaVar<Integer> numberOfCalls = LambdaVar.of(0);
+        final LambdaVar<Integer> lastValue = LambdaVar.of(0);
+        final LambdaVar<Integer> numberOfCalls = LambdaVar.of(0);
         Sync.wrapAfter(presenter::update, presenter.value)
-            .forEach(value -> {
+            .forEachAction(value -> {
                 presenter.update();
                 lastValue.set(value);
                 numberOfCalls.getAndMutate(i -> i + 1);
@@ -41,7 +41,7 @@ public class ValuePresenterTests extends SenseTestCase {
 
     @Test
     public void updateIfEmpty() throws Exception {
-        CounterPresenter presenter = new CounterPresenter();
+        final CounterPresenter presenter = new CounterPresenter();
 
         Sync.wrapAfter(presenter::updateIfEmpty, presenter.value)
             .assertThat(is(equalTo(1)));
@@ -51,7 +51,7 @@ public class ValuePresenterTests extends SenseTestCase {
 
     @Test
     public void lowMemoryLogic() throws Exception {
-        CounterPresenter presenter = new CounterPresenter();
+        final CounterPresenter presenter = new CounterPresenter();
 
         Sync.wrapAfter(presenter::update, presenter.value)
             .assertThat(is(equalTo(1)));
@@ -68,10 +68,10 @@ public class ValuePresenterTests extends SenseTestCase {
 
     @Test
     public void onSaveStateLogic() throws Exception {
-        CounterPresenter presenter = new CounterPresenter();
+        final CounterPresenter presenter = new CounterPresenter();
 
-        int value = Sync.wrapAfter(presenter::update, presenter.value).last();
-        Bundle savedState = presenter.onSaveState();
+        final int value = Sync.wrapAfter(presenter::update, presenter.value).last();
+        final Bundle savedState = presenter.onSaveState();
         assertNotNull(savedState);
         assertTrue(savedState.containsKey(ValuePresenter.SAVED_STATE_KEY));
         assertEquals(value, savedState.getSerializable(ValuePresenter.SAVED_STATE_KEY));
@@ -79,25 +79,25 @@ public class ValuePresenterTests extends SenseTestCase {
 
     @Test
     public void onRestoreStateLogic() throws Exception {
-        CounterPresenter presenter = new CounterPresenter();
+        final CounterPresenter presenter = new CounterPresenter();
 
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putSerializable(ValuePresenter.SAVED_STATE_KEY, 12);
 
         presenter.onRestoreState(bundle);
 
-        int value = Sync.wrapAfter(presenter::update, presenter.value).last();
+        final int value = Sync.wrapAfter(presenter::update, presenter.value).last();
         assertEquals(12, value);
     }
 
 
     @Test
     public void latest() throws Exception {
-        CounterPresenter presenter = new CounterPresenter();
+        final CounterPresenter presenter = new CounterPresenter();
         presenter.update();
 
         // Tests that the latest() observable terminates.
-        int latest = Sync.last(presenter.latest());
+        final int latest = Sync.last(presenter.latest());
         assertEquals(1, latest);
     }
 
