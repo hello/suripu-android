@@ -64,4 +64,12 @@ public class UtilityModule {
     SenseCache.ImageCache providesImageCache(@NonNull final Context context) {
         return new SenseCache.ImageCache(context);
     }
+
+   /*
+    failing for tests because it isn't being used yet.
+   @Provides
+    @Singleton
+    SenseCache.FirmwareCache providesFirmwareCache(@NonNull final Context context) {
+        return new SenseCache.FirmwareCache(context);
+    }*/
 }

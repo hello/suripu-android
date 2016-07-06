@@ -15,13 +15,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -34,12 +27,12 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
 import is.hello.sense.util.SenseCache.AudioCache;
+import rx.Observable;
+import rx.Subscription;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
-    private static final String TAG = InjectionActivity.class.getName() + ".TAG";
 
     private enum PlayerStatus {
         Idle, Loading, Playing
@@ -62,8 +55,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
-    private boolean cancelled = false;
     private RecyclerView recyclerView;
+    private Subscription subscription = null;
 
     @StringRes
     private int titleRes;
@@ -119,6 +112,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         fragment.startActivityForResult(intent, requestCode);
     }
 
+    //region lifecycle
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,6 +172,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unsubscribe();
         if (player != null) {
             player.stopPlayback();
             player.recycle();
@@ -193,37 +188,17 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         selectionTracker.writeSaveInstanceState(outState);
     }
+    //endregion
 
-
-    @Override
-    public void onPlaybackReady(@NonNull final Player player) {
-    }
-
-    @Override
-    public void onPlaybackStarted(@NonNull final Player player) {
-        if (selectionTracker.contains(requestedSoundId)) {
-            playerStatus = PlayerStatus.Playing;
-            notifyAdapter();
-        } else {
-            player.stopPlayback();
+    //region class methods
+    private void unsubscribe() {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
         }
     }
 
-    @Override
-    public void onPlaybackStopped(@NonNull final Player player, final boolean finished) {
-        playerStatus = PlayerStatus.Idle;
-        notifyAdapter();
-    }
-
-    @Override
-    public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
-        playerStatus = PlayerStatus.Idle;
-        notifyAdapter();
-        showError();
-    }
-
     private void setResultAndFinish() {
-        cancelled = true;
+        unsubscribe();
         final Intent intent = new Intent();
         selectionTracker.writeValue(intent);
         setResult(RESULT_OK, intent);
@@ -254,51 +229,37 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         });
     }
 
-    private boolean saveAudioToFile(@NonNull final File file, @NonNull final String urlLocation) {
-        InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        try {
-            final URL url = new URL(urlLocation);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return false;
-            }
-            input = connection.getInputStream();
-            output = new FileOutputStream(file);
-            final byte data[] = new byte[4096];
-            int count;
-            while ((count = input.read(data)) != -1) {
-                if (cancelled) {
-                    return false;
-                }
-                output.write(data, 0, count);
-            }
-        } catch (final MalformedURLException e) {
-            Logger.error(TAG, e.getLocalizedMessage());
-            return false;
-        } catch (final IOException e) {
-            Logger.error(TAG, e.getLocalizedMessage());
-            return false;
-        } finally {
-            try {
-                if (input != null) {
-                    input.close();
-                }
-                if (output != null) {
-                    output.close();
-                }
-            } catch (final IOException e) {
-                Logger.error(TAG, e.getLocalizedMessage());
-            }
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return true;
+    //endregion
+
+    //region player listener
+
+    @Override
+    public void onPlaybackReady(@NonNull final Player player) {
     }
 
+    @Override
+    public void onPlaybackStarted(@NonNull final Player player) {
+        if (selectionTracker.contains(requestedSoundId)) {
+            playerStatus = PlayerStatus.Playing;
+            notifyAdapter();
+        } else {
+            player.stopPlayback();
+        }
+    }
+
+    @Override
+    public void onPlaybackStopped(@NonNull final Player player, final boolean finished) {
+        playerStatus = PlayerStatus.Idle;
+        notifyAdapter();
+    }
+
+    @Override
+    public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
+        playerStatus = PlayerStatus.Idle;
+        notifyAdapter();
+        showError();
+    }
+    //endregion
 
     private class ListAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         final IListObject IListObject;
@@ -470,6 +431,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 if (selectionTracker.contains(itemId)) {
                     return;
                 }
+                unsubscribe();
                 player.stopPlayback();
                 selectionTracker.trackSelection(itemId);
                 notifyAdapter();
@@ -480,25 +442,24 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             status.setText(R.string.preview);
             playerHolder.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
-                new Thread(() -> {
-                    final File file = audioCache.getCacheFile(item.getPreviewUrl());
-                    final boolean saved;
-                    if (file.exists()) {
-                        saved = true;
-                    } else {
-                        view.post(() -> {
-                            playerStatus = PlayerStatus.Loading;
-                            enterLoadingState();
-                        });
-                        saved = saveAudioToFile(file, item.getPreviewUrl());
-                    }
-                    if (saved) {
-                        player.setDataSource(Uri.fromFile(file), true, 1);
-                    } else {
-                        player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
-                    }
-                }).start();
+                final File cacheFile = audioCache.getCacheFile(item.getPreviewUrl());
 
+                if (cacheFile.exists()) {
+                    player.setDataSource(Uri.fromFile(cacheFile), true, 1);
+                } else {
+                    view.post(() -> {
+                        playerStatus = PlayerStatus.Loading;
+                        enterLoadingState();
+                    });
+
+                    final Observable<File> downloadFileObservable =
+                            audioCache.downloadFileObservable(item.getPreviewUrl());
+
+                    subscription = bindAndSubscribe(
+                            downloadFileObservable,
+                            this::audioFileDownloaded,
+                            this::audioFileDownloadError);
+                }
             });
 
             image.setImageResource(playIcon);
@@ -526,6 +487,19 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.setImageResource(loadingIcon);
             image.startSpinning();
         }
+
+        private void audioFileDownloaded(@NonNull final File file) {
+            if (player != null) {
+                player.setDataSource(Uri.fromFile(file), true, 1);
+            }
+        }
+
+        private void audioFileDownloadError(@NonNull final Throwable throwable) {
+            playerStatus = PlayerStatus.Idle;
+            notifyAdapter();
+            showError();
+        }
+
 
     }
 
