@@ -3,7 +3,6 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 
 import java.io.BufferedInputStream;
@@ -14,13 +13,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public abstract class SenseCache {
     private static final String TAG = SenseCache.class.getName() + ".TAG";
 
     private final File cache;
-    private FileDownloadThread fileDownloadThread = null;
 
     SenseCache(@NonNull final Context context, @NonNull final String directoryName) {
         if (directoryName.isEmpty() || directoryName.charAt(0) != '/') {
@@ -31,12 +33,6 @@ public abstract class SenseCache {
             if (!cache.mkdir()) {
                 throw new Error("Failed to create directory");
             }
-        }
-    }
-
-    public void cancelDownload() {
-        if (fileDownloadThread != null) {
-            fileDownloadThread.cancelDownload();
         }
     }
 
@@ -53,13 +49,78 @@ public abstract class SenseCache {
         }
     }
 
-    public void downloadFile(@NonNull final String url, @NonNull final DownloadListener downloadListener) {
-        if (fileDownloadThread != null) {
-            fileDownloadThread.cancelDownload();
-        }
-        fileDownloadThread = new FileDownloadThread(url, downloadListener);
-        fileDownloadThread.start();
+    public rx.Observable<File> downloadFileObservable(@NonNull final String urlLocation) {
+        return rx.Observable
+                .create((rx.Observable.OnSubscribe<File>) subscriber -> {
+                    final boolean[] cancelDownload = {false};
+                    subscriber.add(new Subscription() {
+                        @Override
+                        public void unsubscribe() {
+                            cancelDownload[0] = true;
+                        }
+
+                        @Override
+                        public boolean isUnsubscribed() {
+                            return false;
+                        }
+                    });
+                    String downloadFailedReason = null;
+                    final File cacheFile = getCacheFile(urlLocation);
+                    InputStream input = null;
+                    OutputStream output = null;
+                    HttpURLConnection connection = null;
+                    try {
+                        final URL url = new URL(urlLocation);
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.connect();
+                        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                            downloadFailedReason = connection.getResponseCode() + ", " + connection.getResponseMessage(); //todo change
+                            return;
+                        }
+                        input = new BufferedInputStream(url.openStream());
+                        output = new FileOutputStream(cacheFile);
+                        final byte data[] = new byte[1024];
+                        int count;
+                        while ((count = input.read(data)) != -1) {
+                            if (cancelDownload[0]) {
+                                return;
+                            }
+                            output.write(data, 0, count);
+                        }
+                    } catch (final IOException e) {
+                        Logger.error(TAG, e.getLocalizedMessage());
+                        downloadFailedReason = e.getLocalizedMessage();
+                    } finally {
+                        try {
+                            if (input != null) {
+                                input.close();
+                            }
+                            if (output != null) {
+                                output.flush();
+                                output.close();
+                            }
+                        } catch (final IOException e) {
+                            Logger.error(TAG, e.getLocalizedMessage());
+                        }
+                        if (connection != null) {
+                            connection.disconnect();
+                        }
+                        if (cancelDownload[0]) {
+                            cacheFile.delete();
+                            subscriber.onCompleted();
+                        } else if (downloadFailedReason != null) {
+                            cacheFile.delete();
+                            subscriber.onError(new Throwable(downloadFailedReason));
+                        } else {
+                            subscriber.onNext(cacheFile);
+                            subscriber.onCompleted();
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .timeout(20, TimeUnit.SECONDS);
     }
+
 
     public static class AudioCache extends SenseCache {
         public AudioCache(@NonNull final Context context) {
@@ -78,89 +139,6 @@ public abstract class SenseCache {
 
         public FirmwareCache(@NonNull final Context context) {
             super(context, "/firmware");
-        }
-    }
-
-    public interface DownloadListener {
-
-        void onDownloadCompleted(@NonNull final File file);
-
-        void onDownloadFailed(@Nullable final String reason);
-
-        void onDownloadCanceled();
-
-    }
-
-
-    private class FileDownloadThread extends Thread {
-        private boolean cancelDownload = false;
-        private final String url;
-        private final DownloadListener downloadListener;
-
-        private FileDownloadThread(@NonNull final String url, final DownloadListener downloadListener) {
-            this.url = url;
-            this.downloadListener = downloadListener;
-        }
-
-        private void cancelDownload() {
-            this.cancelDownload = true;
-        }
-
-
-        @Override
-        public void run() {
-            String downloadFailedReason = null;
-            final File cacheFile = getCacheFile(url);
-            InputStream input = null;
-            OutputStream output = null;
-            HttpURLConnection connection = null;
-            try {
-                final URL url = new URL(this.url);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    downloadFailedReason = connection.getResponseCode() + ", " + connection.getResponseMessage(); //todo change
-                    return;
-                }
-                input = new BufferedInputStream(url.openStream(), 8192);
-                output = new FileOutputStream(cacheFile);
-                final byte data[] = new byte[1024];
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    if (cancelDownload) {
-                        return;
-                    }
-                    output.write(data, 0, count);
-                }
-            } catch (final IOException e) {
-                Logger.error(TAG, e.getLocalizedMessage());
-                downloadFailedReason = e.getLocalizedMessage();
-            } finally {
-                try {
-                    if (input != null) {
-                        input.close();
-                    }
-                    if (output != null) {
-                        output.flush();
-                        output.close();
-                    }
-                } catch (final IOException e) {
-                    Logger.error(TAG, e.getLocalizedMessage());
-                }
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                if (cancelDownload) {
-                    cacheFile.delete();
-                    downloadListener.onDownloadCanceled();
-                } else if (downloadFailedReason != null) {
-                    cacheFile.delete();
-                    downloadListener.onDownloadFailed(downloadFailedReason);
-                } else {
-                    downloadListener.onDownloadCompleted(cacheFile);
-                }
-                fileDownloadThread = null;
-            }
         }
     }
 }

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,8 +28,9 @@ import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
-import is.hello.sense.util.SenseCache;
 import is.hello.sense.util.SenseCache.AudioCache;
+import rx.Observable;
+import rx.Subscription;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
 
@@ -56,6 +56,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
     private RecyclerView recyclerView;
+    private Subscription subscription = null;
 
     @StringRes
     private int titleRes;
@@ -171,6 +172,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unsubscribe();
         if (player != null) {
             player.stopPlayback();
             player.recycle();
@@ -189,8 +191,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     //endregion
 
     //region class methods
+    private void unsubscribe() {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
+    }
+
     private void setResultAndFinish() {
-        audioCache.cancelDownload();
+        unsubscribe();
         final Intent intent = new Intent();
         selectionTracker.writeValue(intent);
         setResult(RESULT_OK, intent);
@@ -382,7 +390,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
     }
 
-    public class PlayerViewHolder extends SimpleViewHolder implements SenseCache.DownloadListener {
+    public class PlayerViewHolder extends SimpleViewHolder {
 
         @DrawableRes
         private final static int playIcon = R.drawable.sound_preview_play;
@@ -397,7 +405,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             super(view);
             image.stopSpinning();
         }
-
 
         @Override
         public void bind(@NonNull final IListItem item) {
@@ -424,6 +431,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 if (selectionTracker.contains(itemId)) {
                     return;
                 }
+                unsubscribe();
                 player.stopPlayback();
                 selectionTracker.trackSelection(itemId);
                 notifyAdapter();
@@ -443,7 +451,14 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                         playerStatus = PlayerStatus.Loading;
                         enterLoadingState();
                     });
-                    audioCache.downloadFile(item.getPreviewUrl(), this);
+
+                    final Observable<File> downloadFileObservable =
+                            audioCache.downloadFileObservable(item.getPreviewUrl());
+
+                    subscription = bindAndSubscribe(
+                            downloadFileObservable,
+                            this::audioFileDownloaded,
+                            this::audioFileDownloadError);
                 }
             });
 
@@ -473,27 +488,18 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.startSpinning();
         }
 
-        //region download listener
-
-        @Override
-        public void onDownloadCompleted(@NonNull final File file) {
-            player.setDataSource(Uri.fromFile(file), true, 1);
+        private void audioFileDownloaded(@NonNull final File file) {
+            if (player != null) {
+                player.setDataSource(Uri.fromFile(file), true, 1);
+            }
         }
 
-        @Override
-        public void onDownloadFailed(@Nullable final String reason) {
+        private void audioFileDownloadError(@NonNull final Throwable throwable) {
             playerStatus = PlayerStatus.Idle;
             notifyAdapter();
             showError();
-
         }
 
-        @Override
-        public void onDownloadCanceled() {
-            //ignored only cancelled when back is pushed, so the view will be gone.
-        }
-
-        //endregion
 
     }
 
