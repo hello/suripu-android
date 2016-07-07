@@ -20,9 +20,12 @@
             android:id="@+id/dialog_bottom_alert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/x3"
-            android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading" />
+            android:layout_marginTop="@dimen/x3"
+            android:layout_marginStart="@dimen/x3"
+            android:layout_marginEnd="@dimen/x3"
+            android:layout_marginBottom="@dimen/x2"
+            android:gravity="start"
+            android:textAppearance="@style/AppTheme.Text.Heading.New" />
 
         <TextView
             android:id="@+id/dialog_bottom_alert_message"
@@ -32,7 +35,7 @@
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x3"
-            android:gravity="center"
+            android:gravity="start"
             android:scrollbars="vertical"
             android:overScrollMode="ifContentScrolls"
             android:textAppearance="@style/AppTheme.Text.Body"
