@@ -183,6 +183,11 @@ public class UserSupport {
         }
     }
 
+    public static void showUpdatePill(@NonNull final Activity from) {
+        // TODO Start activity intent here to open updating your sleep pill screen
+        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
+    }
+
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),
@@ -191,6 +196,7 @@ public class UserSupport {
         SENSE_ASCII_WEP("https://support.hello.is/hc/en-us/articles/205019779"),
         SLEEP_PILL_MISSING("https://support.hello.is/hc/en-us/articles/204797159"),
         PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        SLEEP_PILL_WEAK_RSSI("https://support.hello.is/hc/en-us/articles/211421183"),
         TIMELINE_NOT_ENOUGH_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/204994629"),
         TIMELINE_NO_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/205706435");
 
@@ -221,7 +227,8 @@ public class UserSupport {
         SIGN_INTO_WIFI("https://support.hello.is/hc/en-us/articles/205493095"),
         PILL_PAIRING("https://support.hello.is/hc/en-us/articles/204797129"),
         PILL_PLACEMENT("https://support.hello.is/hc/en-us/articles/205493045"),
-        ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289");
+        ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163");
 
         private final String url;
 

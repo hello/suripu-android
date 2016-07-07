@@ -17,10 +17,14 @@
 
 
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
-    <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
+    <string name="error_title_sleep_pill_scan_timeout">Pill Pairing failed</string>
     <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
     <string name="error_sleep_pill_missing_title">Sleep Pill not seen recently</string>
     <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
+    <string name="error_sleep_pill_title_update_missing">Sleep Pill not detected</string>
+    <string name="error_sleep_pill_message_update_missing">Make sure to shake your Sleep Pill quickly for three seconds while holding it close to your mobile device.</string>
+    <string name="error_sleep_pill_title_update_fail">Pill Update failed</string>
+    <string name="error_sleep_pill_message_update_fail">There was a problem updating your Sleep Pill. Please try again. Your Sleep Pill will not function until the update is successful.</string>
 
     <string name="error_peripheral_connection_lost_title">Connection lost</string>
     <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>

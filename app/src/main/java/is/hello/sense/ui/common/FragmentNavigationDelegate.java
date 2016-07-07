@@ -172,7 +172,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
             provider = (StatusBarColorProvider) topFragment;
             targetColor = provider.getStatusBarColor(activity.getResources());
         } else {
-            provider = null;
+            provider = StatusBarColorProvider.EmptyProvider.newInstance();
             targetColor = defaultStatusBarColor;
         }
 
@@ -185,9 +185,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
             statusBarAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    if (provider != null) {
-                        provider.onStatusBarTransitionBegan(targetColor);
-                    }
+                    provider.onStatusBarTransitionBegan(targetColor);
                 }
 
                 @Override
@@ -197,9 +195,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (provider != null) {
-                        provider.onStatusBarTransitionEnded(Windows.getStatusBarColor(window));
-                    }
+                    provider.onStatusBarTransitionEnded(Windows.getStatusBarColor(window));
                 }
             });
             statusBarAnimator.start();

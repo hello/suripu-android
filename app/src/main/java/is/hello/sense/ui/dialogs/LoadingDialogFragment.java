@@ -81,10 +81,25 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
         }
     }
 
+    public static void closeWithOnComplete(@NonNull FragmentManager fm, @Nullable Runnable onCompletion){
+        closeWithMessageTransition(fm, onCompletion, -1);
+    }
+
     public static void closeWithDoneTransition(@NonNull FragmentManager fm, @Nullable Runnable onCompletion) {
+        closeWithMessageTransition(fm, onCompletion, R.string.action_done);
+    }
+
+    public static void closeWithMessageTransition(@NonNull final FragmentManager fm,
+                                                  @Nullable final Runnable onCompletion,
+                                                  @StringRes final int messageRes){
         LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog != null) {
-            dialog.dismissWithDoneTransition(onCompletion);
+            if(messageRes != -1) {
+                dialog.setDismissMessage(messageRes);
+                dialog.dismissWithDoneTransition(onCompletion);
+            } else{
+                dialog.dismissWithOnComplete(onCompletion,1000);
+            }
         } else if (onCompletion != null) {
             onCompletion.run();
         }
@@ -190,6 +205,17 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     //region Dismissing
 
+    public void dismissWithOnComplete(@Nullable final Runnable onCompletion, final long delay){
+        if(titleText != null){
+            titleText.postDelayed(() -> {
+                if (onCompletion != null) {
+                    onCompletion.run();
+                }
+                dismissSafely();
+            }, delay);
+        }
+    }
+
     public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
         if (titleText != null) {
             animatorFor(activityIndicator)
@@ -226,15 +252,10 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                         animatorFor(titleText)
                                 .fadeIn()
                                 .addOnAnimationCompleted(finished1 -> {
-                                    if (!finished1)
+                                    if (!finished1) {
                                         return;
-
-                                    titleText.postDelayed(() -> {
-                                        if (onCompletion != null) {
-                                            onCompletion.run();
-                                        }
-                                        dismissSafely();
-                                    }, DURATION_DONE_MESSAGE);
+                                    }
+                                    dismissWithOnComplete(onCompletion, DURATION_DONE_MESSAGE);
                                 })
                                 .start();
                     })
