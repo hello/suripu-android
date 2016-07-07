@@ -40,6 +40,10 @@ public class SleepPillDevice extends BaseDevice {
         return firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
     }
 
+    public boolean hasLowBattery(){
+        return batteryLevel < 100; //Todo replace with real value when available
+    }
+
     @Override
     public String toString() {
         return "SleepPillDevice{" +

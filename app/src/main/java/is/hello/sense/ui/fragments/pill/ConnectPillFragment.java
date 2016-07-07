@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments.onboarding;
+package is.hello.sense.ui.fragments.pill;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

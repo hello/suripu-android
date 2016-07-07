@@ -14,11 +14,10 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.ConnectPillFragment;
-import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
-import is.hello.sense.ui.fragments.onboarding.UpdateReadyPillFragment;
+import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
+import is.hello.sense.ui.fragments.pill.UpdateIntroPillFragment;
+import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -131,19 +130,8 @@ implements FragmentNavigation{
                     PillUpdateActivity.FLOW_UPDATE_PILL_INTRO_SCREEN), null, false);
             return;
         }
-
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
-
-        //Todo if this activity ever needs to show exitAnimation should implement ExitAnimationProviderActivity
-        final SimpleStepFragment.Builder builder =
-                new SimpleStepFragment.Builder(this);
-        builder.setHeadingText(R.string.title_update_sleep_pill);
-        builder.setSubheadingText(R.string.info_update_sleep_pill);
-        builder.setDiagramImage(R.drawable.sleep_pill_ota);
-        builder.setNextFragmentClass(ConnectPillFragment.class);
-        builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
-        builder.setHelpStep(UserSupport.OnboardingStep.UPDATE_PILL);
-        pushFragment(builder.toFragment(), null, false);
+        pushFragment(UpdateIntroPillFragment.newInstance(FLOW_CONNECT_PILL_SCREEN), null, false);
     }
 
     //unused but for testing or debug

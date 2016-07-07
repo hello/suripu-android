@@ -31,13 +31,13 @@ import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.onboarding.OnboardingModule;
+import is.hello.sense.pill.PillModule;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
-import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
@@ -74,7 +74,8 @@ import is.hello.sense.zendesk.ZendeskModule;
             OnboardingModule.class,
             SettingsModule.class,
             UtilityModule.class,
-            FacebookApiModule.class
+            FacebookApiModule.class,
+            PillModule.class
     },
     injects = {
         SenseApplication.class,
@@ -86,7 +87,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         UnreadStatePresenter.class,
 
         LaunchActivity.class,
-        HomeActivity.class, PillUpdateActivity.class,
+        HomeActivity.class,
 
         SignInFragment.class,
         RegisterFragment.class,

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments.onboarding;
+package is.hello.sense.ui.fragments.pill;
 
 import android.app.Fragment;
 import android.app.NotificationManager;

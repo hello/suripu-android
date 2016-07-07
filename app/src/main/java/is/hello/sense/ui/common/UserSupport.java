@@ -196,6 +196,7 @@ public class UserSupport {
         SENSE_ASCII_WEP("https://support.hello.is/hc/en-us/articles/205019779"),
         SLEEP_PILL_MISSING("https://support.hello.is/hc/en-us/articles/204797159"),
         PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        SLEEP_PILL_LOW_BATTERY("https://support.hello.is/hc/en-us/articles/204496999"),
         SLEEP_PILL_WEAK_RSSI("https://support.hello.is/hc/en-us/articles/211421183"),
         TIMELINE_NOT_ENOUGH_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/204994629"),
         TIMELINE_NO_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/205706435");
