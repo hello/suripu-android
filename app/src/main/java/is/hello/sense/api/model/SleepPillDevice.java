@@ -41,7 +41,7 @@ public class SleepPillDevice extends BaseDevice {
     }
 
     public boolean hasLowBattery(){
-        return batteryLevel < 20; //Todo replace with real value when available
+        return batteryLevel < 200; //Todo replace with real value when available
     }
 
     @Override

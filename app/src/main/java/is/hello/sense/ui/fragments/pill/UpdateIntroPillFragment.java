@@ -11,26 +11,17 @@ import android.widget.Button;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
-import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
-public class UpdateIntroPillFragment extends HardwareFragment {
+public class UpdateIntroPillFragment extends PillHardwareFragment {
     private static final String ARG_NEXT_SCREEN_ID = UpdateIntroPillFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
 
-    @Inject
-    DevicesPresenter devicesPresenter;
-
     private Button primaryButton;
-    private boolean passedChecks = false;
 
     public static UpdateIntroPillFragment newInstance(final int nextScreenId) {
         final UpdateIntroPillFragment fragment = new UpdateIntroPillFragment();
@@ -84,11 +75,7 @@ public class UpdateIntroPillFragment extends HardwareFragment {
     }
 
     public void onPrimaryButtonClick(@NonNull final View ignored){
-        if(passedChecks){
-            done();
-        } else{
-            checkPillBattery();
-        }
+        done();
     }
 
     private void bindAndSubscribeDevice() {
@@ -118,37 +105,23 @@ public class UpdateIntroPillFragment extends HardwareFragment {
     }
 
     private void onNext(final boolean hasEnoughBattery){
+        hideBlockingActivity(false, () -> {
+            updateButtonUI();
+            if(!hasEnoughBattery){
+                presentPillBatteryError();
+            }
+        });
+    }
+
+    private void updateButtonUI(){
         primaryButton.setEnabled(true);
-        if(hasEnoughBattery) {
-            hideBlockingActivity(false, () -> {
-                passedChecks = true;
-                primaryButton.setText(R.string.action_continue);
-            });
-        }
-        else {
-            passedChecks = false;
-            primaryButton.setText(R.string.action_retry);
-            presentPillBatteryError();
-        }
     }
 
     private void presentError(final Throwable e) {
         hideBlockingActivity(false, () -> {
+            updateButtonUI();
             final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
                     .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
-    }
-
-    private void presentPillBatteryError(){
-        hideBlockingActivity(false, () -> {
-            final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_LOW_BATTERY.getUri().toString();
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .withOperation("Check Pill Battery")
-                    .withTitle(R.string.dialog_title_replace_sleep_pill_battery)
-                    .withMessage(StringRef.from(R.string.dialog_message_replace_sleep_pill_battery))
-                    .withAction(helpUriString, R.string.label_having_trouble)
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
