@@ -41,7 +41,7 @@ public class SleepPillDevice extends BaseDevice {
     }
 
     public boolean hasLowBattery(){
-        return batteryLevel <= 7; //Todo check
+        return batteryLevel <= 10; //Todo check with Jackson
     }
 
     @Override
