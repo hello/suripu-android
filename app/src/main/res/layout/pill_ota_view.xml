@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gray3_50">
+
+    <View
+        android:id="@+id/blue_box_view"
+        android:layout_width="100dp"
+        android:layout_height="200dp"
+        android:background="@color/primary"
+        android:layout_gravity="right"/>
+
+    <ImageView
+        android:id="@+id/sleep_pill_ota_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/sleep_pill_ota"
+        />
+
+</FrameLayout>
