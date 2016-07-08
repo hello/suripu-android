@@ -226,7 +226,7 @@
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
     <string name="dialog_message_replace_sleep_pill">Are you sure you want to remove this Sleep Pill from your account? You will not be able to track your sleep until you pair another Sleep Pill.</string>
     <string name="dialog_title_replace_sleep_pill_battery">Replace Sleep Pill battery</string>
-    <string name="dialog_message_replace_sleep_pill_battery">Replace your Sleep Pill battery before you continue with this update.</string>
+    <string name="dialog_message_replace_sleep_pill_battery">Replace your Sleep Pill battery before continuing this update. It may take Sense up to an hour to confirm battery has been replaced.</string>
     <string name="dialog_title_replace_sense">Replace this Sense</string>
     <string name="dialog_message_replace_sense">Are you sure you want to remove this Sense from your account? Only do this if you are replacing it with a different Sense unit. You will need to pair with another Sense to continue using the application.</string>
     <string name="title_trends">Trends</string>

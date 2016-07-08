@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import javax.inject.Inject;
-
-import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -28,9 +25,8 @@ implements FragmentNavigation{
     public static final int FLOW_CONNECT_PILL_SCREEN = 4;
     public static final int FLOW_UPDATE_PILL_SCREEN = 5;
     public static final int FLOW_FINISHED = 6;
+    public  static final int FLOW_BLUETOOTH_CHECK = 7;
     private FragmentNavigationDelegate navigationDelegate;
-    @Inject
-    BluetoothStack bluetoothStack;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -90,6 +86,9 @@ implements FragmentNavigation{
            case FLOW_UPDATE_PILL_INTRO_SCREEN:
                showUpdateIntroPill();
                break;
+           case FLOW_BLUETOOTH_CHECK:
+               showBluetoothScreen();
+               break;
            case FLOW_CONNECT_PILL_SCREEN:
                showConnectPillScreen();
                break;
@@ -125,13 +124,13 @@ implements FragmentNavigation{
     }
 
     public void showUpdateIntroPill(){
-        if (!bluetoothStack.isEnabled()) {
-            pushFragment(BluetoothFragment.newInstance(
-                    PillUpdateActivity.FLOW_UPDATE_PILL_INTRO_SCREEN), null, false);
-            return;
-        }
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
         pushFragment(UpdateIntroPillFragment.newInstance(FLOW_CONNECT_PILL_SCREEN), null, false);
+    }
+
+    private void showBluetoothScreen() {
+        pushFragment(BluetoothFragment.newInstance(
+                PillUpdateActivity.FLOW_CONNECT_PILL_SCREEN), null, false);
     }
 
     //unused but for testing or debug

@@ -11,14 +11,21 @@ import android.widget.Button;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 public class UpdateIntroPillFragment extends PillHardwareFragment {
+    @Inject
+    BluetoothStack bluetoothStack;
+
     private static final String ARG_NEXT_SCREEN_ID = UpdateIntroPillFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
 
     private Button primaryButton;
@@ -58,7 +65,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
                 .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL));
 
         this.primaryButton = (Button) view.findViewById(R.id.view_onboarding_simple_step_primary);
-        this.primaryButton.setEnabled(false);
 
         return view;
     }
@@ -67,7 +73,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribeDevice();
-        checkPillBattery();
     }
 
     public void onCancel(final View ignored) {
@@ -75,7 +80,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     public void onPrimaryButtonClick(@NonNull final View ignored){
-        done();
+        checkPillBattery();
     }
 
     private void bindAndSubscribeDevice() {
@@ -106,24 +111,32 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
 
     private void onNext(final boolean hasEnoughBattery){
         hideBlockingActivity(false, () -> {
-            updateButtonUI();
+            updateButtonUI(hasEnoughBattery);
             if(!hasEnoughBattery){
                 presentPillBatteryError();
+            } else{
+                checkBluetooth();
             }
         });
     }
 
-    private void updateButtonUI(){
-        primaryButton.setEnabled(true);
+    private void updateButtonUI(final boolean shouldEnable){
+        primaryButton.setEnabled(shouldEnable);
     }
 
     private void presentError(final Throwable e) {
         hideBlockingActivity(false, () -> {
-            updateButtonUI();
+            updateButtonUI(false);
             final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
                     .withSupportLink()
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
+    }
+
+    private void checkBluetooth(){
+        if (!bluetoothStack.isEnabled()) {
+            ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_BLUETOOTH_CHECK, null);
+        }
     }
 }
