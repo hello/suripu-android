@@ -137,6 +137,8 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     private void checkBluetooth(){
         if (!bluetoothStack.isEnabled()) {
             ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_BLUETOOTH_CHECK, null);
+        } else{
+            done();
         }
     }
 }
