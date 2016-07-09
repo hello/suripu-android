@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
+import java.lang.ref.WeakReference;
+
 public class AnimatorSetHandler extends Handler {
     private final long callbackDelay;
     private final Runnable callback;
@@ -15,12 +17,17 @@ public class AnimatorSetHandler extends Handler {
 
     public AnimatorSetHandler(final long callbackDelay, @NonNull final AnimatorSet animatorSet){
         super(Looper.getMainLooper());
+        final WeakReference<AnimatorSet> animatorSetWeakReference = new WeakReference<>(animatorSet);
+        final WeakReference<AnimatorSetHandler> handlerWeakReference = new WeakReference<>(this);
         this.callbackDelay = callbackDelay;
         this.callback = () -> {
-            if(animatorSet != null && !animatorSet.isStarted()) {
-                animatorSet.start();
+            if(animatorSetWeakReference.get() != null
+                    && !animatorSetWeakReference.get().isStarted()) {
+                animatorSetWeakReference.get().start();
             }
-            start();
+            if(handlerWeakReference.get() != null) {
+                handlerWeakReference.get().start();
+            }
         };
     }
 

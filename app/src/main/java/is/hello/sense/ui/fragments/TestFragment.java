@@ -15,6 +15,7 @@ public class TestFragment extends android.app.Fragment{
 
     View blueBox;
     private AnimatorSetHandler animatorSetHandler;
+    private AnimatorSet set;
 
     public TestFragment() {
         // Required empty public constructor
@@ -49,6 +50,7 @@ public class TestFragment extends android.app.Fragment{
         this.animatorSetHandler = null;
         this.blueBox.clearAnimation();
         this.blueBox = null;
+        this.set = null;
     }
 
     private void pauseAnimation() {
@@ -57,8 +59,7 @@ public class TestFragment extends android.app.Fragment{
 
     private void resumeAnimation(){
         if(animatorSetHandler == null) {
-            final AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(getActivity(),
-                                                                                R.animator.bluetooth_sleep_pill_ota_animator);
+            set = (AnimatorSet) AnimatorInflater.loadAnimator(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
             set.setTarget(blueBox);
             final long resetTime = set.getDuration() + set.getStartDelay();
             this.animatorSetHandler = new AnimatorSetHandler(resetTime, set);
