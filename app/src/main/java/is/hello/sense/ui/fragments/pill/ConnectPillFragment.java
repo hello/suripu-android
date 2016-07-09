@@ -134,13 +134,7 @@ public class ConnectPillFragment extends HardwareFragment {
         //Todo the loading done drawable is not displayed quick enough before fragment is closed
         activityIndicator.setActivated(true);
         activityStatus.setText(R.string.message_sleep_pill_connected);
-        hideBlockingActivity(false, () -> {
-            onFinish(true);
-            //Todo replace with updatePill to dfu mode
-            /*bindAndSubscribe(hardwarePresenter.linkPill(),
-                          ignored -> completeHardwareActivity(() -> onFinish(true)),
-                          this::presentError);*/
-        });
+        activityStatus.postDelayed( stateSafeExecutor.bind(() -> onFinish(true)), 1200);
 
     }
 
@@ -197,16 +191,16 @@ public class ConnectPillFragment extends HardwareFragment {
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithOnComplete(getFragmentManager(), () -> {
-            stateSafeExecutor.execute(() -> {
-                hardwarePresenter.clearPeripheral();
-                if (success) {
-                    ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_UPDATE_PILL_SCREEN, null);
-                } else {
-                    getActivity().finish();
-                }
-            });
-        });
+        LoadingDialogFragment.closeWithOnComplete(
+                getFragmentManager(),
+                stateSafeExecutor.bind(() -> {
+                    hardwarePresenter.clearPeripheral();
+                    if (success) {
+                        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_UPDATE_PILL_SCREEN, null);
+                    } else {
+                        getActivity().finish();
+                    }
+                }));
     }
 
     private void help(final View view) {
