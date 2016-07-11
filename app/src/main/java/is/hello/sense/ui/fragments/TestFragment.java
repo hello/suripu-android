@@ -45,6 +45,13 @@ public class TestFragment extends android.app.Fragment{
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        set = (AnimatorSet) AnimatorInflater.loadAnimator(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
+        set.setTarget(blueBox);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.animatorSetHandler = null;
@@ -59,10 +66,7 @@ public class TestFragment extends android.app.Fragment{
 
     private void resumeAnimation(){
         if(animatorSetHandler == null) {
-            set = (AnimatorSet) AnimatorInflater.loadAnimator(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
-            set.setTarget(blueBox);
-            final long resetTime = set.getDuration() + set.getStartDelay();
-            this.animatorSetHandler = new AnimatorSetHandler(resetTime, set);
+            this.animatorSetHandler = new AnimatorSetHandler(800, set);
         }
         animatorSetHandler.start();
     }
