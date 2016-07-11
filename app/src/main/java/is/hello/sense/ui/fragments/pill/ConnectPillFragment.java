@@ -162,7 +162,8 @@ public class ConnectPillFragment extends HardwareFragment {
                         .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_missing));
                 errorDialogBuilder.withSupportLink();
             } else {
-                errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
+                errorDialogBuilder.withTitle(R.string.action_turn_on_ble)
+                                  .withMessage(StringRef.from(R.string.info_turn_on_bluetooth));
             }
 
             final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
