@@ -63,6 +63,7 @@
     <string name="title_demographics">Demographics</string>
 
     <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
@@ -224,6 +225,8 @@
     <string name="action_replace_device">Replace</string>
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
     <string name="dialog_message_replace_sleep_pill">Are you sure you want to remove this Sleep Pill from your account? You will not be able to track your sleep until you pair another Sleep Pill.</string>
+    <string name="dialog_title_replace_sleep_pill_battery">Replace Sleep Pill battery</string>
+    <string name="dialog_message_replace_sleep_pill_battery">Replace your Sleep Pill battery before continuing this update. It may take Sense up to an hour to confirm battery has been replaced.</string>
     <string name="dialog_title_replace_sense">Replace this Sense</string>
     <string name="dialog_message_replace_sense">Are you sure you want to remove this Sense from your account? Only do this if you are replacing it with a different Sense unit. You will need to pair with another Sense to continue using the application.</string>
     <string name="title_trends">Trends</string>
@@ -362,6 +365,7 @@
     <string name="notification_update_progress">In progress</string>
     <string name="notification_update_successful">Update successful</string>
     <string name="notification_update_failed">Update failed. Please try again.</string>
+    <string name="title_checking_pill_battery">Checking Sleep Pill battery</string>
     <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
     <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
     <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
@@ -449,7 +453,7 @@
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
-    <string name="label_having_trouble">I\’m having trouble</string>
+    <string name="label_having_trouble">I’m having trouble</string>
 
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
