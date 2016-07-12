@@ -45,6 +45,7 @@ public class BluetoothFragment extends HardwareFragment {
                 .setHeadingText(R.string.action_turn_on_ble)
                 .setSubheadingText(R.string.info_turn_on_bluetooth)
                 .setPrimaryButtonText(R.string.action_turn_on_ble)
+                .setDiagramImage(R.drawable.sleep_pill_bluetooth)
                 .setPrimaryOnClickListener(this::turnOn)
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)

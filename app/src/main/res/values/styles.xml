@@ -519,8 +519,8 @@
 
     <!-- Has v21 style -->
     <style name="AppTheme.ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
-        <item name="android:minWidth">110dp</item>
-        <item name="android:maxWidth">110dp</item>
+        <item name="android:minWidth">164dp</item>
+        <item name="android:maxWidth">164dp</item>
         <item name="android:secondaryProgress">100</item>
     </style>
 
