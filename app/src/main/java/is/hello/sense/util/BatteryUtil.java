@@ -30,7 +30,14 @@ public class BatteryUtil {
     }
 
     public boolean canPerformOperation(@NonNull final Operation operation){
-        return operation.minBatteryPercentage <= getBatteryPercentage();
+        return operation.minBatteryPercentage <= getBatteryPercentage()
+                && (!operation.requiresCharging() || isPluggedInAndCharging());
+    }
+
+    public boolean isPluggedInAndCharging(){
+        final int chargeType = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        final int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        return chargeType != 0 && (status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL);
     }
 
     public double getBatteryPercentage(){
@@ -47,13 +54,23 @@ public class BatteryUtil {
 
     public static class Operation {
         final double minBatteryPercentage;
+        final boolean requiresCharging;
 
-        public Operation(){
-            this(0.20);
+        public static Operation pillUpdateOperationNoCharge() {
+            return new Operation(20, false);
         }
 
-        public Operation(final double minimumBatteryPercentage){
+        public static Operation pillUpdateOperationWithCharge(){
+            return new Operation(15, true);
+        }
+
+        public Operation(){
+            this(0.20, false);
+        }
+
+        public Operation(final double minimumBatteryPercentage, final boolean requiresCharging){
             this.minBatteryPercentage = minimumBatteryPercentage;
+            this.requiresCharging = requiresCharging;
             runAssertions();
         }
 
@@ -63,6 +80,10 @@ public class BatteryUtil {
                     throw new NumberFormatException("minBatteryPercentage must be between 0 - 1");
                 }
             }
+        }
+
+        public boolean requiresCharging() {
+            return requiresCharging;
         }
     }
 }
