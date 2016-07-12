@@ -57,15 +57,15 @@ public class BatteryUtil {
         final boolean requiresCharging;
 
         public static Operation pillUpdateOperationNoCharge() {
-            return new Operation(20, false);
+            return new Operation(0.20, false);
         }
 
         public static Operation pillUpdateOperationWithCharge(){
-            return new Operation(15, true);
+            return new Operation(0.15, true);
         }
 
         public Operation(){
-            this(0.20, false);
+            this(0, false);
         }
 
         public Operation(final double minimumBatteryPercentage, final boolean requiresCharging){
