@@ -118,4 +118,6 @@
     <string name="error_account_remove_photo_title">Failed to remove photo</string>
     <string name="error_account_remove_photo_message">There were issues removing your profile photo. Please check your connection or try again in a few minutes.</string>
 
+    <string name="error_phone_battery_low_title">Phone battery low</string>
+    <string name="error_phone_battery_low_message">Connect your phone to a power source before you continue with this update.</string>
 </resources>
