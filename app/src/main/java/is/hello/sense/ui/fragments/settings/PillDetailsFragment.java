@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -30,8 +31,11 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
 
     private static final int OPTION_ID_REPLACE_PILL = 0;
+    private static final int REQUEST_CODE_PILL_UPDATE = 12;
 
     @Inject DevicesPresenter devicesPresenter;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
 
     //region Lifecycle
 
@@ -56,7 +60,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
 
         showActions();
 
-        if(device.shouldUpdate()){
+        if(shouldShowUpdateFirmwareAction()){
             addDeviceAction(R.drawable.icon_settings_update, R.string.action_update_firmware, this::updateFirmware);
         }
         addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
@@ -82,6 +86,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         }
     }
 
+    private boolean shouldShowUpdateFirmwareAction() {
+        return device.shouldUpdate() && deviceIssuesPresenter.shouldShowUpdateFirmwareAction(device.deviceId);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -98,6 +106,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
                     Logger.warn(getClass().getSimpleName(), "Unknown option " + optionId);
                     break;
                 }
+            }
+        } else if(requestCode == REQUEST_CODE_PILL_UPDATE && resultCode == Activity.RESULT_OK){
+            if(!shouldShowUpdateFirmwareAction()){
+                clearAction(0);
             }
         }
     }

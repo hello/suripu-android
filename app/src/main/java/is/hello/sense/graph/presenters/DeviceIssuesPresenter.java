@@ -62,7 +62,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.SLEEP_PILL_LOW_BATTERY;
         } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
             return Issue.SLEEP_PILL_MISSING;
-        } else if (pill.shouldUpdate()){
+        } else if (pill.shouldUpdate() && shouldReportPillUpdate()){
             return Issue.SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE;
         }
 
@@ -93,6 +93,22 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         }
     }
 
+    private @Nullable DateTime getPillUpdateAlertLastShown() {
+        if (preferences.contains(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN)) {
+            return new DateTime(preferences.getLong(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN, 0));
+        } else {
+            return null;
+        }
+    }
+
+    private @Nullable DateTime getLastPillUpdateDateTime(final String deviceId) {
+        if(preferences.contains(PreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId)){
+            return new DateTime(preferences.getLong(PreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId, 0));
+        } else{
+            return null;
+        }
+    }
+
     @VisibleForTesting
     boolean shouldReportLowBattery() {
         final DateTime lastShown = getSystemAlertLastShown();
@@ -107,6 +123,23 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     boolean shouldReportPillMissing() {
         final DateTime lastShown = getPillMissingAlertLastShown();
         return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
+    }
+
+    boolean shouldReportPillUpdate() {
+        final DateTime lastShown = getPillUpdateAlertLastShown();
+        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
+    }
+
+    public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
+        final DateTime lastUpdated = getLastPillUpdateDateTime(deviceId);
+        return lastUpdated == null || Days.daysBetween(lastUpdated, DateTime.now()).getDays() >= 1;
+    }
+
+    public void updateLastUpdatedDevice(@NonNull final String deviceId){
+        preferences.edit()
+                .putLong(PreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId,
+                         DateTimeUtils.currentTimeMillis())
+                .apply();
     }
 
     public void updateLastShown(@NonNull final Issue issue){
@@ -129,6 +162,11 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
                                     DateTimeUtils.currentTimeMillis())
                            .apply();
                 break;
+            case SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE:
+                preferences.edit()
+                           .putLong(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN,
+                                DateTimeUtils.currentTimeMillis())
+                           .apply();
 
         }
     }

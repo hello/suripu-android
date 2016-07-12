@@ -37,7 +37,7 @@ public class SleepPillDevice extends BaseDevice {
     }
 
     public boolean shouldUpdate() {
-        return firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
+        return true || firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
     }
 
     public boolean hasLowBattery(){

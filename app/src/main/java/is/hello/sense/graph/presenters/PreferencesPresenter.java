@@ -66,6 +66,10 @@ import rx.subscriptions.Subscriptions;
     public static final String SYSTEM_ALERT_LAST_SHOWN = "system_alert_last_shown";
     public static final String SENSE_ALERT_LAST_SHOWN = "sense_alert_last_shown";
     public static final String PILL_MISSING_ALERT_LAST_SHOWN = "pill_missing_alert_last_shown";
+    public static final String PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN = "pill_firmware_update_alert_last_shown";
+
+    //To make key unique must append device id
+    public static final String FIRMWARE_UPDATE_LAST_COMPLETED = "firmware_update_last_completed_with_device_id_";
 
 
     private final Context context;
