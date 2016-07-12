@@ -21,6 +21,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
+import is.hello.sense.util.Analytics;
 
 public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Inject
@@ -44,7 +45,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Todo replace Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_BLE, null);
+        Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
 
         setRetainInstance(true);
     }

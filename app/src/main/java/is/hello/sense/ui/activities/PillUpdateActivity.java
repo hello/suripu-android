@@ -124,7 +124,6 @@ implements FragmentNavigation{
     }
 
     public void showUpdateIntroPill(){
-        Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
         pushFragment(UpdateIntroPillFragment.newInstance(FLOW_CONNECT_PILL_SCREEN), null, false);
     }
 
