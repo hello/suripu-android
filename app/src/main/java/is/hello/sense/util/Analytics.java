@@ -655,6 +655,27 @@ public class Analytics {
 
     }
 
+    /**
+     *  {@link this#EVENT_START} - Fire when user reaches "Updating your Sleep Pill" screen after tapping "Update" button or "Update Sleep Pill firmware" row or "Update Now" pop-up button
+     *
+     *  {@link this#EVENT_OTA_START} - Fire when Pill OTA firmware update starts to transfer
+     *
+     *  {@link this#EVENT_OTA_COMPLETE} - Fire when Pill OTA firmware update completes transfer
+     */
+    public interface PillUpdate {
+        String EVENT_START = "Pill Update Start";
+        String EVENT_OTA_START = "Pill Update OTA Start";
+        String EVENT_OTA_COMPLETE = "Pilll Update Complete";
+
+        interface Error {
+            String PHONE_BATTERY_LOW = "Pill Update Phone Battery Low";
+            String PILL_REPLACE_BATTERY = "Pill Update Replace Battery";
+            String PILL_NOT_DETECTED = "Pill Update Pill Not Detected";
+            String PILL_OTA_FAIL = "Pill Update OTA Failed";
+        }
+
+    }
+
 
     //region Lifecycle
 
@@ -817,7 +838,7 @@ public class Analytics {
 
     //region Events
 
-    public static @NonNull Properties createProperties(@NonNull Object... pairs) {
+    public static @NonNull Properties createProperties(@NonNull final Object... pairs) {
         if ((pairs.length % 2) != 0) {
             throw new IllegalArgumentException("even number of arguments required");
         }
@@ -881,7 +902,7 @@ public class Analytics {
                                 Breadcrumb.PROP_DESCRIPTION, description.desc);
     }
 
-    public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
+    public static void trackEvent(@NonNull final String event, @Nullable final Properties properties) {
         if (segment == null) {
             return;
         }
@@ -891,11 +912,11 @@ public class Analytics {
         Logger.analytic(event, properties);
     }
 
-    public static void trackError(@NonNull String message,
-                                  @Nullable String errorType,
-                                  @Nullable String errorContext,
-                                  @Nullable String errorOperation,
-                                  boolean isWarning) {
+    public static void trackError(@NonNull final String message,
+                                  @Nullable final String errorType,
+                                  @Nullable final String errorContext,
+                                  @Nullable final String errorOperation,
+                                  final boolean isWarning) {
 
         final Properties properties = createProperties(Global.PROP_ERROR_MESSAGE, message,
                                                        Global.PROP_ERROR_TYPE, errorType,
@@ -908,7 +929,7 @@ public class Analytics {
         trackEvent(event, properties);
     }
 
-    public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
+    public static void trackError(@Nullable final Throwable e, @Nullable final String errorOperation) {
         final StringRef message = Errors.getDisplayMessage(e);
         final String messageString;
         if (message != null && SenseApplication.getInstance() != null) {
@@ -919,7 +940,7 @@ public class Analytics {
         trackError(messageString, Errors.getType(e), Errors.getContextInfo(e), errorOperation, ApiException.isNetworkError(e));
     }
 
-    public static void trackUnexpectedError(@Nullable Throwable e) {
+    public static void trackUnexpectedError(@Nullable final Throwable e) {
         if (e != null && !SenseApplication.isRunningInRobolectric()) {
             Bugsnag.notify(e, Severity.WARNING);
         }

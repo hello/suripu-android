@@ -99,6 +99,7 @@ implements FragmentNavigation{
                break;
            case FLOW_FINISHED:
                //Todo add fade out transition
+               Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
                finish();
                break;
            default:
@@ -130,6 +131,9 @@ implements FragmentNavigation{
                     PillUpdateActivity.FLOW_UPDATE_PILL_INTRO_SCREEN), null, false);
             return;
         }
+
+        Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
+
         //Todo if this activity ever needs to show exitAnimation should implement ExitAnimationProviderActivity
         final SimpleStepFragment.Builder builder =
                 new SimpleStepFragment.Builder(this);
@@ -148,6 +152,7 @@ implements FragmentNavigation{
     }
 
     public void showUpdateReadyPill(){
+        Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_START, null);
         pushFragment(UpdateReadyPillFragment.newInstance(), null, false);
     }
 

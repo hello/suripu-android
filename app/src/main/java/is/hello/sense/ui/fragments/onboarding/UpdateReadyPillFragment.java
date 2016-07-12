@@ -183,6 +183,7 @@ implements OnBackPressedInterceptor {
 
             final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             final int notificationId = 1;
+            final String notificationTag = UpdateReadyPillFragment.class.getName() + ".NOTIFICATION_TAG";
             final String onCompleteTitle = getString(R.string.notification_update_successful);
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
             notificationBuilder.setContentTitle(getString(R.string.notification_title_update_sleep_pill));
@@ -205,16 +206,16 @@ implements OnBackPressedInterceptor {
                     if (progress < updateIndicator.getMax()) {
                         updateIndicator.setProgress(++progress);
                         notificationBuilder.setProgress(updateIndicator.getMax(), progress, false);
-                        notificationManager.notify(notificationId, notificationBuilder.build());
+                        notificationManager.notify(notificationTag, notificationId, notificationBuilder.build());
                     } else {
                         this.cancel();
                         notificationBuilder.setProgress(0, 0, false);
                         notificationBuilder.setContentText(onCompleteTitle);
                         notificationBuilder.setAutoCancel(true);
-                        notificationManager.notify(notificationId, notificationBuilder.build());
+                        notificationManager.notify(notificationTag, notificationId, notificationBuilder.build());
 
                         stateSafeExecutor.execute(() -> {
-                            notificationManager.cancel(notificationId);
+                            notificationManager.cancel(notificationTag, notificationId);
                         });
 
                         updateIndicator.post(() -> {
