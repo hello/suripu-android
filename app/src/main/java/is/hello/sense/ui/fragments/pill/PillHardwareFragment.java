@@ -27,17 +27,18 @@ public class PillHardwareFragment extends InjectionFragment {
     }
 
     public static BatteryUtil.Operation pillUpdateOperationWithCharge(){
-        return new BatteryUtil.Operation(0.15, true);
+        return new BatteryUtil.Operation(0, true);
     }
 
     protected void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
-            stateSafeExecutor.execute(() -> {
-                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                        getString(titleRes),
-                                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
-            });
+            stateSafeExecutor.execute(() -> this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+                                                                                                getString(titleRes),
+                                                                                                LoadingDialogFragment.OPAQUE_BACKGROUND));
         } else {
+            if(loadingDialogFragment.getDialog() == null){
+                loadingDialogFragment.showAllowingStateLoss(getFragmentManager(),LoadingDialogFragment.TAG);
+            }
             loadingDialogFragment.setTitle(getString(titleRes));
         }
     }
@@ -55,6 +56,11 @@ public class PillHardwareFragment extends InjectionFragment {
                 onCompletion.run();
             }
         });
+    }
+
+    protected void hideBlockingActivity(){
+        //for delay of 1000 millisecond
+        LoadingDialogFragment.closeWithOnComplete(getFragmentManager(), null);
     }
 
     protected void presentPillBatteryError(){

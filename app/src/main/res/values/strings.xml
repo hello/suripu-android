@@ -367,6 +367,7 @@
     <string name="notification_update_failed">Update failed. Please try again.</string>
     <string name="title_checking_phone_battery">Checking Phone battery</string>
     <string name="title_checking_pill_battery">Checking Sleep Pill battery</string>
+    <string name="title_checking_bluetooth_connectivity">Checking Bluetooth connectivity</string>
     <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
     <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
     <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
