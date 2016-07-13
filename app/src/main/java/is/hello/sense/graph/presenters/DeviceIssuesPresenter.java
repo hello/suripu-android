@@ -8,6 +8,7 @@ import android.support.annotation.VisibleForTesting;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
+import org.joda.time.Hours;
 
 import javax.inject.Inject;
 
@@ -132,7 +133,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
 
     public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
         final DateTime lastUpdated = getLastPillUpdateDateTime(deviceId);
-        return lastUpdated == null || Days.daysBetween(lastUpdated, DateTime.now()).getDays() >= 1;
+        return lastUpdated == null || Hours.hoursBetween(lastUpdated, DateTime.now()).isGreaterThan(Hours.ONE);
     }
 
     public void updateLastUpdatedDevice(@NonNull final String deviceId){
