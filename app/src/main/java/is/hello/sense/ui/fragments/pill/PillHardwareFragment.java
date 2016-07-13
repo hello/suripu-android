@@ -12,6 +12,8 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.util.Analytics;
+import is.hello.sense.util.BatteryUtil;
 
 public class PillHardwareFragment extends InjectionFragment {
 
@@ -19,6 +21,14 @@ public class PillHardwareFragment extends InjectionFragment {
     DevicesPresenter devicesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
+
+    public static BatteryUtil.Operation pillUpdateOperationNoCharge() {
+        return new BatteryUtil.Operation(0.20, false);
+    }
+
+    public static BatteryUtil.Operation pillUpdateOperationWithCharge(){
+        return new BatteryUtil.Operation(0.15, true);
+    }
 
     protected void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
@@ -54,6 +64,17 @@ public class PillHardwareFragment extends InjectionFragment {
                 .withTitle(R.string.dialog_title_replace_sleep_pill_battery)
                 .withMessage(StringRef.from(R.string.dialog_message_replace_sleep_pill_battery))
                 .withAction(helpUriString, R.string.label_having_trouble)
+                .withContextInfo(Analytics.PillUpdate.Error.PILL_REPLACE_BATTERY)
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    protected void presentPhoneBatteryError(){
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+                .withOperation("Check Phone Battery")
+                .withTitle(R.string.error_phone_battery_low_title)
+                .withMessage(StringRef.from(R.string.error_phone_battery_low_message))
+                .withContextInfo(Analytics.PillUpdate.Error.PHONE_BATTERY_LOW)
                 .build();
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
