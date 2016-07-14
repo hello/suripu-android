@@ -23,7 +23,7 @@ public class BatteryUtil {
 
     public boolean canPerformOperation(@NonNull final Operation operation){
         return operation.minBatteryPercentage <= getBatteryPercentage()
-                && (!operation.requiresCharging() || isPluggedInAndCharging());
+                && (!operation.requiresCharging || isPluggedInAndCharging());
     }
 
     public boolean isPluggedInAndCharging(){
@@ -64,10 +64,6 @@ public class BatteryUtil {
                     throw new NumberFormatException("minBatteryPercentage must be between 0 - 1");
                 }
             }
-        }
-
-        public boolean requiresCharging() {
-            return requiresCharging;
         }
     }
 }

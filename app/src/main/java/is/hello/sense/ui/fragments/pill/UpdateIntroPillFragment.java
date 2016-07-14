@@ -145,23 +145,23 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
 
     private void onPillCheckNext(final boolean hasEnoughBattery){
         stateSafeExecutor.execute( () -> {
-            if(!hasEnoughBattery){
+            if(hasEnoughBattery){
+                checkPhoneBattery();
+            } else{
                 hideBlockingActivity();
                 presentPillBatteryError();
-            } else{
-                checkPhoneBattery();
             }
         });
     }
 
     private void onPhoneCheckNext(final boolean hasEnoughBattery) {
         stateSafeExecutor.execute( () -> {
-            if(!hasEnoughBattery){
+            if(hasEnoughBattery){
+                checkBluetooth();
+            } else{
                 updateButtonUI(true, true); //allow user to retry by plugging in phone
                 hideBlockingActivity();
                 presentPhoneBatteryError();
-            } else{
-                checkBluetooth();
             }
         });
     }

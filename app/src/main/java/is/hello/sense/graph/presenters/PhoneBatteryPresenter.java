@@ -43,6 +43,8 @@ public class PhoneBatteryPresenter extends ValuePresenter<Boolean>{
                         }
                     }
                     subscriber.onNext(false);
+                } catch(final Exception e){
+                    subscriber.onError(e);
                 } finally {
                     subscriber.onCompleted();
                 }
@@ -52,7 +54,7 @@ public class PhoneBatteryPresenter extends ValuePresenter<Boolean>{
     //region State Saving
 
     @Override
-    public void onRestoreState(@NonNull Bundle savedState) {
+    public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
 
         if (savedState.containsKey(OPERATIONS_SAVED_STATE_KEY)) {
@@ -65,7 +67,9 @@ public class PhoneBatteryPresenter extends ValuePresenter<Boolean>{
     @Override
     public Bundle onSaveState() {
         final Bundle bundle = super.onSaveState();
-        bundle.putSerializable(OPERATIONS_SAVED_STATE_KEY, operationList);
+        if (bundle != null) {
+            bundle.putSerializable(OPERATIONS_SAVED_STATE_KEY, operationList);
+        }
         return bundle;
     }
 
@@ -80,9 +84,11 @@ public class PhoneBatteryPresenter extends ValuePresenter<Boolean>{
         update();
     }
 
-    public void withAnyOperation(final List<BatteryUtil.Operation> operations){
+    public void withAnyOperation(final @Nullable List<BatteryUtil.Operation> operations){
         this.operationList.clear();
-        this.operationList.addAll(operations);
+        if(operations != null) {
+            this.operationList.addAll(operations);
+        }
     }
 
 }
