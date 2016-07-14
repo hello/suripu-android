@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,7 +27,6 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Styles;
@@ -43,7 +44,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
     private
     @Nullable
-    OnPairNewDeviceListener onPairNewDeviceListener;
+    OnDeviceInteractionListener onDeviceInteractionListener;
 
     public DevicesAdapter(@NonNull Activity activity) {
         super(new ArrayList<>());
@@ -53,8 +54,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
 
-    public void setOnPairNewDeviceListener(@Nullable OnPairNewDeviceListener onPairNewDeviceListener) {
-        this.onPairNewDeviceListener = onPairNewDeviceListener;
+    public void setOnDeviceInteractionListener(@Nullable final OnDeviceInteractionListener onDeviceInteractionListener) {
+        this.onDeviceInteractionListener = onDeviceInteractionListener;
     }
 
     public void bindDevices(@NonNull Devices devices) {
@@ -80,7 +81,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         final BaseDevice item = getItem(position);
         if (item instanceof PlaceholderDevice) {
             return TYPE_PLACEHOLDER;
@@ -94,7 +95,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
             case TYPE_PLACEHOLDER: {
                 final View view = inflater.inflate(R.layout.item_device_placeholder, parent, false);
@@ -115,38 +116,39 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         holder.bind(position);
     }
 
     @Override
-    public void onClick(View view) {
-        if (onPairNewDeviceListener != null) {
+    public void onClick(final View view) {
+        if (onDeviceInteractionListener != null) {
             final PlaceholderDevice.Type type = (PlaceholderDevice.Type) view.getTag();
-            onPairNewDeviceListener.onPairNewDevice(type);
+            onDeviceInteractionListener.onPairNewDevice(type);
         }
     }
 
 
     abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         final TextView title;
-
-        BaseViewHolder(@NonNull View view) {
+        final Context context;
+        BaseViewHolder(@NonNull final View view) {
             super(view);
 
             this.title = (TextView) view.findViewById(R.id.item_device_name);
+            this.context = view.getContext();
         }
 
         abstract boolean wantsChevron();
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             if (wantsChevron()) {
                 @SuppressWarnings("ConstantConditions")
                 final Drawable chevron = ResourcesCompat.getDrawable(resources,
                                                                      R.drawable.disclosure_chevron,
                                                                      null).mutate();
-                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
+                Drawables.setTintColor(chevron, ContextCompat.getColor(context, R.color.light_accent));
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
             } else {
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
@@ -161,7 +163,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status2;
         final TextView status2Label;
 
-        SenseViewHolder(@NonNull View view) {
+        SenseViewHolder(@NonNull final View view) {
             super(view);
 
             this.lastSeen = (TextView) view.findViewById(R.id.item_device_last_seen);
@@ -179,16 +181,16 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
 
             final SenseDevice device = (SenseDevice) getItem(position);
             title.setText(R.string.device_sense);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.text_dark));
             }
 
             status1Label.setText(R.string.label_wifi);
@@ -204,7 +206,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     status1.setText(networkName);
                 }
                 if (wiFiInfo.getSignalStrength() != null) {
-                    @DrawableRes int iconRes = wiFiInfo.getSignalStrength().icon;
+                    @DrawableRes final int iconRes = wiFiInfo.getSignalStrength().icon;
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
                 } else {
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
@@ -228,7 +230,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status3Label;
         final Button actionButton;
 
-        SleepPillViewHolder(@NonNull View view) {
+        SleepPillViewHolder(@NonNull final View view) {
             super(view);
 
             this.lastSeen = (TextView) view.findViewById(R.id.item_device_last_seen);
@@ -245,7 +247,10 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
             Views.setTimeOffsetOnClickListener(view, this);
             Views.setTimeOffsetOnClickListener(actionButton, v -> {
-                UserSupport.showUpdatePill(activity);
+                final int position = getAdapterPosition();
+                if(onDeviceInteractionListener != null && position != RecyclerView.NO_POSITION) {
+                    onDeviceInteractionListener.onUpdateDevice(getItem(position));
+                }
             });
             status2Label.setOnTouchListener((v, event) -> {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -270,9 +275,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             title.setText(R.string.device_pill);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.text_dark));
             }
 
             status1Label.setText(R.string.label_battery_level);
@@ -301,10 +306,13 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status3Label.setText(R.string.label_firmware_version);
             status3.setText(device.firmwareVersion);
 
-            if(device.shouldUpdate()){
-                status3.setTextColor(ContextCompat.getColor(activity, R.color.warning));
+            if(device.shouldUpdateOverride()){
+                status3.setTextColor(ContextCompat.getColor(context, R.color.warning));
                 actionButton.setText(R.string.action_update);
                 actionButton.setVisibility(View.VISIBLE);
+            } else {
+                status3.setTextColor(ContextCompat.getColor(context, R.color.standard));
+                actionButton.setVisibility(View.GONE);
             }
         }
     }
@@ -313,7 +321,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView message;
         final Button actionButton;
 
-        PlaceholderViewHolder(@NonNull View view) {
+        PlaceholderViewHolder(@NonNull final View view) {
             super(view);
 
             this.message = (TextView) view.findViewById(R.id.item_device_placeholder_message);
@@ -326,7 +334,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
 
             final PlaceholderDevice device = (PlaceholderDevice) getItem(position);
@@ -356,7 +364,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
 
-    public interface OnPairNewDeviceListener {
+    public interface OnDeviceInteractionListener {
         void onPairNewDevice(@NonNull PlaceholderDevice.Type type);
+        void onUpdateDevice(@NonNull BaseDevice device);
     }
 }

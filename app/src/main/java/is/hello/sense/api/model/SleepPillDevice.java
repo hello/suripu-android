@@ -22,6 +22,8 @@ public class SleepPillDevice extends BaseDevice {
     @SerializedName("firmware_update_url")
     public final String firmwareUpdateUrl;
 
+    private boolean shouldUpdateOverride;
+
 
     public SleepPillDevice(final State state,
                            final Color color,
@@ -34,10 +36,18 @@ public class SleepPillDevice extends BaseDevice {
         this.color = color;
         this.batteryLevel = batteryLevel;
         this.firmwareUpdateUrl = ""; //Todo update with real url if available
+        this.shouldUpdateOverride = true;
     }
 
     public boolean shouldUpdate() {
         return true || firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
+    }
+    public boolean shouldUpdateOverride(){
+        return shouldUpdateOverride;
+    }
+    //todo remove when no longer need to suppress on client side
+    public void setShouldUpdateOverride(final boolean override){
+        this.shouldUpdateOverride = override;
     }
 
     public boolean hasLowBattery(){
