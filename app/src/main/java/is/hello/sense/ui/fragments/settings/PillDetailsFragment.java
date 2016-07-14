@@ -17,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -31,7 +32,6 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     private static final int REQUEST_CODE_ADVANCED = 0xAd;
 
     private static final int OPTION_ID_REPLACE_PILL = 0;
-    private static final int REQUEST_CODE_PILL_UPDATE = 12;
 
     @Inject DevicesPresenter devicesPresenter;
     @Inject
@@ -107,7 +107,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
                     break;
                 }
             }
-        } else if(requestCode == REQUEST_CODE_PILL_UPDATE && resultCode == Activity.RESULT_OK){
+        } else if(requestCode == PillUpdateActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK){
             if(!shouldShowUpdateFirmwareAction()){
                 clearAction(0);
             }
@@ -120,7 +120,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     //region Pill Actions
 
     public void updateFirmware(){
-        UserSupport.showUpdatePill(getActivity());
+        UserSupport.showUpdatePill(this);
     }
 
     public void replaceDevice() {

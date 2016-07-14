@@ -18,6 +18,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.PersistentPreferencesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
@@ -34,6 +35,7 @@ import is.hello.sense.util.SessionLogger;
 public class DebugActivity extends InjectionActivity {
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;
+    @Inject PersistentPreferencesPresenter persistentPreferences;
     @Inject LocalUsageTracker localUsageTracker;
     @Inject ApiEndpoint apiEndpoint;
 
@@ -77,6 +79,7 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
+        adapter.add(new DetailItem("Forget persistent preferences", this::clearPersistentPreferences));
 
         try {
             final Class<?> activityClass = Class.forName("is.hello.sense.debug.WelcomeDialogsActivity");
@@ -164,6 +167,13 @@ public class DebugActivity extends InjectionActivity {
         localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         Toast.makeText(getApplicationContext(), "Amazon Review prompt re-enabled", Toast.LENGTH_SHORT).show();
     }
+
+    public void clearPersistentPreferences() {
+        persistentPreferences.clear();
+        Toast.makeText(getApplicationContext(), "Forgot persistent preferences", Toast.LENGTH_SHORT).show();
+    }
+
+
 
     public void simulatePicassoLowMemory() {
         SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);

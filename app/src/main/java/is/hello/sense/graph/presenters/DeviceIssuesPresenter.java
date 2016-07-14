@@ -25,6 +25,7 @@ import rx.Observable;
 public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPresenter.Issue> {
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
+    @Inject PersistentPreferencesPresenter persistentPreferences;
 
     public final PresenterSubject<Issue> topIssue = this.subject;
 
@@ -102,14 +103,6 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         }
     }
 
-    private @Nullable DateTime getLastPillUpdateDateTime(final String deviceId) {
-        if(preferences.contains(PreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId)){
-            return new DateTime(preferences.getLong(PreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId, 0));
-        } else{
-            return null;
-        }
-    }
-
     @VisibleForTesting
     boolean shouldReportLowBattery() {
         final DateTime lastShown = getSystemAlertLastShown();
@@ -132,15 +125,12 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     }
 
     public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
-        final DateTime lastUpdated = getLastPillUpdateDateTime(deviceId);
+        final DateTime lastUpdated = persistentPreferences.getLastPillUpdateDateTime(deviceId);
         return lastUpdated == null || Hours.hoursBetween(lastUpdated, DateTime.now()).isGreaterThan(Hours.ONE);
     }
 
     public void updateLastUpdatedDevice(@NonNull final String deviceId){
-        preferences.edit()
-                .putLong(PreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId,
-                         DateTimeUtils.currentTimeMillis())
-                .apply();
+        persistentPreferences.updateLastUpdatedDevice(deviceId);
     }
 
     public void updateLastShown(@NonNull final Issue issue){

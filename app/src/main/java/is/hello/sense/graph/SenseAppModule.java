@@ -12,6 +12,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
+import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -149,5 +150,9 @@ public class SenseAppModule {
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext);
+    }
+
+    @Provides @PersistentSharedPreferences SharedPreferences providePersistentSharedPreferences(@NonNull Context context){
+        return context.getSharedPreferences("PersistentPreferences",Context.MODE_PRIVATE);
     }
 }

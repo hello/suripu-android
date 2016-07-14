@@ -4,19 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 
 import org.joda.time.LocalDate;
-import org.joda.time.format.ISODateTimeFormat;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,11 +21,8 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.Subscription;
-import rx.functions.Func2;
-import rx.subscriptions.Subscriptions;
 
-@Singleton public class PreferencesPresenter extends Presenter {
+@Singleton public class PreferencesPresenter extends BasePreferencesPresenter {
     public static final String SCHEMA_VERSION = "_schema_version";
     public static final int SCHEMA_VERSION_1_0 = 0;
     public static final int SCHEMA_VERSION_1_1 = 1;
@@ -68,30 +57,15 @@ import rx.subscriptions.Subscriptions;
     public static final String PILL_MISSING_ALERT_LAST_SHOWN = "pill_missing_alert_last_shown";
     public static final String PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN = "pill_firmware_update_alert_last_shown";
 
-    //To make key unique must append device id
-    public static final String FIRMWARE_UPDATE_LAST_COMPLETED = "firmware_update_last_completed_with_device_id_";
-
-
-    private final Context context;
-    private final SharedPreferences sharedPreferences;
-
-    /**
-     * SharedPreferences only keeps a weak reference to its OnSharedPreferenceChangeListener,
-     * so we have to keep a strong reference to them somewhere if we want updates.
-     */
-    private final Set<OnSharedPreferenceChangeListener> strongListeners = Collections.synchronizedSet(new HashSet<>());
-
     public @Inject PreferencesPresenter(@NonNull Context context,
                                         @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
-        this.context = context;
-        this.sharedPreferences = sharedPreferences;
+        super(context, sharedPreferences);
 
         migrateIfNeeded();
 
         Observable<Intent> logOut = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOut.subscribe(ignored -> clear(), Functions.LOG_ERROR);
     }
-
 
     //region Schema Migration
 
@@ -119,125 +93,6 @@ import rx.subscriptions.Subscriptions;
     }
 
     //endregion
-
-    
-    //region Editing
-
-    public SharedPreferences.Editor edit() {
-        return sharedPreferences.edit();
-    }
-
-    public void putLocalDate(@NonNull String key, @Nullable LocalDate localDate) {
-        final SharedPreferences.Editor editor = edit();
-        if (localDate != null) {
-            editor.putString(key, localDate.toString(ISODateTimeFormat.date()));
-        } else {
-            editor.remove(key);
-        }
-        editor.apply();
-    }
-
-    public void clear() {
-        logEvent("Clearing user preferences.");
-
-        edit().clear()
-              .apply();
-    }
-
-    //endregion
-
-
-    //region Instantaneous Values
-
-    public boolean contains(String key) {
-        return sharedPreferences.contains(key);
-    }
-
-    public boolean getBoolean(String key, boolean defaultValue) {
-        return sharedPreferences.getBoolean(key, defaultValue);
-    }
-
-    public int getInt(String key, int defaultValue) {
-        return sharedPreferences.getInt(key, defaultValue);
-    }
-
-    public long getLong(String key, long defValue) {
-        return sharedPreferences.getLong(key, defValue);
-    }
-
-    public String getString(String key, String defaultValue) {
-        return sharedPreferences.getString(key, defaultValue);
-    }
-
-    public LocalDate getLocalDate(String key) {
-        final String timestamp = sharedPreferences.getString(key, null);
-        if (TextUtils.isEmpty(timestamp)) {
-            return null;
-        } else {
-            return LocalDate.parse(timestamp, ISODateTimeFormat.date());
-        }
-    }
-
-    //endregion
-
-
-    //region Observable Values
-
-    private <T> Observable<T> observableValue(@NonNull String key, @Nullable T defaultValue, Func2<String, T, T> producer) {
-        return Observable.create(subscriber -> {
-            OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
-                if (changedKey.equals(key)) {
-                    subscriber.onNext(producer.call(key, defaultValue));
-                }
-            };
-
-            Subscription subscription = Subscriptions.create(() -> {
-                sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
-                strongListeners.remove(changeListener);
-            });
-            subscriber.add(subscription);
-
-            sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
-            strongListeners.add(changeListener);
-            subscriber.onNext(producer.call(key, defaultValue));
-        });
-    }
-
-    public Observable<String> observeChangesOn(@NonNull String... keys) {
-        return Observable.create(subscriber -> {
-            OnSharedPreferenceChangeListener changeListener = (prefs, changedKey) -> {
-                for (String key : keys) {
-                    if (key.equals(changedKey)) {
-                        subscriber.onNext(changedKey);
-                    }
-                }
-            };
-
-            Subscription subscription = Subscriptions.create(() -> {
-                sharedPreferences.unregisterOnSharedPreferenceChangeListener(changeListener);
-                strongListeners.remove(changeListener);
-            });
-            subscriber.add(subscription);
-
-            sharedPreferences.registerOnSharedPreferenceChangeListener(changeListener);
-            strongListeners.add(changeListener);
-        });
-    }
-
-    public Observable<String> observableString(@NonNull String key, @Nullable String defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getString);
-    }
-
-    public Observable<Boolean> observableBoolean(@NonNull String key, boolean defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getBoolean);
-    }
-
-    public Observable<Integer> observableInteger(@NonNull String key, int defaultValue) {
-        return observableValue(key, defaultValue, sharedPreferences::getInt);
-    }
-
-    //endregion
-
 
     //region Wrappers
 

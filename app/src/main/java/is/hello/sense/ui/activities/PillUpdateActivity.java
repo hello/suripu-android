@@ -8,11 +8,8 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
-import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -32,13 +29,11 @@ implements FragmentNavigation{
     public static final int FLOW_UPDATE_PILL_SCREEN = 5;
     public static final int FLOW_FINISHED = 6;
     public  static final int FLOW_BLUETOOTH_CHECK = 7;
+    public static final int REQUEST_CODE = 0xfeed;
+    public static final String EXTRA_DEVICE_ID = "device_id_extra";
     private FragmentNavigationDelegate navigationDelegate;
     @Inject
-    BluetoothStack bluetoothStack;
-    @Inject
     DeviceIssuesPresenter deviceIssuesPresenter;
-    @Inject
-    DevicesPresenter devicesPresenter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -109,8 +104,9 @@ implements FragmentNavigation{
                break;
            case FLOW_FINISHED:
                //Todo add fade out transition
-               updatePreferences();
+               updatePreferences(result);
                Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
+               setResult(RESULT_OK);
                finish();
                break;
            default:
@@ -155,12 +151,10 @@ implements FragmentNavigation{
         pushFragment(UpdateReadyPillFragment.newInstance(), null, false);
     }
 
-    private void updatePreferences() {
-        //todo update so it gets device id of actual updated device.
-        final SleepPillDevice device = devicesPresenter.devices.getValue() != null ?
-                devicesPresenter.devices.getValue().getSleepPill() : null;
-        if(device != null) {
-            deviceIssuesPresenter.updateLastUpdatedDevice(device.deviceId);
+    private void updatePreferences(@NonNull final Intent intent) {
+        final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
+        if(deviceId != null) {
+            deviceIssuesPresenter.updateLastUpdatedDevice(deviceId);
         }
     }
 
