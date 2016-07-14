@@ -6,10 +6,9 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.support.annotation.NonNull;
 
-import is.hello.commonsense.util.StringRef;
+import java.io.Serializable;
+
 import is.hello.sense.BuildConfig;
-import is.hello.sense.R;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 /**
  * Only fetches current battery levels on creation. To refresh values use {@link this#refresh(Context)}
@@ -18,20 +17,13 @@ public class BatteryUtil {
 
     private Intent batteryStatus;
 
-    public static ErrorDialogFragment getErrorDialog(){
-        return new ErrorDialogFragment.Builder()
-                .withTitle(R.string.error_phone_battery_low_title)
-                .withMessage(StringRef.from(R.string.error_phone_battery_low_message))
-                .build();
-    }
-
     public BatteryUtil(@NonNull final Context context){
        refresh(context);
     }
 
     public boolean canPerformOperation(@NonNull final Operation operation){
         return operation.minBatteryPercentage <= getBatteryPercentage()
-                && (!operation.requiresCharging() || isPluggedInAndCharging());
+                && (!operation.requiresCharging || isPluggedInAndCharging());
     }
 
     public boolean isPluggedInAndCharging(){
@@ -52,17 +44,9 @@ public class BatteryUtil {
         this.batteryStatus = context.registerReceiver(null, filter);
     }
 
-    public static class Operation {
+    public static class Operation implements Serializable{
         final double minBatteryPercentage;
         final boolean requiresCharging;
-
-        public static Operation pillUpdateOperationNoCharge() {
-            return new Operation(0.20, false);
-        }
-
-        public static Operation pillUpdateOperationWithCharge(){
-            return new Operation(0.15, true);
-        }
 
         public Operation(){
             this(0, false);
@@ -80,10 +64,6 @@ public class BatteryUtil {
                     throw new NumberFormatException("minBatteryPercentage must be between 0 - 1");
                 }
             }
-        }
-
-        public boolean requiresCharging() {
-            return requiresCharging;
         }
     }
 }

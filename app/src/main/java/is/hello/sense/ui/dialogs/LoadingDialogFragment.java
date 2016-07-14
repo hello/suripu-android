@@ -28,6 +28,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
 
     private static final long DURATION_DONE_MESSAGE = 2 * 1000;
+    private static final long DURATION_DEFAULT = 1000;
 
     private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_FLAGS = LoadingDialogFragment.class.getName() + ".ARG_FLAGS";
@@ -56,49 +57,49 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     //region Shortcuts
 
-    public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm,
-                                                      @Nullable String title,
-                                                      int flags) {
-        LoadingDialogFragment preexistingDialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
+    public static @NonNull LoadingDialogFragment show(@NonNull final FragmentManager fm,
+                                                      @Nullable final String title,
+                                                      final int flags) {
+        final LoadingDialogFragment preexistingDialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (preexistingDialog != null) {
             preexistingDialog.dismiss();
         }
 
-        LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, flags);
+        final LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, flags);
         dialog.show(fm, TAG);
 
         return dialog;
     }
 
-    public static @NonNull LoadingDialogFragment show(@NonNull FragmentManager fm) {
+    public static @NonNull LoadingDialogFragment show(@NonNull final FragmentManager fm) {
         return show(fm, null, DEFAULTS);
     }
 
-    public static void close(@NonNull FragmentManager fm) {
-        LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
+    public static void close(@NonNull final FragmentManager fm) {
+        final LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog != null) {
             dialog.dismissSafely();
         }
     }
 
-    public static void closeWithOnComplete(@NonNull FragmentManager fm, @Nullable Runnable onCompletion){
+    public static void closeWithOnComplete(@NonNull final FragmentManager fm, @Nullable final Runnable onCompletion){
         closeWithMessageTransition(fm, onCompletion, -1);
     }
 
-    public static void closeWithDoneTransition(@NonNull FragmentManager fm, @Nullable Runnable onCompletion) {
+    public static void closeWithDoneTransition(@NonNull final FragmentManager fm, @Nullable final Runnable onCompletion) {
         closeWithMessageTransition(fm, onCompletion, R.string.action_done);
     }
 
     public static void closeWithMessageTransition(@NonNull final FragmentManager fm,
                                                   @Nullable final Runnable onCompletion,
                                                   @StringRes final int messageRes){
-        LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
+        final LoadingDialogFragment dialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (dialog != null) {
             if(messageRes != -1) {
                 dialog.setDismissMessage(messageRes);
                 dialog.dismissWithDoneTransition(onCompletion);
             } else{
-                dialog.dismissWithOnComplete(onCompletion,1000);
+                dialog.dismissWithOnComplete(onCompletion,DURATION_DEFAULT);
             }
         } else if (onCompletion != null) {
             onCompletion.run();
@@ -110,10 +111,10 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     //region Lifecycle
 
-    public static LoadingDialogFragment newInstance(@Nullable String title, @Config int flags) {
-        LoadingDialogFragment fragment = new LoadingDialogFragment();
+    public static LoadingDialogFragment newInstance(@Nullable final String title, @Config final int flags) {
+        final LoadingDialogFragment fragment = new LoadingDialogFragment();
 
-        Bundle arguments = new Bundle();
+        final Bundle arguments = new Bundle();
         if (!TextUtils.isEmpty(title)) {
             arguments.putString(ARG_TITLE, title);
         }
@@ -125,14 +126,14 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setCancelable(false);
     }
 
     @Override
-    public @NonNull Dialog onCreateDialog(Bundle savedInstanceState) {
+    public @NonNull Dialog onCreateDialog(final Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_Loading);
 
         dialog.setContentView(R.layout.fragment_dialog_loading);
@@ -143,10 +144,10 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
         this.checkMark = (ImageView) dialog.findViewById(R.id.fragment_dialog_loading_check_mark);
 
         if (getArguments() != null) {
-            Bundle arguments = getArguments();
-            View root = dialog.findViewById(R.id.fragment_dialog_loading_container);
+            final Bundle arguments = getArguments();
+            final View root = dialog.findViewById(R.id.fragment_dialog_loading_container);
 
-            @Config int flags = arguments.getInt(ARG_FLAGS, DEFAULTS);
+            @Config final int flags = arguments.getInt(ARG_FLAGS, DEFAULTS);
 
             if ((flags & OPAQUE_BACKGROUND) == OPAQUE_BACKGROUND) {
                 root.setBackgroundColor(getResources().getColor(R.color.background));
@@ -154,9 +155,9 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
             titleText.setText(arguments.getString(ARG_TITLE));
 
-            boolean lockOrientation = getArguments().getBoolean(ARG_LOCK_ORIENTATION, false);
+            final boolean lockOrientation = getArguments().getBoolean(ARG_LOCK_ORIENTATION, false);
             if (lockOrientation) {
-                Activity activity = getActivity();
+                final Activity activity = getActivity();
                 oldOrientation = activity.getRequestedOrientation();
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
             }
@@ -179,14 +180,14 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     //region Attributes
 
-    public void setTitle(@Nullable String title) {
+    public void setTitle(@Nullable final String title) {
         getArguments().putString(ARG_TITLE, title);
         if (titleText != null) {
             titleText.setText(title);
         }
     }
 
-    public void setDismissMessage(@StringRes int messageRes) {
+    public void setDismissMessage(@StringRes final int messageRes) {
         getArguments().putInt(ARG_DISMISS_MSG, messageRes);
     }
 
@@ -216,7 +217,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
         }
     }
 
-    public void dismissWithDoneTransition(@Nullable Runnable onCompletion) {
+    public void dismissWithDoneTransition(@Nullable final Runnable onCompletion) {
         if (titleText != null) {
             animatorFor(activityIndicator)
                     .withDuration(Anime.DURATION_FAST)
@@ -227,8 +228,9 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                     .withDuration(Anime.DURATION_FAST)
                     .fadeOut(View.INVISIBLE)
                     .addOnAnimationCompleted(finished -> {
-                        if (!finished)
+                        if (!finished) {
                             return;
+                        }
 
                         animatorFor(checkMark)
                                 .addOnAnimationWillStart(animator -> {

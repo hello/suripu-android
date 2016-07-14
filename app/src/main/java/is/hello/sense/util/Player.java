@@ -495,7 +495,7 @@ public final class Player implements MediaPlayer.OnPreparedListener,
                     return StringRef.from("The sound is malformed");
 
                 case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                    return StringRef.from("The sound cannot be played on your phone");
+                    return StringRef.from("The sound cannot be played on your enoughBattery");
 
                 case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
                     return StringRef.from("Player timed out");

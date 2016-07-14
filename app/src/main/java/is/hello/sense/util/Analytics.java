@@ -665,7 +665,7 @@ public class Analytics {
     public interface PillUpdate {
         String EVENT_START = "Pill Update Start";
         String EVENT_OTA_START = "Pill Update OTA Start";
-        String EVENT_OTA_COMPLETE = "Pilll Update Complete";
+        String EVENT_OTA_COMPLETE = "Pill Update Complete";
 
         interface Error {
             String PHONE_BATTERY_LOW = "Pill Update Phone Battery Low";
