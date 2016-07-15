@@ -11,6 +11,9 @@ public class AnimatorSetHandler extends Handler {
     private final long callbackDelay;
     private final Runnable callback;
 
+    /**
+     * @param animatorSet should only be used when duration is set
+     */
     public AnimatorSetHandler(@NonNull final AnimatorSet animatorSet){
         this(animatorSet.getDuration() + animatorSet.getStartDelay(), animatorSet);
     }

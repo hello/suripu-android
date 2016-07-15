@@ -21,6 +21,7 @@ import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
@@ -34,6 +35,8 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     private static final String ARG_NEXT_SCREEN_ID = UpdateIntroPillFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
 
     private Button primaryButton;
+
+    private ViewAnimator viewAnimator;
 
     public static UpdateIntroPillFragment newInstance(final int nextScreenId) {
         final UpdateIntroPillFragment fragment = new UpdateIntroPillFragment();
@@ -53,16 +56,20 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         addPresenter(devicesPresenter);
         addPresenter(phoneBatteryPresenter);
         setRetainInstance(true);
+
+        this.viewAnimator = new ViewAnimator();
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
-        final View view = new OnboardingSimpleStepView(this, inflater)
+        final View animatedView = viewAnimator.onCreateView(inflater, container, R.layout.pill_ota_view, R.id.blue_box_view);
+
+        final ViewGroup view = new OnboardingSimpleStepView(this, inflater)
+                .setAnimatedView(animatedView)
                 .setHeadingText(R.string.title_update_sleep_pill)
                 .setSubheadingText(R.string.info_update_sleep_pill)
-                .setDiagramImage(R.drawable.sleep_pill_ota)
                 .setPrimaryOnClickListener(this::onPrimaryButtonClick)
                 .setSecondaryOnClickListener(this::onCancel)
                 .setSecondaryButtonText(R.string.action_cancel)
@@ -79,6 +86,28 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribeDevice();
+        viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewAnimator.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewAnimator.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        primaryButton.setOnClickListener(null);
+        primaryButton = null;
+        viewAnimator.onDestroyView();
+        viewAnimator = null;
     }
 
     @Override
