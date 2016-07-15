@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -15,12 +17,14 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BatteryUtil;
 
-public class PillHardwareFragment extends InjectionFragment {
+public abstract class PillHardwareFragment extends InjectionFragment {
 
     @Inject
     DevicesPresenter devicesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
+
+    private LocationPermission locationPermission;
 
     public static BatteryUtil.Operation pillUpdateOperationNoCharge() {
         return new BatteryUtil.Operation(0.20, false);
@@ -29,6 +33,38 @@ public class PillHardwareFragment extends InjectionFragment {
     public static BatteryUtil.Operation pillUpdateOperationWithCharge(){
         return new BatteryUtil.Operation(0, true);
     }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        locationPermission = new LocationPermission(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        locationPermission = null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull  final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)){
+            onLocationPermissionGranted(true);
+        } else {
+            locationPermission.showEnableInstructionsDialog();
+        }
+    }
+
+    protected void requestLocationPermission() {
+        locationPermission.requestPermissionWithDialog();
+    }
+
+    protected boolean isLocationPermissionGranted(){
+        return locationPermission.isGranted();
+    }
+
+    abstract void onLocationPermissionGranted(final boolean isGranted);
 
     protected void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
