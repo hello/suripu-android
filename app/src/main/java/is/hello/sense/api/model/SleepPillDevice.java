@@ -40,7 +40,7 @@ public class SleepPillDevice extends BaseDevice {
     }
 
     public boolean shouldUpdate() {
-        return true || firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
+        return firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
     }
     public boolean shouldUpdateOverride(){
         return shouldUpdateOverride;

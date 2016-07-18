@@ -6,6 +6,8 @@ import org.joda.time.LocalDate;
 public final class Constants {
     public static final String UPDATE_URL = "https://hello.is/app";
 
+    public static final String PERSISTENT_PREFS = "persistent_prefs";
+
     public static final String INTERNAL_PREFS = "internal_prefs";
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM = "underside_current_item";
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";

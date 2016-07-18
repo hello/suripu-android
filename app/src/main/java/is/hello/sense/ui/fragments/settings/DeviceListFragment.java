@@ -180,7 +180,7 @@ public class DeviceListFragment extends InjectionFragment
         final ArrayList<SleepPillDevice> updatePills = new ArrayList<>();
 
         for(final SleepPillDevice device : devices.sleepPills){
-            //will remove method once no longer needed to suppress on client side
+            //todo will remove method once no longer needed to suppress on client side
             device.setShouldUpdateOverride(device.shouldUpdate() && deviceIssuesPresenter.shouldShowUpdateFirmwareAction(device.deviceId));
             updatePills.add(device);
         }

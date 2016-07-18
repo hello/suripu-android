@@ -63,6 +63,7 @@ import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
@@ -153,6 +154,6 @@ public class SenseAppModule {
     }
 
     @Provides @PersistentSharedPreferences SharedPreferences providePersistentSharedPreferences(@NonNull Context context){
-        return context.getSharedPreferences("PersistentPreferences",Context.MODE_PRIVATE);
+        return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
     }
 }

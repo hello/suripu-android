@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -46,7 +45,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     @Nullable
     OnDeviceInteractionListener onDeviceInteractionListener;
 
-    public DevicesAdapter(@NonNull Activity activity) {
+    public DevicesAdapter(@NonNull final Activity activity) {
         super(new ArrayList<>());
         this.activity = activity;
         this.inflater = LayoutInflater.from(activity);
@@ -58,7 +57,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         this.onDeviceInteractionListener = onDeviceInteractionListener;
     }
 
-    public void bindDevices(@NonNull Devices devices) {
+    public void bindDevices(@NonNull final Devices devices) {
         BaseDevice sense = devices.getSense();
         BaseDevice sleepPill = devices.getSleepPill();
 
@@ -131,12 +130,10 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
     abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         final TextView title;
-        final Context context;
         BaseViewHolder(@NonNull final View view) {
             super(view);
 
             this.title = (TextView) view.findViewById(R.id.item_device_name);
-            this.context = view.getContext();
         }
 
         abstract boolean wantsChevron();
@@ -148,7 +145,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 final Drawable chevron = ResourcesCompat.getDrawable(resources,
                                                                      R.drawable.disclosure_chevron,
                                                                      null).mutate();
-                Drawables.setTintColor(chevron, ContextCompat.getColor(context, R.color.light_accent));
+                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
             } else {
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
@@ -188,9 +185,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             title.setText(R.string.device_sense);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
             }
 
             status1Label.setText(R.string.label_wifi);
@@ -275,9 +272,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             title.setText(R.string.device_pill);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(context, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
             }
 
             status1Label.setText(R.string.label_battery_level);
@@ -307,11 +304,11 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status3.setText(device.firmwareVersion);
 
             if(device.shouldUpdateOverride()){
-                status3.setTextColor(ContextCompat.getColor(context, R.color.warning));
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.warning));
                 actionButton.setText(R.string.action_update);
                 actionButton.setVisibility(View.VISIBLE);
             } else {
-                status3.setTextColor(ContextCompat.getColor(context, R.color.standard));
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.standard));
                 actionButton.setVisibility(View.GONE);
             }
         }

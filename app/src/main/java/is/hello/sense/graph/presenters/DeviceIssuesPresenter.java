@@ -121,7 +121,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
 
     boolean shouldReportPillUpdate() {
         final DateTime lastShown = getPillUpdateAlertLastShown();
-        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
+        return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.ONE);
     }
 
     public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
