@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.pill;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
@@ -24,7 +23,7 @@ public abstract class PillHardwareFragment extends InjectionFragment {
 
     private LoadingDialogFragment loadingDialogFragment;
 
-    private LocationPermission locationPermission;
+    private final LocationPermission locationPermission = new LocationPermission(this);
 
     public static BatteryUtil.Operation pillUpdateOperationNoCharge() {
         return new BatteryUtil.Operation(0.20, false);
@@ -32,18 +31,6 @@ public abstract class PillHardwareFragment extends InjectionFragment {
 
     public static BatteryUtil.Operation pillUpdateOperationWithCharge(){
         return new BatteryUtil.Operation(0, true);
-    }
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        locationPermission = new LocationPermission(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        locationPermission = null;
     }
 
     @Override
