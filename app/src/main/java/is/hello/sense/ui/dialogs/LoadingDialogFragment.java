@@ -28,7 +28,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
 
     private static final long DURATION_DONE_MESSAGE = 2 * 1000;
-    private static final long DURATION_DEFAULT = 1000;
+    public static final long DURATION_DEFAULT = 1000;
 
     private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
     private static final String ARG_FLAGS = LoadingDialogFragment.class.getName() + ".ARG_FLAGS";

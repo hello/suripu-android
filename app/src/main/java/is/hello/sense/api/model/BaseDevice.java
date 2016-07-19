@@ -89,6 +89,13 @@ public abstract class BaseDevice extends ApiResponse {
                 (getHoursSinceLastUpdated() >= MISSING_THRESHOLD_HRS));
     }
 
+    /**
+     * Returns whether or not device is considered to have low battery.
+     */
+    public boolean hasLowBattery(){
+        return state != null && state == State.LOW_BATTERY;
+    }
+
     @Override
     public String toString() {
         return "BaseDevice{" +

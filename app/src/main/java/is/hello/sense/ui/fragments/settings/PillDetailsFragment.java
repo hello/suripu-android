@@ -66,7 +66,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
 
-        if (device.state == SleepPillDevice.State.LOW_BATTERY) {
+        if (device.hasLowBattery()) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setTitle(StringRef.from(R.string.issue_title_low_battery))
                     .setMessage(StringRef.from(R.string.issue_message_low_battery))
@@ -87,7 +87,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     }
 
     private boolean shouldShowUpdateFirmwareAction() {
-        return device.shouldUpdate() && deviceIssuesPresenter.shouldShowUpdateFirmwareAction(device.deviceId);
+        return !device.hasLowBattery() && device.shouldUpdate() && deviceIssuesPresenter.shouldShowUpdateFirmwareAction(device.deviceId);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
             }
         } else if(requestCode == PillUpdateActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK){
             if(!shouldShowUpdateFirmwareAction()){
-                clearAction(0);
+                clearAction(0); //Index of Firmware Update Action
             }
         }
     }

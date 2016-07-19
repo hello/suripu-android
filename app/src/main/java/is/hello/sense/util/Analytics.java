@@ -669,7 +669,6 @@ public class Analytics {
 
         interface Error {
             String PHONE_BATTERY_LOW = "Pill Update Phone Battery Low";
-            String PILL_REPLACE_BATTERY = "Pill Update Replace Battery";
             String PILL_NOT_DETECTED = "Pill Update Pill Not Detected";
             String PILL_OTA_FAIL = "Pill Update OTA Failed";
         }
