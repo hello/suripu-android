@@ -22,10 +22,14 @@ public class ViewAnimator {
     public ViewAnimator() {
     }
 
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             @NonNull final ViewGroup container,
-                             @LayoutRes final int layoutRes,
-                             @IdRes final int animatedViewResId) {
+    public void setAnimatedView(@NonNull final View animatedView){
+        this.animatedView = animatedView;
+    }
+
+    public View inflateView(@NonNull final LayoutInflater inflater,
+                            @NonNull final ViewGroup container,
+                            @LayoutRes final int layoutRes,
+                            @IdRes final int animatedViewResId) {
         final View view = inflater.inflate(layoutRes, container, false);
         this.animatedView = view.findViewById(animatedViewResId);
 

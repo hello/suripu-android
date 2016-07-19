@@ -24,17 +24,16 @@ import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
-import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -42,61 +41,54 @@ public class UpdateReadyPillFragment extends HardwareFragment
 implements OnBackPressedInterceptor {
     private ProgressBar updateIndicator;
     private TextView activityStatus;
-    private DiagramVideoView diagram;
     private Button retryButton;
+    private Button skipButton;
+    private final ViewAnimator viewAnimator = new ViewAnimator();
 
     private boolean isUpdating = false;
     private SenseAlertDialog backPressedDialog;
+    private OnboardingToolbar toolbar;
 
 
     public static Fragment newInstance() {
         return new UpdateReadyPillFragment();
     }
 
-    public UpdateReadyPillFragment(){
-        //required empty public constructor
-        super();
-    }
-
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
-        final ProgressBar unusedProgressBar = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
-        unusedProgressBar.setVisibility(View.GONE);
-        this.updateIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_progress_determinate);
-        this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
-        this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
-        final TextView titleTextView = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_title);
-        final TextView infoTextView = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_subhead);
-        //skipping this is not an option currently so we don't keep reference to skip button
-        this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
 
-        updateIndicator.setVisibility(View.VISIBLE);
+        final View view = inflater.inflate(R.layout.fragment_pill_update, container, false);
+        this.updateIndicator = (ProgressBar) view.findViewById(R.id.fragment_update_pill_progress_determinate);
+        this.activityStatus = (TextView) view.findViewById(R.id.fragment_update_pill_status);
+        final TextView titleTextView = (TextView) view.findViewById(R.id.fragment_update_pill_title);
+        final TextView infoTextView = (TextView) view.findViewById(R.id.fragment_update_pill_subhead);
+        final View animatedView = view.findViewById(R.id.blue_box_view);
+
+        this.retryButton = (Button) view.findViewById(R.id.fragment_update_pill_retry);
+        this.skipButton = (Button) view.findViewById(R.id.fragment_update_pill_skip);
+
         activityStatus.setText(R.string.message_sleep_pill_updating);
 
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
 
-        diagram.destroy();
-        diagram.setPlaceholder(R.drawable.sleep_pill_ota);
-        diagram.invalidate();
+        Views.setTimeOffsetOnClickListener(retryButton, ignored -> updatePill());
+        Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipUpdatingPill());
 
-        Views.setSafeOnClickListener(retryButton, ignored -> updatePill());
+        viewAnimator.setAnimatedView(animatedView);
 
-        OnboardingToolbar.of(this, view)
+        this.toolbar = OnboardingToolbar.of(this, view)
                          .setWantsBackButton(false)
                          .setOnHelpClickListener(this::help);
 
-        if (BuildConfig.DEBUG) {
-            diagram.setOnLongClickListener(ignored -> {
-                skipUpdatingPill();
-                return true;
-            });
-            diagram.setBackgroundResource(R.drawable.selectable_dark);
-        }
-
         return view;
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
     }
 
     @Override
@@ -106,20 +98,28 @@ implements OnBackPressedInterceptor {
         if (!isUpdating) {
             updatePill();
         }
+        viewAnimator.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewAnimator.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (diagram != null) {
-            diagram.destroy();
-        }
 
         this.activityStatus = null;
-        this.diagram = null;
         this.retryButton.setOnClickListener(null);
         this.retryButton = null;
         this.backPressedDialog = null;
+
+        viewAnimator.onDestroyView();
+
+        toolbar.onDestroyView();
+        toolbar = null;
     }
 
     public void updatePill() {
@@ -142,6 +142,7 @@ implements OnBackPressedInterceptor {
             updateIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
             retryButton.setVisibility(View.VISIBLE);
+            skipButton.setVisibility(View.VISIBLE);
 
             //Todo update error checks
             final ErrorDialogFragment.Builder errorDialogBuilder =
@@ -177,6 +178,7 @@ implements OnBackPressedInterceptor {
         updateIndicator.setVisibility(View.VISIBLE);
         activityStatus.setVisibility(View.VISIBLE);
         retryButton.setVisibility(View.GONE);
+        skipButton.setVisibility(View.GONE);
     }
 
     private void onUpdating(){
@@ -234,18 +236,18 @@ implements OnBackPressedInterceptor {
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.OPAQUE_BACKGROUND);
             getFragmentManager().executePendingTransactions();
+
+            if(!success){
+                ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_CANCELED, null);
+                return;
+            }
+
             LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
-                stateSafeExecutor.execute(() -> {
-                    hardwarePresenter.clearPeripheral();
-                    if (success) {
-                        final String deviceId = "BF39B2A810B9813D"; //todo fix hardcoded
-                        final Intent intent = new Intent();
-                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, intent);
-                    } else {
-                        getActivity().finish();
-                    }
-                });
+                hardwarePresenter.clearPeripheral();
+                final String deviceId = "BF39B2A810B9813D"; //todo fix hardcoded
+                final Intent intent = new Intent();
+                intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, intent);
             }, R.string.message_sleep_pill_updated);
         });
     }

@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.pill;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -64,7 +63,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
-        final View animatedView = viewAnimator.onCreateView(inflater, container, R.layout.pill_ota_view, R.id.blue_box_view);
+        final View animatedView = viewAnimator.inflateView(inflater, container, R.layout.pill_ota_view, R.id.blue_box_view);
 
         final ViewGroup view = new OnboardingSimpleStepView(this, inflater)
                 .setAnimatedView(animatedView)
@@ -118,7 +117,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     public void onCancel(final View ignored) {
-        finishWithResult(Activity.RESULT_CANCELED, null);
+        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_CANCELED, null);
     }
 
     public void onPrimaryButtonClick(@NonNull final View ignored){

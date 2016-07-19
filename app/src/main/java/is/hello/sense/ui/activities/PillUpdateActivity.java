@@ -1,5 +1,4 @@
 package is.hello.sense.ui.activities;
-
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ implements FragmentNavigation{
     public static final int FLOW_UPDATE_PILL_SCREEN = 5;
     public static final int FLOW_FINISHED = 6;
     public  static final int FLOW_BLUETOOTH_CHECK = 7;
+    public static final int FLOW_CANCELED = 8;
     public static final int REQUEST_CODE = 0xfeed;
     public static final String EXTRA_DEVICE_ID = "device_id_extra";
     private FragmentNavigationDelegate navigationDelegate;
@@ -107,6 +107,10 @@ implements FragmentNavigation{
                updatePreferences(result);
                Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
                setResult(RESULT_OK);
+               finish();
+               break;
+           case FLOW_CANCELED:
+               setResult(RESULT_CANCELED, null);
                finish();
                break;
            default:
