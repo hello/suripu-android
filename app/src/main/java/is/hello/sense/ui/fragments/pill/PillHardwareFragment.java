@@ -10,7 +10,6 @@ import is.hello.sense.R;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
@@ -84,18 +83,6 @@ public abstract class PillHardwareFragment extends InjectionFragment {
     protected void hideBlockingActivity(){
         //for delay of 1000 millisecond
         LoadingDialogFragment.closeWithOnComplete(getFragmentManager(), null);
-    }
-
-    protected void presentPillBatteryError(){
-        final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_LOW_BATTERY.getUri().toString();
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                .withOperation("Check Pill Battery")
-                .withTitle(R.string.dialog_title_replace_sleep_pill_battery)
-                .withMessage(StringRef.from(R.string.dialog_message_replace_sleep_pill_battery))
-                .withAction(helpUriString, R.string.label_having_trouble)
-                .withContextInfo(Analytics.PillUpdate.Error.PILL_REPLACE_BATTERY)
-                .build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     protected void presentPhoneBatteryError(){

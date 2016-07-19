@@ -15,13 +15,13 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
-import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
@@ -112,7 +112,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Override
     void onLocationPermissionGranted(final boolean isGranted) {
         if(isGranted){
-            checkPillBattery();
+            checkPhoneBattery();
         }
     }
 
@@ -122,25 +122,15 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
 
     public void onPrimaryButtonClick(@NonNull final View ignored){
         if(isLocationPermissionGranted()){
-            checkPillBattery();
+            checkPhoneBattery();
         } else{
             requestLocationPermission();
         }
     }
 
     private void bindAndSubscribeDevice() {
-        //Todo locate or use default delays
         bindAndSubscribe(
-                devicesPresenter.devices.delay(1200, TimeUnit.MILLISECONDS)
-                                        .map(devices -> {
-                                            final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-                                            return sleepPillDevice != null && !sleepPillDevice.hasLowBattery();
-                                        })
-                , this::onPillCheckNext
-                , this::presentError);
-
-        bindAndSubscribe(
-                phoneBatteryPresenter.enoughBattery.delay(1200, TimeUnit.MILLISECONDS)
+                phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS)
                 , this::onPhoneCheckNext
                 , this::presentError);
     }
@@ -152,12 +142,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         } else{
             onCancel(null);
         }
-    }
-
-    private void checkPillBattery() {
-        showBlockingActivity(R.string.title_checking_pill_battery);
-        updateButtonUI(false, false); //don't want to let user accidentally trigger checks again
-        devicesPresenter.update();
     }
 
     private void checkPhoneBattery(){
@@ -179,17 +163,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
                     .withSupportLink()
                     .build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
-    }
-
-    private void onPillCheckNext(final boolean hasEnoughBattery){
-        stateSafeExecutor.execute( () -> {
-            if(hasEnoughBattery){
-                checkPhoneBattery();
-            } else{
-                hideBlockingActivity();
-                presentPillBatteryError();
-            }
         });
     }
 

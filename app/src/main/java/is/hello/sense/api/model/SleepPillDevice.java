@@ -35,8 +35,8 @@ public class SleepPillDevice extends BaseDevice {
 
         this.color = color;
         this.batteryLevel = batteryLevel;
-        this.firmwareUpdateUrl = ""; //Todo update with real url if available
-        this.shouldUpdateOverride = true;
+        this.firmwareUpdateUrl = "";
+        this.shouldUpdateOverride = false;
     }
 
     public boolean shouldUpdate() {
@@ -48,10 +48,6 @@ public class SleepPillDevice extends BaseDevice {
     //todo remove when no longer need to suppress on client side
     public void setShouldUpdateOverride(final boolean override){
         this.shouldUpdateOverride = override;
-    }
-
-    public boolean hasLowBattery(){
-        return batteryLevel <= 10; //Todo check with Jackson
     }
 
     @Override

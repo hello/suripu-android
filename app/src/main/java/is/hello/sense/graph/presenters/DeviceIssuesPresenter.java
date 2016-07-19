@@ -126,7 +126,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
 
     public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
         final DateTime lastUpdated = persistentPreferences.getLastPillUpdateDateTime(deviceId);
-        return lastUpdated == null || Hours.hoursBetween(lastUpdated, DateTime.now()).isGreaterThan(Hours.ONE);
+        return (lastUpdated == null || Hours.hoursBetween(lastUpdated, DateTime.now()).isGreaterThan(Hours.ONE));
     }
 
     public void updateLastUpdatedDevice(@NonNull final String deviceId){
