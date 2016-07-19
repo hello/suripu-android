@@ -1,6 +1,7 @@
 package is.hello.sense.ui.common;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import com.segment.analytics.Properties;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -184,8 +186,13 @@ public class UserSupport {
     }
 
     public static void showUpdatePill(@NonNull final Activity from) {
-        // TODO Start activity intent here to open updating your sleep pill screen
         Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
+        from.startActivityForResult(new Intent(from, PillUpdateActivity.class), PillUpdateActivity.REQUEST_CODE);
+    }
+
+    public static void showUpdatePill(@NonNull final Fragment from) {
+        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill() from fragment " + from.getClass().getName());
+        from.startActivityForResult(new Intent(from.getActivity(), PillUpdateActivity.class), PillUpdateActivity.REQUEST_CODE);
     }
 
     public enum DeviceIssue {

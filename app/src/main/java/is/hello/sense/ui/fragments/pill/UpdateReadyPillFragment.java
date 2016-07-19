@@ -238,7 +238,10 @@ implements OnBackPressedInterceptor {
                 stateSafeExecutor.execute(() -> {
                     hardwarePresenter.clearPeripheral();
                     if (success) {
-                        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, null);
+                        final String deviceId = "BF39B2A810B9813D"; //todo fix hardcoded
+                        final Intent intent = new Intent();
+                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, intent);
                     } else {
                         getActivity().finish();
                     }

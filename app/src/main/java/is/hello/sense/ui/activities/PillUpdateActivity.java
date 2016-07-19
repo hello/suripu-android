@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -26,7 +29,11 @@ implements FragmentNavigation{
     public static final int FLOW_UPDATE_PILL_SCREEN = 5;
     public static final int FLOW_FINISHED = 6;
     public  static final int FLOW_BLUETOOTH_CHECK = 7;
+    public static final int REQUEST_CODE = 0xfeed;
+    public static final String EXTRA_DEVICE_ID = "device_id_extra";
     private FragmentNavigationDelegate navigationDelegate;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -97,7 +104,9 @@ implements FragmentNavigation{
                break;
            case FLOW_FINISHED:
                //Todo add fade out transition
+               updatePreferences(result);
                Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
+               setResult(RESULT_OK);
                finish();
                break;
            default:
@@ -140,6 +149,13 @@ implements FragmentNavigation{
     public void showUpdateReadyPill(){
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_START, null);
         pushFragment(UpdateReadyPillFragment.newInstance(), null, false);
+    }
+
+    private void updatePreferences(@NonNull final Intent intent) {
+        final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
+        if(deviceId != null) {
+            deviceIssuesPresenter.updateLastUpdatedDevice(deviceId);
+        }
     }
 
     private void back(){

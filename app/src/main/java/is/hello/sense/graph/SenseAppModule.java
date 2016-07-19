@@ -12,6 +12,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
+import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -62,6 +63,7 @@ import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
@@ -149,5 +151,9 @@ public class SenseAppModule {
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext);
+    }
+
+    @Provides @PersistentSharedPreferences SharedPreferences providePersistentSharedPreferences(@NonNull Context context){
+        return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
     }
 }
