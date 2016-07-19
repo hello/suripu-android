@@ -81,12 +81,23 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         bindAndSubscribeDevice();
     }
 
+    @Override
+    void onLocationPermissionGranted(final boolean isGranted) {
+        if(isGranted){
+            checkPillBattery();
+        }
+    }
+
     public void onCancel(final View ignored) {
         finishWithResult(Activity.RESULT_CANCELED, null);
     }
 
     public void onPrimaryButtonClick(@NonNull final View ignored){
-        checkPillBattery();
+        if(isLocationPermissionGranted()){
+            checkPillBattery();
+        } else{
+            requestLocationPermission();
+        }
     }
 
     private void bindAndSubscribeDevice() {
