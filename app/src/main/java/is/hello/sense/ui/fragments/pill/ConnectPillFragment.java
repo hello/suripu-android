@@ -35,11 +35,6 @@ public class ConnectPillFragment extends HardwareFragment {
 
     private boolean isConnecting = false;
 
-    public ConnectPillFragment(){
-        //required empty public constructor
-        super();
-    }
-
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {

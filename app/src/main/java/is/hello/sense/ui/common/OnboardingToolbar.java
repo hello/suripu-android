@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,24 +35,31 @@ public class OnboardingToolbar {
     private @Nullable View.OnClickListener onHelpClickListener;
     private @Nullable View.OnLongClickListener onHelpLongClickListener;
 
-    public static OnboardingToolbar of(@NonNull Fragment fragment, @NonNull View view) {
+    public static OnboardingToolbar of(@NonNull final Fragment fragment, @NonNull final View view) {
         return new OnboardingToolbar(fragment, view.findViewById(R.id.sub_fragment_onboarding_toolbar));
     }
 
-    private OnboardingToolbar(@NonNull Fragment fragment, @NonNull View toolbarView) {
+    public void onDestroyView(){
+        backButton.setOnClickListener(null);
+        helpButton.setOnClickListener(null);
+        onHelpClickListener = null;
+        onHelpLongClickListener = null;
+    }
+
+    private OnboardingToolbar(@NonNull final Fragment fragment, @NonNull final View toolbarView) {
         this.fragment = fragment;
         this.toolbarView = (FrameLayout) toolbarView;
 
-        final Resources resources = fragment.getResources();
+        final Context context = fragment.getActivity();
         this.backButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
         final Drawable backIcon = backButton.getDrawable().mutate();
-        Drawables.setTintColor(backIcon, resources.getColor(R.color.light_accent));
+        Drawables.setTintColor(backIcon, ContextCompat.getColor(context, R.color.light_accent));
         backButton.setImageDrawable(backIcon);
         Views.setSafeOnClickListener(backButton, this::onBack);
 
         this.helpButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
         final Drawable helpIcon = helpButton.getDrawable().mutate();
-        Drawables.setTintColor(helpIcon, resources.getColor(R.color.light_accent));
+        Drawables.setTintColor(helpIcon, ContextCompat.getColor(context, R.color.light_accent));
         helpButton.setImageDrawable(helpIcon);
         Views.setSafeOnClickListener(helpButton, this::onHelp);
         helpButton.setOnLongClickListener(this::onHelpLongClick);
@@ -60,8 +68,7 @@ public class OnboardingToolbar {
         setWantsHelpButton(false);
     }
 
-
-    private void onBack(View view) {
+    private void onBack(final View view) {
         final Activity activity = fragment.getActivity();
         if (activity != null) {
             final View focusView = activity.getCurrentFocus();
@@ -77,13 +84,13 @@ public class OnboardingToolbar {
         }
     }
 
-    private void onHelp(View view) {
+    private void onHelp(final View view) {
         if (onHelpClickListener != null) {
             onHelpClickListener.onClick(view);
         }
     }
 
-    private boolean onHelpLongClick(View view) {
+    private boolean onHelpLongClick(final View view) {
         if (onHelpLongClickListener != null) {
             return onHelpLongClickListener.onLongClick(view);
         } else if (BuildConfig.DEBUG_SCREEN_ENABLED) {
@@ -104,7 +111,7 @@ public class OnboardingToolbar {
         return this;
     }
 
-    public OnboardingToolbar setWantsBackButton(boolean wantsBackButton) {
+    public OnboardingToolbar setWantsBackButton(final boolean wantsBackButton) {
         if (wantsBackButton) {
             backButton.setVisibility(View.VISIBLE);
         } else {
@@ -114,7 +121,7 @@ public class OnboardingToolbar {
         return this;
     }
 
-    public OnboardingToolbar setWantsHelpButton(boolean wantsHelpButton) {
+    public OnboardingToolbar setWantsHelpButton(final boolean wantsHelpButton) {
         if (wantsHelpButton) {
             helpButton.setVisibility(View.VISIBLE);
         } else {
@@ -124,21 +131,21 @@ public class OnboardingToolbar {
         return this;
     }
 
-    public OnboardingToolbar setOnHelpClickListener(@Nullable View.OnClickListener onHelpClickListener) {
+    public OnboardingToolbar setOnHelpClickListener(@Nullable final View.OnClickListener onHelpClickListener) {
         this.onHelpClickListener = onHelpClickListener;
         setWantsHelpButton(onHelpClickListener != null);
 
         return this;
     }
 
-    public OnboardingToolbar setOnHelpLongClickListener(@Nullable View.OnLongClickListener onHelpLongClickListener) {
+    public OnboardingToolbar setOnHelpLongClickListener(@Nullable final View.OnLongClickListener onHelpLongClickListener) {
         this.onHelpLongClickListener = onHelpLongClickListener;
         setWantsHelpButton(onHelpClickListener != null);
 
         return this;
     }
 
-    public OnboardingToolbar setCompact(boolean compact) {
+    public OnboardingToolbar setCompact(final boolean compact) {
         final Resources resources = toolbarView.getResources();
         if (compact) {
             toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height_compact);
@@ -150,7 +157,7 @@ public class OnboardingToolbar {
         return this;
     }
 
-    public OnboardingToolbar replaceHelpButton(@NonNull View view) {
+    public OnboardingToolbar replaceHelpButton(@NonNull final View view) {
         final FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                              ViewGroup.LayoutParams.MATCH_PARENT);
@@ -160,7 +167,7 @@ public class OnboardingToolbar {
         return this;
     }
 
-    public OnboardingToolbar setDark(boolean isDark) {
+    public OnboardingToolbar setDark(final boolean isDark) {
         final Resources resources = fragment.getResources();
         final @ColorInt int tintColor;
         final @ColorInt int backgroundColor;

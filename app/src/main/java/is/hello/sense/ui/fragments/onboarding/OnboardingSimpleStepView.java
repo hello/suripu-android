@@ -71,6 +71,14 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         if (diagramVideo != null) {
             diagramVideo.destroy();
         }
+
+        if(primaryButton.hasOnClickListeners()){
+            primaryButton.setOnClickListener(null);
+        }
+
+        if(secondaryButton.hasOnClickListeners()){
+            secondaryButton.setOnClickListener(null);
+        }
     }
 
     //endregion
@@ -293,6 +301,17 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         ensureDiagramVideo();
         diagramVideo.setDataSource(video);
 
+        return this;
+    }
+
+    public OnboardingSimpleStepView setAnimatedView(View animatedView) {
+        if(diagramVideo == null && diagramImage == null){
+            final LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                               LayoutParams.WRAP_CONTENT);
+            contents.addView(animatedView, contents.getChildCount() - 1, layoutParams);
+        } else{
+            throw new IllegalStateException("Cannot set animated view if diagram image or video is already added.");
+        }
         return this;
     }
 
