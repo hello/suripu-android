@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -24,7 +25,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
-public class UpdateIntroPillFragment extends PillHardwareFragment {
+public class UpdateIntroPillFragment extends PillHardwareFragment implements OnBackPressedInterceptor{
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
@@ -68,10 +69,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
     }
 
-    public void onPrimaryButtonClick(@NonNull final View ignored) {
-        checkPhoneBattery();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -90,6 +87,11 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         primaryButton.setOnClickListener(null);
         primaryButton = null;
         viewAnimator.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         viewAnimator = null;
     }
 
@@ -100,7 +102,12 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         }
     }
 
+    public void onPrimaryButtonClick(@NonNull final View ignored) {
+        checkPhoneBattery();
+    }
+
     private void bindAndSubscribeDevice() {
+        phoneBatteryPresenter.enoughBattery.forget();
         bindAndSubscribe(
                 phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS),
                 this::onPhoneCheckNext,
@@ -148,5 +155,11 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         } else {
             cancel(true);
         }
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
+        cancel(false);
+        return true;
     }
 }

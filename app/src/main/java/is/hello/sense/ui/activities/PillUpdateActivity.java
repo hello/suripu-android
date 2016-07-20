@@ -75,9 +75,6 @@ public class PillUpdateActivity extends InjectionActivity
             if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
                 return;
             }
-        } else if (topFragment instanceof BluetoothFragment) {
-            showUpdatePillIntro();
-            return;
         }
 
         back();
@@ -104,6 +101,7 @@ public class PillUpdateActivity extends InjectionActivity
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
             } else {
+                setResult(RESULT_CANCELED, null);
                 finish();
             }
             return;
@@ -130,7 +128,7 @@ public class PillUpdateActivity extends InjectionActivity
     }
 
     public void showUpdatePillIntro() {
-        pushFragmentAllowingStateLoss(new UpdateIntroPillFragment(), null, false);
+        pushFragmentAllowingStateLoss(new UpdateIntroPillFragment(), null, true);
     }
 
     public void showConnectPillScreen() {

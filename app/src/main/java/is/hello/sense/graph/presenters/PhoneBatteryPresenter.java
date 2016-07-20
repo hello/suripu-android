@@ -39,14 +39,14 @@ public class PhoneBatteryPresenter extends ValuePresenter<Boolean>{
                     for(final BatteryUtil.Operation op : operationList){
                         if (batteryUtil.canPerformOperation(op)){
                             subscriber.onNext(true);
+                            subscriber.onCompleted();
                             return;
                         }
                     }
                     subscriber.onNext(false);
+                    subscriber.onCompleted();
                 } catch(final Exception e){
                     subscriber.onError(e);
-                } finally {
-                    subscriber.onCompleted();
                 }
         });
     }
