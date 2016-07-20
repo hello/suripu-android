@@ -33,6 +33,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SenseCache;
 
 /**
@@ -156,8 +157,10 @@ public class ConnectPillFragment extends PillHardwareFragment {
 
             if (e instanceof RssiException) {
                 title = R.string.error_pill_too_far;
+                Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_TOO_FAR, null);
             } else if (e instanceof PillNotFoundException) {
                 title = R.string.error_pill_not_found;
+                Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_NOT_DETECTED, null);
             } else if (e instanceof ApiException) {
                 title = R.string.network_activity_no_connectivity;
                 message = R.string.error_network_failure_pair_pill;

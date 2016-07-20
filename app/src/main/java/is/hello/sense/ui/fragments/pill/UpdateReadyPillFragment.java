@@ -18,8 +18,6 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
-import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
@@ -27,24 +25,21 @@ import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.ui.activities.PillUpdateActivity;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.widget.DiagramVideoView;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SenseCache;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class UpdateReadyPillFragment extends PillHardwareFragment
         implements OnBackPressedInterceptor, DfuProgressListener {
-    private static final String TAG = UpdateReadyPillFragment.class.getSimpleName();
 
     private ProgressBar updateIndicator;
     private TextView activityStatus;
@@ -171,8 +166,10 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
 
         if (e instanceof RssiException) {
+            Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_TOO_FAR, null);
             title = R.string.error_pill_too_far;
         } else if (e instanceof PillNotFoundException) {
+            Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_NOT_DETECTED, null);
             title = R.string.error_pill_not_found;
         } else if (e instanceof ApiException) {
             title = R.string.network_activity_no_connectivity;
@@ -304,6 +301,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onError(final String deviceAddress, final int error, final int errorType, final String message) {
         Log.d("DFU Listener", "onError: " + message + ". errorType: " + errorType + ". error: " + error);
+        Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_OTA_FAIL, null);
         presentError(new Throwable(message));
     }
 
