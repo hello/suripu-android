@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,10 @@ import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.bluetooth.PillDfuPresenter;
+import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
+import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -67,12 +71,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     @Override
-    protected String operationString() {
-        return null;
-    }
+    void onLocationPermissionGranted(final boolean isGranted) {
+        if (isGranted) {
+            updatePill();
 
-    @Override
-    void onLocationPermissionGranted(boolean isGranted) {
+        }
 
     }
 
@@ -99,13 +102,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipUpdatingPill());
-        Views.setSafeOnClickListener(retryButton, ignored -> {
-            retryButton.setVisibility(View.GONE);
-            activityStatus.setVisibility(View.VISIBLE);
-            updateIndicator.setVisibility(View.VISIBLE);
-            skipButton.setVisibility(View.GONE);
-            firmwareCache.update();
-        });
+        Views.setSafeOnClickListener(retryButton, ignored -> updatePill());
 
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
@@ -157,35 +154,42 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
 
-    public void presentError(final Throwable e) {
-        Log.e(TAG, "Error: " + e);
+    private void updatePill() {
+        retryButton.setVisibility(View.GONE);
+        activityStatus.setVisibility(View.VISIBLE);
+        updateIndicator.setVisibility(View.VISIBLE);
+        skipButton.setVisibility(View.GONE);
+        firmwareCache.update();
+    }
 
+    public void presentError(final Throwable e) {
         updateIndicator.setVisibility(View.GONE);
         activityStatus.setVisibility(View.GONE);
         retryButton.setVisibility(View.VISIBLE);
         skipButton.setVisibility(View.VISIBLE);
+        @StringRes int title = R.string.error_sleep_pill_title_update_fail;
+        @StringRes int message = R.string.error_sleep_pill_message_update_fail;
+        final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
+        errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
 
-        //Todo update error checks
-        final ErrorDialogFragment.Builder errorDialogBuilder =
-                new ErrorDialogFragment.Builder(e, getActivity());
-        errorDialogBuilder.withOperation("Update Pill");
-        if (e instanceof OperationTimeoutException ||
-                SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-            errorDialogBuilder
-                    .withTitle(R.string.error_sleep_pill_title_update_fail)
-                    .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_fail));
-        } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
-            errorDialogBuilder
-                    .withTitle(R.string.error_sleep_pill_title_update_fail)
-                    .withMessage(StringRef.from(R.string.error_sleep_pill_message_update_fail));
-            errorDialogBuilder.withSupportLink();
-        } else {
-            errorDialogBuilder.withTitle(R.string.action_turn_on_ble)
-                              .withMessage(StringRef.from(R.string.info_turn_on_bluetooth));
+        if (e instanceof RssiException) {
+            title = R.string.error_pill_too_far;
+        } else if (e instanceof PillNotFoundException) {
+            title = R.string.error_pill_not_found;
+        } else if (e instanceof ApiException) {
+            title = R.string.network_activity_no_connectivity;
+            message = R.string.error_network_failure_pair_pill;
+        } else if (!(e instanceof OperationTimeoutException)) {
+            title = R.string.action_turn_on_ble;
+            message = R.string.info_turn_on_bluetooth;
         }
-
-        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogBuilder
+                .withTitle(title)
+                .withMessage(StringRef.from(message))
+                .withAction(helpUriString, R.string.label_having_trouble)
+                .build()
+                .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     private void skipUpdatingPill() {
@@ -200,7 +204,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
                     stateSafeExecutor.execute(() -> {
                         if (success) {
-                            final String deviceId = pillDfuPresenter.sleepPill.getValue().getName(); //todo fix hardcoded
+                            final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
+                            pillDfuPresenter.reset();
                             final Intent intent = new Intent();
                             intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
                             getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, intent);

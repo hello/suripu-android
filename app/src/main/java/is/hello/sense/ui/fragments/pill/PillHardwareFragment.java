@@ -1,6 +1,8 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
@@ -26,19 +28,11 @@ public abstract class PillHardwareFragment extends InjectionFragment {
     DevicesPresenter devicesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
-
-    /**
-     * @return the name of the operation for the fragments error dialog.
-     */
-    @StringRes
-    abstract String operationString();
-
     private final LocationPermission locationPermission = new LocationPermission(this);
 
     public static BatteryUtil.Operation pillUpdateOperationNoCharge() {
         return new BatteryUtil.Operation(0.20, false);
     }
-
     public static BatteryUtil.Operation pillUpdateOperationWithCharge() {
         return new BatteryUtil.Operation(0, true);
     }
@@ -110,30 +104,4 @@ public abstract class PillHardwareFragment extends InjectionFragment {
         return ((PillUpdateActivity) getActivity());
     }
 
-    protected void presentError(final Throwable e) {
-        //todo confirm all error states.
-        @StringRes int title = R.string.error_sleep_pill_title_update_missing;
-        @StringRes int message = R.string.error_sleep_pill_message_update_missing;
-        final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
-        errorDialogBuilder.withOperation(operationString());
-
-        if (e instanceof RssiException) {
-            title = R.string.error_pill_too_far;
-        } else if (e instanceof PillNotFoundException) {
-            title = R.string.error_pill_not_found;
-        } else if (e instanceof ApiException) {
-            title = R.string.network_activity_no_connectivity;
-            message = R.string.error_network_failure_pair_pill;
-        } else {
-            errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
-        }
-        errorDialogBuilder
-                .withTitle(title)
-                .withMessage(StringRef.from(message))
-                .withAction(helpUriString, R.string.label_having_trouble)
-                .build()
-                .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-
-    }
 }

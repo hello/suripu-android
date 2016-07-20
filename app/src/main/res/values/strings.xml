@@ -547,6 +547,7 @@
     <string name="stop">STOP</string>
     <string name="connect_pill_fragment_preparing">Preparing update</string>
     <string name="connect_pill_fragment_operation">Connect Pill</string>
+    <string name="update_ready_pill_fragment_operation">Update Pill</string>
 
     <string name="share_text">See how i\'m improving my sleep with insights from Sense. %1$s #MySense</string>
 

@@ -38,11 +38,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     private ViewAnimator viewAnimator;
 
     @Override
-    protected String operationString() {
-        return null;
-    }
-
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -86,6 +81,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     public void onPrimaryButtonClick(@NonNull final View ignored) {
         checkPhoneBattery();
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -109,7 +105,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
 
     @Override
     void onLocationPermissionGranted(final boolean isGranted) {
-        if(isGranted){
+        if (isGranted) {
             checkPhoneBattery();
         }
     }
@@ -123,9 +119,9 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
                 this::onNext,
                 this::presentError);
         bindAndSubscribe(
-                phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS)
-                , this::onPhoneCheckNext
-                , this::presentError);
+                phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS),
+                this::onPhoneCheckNext,
+                this::presentError);
     }
 
     private boolean hasLowBattery(@NonNull final Devices devices) {
@@ -133,7 +129,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         return sleepPillDevice != null && !sleepPillDevice.hasLowBattery();
     }
 
-    private void checkPhoneBattery(){
+    private void checkPhoneBattery() {
         showBlockingActivity(R.string.title_checking_phone_battery);
         phoneBatteryPresenter.withAnyOperation(Arrays.asList(PillHardwareFragment.pillUpdateOperationNoCharge(),
                                                              PillHardwareFragment.pillUpdateOperationWithCharge()));
@@ -160,12 +156,13 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
             }
         });
     }
-    private void updateButtonUI(final boolean shouldEnable, final boolean allowRetry){
+
+    private void updateButtonUI(final boolean shouldEnable, final boolean allowRetry) {
         primaryButton.setEnabled(shouldEnable);
         primaryButton.setText(allowRetry ? R.string.action_retry : R.string.action_continue);
     }
-    @Override
-    protected void presentError(final Throwable e) {
+
+    private void presentError(final Throwable e) {
         hideBlockingActivity(false, () -> {
             updateButtonUI(true, true);
             final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
@@ -174,17 +171,19 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
+
     private void onPhoneCheckNext(final boolean hasEnoughBattery) {
-        stateSafeExecutor.execute( () -> {
-            if(hasEnoughBattery){
+        stateSafeExecutor.execute(() -> {
+            if (hasEnoughBattery) {
                 checkBluetooth();
-            } else{
+            } else {
                 updateButtonUI(true, true); //allow user to retry by plugging in phone
                 hideBlockingActivity();
                 presentPhoneBatteryError();
             }
         });
     }
+
     private void checkBluetooth() {
         if (!bluetoothStack.isEnabled()) {
             cancel(true);

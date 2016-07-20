@@ -16,6 +16,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
+import is.hello.sense.ui.fragments.pill.PillHardwareFragment;
 import is.hello.sense.ui.fragments.pill.PillUpdateFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
@@ -26,15 +27,11 @@ import is.hello.sense.util.Logger;
 public class PillUpdateActivity extends InjectionActivity
         implements FragmentNavigation {
     public static final String ARG_NEEDS_BLUETOOTH = PillUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
-    public static final int FLOW_UPDATE_PILL_INTRO_SCREEN = 3;
-    public static final int FLOW_CONNECT_PILL_SCREEN = 4;
-    public static final int FLOW_UPDATE_PILL_SCREEN = 5;
-    public static final int FLOW_FINISHED = 6;
-    public static final int FLOW_BLUETOOTH_CHECK = 7;
-    public static final int FLOW_CANCELED = 8;
+    public static final String EXTRA_DEVICE_ID = PillUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
     public static final int REQUEST_CODE = 0xfeed;
-    public static final String EXTRA_DEVICE_ID = "device_id_extra";
+
     private FragmentNavigationDelegate navigationDelegate;
+
     @Inject
     DeviceIssuesPresenter deviceIssuesPresenter;
 
@@ -71,7 +68,6 @@ public class PillUpdateActivity extends InjectionActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         navigationDelegate.onDestroy();
     }
 
@@ -86,7 +82,7 @@ public class PillUpdateActivity extends InjectionActivity
             showUpdatePillIntro();
             return;
         } else if (topFragment instanceof ConnectPillFragment) {
-            // return; todo uncomment
+            return;
         }
 
         back();
@@ -117,13 +113,11 @@ public class PillUpdateActivity extends InjectionActivity
             }
             return;
         }
-        Log.e("Flow Finished", "Finished: " + fragment.getClass() + " and is instance: " + (fragment instanceof BluetoothFragment));
-        if (fragment instanceof PillUpdateFragment || fragment instanceof BluetoothFragment) {
+
+       if (fragment instanceof PillUpdateFragment || fragment instanceof BluetoothFragment) {
             showConnectPillScreen();
-            return;
         } else if (fragment instanceof ConnectPillFragment) {
             showUpdateReadyPill();
-            return;
         } else if (fragment instanceof UpdateReadyPillFragment) {
             if (result != null) {
                 updatePreferences(result);
@@ -131,36 +125,6 @@ public class PillUpdateActivity extends InjectionActivity
             Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
             setResult(RESULT_OK);
             finish();
-            return;
-
-        }
-
-        switch (responseCode) {
-            case FLOW_UPDATE_PILL_INTRO_SCREEN:
-                showUpdatePillIntro();
-                break;
-            case FLOW_BLUETOOTH_CHECK:
-                showBluetoothFragment();
-                break;
-            case FLOW_CONNECT_PILL_SCREEN:
-                showConnectPillScreen();
-                break;
-            case FLOW_UPDATE_PILL_SCREEN:
-                showUpdateReadyPill();
-                break;
-            case FLOW_FINISHED:
-                //Todo add fade out transition
-                updatePreferences(result);
-                Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
-                setResult(RESULT_OK);
-                finish();
-                break;
-            case FLOW_CANCELED:
-                setResult(RESULT_CANCELED, null);
-                finish();
-                break;
-            default:
-                Logger.debug(PillUpdateActivity.class.getSimpleName(), "unknown response code for flow finished.");
         }
     }
 
@@ -172,7 +136,6 @@ public class PillUpdateActivity extends InjectionActivity
 
     public void showUpdatePillIntro() {
         pushFragmentAllowingStateLoss(new PillUpdateFragment(), null, false);
-
     }
 
     public void showConnectPillScreen() {

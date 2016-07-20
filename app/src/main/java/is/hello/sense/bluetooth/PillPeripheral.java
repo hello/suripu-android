@@ -23,6 +23,7 @@ import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.sense.bluetooth.exceptions.BleCacheException;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import rx.Observable;
+import rx.Subscriber;
 
 
 //todo move to commonsense or commonpill??? after this is working
@@ -148,6 +149,25 @@ public final class PillPeripheral implements Serializable {
 
 
     //region Connecting
+    @NonNull
+    public Observable<PillPeripheral> enterDfuMode(@NonNull final Context context) {
+        Log.d(getClass().getSimpleName(), "enterDfuMode()");
+        if (inDfuMode) {
+            return Observable.create(new Observable.OnSubscribe<PillPeripheral>() {
+                @Override
+                public void call(final Subscriber<? super PillPeripheral> subscriber) {
+                    subscriber.onNext(PillPeripheral.this);
+                    subscriber.onCompleted();
+                }
+            });
+        }
+        return removeBond()
+                .flatMap(PillPeripheral::connect)
+                .flatMap(PillPeripheral::wipeFirmware)
+                .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
+                .timeout(60, TimeUnit.SECONDS);
+    }
+
     @NonNull
     public Observable<PillPeripheral> connect() {
         Log.d(getClass().getSimpleName(), "connect()");
