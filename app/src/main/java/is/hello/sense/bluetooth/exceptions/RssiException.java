@@ -8,6 +8,6 @@ import is.hello.commonsense.util.StringRef;
 
 public class RssiException extends Exception{
     public RssiException(){
-        super("Pill is to far"); // todo get text
+        super("Pill is to far");
     }
 }

@@ -230,6 +230,10 @@ public final class PillPeripheral implements Serializable {
 
         final byte[] payload = {COMMAND_WIPE_FIRMWARE};
         return writeCommand(CHARACTERISTIC_COMMAND_UUID, GattPeripheral.WriteType.NO_RESPONSE, payload)
+                /**
+                 * We don't wait for a response from the write command. In order to avoid a race
+                 * condition we delay.
+                 */
                 .delay(5, TimeUnit.SECONDS) //this is important
                 .map(aVoid -> this);
     }

@@ -8,17 +8,15 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 
-public class PillNotFoundException extends BuruberiException implements Errors.Reporting{
-    public PillNotFoundException(){
+public class PillNotFoundException extends BuruberiException implements Errors.Reporting {
+    public PillNotFoundException() {
         super("No Pills Found");
     }
-    public PillNotFoundException(String detailMessage) {
+
+    public PillNotFoundException(final String detailMessage) {
         super(detailMessage);
     }
 
-    public PillNotFoundException(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
-    }
 
     @Nullable
     @Override

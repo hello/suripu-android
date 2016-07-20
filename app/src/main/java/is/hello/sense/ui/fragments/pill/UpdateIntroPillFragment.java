@@ -18,8 +18,6 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
-import is.hello.sense.api.model.Devices;
-import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
@@ -52,9 +50,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
         final View animatedView = viewAnimator.inflateView(inflater, container, R.layout.pill_ota_view, R.id.blue_box_view);
-
         final ViewGroup view = new OnboardingSimpleStepView(this, inflater)
                 .setAnimatedView(animatedView)
                 .setHeadingText(R.string.title_update_sleep_pill)
@@ -65,9 +61,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
                 .setWantsSecondaryButton(true)
                 .setToolbarWantsBackButton(false)
                 .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL));
-
         this.primaryButton = (Button) view.findViewById(R.id.view_onboarding_simple_step_primary);
-
         return view;
     }
 
@@ -112,21 +106,9 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
 
     private void bindAndSubscribeDevice() {
         bindAndSubscribe(
-                devicesPresenter
-                        .devices
-                        .delay(1200, TimeUnit.MILLISECONDS)
-                        .map(this::hasLowBattery),
-                this::onNext,
-                this::presentError);
-        bindAndSubscribe(
                 phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS),
                 this::onPhoneCheckNext,
                 this::presentError);
-    }
-
-    private boolean hasLowBattery(@NonNull final Devices devices) {
-        final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-        return sleepPillDevice != null && !sleepPillDevice.hasLowBattery();
     }
 
     private void checkPhoneBattery() {
@@ -146,16 +128,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, intent);
     }
 
-    private void onNext(final boolean hasEnoughBattery) {
-        hideBlockingActivity(false, () -> {
-            updateButtonUI(hasEnoughBattery, true);
-            if (!hasEnoughBattery) {
-                presentPhoneBatteryError();
-            } else {
-                checkBluetooth();
-            }
-        });
-    }
 
     private void updateButtonUI(final boolean shouldEnable, final boolean allowRetry) {
         primaryButton.setEnabled(shouldEnable);
@@ -185,10 +157,10 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     private void checkBluetooth() {
-        if (!bluetoothStack.isEnabled()) {
-            cancel(true);
-        } else {
+        if (bluetoothStack.isEnabled()) {
             done();
+        } else {
+            cancel(true);
         }
     }
 }

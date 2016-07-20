@@ -22,7 +22,6 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.graph.presenters.ValuePresenter;
-import no.nordicsemi.android.dfu.DfuBaseService;
 import rx.Observable;
 
 //todo move to commonsense or commonpill??? after this is working
@@ -106,19 +105,14 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     public Observable<ComponentName> startDfuService(@NonNull final File file) {
         return Observable.<ComponentName>create(subscriber -> {
             if (sleepPill.getValue() == null) {
-                //todo return to first screen. make this a class
                 subscriber.onError(new PillNotFoundException());
             }
-            String empty = null;
             Intent intent = new Intent(context, DfuService.class);
             intent.putExtra(DfuService.EXTRA_DEVICE_NAME, sleepPill.getValue().getName());
             intent.putExtra(DfuService.EXTRA_DEVICE_ADDRESS, sleepPill.getValue().getAddress());
             intent.putExtra(DfuService.EXTRA_FILE_TYPE, DfuService.TYPE_APPLICATION);
             intent.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
             intent.putExtra(DfuService.EXTRA_KEEP_BOND, false);
-            intent.putExtra(DfuService.EXTRA_INIT_FILE_URI, empty);
-            intent.putExtra(DfuBaseService.EXTRA_INIT_FILE_PATH, empty);
-            intent.putExtra(DfuBaseService.EXTRA_INIT_FILE_RES_ID, 0);
             intent.putExtra(DfuService.EXTRA_FILE_PATH, file.getPath());
 
             try {
