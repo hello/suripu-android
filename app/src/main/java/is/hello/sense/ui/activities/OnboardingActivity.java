@@ -53,6 +53,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -199,7 +200,7 @@ public class OnboardingActivity extends InjectionActivity
 
         if (requestCode == EDIT_ALARM_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                showDone();
+                checkForSenseUpdate();
             } else {
                 showSmartAlarmInfo();
             }
@@ -495,6 +496,23 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new Fragment(), null, false);
         final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
+    }
+
+    public void checkForSenseUpdate() {
+        final boolean senseUpdateRequired = true; //todo replace with preferences check
+        if(senseUpdateRequired){
+            showSenseUpdate();
+        } else{
+            showDone();
+        }
+    }
+
+    public void showSenseUpdate(){
+        pushFragment(SenseUpdateIntroFragment.newInstance(true), null, false);
+    }
+
+    public void showSenseUpdating(){
+        //todo implement
     }
 
     public void showDone() {

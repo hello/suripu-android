@@ -125,4 +125,7 @@
 
     <string name="error_pill_too_far">Sleep Pill out of range</string>
     <string name="error_pill_not_found">Sleep Pill not found</string>
+
+    <string name="error_sense_update_failed_message">Sense will try again at a later time. You can begin using Sense, but some features may not be available until the update is complete.</string>
+
 </resources>

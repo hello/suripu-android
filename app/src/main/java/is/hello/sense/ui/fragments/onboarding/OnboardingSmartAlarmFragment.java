@@ -40,7 +40,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
         if(withAlarm){
             ((OnboardingActivity) getActivity()).showSetAlarmDetail();
         } else{
-            ((OnboardingActivity) getActivity()).showDone();
+            ((OnboardingActivity) getActivity()).checkForSenseUpdate();
         }
     }
 }

@@ -241,7 +241,8 @@ public class UserSupport {
         PILL_PAIRING("https://support.hello.is/hc/en-us/articles/204797129"),
         PILL_PLACEMENT("https://support.hello.is/hc/en-us/articles/205493045"),
         ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
-        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163");
+        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163"),
+        UPDATING_SENSE("https://support.hello.is/hc/en-us/articles/211890643");
 
         private final String url;
 
