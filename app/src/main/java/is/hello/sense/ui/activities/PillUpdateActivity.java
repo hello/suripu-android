@@ -30,7 +30,7 @@ public class PillUpdateActivity extends InjectionActivity
     public static final int FLOW_CONNECT_PILL_SCREEN = 4;
     public static final int FLOW_UPDATE_PILL_SCREEN = 5;
     public static final int FLOW_FINISHED = 6;
-    public  static final int FLOW_BLUETOOTH_CHECK = 7;
+    public static final int FLOW_BLUETOOTH_CHECK = 7;
     public static final int FLOW_CANCELED = 8;
     public static final int REQUEST_CODE = 0xfeed;
     public static final String EXTRA_DEVICE_ID = "device_id_extra";
@@ -117,21 +117,30 @@ public class PillUpdateActivity extends InjectionActivity
             }
             return;
         }
-        Log.e("Flow Finished", "Finished: " + fragment.getClass()+" and is instance: " + (fragment instanceof BluetoothFragment));
+        Log.e("Flow Finished", "Finished: " + fragment.getClass() + " and is instance: " + (fragment instanceof BluetoothFragment));
         if (fragment instanceof PillUpdateFragment || fragment instanceof BluetoothFragment) {
             showConnectPillScreen();
             return;
         } else if (fragment instanceof ConnectPillFragment) {
             showUpdateReadyPill();
             return;
+        } else if (fragment instanceof UpdateReadyPillFragment) {
+            if (result != null) {
+                updatePreferences(result);
+            }
+            Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
+            setResult(RESULT_OK);
+            finish();
+            return;
+
         }
 
-        switch (responseCode){
+        switch (responseCode) {
             case FLOW_UPDATE_PILL_INTRO_SCREEN:
-                showUpdateIntroPill();
+                showUpdatePillIntro();
                 break;
             case FLOW_BLUETOOTH_CHECK:
-                showBluetoothScreen();
+                showBluetoothFragment();
                 break;
             case FLOW_CONNECT_PILL_SCREEN:
                 showConnectPillScreen();
@@ -151,7 +160,7 @@ public class PillUpdateActivity extends InjectionActivity
                 finish();
                 break;
             default:
-                Logger.debug(PillUpdateActivity.class.getSimpleName(),"unknown response code for flow finished.");
+                Logger.debug(PillUpdateActivity.class.getSimpleName(), "unknown response code for flow finished.");
         }
     }
 
@@ -177,7 +186,7 @@ public class PillUpdateActivity extends InjectionActivity
 
     private void updatePreferences(@NonNull final Intent intent) {
         final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-        if(deviceId != null) {
+        if (deviceId != null) {
             deviceIssuesPresenter.updateLastUpdatedDevice(deviceId);
         }
     }

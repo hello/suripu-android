@@ -56,6 +56,11 @@ public class ConnectPillFragment extends PillHardwareFragment {
         return StringRef.from(R.string.connect_pill_fragment_operation).toString();
     }
 
+    @Override
+    void onLocationPermissionGranted(final boolean isGranted) {
+
+    }
+
     //region lifecycle
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -132,7 +137,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
         assert sleepPillDevice.firmwareUpdateUrl != null;
 
         firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
-        final String pillName = sleepPillDevice.deviceId;
+        final String pillName = sleepPillDevice.getSimpleName();
         pillDfuPresenter.setDesiredPillName(pillName);
         pillDfuPresenter.update();
     }

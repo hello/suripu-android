@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -71,6 +72,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     @Override
+    void onLocationPermissionGranted(boolean isGranted) {
+
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(firmwareCache);
@@ -83,34 +89,28 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         final View view = inflater.inflate(R.layout.fragment_pill_update, container, false);
         this.updateIndicator = (ProgressBar) view.findViewById(R.id.fragment_update_pill_progress_determinate);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_update_pill_status);
+        this.retryButton = (Button) view.findViewById(R.id.fragment_update_pill_retry);
+        this.skipButton = (Button) view.findViewById(R.id.fragment_update_pill_skip);
         final TextView titleTextView = (TextView) view.findViewById(R.id.fragment_update_pill_title);
         final TextView infoTextView = (TextView) view.findViewById(R.id.fragment_update_pill_subhead);
-        //skipping this is not an option currently so we don't keep reference to skip button
-        this.retryButton = (Button) view.findViewById(R.id.fragment_update_pill_retry);
-        final View animatedView = view.findViewById(R.id.blue_box_view);
 
-        updateIndicator.setVisibility(View.VISIBLE);
+        viewAnimator.setAnimatedView(view.findViewById(R.id.blue_box_view));
         activityStatus.setText(R.string.message_sleep_pill_updating);
-
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
-
-        Views.setTimeOffsetOnClickListener(retryButton, ignored -> updatePill());
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipUpdatingPill());
-
-        viewAnimator.setAnimatedView(animatedView);
         Views.setSafeOnClickListener(retryButton, ignored -> {
             retryButton.setVisibility(View.GONE);
             activityStatus.setVisibility(View.VISIBLE);
             updateIndicator.setVisibility(View.VISIBLE);
+            skipButton.setVisibility(View.GONE);
             firmwareCache.update();
         });
 
         this.toolbar = OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(false)
-                         .setOnHelpClickListener(this::help);
+                                        .setWantsBackButton(false)
+                                        .setOnHelpClickListener(this::help);
 
-   
 
         return view;
     }
@@ -160,10 +160,10 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     public void presentError(final Throwable e) {
         Log.e(TAG, "Error: " + e);
 
-            updateIndicator.setVisibility(View.GONE);
-            activityStatus.setVisibility(View.GONE);
-            retryButton.setVisibility(View.VISIBLE);
-            skipButton.setVisibility(View.VISIBLE);
+        updateIndicator.setVisibility(View.GONE);
+        activityStatus.setVisibility(View.GONE);
+        retryButton.setVisibility(View.VISIBLE);
+        skipButton.setVisibility(View.VISIBLE);
 
         //Todo update error checks
         final ErrorDialogFragment.Builder errorDialogBuilder =
@@ -192,38 +192,22 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         onFinish(false);
     }
 
-    private void onBegin() {
-        updateIndicator.setVisibility(View.VISIBLE);
-        activityStatus.setVisibility(View.VISIBLE);
-        retryButton.setVisibility(View.GONE);
-        skipButton.setVisibility(View.GONE);
-    }
-
-
     private void onFinish(final boolean success) {
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.OPAQUE_BACKGROUND);
             getFragmentManager().executePendingTransactions();
-
-            if(!success){
-                ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_CANCELED, null);
-                return;
-            }
-
-            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
-                stateSafeExecutor.execute(() -> {
-                    if (success) {
-                        final String deviceId = "BF39B2A810B9813D"; //todo fix hardcoded
-                        final Intent intent = new Intent();
-                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_FINISHED, intent);
-                    } else {
-                        getActivity().finish();
-                    }
-                });
-              
-            }, R.string.message_sleep_pill_updated);
+            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
+                    stateSafeExecutor.execute(() -> {
+                        if (success) {
+                            final String deviceId = pillDfuPresenter.sleepPill.getValue().getName(); //todo fix hardcoded
+                            final Intent intent = new Intent();
+                            intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                            getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, intent);
+                        } else {
+                            getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, null);
+                        }
+                    }), R.string.message_sleep_pill_updated);
         });
     }
 
@@ -256,7 +240,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onDeviceConnected(final String deviceAddress) {
         Log.e("DFU Listener", "onDeviceConnected");
-        
+
     }
 
     @Override
@@ -280,9 +264,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onProgressChanged(final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
         Log.e("DFU Listener", "onProgressChanged " + percent + "%");
-        updateIndicator.post(() -> {
-            updateIndicator.setProgress(percent);
-        });
+        updateIndicator.post(() -> updateIndicator.setProgress(percent));
 
 
     }

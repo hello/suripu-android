@@ -84,7 +84,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     public void onPrimaryButtonClick(@NonNull final View ignored) {
-        checkPillBattery();
+        checkPhoneBattery();
     }
     @Override
     public void onResume() {
@@ -113,18 +113,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
             checkPhoneBattery();
         }
     }
-
-    public void onCancel(final View ignored) {
-        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_CANCELED, null);
-    }
-
-    public void onPrimaryButtonClick(@NonNull final View ignored){
-        if(isLocationPermissionGranted()){
-            checkPhoneBattery();
-        } else{
-            requestLocationPermission();
-        }
-    
 
     private void bindAndSubscribeDevice() {
         bindAndSubscribe(
