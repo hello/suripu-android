@@ -65,20 +65,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         return new UpdateReadyPillFragment();
     }
 
-    public UpdateReadyPillFragment() {
-        //required empty public constructor //todo why?
-        super();
-    }
-
-    @Override
-    void onLocationPermissionGranted(final boolean isGranted) {
-        if (isGranted) {
-            updatePill();
-
-        }
-
-    }
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,12 +140,23 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
 
+    @Override
+    void onLocationPermissionGranted(final boolean isGranted) {
+        if (isGranted) {
+            updatePill();
+        }
+    }
+
     private void updatePill() {
-        retryButton.setVisibility(View.GONE);
-        activityStatus.setVisibility(View.VISIBLE);
-        updateIndicator.setVisibility(View.VISIBLE);
-        skipButton.setVisibility(View.GONE);
-        firmwareCache.update();
+        if (isLocationPermissionGranted()) {
+            retryButton.setVisibility(View.GONE);
+            activityStatus.setVisibility(View.VISIBLE);
+            updateIndicator.setVisibility(View.VISIBLE);
+            skipButton.setVisibility(View.GONE);
+            firmwareCache.update();
+        } else {
+            requestLocationPermission();
+        }
     }
 
     public void presentError(final Throwable e) {
@@ -239,36 +236,36 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     @Override
     public void onDeviceConnecting(final String deviceAddress) {
-        Log.e("DFU Listener", "onDeviceConnecting");
+        Log.d("DFU Listener", "onDeviceConnecting");
     }
 
     @Override
     public void onDeviceConnected(final String deviceAddress) {
-        Log.e("DFU Listener", "onDeviceConnected");
+        Log.d("DFU Listener", "onDeviceConnected");
 
     }
 
     @Override
     public void onDfuProcessStarting(final String deviceAddress) {
-        Log.e("DFU Listener", "onDfuProcessStarting");
+        Log.d("DFU Listener", "onDfuProcessStarting");
 
     }
 
     @Override
     public void onDfuProcessStarted(final String deviceAddress) {
-        Log.e("DFU Listener", "onDfuProcessStarted");
+        Log.d("DFU Listener", "onDfuProcessStarted");
 
     }
 
     @Override
     public void onEnablingDfuMode(final String deviceAddress) {
-        Log.e("DFU Listener", "onEnablingDfuMode");
+        Log.d("DFU Listener", "onEnablingDfuMode");
 
     }
 
     @Override
     public void onProgressChanged(final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
-        Log.e("DFU Listener", "onProgressChanged " + percent + "%");
+        Log.d("DFU Listener", "onProgressChanged " + percent + "%");
         updateIndicator.post(() -> updateIndicator.setProgress(percent));
 
 
@@ -276,37 +273,37 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     @Override
     public void onFirmwareValidating(final String deviceAddress) {
-        Log.e("DFU Listener", "onFirmwareValidating");
+        Log.d("DFU Listener", "onFirmwareValidating");
 
     }
 
     @Override
     public void onDeviceDisconnecting(final String deviceAddress) {
-        Log.e("DFU Listener", "onDeviceDisconnecting");
+        Log.d("DFU Listener", "onDeviceDisconnecting");
 
     }
 
     @Override
     public void onDeviceDisconnected(final String deviceAddress) {
-        Log.e("DFU Listener", "onDeviceDisconnected");
+        Log.d("DFU Listener", "onDeviceDisconnected");
 
     }
 
     @Override
     public void onDfuCompleted(final String deviceAddress) {
-        Log.e("DFU Listener", "onDfuCompleted");
+        Log.d("DFU Listener", "onDfuCompleted");
         onFinish(true);
     }
 
     @Override
     public void onDfuAborted(final String deviceAddress) {
-        Log.e("DFU Listener", "onDfuAborted");
+        Log.d("DFU Listener", "onDfuAborted");
 
     }
 
     @Override
     public void onError(final String deviceAddress, final int error, final int errorType, final String message) {
-        Log.e("DFU Listener", "onError: " + message + ". errorType: " + errorType + ". error: " + error);
+        Log.d("DFU Listener", "onError: " + message + ". errorType: " + errorType + ". error: " + error);
         presentError(new Throwable(message));
     }
 

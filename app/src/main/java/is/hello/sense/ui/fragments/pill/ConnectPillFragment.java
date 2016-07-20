@@ -53,11 +53,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private TextView activityStatus;
     private Button retryButton;
 
-    @Override
-    void onLocationPermissionGranted(final boolean isGranted) {
-
-    }
-
     //region lifecycle
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -110,14 +105,27 @@ public class ConnectPillFragment extends PillHardwareFragment {
         devicesPresenter.update();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (diagram != null) {
+            diagram.destroy();
+        }
+        this.diagram = null;
+    }
+
     private void searchForPill() {
-        retryButton.post(() -> {
-            activityIndicator.setVisibility(View.VISIBLE);
-            activityStatus.setVisibility(View.VISIBLE);
-            retryButton.setVisibility(View.GONE);
-            setStatus(R.string.label_searching_for_pill);
-            devicesPresenter.update();
-        });
+        if (isLocationPermissionGranted()) {
+            retryButton.post(() -> {
+                activityIndicator.setVisibility(View.VISIBLE);
+                activityStatus.setVisibility(View.VISIBLE);
+                retryButton.setVisibility(View.GONE);
+                setStatus(R.string.label_searching_for_pill);
+                devicesPresenter.update();
+            });
+        } else {
+            requestLocationPermission();
+        }
     }
 
     private void bindDevices(@NonNull final Devices devices) {
@@ -165,16 +173,14 @@ public class ConnectPillFragment extends PillHardwareFragment {
 
         });
     }
+    //endregion
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (diagram != null) {
-            diagram.destroy();
+    void onLocationPermissionGranted(final boolean isGranted) {
+        if (isGranted) {
+            searchForPill();
         }
-        this.diagram = null;
     }
-    //endregion
 
     private void requestBle() {
         final Intent intent = new Intent();
