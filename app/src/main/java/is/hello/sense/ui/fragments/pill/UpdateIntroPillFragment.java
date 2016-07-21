@@ -43,7 +43,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
             return;
         }
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
-        addPresenter(devicesPresenter);
         addPresenter(phoneBatteryPresenter);
         setRetainInstance(true);
 

@@ -68,7 +68,6 @@ public final class PillPeripheral implements Serializable {
     }
 
     //region Creation
-
     PillPeripheral(@NonNull final GattPeripheral gattPeripheral) {
         this.gattPeripheral = gattPeripheral;
 

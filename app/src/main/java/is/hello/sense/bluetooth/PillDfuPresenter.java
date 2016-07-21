@@ -26,13 +26,10 @@ import rx.Observable;
 
 @Singleton
 public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
-    public static final String PILL_DFU_NAME = "PillDFU";
-
     private final Context context;
     private final BluetoothStack bluetoothStack;
 
     public final PresenterSubject<PillPeripheral> sleepPill = this.subject;
-    private String desiredPillName = null;
 
 
     @Inject
@@ -40,11 +37,6 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
                             @NonNull final BluetoothStack bluetoothStack) {
         this.context = context;
         this.bluetoothStack = bluetoothStack;
-    }
-
-
-    public void setDesiredPillName(@Nullable final String desiredPillName) {
-        this.desiredPillName = desiredPillName;
     }
 
     @Override
@@ -64,22 +56,19 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
         criteria.addPredicate(ad -> (PillPeripheral.isPillNormal(ad) || PillPeripheral.isPillDfu(ad)));
         return bluetoothStack.discoverPeripherals(criteria)
                              .map(gattPeripherals -> {
-                                 Log.d(getClass().getName(), "Desired Pill: " + desiredPillName);
-                                 PillPeripheral closestDFUPill = null;
+                                 GattPeripheral closestPill = null;
                                  for (final GattPeripheral peripheral : gattPeripherals) {
                                      final String pillName = peripheral.getName();
-                                     if (desiredPillName != null && desiredPillName.equals(pillName)) {
-                                         return new PillPeripheral(peripheral);
-                                     }
-                                     if (PILL_DFU_NAME.equals(pillName)) {
-                                         if (closestDFUPill == null) {
-                                             closestDFUPill = new PillPeripheral(peripheral);
-                                         } else if (closestDFUPill.getScanTimeRssi() < peripheral.getScanTimeRssi()) {
-                                             closestDFUPill = new PillPeripheral(peripheral);
+                                     if (pillName != null && pillName.contains("Pill")) {
+                                         if (closestPill == null || closestPill.getScanTimeRssi() < peripheral.getScanTimeRssi()) {
+                                             closestPill = peripheral;
                                          }
                                      }
                                  }
-                                 return closestDFUPill;
+                                 if (closestPill == null) {
+                                     return null;
+                                 }
+                                 return new PillPeripheral(closestPill);
                              });
 
     }

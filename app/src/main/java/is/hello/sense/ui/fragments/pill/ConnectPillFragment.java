@@ -42,10 +42,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    DevicesPresenter devicesPresenter;
-    @Inject
-    PillDfuPresenter pillDfuPresenter;
-    @Inject
     SenseCache.FirmwareCache firmwareCache;
 
     private DiagramVideoView diagram;
@@ -65,8 +61,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
             requestBle();
             return;
         }
-        addPresenter(devicesPresenter);
-        addPresenter(pillDfuPresenter);
         addPresenter(firmwareCache);
     }
 
@@ -113,6 +107,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
         if (diagram != null) {
             diagram.destroy();
         }
+        this.retryButton.setOnClickListener(null);
+        this.retryButton = null;
         this.diagram = null;
     }
 
@@ -141,8 +137,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
         assert sleepPillDevice.firmwareUpdateUrl != null;
 
         firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
-        final String pillName = sleepPillDevice.getSimpleName();
-        pillDfuPresenter.setDesiredPillName(pillName);
         pillDfuPresenter.update();
     }
 
@@ -197,7 +191,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
     }
 
     private void pillIsInDFUMode(@NonNull final PillPeripheral pillPeripheral) {
-        activityStatus.post(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null));
+        activityStatus.post(() -> activityIndicator.setActivated(true));
+        activityStatus.postDelayed(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null), 1500);
     }
 
     private void setStatus(@StringRes final int text) {

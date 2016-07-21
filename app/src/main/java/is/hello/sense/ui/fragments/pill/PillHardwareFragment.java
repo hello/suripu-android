@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -7,6 +8,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -20,6 +22,8 @@ public abstract class PillHardwareFragment extends InjectionFragment {
 
     @Inject
     DevicesPresenter devicesPresenter;
+    @Inject
+    PillDfuPresenter pillDfuPresenter;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     protected OnboardingToolbar toolbar;
@@ -30,6 +34,13 @@ public abstract class PillHardwareFragment extends InjectionFragment {
 
     public static BatteryUtil.Operation pillUpdateOperationWithCharge() {
         return new BatteryUtil.Operation(0, true);
+    }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addPresenter(devicesPresenter);
+        addPresenter(pillDfuPresenter);
     }
 
     @Override

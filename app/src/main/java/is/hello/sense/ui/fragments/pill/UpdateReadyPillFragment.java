@@ -43,19 +43,15 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 public class UpdateReadyPillFragment extends PillHardwareFragment
         implements OnBackPressedInterceptor, DfuProgressListener {
 
+    private final ViewAnimator viewAnimator = new ViewAnimator();
     private ProgressBar updateIndicator;
     private TextView activityStatus;
     private Button retryButton;
     private Button skipButton;
-    private final ViewAnimator viewAnimator = new ViewAnimator();
-
     private SenseAlertDialog backPressedDialog;
 
     @Inject
     SenseCache.FirmwareCache firmwareCache;
-
-    @Inject
-    PillDfuPresenter pillDfuPresenter;
 
     public static Fragment newInstance() {
         return new UpdateReadyPillFragment();
@@ -69,7 +65,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             return;
         }
         addPresenter(firmwareCache);
-        addPresenter(pillDfuPresenter);
     }
 
     @Nullable
@@ -191,7 +186,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
-
                 stateSafeExecutor.execute(() -> {
                     if (success) {
                         final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
@@ -202,7 +196,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                     } else {
                         getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
                     }
-                }), R.string.message_sleep_pill_updated);
+                }), success ? R.string.message_sleep_pill_updated : R.string.message_sleep_pill_skipped);
     }
 
     @Override

@@ -39,16 +39,6 @@ public class SleepPillDevice extends BaseDevice {
         this.shouldUpdateOverride = false;
     }
 
-    /**
-     * @return name the physical pill should have for this account.
-     */
-    public String getSimpleName() {
-        if (deviceId != null && !deviceId.isEmpty()) {
-            return "Pill-" + deviceId.charAt(0) + "" + deviceId.charAt(deviceId.length() - 1);
-        }
-        return null;
-    }
-
     public boolean shouldUpdate() {
         return firmwareUpdateUrl != null && !firmwareUpdateUrl.isEmpty();
     }
