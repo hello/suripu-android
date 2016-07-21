@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments.onboarding;
+package is.hello.sense.ui.fragments.onboarding.sense;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
 public class SenseUpdateIntroFragment extends HardwareFragment {
@@ -39,7 +40,7 @@ public class SenseUpdateIntroFragment extends HardwareFragment {
         return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_sense_update)
                 .setSubheadingText(R.string.subtitle_sense_update)
-                .setDiagramImage(R.drawable.illustration_sense_ota)
+                .setDiagramImage(R.drawable.onboarding_sense_ota)
                 .setPrimaryButtonText(R.string.action_continue)
                 .setPrimaryOnClickListener(this::onContinue)
                 .setWantsSecondaryButton(false)

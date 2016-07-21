@@ -11,7 +11,8 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.SenseUpdateIntroFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
 
 @Module(complete = false, injects = {
         OnboardingActivity.class,
@@ -25,6 +26,7 @@ import is.hello.sense.ui.fragments.onboarding.SenseUpdateIntroFragment;
         OnboardingSenseColorsFragment.class,
         OnboardingRoomCheckFragment.class,
         SenseUpdateIntroFragment.class,
+        SenseUpdateFragment.class
 
 })
 public class OnboardingModule {

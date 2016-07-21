@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,6 +24,7 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -53,8 +55,9 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
-import is.hello.sense.ui.fragments.onboarding.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -489,6 +492,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSmartAlarmInfo() {
+        checkSenseUpdateStatus(); //todo remove
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
@@ -499,20 +503,33 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void checkForSenseUpdate() {
-        final boolean senseUpdateRequired = true; //todo replace with preferences check
+        final String senseOtaStatus = preferences.getString("device_ota_status","missing");
+        final boolean senseUpdateRequired = senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name()); //todo replace with preferences check
         if(senseUpdateRequired){
-            showSenseUpdate();
+            showSenseUpdateIntro();
         } else{
             showDone();
         }
     }
 
-    public void showSenseUpdate(){
+    public void checkSenseUpdateStatus(){
+        subscribe(apiService.getSenseUpdateStatus(),
+                  state -> {
+                      Log.d(getClass().getSimpleName(), "checkSenseUpdateStatus: " + state.state.name());
+                      preferences.edit().putString("device_ota_status", state.state.name())
+                              .apply();
+                  },
+                  error -> {
+                      Log.e(getClass().getSimpleName(), "checkSenseUpdateStatus: ", error);
+                  });
+    }
+
+    public void showSenseUpdateIntro(){
         pushFragment(SenseUpdateIntroFragment.newInstance(true), null, false);
     }
 
     public void showSenseUpdating(){
-        //todo implement
+        pushFragment(SenseUpdateFragment.newInstance(), null, false);
     }
 
     public void showDone() {
