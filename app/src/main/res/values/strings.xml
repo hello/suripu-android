@@ -374,7 +374,6 @@
     <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
     <string name="message_sleep_pill_updating">Sleep Pill Updating</string>
     <string name="message_sleep_pill_updated">Sleep Pill Updated</string>
-    <string name="message_sleep_pill_skipped">Sleep Pill Update Skipped</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
     <string name="timeline_info_label_sound_sleep">Deep sleep</string>

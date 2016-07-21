@@ -182,21 +182,21 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void onFinish(final boolean success) {
+        if (!success) {
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
+            return;
+        }
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
                 stateSafeExecutor.execute(() -> {
-                    if (success) {
-                        final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
-                        pillDfuPresenter.reset();
-                        final Intent intent = new Intent();
-                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
-                    } else {
-                        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
-                    }
-                }), success ? R.string.message_sleep_pill_updated : R.string.message_sleep_pill_skipped);
+                    final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
+                    pillDfuPresenter.reset();
+                    final Intent intent = new Intent();
+                    intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                    getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+                }), R.string.message_sleep_pill_updated);
     }
 
     @Override
