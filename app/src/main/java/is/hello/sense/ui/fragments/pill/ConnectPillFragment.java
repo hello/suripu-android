@@ -28,6 +28,7 @@ import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
@@ -51,6 +52,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
     private Button retryButton;
+    private OnboardingToolbar toolbar;
 
     //region lifecycle
     @Override
@@ -78,6 +80,9 @@ public class ConnectPillFragment extends PillHardwareFragment {
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
         retryButton.setOnClickListener(ignored -> searchForPill());
+        this.toolbar = OnboardingToolbar.of(this, view)
+                                        .setWantsBackButton(false)
+                                        .setOnHelpClickListener(this::help);
         return view;
     }
 
@@ -100,7 +105,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
                                                           this::presentError);
                              }
                          }, this::presentError);
-        devicesPresenter.update();
+        searchForPill();
     }
 
     @Override
@@ -118,6 +123,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
                 if (diagram != null) {
                     diagram.startPlayback();
                 }
+                toolbar.setVisible(true);
                 activityIndicator.setVisibility(View.VISIBLE);
                 activityStatus.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.GONE);
@@ -148,6 +154,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
             if (diagram != null) {
                 diagram.suspendPlayback(true);
             }
+            toolbar.setVisible(false);
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
             retryButton.setVisibility(View.VISIBLE);

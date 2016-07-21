@@ -87,7 +87,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         activityStatus.setText(R.string.message_sleep_pill_updating);
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
-        Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipUpdatingPill());
+        Views.setTimeOffsetOnClickListener(skipButton, ignored -> onFinish(false));
         Views.setSafeOnClickListener(retryButton, ignored -> updatePill());
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
@@ -189,10 +189,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                 .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    private void skipUpdatingPill() {
-        onFinish(false);
-    }
-
     private void onFinish(final boolean success) {
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
@@ -210,10 +206,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                         getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
                     }
                 }), R.string.message_sleep_pill_updated);
-    }
-
-    private void help(final View view) {
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL);
     }
 
     @Override
