@@ -71,13 +71,13 @@ public abstract class SenseCache extends ValuePresenter<File> {
 
     @Override
     protected Observable<File> provideUpdateObservable() {
-        Log.e(TAG, "Url: " + urlLocation);
+        Log.d(TAG, "Url: " + urlLocation);
         if (urlLocation == null) {
             throw new Error("Cache UrlLocation is null");
         }
         return Observable
                 .create((Observable.OnSubscribe<File>) subscriber -> {
-                    Log.e("Sense Cache", "Updating");
+                    Log.d(TAG, "Updating");
                     final boolean[] cancelDownload = {false};
                     subscriber.add(new Subscription() {
                         @Override
@@ -120,7 +120,7 @@ public abstract class SenseCache extends ValuePresenter<File> {
                             output.write(data, 0, count);
                         }
                     } catch (final IOException e) {
-                        Log.e(TAG, e.toString());
+                        Log.d(TAG, e.toString());
                         Logger.error(TAG, e.getLocalizedMessage());
                         downloadFailedReason = e.getLocalizedMessage();
                     } finally {
@@ -133,7 +133,7 @@ public abstract class SenseCache extends ValuePresenter<File> {
                                 output.close();
                             }
                         } catch (final IOException e) {
-                            Log.e(TAG, e.toString());
+                            Log.d(TAG, e.toString());
                             Logger.error(TAG, e.getLocalizedMessage());
                         }
                         if (connection != null) {

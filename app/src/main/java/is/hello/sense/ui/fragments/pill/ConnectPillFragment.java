@@ -52,7 +52,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
     private Button retryButton;
-    private OnboardingToolbar toolbar;
 
     //region lifecycle
     @Override
@@ -120,10 +119,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void searchForPill() {
         if (isLocationPermissionGranted()) {
             retryButton.post(() -> {
-                if (diagram != null) {
-                    diagram.startPlayback();
-                }
-                toolbar.setVisible(true);
+                diagram.startPlayback();
+                toolbar.setVisible(false);
                 activityIndicator.setVisibility(View.VISIBLE);
                 activityStatus.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.GONE);
@@ -151,10 +148,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
 
     private void presentError(@NonNull final Throwable e) {
         retryButton.post(() -> {
-            if (diagram != null) {
-                diagram.suspendPlayback(true);
-            }
-            toolbar.setVisible(false);
+            diagram.suspendPlayback(true);
+            toolbar.setVisible(true);
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
             retryButton.setVisibility(View.VISIBLE);

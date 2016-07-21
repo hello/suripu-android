@@ -50,7 +50,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private final ViewAnimator viewAnimator = new ViewAnimator();
 
     private SenseAlertDialog backPressedDialog;
-    private OnboardingToolbar toolbar;
 
     @Inject
     SenseCache.FirmwareCache firmwareCache;
@@ -131,8 +130,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         this.backPressedDialog = null;
 
         viewAnimator.onDestroyView();
-        toolbar.onDestroyView();
-        toolbar = null;
     }
 
 

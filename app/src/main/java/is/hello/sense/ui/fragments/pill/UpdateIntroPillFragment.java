@@ -137,13 +137,12 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     private void presentError(final Throwable e) {
-        hideBlockingActivity(false, () -> {
-            updateButtonUI(true, true);
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+        updateButtonUI(true, true);
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                .withSupportLink()
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
     }
 
     private void onPhoneCheckNext(final boolean hasEnoughBattery) {

@@ -1,25 +1,18 @@
 package is.hello.sense.ui.fragments.pill;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.view.View;
 
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.ApiException;
-import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
-import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.BatteryUtil;
 
@@ -28,12 +21,13 @@ public abstract class PillHardwareFragment extends InjectionFragment {
     @Inject
     DevicesPresenter devicesPresenter;
 
-    private LoadingDialogFragment loadingDialogFragment;
     private final LocationPermission locationPermission = new LocationPermission(this);
+    protected OnboardingToolbar toolbar;
 
     public static BatteryUtil.Operation pillUpdateOperationNoCharge() {
         return new BatteryUtil.Operation(0.20, false);
     }
+
     public static BatteryUtil.Operation pillUpdateOperationWithCharge() {
         return new BatteryUtil.Operation(0, true);
     }
@@ -58,37 +52,13 @@ public abstract class PillHardwareFragment extends InjectionFragment {
 
     abstract void onLocationPermissionGranted(final boolean isGranted);
 
-    protected void showBlockingActivity(@StringRes final int titleRes) {
-        if (loadingDialogFragment == null) {
-            stateSafeExecutor.execute(() -> this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                                                    getString(titleRes),
-                                                                                                    LoadingDialogFragment.OPAQUE_BACKGROUND));
-        } else {
-            if (loadingDialogFragment.getDialog() == null) {
-                loadingDialogFragment.showAllowingStateLoss(getFragmentManager(), LoadingDialogFragment.TAG);
-            }
-            loadingDialogFragment.setTitle(getString(titleRes));
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (toolbar != null) {
+            this.toolbar.onDestroyView();
+            this.toolbar = null;
         }
-    }
-
-    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
-        stateSafeExecutor.execute(() -> {
-            if (success) {
-                LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                    this.loadingDialogFragment = null;
-                    stateSafeExecutor.execute(onCompletion);
-                });
-            } else {
-                LoadingDialogFragment.close(getFragmentManager());
-                this.loadingDialogFragment = null;
-                onCompletion.run();
-            }
-        });
-    }
-
-    protected void hideBlockingActivity() {
-        //for delay of 1000 millisecond
-        LoadingDialogFragment.closeWithOnComplete(getFragmentManager(), null);
     }
 
     protected void presentPhoneBatteryError() {
@@ -101,7 +71,7 @@ public abstract class PillHardwareFragment extends InjectionFragment {
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    protected void help(final View view) {
+    protected void help(final View ignored) {
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL);
     }
 }
