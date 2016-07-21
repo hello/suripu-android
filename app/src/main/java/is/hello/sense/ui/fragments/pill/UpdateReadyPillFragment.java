@@ -102,11 +102,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         bindAndSubscribe(firmwareCache.file,
                          file -> pillDfuPresenter.startDfuService(file)
                                                  .subscribe(),
-                         e -> {
-                             Log.e("Firmware Error: ", e.toString());
-                             this.presentError(e);
-                         });
-        firmwareCache.update();
+                         this::presentError);
+        updatePill();
     }
 
     @Override
@@ -134,7 +131,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         this.backPressedDialog = null;
 
         viewAnimator.onDestroyView();
-
         toolbar.onDestroyView();
         toolbar = null;
     }
@@ -149,6 +145,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     private void updatePill() {
         if (isLocationPermissionGranted()) {
+            toolbar.setVisible(false);
             retryButton.setVisibility(View.GONE);
             activityStatus.setVisibility(View.VISIBLE);
             updateIndicator.setVisibility(View.VISIBLE);
@@ -160,16 +157,17 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     public void presentError(final Throwable e) {
+        toolbar.setVisible(true);
         updateIndicator.setVisibility(View.GONE);
         activityStatus.setVisibility(View.GONE);
         retryButton.setVisibility(View.VISIBLE);
         skipButton.setVisibility(View.VISIBLE);
+
         @StringRes int title = R.string.action_turn_on_ble;
         @StringRes int message = R.string.info_turn_on_bluetooth;
         final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
         errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
-
         if (e instanceof RssiException) {
             Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_TOO_FAR, null);
             title = R.string.error_pill_too_far;
