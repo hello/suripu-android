@@ -98,7 +98,7 @@ public final class PillPeripheral implements Serializable {
                                         cacheCleared[0] = (boolean) (Boolean) localMethod.invoke(gatt);
                                     }
                                 } catch (final Exception localException) {
-                                    Log.e(getClass().getSimpleName(), "Failed to get refresh method: " + localException);
+                                    Log.d(getClass().getSimpleName(), "Failed to get refresh method: " + localException);
                                     // Don't exit from here. We need to make sure we disconnect so
                                     // the user can try again.
                                 }
@@ -119,10 +119,10 @@ public final class PillPeripheral implements Serializable {
                 //todo I read that the above should trigger this error but I haven't seen it on my 5x.
                 // if we confirm that this error is not commonly triggered for our supported devices
                 // we can have it throw an error.
-                Log.e(getClass().getSimpleName(), "NoSuchFieldException: " + e);
+                Log.d(getClass().getSimpleName(), "NoSuchFieldException: " + e);
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
-                Log.e(getClass().getSimpleName(), "IllegalAccessException: " + e);
+                Log.d(getClass().getSimpleName(), "IllegalAccessException: " + e);
                 e.printStackTrace();
             }
         });
@@ -193,11 +193,11 @@ public final class PillPeripheral implements Serializable {
         final OperationTimeout operationTimeout = createOperationTimeout("Connect");
         return gattPeripheral.connect(GattPeripheral.CONNECT_FLAG_DEFAULTS, operationTimeout)
                              .flatMap(connectedPeripheral -> {
-                                 Log.e(getClass().getSimpleName(), "discoverService(" + SERVICE + ")");
+                                 Log.d(getClass().getSimpleName(), "discoverService(" + SERVICE + ")");
                                  return connectedPeripheral.discoverService(SERVICE, operationTimeout);
                              })
                              .map(gattService -> {
-                                 Log.e(getClass().getSimpleName(), "connected");
+                                 Log.d(getClass().getSimpleName(), "connected");
                                  this.service = gattService;
                                  return this;
                              });
@@ -205,9 +205,9 @@ public final class PillPeripheral implements Serializable {
 
     @NonNull
     public Observable<PillPeripheral> removeBond() {
-        Log.e(getClass().getSimpleName(), "removeBond()");
+        Log.d(getClass().getSimpleName(), "removeBond()");
         return gattPeripheral.removeBond(createOperationTimeout("Remove Bond TimeOut")).map(ignored -> {
-            Log.e(getClass().getSimpleName(), "bond removed");
+            Log.d(getClass().getSimpleName(), "bond removed");
             return this;
         });
     }
@@ -226,7 +226,7 @@ public final class PillPeripheral implements Serializable {
     private Observable<Void> writeCommand(@NonNull final UUID identifier,
                                           @NonNull final GattPeripheral.WriteType writeType,
                                           @NonNull final byte[] payload) {
-        Log.e(getClass().getSimpleName(), "writeCommand(" + identifier + ", " + writeType + ", " + Arrays.toString(payload) + ")");
+        Log.d(getClass().getSimpleName(), "writeCommand(" + identifier + ", " + writeType + ", " + Arrays.toString(payload) + ")");
 
         if (!isConnected()) {
             return Observable.error(new PillNotFoundException("writeCommand(...) requires a connection"));
@@ -241,7 +241,7 @@ public final class PillPeripheral implements Serializable {
     }
 
     public Observable<PillPeripheral> wipeFirmware() {
-        Log.e(getClass().getSimpleName(), "wipeFirmware()");
+        Log.d(getClass().getSimpleName(), "wipeFirmware()");
 
         final byte[] payload = {COMMAND_WIPE_FIRMWARE};
         return writeCommand(CHARACTERISTIC_COMMAND_UUID, GattPeripheral.WriteType.NO_RESPONSE, payload)

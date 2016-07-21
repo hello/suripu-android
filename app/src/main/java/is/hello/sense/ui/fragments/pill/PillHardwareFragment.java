@@ -100,8 +100,4 @@ public abstract class PillHardwareFragment extends InjectionFragment {
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public PillUpdateActivity getPillUpdateActivity() {
-        return ((PillUpdateActivity) getActivity());
-    }
-
 }

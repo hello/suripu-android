@@ -58,7 +58,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!(getActivity() instanceof FragmentNavigation)) {
+        if (getFragmentNavigation() == null) {
             finishWithResult(Activity.RESULT_CANCELED, null);
             return;
         }
@@ -131,7 +131,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void bindDevices(@NonNull final Devices devices) {
         final SleepPillDevice sleepPillDevice = devices.getSleepPill();
         if (sleepPillDevice == null || !sleepPillDevice.shouldUpdate()) {
-            getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, null);
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
         assert sleepPillDevice.firmwareUpdateUrl != null;
@@ -187,11 +187,11 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void requestBle() {
         final Intent intent = new Intent();
         intent.putExtra(PillUpdateActivity.ARG_NEEDS_BLUETOOTH, true);
-        ((FragmentNavigation) getActivity()).flowFinished(this, Activity.RESULT_CANCELED, intent);
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, intent);
     }
 
     private void pillIsInDFUMode(@NonNull final PillPeripheral pillPeripheral) {
-        activityStatus.post(() -> getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, null));
+        activityStatus.post(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null));
     }
 
     private void setStatus(@StringRes final int text) {

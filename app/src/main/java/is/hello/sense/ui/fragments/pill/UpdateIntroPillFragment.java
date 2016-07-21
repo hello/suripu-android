@@ -38,7 +38,10 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getFragmentNavigation() == null) {
+            finishWithResult(Activity.RESULT_CANCELED, null);
+            return;
+        }
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
         addPresenter(devicesPresenter);
         addPresenter(phoneBatteryPresenter);
@@ -118,13 +121,13 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     private void done() {
-        getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, null);
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
     }
 
     public void cancel(final boolean needsBle) {
         final Intent intent = new Intent();
         intent.putExtra(PillUpdateActivity.ARG_NEEDS_BLUETOOTH, needsBle);
-        getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, intent);
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, intent);
     }
 
 

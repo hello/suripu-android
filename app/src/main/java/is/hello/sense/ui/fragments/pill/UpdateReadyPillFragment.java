@@ -65,6 +65,10 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getFragmentNavigation() == null) {
+            finishWithResult(Activity.RESULT_CANCELED, null);
+            return;
+        }
         addPresenter(firmwareCache);
         addPresenter(pillDfuPresenter);
     }
@@ -203,9 +207,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                         pillDfuPresenter.reset();
                         final Intent intent = new Intent();
                         intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                        getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, intent);
+                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
                     } else {
-                        getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, null);
+                        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
                     }
                 }), R.string.message_sleep_pill_updated);
     }

@@ -64,15 +64,16 @@ public class BluetoothFragment extends HardwareFragment {
 
     public void done() {
         hideBlockingActivity(true, () -> {
-            if (getActivity() instanceof FragmentNavigation) {
+            FragmentNavigation fragmentNavigation = getFragmentNavigation();
+            if (fragmentNavigation != null) {
                 if (getArguments() != null && getArguments().containsKey(ARG_NEXT_SCREEN_ID)) {
                     final int nextScreenId = getArguments().getInt(ARG_NEXT_SCREEN_ID, -1);
                     if (nextScreenId != -1) {
-                        ((FragmentNavigation) getActivity()).flowFinished(this, nextScreenId, null);
+                        fragmentNavigation.flowFinished(this, nextScreenId, null);
                         return;
                     }
                 }
-                ((FragmentNavigation) getActivity()).flowFinished(this, Activity.RESULT_OK, null);
+                fragmentNavigation.flowFinished(this, Activity.RESULT_OK, null);
                 return;
             }
             finishWithResult(Activity.RESULT_OK, null);
