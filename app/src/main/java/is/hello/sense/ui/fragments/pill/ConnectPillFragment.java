@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,7 +28,6 @@ import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
@@ -117,6 +115,9 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void searchForPill() {
         if (isLocationPermissionGranted()) {
             retryButton.post(() -> {
+                if (diagram != null) {
+                    diagram.startPlayback();
+                }
                 activityIndicator.setVisibility(View.VISIBLE);
                 activityStatus.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.GONE);
@@ -144,6 +145,9 @@ public class ConnectPillFragment extends PillHardwareFragment {
 
     private void presentError(@NonNull final Throwable e) {
         retryButton.post(() -> {
+            if (diagram != null) {
+                diagram.suspendPlayback(true);
+            }
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
             retryButton.setVisibility(View.VISIBLE);
