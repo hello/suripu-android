@@ -17,9 +17,9 @@ import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.pill.PillHardwareFragment;
-import is.hello.sense.ui.fragments.pill.PillUpdateFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
+import is.hello.sense.ui.fragments.pill.UpdateIntroPillFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.util.Logger;
@@ -114,7 +114,7 @@ public class PillUpdateActivity extends InjectionActivity
             return;
         }
 
-       if (fragment instanceof PillUpdateFragment || fragment instanceof BluetoothFragment) {
+       if (fragment instanceof UpdateIntroPillFragment || fragment instanceof BluetoothFragment) {
             showConnectPillScreen();
         } else if (fragment instanceof ConnectPillFragment) {
             showUpdateReadyPill();
@@ -135,7 +135,7 @@ public class PillUpdateActivity extends InjectionActivity
     }
 
     public void showUpdatePillIntro() {
-        pushFragmentAllowingStateLoss(new PillUpdateFragment(), null, false);
+        pushFragmentAllowingStateLoss(new UpdateIntroPillFragment(), null, false);
     }
 
     public void showConnectPillScreen() {

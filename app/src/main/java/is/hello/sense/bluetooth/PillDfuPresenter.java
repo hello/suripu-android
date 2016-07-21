@@ -9,14 +9,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
-import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
@@ -63,13 +61,10 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     protected Observable<PillPeripheral> provideUpdateObservable() {
         final PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setDuration(PeripheralCriteria.DEFAULT_DURATION_MS * 2);
-        criteria.addPredicate(ad -> (ad.anyRecordMatches(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                                         b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b)) ||
-                ad.anyRecordMatches(AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                    b -> Arrays.equals(PillPeripheral.DFU_ADVERTISEMENT_SERVICE_128_BIT, b))));
+        criteria.addPredicate(ad -> (PillPeripheral.isPillNormal(ad) || PillPeripheral.isPillDfu(ad)));
         return bluetoothStack.discoverPeripherals(criteria)
                              .map(gattPeripherals -> {
-                                 Log.e(getClass().getName(), "Desired Pill: " + desiredPillName);
+                                 Log.d(getClass().getName(), "Desired Pill: " + desiredPillName);
                                  PillPeripheral closestDFUPill = null;
                                  for (final GattPeripheral peripheral : gattPeripherals) {
                                      final String pillName = peripheral.getName();
@@ -114,6 +109,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
             intent.putExtra(DfuService.EXTRA_FILE_MIME_TYPE, DfuService.MIME_TYPE_OCTET_STREAM);
             intent.putExtra(DfuService.EXTRA_KEEP_BOND, false);
             intent.putExtra(DfuService.EXTRA_FILE_PATH, file.getPath());
+            intent.putExtra(DfuService.EXTRA_DISABLE_NOTIFICATION, true);
 
             try {
                 context.stopService(intent);

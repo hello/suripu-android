@@ -112,7 +112,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     }
 
     private void checkPhoneBattery() {
-        showBlockingActivity(R.string.title_checking_phone_battery);
         phoneBatteryPresenter.withAnyOperation(Arrays.asList(PillHardwareFragment.pillUpdateOperationNoCharge(),
                                                              PillHardwareFragment.pillUpdateOperationWithCharge()));
         phoneBatteryPresenter.refreshAndUpdate(getActivity());
@@ -150,7 +149,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
                 checkBluetooth();
             } else {
                 updateButtonUI(true, true); //allow user to retry by plugging in phone
-                hideBlockingActivity();
                 presentPhoneBatteryError();
             }
         });

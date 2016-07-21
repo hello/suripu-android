@@ -51,7 +51,6 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
-import is.hello.sense.ui.fragments.pill.PillUpdateFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
@@ -135,8 +134,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         SleepSoundsPresenter.class,
         SleepDurationsPresenter.class,
         ListActivity.class,
-        SleepSoundsPlayerView.class,
-        PillUpdateFragment.class
+        SleepSoundsPlayerView.class
     }
 )
 @SuppressWarnings("UnusedDeclaration")

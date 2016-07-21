@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.graph.presenters.ValuePresenter;
@@ -105,8 +104,10 @@ public abstract class SenseCache extends ValuePresenter<File> {
                             return;
                         }
                         if (connection.getContentLength() == cacheFile.length()) {
-                            Log.e("File Already Found", "Length: " + cacheFile.length());
+                            Log.d(TAG, "File Already Found - Length: " + cacheFile.length());
                             return;
+                        } else {
+                            Log.d(TAG, "Downloading");
                         }
                         input = new BufferedInputStream(url.openStream());
                         output = new FileOutputStream(cacheFile);
@@ -119,6 +120,7 @@ public abstract class SenseCache extends ValuePresenter<File> {
                             output.write(data, 0, count);
                         }
                     } catch (final IOException e) {
+                        Log.e(TAG, e.toString());
                         Logger.error(TAG, e.getLocalizedMessage());
                         downloadFailedReason = e.getLocalizedMessage();
                     } finally {
@@ -131,6 +133,7 @@ public abstract class SenseCache extends ValuePresenter<File> {
                                 output.close();
                             }
                         } catch (final IOException e) {
+                            Log.e(TAG, e.toString());
                             Logger.error(TAG, e.getLocalizedMessage());
                         }
                         if (connection != null) {
@@ -148,8 +151,7 @@ public abstract class SenseCache extends ValuePresenter<File> {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .timeout(20, TimeUnit.SECONDS);
+                .subscribeOn(Schedulers.io());
     }
 
 

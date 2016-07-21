@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeoutException;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
@@ -77,19 +79,15 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         this.skipButton = (Button) view.findViewById(R.id.fragment_update_pill_skip);
         final TextView titleTextView = (TextView) view.findViewById(R.id.fragment_update_pill_title);
         final TextView infoTextView = (TextView) view.findViewById(R.id.fragment_update_pill_subhead);
-
         viewAnimator.setAnimatedView(view.findViewById(R.id.blue_box_view));
         activityStatus.setText(R.string.message_sleep_pill_updating);
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipUpdatingPill());
         Views.setSafeOnClickListener(retryButton, ignored -> updatePill());
-
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
                                         .setOnHelpClickListener(this::help);
-
-
         return view;
     }
 
@@ -100,7 +98,10 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         bindAndSubscribe(firmwareCache.file,
                          file -> pillDfuPresenter.startDfuService(file)
                                                  .subscribe(),
-                         this::presentError);
+                         e -> {
+                             Log.e("Firmware Error: ", e.toString());
+                             this.presentError(e);
+                         });
         firmwareCache.update();
     }
 
@@ -159,8 +160,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         activityStatus.setVisibility(View.GONE);
         retryButton.setVisibility(View.VISIBLE);
         skipButton.setVisibility(View.VISIBLE);
-        @StringRes int title = R.string.error_sleep_pill_title_update_fail;
-        @StringRes int message = R.string.error_sleep_pill_message_update_fail;
+        @StringRes int title = R.string.action_turn_on_ble;
+        @StringRes int message = R.string.info_turn_on_bluetooth;
         final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
         errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
@@ -174,9 +175,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         } else if (e instanceof ApiException) {
             title = R.string.network_activity_no_connectivity;
             message = R.string.error_network_failure_pair_pill;
-        } else if (!(e instanceof OperationTimeoutException)) {
-            title = R.string.action_turn_on_ble;
-            message = R.string.info_turn_on_bluetooth;
+        } else if (e instanceof OperationTimeoutException || e instanceof TimeoutException) {
+            title = R.string.error_sleep_pill_title_update_fail;
+            message = R.string.error_sleep_pill_message_update_fail;
         }
         errorDialogBuilder
                 .withTitle(title)
@@ -191,23 +192,22 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void onFinish(final boolean success) {
-        stateSafeExecutor.execute(() -> {
-            LoadingDialogFragment.show(getFragmentManager(),
-                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-            getFragmentManager().executePendingTransactions();
-            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
-                    stateSafeExecutor.execute(() -> {
-                        if (success) {
-                            final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
-                            pillDfuPresenter.reset();
-                            final Intent intent = new Intent();
-                            intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                            getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, intent);
-                        } else {
-                            getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, null);
-                        }
-                    }), R.string.message_sleep_pill_updated);
-        });
+        LoadingDialogFragment.show(getFragmentManager(),
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+        getFragmentManager().executePendingTransactions();
+        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
+
+                stateSafeExecutor.execute(() -> {
+                    if (success) {
+                        final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
+                        pillDfuPresenter.reset();
+                        final Intent intent = new Intent();
+                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                        getPillUpdateActivity().flowFinished(this, Activity.RESULT_OK, intent);
+                    } else {
+                        getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, null);
+                    }
+                }), R.string.message_sleep_pill_updated);
     }
 
     private void help(final View view) {

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.Serializable;
@@ -36,7 +37,7 @@ public final class PillPeripheral implements Serializable {
     private static final UUID CHARACTERISTIC_COMMAND_UUID = UUID.fromString("0000DEED-0000-1000-8000-00805F9B34FB");
     private static final byte COMMAND_WIPE_FIRMWARE = 8;
     private static final int TIME_OUT_SECONDS = 10;
-    private static final int minRSSI = -100; //todo get final value
+    private static final int minRSSI = -70;
 
     //endregion
 
@@ -50,15 +51,28 @@ public final class PillPeripheral implements Serializable {
     //endregion
 
 
+    public static boolean isPillDfu(@Nullable final AdvertisingData advertisingData) {
+        if (advertisingData == null) {
+            return false;
+        }
+        return advertisingData.anyRecordMatches(AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
+                                                b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
+    }
+
+    public static boolean isPillNormal(@Nullable final AdvertisingData advertisingData) {
+        if (advertisingData == null) {
+            return false;
+        }
+        return advertisingData.anyRecordMatches(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
+                                                 b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
+    }
+
     //region Creation
 
     PillPeripheral(@NonNull final GattPeripheral gattPeripheral) {
         this.gattPeripheral = gattPeripheral;
 
-        final AdvertisingData advertisingData = gattPeripheral.getAdvertisingData();
-        this.inDfuMode = advertisingData.anyRecordMatches(AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                                          b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
-
+        this.inDfuMode = isPillDfu(gattPeripheral.getAdvertisingData());
     }
     //endregion
 
@@ -165,7 +179,8 @@ public final class PillPeripheral implements Serializable {
                 .flatMap(PillPeripheral::connect)
                 .flatMap(PillPeripheral::wipeFirmware)
                 .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
-                .timeout(60, TimeUnit.SECONDS);
+                .timeout(60, TimeUnit.SECONDS)
+                .delay(5, TimeUnit.SECONDS); // avoid any potential race conditions
     }
 
     @NonNull

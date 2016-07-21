@@ -98,9 +98,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
                              } else {
                                  setStatus(R.string.connect_pill_fragment_preparing);
                                  pillPeripheral.enterDfuMode(getActivity())
-                                         .delay(5, TimeUnit.SECONDS) // seems to help
-                                         .subscribe(this::pillIsInDFUMode,
-                                                    this::presentError);
+                                               .subscribe(this::pillIsInDFUMode,
+                                                          this::presentError);
                              }
                          }, this::presentError);
         devicesPresenter.update();
@@ -132,7 +131,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void bindDevices(@NonNull final Devices devices) {
         final SleepPillDevice sleepPillDevice = devices.getSleepPill();
         if (sleepPillDevice == null || !sleepPillDevice.shouldUpdate()) {
-            getActivity().finish();
+            getPillUpdateActivity().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
         assert sleepPillDevice.firmwareUpdateUrl != null;
