@@ -3,6 +3,7 @@ package is.hello.sense.util;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 
 import java.io.BufferedInputStream;
@@ -13,16 +14,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.presenters.ValuePresenter;
+import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public abstract class SenseCache {
+public abstract class SenseCache extends ValuePresenter<File> {
     private static final String TAG = SenseCache.class.getName() + ".TAG";
 
     private final File cache;
+    private String urlLocation;
+    public final PresenterSubject<File> file = this.subject;
 
     SenseCache(@NonNull final Context context, @NonNull final String directoryName) {
         if (directoryName.isEmpty() || directoryName.charAt(0) != '/') {
@@ -36,6 +41,10 @@ public abstract class SenseCache {
         }
     }
 
+    public void setUrlLocation(@NonNull final String urlLocation) {
+        this.urlLocation = urlLocation;
+    }
+
     public File getCacheFile(@NonNull final String urlLocation) {
         final String fileName = Uri.parse(urlLocation).getLastPathSegment();
         final File file = new File(cache, fileName);
@@ -47,11 +56,28 @@ public abstract class SenseCache {
         for (final String child : cache.list()) {
             new File(cache, child).delete();
         }
+        file.forget();
     }
 
-    public rx.Observable<File> downloadFileObservable(@NonNull final String urlLocation) {
-        return rx.Observable
-                .create((rx.Observable.OnSubscribe<File>) subscriber -> {
+    @Override
+    protected boolean isDataDisposable() {
+        return false;
+    }
+
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    protected Observable<File> provideUpdateObservable() {
+        Log.d(TAG, "Url: " + urlLocation);
+        if (urlLocation == null) {
+            throw new Error("Cache UrlLocation is null");
+        }
+        return Observable
+                .create((Observable.OnSubscribe<File>) subscriber -> {
+                    Log.d(TAG, "Updating");
                     final boolean[] cancelDownload = {false};
                     subscriber.add(new Subscription() {
                         @Override
@@ -77,6 +103,12 @@ public abstract class SenseCache {
                             downloadFailedReason = connection.getResponseCode() + ", " + connection.getResponseMessage(); //todo change
                             return;
                         }
+                        if (connection.getContentLength() == cacheFile.length()) {
+                            Log.d(TAG, "File Already Found - Length: " + cacheFile.length());
+                            return;
+                        } else {
+                            Log.d(TAG, "Downloading");
+                        }
                         input = new BufferedInputStream(url.openStream());
                         output = new FileOutputStream(cacheFile);
                         final byte data[] = new byte[1024];
@@ -88,6 +120,7 @@ public abstract class SenseCache {
                             output.write(data, 0, count);
                         }
                     } catch (final IOException e) {
+                        Log.d(TAG, e.toString());
                         Logger.error(TAG, e.getLocalizedMessage());
                         downloadFailedReason = e.getLocalizedMessage();
                     } finally {
@@ -100,6 +133,7 @@ public abstract class SenseCache {
                                 output.close();
                             }
                         } catch (final IOException e) {
+                            Log.d(TAG, e.toString());
                             Logger.error(TAG, e.getLocalizedMessage());
                         }
                         if (connection != null) {
@@ -117,8 +151,7 @@ public abstract class SenseCache {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .timeout(20, TimeUnit.SECONDS);
+                .subscribeOn(Schedulers.io());
     }
 
 

@@ -62,21 +62,28 @@ public class BluetoothFragment extends HardwareFragment {
     }
 
 
-
     public void done() {
         hideBlockingActivity(true, () -> {
-            final int nextScreenId = getArguments().getInt(ARG_NEXT_SCREEN_ID,-1);
-            if(nextScreenId != -1 && getActivity() instanceof FragmentNavigation){
-                ((FragmentNavigation) getActivity()).flowFinished(this, nextScreenId, null);
-            } else{
-                finishWithResult(Activity.RESULT_CANCELED, null);
+            FragmentNavigation fragmentNavigation = getFragmentNavigation();
+            if (fragmentNavigation != null) {
+                if (getArguments() != null && getArguments().containsKey(ARG_NEXT_SCREEN_ID)) {
+                    final int nextScreenId = getArguments().getInt(ARG_NEXT_SCREEN_ID, -1);
+                    if (nextScreenId != -1) {
+                        fragmentNavigation.flowFinished(this, nextScreenId, null);
+                        return;
+                    }
+                }
+                fragmentNavigation.flowFinished(this, Activity.RESULT_OK, null);
+                return;
             }
+            finishWithResult(Activity.RESULT_OK, null);
         });
     }
 
     public void turnOn(@NonNull final View sender) {
         showBlockingActivity(R.string.title_turning_on);
-        bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {}, this::presentError);
+        bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {
+        }, this::presentError);
     }
 
     public void presentError(Throwable e) {

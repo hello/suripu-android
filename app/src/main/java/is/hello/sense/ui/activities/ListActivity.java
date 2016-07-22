@@ -451,14 +451,12 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                         playerStatus = PlayerStatus.Loading;
                         enterLoadingState();
                     });
-
-                    final Observable<File> downloadFileObservable =
-                            audioCache.downloadFileObservable(item.getPreviewUrl());
-
+                    audioCache.setUrlLocation(item.getPreviewUrl());
                     subscription = bindAndSubscribe(
-                            downloadFileObservable,
+                            audioCache.file,
                             this::audioFileDownloaded,
                             this::audioFileDownloadError);
+                    audioCache.update();
                 }
             });
 

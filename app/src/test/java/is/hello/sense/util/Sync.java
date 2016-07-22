@@ -35,7 +35,7 @@ public final class Sync<T> implements Iterable<T> {
      * <p/>
      * This method <b>does not</b> work PresenterSubject.
      */
-    public static <T> Sync<T> wrap(@NonNull Observable<T> source) {
+    public static <T> Sync<T> wrap(@NonNull final Observable<T> source) {
         if (source instanceof PresenterSubject) {
             throw new IllegalArgumentException("of(Observable) cannot be used with PresenterSubject!");
         }
@@ -47,7 +47,7 @@ public final class Sync<T> implements Iterable<T> {
      * Wraps a presenter subject, converting it to a bounded observable
      * by <code>take</code>ing a given number of emitted values from it.
      */
-    public static <T> Sync<T> wrap(int limit, @NonNull PresenterSubject<T> source) {
+    public static <T> Sync<T> wrap(final int limit, @NonNull final PresenterSubject<T> source) {
         return new Sync<>(source.take(limit));
     }
 
@@ -55,7 +55,7 @@ public final class Sync<T> implements Iterable<T> {
      * Wraps a presenter subject, converting it to a bounded observable
      * by <code>take</code>ing one emitted value from it.
      */
-    public static <T> Sync<T> wrap(@NonNull PresenterSubject<T> source) {
+    public static <T> Sync<T> wrap(@NonNull final PresenterSubject<T> source) {
         return wrap(1, source);
     }
 
@@ -68,15 +68,15 @@ public final class Sync<T> implements Iterable<T> {
      *     Account account = Sync.wrapAfter(presenter::update, presenter.account).last();
      * </pre>
      */
-    public static <T> Sync<T> wrapAfter(@NonNull Action0 action, @NonNull Observable<T> source) {
-        Observable<T> next = source.take(1);
-        Sync<T> sync = new Sync<>(next);
+    public static <T> Sync<T> wrapAfter(@NonNull final Action0 action, @NonNull final Observable<T> source) {
+        final Observable<T> next = source.take(1);
+        final Sync<T> sync = new Sync<>(next);
         action.call();
         return sync;
     }
 
 
-    private Sync(@NonNull Observable<T> source) {
+    private Sync(@NonNull final Observable<T> source) {
         this.observable = source.toBlocking();
     }
 
@@ -99,7 +99,7 @@ public final class Sync<T> implements Iterable<T> {
      * Calls a given action for each value emitted by the wrapped
      * observable, blocking until the observable completes.
      */
-    public void forEach(@NonNull Action1<T> action) {
+    public void forEachAction(@NonNull final Action1<T> action) {
         observable.forEach(action);
     }
 
@@ -121,11 +121,11 @@ public final class Sync<T> implements Iterable<T> {
      * This method raises an assertion failure if the observable does not fail,
      * or if the error passed out of the observable does not match the given class.
      */
-    public <E extends Throwable> void assertThrows(@NonNull Class<E> errorClass) {
+    public <E extends Throwable> void assertThrows(@NonNull final Class<E> errorClass) {
         try {
             last();
             Assert.fail("Observable did not fail as expected");
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!errorClass.isAssignableFrom(e.getClass()) &&
                     e.getCause() != null && !errorClass.isAssignableFrom(e.getCause().getClass())) {
                 Assert.fail("Unexpected failure '" + e.getClass() + "'");
@@ -138,8 +138,8 @@ public final class Sync<T> implements Iterable<T> {
      * that the value matches the given matcher.
      * @param matcher The matcher.
      */
-    public T assertThat(@NonNull Matcher<? super T> matcher) {
-        T last = last();
+    public T assertThat(@NonNull final Matcher<? super T> matcher) {
+        final T last = last();
         Assert.assertThat(last, matcher);
         return last;
     }
@@ -170,7 +170,7 @@ public final class Sync<T> implements Iterable<T> {
      * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
     @Deprecated
-    public void assertEquals(T value) {
+    public void assertEquals(final T value) {
         Assert.assertEquals(value, last());
     }
 
@@ -180,7 +180,7 @@ public final class Sync<T> implements Iterable<T> {
      * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
     @Deprecated
-    public void assertTrue(@NonNull Func1<T, Boolean> predicate) {
+    public void assertTrue(@NonNull final Func1<T, Boolean> predicate) {
         Assert.assertTrue(predicate.call(last()));
     }
 
@@ -190,7 +190,7 @@ public final class Sync<T> implements Iterable<T> {
      * @deprecated Prefer {@link #assertThat(Matcher)} for new tests.
      */
     @Deprecated
-    public void assertFalse(@NonNull Func1<T, Boolean> predicate) {
+    public void assertFalse(@NonNull final Func1<T, Boolean> predicate) {
         Assert.assertFalse(predicate.call(last()));
     }
 
@@ -205,7 +205,7 @@ public final class Sync<T> implements Iterable<T> {
      * @see #wrap(rx.Observable)
      * @see #last()
      */
-    public static <T> T last(@NonNull Observable<T> source) {
+    public static <T> T last(@NonNull final Observable<T> source) {
         return wrap(source).last();
     }
 
@@ -215,7 +215,7 @@ public final class Sync<T> implements Iterable<T> {
      * @see #wrap(is.hello.sense.graph.PresenterSubject)
      * @see #last()
      */
-    public static <T> T next(@NonNull PresenterSubject<T> source) {
+    public static <T> T next(@NonNull final PresenterSubject<T> source) {
         return wrap(source).last();
     }
 

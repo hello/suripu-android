@@ -133,6 +133,8 @@
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="dialog_title_confirm_leave_app">Leaving Sense App</string>
     <string name="dialog_message_confirm_leave_update_pill">Sleep Pill will continue updating in the background. Please note your Sleep Pill will not function until the update is successful.</string>
+    <string name="dialog_title_skip_update">Update Pill</string>
+    <string name="dialog_message_skip_update">Please note your Sleep Pill will not function until the update is successful.</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
@@ -545,6 +547,9 @@
     <string name="sense_offline_message">We haven\'t received data from your Sense recently. Make sure Sense is connected to Wi-Fi.</string>
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
+    <string name="connect_pill_fragment_preparing">Preparing update</string>
+    <string name="connect_pill_fragment_operation">Connect Pill</string>
+    <string name="update_ready_pill_fragment_operation">Update Pill</string>
 
     <string name="share_text">See how i\'m improving my sleep with insights from Sense. %1$s #MySense</string>
 
@@ -580,6 +585,7 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
+    <string name="message_no_pills">No Pills Found</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

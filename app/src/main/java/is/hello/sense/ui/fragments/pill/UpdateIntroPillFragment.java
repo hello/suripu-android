@@ -1,5 +1,7 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +19,6 @@ import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
-import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -31,28 +32,17 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Inject
     PhoneBatteryPresenter phoneBatteryPresenter;
 
-    private static final String ARG_NEXT_SCREEN_ID = UpdateIntroPillFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
-
     private Button primaryButton;
-
     private ViewAnimator viewAnimator;
-
-    public static UpdateIntroPillFragment newInstance(final int nextScreenId) {
-        final UpdateIntroPillFragment fragment = new UpdateIntroPillFragment();
-
-        final Bundle arguments = new Bundle();
-        arguments.putInt(ARG_NEXT_SCREEN_ID, nextScreenId);
-        fragment.setArguments(arguments);
-
-        return fragment;
-    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getFragmentNavigation() == null) {
+            finishWithResult(Activity.RESULT_CANCELED, null);
+            return;
+        }
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
-        addPresenter(devicesPresenter);
         addPresenter(phoneBatteryPresenter);
         setRetainInstance(true);
 
@@ -62,22 +52,18 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
         final View animatedView = viewAnimator.inflateView(inflater, container, R.layout.pill_ota_view, R.id.blue_box_view);
-
         final ViewGroup view = new OnboardingSimpleStepView(this, inflater)
                 .setAnimatedView(animatedView)
                 .setHeadingText(R.string.title_update_sleep_pill)
                 .setSubheadingText(R.string.info_update_sleep_pill)
                 .setPrimaryOnClickListener(this::onPrimaryButtonClick)
-                .setSecondaryOnClickListener(this::onCancel)
+                .setSecondaryOnClickListener(view1 -> this.cancel(false))
                 .setSecondaryButtonText(R.string.action_cancel)
                 .setWantsSecondaryButton(true)
                 .setToolbarWantsBackButton(false)
                 .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL));
-
         this.primaryButton = (Button) view.findViewById(R.id.view_onboarding_simple_step_primary);
-
         return view;
     }
 
@@ -86,6 +72,10 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribeDevice();
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
+    }
+
+    public void onPrimaryButtonClick(@NonNull final View ignored) {
+        checkPhoneBattery();
     }
 
     @Override
@@ -111,80 +101,65 @@ public class UpdateIntroPillFragment extends PillHardwareFragment {
 
     @Override
     void onLocationPermissionGranted(final boolean isGranted) {
-        if(isGranted){
+        if (isGranted) {
             checkPhoneBattery();
-        }
-    }
-
-    public void onCancel(final View ignored) {
-        ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_CANCELED, null);
-    }
-
-    public void onPrimaryButtonClick(@NonNull final View ignored){
-        if(isLocationPermissionGranted()){
-            checkPhoneBattery();
-        } else{
-            requestLocationPermission();
         }
     }
 
     private void bindAndSubscribeDevice() {
         bindAndSubscribe(
-                phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS)
-                , this::onPhoneCheckNext
-                , this::presentError);
+                phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS),
+                this::onPhoneCheckNext,
+                this::presentError);
     }
 
-    private void done() {
-        final int nextScreenId = getArguments().getInt(ARG_NEXT_SCREEN_ID,-1);
-        if(nextScreenId != -1 && getActivity() instanceof FragmentNavigation){
-            ((FragmentNavigation) getActivity()).flowFinished(this, nextScreenId, null);
-        } else{
-            onCancel(null);
-        }
-    }
-
-    private void checkPhoneBattery(){
-        showBlockingActivity(R.string.title_checking_phone_battery);
+    private void checkPhoneBattery() {
         phoneBatteryPresenter.withAnyOperation(Arrays.asList(PillHardwareFragment.pillUpdateOperationNoCharge(),
                                                              PillHardwareFragment.pillUpdateOperationWithCharge()));
         phoneBatteryPresenter.refreshAndUpdate(getActivity());
     }
 
-    private void updateButtonUI(final boolean shouldEnable, final boolean allowRetry){
+    private void done() {
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+    }
+
+    public void cancel(final boolean needsBle) {
+        final Intent intent = new Intent();
+        intent.putExtra(PillUpdateActivity.ARG_NEEDS_BLUETOOTH, needsBle);
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, intent);
+    }
+
+
+    private void updateButtonUI(final boolean shouldEnable, final boolean allowRetry) {
         primaryButton.setEnabled(shouldEnable);
-        primaryButton.setText( allowRetry ? R.string.action_retry : R.string.action_continue);
+        primaryButton.setText(allowRetry ? R.string.action_retry : R.string.action_continue);
     }
 
     private void presentError(final Throwable e) {
-        hideBlockingActivity(false, () -> {
-            updateButtonUI(true, true);
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+        updateButtonUI(true, true);
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                .withSupportLink()
+                .build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
     }
 
     private void onPhoneCheckNext(final boolean hasEnoughBattery) {
-        stateSafeExecutor.execute( () -> {
-            if(hasEnoughBattery){
+        stateSafeExecutor.execute(() -> {
+            if (hasEnoughBattery) {
                 checkBluetooth();
-            } else{
+            } else {
                 updateButtonUI(true, true); //allow user to retry by plugging in phone
-                hideBlockingActivity();
                 presentPhoneBatteryError();
             }
         });
     }
 
-    private void checkBluetooth(){
-        showBlockingActivity(R.string.title_checking_bluetooth_connectivity);
-        hideBlockingActivity();
-        if (!bluetoothStack.isEnabled()) {
-            ((FragmentNavigation) getActivity()).flowFinished(this, PillUpdateActivity.FLOW_BLUETOOTH_CHECK, null);
-        } else{
+    private void checkBluetooth() {
+        if (bluetoothStack.isEnabled()) {
             done();
+        } else {
+            cancel(true);
         }
     }
 }

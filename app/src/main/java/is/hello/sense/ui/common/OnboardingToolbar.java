@@ -32,14 +32,18 @@ public class OnboardingToolbar {
     private final ImageButton backButton;
     private final ImageButton helpButton;
 
-    private @Nullable View.OnClickListener onHelpClickListener;
-    private @Nullable View.OnLongClickListener onHelpLongClickListener;
+    private
+    @Nullable
+    View.OnClickListener onHelpClickListener;
+    private
+    @Nullable
+    View.OnLongClickListener onHelpLongClickListener;
 
     public static OnboardingToolbar of(@NonNull final Fragment fragment, @NonNull final View view) {
         return new OnboardingToolbar(fragment, view.findViewById(R.id.sub_fragment_onboarding_toolbar));
     }
 
-    public void onDestroyView(){
+    public void onDestroyView() {
         backButton.setOnClickListener(null);
         helpButton.setOnClickListener(null);
         onHelpClickListener = null;
@@ -107,6 +111,12 @@ public class OnboardingToolbar {
 
     public OnboardingToolbar hide() {
         toolbarView.setVisibility(View.GONE);
+
+        return this;
+    }
+
+    public OnboardingToolbar setVisible(final boolean visible) {
+        toolbarView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
 
         return this;
     }

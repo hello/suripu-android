@@ -62,7 +62,8 @@ public class SleepPillDevice extends BaseDevice {
         RED(R.string.device_color_red),
         UNKNOWN(R.string.missing_data_placeholder);
 
-        public final @StringRes
+        @StringRes
+        public final
         int nameRes;
 
         Color(int nameRes) {

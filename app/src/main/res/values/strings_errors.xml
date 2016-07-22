@@ -120,4 +120,7 @@
 
     <string name="error_phone_battery_low_title">Device battery low</string>
     <string name="error_phone_battery_low_message">To continue this update, your mobile device needs to be charged at least 20% or be connected to its charger.</string>
+
+    <string name="error_pill_too_far">Sleep Pill out of range</string>
+    <string name="error_pill_not_found">Sleep Pill not found</string>
 </resources>
