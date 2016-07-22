@@ -179,8 +179,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         retryButton.setVisibility(View.VISIBLE);
         skipButton.setVisibility(View.VISIBLE);
 
-        @StringRes int title = R.string.action_turn_on_ble;
-        @StringRes int message = R.string.info_turn_on_bluetooth;
+        @StringRes int title = R.string.error_sleep_pill_title_update_fail;
+        @StringRes int message = R.string.error_sleep_pill_message_update_fail;
         final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
         errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
@@ -193,9 +193,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         } else if (e instanceof ApiException) {
             title = R.string.network_activity_no_connectivity;
             message = R.string.error_network_failure_pair_pill;
-        } else if (e instanceof OperationTimeoutException || e instanceof TimeoutException) {
-            title = R.string.error_sleep_pill_title_update_fail;
-            message = R.string.error_sleep_pill_message_update_fail;
         }
         errorDialogBuilder
                 .withTitle(title)
