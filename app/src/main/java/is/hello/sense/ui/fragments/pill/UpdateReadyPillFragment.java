@@ -44,11 +44,13 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         implements OnBackPressedInterceptor, DfuProgressListener {
 
     private final ViewAnimator viewAnimator = new ViewAnimator();
+    private SenseAlertDialog backPressedDialog;
+    private SenseAlertDialog skipPressedDialog;
     private ProgressBar updateIndicator;
     private TextView activityStatus;
     private Button retryButton;
     private Button skipButton;
-    private SenseAlertDialog backPressedDialog;
+    private boolean isUploading = false;
 
     @Inject
     SenseCache.FirmwareCache firmwareCache;
@@ -65,6 +67,23 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             return;
         }
         addPresenter(firmwareCache);
+        skipPressedDialog = new SenseAlertDialog(getActivity());
+        skipPressedDialog.setCanceledOnTouchOutside(true);
+        skipPressedDialog.setTitle(R.string.dialog_title_skip_update);
+        skipPressedDialog.setMessage(R.string.dialog_message_skip_update);
+        skipPressedDialog.setPositiveButton(R.string.action_ok, (which, ignored) -> {
+            onFinish(false);
+        });
+        skipPressedDialog.setNegativeButton(android.R.string.cancel, null);
+
+        backPressedDialog = new SenseAlertDialog(getActivity());
+        backPressedDialog.setCanceledOnTouchOutside(true);
+        backPressedDialog.setTitle(R.string.dialog_title_confirm_leave_app);
+        backPressedDialog.setMessage(R.string.dialog_message_confirm_leave_update_pill);
+        backPressedDialog.setPositiveButton(R.string.action_ok, (which, ignored) -> {
+            startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME));
+        });
+        backPressedDialog.setNegativeButton(android.R.string.cancel, null);
     }
 
     @Nullable
@@ -81,7 +100,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         activityStatus.setText(R.string.message_sleep_pill_updating);
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
-        Views.setTimeOffsetOnClickListener(skipButton, ignored -> onFinish(false));
+        Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipPressedDialog.show());
         Views.setSafeOnClickListener(retryButton, ignored -> updatePill());
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
@@ -94,8 +113,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         super.onViewCreated(view, savedInstanceState);
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
         bindAndSubscribe(firmwareCache.file,
-                         file -> pillDfuPresenter.startDfuService(file)
-                                                 .subscribe(),
+                         file -> {
+                             isUploading = true;
+                             pillDfuPresenter.startDfuService(file)
+                                             .subscribe();
+                         },
                          this::presentError);
         updatePill();
     }
@@ -122,7 +144,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         this.activityStatus = null;
         this.retryButton.setOnClickListener(null);
         this.retryButton = null;
-        this.backPressedDialog = null;
+        skipPressedDialog = null;
+        backPressedDialog = null;
 
         viewAnimator.onDestroyView();
     }
@@ -150,6 +173,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     public void presentError(final Throwable e) {
         toolbar.setVisible(true);
+        isUploading = false;
         updateIndicator.setVisibility(View.GONE);
         activityStatus.setVisibility(View.GONE);
         retryButton.setVisibility(View.VISIBLE);
@@ -201,17 +225,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (this.backPressedDialog == null) {
-            this.backPressedDialog = new SenseAlertDialog(getActivity());
-            backPressedDialog.setCanceledOnTouchOutside(true);
-            backPressedDialog.setTitle(R.string.dialog_title_confirm_leave_app);
-            backPressedDialog.setMessage(R.string.dialog_message_confirm_leave_update_pill);
-            backPressedDialog.setPositiveButton(R.string.action_ok, (which, ignored) -> {
-                startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME));
-            });
-            backPressedDialog.setNegativeButton(android.R.string.cancel, null);
+        if (isUploading) {
+            backPressedDialog.show();
+        } else {
+            skipPressedDialog.show();
         }
-        backPressedDialog.show();
         return true;
     }
 
@@ -236,6 +254,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onDfuProcessStarted(final String deviceAddress) {
         Log.d("DFU Listener", "onDfuProcessStarted");
+        isUploading = true;
 
     }
 

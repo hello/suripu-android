@@ -133,6 +133,8 @@
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
     <string name="dialog_title_confirm_leave_app">Leaving Sense App</string>
     <string name="dialog_message_confirm_leave_update_pill">Sleep Pill will continue updating in the background. Please note your Sleep Pill will not function until the update is successful.</string>
+    <string name="dialog_title_skip_update">Update Pill</string>
+    <string name="dialog_message_skip_update">Please note your Sleep Pill will not function until the update is successful.</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
