@@ -219,12 +219,12 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
         this.surfaceTexture = surfaceTexture;
         clearIfNeeded();
+        ensureVideoSurface();
         if (autoStart && isShown()) {
             player.startPlayback();
-        }else {
+        }else if (player.getState() != Player.STATE_LOADING) {
             player.seekTo(0);
         }
-        ensureVideoSurface();
     }
 
     @Override

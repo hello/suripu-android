@@ -139,15 +139,15 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-
+        this.pillDfuPresenter.reset();
         this.activityStatus = null;
         this.retryButton.setOnClickListener(null);
         this.retryButton = null;
-        skipPressedDialog = null;
-        backPressedDialog = null;
+        this.skipPressedDialog = null;
+        this.backPressedDialog = null;
 
         viewAnimator.onDestroyView();
+        super.onDestroyView();
     }
 
 
