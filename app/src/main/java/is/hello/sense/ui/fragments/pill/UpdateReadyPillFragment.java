@@ -26,7 +26,6 @@ import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
-import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.functional.Functions;
@@ -174,11 +173,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private void connectPill() {
         activityStatus.post( () -> {
             if (isLocationPermissionGranted()) {
-                toolbar.setVisible(false);
-                retryButton.setVisibility(View.GONE);
-                activityStatus.setVisibility(View.VISIBLE);
-                updateIndicator.setVisibility(View.VISIBLE);
-                skipButton.setVisibility(View.GONE);
+                updateUI(false);
                 pillDfuPresenter.update();
             } else {
                 requestLocationPermission();
@@ -190,12 +185,18 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         firmwareCache.update();
     }
 
+    private void updateUI(final boolean onError){
+        activityStatus.post( () -> {
+            toolbar.setVisible(onError);
+            skipButton.setVisibility(onError ? View.VISIBLE : View.GONE);
+            retryButton.setVisibility(onError ? View.VISIBLE : View.GONE);
+            activityStatus.setVisibility(onError ? View.GONE : View.VISIBLE);
+            updateIndicator.setVisibility(onError ? View.GONE : View.VISIBLE);
+        });
+    }
+
     public void presentError(final Throwable e) {
-        toolbar.setVisible(true);
-        updateIndicator.setVisibility(View.GONE);
-        activityStatus.setVisibility(View.GONE);
-        retryButton.setVisibility(View.VISIBLE);
-        skipButton.setVisibility(View.VISIBLE);
+        updateUI(true);
 
         @StringRes int title = R.string.error_sleep_pill_title_update_fail;
         @StringRes int message = R.string.error_sleep_pill_message_update_fail;
@@ -252,7 +253,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     /*
-      To use when user backs presses to leave app
+      todo use when user backs presses to leave app
    */
     private NotificationCompat.Builder getNotificationBuilder(){
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
