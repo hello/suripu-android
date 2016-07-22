@@ -2,11 +2,14 @@ package is.hello.sense.ui.fragments.pill;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -230,6 +233,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                 stateSafeExecutor.execute(() -> {
                    devicesPresenter.latest().doOnNext( devices -> {
                        final String deviceId = devicesPresenter.devices.getValue().getSleepPill().deviceId;
+                       pillDfuPresenter.reset();
                        final Intent intent = new Intent();
                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
@@ -247,6 +251,21 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         return true;
     }
 
+    /*
+      To use when user backs presses to leave app
+   */
+    private NotificationCompat.Builder getNotificationBuilder(){
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
+        notificationBuilder.setContentTitle(getString(R.string.notification_title_update_sleep_pill));
+        notificationBuilder.setContentText(getString(R.string.notification_update_progress));
+        notificationBuilder.setColor(ContextCompat.getColor(getActivity(), R.color.primary));
+        notificationBuilder.setSmallIcon(R.drawable.pill_icon);
+        final Intent intent = new Intent(getActivity(), PillUpdateActivity.class);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notificationBuilder.setContentIntent(pendingIntent);
+
+        return notificationBuilder;
+    }
 
     @Override
     public void onDeviceConnecting(final String deviceAddress) {
@@ -280,7 +299,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     public void onProgressChanged(final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
         Log.d("DFU Listener", "onProgressChanged " + percent + "%");
         updateIndicator.post(() -> updateIndicator.setProgress(percent));
-
 
     }
 
