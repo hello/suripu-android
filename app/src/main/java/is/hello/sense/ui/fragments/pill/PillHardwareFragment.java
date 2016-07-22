@@ -39,8 +39,8 @@ public abstract class PillHardwareFragment extends InjectionFragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPresenter(devicesPresenter);
-        addPresenter(pillDfuPresenter);
+        //addPresenter(devicesPresenter);
+        //addPresenter(pillDfuPresenter);
     }
 
     @Override

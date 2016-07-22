@@ -26,6 +26,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -50,7 +51,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private TextView activityStatus;
     private Button retryButton;
     private Button skipButton;
-    private boolean isUploading = false;
 
     @Inject
     SenseCache.FirmwareCache firmwareCache;
@@ -101,7 +101,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         titleTextView.setText(R.string.title_update_sleep_pill);
         infoTextView.setText(R.string.info_update_sleep_pill);
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipPressedDialog.show());
-        Views.setSafeOnClickListener(retryButton, ignored -> updatePill());
+        Views.setSafeOnClickListener(retryButton, ignored -> connectPill());
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
                                         .setOnHelpClickListener(this::help);
@@ -112,14 +112,24 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
-        bindAndSubscribe(firmwareCache.file,
-                         file -> {
-                             isUploading = true;
-                             pillDfuPresenter.startDfuService(file)
-                                             .subscribe();
+        bindAndSubscribe(pillDfuPresenter.sleepPill,
+                         pillPeripheral -> {
+                             if (pillPeripheral == null) {
+                                 presentError(new PillNotFoundException());
+                             } else if (pillPeripheral.isTooFar()) {
+                                 presentError(new RssiException());
+                             } else {
+                                 pillPeripheral.enterDfuMode(getActivity())
+                                               .subscribe( ignore -> updatePill(),
+                                                           this::presentError);
+                             }
                          },
                          this::presentError);
-        updatePill();
+
+        bindAndSubscribe(firmwareCache.file
+                                 .flatMap(file -> pillDfuPresenter.startDfuService(file)),
+                         Functions.NO_OP,
+                         this::presentError);
     }
 
     @Override
@@ -139,7 +149,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     @Override
     public void onDestroyView() {
-        this.pillDfuPresenter.reset();
+        super.onDestroyView();
+
         this.activityStatus = null;
         this.retryButton.setOnClickListener(null);
         this.retryButton = null;
@@ -147,33 +158,37 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         this.backPressedDialog = null;
 
         viewAnimator.onDestroyView();
-        super.onDestroyView();
     }
 
 
     @Override
     void onLocationPermissionGranted(final boolean isGranted) {
         if (isGranted) {
-            updatePill();
+            connectPill();
         }
     }
 
+    private void connectPill() {
+        activityStatus.post( () -> {
+            if (isLocationPermissionGranted()) {
+                toolbar.setVisible(false);
+                retryButton.setVisibility(View.GONE);
+                activityStatus.setVisibility(View.VISIBLE);
+                updateIndicator.setVisibility(View.VISIBLE);
+                skipButton.setVisibility(View.GONE);
+                pillDfuPresenter.update();
+            } else {
+                requestLocationPermission();
+            }
+        });
+    }
+
     private void updatePill() {
-        if (isLocationPermissionGranted()) {
-            toolbar.setVisible(false);
-            retryButton.setVisibility(View.GONE);
-            activityStatus.setVisibility(View.VISIBLE);
-            updateIndicator.setVisibility(View.VISIBLE);
-            skipButton.setVisibility(View.GONE);
-            firmwareCache.update();
-        } else {
-            requestLocationPermission();
-        }
+        firmwareCache.update();
     }
 
     public void presentError(final Throwable e) {
         toolbar.setVisible(true);
-        isUploading = false;
         updateIndicator.setVisibility(View.GONE);
         activityStatus.setVisibility(View.GONE);
         retryButton.setVisibility(View.VISIBLE);
@@ -203,6 +218,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void onFinish(final boolean success) {
+        pillDfuPresenter.reset();
         if (!success) {
             getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
@@ -212,17 +228,18 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
                 stateSafeExecutor.execute(() -> {
-                    final String deviceId = pillDfuPresenter.sleepPill.getValue().getName();
-                    pillDfuPresenter.reset();
-                    final Intent intent = new Intent();
-                    intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                    getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+                   devicesPresenter.latest().doOnNext( devices -> {
+                       final String deviceId = devicesPresenter.devices.getValue().getSleepPill().deviceId;
+                       final Intent intent = new Intent();
+                       intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                       getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+                   });
                 }), R.string.message_sleep_pill_updated);
     }
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (isUploading) {
+        if (pillDfuPresenter.isUpdating()) {
             backPressedDialog.show();
         } else {
             skipPressedDialog.show();
@@ -251,8 +268,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onDfuProcessStarted(final String deviceAddress) {
         Log.d("DFU Listener", "onDfuProcessStarted");
-        isUploading = true;
-
     }
 
     @Override
@@ -303,6 +318,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     public void onError(final String deviceAddress, final int error, final int errorType, final String message) {
         Log.d("DFU Listener", "onError: " + message + ". errorType: " + errorType + ". error: " + error);
         Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_OTA_FAIL, null);
+        pillDfuPresenter.setIsUpdating(false);
         presentError(new Throwable(message));
     }
 

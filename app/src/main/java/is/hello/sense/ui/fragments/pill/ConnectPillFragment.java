@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
@@ -22,11 +21,9 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.bluetooth.PillDfuPresenter;
-import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.PillPeripheral;
+import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
-import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
@@ -61,7 +58,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
             requestBle();
             return;
         }
-        addPresenter(firmwareCache);
+        //addPresenter(firmwareCache);
+        addPresenter(pillDfuPresenter);
     }
 
     @Nullable
@@ -92,10 +90,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
                              } else if (pillPeripheral.isTooFar()) {
                                  presentError(new RssiException());
                              } else {
-                                 setStatus(R.string.connect_pill_fragment_preparing);
-                                 pillPeripheral.enterDfuMode(getActivity())
-                                               .subscribe(this::pillIsInDFUMode,
-                                                          this::presentError);
+                                 pillFound(pillPeripheral);
                              }
                          }, this::presentError);
         searchForPill();
@@ -190,7 +185,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
         getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, intent);
     }
 
-    private void pillIsInDFUMode(@NonNull final PillPeripheral pillPeripheral) {
+    private void pillFound(@NonNull final PillPeripheral pillPeripheral) {
+        setStatus(R.string.message_sleep_pill_connected);
         activityStatus.post(() -> activityIndicator.setActivated(true));
         activityStatus.postDelayed(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null), 1500);
     }

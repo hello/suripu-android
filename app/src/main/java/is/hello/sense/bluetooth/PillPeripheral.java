@@ -47,31 +47,24 @@ public final class PillPeripheral implements Serializable {
     private final GattPeripheral gattPeripheral;
     private final boolean inDfuMode;
     private GattService service;
+    private boolean isUpdating;
 
     //endregion
 
 
     public static boolean isPillDfu(@Nullable final AdvertisingData advertisingData) {
-        if (advertisingData == null) {
-            return false;
-        }
-        return advertisingData.anyRecordMatches(AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                                b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
+        return advertisingData != null && advertisingData.anyRecordMatches(AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
     }
 
     public static boolean isPillNormal(@Nullable final AdvertisingData advertisingData) {
-        if (advertisingData == null) {
-            return false;
-        }
-        return advertisingData.anyRecordMatches(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                                 b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
+        return advertisingData != null && advertisingData.anyRecordMatches(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
     }
 
     //region Creation
     PillPeripheral(@NonNull final GattPeripheral gattPeripheral) {
         this.gattPeripheral = gattPeripheral;
-
         this.inDfuMode = isPillDfu(gattPeripheral.getAdvertisingData());
+        this.isUpdating = false;
     }
     //endregion
 
@@ -83,7 +76,7 @@ public final class PillPeripheral implements Serializable {
         return Observable.create(subscriber -> {
             try {
                 final boolean[] cacheCleared = {false};
-                Field field = gattPeripheral.getClass().getDeclaredField("bluetoothDevice");
+                final Field field = gattPeripheral.getClass().getDeclaredField("bluetoothDevice");
                 field.setAccessible(true);
                 final BluetoothDevice bluetoothDevice = (BluetoothDevice) field.get(gattPeripheral);
                 if (bluetoothDevice != null) {
@@ -133,6 +126,17 @@ public final class PillPeripheral implements Serializable {
         return inDfuMode;
     }
 
+    /**
+     * @return if the {@link DfuService} has started to update this pill peripheral
+     */
+    public boolean isUpdating() {
+        return isUpdating;
+    }
+
+    public void setIsUpdating(final boolean isUpdating){
+        this.isUpdating = isUpdating;
+    }
+
     public int getScanTimeRssi() {
         return gattPeripheral.getScanTimeRssi();
     }
@@ -178,7 +182,7 @@ public final class PillPeripheral implements Serializable {
                 .flatMap(PillPeripheral::connect)
                 .flatMap(PillPeripheral::wipeFirmware)
                 .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
-                .timeout(60, TimeUnit.SECONDS)
+                .timeout(20, TimeUnit.SECONDS)
                 .delay(5, TimeUnit.SECONDS); // avoid any potential race conditions
     }
 
