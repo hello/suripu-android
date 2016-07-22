@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.pill;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,17 +25,14 @@ import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SenseCache;
 
-/**
- * This class requires the Activity it's in implement FragmentNavigation.
- */
 public class ConnectPillFragment extends PillHardwareFragment {
     @Inject
     DevicesPresenter devicesPresenter;
@@ -51,17 +47,14 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
     private Button retryButton;
+    private Button skipButton;
 
     //region lifecycle
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getFragmentNavigation() == null) {
-            finishWithResult(Activity.RESULT_CANCELED, null);
-            return;
-        }
         if (!bluetoothStack.isEnabled()) {
-            requestBle();
+            cancel(true);
             return;
         }
         addPresenter(pillDfuPresenter);
@@ -74,10 +67,15 @@ public class ConnectPillFragment extends PillHardwareFragment {
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
+        this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
-        retryButton.setOnClickListener(ignored -> searchForPill());
+
+        this.retryButton.setText(R.string.action_cancel);
+        Views.setTimeOffsetOnClickListener(retryButton, ignored -> searchForPill());
+        Views.setTimeOffsetOnClickListener(skipButton, ignored -> onCancel());
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
+                                        .setWantsHelpButton(false)
                                         .setOnHelpClickListener(this::help);
         return view;
     }
@@ -109,17 +107,22 @@ public class ConnectPillFragment extends PillHardwareFragment {
         }
         this.retryButton.setOnClickListener(null);
         this.retryButton = null;
+        this.skipButton.setOnClickListener(null);
+        this.skipButton = null;
         this.diagram = null;
+    }
+
+    @Override
+    void onLocationPermissionGranted(final boolean isGranted) {
+        if (isGranted) {
+            searchForPill();
+        }
     }
 
     private void searchForPill() {
         if (isLocationPermissionGranted()) {
             retryButton.post(() -> {
-                diagram.startPlayback();
-                toolbar.setVisible(false);
-                activityIndicator.setVisibility(View.VISIBLE);
-                activityStatus.setVisibility(View.VISIBLE);
-                retryButton.setVisibility(View.GONE);
+                updateUI(false);
                 setStatus(R.string.label_searching_for_pill);
                 devicesPresenter.update();
             });
@@ -131,7 +134,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void bindDevices(@NonNull final Devices devices) {
         final SleepPillDevice sleepPillDevice = devices.getSleepPill();
         if (sleepPillDevice == null || !sleepPillDevice.shouldUpdate()) {
-            getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
+            cancel(false);
             return;
         }
         assert sleepPillDevice.firmwareUpdateUrl != null;
@@ -140,13 +143,25 @@ public class ConnectPillFragment extends PillHardwareFragment {
         pillDfuPresenter.update();
     }
 
+    private void updateUI(final boolean onError){
+        if(onError){
+            diagram.startPlayback();
+        } else {
+            diagram.suspendPlayback(true);
+        }
+        toolbar.setVisible(onError);
+        toolbar.setWantsHelpButton(onError);
+        final int visibleOnError = onError ? View.VISIBLE : View.GONE;
+        final int hiddenOnError = onError ? View.GONE : View.VISIBLE;
+        skipButton.setVisibility(visibleOnError);
+        retryButton.setVisibility(visibleOnError);
+        activityStatus.setVisibility(hiddenOnError);
+        activityIndicator.setVisibility(hiddenOnError);
+    }
+
     private void presentError(@NonNull final Throwable e) {
         retryButton.post(() -> {
-            diagram.suspendPlayback(true);
-            toolbar.setVisible(true);
-            activityIndicator.setVisibility(View.GONE);
-            activityStatus.setVisibility(View.GONE);
-            retryButton.setVisibility(View.VISIBLE);
+            updateUI(true);
 
             @StringRes int title = R.string.error_sleep_pill_title_update_missing;
             @StringRes int message = R.string.error_sleep_pill_message_update_missing;
@@ -177,17 +192,9 @@ public class ConnectPillFragment extends PillHardwareFragment {
     }
     //endregion
 
-    @Override
-    void onLocationPermissionGranted(final boolean isGranted) {
-        if (isGranted) {
-            searchForPill();
-        }
-    }
-
-    private void requestBle() {
-        final Intent intent = new Intent();
-        intent.putExtra(PillUpdateActivity.ARG_NEEDS_BLUETOOTH, true);
-        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, intent);
+    private void onCancel(){
+        pillDfuPresenter.reset();
+        cancel(false);
     }
 
     private void pillFound(@NonNull final PillPeripheral pillPeripheral) {

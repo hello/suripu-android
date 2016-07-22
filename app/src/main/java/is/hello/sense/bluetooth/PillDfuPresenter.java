@@ -27,6 +27,7 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     private static final String PILL_DFU_NAME = "PillDFU";
+    private static final String PILL_PREFIX = "Pill";
     private final Context context;
     private final BluetoothStack bluetoothStack;
 
@@ -61,7 +62,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
                                  GattPeripheral closestPill = null;
                                  for (final GattPeripheral peripheral : gattPeripherals) {
                                      final String pillName = peripheral.getName();
-                                     if (pillName != null && pillName.contains("Pill")) {
+                                     if (pillName != null && pillName.startsWith(PILL_PREFIX)) {
                                          if (closestPill == null || closestPill.getScanTimeRssi() < peripheral.getScanTimeRssi()) {
                                              closestPill = peripheral;
                                          }

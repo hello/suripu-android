@@ -23,7 +23,7 @@
             android:layout_marginBottom="@dimen/x2"
             android:textAppearance="?attr/senseTextAppearanceHeading"
             android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-            android:text="@string/title_pair_pill"/>
+            android:text="@string/title_update_sleep_pill"/>
 
         <TextView
             android:id="@+id/fragment_update_pill_subhead"
@@ -33,7 +33,7 @@
             android:layout_marginRight="@dimen/x3"
             android:textAppearance="?attr/senseTextAppearanceSubheading"
             android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-            android:text="@string/info_pair_pill"/>
+            android:text="@string/info_update_sleep_pill"/>
 
         <Space
             android:layout_width="match_parent"
@@ -43,8 +43,7 @@
         <include layout="@layout/pill_ota_view"
             android:id="@+id/fragment_update_pill_diagram"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/info_pair_pill" />
+            android:layout_height="wrap_content"/>
 
         <Space
             android:layout_width="match_parent"

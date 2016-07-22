@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,9 +21,11 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.bluetooth.DfuService;
 import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
@@ -67,10 +70,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getFragmentNavigation() == null) {
-            finishWithResult(Activity.RESULT_CANCELED, null);
-            return;
-        }
         addPresenter(firmwareCache);
         skipPressedDialog = new SenseAlertDialog(getActivity());
         skipPressedDialog.setCanceledOnTouchOutside(true);
@@ -89,6 +88,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME));
         });
         backPressedDialog.setNegativeButton(android.R.string.cancel, null);
+
+        //todo remove when release
+        bindAndSubscribe(Rx.fromLocalBroadcast(getActivity(), new IntentFilter(DfuService.BROADCAST_LOG)),
+                         intent -> Log.d(getClass().getSimpleName(), "broadcast log: " + intent.getStringExtra(DfuService.EXTRA_LOG_MESSAGE)),
+                                         Functions.IGNORE_ERROR);
     }
 
     @Nullable
@@ -99,16 +103,13 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_update_pill_status);
         this.retryButton = (Button) view.findViewById(R.id.fragment_update_pill_retry);
         this.skipButton = (Button) view.findViewById(R.id.fragment_update_pill_skip);
-        final TextView titleTextView = (TextView) view.findViewById(R.id.fragment_update_pill_title);
-        final TextView infoTextView = (TextView) view.findViewById(R.id.fragment_update_pill_subhead);
         viewAnimator.setAnimatedView(view.findViewById(R.id.blue_box_view));
         activityStatus.setText(R.string.message_sleep_pill_updating);
-        titleTextView.setText(R.string.title_update_sleep_pill);
-        infoTextView.setText(R.string.info_update_sleep_pill);
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipPressedDialog.show());
-        Views.setSafeOnClickListener(retryButton, ignored -> connectPill());
+        Views.setTimeOffsetOnClickListener(retryButton, ignored -> connectPill());
         this.toolbar = OnboardingToolbar.of(this, view)
                                         .setWantsBackButton(false)
+                                        .setWantsHelpButton(false)
                                         .setOnHelpClickListener(this::help);
         return view;
     }
@@ -191,6 +192,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private void updateUI(final boolean onError){
         activityStatus.post( () -> {
             toolbar.setVisible(onError);
+            toolbar.setWantsHelpButton(onError);
             final int visibleOnError = onError ? View.VISIBLE : View.GONE;
             final int hiddenOnError = onError ? View.GONE : View.VISIBLE;
             skipButton.setVisibility(visibleOnError);
