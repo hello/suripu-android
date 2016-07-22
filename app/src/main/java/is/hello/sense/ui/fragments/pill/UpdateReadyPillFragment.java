@@ -18,17 +18,16 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.concurrent.TimeoutException;
-
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -54,6 +53,10 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private Button retryButton;
     private Button skipButton;
 
+    @Inject
+    DevicesPresenter devicesPresenter;
+    @Inject
+    PillDfuPresenter pillDfuPresenter;
     @Inject
     SenseCache.FirmwareCache firmwareCache;
 
@@ -188,10 +191,12 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private void updateUI(final boolean onError){
         activityStatus.post( () -> {
             toolbar.setVisible(onError);
-            skipButton.setVisibility(onError ? View.VISIBLE : View.GONE);
-            retryButton.setVisibility(onError ? View.VISIBLE : View.GONE);
-            activityStatus.setVisibility(onError ? View.GONE : View.VISIBLE);
-            updateIndicator.setVisibility(onError ? View.GONE : View.VISIBLE);
+            final int visibleOnError = onError ? View.VISIBLE : View.GONE;
+            final int hiddenOnError = onError ? View.GONE : View.VISIBLE;
+            skipButton.setVisibility(visibleOnError);
+            retryButton.setVisibility(visibleOnError);
+            activityStatus.setVisibility(hiddenOnError);
+            updateIndicator.setVisibility(hiddenOnError);
         });
     }
 

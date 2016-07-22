@@ -182,7 +182,7 @@ public final class PillPeripheral implements Serializable {
                 .flatMap(PillPeripheral::connect)
                 .flatMap(PillPeripheral::wipeFirmware)
                 .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
-                .timeout(20, TimeUnit.SECONDS)
+                .timeout(60, TimeUnit.SECONDS)
                 .delay(5, TimeUnit.SECONDS); // avoid any potential race conditions
     }
 
@@ -252,7 +252,7 @@ public final class PillPeripheral implements Serializable {
                  * We don't wait for a response from the write command. In order to avoid a race
                  * condition we delay.
                  */
-                .delay(5, TimeUnit.SECONDS) //this is important
+                .delay(10, TimeUnit.SECONDS) //this is important
                 .map(aVoid -> this);
     }
 

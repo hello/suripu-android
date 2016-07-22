@@ -21,9 +21,11 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
+import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
@@ -36,6 +38,10 @@ import is.hello.sense.util.SenseCache;
  * This class requires the Activity it's in implement FragmentNavigation.
  */
 public class ConnectPillFragment extends PillHardwareFragment {
+    @Inject
+    DevicesPresenter devicesPresenter;
+    @Inject
+    PillDfuPresenter pillDfuPresenter;
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
@@ -58,7 +64,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
             requestBle();
             return;
         }
-        //addPresenter(firmwareCache);
         addPresenter(pillDfuPresenter);
     }
 
