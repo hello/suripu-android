@@ -45,6 +45,7 @@
             android:id="@+id/fragment_onboarding_pair_pill_diagram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:senseAutoStart="false"
             app:sensePlaceholder="@drawable/onboarding_shake_pill"
             app:senseDiagramVideo="@string/diagram_onboarding_pair_pill"
             android:contentDescription="@string/info_pair_pill" />

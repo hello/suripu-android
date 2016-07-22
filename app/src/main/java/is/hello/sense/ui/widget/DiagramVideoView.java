@@ -28,10 +28,16 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
     private final Player player;
 
     private boolean autoStart = true;
-    private @Nullable Drawable placeholder;
+    private
+    @Nullable
+    Drawable placeholder;
 
-    private @Nullable SurfaceTexture surfaceTexture;
-    private @Nullable Surface videoSurface;
+    private
+    @Nullable
+    SurfaceTexture surfaceTexture;
+    private
+    @Nullable
+    Surface videoSurface;
 
     //region Lifecycle
 
@@ -213,8 +219,11 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
         this.surfaceTexture = surfaceTexture;
         clearIfNeeded();
-
-        player.startPlayback();
+        if (autoStart && isShown()) {
+            player.startPlayback();
+        }else {
+            player.seekTo(0);
+        }
         ensureVideoSurface();
     }
 
