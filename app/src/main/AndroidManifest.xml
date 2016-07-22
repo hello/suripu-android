@@ -117,8 +117,7 @@
 
         <service
             android:name=".bluetooth.DfuService"
-            android:exported="true"
-            android:label="some label to be changed" >
+            android:exported="true" >
             <intent-filter>
                 <action android:name="no.nordicsemi.android.action.DFU_UPLOAD" />
 
