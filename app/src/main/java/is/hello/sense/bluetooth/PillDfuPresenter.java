@@ -30,7 +30,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     private static final String PILL_PREFIX = "Pill";
     private final Context context;
     private final BluetoothStack bluetoothStack;
-
+    private boolean isUpdating;
     public final PresenterSubject<PillPeripheral> sleepPill = this.subject;
 
 
@@ -40,6 +40,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
                             @NonNull final BluetoothStack bluetoothStack) {
         this.context = context;
         this.bluetoothStack = bluetoothStack;
+        this.isUpdating = false;
     }
 
     @Override
@@ -86,13 +87,11 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     //region Pill Interactions
 
     public boolean isUpdating(){
-        return sleepPill.hasValue() && sleepPill.getValue().isUpdating();
+        return isUpdating;
     }
 
     public void setIsUpdating(final boolean isUpdating) {
-        if(sleepPill.hasValue()) {
-            sleepPill.getValue().setIsUpdating(isUpdating);
-        }
+        this.isUpdating = isUpdating;
     }
 
     public void reset() {

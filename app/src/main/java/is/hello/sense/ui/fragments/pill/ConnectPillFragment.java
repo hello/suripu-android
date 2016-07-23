@@ -70,7 +70,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
         this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
 
-        this.retryButton.setText(R.string.action_cancel);
+        this.skipButton.setText(R.string.action_cancel);
         Views.setTimeOffsetOnClickListener(retryButton, ignored -> searchForPill());
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> onCancel());
         this.toolbar = OnboardingToolbar.of(this, view)
@@ -145,9 +145,9 @@ public class ConnectPillFragment extends PillHardwareFragment {
 
     private void updateUI(final boolean onError){
         if(onError){
-            diagram.startPlayback();
-        } else {
             diagram.suspendPlayback(true);
+        } else {
+            diagram.startPlayback();
         }
         toolbar.setVisible(onError);
         toolbar.setWantsHelpButton(onError);

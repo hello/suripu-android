@@ -47,7 +47,6 @@ public final class PillPeripheral implements Serializable {
     private final GattPeripheral gattPeripheral;
     private final boolean inDfuMode;
     private GattService service;
-    private boolean isUpdating;
 
     //endregion
 
@@ -64,7 +63,6 @@ public final class PillPeripheral implements Serializable {
     PillPeripheral(@NonNull final GattPeripheral gattPeripheral) {
         this.gattPeripheral = gattPeripheral;
         this.inDfuMode = isPillDfu(gattPeripheral.getAdvertisingData());
-        this.isUpdating = false;
     }
     //endregion
 
@@ -97,6 +95,7 @@ public final class PillPeripheral implements Serializable {
                                 gatt.disconnect();
                             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                                 if (cacheCleared[0]) {
+                                    //gatt.close();
                                     subscriber.onNext(PillPeripheral.this);
                                     subscriber.onCompleted();
                                 } else {
@@ -124,17 +123,6 @@ public final class PillPeripheral implements Serializable {
 
     public boolean isInDfuMode() {
         return inDfuMode;
-    }
-
-    /**
-     * @return if the {@link DfuService} has started to update this pill peripheral
-     */
-    public boolean isUpdating() {
-        return isUpdating;
-    }
-
-    public void setIsUpdating(final boolean isUpdating){
-        this.isUpdating = isUpdating;
     }
 
     public int getScanTimeRssi() {

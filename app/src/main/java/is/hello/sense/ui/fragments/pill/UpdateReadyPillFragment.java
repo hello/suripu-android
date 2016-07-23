@@ -241,7 +241,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                 stateSafeExecutor.execute(() -> {
                    devicesPresenter.latest().doOnNext( devices -> {
                        final String deviceId = devicesPresenter.devices.getValue().getSleepPill().deviceId;
-                       pillDfuPresenter.reset();
                        final Intent intent = new Intent();
                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
