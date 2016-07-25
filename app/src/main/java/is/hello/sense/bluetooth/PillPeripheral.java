@@ -26,6 +26,7 @@ import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.sense.bluetooth.exceptions.BleCacheException;
 import is.hello.sense.bluetooth.exceptions.PillCharNotFoundException;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
+import is.hello.sense.functional.Functions;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -188,9 +189,8 @@ public final class PillPeripheral implements Serializable {
                 .timeout(60, TimeUnit.SECONDS)
                 .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
                 .doOnError( throwable -> {
-                    if(throwable instanceof ServiceDiscoveryException
-                            || throwable instanceof PillCharNotFoundException){
-                        this.clearCache(context).subscribe();
+                    if(throwable instanceof ServiceDiscoveryException || throwable instanceof PillCharNotFoundException){
+                        this.clearCache(context).subscribe(Functions.NO_OP, Functions.LOG_ERROR);
                     }
                 });
     }

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -16,13 +15,11 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
-import is.hello.sense.ui.fragments.pill.PillHardwareFragment;
-import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
+import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdateIntroPillFragment;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
-import is.hello.sense.util.Logger;
+import is.hello.sense.util.Analytics;
 
 public class PillUpdateActivity extends InjectionActivity
         implements FragmentNavigation {
@@ -80,8 +77,6 @@ public class PillUpdateActivity extends InjectionActivity
             }
         } else if (topFragment instanceof BluetoothFragment) {
             showUpdatePillIntro();
-            return;
-        } else if (topFragment instanceof ConnectPillFragment) {
             return;
         }
 

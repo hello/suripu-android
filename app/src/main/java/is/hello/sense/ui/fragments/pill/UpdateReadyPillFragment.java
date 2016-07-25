@@ -25,6 +25,7 @@ import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.bluetooth.DfuService;
 import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.exceptions.BleCacheException;
@@ -71,7 +72,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //addPresenter(firmwareCache);
+
         skipPressedDialog = new SenseAlertDialog(getActivity());
         skipPressedDialog.setCanceledOnTouchOutside(true);
         skipPressedDialog.setTitle(R.string.dialog_title_skip_update);
@@ -235,15 +236,19 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
-                stateSafeExecutor.execute(() -> {
-                   devicesPresenter.latest().subscribe( devices -> {
-                       final String deviceId = devicesPresenter.devices.getValue().getSleepPill().deviceId;
-                       final Intent intent = new Intent();
-                       intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                       getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
-                   });
-                }), R.string.message_sleep_pill_updated);
+
+        stateSafeExecutor.execute(() -> {
+            //todo if device id is not needed but just account id then don't bother with this call here.
+           devicesPresenter.latest().subscribe( devices -> {
+               final SleepPillDevice sleepPillDevice = devices.getSleepPill();
+               final String deviceId = sleepPillDevice != null ? sleepPillDevice.deviceId : "no_device_id";
+               LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
+                   final Intent intent = new Intent();
+                   intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                   getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+               }, R.string.message_sleep_pill_updated);
+           });
+        });
     }
 
     @Override
