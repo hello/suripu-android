@@ -23,6 +23,7 @@ import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -30,7 +31,7 @@ import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SenseCache;
 
-public class ConnectPillFragment extends PillHardwareFragment {
+public class ConnectPillFragment extends PillHardwareFragment implements OnBackPressedInterceptor {
     @Inject
     DevicesPresenter devicesPresenter;
     @Inject
@@ -54,7 +55,6 @@ public class ConnectPillFragment extends PillHardwareFragment {
             cancel(true);
             return;
         }
-        //addPresenter(pillDfuPresenter);
     }
 
     @Nullable
@@ -107,6 +107,14 @@ public class ConnectPillFragment extends PillHardwareFragment {
         if (isGranted) {
             searchForPill();
         }
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if(retryButton.getVisibility() == View.VISIBLE) {
+            onCancel();
+        }
+        return true;
     }
 
     private void searchForPill() {
@@ -183,5 +191,4 @@ public class ConnectPillFragment extends PillHardwareFragment {
     private void setStatus(@StringRes final int text) {
         activityStatus.post(() -> activityStatus.setText(text));
     }
-
 }

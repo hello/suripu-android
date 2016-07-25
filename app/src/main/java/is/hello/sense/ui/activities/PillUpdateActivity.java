@@ -69,18 +69,6 @@ public class PillUpdateActivity extends InjectionActivity
     }
 
     @Override
-    public void onBackPressed() {
-        final Fragment topFragment = getTopFragment();
-        if (topFragment instanceof OnBackPressedInterceptor) {
-            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
-                return;
-            }
-        }
-
-        back();
-    }
-
-    @Override
     public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
@@ -127,8 +115,20 @@ public class PillUpdateActivity extends InjectionActivity
         return navigationDelegate.getTopFragment();
     }
 
+    @Override
+    public void onBackPressed() {
+        final Fragment topFragment = getTopFragment();
+        if (topFragment instanceof OnBackPressedInterceptor) {
+            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
+                return;
+            }
+        }
+
+        back();
+    }
+
     public void showUpdatePillIntro() {
-        pushFragmentAllowingStateLoss(new UpdateIntroPillFragment(), null, true);
+        pushFragment(new UpdateIntroPillFragment(), null, true);
     }
 
     public void showConnectPillScreen() {
@@ -148,7 +148,7 @@ public class PillUpdateActivity extends InjectionActivity
     }
 
     public void showBluetoothFragment() {
-        pushFragmentAllowingStateLoss(new BluetoothFragment(), null, false);
+        pushFragmentAllowingStateLoss(new BluetoothFragment(), null, true);
 
     }
 

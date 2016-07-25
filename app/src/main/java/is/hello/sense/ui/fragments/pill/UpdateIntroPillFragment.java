@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -21,7 +20,6 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
@@ -32,7 +30,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
     PhoneBatteryPresenter phoneBatteryPresenter;
 
     private Button primaryButton;
-    private ViewAnimator viewAnimator;
+    private final ViewAnimator viewAnimator = new ViewAnimator();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -40,8 +38,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
         Analytics.trackEvent(Analytics.PillUpdate.EVENT_START, null);
         addPresenter(phoneBatteryPresenter);
         setRetainInstance(true);
-
-        this.viewAnimator = new ViewAnimator();
     }
 
     @Nullable
@@ -53,7 +49,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
                 .setHeadingText(R.string.title_update_sleep_pill)
                 .setSubheadingText(R.string.info_update_sleep_pill)
                 .setPrimaryOnClickListener(this::onPrimaryButtonClick)
-                .setSecondaryOnClickListener(view1 -> this.cancel(false))
+                .setSecondaryOnClickListener(view1 -> onInterceptBackPressed(null))
                 .setSecondaryButtonText(R.string.action_cancel)
                 .setWantsSecondaryButton(true)
                 .setToolbarWantsBackButton(false)
@@ -87,12 +83,13 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
         primaryButton.setOnClickListener(null);
         primaryButton = null;
         viewAnimator.onDestroyView();
+        phoneBatteryPresenter.enoughBattery.forget();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        viewAnimator = null;
+    public boolean onInterceptBackPressed(@Nullable final Runnable defaultBehavior) {
+        cancel(false);
+        return true;
     }
 
     @Override
@@ -107,9 +104,8 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
     }
 
     private void bindAndSubscribeDevice() {
-        phoneBatteryPresenter.enoughBattery.forget();
         bindAndSubscribe(
-                phoneBatteryPresenter.enoughBattery.delay(LoadingDialogFragment.DURATION_DEFAULT, TimeUnit.MILLISECONDS),
+                phoneBatteryPresenter.enoughBattery,
                 this::onPhoneCheckNext,
                 this::presentError);
     }
@@ -155,11 +151,5 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
         } else {
             cancel(true);
         }
-    }
-
-    @Override
-    public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
-        cancel(false);
-        return true;
     }
 }
