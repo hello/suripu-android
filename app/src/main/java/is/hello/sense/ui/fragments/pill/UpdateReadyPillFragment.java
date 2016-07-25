@@ -22,15 +22,10 @@ import android.widget.TextView;
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.bluetooth.DfuService;
 import is.hello.sense.bluetooth.PillDfuPresenter;
-import is.hello.sense.bluetooth.exceptions.BleCacheException;
-import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
-import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
@@ -199,28 +194,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     public void presentError(final Throwable e) {
         updateUI(true);
 
-        @StringRes int title = R.string.error_sleep_pill_title_update_fail;
-        @StringRes int message = R.string.error_sleep_pill_message_update_fail;
+        @StringRes final int title = R.string.error_sleep_pill_title_update_fail;
+        @StringRes final int message = R.string.error_sleep_pill_message_update_fail;
         final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
-        errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
-        if (e instanceof RssiException) {
-            Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_TOO_FAR, null);
-            title = R.string.error_pill_too_far;
-        } else if (e instanceof PillNotFoundException) {
-            Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_NOT_DETECTED, null);
-            title = R.string.error_pill_not_found;
-        } else if (e instanceof ApiException) {
-            title = R.string.network_activity_no_connectivity;
-            message = R.string.error_network_failure_pair_pill;
-        } else if (e instanceof BleCacheException){
-            message = R.string.error_addendum_unstable_stack;
-        }
+        final ErrorDialogFragment.Builder errorDialogBuilder = getErrorDialogFragmentBuilder(e, title, message, helpUriString);
         errorDialogBuilder
-                .withTitle(title)
-                .withMessage(StringRef.from(message))
-                .withContextInfo(e.getMessage())
-                .withAction(helpUriString, R.string.label_having_trouble)
                 .build()
                 .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
 

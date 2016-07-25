@@ -119,6 +119,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
             return Observable.empty();
         }
 
+
         return Observable.<ComponentName>create(subscriber -> {
             Intent intent = new Intent(context, DfuService.class);
             intent.putExtra(DfuService.EXTRA_DEVICE_NAME, PILL_DFU_NAME);

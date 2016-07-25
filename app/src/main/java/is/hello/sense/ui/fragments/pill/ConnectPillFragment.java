@@ -18,20 +18,16 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.bluetooth.PillPeripheral;
-import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
-import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SenseCache;
 
 public class ConnectPillFragment extends PillHardwareFragment {
@@ -157,28 +153,13 @@ public class ConnectPillFragment extends PillHardwareFragment {
         retryButton.post(() -> {
             updateUI(true);
 
-            @StringRes int title = R.string.error_sleep_pill_title_update_missing;
-            @StringRes int message = R.string.error_sleep_pill_message_update_missing;
+            @StringRes final int title = R.string.error_sleep_pill_title_update_missing;
+            @StringRes final int message = R.string.error_sleep_pill_message_update_missing;
             final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
+            final ErrorDialogFragment.Builder errorDialogBuilder = getErrorDialogFragmentBuilder(e, title, message, helpUriString);
             errorDialogBuilder.withOperation(StringRef.from(R.string.connect_pill_fragment_operation).toString());
 
-            if (e instanceof RssiException) {
-                title = R.string.error_pill_too_far;
-                Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_TOO_FAR, null);
-            } else if (e instanceof PillNotFoundException) {
-                title = R.string.error_pill_not_found;
-                Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_NOT_DETECTED, null);
-            } else if (e instanceof ApiException) {
-                title = R.string.network_activity_no_connectivity;
-                message = R.string.error_network_failure_pair_pill;
-            } else {
-                errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
-            }
             errorDialogBuilder
-                    .withTitle(title)
-                    .withMessage(StringRef.from(message))
-                    .withAction(helpUriString, R.string.label_having_trouble)
                     .build()
                     .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
 
