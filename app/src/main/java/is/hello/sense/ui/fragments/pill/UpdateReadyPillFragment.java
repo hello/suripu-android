@@ -211,22 +211,25 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
+
+        firmwareCache.trimCache();
+
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
 
-        stateSafeExecutor.execute(() -> {
-            //todo if device id is not needed but just account id then don't bother with this call here.
-           devicesPresenter.latest().subscribe( devices -> {
-               final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-               final String deviceId = sleepPillDevice != null ? sleepPillDevice.deviceId : "no_device_id";
-               LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
-                   final Intent intent = new Intent();
-                   intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                   getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
-               }, R.string.message_sleep_pill_updated);
-           });
-        });
+        //todo if device id is not needed but just account id then don't bother with this call here.
+
+        bindAndSubscribe(devicesPresenter.devices, devices -> {
+            final SleepPillDevice sleepPillDevice = devices.getSleepPill();
+            final String deviceId = sleepPillDevice != null ? sleepPillDevice.deviceId : "no_device_id";
+            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
+                final Intent intent = new Intent();
+                intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+            }, R.string.message_sleep_pill_updated);
+        }, this::presentError);
+        devicesPresenter.update();
     }
 
     @Override
