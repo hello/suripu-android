@@ -17,6 +17,7 @@ import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
+import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.graph.presenters.ValuePresenter;
 import rx.Observable;
@@ -73,6 +74,15 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
                                      return null;
                                  }
                                  return new PillPeripheral(closestPill);
+                             })
+                             .flatMap( pillPeripheral -> {
+                                if (pillPeripheral == null) {
+                                    return Observable.error(new PillNotFoundException());
+                                } else if (pillPeripheral.isTooFar()) {
+                                    return Observable.error(new RssiException());
+                                } else {
+                                    return Observable.just(pillPeripheral);
+                                }
                              });
 
     }
@@ -95,6 +105,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     }
 
     public void reset() {
+        setIsUpdating(false);
         sleepPill.forget();
     }
 

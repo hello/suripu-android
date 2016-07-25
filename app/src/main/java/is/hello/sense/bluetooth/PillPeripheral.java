@@ -16,12 +16,15 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.buruberi.bluetooth.errors.ServiceDiscoveryException;
+import is.hello.buruberi.bluetooth.stacks.GattCharacteristic;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.GattService;
 import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.sense.bluetooth.exceptions.BleCacheException;
+import is.hello.sense.bluetooth.exceptions.PillCharNotFoundException;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import rx.Observable;
 import rx.Subscriber;
@@ -36,7 +39,8 @@ public final class PillPeripheral implements Serializable {
     private static final UUID SERVICE = UUID.fromString("0000e110-1212-efde-1523-785feabcd123");
     private static final UUID CHARACTERISTIC_COMMAND_UUID = UUID.fromString("0000DEED-0000-1000-8000-00805F9B34FB");
     private static final byte COMMAND_WIPE_FIRMWARE = 8;
-    private static final int TIME_OUT_SECONDS = 10;
+    private static final int TIME_OUT_SECONDS = 30;
+    private static final int RACE_CONDITION_DELAY_SECONDS = 10;
     private static final int minRSSI = -70;
 
     //endregion
@@ -52,11 +56,17 @@ public final class PillPeripheral implements Serializable {
 
 
     public static boolean isPillDfu(@Nullable final AdvertisingData advertisingData) {
-        return advertisingData != null && advertisingData.anyRecordMatches(AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
+        return advertisingData != null
+                && advertisingData.anyRecordMatches(
+                    AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
+                    b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
     }
 
     public static boolean isPillNormal(@Nullable final AdvertisingData advertisingData) {
-        return advertisingData != null && advertisingData.anyRecordMatches(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS, b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
+        return advertisingData != null
+                && advertisingData.anyRecordMatches(
+                AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
+                b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
     }
 
     //region Creation
@@ -95,7 +105,6 @@ public final class PillPeripheral implements Serializable {
                                 gatt.disconnect();
                             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                                 if (cacheCleared[0]) {
-                                    //gatt.close();
                                     subscriber.onNext(PillPeripheral.this);
                                     subscriber.onCompleted();
                                 } else {
@@ -140,6 +149,11 @@ public final class PillPeripheral implements Serializable {
     public boolean isTooFar() {
         return getScanTimeRssi() < minRSSI;
     }
+
+    public boolean isConnected() {
+        return (gattPeripheral.getConnectionStatus() == GattPeripheral.STATUS_CONNECTED &&
+                service != null);
+    }
     //endregion
 
 
@@ -147,7 +161,7 @@ public final class PillPeripheral implements Serializable {
 
     @NonNull
     private OperationTimeout createOperationTimeout(@NonNull final String name) {
-        return gattPeripheral.createOperationTimeout(name, 30, TimeUnit.SECONDS);
+        return gattPeripheral.createOperationTimeout(name, TIME_OUT_SECONDS, TimeUnit.SECONDS);
     }
 
     //endregion
@@ -167,11 +181,32 @@ public final class PillPeripheral implements Serializable {
             });
         }
         return removeBond()
+                .flatMap(PillPeripheral::disconnect)
                 .flatMap(PillPeripheral::connect)
                 .flatMap(PillPeripheral::wipeFirmware)
                 .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
                 .timeout(60, TimeUnit.SECONDS)
-                .delay(5, TimeUnit.SECONDS); // avoid any potential race conditions
+                .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
+                .doOnError( throwable -> {
+                    if(throwable instanceof ServiceDiscoveryException
+                            || throwable instanceof PillCharNotFoundException){
+                        this.clearCache(context).subscribe();
+                    }
+                });
+    }
+
+    public Observable<PillPeripheral> disconnect() {
+        Log.d(getClass().getSimpleName(), "connect()");
+        if (inDfuMode) {
+            return Observable.error(new IllegalStateException("Cannot disconnect to sleep pill in dfu mode."));
+        }
+
+        return gattPeripheral.disconnect()
+                             .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
+                             .map( disconnectedPeripheral -> {
+                                Log.d(getClass().getSimpleName(), "disconnected");
+                                return this;
+                             });
     }
 
     @NonNull
@@ -181,11 +216,10 @@ public final class PillPeripheral implements Serializable {
             return Observable.error(new IllegalStateException("Cannot connect to sleep pill in dfu mode."));
         }
 
-        final OperationTimeout operationTimeout = createOperationTimeout("Connect");
-        return gattPeripheral.connect(GattPeripheral.CONNECT_FLAG_DEFAULTS, operationTimeout)
+        return gattPeripheral.connect(GattPeripheral.CONNECT_FLAG_TRANSPORT_LE, createOperationTimeout("Connect"))
                              .flatMap(connectedPeripheral -> {
                                  Log.d(getClass().getSimpleName(), "discoverService(" + SERVICE + ")");
-                                 return connectedPeripheral.discoverService(SERVICE, operationTimeout);
+                                 return connectedPeripheral.discoverService(SERVICE, createOperationTimeout("Discover Service"));
                              })
                              .map(gattService -> {
                                  Log.d(getClass().getSimpleName(), "connected");
@@ -203,11 +237,6 @@ public final class PillPeripheral implements Serializable {
         });
     }
 
-    public boolean isConnected() {
-        return (gattPeripheral.getConnectionStatus() == GattPeripheral.STATUS_CONNECTED &&
-                service != null);
-    }
-
     //endregion
 
 
@@ -223,12 +252,15 @@ public final class PillPeripheral implements Serializable {
             return Observable.error(new PillNotFoundException("writeCommand(...) requires a connection"));
         }
 
-        return service.getCharacteristic(identifier)
-                      .write(writeType,
-                             payload,
-                             gattPeripheral.createOperationTimeout("Animation",
-                                                                   TIME_OUT_SECONDS,
-                                                                   TimeUnit.SECONDS));
+        final GattCharacteristic commandCharacteristic = service.getCharacteristic(identifier);
+
+        if(commandCharacteristic == null){
+            return Observable.error(new PillCharNotFoundException(identifier));
+        }
+
+        return commandCharacteristic.write(writeType,
+                                           payload,
+                                           createOperationTimeout("Write Command"));
     }
 
     public Observable<PillPeripheral> wipeFirmware() {
@@ -240,7 +272,7 @@ public final class PillPeripheral implements Serializable {
                  * We don't wait for a response from the write command. In order to avoid a race
                  * condition we delay.
                  */
-                .delay(10, TimeUnit.SECONDS) //this is important
+                .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS) //this is important
                 .map(aVoid -> this);
     }
 

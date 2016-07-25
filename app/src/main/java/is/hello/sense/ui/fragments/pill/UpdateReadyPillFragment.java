@@ -27,6 +27,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.bluetooth.DfuService;
 import is.hello.sense.bluetooth.PillDfuPresenter;
+import is.hello.sense.bluetooth.exceptions.BleCacheException;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.bluetooth.exceptions.RssiException;
 import is.hello.sense.functional.Functions;
@@ -70,7 +71,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPresenter(firmwareCache);
+        //addPresenter(firmwareCache);
         skipPressedDialog = new SenseAlertDialog(getActivity());
         skipPressedDialog.setCanceledOnTouchOutside(true);
         skipPressedDialog.setTitle(R.string.dialog_title_skip_update);
@@ -119,17 +120,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         super.onViewCreated(view, savedInstanceState);
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
         bindAndSubscribe(pillDfuPresenter.sleepPill,
-                         pillPeripheral -> {
-                             if (pillPeripheral == null) {
-                                 presentError(new PillNotFoundException());
-                             } else if (pillPeripheral.isTooFar()) {
-                                 presentError(new RssiException());
-                             } else {
-                                 pillPeripheral.enterDfuMode(getActivity())
-                                               .subscribe( ignore -> updatePill(),
-                                                           this::presentError);
-                             }
-                         },
+                         pillPeripheral -> pillPeripheral.enterDfuMode(getActivity())
+                                                         .subscribe( ignore -> updatePill(),
+                                                                 this::presentError),
                          this::presentError);
 
         bindAndSubscribe(firmwareCache.file
@@ -219,13 +212,18 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         } else if (e instanceof ApiException) {
             title = R.string.network_activity_no_connectivity;
             message = R.string.error_network_failure_pair_pill;
+        } else if (e instanceof BleCacheException){
+            message = R.string.error_addendum_unstable_stack;
         }
         errorDialogBuilder
                 .withTitle(title)
                 .withMessage(StringRef.from(message))
+                .withContextInfo(e.getMessage())
                 .withAction(helpUriString, R.string.label_having_trouble)
                 .build()
                 .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
+        Log.e(getTag(), "presentError: ", e);
     }
 
     private void onFinish(final boolean success) {
@@ -239,7 +237,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         getFragmentManager().executePendingTransactions();
         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () ->
                 stateSafeExecutor.execute(() -> {
-                   devicesPresenter.latest().doOnNext( devices -> {
+                   devicesPresenter.latest().subscribe( devices -> {
                        final String deviceId = devicesPresenter.devices.getValue().getSleepPill().deviceId;
                        final Intent intent = new Intent();
                        intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +58,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
             cancel(true);
             return;
         }
-        addPresenter(pillDfuPresenter);
+        //addPresenter(pillDfuPresenter);
     }
 
     @Nullable
@@ -87,15 +88,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
                          this::bindDevices,
                          this::presentError);
         bindAndSubscribe(pillDfuPresenter.sleepPill,
-                         pillPeripheral -> {
-                             if (pillPeripheral == null) {
-                                 presentError(new PillNotFoundException());
-                             } else if (pillPeripheral.isTooFar()) {
-                                 presentError(new RssiException());
-                             } else {
-                                 pillFound(pillPeripheral);
-                             }
-                         }, this::presentError);
+                         this::pillFound,
+                         this::presentError);
         searchForPill();
     }
 
@@ -187,6 +181,8 @@ public class ConnectPillFragment extends PillHardwareFragment {
                     .withAction(helpUriString, R.string.label_having_trouble)
                     .build()
                     .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+
+            Log.e(getTag(), "presentError: ", e);
 
         });
     }
