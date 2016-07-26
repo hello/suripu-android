@@ -25,6 +25,7 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.DfuService;
 import is.hello.sense.bluetooth.PillDfuPresenter;
+import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -40,7 +41,7 @@ import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 public class UpdateReadyPillFragment extends PillHardwareFragment
-        implements OnBackPressedInterceptor, DfuProgressListener {
+        implements OnBackPressedInterceptor, DfuProgressListener, PillPeripheral.DfuCallback {
 
     private final ViewAnimator viewAnimator = new ViewAnimator();
     private SenseAlertDialog backPressedDialog;
@@ -84,7 +85,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         //todo remove when release
         bindAndSubscribe(Rx.fromLocalBroadcast(getActivity(), new IntentFilter(DfuService.BROADCAST_LOG)),
                          intent -> Log.d(getClass().getSimpleName(), "broadcast log: " + intent.getStringExtra(DfuService.EXTRA_LOG_MESSAGE)),
-                                         Functions.IGNORE_ERROR);
+                         Functions.IGNORE_ERROR);
     }
 
     @Nullable
@@ -111,9 +112,10 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         super.onViewCreated(view, savedInstanceState);
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
         bindAndSubscribe(pillDfuPresenter.sleepPill,
-                         pillPeripheral -> pillPeripheral.enterDfuMode(getActivity())
-                                                         .subscribe( ignore -> updatePill(),
-                                                                 this::presentError),
+                         pillPeripheral ->
+                                 pillPeripheral.enterDfuMode(getActivity(), this)
+                                               .subscribe(ignore -> updatePill(),
+                                                          this::presentError),
                          this::presentError);
 
         bindAndSubscribe(firmwareCache.file
@@ -132,13 +134,13 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
     @Override
     public void onPause() {
-        DfuServiceListenerHelper.unregisterProgressListener(getActivity(), this);
         viewAnimator.onPause();
         super.onPause();
     }
 
     @Override
     public void onDestroyView() {
+        DfuServiceListenerHelper.unregisterProgressListener(getActivity(), this);
         super.onDestroyView();
 
         this.activityStatus = null;
@@ -159,7 +161,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void connectPill() {
-        activityStatus.post( () -> {
+        activityStatus.post(() -> {
             if (isLocationPermissionGranted()) {
                 updateUI(false);
                 pillDfuPresenter.update();
@@ -174,8 +176,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         firmwareCache.update();
     }
 
-    private void updateUI(final boolean onError){
-        activityStatus.post( () -> {
+    private void updateUI(final boolean onError) {
+        activityStatus.post(() -> {
             toolbar.setVisible(onError);
             toolbar.setWantsHelpButton(onError);
             final int visibleOnError = onError ? View.VISIBLE : View.GONE;
@@ -183,9 +185,13 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             skipButton.setVisibility(visibleOnError);
             retryButton.setVisibility(visibleOnError);
             activityStatus.setVisibility(hiddenOnError);
-            updateIndicator.setProgress(0); //reset progress
+            setProgress(0); //reset progress
             updateIndicator.setVisibility(hiddenOnError);
         });
+    }
+
+    private void setProgress(final int progress) {
+        updateIndicator.post(() -> updateIndicator.setProgress(progress));
     }
 
     public void presentError(final Throwable e) {
@@ -214,21 +220,26 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         }
 
         firmwareCache.trimCache();
+        stateSafeExecutor.execute(() -> {
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+            getFragmentManager().executePendingTransactions();
 
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-        getFragmentManager().executePendingTransactions();
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+            getFragmentManager().executePendingTransactions();
 
-        LoadingDialogFragment.closeWithMessageTransition(
-                getFragmentManager(),
-                () -> {
-                    final Intent intent = new Intent()
-                            .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID,
-                                      pillDfuPresenter.getDeviceId());
-                    pillDfuPresenter.reset();
-                    getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
-                },
-                R.string.message_sleep_pill_updated);
+            LoadingDialogFragment.closeWithMessageTransition(
+                    getFragmentManager(),
+                    () -> {
+                        final Intent intent = new Intent()
+                                .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID,
+                                          pillDfuPresenter.getDeviceId());
+                        pillDfuPresenter.reset();
+                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+                    },
+                    R.string.message_sleep_pill_updated);
+        });
     }
 
     @Override
@@ -239,22 +250,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             skipPressedDialog.show();
         }
         return true;
-    }
-
-    /*
-      todo use when user backs presses to leave app
-   */
-    private NotificationCompat.Builder getNotificationBuilder(){
-        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity());
-        notificationBuilder.setContentTitle(getString(R.string.notification_title_update_sleep_pill));
-        notificationBuilder.setContentText(getString(R.string.notification_update_progress));
-        notificationBuilder.setColor(ContextCompat.getColor(getActivity(), R.color.primary));
-        notificationBuilder.setSmallIcon(R.drawable.pill_icon);
-        final Intent intent = new Intent(getActivity(), PillUpdateActivity.class);
-        final PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notificationBuilder.setContentIntent(pendingIntent);
-
-        return notificationBuilder;
     }
 
     @Override
@@ -288,7 +283,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onProgressChanged(final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
         Log.d("DFU Listener", "onProgressChanged " + percent + "%");
-        updateIndicator.post(() -> updateIndicator.setProgress(percent));
+        setProgress(PillPeripheral.DFU_MODE_PROGRESS + (percent / 2));
 
     }
 
@@ -329,4 +324,21 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         presentError(new Throwable(message));
     }
 
+    @Override
+    public void onStateChange(final PillPeripheral.PillState state) {
+        int value = 0;
+        switch (state) {
+            case DfuMode:
+                value += 10;
+            case Wiped:
+                value += 10;
+            case Connected:
+                value += 10;
+            case Disconnected:
+                value += 10;
+            case BondRemoved:
+                value+=10;
+        }
+        setProgress(value);
+    }
 }

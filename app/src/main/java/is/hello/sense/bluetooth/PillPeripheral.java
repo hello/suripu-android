@@ -37,13 +37,25 @@ public final class PillPeripheral implements Serializable {
     //region Identifiers
     public static final byte[] NORMAL_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121210E10000");
     public static final byte[] DFU_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121230150000");
+    public static final int DFU_MODE_PROGRESS = 50;
+    private static final int WIPE_PROGRESS = 40;
+    private static final int CONNECT_PROGRESS = 30;
+    private static final int DISCONNECT_PROGRESS = 20;
     private static final UUID SERVICE = UUID.fromString("0000e110-1212-efde-1523-785feabcd123");
     private static final UUID CHARACTERISTIC_COMMAND_UUID = UUID.fromString("0000DEED-0000-1000-8000-00805F9B34FB");
     private static final byte COMMAND_WIPE_FIRMWARE = 8;
     private static final int TIME_OUT_SECONDS = 30;
+    private static final int DFU_TIME_OUT_SECONDS = 80;
     private static final int RACE_CONDITION_DELAY_SECONDS = 10;
     private static final int minRSSI = -70;
 
+    public enum PillState {
+        BondRemoved,
+        Disconnected,
+        Connected,
+        Wiped,
+        DfuMode
+    }
     //endregion
 
 
@@ -52,6 +64,7 @@ public final class PillPeripheral implements Serializable {
     private final GattPeripheral gattPeripheral;
     private final boolean inDfuMode;
     private GattService service;
+    private DfuCallback dfuCallback;
 
     //endregion
 
@@ -59,8 +72,8 @@ public final class PillPeripheral implements Serializable {
     public static boolean isPillDfu(@Nullable final AdvertisingData advertisingData) {
         return advertisingData != null
                 && advertisingData.anyRecordMatches(
-                    AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                    b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
+                AdvertisingData.TYPE_INCOMPLETE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
+                b -> Arrays.equals(DFU_ADVERTISEMENT_SERVICE_128_BIT, b));
     }
 
     public static boolean isPillNormal(@Nullable final AdvertisingData advertisingData) {
@@ -82,6 +95,7 @@ public final class PillPeripheral implements Serializable {
     // the cache from another part of the app we should consider moving this code to be a better
     // utility function.
     public Observable<PillPeripheral> clearCache(@NonNull final Context context) {
+        stateChanged(PillState.DfuMode);
         return Observable.create(subscriber -> {
             try {
                 final boolean[] cacheCleared = {false};
@@ -131,10 +145,6 @@ public final class PillPeripheral implements Serializable {
 
     //region Attributes
 
-    public boolean isInDfuMode() {
-        return inDfuMode;
-    }
-
     public int getScanTimeRssi() {
         return gattPeripheral.getScanTimeRssi();
     }
@@ -155,6 +165,12 @@ public final class PillPeripheral implements Serializable {
         return (gattPeripheral.getConnectionStatus() == GattPeripheral.STATUS_CONNECTED &&
                 service != null);
     }
+
+    private void stateChanged(final PillState state) {
+        if (this.dfuCallback != null) {
+            dfuCallback.onStateChange(state);
+        }
+    }
     //endregion
 
 
@@ -170,9 +186,11 @@ public final class PillPeripheral implements Serializable {
 
     //region Connecting
     @NonNull
-    public Observable<PillPeripheral> enterDfuMode(@NonNull final Context context) {
+    public Observable<PillPeripheral> enterDfuMode(@NonNull final Context context, @NonNull final DfuCallback callback) {
+        this.dfuCallback = callback;
         Log.d(getClass().getSimpleName(), "enterDfuMode()");
         if (inDfuMode) {
+            stateChanged(PillState.DfuMode);
             return Observable.create(new Observable.OnSubscribe<PillPeripheral>() {
                 @Override
                 public void call(final Subscriber<? super PillPeripheral> subscriber) {
@@ -186,16 +204,17 @@ public final class PillPeripheral implements Serializable {
                 .flatMap(PillPeripheral::connect)
                 .flatMap(PillPeripheral::wipeFirmware)
                 .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
-                .timeout(80, TimeUnit.SECONDS)
+                .timeout(DFU_TIME_OUT_SECONDS, TimeUnit.SECONDS)
                 .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
-                .doOnError( throwable -> {
-                    if(throwable instanceof ServiceDiscoveryException || throwable instanceof PillCharNotFoundException){
+                .doOnError(throwable -> {
+                    if (throwable instanceof ServiceDiscoveryException || throwable instanceof PillCharNotFoundException) {
                         this.clearCache(context).subscribe(Functions.NO_OP, Functions.LOG_ERROR);
                     }
                 });
     }
 
     public Observable<PillPeripheral> disconnect() {
+        stateChanged(PillState.Disconnected);
         Log.d(getClass().getSimpleName(), "connect()");
         if (inDfuMode) {
             return Observable.error(new IllegalStateException("Cannot disconnect to sleep pill in dfu mode."));
@@ -203,14 +222,15 @@ public final class PillPeripheral implements Serializable {
 
         return gattPeripheral.disconnect()
                              .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
-                             .map( disconnectedPeripheral -> {
-                                Log.d(getClass().getSimpleName(), "disconnected");
-                                return this;
+                             .map(disconnectedPeripheral -> {
+                                 Log.d(getClass().getSimpleName(), "disconnected");
+                                 return this;
                              });
     }
 
     @NonNull
     public Observable<PillPeripheral> connect() {
+        stateChanged(PillState.Connected);
         Log.d(getClass().getSimpleName(), "connect()");
         if (inDfuMode) {
             return Observable.error(new IllegalStateException("Cannot connect to sleep pill in dfu mode."));
@@ -230,6 +250,7 @@ public final class PillPeripheral implements Serializable {
 
     @NonNull
     public Observable<PillPeripheral> removeBond() {
+        stateChanged(PillState.BondRemoved);
         Log.d(getClass().getSimpleName(), "removeBond()");
         return gattPeripheral.removeBond(createOperationTimeout("Remove Bond TimeOut")).map(ignored -> {
             Log.d(getClass().getSimpleName(), "bond removed");
@@ -254,7 +275,7 @@ public final class PillPeripheral implements Serializable {
 
         final GattCharacteristic commandCharacteristic = service.getCharacteristic(identifier);
 
-        if(commandCharacteristic == null){
+        if (commandCharacteristic == null) {
             return Observable.error(new PillCharNotFoundException(identifier));
         }
 
@@ -264,6 +285,7 @@ public final class PillPeripheral implements Serializable {
     }
 
     public Observable<PillPeripheral> wipeFirmware() {
+        stateChanged(PillState.Wiped);
         Log.d(getClass().getSimpleName(), "wipeFirmware()");
 
         final byte[] payload = {COMMAND_WIPE_FIRMWARE};
@@ -278,5 +300,8 @@ public final class PillPeripheral implements Serializable {
 
     //endregion
 
+    public interface DfuCallback {
+        void onStateChange(PillState state);
+    }
 
 }

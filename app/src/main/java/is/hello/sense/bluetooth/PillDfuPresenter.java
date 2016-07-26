@@ -37,7 +37,6 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     public final PresenterSubject<PillPeripheral> sleepPill = this.subject;
 
 
-
     @Inject
     public PillDfuPresenter(@NonNull final Context context,
                             @NonNull final BluetoothStack bluetoothStack) {
@@ -78,14 +77,14 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
                                  }
                                  return new PillPeripheral(closestPill);
                              })
-                             .flatMap( pillPeripheral -> {
-                                if (pillPeripheral == null) {
-                                    return Observable.error(new PillNotFoundException());
-                                } else if (pillPeripheral.isTooFar()) {
-                                    return Observable.error(new RssiException());
-                                } else {
-                                    return Observable.just(pillPeripheral);
-                                }
+                             .flatMap(pillPeripheral -> {
+                                 if (pillPeripheral == null) {
+                                     return Observable.error(new PillNotFoundException());
+                                 } else if (pillPeripheral.isTooFar()) {
+                                     return Observable.error(new RssiException());
+                                 } else {
+                                     return Observable.just(pillPeripheral);
+                                 }
                              });
 
     }
@@ -107,7 +106,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
 
     //region Pill Interactions
 
-    public boolean isUpdating(){
+    public boolean isUpdating() {
         return isUpdating;
     }
 
@@ -134,7 +133,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
             return Observable.error(new PillNotFoundException());
         }
 
-        if(isUpdating()) {
+        if (isUpdating()) {
             logEvent("Dfu service already started.");
             return Observable.empty();
         }
@@ -161,7 +160,8 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
                 subscriber.onError(e);
             }
         }).subscribeOn(Schedulers.io())
-          .observeOn(Rx.mainThreadScheduler());
+                         .observeOn(Rx.mainThreadScheduler());
     }
     //endregion
+
 }
