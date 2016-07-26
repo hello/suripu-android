@@ -71,9 +71,9 @@ public class ConnectPillFragment extends PillHardwareFragment {
         Views.setTimeOffsetOnClickListener(retryButton, ignored -> searchForPill());
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> onCancel());
         this.toolbar = OnboardingToolbar.of(this, view)
+                                        .setOnHelpClickListener(this::help)
                                         .setWantsBackButton(false)
-                                        .setWantsHelpButton(false)
-                                        .setOnHelpClickListener(this::help);
+                                        .setWantsHelpButton(false);
         return view;
     }
 

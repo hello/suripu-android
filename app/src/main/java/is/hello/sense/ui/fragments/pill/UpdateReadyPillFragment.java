@@ -104,9 +104,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipPressedDialog.show());
         Views.setTimeOffsetOnClickListener(retryButton, ignored -> connectPill());
         this.toolbar = OnboardingToolbar.of(this, view)
+                                        .setOnHelpClickListener(this::help)
                                         .setWantsBackButton(false)
-                                        .setWantsHelpButton(false)
-                                        .setOnHelpClickListener(this::help);
+                                        .setWantsHelpButton(false);
         return view;
     }
 
@@ -186,6 +186,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             skipButton.setVisibility(visibleOnError);
             retryButton.setVisibility(visibleOnError);
             activityStatus.setVisibility(hiddenOnError);
+            updateIndicator.setProgress(0); //reset progress
             updateIndicator.setVisibility(hiddenOnError);
         });
     }
