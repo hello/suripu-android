@@ -8,6 +8,8 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 
+import static is.hello.sense.util.Analytics.PillUpdate.Error.PILL_NOT_DETECTED;
+
 public class PillNotFoundException extends BuruberiException implements Errors.Reporting {
     public PillNotFoundException() {
         super("No Pills Found");
@@ -21,7 +23,7 @@ public class PillNotFoundException extends BuruberiException implements Errors.R
     @Nullable
     @Override
     public String getContextInfo() {
-        return null;
+        return PILL_NOT_DETECTED;
     }
 
     @NonNull

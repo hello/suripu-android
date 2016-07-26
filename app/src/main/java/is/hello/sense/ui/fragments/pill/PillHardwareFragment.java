@@ -108,11 +108,10 @@ public abstract class PillHardwareFragment extends InjectionFragment {
         errorDialogBuilder.withOperation(StringRef.from(R.string.update_ready_pill_fragment_operation).toString());
         @StringRes int title = defaultTitle;
         @StringRes int message = defaultMessage;
+        final String defaultContextInfo = Analytics.PillUpdate.Error.PILL_OTA_FAIL;
         if (e instanceof RssiException) {
-            Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_TOO_FAR, null);
             title = R.string.error_pill_too_far;
         } else if (e instanceof PillNotFoundException) {
-            Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_NOT_DETECTED, null);
             title = R.string.error_pill_not_found;
         } else if (e instanceof ApiException) {
             title = R.string.network_activity_no_connectivity;
@@ -122,11 +121,12 @@ public abstract class PillHardwareFragment extends InjectionFragment {
             message = R.string.info_turn_on_bluetooth;
         }else if (e instanceof BleCacheException){
             message = R.string.error_addendum_unstable_stack;
+        } else {
+            errorDialogBuilder.withContextInfo(defaultContextInfo);
         }
         return errorDialogBuilder
                 .withTitle(title)
                 .withMessage(StringRef.from(message))
-                .withContextInfo(e.getMessage())
                 .withAction(helpUri, R.string.label_having_trouble);
     }
 }

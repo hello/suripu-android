@@ -37,7 +37,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SenseCache;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
@@ -105,9 +104,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         Views.setTimeOffsetOnClickListener(skipButton, ignored -> skipPressedDialog.show());
         Views.setTimeOffsetOnClickListener(retryButton, ignored -> connectPill());
         this.toolbar = OnboardingToolbar.of(this, view)
+                                        .setOnHelpClickListener(this::help)
                                         .setWantsBackButton(false)
-                                        .setWantsHelpButton(false)
-                                        .setOnHelpClickListener(this::help);
+                                        .setWantsHelpButton(false);
         return view;
     }
 
@@ -187,6 +186,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             skipButton.setVisibility(visibleOnError);
             retryButton.setVisibility(visibleOnError);
             activityStatus.setVisibility(hiddenOnError);
+            updateIndicator.setProgress(0); //reset progress
             updateIndicator.setVisibility(hiddenOnError);
         });
     }
@@ -197,7 +197,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         @StringRes final int title = R.string.error_sleep_pill_title_update_fail;
         @StringRes final int message = R.string.error_sleep_pill_message_update_fail;
         final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
-        final ErrorDialogFragment.Builder errorDialogBuilder = getErrorDialogFragmentBuilder(e, title, message, helpUriString);
+        final ErrorDialogFragment.Builder errorDialogBuilder =
+                getErrorDialogFragmentBuilder(e,
+                                              title,
+                                              message,
+                                              helpUriString);
         errorDialogBuilder
                 .build()
                 .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -211,22 +215,25 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
+
+        firmwareCache.trimCache();
+
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
 
-        stateSafeExecutor.execute(() -> {
-            //todo if device id is not needed but just account id then don't bother with this call here.
-           devicesPresenter.latest().subscribe( devices -> {
-               final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-               final String deviceId = sleepPillDevice != null ? sleepPillDevice.deviceId : "no_device_id";
-               LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
-                   final Intent intent = new Intent();
-                   intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                   getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
-               }, R.string.message_sleep_pill_updated);
-           });
-        });
+        //todo if device id is not needed but just account id then don't bother with this call here.
+
+        bindAndSubscribe(devicesPresenter.devices, devices -> {
+            final SleepPillDevice sleepPillDevice = devices.getSleepPill();
+            final String deviceId = sleepPillDevice != null ? sleepPillDevice.deviceId : "no_device_id";
+            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
+                final Intent intent = new Intent();
+                intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
+                getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+            }, R.string.message_sleep_pill_updated);
+        }, this::presentError);
+        devicesPresenter.update();
     }
 
     @Override
@@ -323,7 +330,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onError(final String deviceAddress, final int error, final int errorType, final String message) {
         Log.d("DFU Listener", "onError: " + message + ". errorType: " + errorType + ". error: " + error);
-        Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_OTA_FAIL, null);
         pillDfuPresenter.setIsUpdating(false);
         presentError(new Throwable(message));
     }

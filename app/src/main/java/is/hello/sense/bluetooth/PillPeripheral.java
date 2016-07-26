@@ -186,7 +186,7 @@ public final class PillPeripheral implements Serializable {
                 .flatMap(PillPeripheral::connect)
                 .flatMap(PillPeripheral::wipeFirmware)
                 .flatMap(pillPeripheral3 -> pillPeripheral3.clearCache(context))
-                .timeout(60, TimeUnit.SECONDS)
+                .timeout(80, TimeUnit.SECONDS)
                 .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
                 .doOnError( throwable -> {
                     if(throwable instanceof ServiceDiscoveryException || throwable instanceof PillCharNotFoundException){
