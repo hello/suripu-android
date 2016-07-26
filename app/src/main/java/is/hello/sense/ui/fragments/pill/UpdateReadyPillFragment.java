@@ -37,7 +37,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SenseCache;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
@@ -197,7 +196,11 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         @StringRes final int title = R.string.error_sleep_pill_title_update_fail;
         @StringRes final int message = R.string.error_sleep_pill_message_update_fail;
         final String helpUriString = UserSupport.DeviceIssue.SLEEP_PILL_WEAK_RSSI.getUri().toString();
-        final ErrorDialogFragment.Builder errorDialogBuilder = getErrorDialogFragmentBuilder(e, title, message, helpUriString);
+        final ErrorDialogFragment.Builder errorDialogBuilder =
+                getErrorDialogFragmentBuilder(e,
+                                              title,
+                                              message,
+                                              helpUriString);
         errorDialogBuilder
                 .build()
                 .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -326,7 +329,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onError(final String deviceAddress, final int error, final int errorType, final String message) {
         Log.d("DFU Listener", "onError: " + message + ". errorType: " + errorType + ". error: " + error);
-        Analytics.trackEvent(Analytics.PillUpdate.Error.PILL_OTA_FAIL, null);
         pillDfuPresenter.setIsUpdating(false);
         presentError(new Throwable(message));
     }
