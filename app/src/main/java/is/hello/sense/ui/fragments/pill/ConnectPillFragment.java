@@ -66,6 +66,7 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
         this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
+        ((TextView)view.findViewById(R.id.fragment_onboarding_pair_pill_title)).setText(R.string.title_connect_sleep_pill);
 
         this.skipButton.setText(R.string.action_cancel);
         Views.setTimeOffsetOnClickListener(retryButton, ignored -> searchForPill());
