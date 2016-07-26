@@ -131,6 +131,7 @@ public class ConnectPillFragment extends PillHardwareFragment {
 
         firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
         pillDfuPresenter.update();
+        pillDfuPresenter.setDeviceId(sleepPillDevice.deviceId);
     }
 
     private void updateUI(final boolean onError){

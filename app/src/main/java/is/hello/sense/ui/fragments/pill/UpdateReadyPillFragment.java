@@ -23,11 +23,9 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
-import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.bluetooth.DfuService;
 import is.hello.sense.bluetooth.PillDfuPresenter;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -52,8 +50,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private Button retryButton;
     private Button skipButton;
 
-    @Inject
-    DevicesPresenter devicesPresenter;
     @Inject
     PillDfuPresenter pillDfuPresenter;
     @Inject
@@ -210,8 +206,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void onFinish(final boolean success) {
-        pillDfuPresenter.reset();
         if (!success) {
+            pillDfuPresenter.reset();
             getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
@@ -222,18 +218,16 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
 
-        //todo if device id is not needed but just account id then don't bother with this call here.
-
-        bindAndSubscribe(devicesPresenter.devices, devices -> {
-            final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-            final String deviceId = sleepPillDevice != null ? sleepPillDevice.deviceId : "no_device_id";
-            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), () -> {
-                final Intent intent = new Intent();
-                intent.putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId);
-                getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
-            }, R.string.message_sleep_pill_updated);
-        }, this::presentError);
-        devicesPresenter.update();
+        LoadingDialogFragment.closeWithMessageTransition(
+                getFragmentManager(),
+                () -> {
+                    final Intent intent = new Intent()
+                            .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID,
+                                      pillDfuPresenter.getDeviceId());
+                    pillDfuPresenter.reset();
+                    getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, intent);
+                },
+                R.string.message_sleep_pill_updated);
     }
 
     @Override

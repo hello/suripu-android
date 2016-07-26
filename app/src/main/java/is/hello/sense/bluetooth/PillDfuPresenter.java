@@ -29,9 +29,11 @@ import rx.schedulers.Schedulers;
 public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     private static final String PILL_DFU_NAME = "PillDFU";
     private static final String PILL_PREFIX = "Pill";
+    private static final String EXTRA_DEVICE_ID = PillDfuPresenter.class.getName() + "EXTRA_DEVICE_ID";
     private final Context context;
     private final BluetoothStack bluetoothStack;
     private boolean isUpdating;
+    private String deviceId;
     public final PresenterSubject<PillPeripheral> sleepPill = this.subject;
 
 
@@ -42,6 +44,7 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
         this.context = context;
         this.bluetoothStack = bluetoothStack;
         this.isUpdating = false;
+        this.deviceId = null;
     }
 
     @Override
@@ -91,7 +94,15 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
     @Nullable
     @Override
     public Bundle onSaveState() {
-        return null;
+        final Bundle state = new Bundle();
+        state.putString(EXTRA_DEVICE_ID, deviceId);
+        return state;
+    }
+
+    @Override
+    public void onRestoreState(@NonNull final Bundle savedState) {
+        super.onRestoreState(savedState);
+        deviceId = savedState.getString(EXTRA_DEVICE_ID);
     }
 
     //region Pill Interactions
@@ -104,8 +115,17 @@ public class PillDfuPresenter extends ValuePresenter<PillPeripheral> {
         this.isUpdating = isUpdating;
     }
 
+    public String getDeviceId(){
+        return deviceId;
+    }
+
+    public void setDeviceId(@Nullable final String deviceId) {
+        this.deviceId = deviceId;
+    }
+
     public void reset() {
-        setIsUpdating(false);
+        isUpdating = false;
+        deviceId = null;
         sleepPill.forget();
     }
 

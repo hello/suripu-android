@@ -28,6 +28,8 @@ public class PillUpdateActivity extends InjectionActivity
     public static final int REQUEST_CODE = 0xfeed;
 
     private FragmentNavigationDelegate navigationDelegate;
+    //Todo able to remove once server can be notified immediately after a successful update.
+    private String deviceId;
 
     @Inject
     DeviceIssuesPresenter deviceIssuesPresenter;
@@ -43,9 +45,12 @@ public class PillUpdateActivity extends InjectionActivity
 
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
+            getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
             showUpdatePillIntro();
         }
+
+        getDeviceIdFromIntent(getIntent());
     }
 
     @Override
@@ -54,12 +59,15 @@ public class PillUpdateActivity extends InjectionActivity
         if (this.navigationDelegate == null || this.navigationDelegate.getTopFragment() == null) {
             showUpdatePillIntro();
         }
+
+        getDeviceIdFromIntent(intent);
     }
 
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         navigationDelegate.onSaveInstanceState(outState);
+        outState.putString(EXTRA_DEVICE_ID, deviceId);
     }
 
     @Override
@@ -111,16 +119,15 @@ public class PillUpdateActivity extends InjectionActivity
 
        if (fragment instanceof UpdateIntroPillFragment || fragment instanceof BluetoothFragment) {
             showConnectPillScreen();
-        } else if (fragment instanceof ConnectPillFragment) {
+       } else if (fragment instanceof ConnectPillFragment) {
             showUpdateReadyPill();
-        } else if (fragment instanceof UpdateReadyPillFragment) {
-            if (result != null) {
-                updatePreferences(result);
-            }
-            Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
-            setResult(RESULT_OK);
-            finish();
-        }
+       } else if (fragment instanceof UpdateReadyPillFragment) {
+           getDeviceIdFromIntent(result);
+           updatePreferences();
+           Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_COMPLETE, null);
+           setResult(RESULT_OK);
+           finish();
+       }
     }
 
     @Nullable
@@ -142,8 +149,7 @@ public class PillUpdateActivity extends InjectionActivity
         pushFragment(UpdateReadyPillFragment.newInstance(), null, false);
     }
 
-    private void updatePreferences(@NonNull final Intent intent) {
-        final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
+    private void updatePreferences() {
         if (deviceId != null) {
             deviceIssuesPresenter.updateLastUpdatedDevice(deviceId);
         }
@@ -156,5 +162,17 @@ public class PillUpdateActivity extends InjectionActivity
 
     private void back() {
         stateSafeExecutor.execute(super::onBackPressed);
+    }
+
+    private void getDeviceIdFromBundle(@NonNull final Bundle savedInstanceState) {
+        if(savedInstanceState.containsKey(EXTRA_DEVICE_ID)){
+            this.deviceId = savedInstanceState.getString(EXTRA_DEVICE_ID);
+        }
+    }
+
+    private void getDeviceIdFromIntent(@Nullable final Intent intent) {
+        if(intent != null && intent.hasExtra(EXTRA_DEVICE_ID)){
+            this.deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
+        }
     }
 }
