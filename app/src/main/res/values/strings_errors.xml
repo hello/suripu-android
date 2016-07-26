@@ -16,6 +16,10 @@
     <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
     <string name="error_sense_missing_title">Sense not seen recently</string>
     <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
+    <string name="error_sense_update_failed_message">Sense was unable to update successfully. Please try again</string>
+    <string name="error_update_failed">Update failed</string>
+    <string name="error_sense_voice_not_detected">Sorry didn't quite get that.\nPlease try again.</string>
+
 
 
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
@@ -125,8 +129,5 @@
 
     <string name="error_pill_too_far">Sleep Pill out of range</string>
     <string name="error_pill_not_found">Sleep Pill not found</string>
-
-    <string name="error_sense_update_failed_message">Sense was unable to update successfully. Please try again</string>
-    <string name="error_update_failed">Update failed</string>
 
 </resources>
