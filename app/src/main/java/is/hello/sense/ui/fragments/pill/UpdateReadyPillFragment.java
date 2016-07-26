@@ -168,6 +168,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
                 updateUI(false);
                 pillDfuPresenter.update();
             } else {
+                updateUI(true);
                 requestLocationPermission();
             }
         });

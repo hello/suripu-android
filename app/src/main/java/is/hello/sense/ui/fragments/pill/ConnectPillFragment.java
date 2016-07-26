@@ -110,15 +110,16 @@ public class ConnectPillFragment extends PillHardwareFragment {
     }
 
     private void searchForPill() {
-        if (isLocationPermissionGranted()) {
-            retryButton.post(() -> {
+        retryButton.post(() -> {
+            if (isLocationPermissionGranted()) {
                 updateUI(false);
                 setStatus(R.string.label_searching_for_pill);
                 devicesPresenter.update();
-            });
-        } else {
-            requestLocationPermission();
-        }
+            } else {
+                updateUI(true);
+                requestLocationPermission();
+            }
+        });
     }
 
     private void bindDevices(@NonNull final Devices devices) {
