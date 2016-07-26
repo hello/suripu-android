@@ -6,6 +6,8 @@
     <string name="error_no_bluetooth_connectivity_title">Could not connect over Bluetooth</string>
     <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense.</string>
 
+    <string name="error_bluetooth_pill_characteristic_discovery_failed">Could not resolve characteristics from Sleep pill.</string>
+
     <string name="error_sense_already_paired">Your Sense is already linked to this account.</string>
     <string name="error_sense_device_db_full">Your Sense cannot be paired to any more devices.</string>
     <string name="error_sense_not_found_title">​Could not connect over Bluetooth</string>

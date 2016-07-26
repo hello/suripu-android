@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -16,13 +15,11 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
-import is.hello.sense.ui.fragments.pill.PillHardwareFragment;
-import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
+import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdateIntroPillFragment;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
-import is.hello.sense.util.Logger;
+import is.hello.sense.util.Analytics;
 
 public class PillUpdateActivity extends InjectionActivity
         implements FragmentNavigation {
@@ -72,23 +69,6 @@ public class PillUpdateActivity extends InjectionActivity
     }
 
     @Override
-    public void onBackPressed() {
-        final Fragment topFragment = getTopFragment();
-        if (topFragment instanceof OnBackPressedInterceptor) {
-            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
-                return;
-            }
-        } else if (topFragment instanceof BluetoothFragment) {
-            showUpdatePillIntro();
-            return;
-        } else if (topFragment instanceof ConnectPillFragment) {
-            return;
-        }
-
-        back();
-    }
-
-    @Override
     public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
@@ -109,6 +89,7 @@ public class PillUpdateActivity extends InjectionActivity
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
             } else {
+                setResult(RESULT_CANCELED, null);
                 finish();
             }
             return;
@@ -134,8 +115,20 @@ public class PillUpdateActivity extends InjectionActivity
         return navigationDelegate.getTopFragment();
     }
 
+    @Override
+    public void onBackPressed() {
+        final Fragment topFragment = getTopFragment();
+        if (topFragment instanceof OnBackPressedInterceptor) {
+            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
+                return;
+            }
+        }
+
+        back();
+    }
+
     public void showUpdatePillIntro() {
-        pushFragmentAllowingStateLoss(new UpdateIntroPillFragment(), null, false);
+        pushFragment(new UpdateIntroPillFragment(), null, true);
     }
 
     public void showConnectPillScreen() {
@@ -155,7 +148,7 @@ public class PillUpdateActivity extends InjectionActivity
     }
 
     public void showBluetoothFragment() {
-        pushFragmentAllowingStateLoss(new BluetoothFragment(), null, false);
+        pushFragmentAllowingStateLoss(new BluetoothFragment(), null, true);
 
     }
 
