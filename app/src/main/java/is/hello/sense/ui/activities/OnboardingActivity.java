@@ -55,6 +55,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
@@ -171,6 +172,10 @@ public class OnboardingActivity extends InjectionActivity
 
                     case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
                         showSmartAlarmInfo();
+                        break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_SENSE_VOICE:
+                        showSenseVoice();
                         break;
                 }
             }
@@ -536,6 +541,10 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showSenseUpdating(){
         pushFragment(SenseUpdateFragment.newInstance(), null, false);
+    }
+
+    private void showSenseVoice() {
+        pushFragment(new SenseVoiceFragment(), null, false);
     }
 
     public void showDone() {
