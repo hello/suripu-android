@@ -2,15 +2,12 @@ package is.hello.sense.ui.fragments.pill;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -283,7 +280,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onProgressChanged(final String deviceAddress, final int percent, final float speed, final float avgSpeed, final int currentPart, final int partsTotal) {
         Log.d("DFU Listener", "onProgressChanged " + percent + "%");
-        setProgress(PillPeripheral.DFU_MODE_PROGRESS + (percent / 2));
+        setProgress(50 + (percent / 2));
 
     }
 
@@ -337,7 +334,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
             case Disconnected:
                 value += 10;
             case BondRemoved:
-                value+=10;
+                value += 10;
         }
         setProgress(value);
     }
