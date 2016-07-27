@@ -252,7 +252,7 @@ public class DeviceListFragment extends InjectionFragment
     @Override
     public void onUpdateDevice(@NonNull final BaseDevice device) {
         if(device instanceof SleepPillDevice) {
-            UserSupport.showUpdatePill(this);
+            UserSupport.showUpdatePill(this, device.deviceId);
         }
 
     }

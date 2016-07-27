@@ -141,6 +141,7 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
 
         firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
         pillDfuPresenter.update();
+        pillDfuPresenter.setDeviceId(sleepPillDevice.deviceId);
     }
 
     private void updateUI(final boolean onError){

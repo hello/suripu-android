@@ -120,7 +120,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     //region Pill Actions
 
     public void updateFirmware(){
-        UserSupport.showUpdatePill(this);
+        UserSupport.showUpdatePill(this, device.deviceId);
     }
 
     public void replaceDevice() {

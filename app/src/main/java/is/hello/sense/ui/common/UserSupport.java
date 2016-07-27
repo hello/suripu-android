@@ -187,12 +187,17 @@ public class UserSupport {
 
     public static void showUpdatePill(@NonNull final Activity from) {
         Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
-        from.startActivityForResult(new Intent(from, PillUpdateActivity.class), PillUpdateActivity.REQUEST_CODE);
+        from.startActivityForResult(
+                new Intent(from, PillUpdateActivity.class),
+                PillUpdateActivity.REQUEST_CODE);
     }
 
-    public static void showUpdatePill(@NonNull final Fragment from) {
+    public static void showUpdatePill(@NonNull final Fragment from, @NonNull final String deviceId) {
         Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill() from fragment " + from.getClass().getName());
-        from.startActivityForResult(new Intent(from.getActivity(), PillUpdateActivity.class), PillUpdateActivity.REQUEST_CODE);
+        from.startActivityForResult(
+                new Intent(from.getActivity(), PillUpdateActivity.class)
+                        .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId),
+                PillUpdateActivity.REQUEST_CODE);
     }
 
     public enum DeviceIssue {
