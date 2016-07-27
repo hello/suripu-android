@@ -44,6 +44,7 @@ public final class PillPeripheral implements Serializable {
     private static final int DFU_TIME_OUT_SECONDS = 80;
     private static final int RACE_CONDITION_DELAY_SECONDS = 10;
     private static final int minRSSI = -70;
+    private static final String TAG = PillPeripheral.class.getSimpleName();
 
     public enum PillState {
         BondRemoved,
@@ -109,7 +110,7 @@ public final class PillPeripheral implements Serializable {
                                         cacheCleared[0] = (boolean) (Boolean) localMethod.invoke(gatt);
                                     }
                                 } catch (final Exception localException) {
-                                    Log.d(getClass().getSimpleName(), "Failed to get refresh method: " + localException);
+                                    Log.d(TAG, "Failed to get refresh method: " + localException);
                                     // Don't exit from here. We need to make sure we disconnect so
                                     // the user can try again.
                                 }
@@ -130,10 +131,10 @@ public final class PillPeripheral implements Serializable {
                 //todo I read that the above should trigger this error but I haven't seen it on my 5x.
                 // if we confirm that this error is not commonly triggered for our supported devices
                 // we can have it throw an error.
-                Log.d(getClass().getSimpleName(), "NoSuchFieldException: " + e);
+                Log.d(TAG, "NoSuchFieldException: " + e);
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
-                Log.d(getClass().getSimpleName(), "IllegalAccessException: " + e);
+                Log.d(TAG, "IllegalAccessException: " + e);
                 e.printStackTrace();
             }
         });
@@ -184,7 +185,7 @@ public final class PillPeripheral implements Serializable {
     @NonNull
     public Observable<PillPeripheral> enterDfuMode(@NonNull final Context context, @NonNull final DfuCallback callback) {
         this.dfuCallback = callback;
-        Log.d(getClass().getSimpleName(), "enterDfuMode()");
+        Log.d(TAG, "enterDfuMode()");
         if (inDfuMode) {
             stateChanged(PillState.DfuMode);
             return Observable.create(new Observable.OnSubscribe<PillPeripheral>() {
@@ -211,7 +212,7 @@ public final class PillPeripheral implements Serializable {
 
     public Observable<PillPeripheral> disconnect() {
         stateChanged(PillState.Disconnected);
-        Log.d(getClass().getSimpleName(), "connect()");
+        Log.d(TAG, "disconnect()");
         if (inDfuMode) {
             return Observable.error(new IllegalStateException("Cannot disconnect to sleep pill in dfu mode."));
         }
@@ -219,7 +220,7 @@ public final class PillPeripheral implements Serializable {
         return gattPeripheral.disconnect()
                              .delay(RACE_CONDITION_DELAY_SECONDS, TimeUnit.SECONDS)
                              .map(disconnectedPeripheral -> {
-                                 Log.d(getClass().getSimpleName(), "disconnected");
+                                 Log.d(TAG, "disconnected");
                                  return this;
                              });
     }
@@ -227,18 +228,18 @@ public final class PillPeripheral implements Serializable {
     @NonNull
     public Observable<PillPeripheral> connect() {
         stateChanged(PillState.Connected);
-        Log.d(getClass().getSimpleName(), "connect()");
+        Log.d(TAG, "connect()");
         if (inDfuMode) {
             return Observable.error(new IllegalStateException("Cannot connect to sleep pill in dfu mode."));
         }
 
         return gattPeripheral.connect(GattPeripheral.CONNECT_FLAG_TRANSPORT_LE, createOperationTimeout("Connect"))
                              .flatMap(connectedPeripheral -> {
-                                 Log.d(getClass().getSimpleName(), "discoverService(" + SERVICE + ")");
+                                 Log.d(TAG, "discoverService(" + SERVICE + ")");
                                  return connectedPeripheral.discoverService(SERVICE, createOperationTimeout("Discover Service"));
                              })
                              .map(gattService -> {
-                                 Log.d(getClass().getSimpleName(), "connected");
+                                 Log.d(TAG, "connected");
                                  this.service = gattService;
                                  return this;
                              });
@@ -247,9 +248,9 @@ public final class PillPeripheral implements Serializable {
     @NonNull
     public Observable<PillPeripheral> removeBond() {
         stateChanged(PillState.BondRemoved);
-        Log.d(getClass().getSimpleName(), "removeBond()");
+        Log.d(TAG, "removeBond()");
         return gattPeripheral.removeBond(createOperationTimeout("Remove Bond TimeOut")).map(ignored -> {
-            Log.d(getClass().getSimpleName(), "bond removed");
+            Log.d(TAG, "bond removed");
             return this;
         });
     }
@@ -263,7 +264,7 @@ public final class PillPeripheral implements Serializable {
     private Observable<Void> writeCommand(@NonNull final UUID identifier,
                                           @NonNull final GattPeripheral.WriteType writeType,
                                           @NonNull final byte[] payload) {
-        Log.d(getClass().getSimpleName(), "writeCommand(" + identifier + ", " + writeType + ", " + Arrays.toString(payload) + ")");
+        Log.d(TAG, "writeCommand(" + identifier + ", " + writeType + ", " + Arrays.toString(payload) + ")");
 
         if (!isConnected()) {
             return Observable.error(new PillNotFoundException("writeCommand(...) requires a connection"));
@@ -282,7 +283,7 @@ public final class PillPeripheral implements Serializable {
 
     public Observable<PillPeripheral> wipeFirmware() {
         stateChanged(PillState.Wiped);
-        Log.d(getClass().getSimpleName(), "wipeFirmware()");
+        Log.d(TAG, "wipeFirmware()");
 
         final byte[] payload = {COMMAND_WIPE_FIRMWARE};
         return writeCommand(CHARACTERISTIC_COMMAND_UUID, GattPeripheral.WriteType.NO_RESPONSE, payload)

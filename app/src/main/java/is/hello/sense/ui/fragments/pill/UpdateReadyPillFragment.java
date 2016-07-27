@@ -107,6 +107,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        DfuServiceListenerHelper.registerProgressListener(getActivity(), this);
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
         bindAndSubscribe(pillDfuPresenter.sleepPill,
                          pillPeripheral ->
@@ -124,7 +125,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     @Override
     public void onResume() {
         super.onResume();
-        DfuServiceListenerHelper.registerProgressListener(getActivity(), this);
         viewAnimator.onResume();
     }
 
@@ -218,10 +218,6 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
 
         firmwareCache.trimCache();
         stateSafeExecutor.execute(() -> {
-            LoadingDialogFragment.show(getFragmentManager(),
-                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-            getFragmentManager().executePendingTransactions();
-
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.OPAQUE_BACKGROUND);
             getFragmentManager().executePendingTransactions();
