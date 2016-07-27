@@ -188,13 +188,7 @@ public final class PillPeripheral implements Serializable {
         Log.d(TAG, "enterDfuMode()");
         if (inDfuMode) {
             stateChanged(PillState.DfuMode);
-            return Observable.create(new Observable.OnSubscribe<PillPeripheral>() {
-                @Override
-                public void call(final Subscriber<? super PillPeripheral> subscriber) {
-                    subscriber.onNext(PillPeripheral.this);
-                    subscriber.onCompleted();
-                }
-            });
+            return Observable.just(this);
         }
         return removeBond()
                 .flatMap(PillPeripheral::disconnect)
