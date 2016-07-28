@@ -24,6 +24,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
@@ -140,7 +141,19 @@ public class SenseUpdateFragment extends HardwareFragment {
 
     private void done() {
         // todo update message to Sense updated and check if voice needed
-        getOnboardingActivity().showDone();
+        stateSafeExecutor.execute( () -> {
+
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+            getFragmentManager().executePendingTransactions();
+
+            LoadingDialogFragment.closeWithMessageTransition(
+                    getFragmentManager(),
+                    stateSafeExecutor.bind( () -> {
+                        getOnboardingActivity().showDone();
+                    }),
+                    R.string.sense_updated);
+        });
     }
 
     public void showHelp(@NonNull final View sender) {

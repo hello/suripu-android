@@ -600,5 +600,6 @@
     <string name="subtitle_sense_update">Sense needs an update before use. This will take up to 3 minutes.</string>
     <string name="title_sense_updating">Updating your Sense</string>
     <string name="subtitle_sense_updating">Sense is currently updating. This will take up to 3 minutes.</string>
+    <string name="sense_updated">Sense updated</string>
 
 </resources>
