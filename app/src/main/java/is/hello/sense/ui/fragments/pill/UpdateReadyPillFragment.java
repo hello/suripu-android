@@ -36,6 +36,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SenseCache;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
+import rx.Subscription;
 
 public class UpdateReadyPillFragment extends PillHardwareFragment
         implements OnBackPressedInterceptor, DfuProgressListener, PillPeripheral.DfuCallback {
@@ -83,6 +84,8 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         bindAndSubscribe(Rx.fromLocalBroadcast(getActivity(), new IntentFilter(DfuService.BROADCAST_LOG)),
                          intent -> Log.d(getClass().getSimpleName(), "broadcast log: " + intent.getStringExtra(DfuService.EXTRA_LOG_MESSAGE)),
                          Functions.IGNORE_ERROR);
+
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -110,10 +113,13 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         DfuServiceListenerHelper.registerProgressListener(getActivity(), this);
         viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
         bindAndSubscribe(pillDfuPresenter.sleepPill,
-                         pillPeripheral ->
-                                 pillPeripheral.enterDfuMode(getActivity(), this)
-                                               .subscribe(ignore -> updatePill(),
-                                                          this::presentError),
+                         pillPeripheral -> {
+                             final Subscription subscription =
+                                     pillPeripheral.enterDfuMode(getActivity(), this)
+                                                   .subscribe(ignore -> updatePill(),
+                                                              this::presentError);
+                             observableContainer.track(subscription);
+                         },
                          this::presentError);
 
         bindAndSubscribe(firmwareCache.file
@@ -174,6 +180,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void updateUI(final boolean onError) {
+        if (activityStatus == null) {
+            return;
+        }
         activityStatus.post(() -> {
             toolbar.setVisible(onError);
             toolbar.setWantsHelpButton(onError);
@@ -188,6 +197,9 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void setProgress(final int progress) {
+        if (updateIndicator == null) {
+            return;
+        }
         updateIndicator.post(() -> updateIndicator.setProgress(progress));
     }
 
@@ -213,6 +225,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
         firmwareCache.trimCache();
         if (!success) {
             pillDfuPresenter.reset();
+            //observableContainer.clearSubscriptions();
             getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
