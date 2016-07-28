@@ -149,13 +149,13 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     public class SleepSoundsPlayerViewHolder extends BaseViewHolder {
         private final SleepSoundsPlayerView view;
 
-        SleepSoundsPlayerViewHolder(@NonNull SleepSoundsPlayerView playerView) {
+        SleepSoundsPlayerViewHolder(@NonNull final SleepSoundsPlayerView playerView) {
             super(playerView);
             this.view = playerView;
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             view.bindStatus(sleepSoundStatus,
                             getSavedSound(),
                             getSavedDuration(),
@@ -166,7 +166,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     //region sleep state view holders
 
-    public abstract class SleepStateViewHolder extends BaseViewHolder {
+    public static abstract class SleepStateViewHolder extends BaseViewHolder {
         protected final ImageView image;
         protected final TextView title;
         protected final TextView message;
@@ -192,13 +192,13 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class OfflineViewHolder extends SleepStateViewHolder {
+    static class OfflineViewHolder extends SleepStateViewHolder {
         OfflineViewHolder(final @NonNull View view) {
             super(view);
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             this.title.setText(R.string.sense_offline_title);
             this.image.setImageResource(R.drawable.illustration_sense_offline);
             this.message.setText(R.string.sense_offline_message);
@@ -206,7 +206,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class NoSoundsStateViewHolder extends SleepStateViewHolder {
+    static class NoSoundsStateViewHolder extends SleepStateViewHolder {
 
         NoSoundsStateViewHolder(final @NonNull View view) {
             super(view);
@@ -220,7 +220,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class FwUpdateStateViewHolder extends SleepStateViewHolder {
+    static class FwUpdateStateViewHolder extends SleepStateViewHolder {
 
         FwUpdateStateViewHolder(final @NonNull View view) {
             super(view);

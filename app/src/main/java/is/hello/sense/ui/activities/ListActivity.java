@@ -29,7 +29,6 @@ import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
 import is.hello.sense.util.SenseCache.AudioCache;
-import rx.Observable;
 import rx.Subscription;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
@@ -452,6 +451,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                         enterLoadingState();
                     });
                     audioCache.setUrlLocation(item.getPreviewUrl());
+                    audioCache.file.forget();
                     subscription = bindAndSubscribe(
                             audioCache.file,
                             this::audioFileDownloaded,
