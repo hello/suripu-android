@@ -8,6 +8,7 @@ import android.support.annotation.VisibleForTesting;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
+import org.joda.time.Hours;
 
 import javax.inject.Inject;
 
@@ -24,6 +25,7 @@ import rx.Observable;
 public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPresenter.Issue> {
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
+    @Inject PersistentPreferencesPresenter persistentPreferences;
 
     public final PresenterSubject<Issue> topIssue = this.subject;
 
@@ -44,7 +46,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
     }
 
 
-    public Issue getTopIssue(@NonNull Devices devices) {
+    public Issue getTopIssue(@NonNull final Devices devices) {
         final SenseDevice sense = devices.getSense();
         final SleepPillDevice pill = devices.getSleepPill();
 
@@ -62,6 +64,8 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
             return Issue.SLEEP_PILL_LOW_BATTERY;
         } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
             return Issue.SLEEP_PILL_MISSING;
+        } else if (pill.shouldUpdate() && shouldReportPillUpdate()){
+            return Issue.SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE;
         }
 
         return Issue.NONE;
@@ -91,6 +95,14 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         }
     }
 
+    private @Nullable DateTime getPillUpdateAlertLastShown() {
+        if (preferences.contains(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN)) {
+            return new DateTime(preferences.getLong(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN, 0));
+        } else {
+            return null;
+        }
+    }
+
     @VisibleForTesting
     boolean shouldReportLowBattery() {
         final DateTime lastShown = getSystemAlertLastShown();
@@ -107,7 +119,21 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
     }
 
-    public void updateLastShown(@NonNull Issue issue){
+    boolean shouldReportPillUpdate() {
+        final DateTime lastShown = getPillUpdateAlertLastShown();
+        return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.ONE);
+    }
+
+    public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
+        final DateTime lastUpdated = persistentPreferences.getLastPillUpdateDateTime(deviceId);
+        return (lastUpdated == null || Hours.hoursBetween(lastUpdated, DateTime.now()).isGreaterThan(Hours.ONE));
+    }
+
+    public void updateLastUpdatedDevice(@NonNull final String deviceId){
+        persistentPreferences.updateLastUpdatedDevice(deviceId);
+    }
+
+    public void updateLastShown(@NonNull final Issue issue){
         switch (issue) {
             case SENSE_MISSING:
                 preferences.edit()
@@ -127,38 +153,55 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
                                     DateTimeUtils.currentTimeMillis())
                            .apply();
                 break;
+            case SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE:
+                preferences.edit()
+                           .putLong(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN,
+                                DateTimeUtils.currentTimeMillis())
+                           .apply();
 
         }
     }
 
     public enum Issue {
-        NONE(0, 0, 0),
+        NONE(0, 0, 0, 0),
         NO_SENSE_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED,
                         R.string.issue_title_no_sense,
-                        R.string.issue_message_no_sense),
+                        R.string.issue_message_no_sense,
+                        R.string.action_fix_now),
         SENSE_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN,
                       R.string.issue_title_missing_sense,
-                      R.string.issue_message_missing_sense),
+                      R.string.issue_message_missing_sense,
+                      R.string.action_fix_now),
         NO_SLEEP_PILL_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED,
                              R.string.issue_title_no_pill,
-                             R.string.issue_message_no_pill),
+                             R.string.issue_message_no_pill,
+                             R.string.action_fix_now),
         SLEEP_PILL_LOW_BATTERY(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY,
                                R.string.issue_title_low_battery,
-                               R.string.issue_message_low_battery),
+                               R.string.issue_message_low_battery,
+                               R.string.action_replace),
         SLEEP_PILL_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN,
                            R.string.issue_title_missing_pill,
-                           R.string.issue_message_missing_pill);
+                           R.string.issue_message_missing_pill,
+                           R.string.action_fix_now),
+        SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_FIRMWARE_UPDATE_AVAILABLE,
+                                             R.string.issue_title_pill_firmware_update_available,
+                                             R.string.issue_message_pill_firmware_update_available,
+                                             R.string.action_update_now);
 
         public final int systemAlertType;
         public final @StringRes int titleRes;
         public final @StringRes int messageRes;
+        public final @StringRes int buttonActionRes;
 
-        Issue(int systemAlertType,
-              @StringRes int titleRes,
-              @StringRes int messageRes) {
+        Issue(final int systemAlertType,
+              @StringRes final int titleRes,
+              @StringRes final int messageRes,
+              @StringRes final int buttonActionRes) {
             this.systemAlertType = systemAlertType;
             this.titleRes = titleRes;
             this.messageRes = messageRes;
+            this.buttonActionRes = buttonActionRes;
         }
     }
 }

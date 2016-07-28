@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -42,9 +43,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
     private
     @Nullable
-    OnPairNewDeviceListener onPairNewDeviceListener;
+    OnDeviceInteractionListener onDeviceInteractionListener;
 
-    public DevicesAdapter(@NonNull Activity activity) {
+    public DevicesAdapter(@NonNull final Activity activity) {
         super(new ArrayList<>());
         this.activity = activity;
         this.inflater = LayoutInflater.from(activity);
@@ -52,11 +53,11 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
 
-    public void setOnPairNewDeviceListener(@Nullable OnPairNewDeviceListener onPairNewDeviceListener) {
-        this.onPairNewDeviceListener = onPairNewDeviceListener;
+    public void setOnDeviceInteractionListener(@Nullable final OnDeviceInteractionListener onDeviceInteractionListener) {
+        this.onDeviceInteractionListener = onDeviceInteractionListener;
     }
 
-    public void bindDevices(@NonNull Devices devices) {
+    public void bindDevices(@NonNull final Devices devices) {
         BaseDevice sense = devices.getSense();
         BaseDevice sleepPill = devices.getSleepPill();
 
@@ -79,7 +80,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         final BaseDevice item = getItem(position);
         if (item instanceof PlaceholderDevice) {
             return TYPE_PLACEHOLDER;
@@ -93,7 +94,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
             case TYPE_PLACEHOLDER: {
                 final View view = inflater.inflate(R.layout.item_device_placeholder, parent, false);
@@ -114,23 +115,22 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         holder.bind(position);
     }
 
     @Override
-    public void onClick(View view) {
-        if (onPairNewDeviceListener != null) {
+    public void onClick(final View view) {
+        if (onDeviceInteractionListener != null) {
             final PlaceholderDevice.Type type = (PlaceholderDevice.Type) view.getTag();
-            onPairNewDeviceListener.onPairNewDevice(type);
+            onDeviceInteractionListener.onPairNewDevice(type);
         }
     }
 
 
     abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         final TextView title;
-
-        BaseViewHolder(@NonNull View view) {
+        BaseViewHolder(@NonNull final View view) {
             super(view);
 
             this.title = (TextView) view.findViewById(R.id.item_device_name);
@@ -139,7 +139,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         abstract boolean wantsChevron();
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             if (wantsChevron()) {
                 @SuppressWarnings("ConstantConditions")
                 final Drawable chevron = ResourcesCompat.getDrawable(resources,
@@ -160,7 +160,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status2;
         final TextView status2Label;
 
-        SenseViewHolder(@NonNull View view) {
+        SenseViewHolder(@NonNull final View view) {
             super(view);
 
             this.lastSeen = (TextView) view.findViewById(R.id.item_device_last_seen);
@@ -178,7 +178,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
 
             final SenseDevice device = (SenseDevice) getItem(position);
@@ -203,7 +203,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     status1.setText(networkName);
                 }
                 if (wiFiInfo.getSignalStrength() != null) {
-                    @DrawableRes int iconRes = wiFiInfo.getSignalStrength().icon;
+                    @DrawableRes final int iconRes = wiFiInfo.getSignalStrength().icon;
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
                 } else {
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
@@ -223,8 +223,11 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status1Label;
         final TextView status2;
         final TextView status2Label;
+        final TextView status3;
+        final TextView status3Label;
+        final Button actionButton;
 
-        SleepPillViewHolder(@NonNull View view) {
+        SleepPillViewHolder(@NonNull final View view) {
             super(view);
 
             this.lastSeen = (TextView) view.findViewById(R.id.item_device_last_seen);
@@ -232,19 +235,28 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status1Label = (TextView) view.findViewById(R.id.item_device_status_label);
             this.status2 = (TextView) view.findViewById(R.id.item_device_status2);
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
+            this.status3 = (TextView) view.findViewById(R.id.item_device_status3);
+            this.status3Label = (TextView) view.findViewById(R.id.item_device_status3_label);
+            this.actionButton = (Button) view.findViewById(R.id.item_device_action_button);
 
-            view.setOnClickListener(this);
-            status2Label.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
-                            WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
-                            return true;
-                        }
-                    }
-                    return false;
+            this.status3Label.setVisibility(View.VISIBLE);
+            this.status3.setVisibility(View.VISIBLE);
+
+            Views.setTimeOffsetOnClickListener(view, this);
+            Views.setTimeOffsetOnClickListener(actionButton, v -> {
+                final int position = getAdapterPosition();
+                if(onDeviceInteractionListener != null && position != RecyclerView.NO_POSITION) {
+                    onDeviceInteractionListener.onUpdateDevice(getItem(position));
                 }
+            });
+            status2Label.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
+                        WelcomeDialogFragment.show(activity, R.xml.welcome_dialog_pill_color, true);
+                        return true;
+                    }
+                }
+                return false;
             });
         }
 
@@ -254,7 +266,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
             final SleepPillDevice device = (SleepPillDevice) getItem(position);
             title.setText(R.string.device_pill);
@@ -287,6 +299,18 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status2.setText(color.nameRes);
             status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.gap_medium));
             status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
+
+            status3Label.setText(R.string.label_firmware_version);
+            status3.setText(device.firmwareVersion);
+
+            if(device.shouldUpdateOverride()){
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.warning));
+                actionButton.setText(R.string.action_update);
+                actionButton.setVisibility(View.VISIBLE);
+            } else {
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.standard));
+                actionButton.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -294,7 +318,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView message;
         final Button actionButton;
 
-        PlaceholderViewHolder(@NonNull View view) {
+        PlaceholderViewHolder(@NonNull final View view) {
             super(view);
 
             this.message = (TextView) view.findViewById(R.id.item_device_placeholder_message);
@@ -307,7 +331,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
 
             final PlaceholderDevice device = (PlaceholderDevice) getItem(position);
@@ -337,7 +361,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
 
-    public interface OnPairNewDeviceListener {
+    public interface OnDeviceInteractionListener {
         void onPairNewDevice(@NonNull PlaceholderDevice.Type type);
+        void onUpdateDevice(@NonNull BaseDevice device);
     }
 }

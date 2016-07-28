@@ -15,14 +15,15 @@ import is.hello.sense.util.Analytics;
 
 /**
  * A partial object graph that vends a configured BluetoothStack object.
- * <p/>
+ * <p>
  * Requires a containing module to provide an unqualified
  * application Context in order to compile.
  */
 @Module(library = true, complete = false)
 @SuppressWarnings("UnusedDeclaration")
 public class BluetoothModule {
-    @Provides ErrorListener provideErrorListener() {
+    @Provides
+    ErrorListener provideErrorListener() {
         return new ErrorListener() {
             @Override
             public void call(Throwable e) {
@@ -33,11 +34,14 @@ public class BluetoothModule {
         };
     }
 
-    @Provides @Singleton BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
-                                                            @NonNull ErrorListener errorListener) {
+    @Provides
+    @Singleton
+    BluetoothStack provideDeviceCenter(@NonNull Context applicationContext,
+                                       @NonNull ErrorListener errorListener) {
         return new Buruberi()
                 .setApplicationContext(applicationContext)
                 .setErrorListener(errorListener)
                 .build();
     }
+
 }

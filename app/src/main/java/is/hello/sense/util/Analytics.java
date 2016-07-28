@@ -455,6 +455,7 @@ public class Analytics {
         int SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY = 5;
         int SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN = 6;
         int SYSTEM_ALERT_TYPE_PILL_NOT_SEEN = 7;
+        int SYSTEM_ALERT_TYPE_PILL_FIRMWARE_UPDATE_AVAILABLE = 8;
 
         String EVENT_SYSTEM_ALERT_ACTION = "System Alert Action";
 
@@ -654,10 +655,31 @@ public class Analytics {
 
     }
 
+    /**
+     *  {@link this#EVENT_START} - Fire when user reaches "Updating your Sleep Pill" screen after tapping "Update" button or "Update Sleep Pill firmware" row or "Update Now" pop-up button
+     *
+     *  {@link this#EVENT_OTA_START} - Fire when Pill OTA firmware update starts to transfer
+     *
+     *  {@link this#EVENT_OTA_COMPLETE} - Fire when Pill OTA firmware update completes transfer
+     */
+    public interface PillUpdate {
+        String EVENT_START = "Pill Update Start";
+        String EVENT_OTA_START = "Pill Update OTA Start";
+        String EVENT_OTA_COMPLETE = "Pill Update Complete";
+
+        interface Error {
+            String PHONE_BATTERY_LOW = "Pill Update Phone Battery Low";
+            String PILL_NOT_DETECTED = "Pill Update Pill Not Detected";
+            String PILL_TOO_FAR = "Pill Update Pill Too Far";
+            String PILL_OTA_FAIL = "Pill Update OTA Failed";
+        }
+
+    }
+
 
     //region Lifecycle
 
-    public static void initialize(@NonNull Context context) {
+    public static void initialize(@NonNull final Context context) {
         final com.segment.analytics.Analytics.Builder builder =
                 new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
         builder.flushQueueSize(1);
@@ -669,11 +691,11 @@ public class Analytics {
     }
 
     @SuppressWarnings("UnusedParameters")
-    public static void onResume(@NonNull Activity activity) {
+    public static void onResume(@NonNull final Activity activity) {
     }
 
     @SuppressWarnings("UnusedParameters")
-    public static void onPause(@NonNull Activity activity) {
+    public static void onPause(@NonNull final Activity activity) {
         if (segment == null) {
             return;
         }
@@ -698,8 +720,8 @@ public class Analytics {
         return traits;
     }
 
-    public static void trackUserIdentifier(@NonNull String accountId,
-                                           boolean includeSegment) {
+    public static void trackUserIdentifier(@NonNull final String accountId,
+                                          final boolean includeSegment) {
         Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
 
         if (!SenseApplication.isRunningInRobolectric()) {
@@ -712,7 +734,7 @@ public class Analytics {
         }
     }
 
-    public static void trackRegistration(@NonNull String accountId,
+    public static void trackRegistration(@NonNull final String accountId,
                                          @Nullable final String name,
                                          @Nullable final String email,
                                          @NonNull final DateTime created) {
@@ -762,7 +784,7 @@ public class Analytics {
         segment.flush();
     }
 
-    public static void backFillUserInfo(@Nullable String name, @Nullable String email) {
+    public static void backFillUserInfo(@Nullable final String name, @Nullable final String email) {
         if (segment == null) {
             return;
         }
@@ -788,7 +810,7 @@ public class Analytics {
         segment.reset();
     }
 
-    public static void setSenseId(@Nullable String senseId) {
+    public static void setSenseId(@Nullable final String senseId) {
         Logger.info(LOG_TAG, "Tracking Sense " + senseId);
         if (segment == null || senseId == null) {
             return;
@@ -816,7 +838,7 @@ public class Analytics {
 
     //region Events
 
-    public static @NonNull Properties createProperties(@NonNull Object... pairs) {
+    public static @NonNull Properties createProperties(@NonNull final Object... pairs) {
         if ((pairs.length % 2) != 0) {
             throw new IllegalArgumentException("even number of arguments required");
         }
@@ -828,12 +850,12 @@ public class Analytics {
         return properties;
     }
 
-    private static boolean isConnected(int connectionState) {
+    private static boolean isConnected(final int connectionState) {
         return (connectionState == BluetoothAdapter.STATE_CONNECTING ||
                 connectionState == BluetoothAdapter.STATE_CONNECTED);
     }
 
-    public static @NonNull Properties createBluetoothTrackingProperties(@NonNull Context context) {
+    public static @NonNull Properties createBluetoothTrackingProperties(@NonNull final Context context) {
         int bondedCount = 0,
             connectedCount = 0;
 
@@ -849,7 +871,7 @@ public class Analytics {
             if (adapter != null && adapter.isEnabled()) {
                 final Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
                 bondedCount = bondedDevices.size();
-                for (BluetoothDevice bondedDevice : bondedDevices) {
+                for (final BluetoothDevice bondedDevice : bondedDevices) {
                     final int gattConnectionState =
                             bluetoothManager.getConnectionState(bondedDevice, BluetoothProfile.GATT);
                     if (isConnected(gattConnectionState)) {
@@ -880,7 +902,7 @@ public class Analytics {
                                 Breadcrumb.PROP_DESCRIPTION, description.desc);
     }
 
-    public static void trackEvent(@NonNull String event, @Nullable Properties properties) {
+    public static void trackEvent(@NonNull final String event, @Nullable final Properties properties) {
         if (segment == null) {
             return;
         }
@@ -890,11 +912,11 @@ public class Analytics {
         Logger.analytic(event, properties);
     }
 
-    public static void trackError(@NonNull String message,
-                                  @Nullable String errorType,
-                                  @Nullable String errorContext,
-                                  @Nullable String errorOperation,
-                                  boolean isWarning) {
+    public static void trackError(@NonNull final String message,
+                                  @Nullable final String errorType,
+                                  @Nullable final String errorContext,
+                                  @Nullable final String errorOperation,
+                                  final boolean isWarning) {
 
         final Properties properties = createProperties(Global.PROP_ERROR_MESSAGE, message,
                                                        Global.PROP_ERROR_TYPE, errorType,
@@ -907,7 +929,7 @@ public class Analytics {
         trackEvent(event, properties);
     }
 
-    public static void trackError(@Nullable Throwable e, @Nullable String errorOperation) {
+    public static void trackError(@Nullable final Throwable e, @Nullable final String errorOperation) {
         final StringRef message = Errors.getDisplayMessage(e);
         final String messageString;
         if (message != null && SenseApplication.getInstance() != null) {
@@ -918,7 +940,7 @@ public class Analytics {
         trackError(messageString, Errors.getType(e), Errors.getContextInfo(e), errorOperation, ApiException.isNetworkError(e));
     }
 
-    public static void trackUnexpectedError(@Nullable Throwable e) {
+    public static void trackUnexpectedError(@Nullable final Throwable e) {
         if (e != null && !SenseApplication.isRunningInRobolectric()) {
             Bugsnag.notify(e, Severity.WARNING);
         }

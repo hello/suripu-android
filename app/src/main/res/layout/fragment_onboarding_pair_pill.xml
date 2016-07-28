@@ -15,6 +15,7 @@
         <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
         <TextView
+            android:id="@+id/fragment_onboarding_pair_pill_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gap_small"
@@ -26,6 +27,7 @@
             android:text="@string/title_pair_pill"/>
 
         <TextView
+            android:id="@+id/fragment_onboarding_pair_pill_subhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/gap_outer"
@@ -43,6 +45,7 @@
             android:id="@+id/fragment_onboarding_pair_pill_diagram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:senseAutoStart="false"
             app:sensePlaceholder="@drawable/onboarding_shake_pill"
             app:senseDiagramVideo="@string/diagram_onboarding_pair_pill"
             android:contentDescription="@string/info_pair_pill" />
@@ -58,6 +61,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             style="@style/AppTheme.ProgressBar.Small" />
+
+        <ProgressBar
+            android:id="@+id/fragment_onboarding_pair_pill_progress_determinate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@style/AppTheme.ProgressBar.Horizontal"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/fragment_onboarding_pair_pill_status"

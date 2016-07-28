@@ -18,6 +18,7 @@ import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
+import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.AccountPresenterTests;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
@@ -26,6 +27,8 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenterTests;
+import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
+import is.hello.sense.graph.presenters.PhoneBatteryPresenterTests;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenterTests;
 import is.hello.sense.graph.presenters.QuestionsPresenter;
@@ -44,6 +47,7 @@ import is.hello.sense.graph.presenters.questions.ReviewQuestionProviderTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
+import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
 import is.hello.sense.util.markup.MarkupProcessor;
 import rx.Observable;
@@ -92,6 +96,9 @@ import static org.mockito.Mockito.mock;
         LocalUsageTrackerTests.class,
         ReviewQuestionProviderTests.class,
         UnreadStatePresenterTests.class,
+
+            PhoneBatteryPresenter.class,
+            PhoneBatteryPresenterTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -122,6 +129,10 @@ public final class TestModule {
         return applicationContext.getSharedPreferences("test_suite_preferences", Context.MODE_PRIVATE);
     }
 
+    @Provides @PersistentSharedPreferences SharedPreferences providePersistentPreferences() {
+        return applicationContext.getSharedPreferences("test_suite_persistent_preferences", Context.MODE_PRIVATE);
+    }
+
     @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull Gson gson) {
         return new TestApiService(context, gson);
     }
@@ -139,5 +150,16 @@ public final class TestModule {
                 .when(bluetoothStack)
                 .enabled();
         return bluetoothStack;
+    }
+
+    @Provides BatteryUtil provideBatteryUtil(){
+        final BatteryUtil batteryUtil = mock(BatteryUtil.class);
+        doReturn(true)
+                .when(batteryUtil)
+                .isPluggedInAndCharging();
+        doReturn(0.5)
+                .when(batteryUtil)
+                .getBatteryPercentage();
+        return batteryUtil;
     }
 }

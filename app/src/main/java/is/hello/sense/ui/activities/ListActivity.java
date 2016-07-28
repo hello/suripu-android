@@ -15,13 +15,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -34,12 +27,10 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.Player;
 import is.hello.sense.util.SenseCache.AudioCache;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
-    private static final String TAG = InjectionActivity.class.getName() + ".TAG";
 
     private enum PlayerStatus {
         Idle, Loading, Playing
@@ -62,7 +53,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private Player player;
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
-    private boolean cancelled = false;
     private RecyclerView recyclerView;
 
     @StringRes
@@ -119,6 +109,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         fragment.startActivityForResult(intent, requestCode);
     }
 
+    //region lifecycle
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,6 +153,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         recyclerView.setItemAnimator(null);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(listAdapter);
+
+        bindAndSubscribe(
+                audioCache.file,
+                this::audioFileDownloaded,
+                this::audioFileDownloadError);
     }
 
     @Override
@@ -193,7 +189,62 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         selectionTracker.writeSaveInstanceState(outState);
     }
+    //endregion
 
+    //region class methods
+    private void unsubscribe() {
+        if (observableContainer != null) {
+            observableContainer.clearSubscriptions();
+        }
+    }
+
+    private void setResultAndFinish() {
+        unsubscribe();
+        final Intent intent = new Intent();
+        selectionTracker.writeValue(intent);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    private void notifyAdapter() {
+        if (recyclerView == null) {
+            return;
+        }
+        recyclerView.post(() -> {
+            if (listAdapter != null) {
+                listAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void showError(@NonNull Throwable e) {
+        if (recyclerView == null) {
+            return;
+        }
+        recyclerView.post(() -> {
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getApplicationContext())
+                    .withMessage(StringRef.from(R.string.error_playing_sound))
+                    .build();
+
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        });
+    }
+
+    private void audioFileDownloaded(@NonNull final File file) {
+        if (player != null) {
+            player.setDataSource(Uri.fromFile(file), true, 1);
+        }
+    }
+
+    private void audioFileDownloadError(@NonNull final Throwable throwable) {
+        playerStatus = PlayerStatus.Idle;
+        notifyAdapter();
+        showError(throwable);
+    }
+
+    //endregion
+
+    //region player listener
 
     @Override
     public void onPlaybackReady(@NonNull final Player player) {
@@ -219,86 +270,9 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
         playerStatus = PlayerStatus.Idle;
         notifyAdapter();
-        showError();
+        showError(error);
     }
-
-    private void setResultAndFinish() {
-        cancelled = true;
-        final Intent intent = new Intent();
-        selectionTracker.writeValue(intent);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
-
-    private void notifyAdapter() {
-        if (recyclerView == null) {
-            return;
-        }
-        recyclerView.post(() -> {
-            if (listAdapter != null) {
-                listAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    private void showError() {
-        if (recyclerView == null) {
-            return;
-        }
-        recyclerView.post(() -> {
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
-                    .withMessage(StringRef.from(R.string.error_playing_sound))
-                    .build();
-
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
-    }
-
-    private boolean saveAudioToFile(@NonNull final File file, @NonNull final String urlLocation) {
-        InputStream input = null;
-        OutputStream output = null;
-        HttpURLConnection connection = null;
-        try {
-            final URL url = new URL(urlLocation);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                return false;
-            }
-            input = connection.getInputStream();
-            output = new FileOutputStream(file);
-            final byte data[] = new byte[4096];
-            int count;
-            while ((count = input.read(data)) != -1) {
-                if (cancelled) {
-                    return false;
-                }
-                output.write(data, 0, count);
-            }
-        } catch (final MalformedURLException e) {
-            Logger.error(TAG, e.getLocalizedMessage());
-            return false;
-        } catch (final IOException e) {
-            Logger.error(TAG, e.getLocalizedMessage());
-            return false;
-        } finally {
-            try {
-                if (input != null) {
-                    input.close();
-                }
-                if (output != null) {
-                    output.close();
-                }
-            } catch (final IOException e) {
-                Logger.error(TAG, e.getLocalizedMessage());
-            }
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        return true;
-    }
-
+    //endregion
 
     private class ListAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         final IListObject IListObject;
@@ -470,6 +444,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 if (selectionTracker.contains(itemId)) {
                     return;
                 }
+                //unsubscribe();
                 player.stopPlayback();
                 selectionTracker.trackSelection(itemId);
                 notifyAdapter();
@@ -480,25 +455,19 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             status.setText(R.string.preview);
             playerHolder.setOnClickListener(v -> {
                 requestedSoundId = item.getId();
-                new Thread(() -> {
-                    final File file = audioCache.getCacheFile(item.getPreviewUrl());
-                    final boolean saved;
-                    if (file.exists()) {
-                        saved = true;
-                    } else {
-                        view.post(() -> {
-                            playerStatus = PlayerStatus.Loading;
-                            enterLoadingState();
-                        });
-                        saved = saveAudioToFile(file, item.getPreviewUrl());
-                    }
-                    if (saved) {
-                        player.setDataSource(Uri.fromFile(file), true, 1);
-                    } else {
-                        player.setDataSource(Uri.parse(item.getPreviewUrl()), true, 1);
-                    }
-                }).start();
+                final File cacheFile = audioCache.getCacheFile(item.getPreviewUrl());
 
+                if (cacheFile.exists()) {
+                    player.setDataSource(Uri.fromFile(cacheFile), true, 1);
+                } else {
+                    view.post(() -> {
+                        playerStatus = PlayerStatus.Loading;
+                        enterLoadingState();
+                    });
+                    audioCache.setUrlLocation(item.getPreviewUrl());
+                    audioCache.file.forget();
+                    audioCache.update();
+                }
             });
 
             image.setImageResource(playIcon);
