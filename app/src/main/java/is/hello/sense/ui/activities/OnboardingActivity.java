@@ -251,6 +251,12 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
+        } else if (fragment instanceof SenseUpdateFragment){
+            if(responseCode == Activity.RESULT_CANCELED){
+                showDone();
+            } else if(responseCode == Activity.RESULT_OK){
+                showDone(); //todo redirect to voice fragment
+            }
         }
     }
 

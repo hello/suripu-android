@@ -26,6 +26,7 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -136,11 +137,20 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     private void skipUpdate(){
-        getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
+        final SenseAlertDialog alertDialog = new SenseAlertDialog(getActivity());
+        alertDialog.setTitle(R.string.title_update_later);
+        alertDialog.setMessage(R.string.sense_try_later_dialog_message);
+        alertDialog.setNegativeButton(android.R.string.cancel, null);
+        alertDialog.setPositiveButton(R.string.action_ok, (dismiss, which) -> {
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
+            dismiss.dismiss();
+        });
+
+        alertDialog.show();
     }
 
     private void done() {
-        // todo update message to Sense updated and check if voice needed
+        // todo check if voice needed
         stateSafeExecutor.execute( () -> {
 
             LoadingDialogFragment.show(getFragmentManager(),
@@ -150,7 +160,7 @@ public class SenseUpdateFragment extends HardwareFragment {
             LoadingDialogFragment.closeWithMessageTransition(
                     getFragmentManager(),
                     stateSafeExecutor.bind( () -> {
-                        getOnboardingActivity().showDone();
+                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
                     }),
                     R.string.sense_updated);
         });
@@ -166,7 +176,8 @@ public class SenseUpdateFragment extends HardwareFragment {
         hideBlockingActivity(false, () -> {
             updateUI(true);
 
-            final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+            final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                    .withTitle(R.string.error_update_failed)
                     .withMessage(StringRef.from(R.string.error_sense_update_failed_message))
                     .withOperation(operation)
                     .withSupportLink()
