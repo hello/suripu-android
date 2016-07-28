@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer">
+    android:padding="@dimen/x3">
 
     <TextView
         android:id="@+id/item_timeline_info_title"
