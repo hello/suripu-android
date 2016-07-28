@@ -174,21 +174,25 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void updateUI(final boolean onError) {
-        activityStatus.post(() -> {
-            toolbar.setVisible(onError);
-            toolbar.setWantsHelpButton(onError);
-            final int visibleOnError = onError ? View.VISIBLE : View.GONE;
-            final int hiddenOnError = onError ? View.GONE : View.VISIBLE;
-            skipButton.setVisibility(visibleOnError);
-            retryButton.setVisibility(visibleOnError);
-            activityStatus.setVisibility(hiddenOnError);
-            setProgress(0); //reset progress
-            updateIndicator.setVisibility(hiddenOnError);
-        });
+        if (activityStatus != null) {
+            activityStatus.post(() -> {
+                toolbar.setVisible(onError);
+                toolbar.setWantsHelpButton(onError);
+                final int visibleOnError = onError ? View.VISIBLE : View.GONE;
+                final int hiddenOnError = onError ? View.GONE : View.VISIBLE;
+                skipButton.setVisibility(visibleOnError);
+                retryButton.setVisibility(visibleOnError);
+                activityStatus.setVisibility(hiddenOnError);
+                setProgress(0); //reset progress
+                updateIndicator.setVisibility(hiddenOnError);
+            });
+        }
     }
 
     private void setProgress(final int progress) {
-        updateIndicator.post(() -> updateIndicator.setProgress(progress));
+        if (updateIndicator != null) {
+            updateIndicator.post(() -> updateIndicator.setProgress(progress));
+        }
     }
 
     public void presentError(final Throwable e) {
