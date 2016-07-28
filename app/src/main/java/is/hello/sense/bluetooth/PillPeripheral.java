@@ -166,6 +166,9 @@ public final class PillPeripheral implements Serializable {
     private void stateChanged(final PillState state) {
         if (this.dfuCallback != null) {
             dfuCallback.onStateChange(state);
+            if (state == PillState.DfuMode){
+                dfuCallback = null;
+            }
         }
     }
     //endregion
