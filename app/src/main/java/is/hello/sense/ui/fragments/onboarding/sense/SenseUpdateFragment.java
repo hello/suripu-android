@@ -139,16 +139,14 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     private void done() {
-        // todo update message to Sense updated
-        hideBlockingActivity(true, () -> {
-            getOnboardingActivity().checkForSenseUpdate();
-        });
+        // todo update message to Sense updated and check if voice needed
+        getOnboardingActivity().showDone();
     }
 
     public void showHelp(@NonNull final View sender) {
         //todo replace with sense ota analytics
         //Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
+        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE);
     }
 
     public void presentError(final Throwable e, @NonNull final String operation) {

@@ -504,7 +504,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public void checkForSenseUpdate() {
         final String senseOtaStatus = preferences.getString("device_ota_status","missing");
-        final boolean senseUpdateRequired = senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name()); //todo replace with preferences check
+        final boolean senseUpdateRequired = senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name());
         if(senseUpdateRequired){
             showSenseUpdateIntro();
         } else{
