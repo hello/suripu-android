@@ -210,13 +210,13 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     }
 
     private void onFinish(final boolean success) {
+        firmwareCache.trimCache();
         if (!success) {
             pillDfuPresenter.reset();
             getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
             return;
         }
 
-        firmwareCache.trimCache();
         stateSafeExecutor.execute(() -> {
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.OPAQUE_BACKGROUND);
