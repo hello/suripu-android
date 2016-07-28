@@ -13,20 +13,13 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
 public class SenseUpdateIntroFragment extends HardwareFragment {
-    private static final String ARG_NEXT_SCREEN_ID = SenseUpdateIntroFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
 
-    public static SenseUpdateIntroFragment newInstance(boolean nextScreenId) {
-        SenseUpdateIntroFragment fragment = new SenseUpdateIntroFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_NEXT_SCREEN_ID, nextScreenId);
-        fragment.setArguments(arguments);
-
-        return fragment;
+    public static SenseUpdateIntroFragment newInstance() {
+        return new SenseUpdateIntroFragment();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_BLE, null);
@@ -45,15 +38,12 @@ public class SenseUpdateIntroFragment extends HardwareFragment {
                 .setPrimaryOnClickListener(this::onContinue)
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE));
+                .setToolbarOnHelpClickListener(
+                        ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE));
     }
 
 
     public void onContinue(final View ignored) {
-        hideBlockingActivity(true, () -> {
-            if (getArguments().getBoolean(ARG_NEXT_SCREEN_ID, false)) {
-                getOnboardingActivity().showSenseUpdating();
-            }
-        });
+        getOnboardingActivity().showSenseUpdating();
     }
 }

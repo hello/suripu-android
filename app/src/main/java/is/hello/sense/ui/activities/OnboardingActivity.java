@@ -56,9 +56,9 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragmen
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
+import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
-import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -262,7 +262,7 @@ public class OnboardingActivity extends InjectionActivity
 
     @Override
     public void onBackPressed() {
-        Fragment topFragment = getTopFragment();
+        final Fragment topFragment = getTopFragment();
         if (topFragment instanceof OnBackPressedInterceptor) {
             if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
                 return;
@@ -514,9 +514,9 @@ public class OnboardingActivity extends InjectionActivity
 
     public void checkSenseUpdateStatus(){
         subscribe(apiService.getSenseUpdateStatus(),
-                  state -> {
-                      Log.d(getClass().getSimpleName(), "checkSenseUpdateStatus: " + state.state.name());
-                      preferences.edit().putString("device_ota_status", state.state.name())
+                  otaStatus -> {
+                      Log.d(getClass().getSimpleName(), "checkSenseUpdateStatus: " + otaStatus.state.name());
+                      preferences.edit().putString("device_ota_status", otaStatus.state.name())
                               .apply();
                   },
                   error -> {
@@ -525,7 +525,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSenseUpdateIntro(){
-        pushFragment(SenseUpdateIntroFragment.newInstance(true), null, false);
+        pushFragment(SenseUpdateIntroFragment.newInstance(), null, false);
     }
 
     public void showSenseUpdating(){

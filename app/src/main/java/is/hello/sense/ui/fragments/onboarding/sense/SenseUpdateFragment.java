@@ -50,7 +50,7 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setRetainInstance(true);
@@ -58,7 +58,9 @@ public class SenseUpdateFragment extends HardwareFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_onboarding_sense_update, container, false);
 
@@ -78,15 +80,26 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         requestUpdate();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        progressBar = null;
+        progressStatus = null;
+        retryButton.setOnClickListener(null);
+        retryButton = null;
+        skipButton.setOnClickListener(null);
+        skipButton = null;
+    }
+
     private void requestUpdate() {
         updateUI(false);
-
-        bindAndSubscribe(apiService.requestSenseUpdate(""), //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
+        //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
+        bindAndSubscribe(apiService.requestSenseUpdate(""),
                          ignored -> {
                              Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent.");
                          },
@@ -94,9 +107,9 @@ public class SenseUpdateFragment extends HardwareFragment {
 
         bindAndSubscribe(Observable.interval(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS, Schedulers.io())
                 .flatMap( func -> apiService.getSenseUpdateStatus()),
-                         state -> {
-                             setProgressStatus(state.state);
-                             if(state.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
+                         response -> {
+                             setProgressStatus(response.state);
+                             if(response.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
                                  Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense updated.");
                                  done();
                              }
@@ -115,7 +128,7 @@ public class SenseUpdateFragment extends HardwareFragment {
 
     }
 
-    private void setProgressStatus(DeviceOTAState.OtaState state) {
+    private void setProgressStatus(final DeviceOTAState.OtaState state) {
         this.progressStatus.post( () -> {
             this.progressStatus.setText(state.state);
         });
@@ -132,7 +145,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         });
     }
 
-    public void showHelp(@NonNull View sender) {
+    public void showHelp(@NonNull final View sender) {
         //todo replace with sense ota analytics
         //Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
@@ -152,10 +165,12 @@ public class SenseUpdateFragment extends HardwareFragment {
         });
     }
 
-    private void updateUI(boolean showRetry) {
-        progressBar.setVisibility(showRetry ? View.GONE : View.VISIBLE);
-        progressStatus.setVisibility(showRetry ? View.GONE : View.VISIBLE);
-        retryButton.setVisibility(showRetry ? View.VISIBLE : View.GONE);
-        skipButton.setVisibility(showRetry ? View.VISIBLE : View.GONE);
+    private void updateUI(final boolean showRetry) {
+        final int hideOnRetry = showRetry ? View.GONE : View.VISIBLE;
+        final int showOnRetry = showRetry ? View.VISIBLE : View.GONE;
+        progressBar.setVisibility(hideOnRetry);
+        progressStatus.setVisibility(hideOnRetry);
+        retryButton.setVisibility(showOnRetry);
+        skipButton.setVisibility(showOnRetry);
     }
 }

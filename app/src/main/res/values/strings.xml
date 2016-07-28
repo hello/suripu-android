@@ -597,8 +597,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="title_sense_update">Update your Sense</string>
-    <string name="subtitle_sense_update">Sense needs an update before use. This will take a few moments.</string>
+    <string name="subtitle_sense_update">Sense needs an update before use. This will take up to 3 minutes.</string>
     <string name="title_sense_updating">Updating your Sense</string>
-    <string name="subtitle_sense_updating">Sense is currently updating. This will take a few moments.</string>
+    <string name="subtitle_sense_updating">Sense is currently updating. This will take up to 3 minutes.</string>
 
 </resources>
