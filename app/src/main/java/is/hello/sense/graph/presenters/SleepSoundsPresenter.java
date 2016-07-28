@@ -37,15 +37,11 @@ public class SleepSoundsPresenter extends ScopedValuePresenter<SleepSoundsStateD
 
     public Observable<VoidResponse> play(final @NonNull SleepSoundActionPlay actionPlay) {
         // todo validate actionPlay
-        return latest().flatMap(a -> {
-            return apiService.playSleepSound(actionPlay);
-        });
+        return latest().flatMap(a -> apiService.playSleepSound(actionPlay));
     }
 
     public Observable<VoidResponse> stop(final @NonNull SleepSoundActionStop actionStop) {
         // todo validate action stop
-        return latest().flatMap(a -> {
-            return apiService.stopSleepSound(actionStop);
-        });
+        return latest().flatMap(a -> apiService.stopSleepSound(actionStop));
     }
 }

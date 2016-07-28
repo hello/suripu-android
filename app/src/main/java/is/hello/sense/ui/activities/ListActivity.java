@@ -29,8 +29,6 @@ import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
 import is.hello.sense.util.SenseCache.AudioCache;
-import rx.Observable;
-import rx.Subscription;
 
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
 
@@ -56,7 +54,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     private PlayerStatus playerStatus = PlayerStatus.Idle;
     private SelectionTracker selectionTracker = new SelectionTracker();
     private RecyclerView recyclerView;
-    private Subscription subscription = null;
 
     @StringRes
     private int titleRes;
@@ -156,6 +153,11 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         recyclerView.setItemAnimator(null);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(listAdapter);
+
+        bindAndSubscribe(
+                audioCache.file,
+                this::audioFileDownloaded,
+                this::audioFileDownloadError);
     }
 
     @Override
@@ -172,7 +174,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unsubscribe();
         if (player != null) {
             player.stopPlayback();
             player.recycle();
@@ -192,8 +193,8 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
 
     //region class methods
     private void unsubscribe() {
-        if (subscription != null && !subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
+        if (observableContainer != null) {
+            observableContainer.clearSubscriptions();
         }
     }
 
@@ -216,17 +217,29 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         });
     }
 
-    private void showError() {
+    private void showError(@NonNull Throwable e) {
         if (recyclerView == null) {
             return;
         }
         recyclerView.post(() -> {
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getApplicationContext())
                     .withMessage(StringRef.from(R.string.error_playing_sound))
                     .build();
 
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
+    }
+
+    private void audioFileDownloaded(@NonNull final File file) {
+        if (player != null) {
+            player.setDataSource(Uri.fromFile(file), true, 1);
+        }
+    }
+
+    private void audioFileDownloadError(@NonNull final Throwable throwable) {
+        playerStatus = PlayerStatus.Idle;
+        notifyAdapter();
+        showError(throwable);
     }
 
     //endregion
@@ -257,7 +270,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     public void onPlaybackError(@NonNull final Player player, @NonNull final Throwable error) {
         playerStatus = PlayerStatus.Idle;
         notifyAdapter();
-        showError();
+        showError(error);
     }
     //endregion
 
@@ -431,7 +444,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 if (selectionTracker.contains(itemId)) {
                     return;
                 }
-                unsubscribe();
+                //unsubscribe();
                 player.stopPlayback();
                 selectionTracker.trackSelection(itemId);
                 notifyAdapter();
@@ -452,10 +465,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                         enterLoadingState();
                     });
                     audioCache.setUrlLocation(item.getPreviewUrl());
-                    subscription = bindAndSubscribe(
-                            audioCache.file,
-                            this::audioFileDownloaded,
-                            this::audioFileDownloadError);
+                    audioCache.file.forget();
                     audioCache.update();
                 }
             });
@@ -485,19 +495,6 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             image.setImageResource(loadingIcon);
             image.startSpinning();
         }
-
-        private void audioFileDownloaded(@NonNull final File file) {
-            if (player != null) {
-                player.setDataSource(Uri.fromFile(file), true, 1);
-            }
-        }
-
-        private void audioFileDownloadError(@NonNull final Throwable throwable) {
-            playerStatus = PlayerStatus.Idle;
-            notifyAdapter();
-            showError();
-        }
-
 
     }
 

@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -92,10 +91,8 @@ public abstract class SenseCache extends ValuePresenter<File> {
                     });
                     String downloadFailedReason = null;
                     final File cacheFile = getCacheFile(urlLocation);
-                    InputStream input = null;
-                    OutputStream output = null;
                     HttpURLConnection connection = null;
-                    try {
+                    try{
                         final URL url = new URL(urlLocation);
                         connection = (HttpURLConnection) url.openConnection();
                         connection.connect();
@@ -103,39 +100,29 @@ public abstract class SenseCache extends ValuePresenter<File> {
                             downloadFailedReason = connection.getResponseCode() + ", " + connection.getResponseMessage(); //todo change
                             return;
                         }
-                        if (connection.getContentLength() == cacheFile.length()) {
+                        if (cacheFile.exists() && connection.getContentLength() == cacheFile.length()) {
                             Log.d(TAG, "File Already Found - Length: " + cacheFile.length());
                             return;
                         } else {
                             Log.d(TAG, "Downloading");
                         }
-                        input = new BufferedInputStream(url.openStream());
-                        output = new FileOutputStream(cacheFile);
-                        final byte data[] = new byte[1024];
-                        int count;
-                        while ((count = input.read(data)) != -1) {
-                            if (cancelDownload[0]) {
-                                return;
+                        try(final InputStream input = new BufferedInputStream(url.openStream());
+                            final OutputStream output = new FileOutputStream(cacheFile)){
+                            final byte data[] = new byte[1024];
+                            int count;
+                            while ((count = input.read(data)) != -1) {
+                                if (cancelDownload[0]) {
+                                    return;
+                                }
+                                output.write(data, 0, count);
                             }
-                            output.write(data, 0, count);
                         }
+
                     } catch (final IOException e) {
                         Log.d(TAG, e.toString());
                         Logger.error(TAG, e.getLocalizedMessage());
                         downloadFailedReason = e.getLocalizedMessage();
                     } finally {
-                        try {
-                            if (input != null) {
-                                input.close();
-                            }
-                            if (output != null) {
-                                output.flush();
-                                output.close();
-                            }
-                        } catch (final IOException e) {
-                            Log.d(TAG, e.toString());
-                            Logger.error(TAG, e.getLocalizedMessage());
-                        }
                         if (connection != null) {
                             connection.disconnect();
                         }

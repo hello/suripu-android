@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
@@ -46,7 +45,9 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import rx.Observable;
 
-import static is.hello.sense.ui.adapter.SleepSoundsAdapter.*;
+import static is.hello.sense.ui.adapter.SleepSoundsAdapter.AdapterState;
+import static is.hello.sense.ui.adapter.SleepSoundsAdapter.InteractionListener;
+import static is.hello.sense.ui.adapter.SleepSoundsAdapter.Retry;
 
 public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
     private final static int pollingInterval = 500; // ms
@@ -432,12 +433,9 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
             this.isViewVisible = isViewVisible;
         }
 
-        final Runnable statusPollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                isRunning = false;
-                sleepSoundsStatusPresenter.update();
-            }
+        final Runnable statusPollingRunnable = () -> {
+            isRunning = false;
+            sleepSoundsStatusPresenter.update();
         };
 
         private void poll() {
