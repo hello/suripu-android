@@ -10,13 +10,20 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
+import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
+import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
 @Module(complete = false, injects = {
-        AccountSettingsFragment.class, RegisterFragment.class, ListActivity.class
+        AccountSettingsFragment.class,
+        RegisterFragment.class,
+        ListActivity.class,
+        PhoneBatteryPresenter.class,
+        ConnectPillFragment.class
 })
 public class UtilityModule {
 
@@ -63,5 +70,17 @@ public class UtilityModule {
     @Singleton
     SenseCache.ImageCache providesImageCache(@NonNull final Context context) {
         return new SenseCache.ImageCache(context);
+    }
+
+    @Provides
+    @Singleton
+    BatteryUtil providesBatteryUtil(@NonNull final Context context){
+        return new BatteryUtil(context);
+    }
+
+    @Provides
+    @Singleton
+    SenseCache.FirmwareCache providesFirmwareCache(@NonNull final Context context) {
+        return new SenseCache.FirmwareCache(context);
     }
 }

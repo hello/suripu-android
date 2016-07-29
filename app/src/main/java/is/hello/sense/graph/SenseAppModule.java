@@ -12,6 +12,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
+import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -31,6 +32,7 @@ import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.onboarding.OnboardingModule;
+import is.hello.sense.pill.PillModule;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
@@ -41,14 +43,10 @@ import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
-import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
 import is.hello.sense.ui.fragments.SensorHistoryFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
@@ -60,7 +58,12 @@ import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
+import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
+import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
@@ -73,7 +76,8 @@ import is.hello.sense.zendesk.ZendeskModule;
             OnboardingModule.class,
             SettingsModule.class,
             UtilityModule.class,
-            FacebookApiModule.class
+            FacebookApiModule.class,
+            PillModule.class
     },
     injects = {
         SenseApplication.class,
@@ -147,5 +151,9 @@ public class SenseAppModule {
 
     @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext);
+    }
+
+    @Provides @PersistentSharedPreferences SharedPreferences providePersistentSharedPreferences(@NonNull Context context){
+        return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
     }
 }

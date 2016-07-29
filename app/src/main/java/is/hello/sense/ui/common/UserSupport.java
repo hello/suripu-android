@@ -1,6 +1,7 @@
 package is.hello.sense.ui.common;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import com.segment.analytics.Properties;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -153,14 +155,14 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
-    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull final Activity from){
+    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull final Activity from) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_GALLERY_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210819543");
         openUri(from, supportUrl);
     }
 
-    public static void showFacebookAutoFillMoreInfoPage(@NonNull final Activity from){
+    public static void showFacebookAutoFillMoreInfoPage(@NonNull final Activity from) {
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210329423");
         openUri(from, supportUrl);
     }
@@ -183,6 +185,21 @@ public class UserSupport {
         }
     }
 
+    public static void showUpdatePill(@NonNull final Activity from) {
+        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
+        from.startActivityForResult(
+                new Intent(from, PillUpdateActivity.class),
+                PillUpdateActivity.REQUEST_CODE);
+    }
+
+    public static void showUpdatePill(@NonNull final Fragment from, @NonNull final String deviceId) {
+        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill() from fragment " + from.getClass().getName());
+        from.startActivityForResult(
+                new Intent(from.getActivity(), PillUpdateActivity.class)
+                        .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId),
+                PillUpdateActivity.REQUEST_CODE);
+    }
+
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),
@@ -191,6 +208,8 @@ public class UserSupport {
         SENSE_ASCII_WEP("https://support.hello.is/hc/en-us/articles/205019779"),
         SLEEP_PILL_MISSING("https://support.hello.is/hc/en-us/articles/204797159"),
         PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        SLEEP_PILL_LOW_BATTERY("https://support.hello.is/hc/en-us/articles/204496999"),
+        SLEEP_PILL_WEAK_RSSI("https://support.hello.is/hc/en-us/articles/211421183"),
         TIMELINE_NOT_ENOUGH_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/204994629"),
         TIMELINE_NO_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/205706435");
 
@@ -221,7 +240,8 @@ public class UserSupport {
         SIGN_INTO_WIFI("https://support.hello.is/hc/en-us/articles/205493095"),
         PILL_PAIRING("https://support.hello.is/hc/en-us/articles/204797129"),
         PILL_PLACEMENT("https://support.hello.is/hc/en-us/articles/205493045"),
-        ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289");
+        ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163");
 
         private final String url;
 

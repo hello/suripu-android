@@ -15,7 +15,9 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -32,6 +34,8 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     private static final int OPTION_ID_REPLACE_PILL = 0;
 
     @Inject DevicesPresenter devicesPresenter;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
 
     //region Lifecycle
 
@@ -55,10 +59,14 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         super.onViewCreated(view, savedInstanceState);
 
         showActions();
+
+        if(shouldShowUpdateFirmwareAction()){
+            addDeviceAction(R.drawable.icon_settings_update, R.string.action_update_firmware, this::updateFirmware);
+        }
         addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
 
-        if (device.state == SleepPillDevice.State.LOW_BATTERY) {
+        if (device.hasLowBattery()) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setTitle(StringRef.from(R.string.issue_title_low_battery))
                     .setMessage(StringRef.from(R.string.issue_message_low_battery))
@@ -78,6 +86,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         }
     }
 
+    private boolean shouldShowUpdateFirmwareAction() {
+        return !device.hasLowBattery() && device.shouldUpdate() && deviceIssuesPresenter.shouldShowUpdateFirmwareAction(device.deviceId);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -95,6 +107,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
                     break;
                 }
             }
+        } else if(requestCode == PillUpdateActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            if(!shouldShowUpdateFirmwareAction()){
+                clearAction(0); //Index of Firmware Update Action
+            }
         }
     }
 
@@ -102,6 +118,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
 
 
     //region Pill Actions
+
+    public void updateFirmware(){
+        UserSupport.showUpdatePill(this, device.deviceId);
+    }
 
     public void replaceDevice() {
         Analytics.trackEvent(Analytics.Backside.EVENT_REPLACE_PILL, null);

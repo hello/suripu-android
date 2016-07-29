@@ -2,7 +2,7 @@ package is.hello.sense.onboarding;
 
 import dagger.Module;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.fragments.onboarding.OnboardingBluetoothFragment;
+import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -16,7 +16,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragmen
         OnboardingActivity.class,
         OnboardingRegisterWeightFragment.class,
         OnboardingRegisterHeightFragment.class,
-        OnboardingBluetoothFragment.class,
+        BluetoothFragment.class,
         OnboardingRegisterAudioFragment.class,
         OnboardingUnsupportedDeviceFragment.class,
         OnboardingPairSenseFragment.class,

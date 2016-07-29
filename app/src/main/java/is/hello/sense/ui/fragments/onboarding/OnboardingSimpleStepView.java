@@ -45,8 +45,8 @@ public class OnboardingSimpleStepView extends RelativeLayout {
 
     //region Lifecycle
 
-    public OnboardingSimpleStepView(@NonNull Fragment fragment,
-                                    @NonNull LayoutInflater inflater) {
+    public OnboardingSimpleStepView(@NonNull final Fragment fragment,
+                                    @NonNull final LayoutInflater inflater) {
         super(fragment.getActivity());
 
         inflater.inflate(R.layout.view_onboarding_simple_step, this, true);
@@ -71,6 +71,14 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         if (diagramVideo != null) {
             diagramVideo.destroy();
         }
+
+        if(primaryButton.hasOnClickListeners()){
+            primaryButton.setOnClickListener(null);
+        }
+
+        if(secondaryButton.hasOnClickListeners()){
+            secondaryButton.setOnClickListener(null);
+        }
     }
 
     //endregion
@@ -79,7 +87,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
     //region Toolbar
 
     public OnboardingSimpleStepView hideToolbar() {
-        int newTopPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        final int newTopPadding = getResources().getDimensionPixelSize(R.dimen.x3);
         headingText.setPadding(headingText.getPaddingLeft(), newTopPadding, headingText.getRight(), headingText.getBottom());
         toolbar.hide();
         return this;
@@ -105,15 +113,15 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         return this;
     }
 
-    public OnboardingSimpleStepView setCompact(boolean compact) {
+    public OnboardingSimpleStepView setCompact(final boolean compact) {
         toolbar.setCompact(compact);
 
-        Resources resources = getResources();
-        int newBottomMargin;
+        final Resources resources = getResources();
+        final int newBottomMargin;
         if (compact) {
-            newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_small);
+            newBottomMargin = resources.getDimensionPixelSize(R.dimen.x1);
         } else {
-            newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_outer);
+            newBottomMargin = resources.getDimensionPixelSize(R.dimen.x3);
         }
         ((MarginLayoutParams) primaryButton.getLayoutParams()).bottomMargin = newBottomMargin;
         primaryButton.invalidate();
@@ -293,6 +301,17 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         ensureDiagramVideo();
         diagramVideo.setDataSource(video);
 
+        return this;
+    }
+
+    public OnboardingSimpleStepView setAnimatedView(View animatedView) {
+        if(diagramVideo == null && diagramImage == null){
+            final LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                               LayoutParams.WRAP_CONTENT);
+            contents.addView(animatedView, contents.getChildCount() - 1, layoutParams);
+        } else{
+            throw new IllegalStateException("Cannot set animated view if diagram image or video is already added.");
+        }
         return this;
     }
 

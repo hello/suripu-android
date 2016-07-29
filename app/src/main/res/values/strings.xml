@@ -63,6 +63,7 @@
     <string name="title_demographics">Demographics</string>
 
     <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
@@ -88,6 +89,7 @@
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
     <string name="action_skip">Skip</string>
+    <string name="action_try_again_later">Try again later</string>
     <string name="action_play_video">Play</string>
     <string name="action_get_started">Get Started</string>
     <string name="action_buy_sense">Order a Sense</string>
@@ -129,6 +131,10 @@
     <string name="dialog_message_put_into_pairing_mode">Are you sure you want to put Sense into Pairing Mode? You should use this option only if you have another mobile device you wish to pair with Sense. If you‘re having trouble, visit <a href="#user-guide">https://support.hello.is/</a> for support.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
+    <string name="dialog_title_confirm_leave_app">Leaving Sense App</string>
+    <string name="dialog_message_confirm_leave_update_pill">Sleep Pill will continue updating in the background. Please note your Sleep Pill will not function until the update is successful.</string>
+    <string name="dialog_title_skip_update">Update Pill</string>
+    <string name="dialog_message_skip_update">Please note your Sleep Pill will not function until the update is successful.</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
@@ -250,6 +256,7 @@
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
     <string name="action_replace_this_sense">Replace this Sense</string>
     <string name="action_replace_sleep_pill">Replace this Sleep Pill</string>
+    <string name="action_update_firmware">Update Firmware</string>
     <string name="action_replace_battery">Replace Battery</string>
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
@@ -265,6 +272,7 @@
     <string name="dialog_title_new_version">New version</string>
     <string name="dialog_message_new_version">A new version of Sense is available.</string>
     <string name="action_update">Update</string>
+    <string name="action_update_now">Update now</string>
     <string name="title_smart_alarms">Smart Alarms</string>
     <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at the lightest point in your natural sleep cycle, so you wake feeling rested. Once set, your alarms will appear here.</string>
     <string name="prompt_set_your_first_alarm">Set your first Smart Alarm</string>
@@ -301,6 +309,8 @@
     <string name="issue_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
     <string name="issue_title_low_battery">Low Battery</string>
     <string name="issue_message_low_battery">Your Sleep Pill battery is low, and will need to be replaced soon.</string>
+    <string name="issue_title_pill_firmware_update_available">Sleep Pill update</string>
+    <string name="issue_message_pill_firmware_update_available">An update for your Sleep Pill is available. You can update now, or visit settings to update later.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom and recognizes your movements during the night, giving you a full picture of your sleep.\n\nSense takes all this data and builds a Sleep Timeline of your sleep for each night. Swipe left to learn more.</string>
@@ -352,6 +362,20 @@
     </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
+    <string name="notification_title_update_sleep_pill">Sleep Pill Update</string>
+    <string name="notification_update_progress">In progress</string>
+    <string name="notification_update_successful">Update successful</string>
+    <string name="notification_update_failed">Update failed. Please try again.</string>
+    <string name="title_checking_phone_battery">Checking Phone battery</string>
+    <string name="title_checking_pill_battery">Checking Sleep Pill battery</string>
+    <string name="title_checking_bluetooth_connectivity">Checking Bluetooth connectivity</string>
+    <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
+    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
+    <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
+    <string name="info_connect_sleep_pill">Hold your Sleep Pill near your mobile device, and then quickly shake it for three seconds to begin the update.</string>
+    <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
+    <string name="message_sleep_pill_updating">Sleep Pill Updating</string>
+    <string name="message_sleep_pill_updated">Sleep Pill Updated</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
     <string name="timeline_info_label_sound_sleep">Deep sleep</string>
@@ -432,6 +456,7 @@
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
+    <string name="label_having_trouble">I’m having trouble</string>
 
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
@@ -522,6 +547,9 @@
     <string name="sense_offline_message">We haven\'t received data from your Sense recently. Make sure Sense is connected to Wi-Fi.</string>
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
+    <string name="connect_pill_fragment_preparing">Preparing update</string>
+    <string name="connect_pill_fragment_operation">Connect Pill</string>
+    <string name="update_ready_pill_fragment_operation">Update Pill</string>
 
     <string name="share_text">See how I\'m improving my sleep with Insights from Sense. %1$s #MySense</string>
 
@@ -557,5 +585,9 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
+    <string name="message_no_pills">No Pills Found</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

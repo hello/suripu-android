@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -24,10 +25,12 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
+import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
@@ -35,6 +38,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
@@ -45,13 +49,15 @@ import is.hello.sense.util.Constants;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class DeviceListFragment extends InjectionFragment
-        implements DevicesAdapter.OnPairNewDeviceListener,
+        implements DevicesAdapter.OnDeviceInteractionListener,
         ArrayRecyclerAdapter.OnItemClickedListener<BaseDevice> {
     private static final int DEVICE_REQUEST_CODE = 0x14;
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
     @Inject
     DevicesPresenter devicesPresenter;
+    @Inject
+    DeviceIssuesPresenter deviceIssuesPresenter;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -97,7 +103,7 @@ public class DeviceListFragment extends InjectionFragment
 
         this.adapter = new DevicesAdapter(getActivity());
         adapter.setOnItemClickedListener(this);
-        adapter.setOnPairNewDeviceListener(this);
+        adapter.setOnDeviceInteractionListener(this);
 
         this.supportInfoFooter = (TextView) inflater.inflate(R.layout.item_device_support_footer, recyclerView, false);
         supportInfoFooter.setVisibility(View.INVISIBLE);
@@ -149,6 +155,8 @@ public class DeviceListFragment extends InjectionFragment
                     .start();
 
             devicesPresenter.update();
+        } else if( requestCode == PillUpdateActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            // can do something here but not needed because onResume will call update devices
         }
     }
 
@@ -161,11 +169,26 @@ public class DeviceListFragment extends InjectionFragment
         }
     }
 
-    public void bindDevices(@NonNull Devices devices) {
-        adapter.bindDevices(devices);
+    public void bindDevices(@NonNull final Devices devices) {
+        adapter.bindDevices(shouldUpdateDevices(devices));
         loadingIndicator.setVisibility(View.GONE);
         supportInfoFooter.setVisibility(View.VISIBLE);
+    }
 
+    private Devices shouldUpdateDevices(final Devices devices) {
+        final ArrayList<SenseDevice> updateSenses = devices.senses;
+        final ArrayList<SleepPillDevice> updatePills = new ArrayList<>();
+
+        for(final SleepPillDevice device : devices.sleepPills){
+            //todo will remove method once no longer needed to suppress on client side
+            device.setShouldUpdateOverride(
+                    !device.hasLowBattery()
+                            && device.shouldUpdate()
+                            && deviceIssuesPresenter.shouldShowUpdateFirmwareAction(device.deviceId));
+            updatePills.add(device);
+        }
+
+        return new Devices(updateSenses, updatePills);
     }
 
     public void devicesUnavailable(Throwable e) {
@@ -199,8 +222,8 @@ public class DeviceListFragment extends InjectionFragment
     }
 
     @Override
-    public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
-        Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+    public void onPairNewDevice(@NonNull final PlaceholderDevice.Type type) {
+        final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         switch (type) {
             case SENSE: {
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
@@ -224,5 +247,13 @@ public class DeviceListFragment extends InjectionFragment
             }
         }
         startActivityForResult(intent, PAIR_DEVICE_REQUEST_CODE);
+    }
+
+    @Override
+    public void onUpdateDevice(@NonNull final BaseDevice device) {
+        if(device instanceof SleepPillDevice) {
+            UserSupport.showUpdatePill(this, device.deviceId);
+        }
+
     }
 }
