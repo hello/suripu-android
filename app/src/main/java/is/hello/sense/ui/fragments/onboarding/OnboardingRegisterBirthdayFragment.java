@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,7 +26,6 @@ import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
-import is.hello.sense.util.TimeOffsetOnClickListener;
 
 public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     private static final int NUM_FIELDS = 3;
@@ -140,7 +138,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
                     continue;
                 }
 
-                columnButton.setOnClickListener(new TimeOffsetOnClickListener(appendNumber));
+                Views.setTimeOffsetOnClickListener(columnButton, appendNumber);
             }
         }
 
