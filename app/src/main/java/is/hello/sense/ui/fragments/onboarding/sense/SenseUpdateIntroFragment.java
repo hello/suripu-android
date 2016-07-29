@@ -22,7 +22,7 @@ public class SenseUpdateIntroFragment extends HardwareFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_BLE, null);
+        Analytics.trackEvent(Analytics.SenseUpdate.EVENT_ENTER, null);
 
         setRetainInstance(true);
     }

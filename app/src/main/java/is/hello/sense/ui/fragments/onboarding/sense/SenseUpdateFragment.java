@@ -28,6 +28,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -54,7 +55,6 @@ public class SenseUpdateFragment extends HardwareFragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setRetainInstance(true);
     }
 
@@ -101,6 +101,7 @@ public class SenseUpdateFragment extends HardwareFragment {
     private void requestUpdate() {
         updateUI(false);
         //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
+        Analytics.trackEvent(Analytics.SenseUpdate.EVENT_START, null);
         bindAndSubscribe(apiService.requestSenseUpdate(""),
                          ignored -> {
                              Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent.");
@@ -110,6 +111,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         bindAndSubscribe(Observable.interval(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS, Schedulers.io())
                 .flatMap( func -> apiService.getSenseUpdateStatus()),
                          response -> {
+                             sendAnalyticsStatusUpdate(response.state);
                              setProgressStatus(response.state);
                              if(response.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
                                  Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense updated.");
@@ -128,6 +130,13 @@ public class SenseUpdateFragment extends HardwareFragment {
                          },
                          Functions.LOG_ERROR);
 
+    }
+
+    private void sendAnalyticsStatusUpdate(final DeviceOTAState.OtaState state) {
+        if(!this.progressStatus.getText().equals(state.name())){
+            Analytics.trackEvent(Analytics.SenseUpdate.EVENT_STATUS,
+                                 Analytics.createProperties(Analytics.SenseUpdate.PROPERY_NAME, state.name()));
+        }
     }
 
     private void setProgressStatus(final DeviceOTAState.OtaState state) {
@@ -151,6 +160,7 @@ public class SenseUpdateFragment extends HardwareFragment {
 
     private void done() {
         // todo check if voice needed
+        Analytics.trackEvent(Analytics.SenseUpdate.EVENT_END, null);
         stateSafeExecutor.execute( () -> {
 
             LoadingDialogFragment.show(getFragmentManager(),

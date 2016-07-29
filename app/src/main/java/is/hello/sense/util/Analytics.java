@@ -676,6 +676,23 @@ public class Analytics {
 
     }
 
+    /**
+     *  {@link this#EVENT_ENTER} - fire when user lands on the sense update required screen
+     *
+     *  {@link this#EVENT_START} - fire when user taps on continue and a force ota is triggered
+     *
+     *  {@link this#EVENT_STATUS} - Fire when the status changes from the previous status.\nProperties: { {@link this#PROPERY_NAME}: <enum>value from server</enum>}
+     *
+     *  {@link this#EVENT_END} - Fire when the status returned becomes 'COMPLETE'
+     */
+    public interface SenseUpdate {
+        String EVENT_ENTER = "Sense DFU";
+        String EVENT_START = "Sense DFU begin";
+        String EVENT_STATUS = "Sense DFU Status";
+        String EVENT_END = "Sense DFU end";
+        String PROPERY_NAME = "status";
+    }
+
 
     //region Lifecycle
 
