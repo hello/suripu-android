@@ -604,4 +604,9 @@
     <string name="sense_updated">Sense updated</string>
     <string name="sense_try_later_dialog_message">Sense will try again at a later time. You can begin using Sense, but some features may not be available until the update is complete.</string>
 
+    <string name="voice_result_none">none</string>
+    <string name="voice_result_ok">ok</string>
+    <string name="voice_result_rejected">rejected</string>
+    <string name="voice_result_try_again">try again</string>
+    <string name="voice_result_unknown">unknown</string>
 </resources>
