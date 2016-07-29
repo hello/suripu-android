@@ -53,7 +53,6 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
         super.onCreate(savedInstanceState);
         if (!bluetoothStack.isEnabled()) {
             cancel(true);
-            return;
         }
     }
 
@@ -187,6 +186,7 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
 
     private void pillFound(@NonNull final PillPeripheral pillPeripheral) {
         setStatus(R.string.message_sleep_pill_connected);
+        diagram.suspendPlayback(true);
         activityStatus.post(() -> activityIndicator.setActivated(true));
         activityStatus.postDelayed(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null), 1500);
     }
