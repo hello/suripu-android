@@ -24,6 +24,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -406,6 +407,16 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ShareUrl> shareInsight(@NonNull @Body InsightType insightType) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<DeviceOTAState> getSenseUpdateStatus() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<VoidResponse> requestSenseUpdate(@Body String empty) {
         return unimplemented();
     }
 }
