@@ -22,6 +22,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
+import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
@@ -153,6 +154,13 @@ public interface ApiService {
                                                  @NonNull @Path("type") TimelineEvent.Type type,
                                                  @Path("timestamp") long timestamp,
                                                  @NonNull @Body String stupidOkHttp);
+
+    //endregion
+
+    //region Voice
+
+    @GET("/v1/speech/onboarding")
+    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
 
     //endregion
 
