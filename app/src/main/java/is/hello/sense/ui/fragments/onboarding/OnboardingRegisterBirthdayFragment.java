@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     private TextView yearText;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
@@ -54,15 +55,15 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
 
         final LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
-        final int hintColor = getResources().getColor(R.color.text_dim_placeholder);
+        final int hintColor = ContextCompat.getColor(getActivity(), R.color.text_dim_placeholder);
 
         final char[] dateFormat = DateFormatter.getDateFormatOrder(getActivity());
         int index = 0;
-        for (char field : dateFormat) {
+        for (final char field : dateFormat) {
             final TextView component = (TextView) inflater.inflate(R.layout.item_onboarding_birthday_field, fieldContainer, false);
             component.setHintTextColor(hintColor);
 
@@ -130,14 +131,14 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
 
         final View.OnClickListener appendNumber = this::appendNumber;
         for (int row = 0, rowCount = keys.getChildCount(); row < rowCount; row++) {
-            TableRow rowLayout = (TableRow) keys.getChildAt(row);
+            final TableRow rowLayout = (TableRow) keys.getChildAt(row);
             for (int column = 0, columnCount = rowLayout.getChildCount(); column < columnCount; column++) {
-                Button columnButton = (Button) rowLayout.getChildAt(column);
+                final Button columnButton = (Button) rowLayout.getChildAt(column);
                 if ("-1".equals(columnButton.getTag())) {
                     continue;
                 }
 
-                columnButton.setOnClickListener(appendNumber);
+                Views.setTimeOffsetOnClickListener(columnButton, appendNumber);
             }
         }
 
@@ -147,62 +148,62 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     }
 
 
-    private int parseString(@NonNull CharSequence value) throws NumberFormatException {
+    private int parseString(@NonNull final CharSequence value) throws NumberFormatException {
         return Integer.valueOf(value.toString(), 10);
     }
 
-    private boolean validateMonth(@NonNull CharSequence month) {
+    private boolean validateMonth(@NonNull final CharSequence month) {
         if (month.equals(LEADING_ZERO)) {
             return true;
         }
 
         try {
-            int value = parseString(month);
+            final int value = parseString(month);
             return (value > 0 && value <= 12);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return false;
         }
     }
 
-    private boolean validateDay(@NonNull CharSequence day) {
+    private boolean validateDay(@NonNull final CharSequence day) {
         if (day.equals(LEADING_ZERO)) {
             return true;
         }
 
         try {
-            int value = parseString(day);
+            final int value = parseString(day);
             return (value > 0 && value <= 31);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return false;
         }
     }
 
-    private boolean validateYear(@NonNull CharSequence year) {
+    private boolean validateYear(@NonNull final CharSequence year) {
         try {
-            int value = parseString(year);
+            final int value = parseString(year);
             return (value > 0 && value <= today.getYear());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return false;
         }
     }
 
     private boolean validateAll() {
-        int year = parseString(yearText.getText());
+        final int year = parseString(yearText.getText());
         if (year == today.getYear()) {
-            int month = parseString(monthText.getText());
-            int day = parseString(dayText.getText());
+            final int month = parseString(monthText.getText());
+            final int day = parseString(dayText.getText());
             return (month <= today.getMonthOfYear() && day <= today.getDayOfMonth());
         } else {
             return (year < today.getYear());
         }
     }
 
-    private void setActiveField(int activeField) {
-        int activeColor = getResources().getColor(R.color.light_accent),
-            inactiveColor = getResources().getColor(R.color.text_dark);
+    private void setActiveField(final int activeField) {
+        final int activeColor = ContextCompat.getColor(getActivity(), R.color.light_accent);
+        final int inactiveColor = ContextCompat.getColor(getActivity(), R.color.text_dark);
         for (int i = 0; i < fields.length; i++) {
-            TextView field = fields[i];
-            int padding = field.getPaddingTop();
+            final TextView field = fields[i];
+            final int padding = field.getPaddingTop();
             if (activeField == i) {
                 field.setBackgroundResource(R.drawable.edit_text_background_focused);
                 field.setTextColor(activeColor);
@@ -228,14 +229,14 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         setActiveField(activeField + 1);
     }
 
-    private boolean shouldAddLeadingZero(@NonNull String newText) {
+    private boolean shouldAddLeadingZero(@NonNull final String newText) {
         return (newText.length() < 2 &&
                 !newText.startsWith(LEADING_ZERO) &&
                 parseString(newText) >= minInsertZeroValues[activeField]);
     }
 
 
-    public void backspace(@NonNull View sender) {
+    public void backspace(@NonNull final View sender) {
         sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 
         TextView field = fields[activeField];
@@ -249,18 +250,18 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
             }
         }
 
-        CharSequence text = field.getText();
-        CharSequence textDelta = text.subSequence(0, text.length() - 1);
+        final CharSequence text = field.getText();
+        final CharSequence textDelta = text.subSequence(0, text.length() - 1);
         field.setText(textDelta);
     }
 
-    public void appendNumber(@NonNull View sender) {
+    public void appendNumber(@NonNull final View sender) {
         sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 
-        String numberValue = sender.getTag().toString();
-        TextView field = fields[activeField];
+        final String numberValue = sender.getTag().toString();
+        final TextView field = fields[activeField];
 
-        CharSequence text = field.getText();
+        final CharSequence text = field.getText();
         if (text.length() == fieldLimits[activeField]) {
             return;
         }
@@ -287,7 +288,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         }
     }
 
-    public void skip(@NonNull View sender) {
+    public void skip(@NonNull final View sender) {
         sender.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "birthday"));
@@ -295,12 +296,12 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     }
 
     public void next() {
-        int year = parseString(yearText.getText());
-        int month = parseString(monthText.getText());
-        int day = parseString(dayText.getText());
+        final int year = parseString(yearText.getText());
+        final int month = parseString(monthText.getText());
+        final int day = parseString(dayText.getText());
 
-        LocalDate dateWithoutDay = new LocalDate(year, month, 1);
-        LocalDate date;
+        final LocalDate dateWithoutDay = new LocalDate(year, month, 1);
+        final LocalDate date;
         if (day > dateWithoutDay.dayOfMonth().getMaximumValue()) {
             date = dateWithoutDay.withDayOfMonth(dateWithoutDay.dayOfMonth().getMaximumValue());
         } else {
