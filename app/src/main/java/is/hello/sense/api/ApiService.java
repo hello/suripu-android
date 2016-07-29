@@ -160,7 +160,7 @@ public interface ApiService {
     //region Voice
 
     @GET("/v1/speech/onboarding")
-    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse(@NonNull @Query("token") String token);
+    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
 
     //endregion
 

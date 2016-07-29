@@ -422,7 +422,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse(@NonNull @Query("token") final String token) {
+    public Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse() {
         return unimplemented(); //todo implement once api is stable
     }
 }
