@@ -121,7 +121,7 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
 
     boolean shouldReportPillUpdate() {
         final DateTime lastShown = getPillUpdateAlertLastShown();
-        return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.ONE);
+        return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.TWO);
     }
 
     public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
@@ -129,8 +129,12 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
         return (lastUpdated == null || Hours.hoursBetween(lastUpdated, DateTime.now()).isGreaterThan(Hours.ONE));
     }
 
-    public void updateLastUpdatedDevice(@NonNull final String deviceId){
+    public void updateLastUpdatedDevice(@NonNull final String deviceId) {
         persistentPreferences.updateLastUpdatedDevice(deviceId);
+        preferences.edit()
+                   .putLong(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN,
+                            DateTimeUtils.currentTimeMillis())
+                   .apply();
     }
 
     public void updateLastShown(@NonNull final Issue issue){
@@ -153,12 +157,6 @@ public class DeviceIssuesPresenter extends ScopedValuePresenter<DeviceIssuesPres
                                     DateTimeUtils.currentTimeMillis())
                            .apply();
                 break;
-            case SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE:
-                preferences.edit()
-                           .putLong(PreferencesPresenter.PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN,
-                                DateTimeUtils.currentTimeMillis())
-                           .apply();
-
         }
     }
 
