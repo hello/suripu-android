@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,6 +24,7 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
@@ -55,6 +57,8 @@ import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -67,9 +71,10 @@ public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation,
         SimpleStepFragment.ExitAnimationProviderActivity,
         AccountEditor.Container {
-    public static final String EXTRA_START_CHECKPOINT = OnboardingActivity.class.getName() + ".EXTRA_START_CHECKPOINT";
-    public static final String EXTRA_PAIR_ONLY = OnboardingActivity.class.getName() + ".EXTRA_PAIR_ONLY";
-    public static final String EXTRA_RELEASE_PERIPHERAL_ON_PAIR = OnboardingActivity.class.getName() + ".EXTRA_RELEASE_PERIPHERAL_ON_PAIR";
+    public static final String TAG = OnboardingActivity.class.getName();
+    public static final String EXTRA_START_CHECKPOINT = TAG + ".EXTRA_START_CHECKPOINT";
+    public static final String EXTRA_PAIR_ONLY = TAG + ".EXTRA_PAIR_ONLY";
+    public static final String EXTRA_RELEASE_PERIPHERAL_ON_PAIR = TAG + ".EXTRA_RELEASE_PERIPHERAL_ON_PAIR";
 
     public static final int FLOW_NONE = -1;
     public static final int FLOW_REGISTER = 0;
@@ -199,7 +204,7 @@ public class OnboardingActivity extends InjectionActivity
 
         if (requestCode == EDIT_ALARM_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                showDone();
+                checkForSenseUpdate();
             } else {
                 showSmartAlarmInfo();
             }
@@ -247,6 +252,12 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
+        } else if (fragment instanceof SenseUpdateFragment){
+            if(responseCode == Activity.RESULT_CANCELED){
+                showDone();
+            } else if(responseCode == Activity.RESULT_OK){
+                showDone(); //todo redirect to voice fragment
+            }
         }
     }
 
@@ -258,7 +269,7 @@ public class OnboardingActivity extends InjectionActivity
 
     @Override
     public void onBackPressed() {
-        Fragment topFragment = getTopFragment();
+        final Fragment topFragment = getTopFragment();
         if (topFragment instanceof OnBackPressedInterceptor) {
             if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
                 return;
@@ -337,9 +348,9 @@ public class OnboardingActivity extends InjectionActivity
         }
 
         if (bluetoothStack.isEnabled()) {
-            Logger.info(getClass().getSimpleName(), "Performing preemptive BLE Sense scan");
+            Logger.info(TAG, "Performing preemptive BLE Sense scan");
             bindAndSubscribe(hardwarePresenter.closestPeripheral(),
-                             peripheral -> Logger.info(getClass().getSimpleName(),
+                             peripheral -> Logger.info(TAG,
                                                        "Found and cached Sense " + peripheral),
                              Functions.IGNORE_ERROR);
 
@@ -360,7 +371,7 @@ public class OnboardingActivity extends InjectionActivity
     @Override
     public Account getAccount() {
         if (account == null) {
-            Logger.warn(getClass().getSimpleName(), "getAccount() without account being specified before-hand. Creating default.");
+            Logger.warn(TAG, "getAccount() without account being specified before-hand. Creating default.");
             this.account = Account.createDefault();
         }
 
@@ -425,10 +436,10 @@ public class OnboardingActivity extends InjectionActivity
         if (showIntroduction) {
             bindAndSubscribe(apiService.devicesInfo(),
                              devicesInfo -> {
-                                 Logger.info(getClass().getSimpleName(), "Loaded devices info");
+                                 Logger.info(TAG, "Loaded devices info");
                                  Analytics.setSenseId(devicesInfo.getSenseId());
                              }, e -> {
-                        Logger.error(getClass().getSimpleName(), "Failed to silently load devices info, will retry later", e);
+                        Logger.error(TAG, "Failed to silently load devices info, will retry later", e);
                     });
 
             final SimpleStepFragment.Builder builder =
@@ -488,6 +499,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSmartAlarmInfo() {
+        checkSenseUpdateStatus(); //todo remove
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
@@ -495,6 +507,35 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new Fragment(), null, false);
         final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
+    }
+
+    public void checkForSenseUpdate() {
+        final String senseOtaStatus = preferences.getString("device_ota_status","missing");
+        if(senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name())){
+            showSenseUpdateIntro();
+        } else{
+            showDone();
+        }
+    }
+
+    public void checkSenseUpdateStatus(){
+        subscribe(apiService.getSenseUpdateStatus(),
+                  otaStatus -> {
+                      Log.d(TAG, "checkSenseUpdateStatus: " + otaStatus.state.name());
+                      preferences.edit().putString("device_ota_status", otaStatus.state.name())
+                              .apply();
+                  },
+                  error -> {
+                      Log.e(TAG, "checkSenseUpdateStatus: ", error);
+                  });
+    }
+
+    public void showSenseUpdateIntro(){
+        pushFragment(SenseUpdateIntroFragment.newInstance(), null, false);
+    }
+
+    public void showSenseUpdating(){
+        pushFragment(SenseUpdateFragment.newInstance(), null, false);
     }
 
     public void showDone() {

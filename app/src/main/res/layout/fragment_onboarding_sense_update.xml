@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:fillViewport="true"
+            android:keepScreenOn="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/sub_fragment_onboarding_toolbar" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginBottom="@dimen/x2"
+            android:textAppearance="?attr/senseTextAppearanceHeading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+            android:text="@string/title_sense_updating"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:textAppearance="?attr/senseTextAppearanceSubheading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+            android:text="@string/subtitle_sense_updating"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <is.hello.sense.ui.widget.DiagramVideoView
+            android:id="@+id/fragment_onboarding_sense_update_diagram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:sensePlaceholder="@drawable/onboarding_sense_ota"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ProgressBar
+            android:id="@+id/fragment_onboarding_sense_update_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="@style/AppTheme.ProgressBar.Small" />
+
+        <TextView
+            android:id="@+id/fragment_onboarding_sense_update_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x2"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginBottom="@dimen/x3"
+            android:gravity="center"
+            android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
+            android:textColor="@color/text_detail_grey"
+            android:text="@string/title_connecting"/>
+
+        <Button
+            android:id="@+id/fragment_onboarding_sense_update_skip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginTop="@dimen/x3"
+            android:layout_marginBottom="@dimen/x1"
+            android:text="@string/action_try_again_later"
+            style="@style/AppTheme.Button.Borderless.Accent.Bounded"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/fragment_onboarding_sense_update_retry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginBottom="@dimen/x3"
+            android:text="@string/action_retry"
+            style="@style/AppTheme.Button.Rounded"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+</ScrollView>

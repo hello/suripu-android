@@ -9,6 +9,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -296,6 +297,16 @@ public interface ApiService {
 
     @POST("/v2/store/feedback")
     Observable<Void> trackStoreReview(@NonNull @Body StoreReview review);
+
+    //endregion
+
+    //region Sense Update
+
+    @GET("/v1/ota/status")
+    Observable<DeviceOTAState> getSenseUpdateStatus();
+
+    @POST("/v1/ota/request_ota")
+    Observable<VoidResponse> requestSenseUpdate(@Body String empty);
 
     //endregion
 }
