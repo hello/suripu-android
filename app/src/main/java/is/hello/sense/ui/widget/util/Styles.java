@@ -37,8 +37,6 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.util.ConnectProgress;
@@ -301,6 +299,11 @@ public final class Styles {
 
                 case "#facebook-autofill":{
                     clickableSpan = new SimpleClickableSpan(v -> UserSupport.showFacebookAutoFillMoreInfoPage(activity));
+                    break;
+                }
+
+                case "#voice-support":{
+                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showVoiceHelpTicket(activity));
                     break;
                 }
 

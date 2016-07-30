@@ -157,14 +157,6 @@ public interface ApiService {
 
     //endregion
 
-    //region Voice
-
-    @GET("/v1/speech/onboarding")
-    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
-
-    //endregion
-
-
     //region Room Conditions
 
     @GET("/v1/room/current")
@@ -315,6 +307,13 @@ public interface ApiService {
 
     @POST("/v1/ota/request_ota")
     Observable<VoidResponse> requestSenseUpdate(@Body String empty);
+
+    //endregion
+
+    //region Voice
+
+    @GET("/v1/speech/onboarding")
+    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
 
     //endregion
 }

@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:clipChildren="false">
 
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
@@ -28,36 +29,11 @@
         android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
         android:text="@string/info_sense_voice_intro"/>
 
-    <TextView
-        android:id="@+id/fragment_sense_voice_try"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/x3"
-        android:layout_marginRight="@dimen/x3"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_marginBottom="@dimen/x2"
-        android:gravity="center"
-        android:text="@string/sense_voice_question_temperature"
-        android:textAppearance="?attr/senseTextAppearanceSubheading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-        android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/fragment_sense_voice_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/x3"
-        android:layout_marginRight="@dimen/x3"
-        android:gravity="center"
-        android:text="@string/sense_voice_question_temperature"
-        android:textAppearance="@style/AppTheme.Text.Header.H4"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:visibility="gone"/>
-
     <FrameLayout
         android:id="@+id/sense_voice_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipChildren="false">
 
         <ImageView
             android:id="@+id/nightstand"
@@ -67,12 +43,13 @@
             android:layout_gravity="center_horizontal|bottom"
             android:paddingTop="40dp"/>
 
-        <View
+        <ImageView
             android:id="@+id/animated_circles_view"
             android:layout_width="236dp"
             android:layout_height="236dp"
-            android:background="@drawable/sense_voice_circle_selector"
+            android:src="@drawable/sense_voice_circle_selector"
             android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="42dp"
             />
 
         <ImageView
@@ -80,8 +57,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/sense_voice_selector"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_horizontal|center"
             />
+
+        <TextView
+            android:id="@+id/fragment_sense_voice_try_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginTop="@dimen/x1"
+            android:layout_marginBottom="@dimen/x2"
+            android:gravity="center"
+            android:text="@string/activate_sense_voice_prompt"
+            android:textAppearance="?attr/senseTextAppearanceSubheading"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/fragment_sense_voice_question_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:gravity="center"
+            android:text="@string/sense_voice_question_temperature"
+            android:textAppearance="@style/AppTheme.Text.Header.H4"
+            android:visibility="invisible"/>
 
     </FrameLayout>
 

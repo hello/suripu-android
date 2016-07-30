@@ -200,6 +200,10 @@ public class UserSupport {
                 PillUpdateActivity.REQUEST_CODE);
     }
 
+    public static void showVoiceHelpTicket(@NonNull Activity activity) {
+        //Todo implement Zendesk support ticket for voice
+    }
+
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),

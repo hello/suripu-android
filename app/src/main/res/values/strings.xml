@@ -595,12 +595,10 @@
 
     <string name="title_sense_voice">Sense with Voice</string>
     <string name="info_sense_voice_intro">Speak to Sense to set alarms, check the conditions in your room, and more.</string>
-    <string name="try_it_now">Try it now:</string>
-    <string name="sense_voice_question_temperature">&quot;Hey Sense…\nwhat\'s the temperature?&quot;</string>
+    <string name="activate_sense_voice_prompt">Activate Sense by asking a question:</string>
+    <string name="sense_voice_question_temperature">\"Hey Sense…<br>what\'s the temperature?\"</br></string>
     <string name="title_voice_tip">Voice Tip</string>
-    <string name="info_voice_tip">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.\nIf you are still having trouble, please contact <a href="#support">support</a>.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="info_voice_tip">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.\n\nIf you are still having trouble, please contact <a href="#voice-support">support</a>.</string>
 
     <string name="title_update_later">Update later</string>
     <string name="title_sense_update">Update your Sense</string>
