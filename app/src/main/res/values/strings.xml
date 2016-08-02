@@ -598,8 +598,8 @@
     <string name="activate_sense_voice_prompt">Activate Sense by asking a question:</string>
     <string name="sense_voice_question_temperature">\"Hey Sense…<br>what\'s the temperature?\"</br></string>
     <string name="title_voice_tip">Voice Tip</string>
-    <string name="info_voice_tip">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.\n\nIf you are still having trouble, please contact <a href="#voice-support">support</a>.</string>
-
+    <string name="info_voice_tip">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.</string>
+    <string name="info_voice_tip_with_support">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.\n\nIf you are still having trouble, please contact <a href="#voice-support">support</a>.</string>
     <string name="title_update_later">Update later</string>
     <string name="title_sense_update">Update your Sense</string>
     <string name="subtitle_sense_update">Sense needs an update before use. This will take up to 3 minutes.</string>

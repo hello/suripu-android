@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
+    <item android:gravity="center">
         <shape android:shape="oval">
-            <size android:height="236dp"
-                  android:width="236dp"/>
+            <size android:height="@dimen/sense_voice_circles_x3"
+                  android:width="@dimen/sense_voice_circles_x3"/>
             <solid android:color="@color/red3"/>
         </shape>
     </item>
-    <item>
+    <item android:gravity="center">
         <shape android:shape="oval">
-            <size android:height="192dp"
-                  android:width="192dp"/>
+            <size android:height="@dimen/sense_voice_circles_x2"
+                  android:width="@dimen/sense_voice_circles_x2"/>
             <solid android:color="@color/red4"/>
         </shape>
     </item>
-    <item>
+    <item android:gravity="center">
         <shape android:shape="oval">
-            <size android:height="146dp"
-                  android:width="146dp"/>
+            <size android:height="@dimen/sense_voice_circles_x1"
+                  android:width="@dimen/sense_voice_circles_x1"/>
             <solid android:color="@color/red5"/>
         </shape>
     </item>

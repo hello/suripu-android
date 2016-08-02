@@ -41,28 +41,25 @@
             android:layout_height="wrap_content"
             android:src="@drawable/nightstand"
             android:layout_gravity="center_horizontal|bottom"
-            android:paddingTop="40dp"/>
+            android:layout_marginTop="170dp"/>
 
         <ImageView
             android:id="@+id/animated_circles_view"
-            android:layout_width="236dp"
-            android:layout_height="236dp"
-            android:src="@drawable/sense_voice_circle_selector"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="42dp"
-            />
+            android:layout_width="@dimen/sense_voice_circles_x3"
+            android:layout_height="@dimen/sense_voice_circles_x3"
+            android:layout_gravity="center"/>
 
         <ImageView
             android:id="@+id/sense_voice_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/sense_voice_selector"
-            android:layout_gravity="center_horizontal|center"
+            android:layout_gravity="center"
             />
 
         <TextView
             android:id="@+id/fragment_sense_voice_try_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
@@ -75,7 +72,7 @@
 
         <TextView
             android:id="@+id/fragment_sense_voice_question_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"

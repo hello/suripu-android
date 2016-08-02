@@ -25,6 +25,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class UserSupport {
+    public static final String TAG = UserSupport.class.getName();
     public static final String ORDER_URL = "https://store.hello.is";
     public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
@@ -66,7 +67,7 @@ public class UserSupport {
                     .build();
             from.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
         } catch (final ActivityNotFoundException e) {
-            Logger.info(UserSupport.class.getSimpleName(), "Market unavailable", e);
+            Logger.info(TAG, "Market unavailable", e);
 
             final Uri webUri = new Uri.Builder()
                     .scheme("http")
@@ -186,22 +187,30 @@ public class UserSupport {
     }
 
     public static void showUpdatePill(@NonNull final Activity from) {
-        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
+        Logger.debug(TAG,"showUpdatePill()");
         from.startActivityForResult(
                 new Intent(from, PillUpdateActivity.class),
                 PillUpdateActivity.REQUEST_CODE);
     }
 
     public static void showUpdatePill(@NonNull final Fragment from, @NonNull final String deviceId) {
-        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill() from fragment " + from.getClass().getName());
+        Logger.debug(TAG,"showUpdatePill() from fragment " + from.getClass().getName());
         from.startActivityForResult(
                 new Intent(from.getActivity(), PillUpdateActivity.class)
                         .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId),
                 PillUpdateActivity.REQUEST_CODE);
     }
 
-    public static void showVoiceHelpTicket(@NonNull Activity activity) {
+    public static void showVoiceHelpTicket(@NonNull final Activity from) {
         //Todo implement Zendesk support ticket for voice
+        showContactForm(from);
+
+        /*final SupportTopic supportTopic = new SupportTopic("Sense Voice", "Sense Voice");
+        if( from instanceof FragmentNavigation){
+            ((FragmentNavigation) from).pushFragment(TicketSubmitFragment.newInstance(supportTopic), null, true);
+        } else {
+            Log.d(TAG, "showVoiceHelpTicket: " + from.getClass().getName() + " does not implement FragmentNavigation");
+        }*/
     }
 
     public enum DeviceIssue {

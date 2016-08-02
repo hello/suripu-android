@@ -166,6 +166,11 @@
 
     <dimen name="profile_image_size">104dp</dimen>
 
+    <dimen name="sense_voice_circles_x1">146dp</dimen>
+    <dimen name="sense_voice_circles_x2">192dp</dimen>
+    <dimen name="sense_voice_circles_x3">236dp</dimen>
+    <dimen name="sense_voice_translate_y">40dp</dimen>
+
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>
