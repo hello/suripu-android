@@ -21,7 +21,7 @@
         android:layout_gravity="center_vertical|end"
         android:padding="0dp"
         android:scaleType="center"
-        android:src="@drawable/action_info"
+        android:src="@drawable/info_button_icon_small"
         android:contentDescription="@string/action_help"/>
 
 </FrameLayout>

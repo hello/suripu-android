@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -177,7 +178,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         if (hasCurrentConditions) {
             ((OnboardingActivity) getActivity()).showRoomCheckIntro();
         } else {
-            ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
         }
     }
 

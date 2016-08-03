@@ -146,8 +146,8 @@ public class OnboardingActivity extends InjectionActivity
                                                        getString(R.string.dialog_loading_message),
                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
                             bindAndSubscribe(apiService.getAccount(true),
-                                             account -> {
-                                                 showBirthday(account, false);
+                                             nextAccount -> {
+                                                 showBirthday(nextAccount, false);
                                              },
                                              e -> {
                                                  LoadingDialogFragment.close(getFragmentManager());
@@ -172,6 +172,10 @@ public class OnboardingActivity extends InjectionActivity
 
                     case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
                         showSmartAlarmInfo();
+                        break;
+
+                    case Constants.ONBOARDING_CHECKPOINT_SENSE_UPDATE:
+                        showSenseUpdateIntro();
                         break;
 
                     case Constants.ONBOARDING_CHECKPOINT_SENSE_VOICE:
@@ -257,6 +261,10 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
+        } else if(fragment instanceof OnboardingRoomCheckFragment ||
+                fragment instanceof OnboardingSenseColorsFragment) {
+            checkSenseUpdateStatus();
+            showSmartAlarmInfo();
         } else if (fragment instanceof SenseUpdateFragment) {
             if (responseCode == Activity.RESULT_CANCELED) {
                 showDone();
@@ -506,7 +514,6 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSmartAlarmInfo() {
-        checkSenseUpdateStatus(); //todo remove
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
@@ -516,25 +523,23 @@ public class OnboardingActivity extends InjectionActivity
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
     }
 
+    public void checkSenseUpdateStatus(){
+        subscribe(apiService.getSenseUpdateStatus(),
+                  otaStatus -> {
+                      Log.d(TAG, "checkSenseUpdateStatus: " + otaStatus.state.name());
+                      preferences.edit().putString(PreferencesPresenter.DEVICE_OTA_STATUS, otaStatus.state.name())
+                                 .apply();
+                  },
+                  Functions.LOG_ERROR);
+    }
+
     public void checkForSenseUpdate() {
-        final String senseOtaStatus = preferences.getString("device_ota_status","missing");
+        final String senseOtaStatus = preferences.getString(PreferencesPresenter.DEVICE_OTA_STATUS,"missing");
         if(senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name())){
             showSenseUpdateIntro();
         } else{
             showDone();
         }
-    }
-
-    public void checkSenseUpdateStatus(){
-        subscribe(apiService.getSenseUpdateStatus(),
-                  otaStatus -> {
-                      Log.d(TAG, "checkSenseUpdateStatus: " + otaStatus.state.name());
-                      preferences.edit().putString("device_ota_status", otaStatus.state.name())
-                              .apply();
-                  },
-                  error -> {
-                      Log.e(TAG, "checkSenseUpdateStatus: ", error);
-                  });
     }
 
     public void showSenseUpdateIntro(){

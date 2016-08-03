@@ -11,26 +11,39 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
 
 import is.hello.sense.util.AnimatorSetHandler;
 
 public class ViewAnimator {
 
+    private @Nullable final Interpolator interpolator;
     private @Nullable View animatedView;
     private @Nullable AnimatorSetHandler animatorSetHandler;
     private @Nullable AnimatorSet set;
     private final long callbackDelay;
+    private int repeatCount;
 
     public ViewAnimator() {
         this(800);
     }
 
     public ViewAnimator(final long callbackDelay){
+        this(callbackDelay, null);
+    }
+
+    public ViewAnimator(final long callbackDelay, @Nullable final Interpolator interpolator){
         this.callbackDelay = callbackDelay;
+        this.interpolator = interpolator;
+        this.repeatCount = AnimatorSetHandler.LOOP_ANIMATION;
     }
 
     public void setAnimatedView(@NonNull final View animatedView){
         this.animatedView = animatedView;
+    }
+
+    public void setRepeatCount(final int repeatCount){
+        this.repeatCount = repeatCount;
     }
 
     public View inflateView(@NonNull final LayoutInflater inflater,
@@ -46,15 +59,17 @@ public class ViewAnimator {
     public void onViewCreated(@NonNull final Context context, @AnimatorRes final int animatorRes) {
         set = (AnimatorSet) AnimatorInflater.loadAnimator(context, animatorRes);
         setTarget(set, animatedView);
+        setInterpolator(set, interpolator);
     }
 
     /**
      * @param animatorSet not required to set {@link this#animatedView} if provided animatorSet
      * has existing target.
      */
-    public void onViewCreated(@NonNull final AnimatorSet animatorSet) {
+    public void onViewCreated(@Nullable final AnimatorSet animatorSet) {
         set = animatorSet;
         setTarget(set, animatedView);
+        setInterpolator(set, interpolator);
     }
 
     public void onResume() {
@@ -78,7 +93,7 @@ public class ViewAnimator {
         }
     }
 
-    public void resetAnimation(@NonNull final AnimatorSet animatorSet){
+    public void resetAnimation(@Nullable final AnimatorSet animatorSet){
         onPause();
         onDestroyView();
         onViewCreated(animatorSet);
@@ -93,7 +108,7 @@ public class ViewAnimator {
 
     private void resumeAnimation(){
         if(animatorSetHandler == null && set != null) {
-            this.animatorSetHandler = new AnimatorSetHandler(callbackDelay, set);
+            this.animatorSetHandler = new AnimatorSetHandler(callbackDelay, repeatCount, set);
         }
 
         if(animatorSetHandler != null){
@@ -101,9 +116,15 @@ public class ViewAnimator {
         }
     }
 
-    private void setTarget(@NonNull final AnimatorSet set, @Nullable final View target) {
-        if(target != null){
+    private void setTarget(@Nullable final AnimatorSet set, @Nullable final View target) {
+        if(set != null && target != null){
             set.setTarget(target);
+        }
+    }
+
+    private void setInterpolator(@Nullable final AnimatorSet set, @Nullable final Interpolator interpolator){
+        if(set != null && interpolator != null){
+            set.setInterpolator(interpolator);
         }
     }
 

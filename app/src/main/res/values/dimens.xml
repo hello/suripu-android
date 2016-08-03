@@ -169,6 +169,8 @@
     <dimen name="sense_voice_circles_x1">146dp</dimen>
     <dimen name="sense_voice_circles_x2">192dp</dimen>
     <dimen name="sense_voice_circles_x3">236dp</dimen>
+    <dimen name="sense_voice_circles_x1_padding">44dp</dimen>
+    <dimen name="sense_voice_circles_x2_padding">21dp</dimen>
     <dimen name="sense_voice_translate_y">40dp</dimen>
 
     <!-- Graphs -->

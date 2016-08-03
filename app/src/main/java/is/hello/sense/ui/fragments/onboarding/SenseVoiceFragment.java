@@ -20,17 +20,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import dagger.Lazy;
 import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.VoiceResponse;
+import is.hello.sense.graph.presenters.SenseVoicePresenter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.ViewAnimator;
@@ -38,21 +34,21 @@ import is.hello.sense.ui.common.VoiceHelpDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import is.hello.sense.util.AnimatorSetHandler;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseVoiceFragment extends InjectionFragment {
 
-    private static final int INTERVAL_SECONDS = 10; //todo consult jimmy prishil for best poll time
     @Inject
-    ApiService apiService;
+    SenseVoicePresenter senseVoicePresenter;
 
+    private static final int MAX_ALPHA = 20;
+    private static final int VOICE_FAIL_COUNT_THRESHOLD = 2;
     private static final int[] FAIL_STATE = new int[]{android.R.attr.state_middle};
     private static final int[] OK_STATE = new int[]{android.R.attr.state_last};
-    private final Lazy<Integer> TRANSLATE_Y =
-            () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
+    private static final int[] WAIT_STATE = new int[]{};
+
     private OnboardingToolbar toolbar;
     private TextView title;
     private TextView subtitle;
@@ -63,7 +59,10 @@ public class SenseVoiceFragment extends InjectionFragment {
     private ImageView senseImageView;
     private ImageView senseCircleView;
     private View nightStandView;
-    private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT);
+    private final Lazy<Integer> TRANSLATE_Y =
+            () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
+    private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
+                                                               new AccelerateDecelerateInterpolator());
 
     @Nullable
     @Override
@@ -184,7 +183,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                 .start();
 
         updateUI(false);
-        poll(INTERVAL_SECONDS);
+        poll();
     }
 
     private void onSkip(final View view) {
@@ -192,8 +191,10 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void onFinish(final boolean success){
+        senseVoicePresenter.reset();
         retryButton.setEnabled(false);
         skipButton.setEnabled(false);
+        senseVoicePresenter.updateHasCompletedTutorial(success);
         questionText.postDelayed(
                 () -> getFragmentNavigation()
                         .flowFinished(this, success ? Activity.RESULT_OK : Activity.RESULT_CANCELED, null),
@@ -203,6 +204,7 @@ public class SenseVoiceFragment extends InjectionFragment {
     private void updateUI(final boolean onError){
         if(onError) {
             toolbar.setWantsHelpButton(true);
+            observableContainer.clearSubscriptions();
         } else {
             senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
             senseCircleView.getDrawable().setAlpha(0);
@@ -220,7 +222,9 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void showVoiceTipDialog(final boolean shouldShow) {
-        VoiceHelpDialogFragment bottomSheet = (VoiceHelpDialogFragment) getFragmentManager().findFragmentByTag(VoiceHelpDialogFragment.TAG);
+        VoiceHelpDialogFragment bottomSheet =
+                (VoiceHelpDialogFragment) getFragmentManager()
+                        .findFragmentByTag(VoiceHelpDialogFragment.TAG);
         if (bottomSheet != null && !shouldShow) {
             bottomSheet.dismissSafely();
         } else if(bottomSheet == null && shouldShow){
@@ -229,55 +233,64 @@ public class SenseVoiceFragment extends InjectionFragment {
         }
     }
 
-    private void poll(final int pollInterval){
-        //todo make into presenter when more stable
-        bindAndSubscribe(Observable.interval(pollInterval, TimeUnit.SECONDS, Schedulers.io())
-                         .flatMap( ignored -> apiService.getOnboardingVoiceResponse()),
+    private void poll(){
+        bindAndSubscribe(senseVoicePresenter.voiceResponse,
                          this::handleVoiceResponse,
                          this::presentError);
+        senseVoicePresenter.update();
     }
 
-    private void handleVoiceResponse(@NonNull final ArrayList<VoiceResponse> voiceResponses) {
-        if(voiceResponses.isEmpty()){
-            return;
-        }
-        Collections.sort(voiceResponses,
-                         (thisResponse, otherResponse) -> thisResponse.dateTime.compareTo(otherResponse.dateTime)) ;
-        final VoiceResponse voiceResponse = voiceResponses.get(0);
-        if(voiceResponse.result.equals(VoiceResponse.Result.OK)){
+    private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
+        if(SenseVoicePresenter.hasSuccessful(voiceResponse)){
             updateState(R.string.sense_voice_question_temperature,
                         R.color.primary,
-                        OK_STATE);
+                        View.GONE,
+                        OK_STATE,
+                        1);
             onFinish(true);
         } else{
             updateState(R.string.error_sense_voice_not_detected,
                         R.color.text_dark,
-                        FAIL_STATE);
+                        View.GONE,
+                        FAIL_STATE,
+                        1);
+            showVoiceTipDialog(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD);
+            //return to normal wait state
+            questionText.postDelayed(stateSafeExecutor.bind(() -> {
+                updateState(R.string.sense_voice_question_temperature,
+                            R.color.text_dark,
+                            View.VISIBLE,
+                            WAIT_STATE,
+                            AnimatorSetHandler.LOOP_ANIMATION);
+            }), LoadingDialogFragment.DURATION_DEFAULT * 3);
         }
     }
 
     private void updateState(@StringRes final int stringRes,
                              @ColorRes final int textColorRes,
-                             final int[] imageState){
+                             final int tryVisibility,
+                             final int[] imageState,
+                             final int repeatCount){
         questionText.postDelayed(
                 stateSafeExecutor.bind(()-> {
                     senseImageView.setImageState(imageState, false);
+                    tryText.setVisibility(tryVisibility);
                     questionText.setText(stringRes);
                     questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
                 }), LoadingDialogFragment.DURATION_DEFAULT);
+
         senseCircleView.setImageState(imageState, false);
+        viewAnimator.setRepeatCount(repeatCount);
         viewAnimator.resetAnimation(
                 createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
     }
 
     private AnimatorSet createAnimatorSetFor(@NonNull final StateListDrawable stateListDrawable) {
-        final int MAX_ALPHA = 20;
         final LayerDrawable layerDrawable = (LayerDrawable) stateListDrawable.getCurrent();
         final Drawable outerCircle = layerDrawable.getDrawable(0);
         final Drawable middleCircle = layerDrawable.getDrawable(1);
         final Drawable innerCircle = layerDrawable.getDrawable(2);
         final AnimatorSet animSet = new AnimatorSet();
-        animSet.setInterpolator(new AccelerateDecelerateInterpolator());
         animSet.playSequentially(
                 ObjectAnimator.ofInt(innerCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
                 ObjectAnimator.ofInt(middleCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
