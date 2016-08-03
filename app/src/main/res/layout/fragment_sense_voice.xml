@@ -3,6 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:layout_weight="10"
               android:clipChildren="false">
 
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
@@ -32,30 +33,45 @@
     <FrameLayout
         android:id="@+id/sense_voice_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="6"
         android:clipChildren="false">
 
-        <ImageView
-            android:id="@+id/nightstand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/nightstand"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginTop="170dp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/animated_circles_view"
-            android:layout_width="@dimen/sense_voice_circles_x3"
-            android:layout_height="@dimen/sense_voice_circles_x3"
-            android:layout_gravity="center"/>
+            <ImageView
+                android:id="@+id/nightstand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/nightstand"
+                android:adjustViewBounds="true"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"/>
 
-        <ImageView
-            android:id="@+id/sense_voice_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/sense_voice_selector"
-            android:layout_gravity="center"
-            />
+            <ImageView
+                android:id="@+id/animated_circles_view"
+                android:layout_width="@dimen/sense_voice_circles_x3"
+                android:layout_height="@dimen/sense_voice_circles_x3"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"/>
+
+            <ImageView
+                android:id="@+id/sense_voice_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/sense_voice_selector"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_above="@id/nightstand"
+                android:layout_marginBottom="-20dp"
+                />
+
+        </RelativeLayout>
+
+
 
         <TextView
             android:id="@+id/fragment_sense_voice_try_text"

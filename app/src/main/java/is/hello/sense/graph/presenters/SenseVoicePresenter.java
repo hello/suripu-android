@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -30,7 +31,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     private final static long pollInterval = 10;
     public final PresenterSubject<VoiceResponse> voiceResponse = this.subject;
-    private int failCount = 0;
+    private final AtomicInteger failCount = new AtomicInteger(0);
 
     @Nullable
     public static VoiceResponse getMostRecent(@NonNull final ArrayList<VoiceResponse> voiceResponses){
@@ -66,12 +67,12 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     }
 
     public void reset(){
-        failCount = 0;
+        failCount.set(0);
         voiceResponse.forget();
     }
 
     public int getFailCount(){
-        return failCount;
+        return failCount.get();
     }
 
     public void updateHasCompletedTutorial(final boolean hasCompleted){
@@ -87,9 +88,9 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     private void updateFailCount(@Nullable final VoiceResponse voiceResponse){
         if(!hasSuccessful(voiceResponse)){
-            failCount++;
+            failCount.incrementAndGet();
         } else {
-            failCount = 0;
+            failCount.set(0);
         }
         logEvent("failCount = " + failCount);
     }
