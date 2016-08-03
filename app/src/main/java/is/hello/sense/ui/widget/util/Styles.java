@@ -302,11 +302,6 @@ public final class Styles {
                     break;
                 }
 
-                case "#voice-support":{
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showVoiceHelpTicket(activity));
-                    break;
-                }
-
                 default: {
                     throw new IllegalArgumentException("Unknown deep link url " + url);
                 }

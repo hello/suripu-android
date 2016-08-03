@@ -201,18 +201,6 @@ public class UserSupport {
                 PillUpdateActivity.REQUEST_CODE);
     }
 
-    public static void showVoiceHelpTicket(@NonNull final Activity from) {
-        //Todo implement Zendesk support ticket for voice
-        showContactForm(from);
-
-        /*final SupportTopic supportTopic = new SupportTopic("Sense Voice", "Sense Voice");
-        if( from instanceof FragmentNavigation){
-            ((FragmentNavigation) from).pushFragment(TicketSubmitFragment.newInstance(supportTopic), null, true);
-        } else {
-            Log.d(TAG, "showVoiceHelpTicket: " + from.getClass().getName() + " does not implement FragmentNavigation");
-        }*/
-    }
-
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),

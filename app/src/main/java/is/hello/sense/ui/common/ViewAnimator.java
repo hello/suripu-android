@@ -66,7 +66,7 @@ public class ViewAnimator {
      * @param animatorSet not required to set {@link this#animatedView} if provided animatorSet
      * has existing target.
      */
-    public void onViewCreated(@Nullable final AnimatorSet animatorSet) {
+    public void onViewCreated(@NonNull final AnimatorSet animatorSet) {
         set = animatorSet;
         setTarget(set, animatedView);
         setInterpolator(set, interpolator);
@@ -93,7 +93,7 @@ public class ViewAnimator {
         }
     }
 
-    public void resetAnimation(@Nullable final AnimatorSet animatorSet){
+    public void resetAnimation(@NonNull final AnimatorSet animatorSet){
         onPause();
         onDestroyView();
         onViewCreated(animatorSet);
@@ -107,23 +107,23 @@ public class ViewAnimator {
     }
 
     private void resumeAnimation(){
-        if(animatorSetHandler == null && set != null) {
+        if(set == null){
+            throw new IllegalStateException("AnimatorSet set cannot be null when calling resumeAnimation()");
+        }
+        if(animatorSetHandler == null) {
             this.animatorSetHandler = new AnimatorSetHandler(callbackDelay, repeatCount, set);
         }
-
-        if(animatorSetHandler != null){
-            animatorSetHandler.start();
-        }
+        animatorSetHandler.start();
     }
 
-    private void setTarget(@Nullable final AnimatorSet set, @Nullable final View target) {
-        if(set != null && target != null){
+    private void setTarget(@NonNull final AnimatorSet set, @Nullable final View target) {
+        if(target != null){
             set.setTarget(target);
         }
     }
 
-    private void setInterpolator(@Nullable final AnimatorSet set, @Nullable final Interpolator interpolator){
-        if(set != null && interpolator != null){
+    private void setInterpolator(@NonNull final AnimatorSet set, @Nullable final Interpolator interpolator){
+        if(interpolator != null){
             set.setInterpolator(interpolator);
         }
     }

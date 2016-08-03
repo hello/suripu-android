@@ -83,7 +83,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         Views.setTimeOffsetOnClickListener(skipButton,this::onSkip);
         toolbar = OnboardingToolbar.of(this, view)
                                    .setOnHelpClickListener(ignored -> showVoiceTipDialog(true))
-                                   .setWantsHelpButton(true)
+                                   .setWantsHelpButton(false)
                                    .setWantsBackButton(false);
 
         senseImageView.setScaleX(0.6f);
@@ -184,6 +184,7 @@ public class SenseVoiceFragment extends InjectionFragment {
 
         updateUI(false);
         poll();
+        toolbar.setWantsHelpButton(true);
     }
 
     private void onSkip(final View view) {
@@ -205,6 +206,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         if(onError) {
             toolbar.setWantsHelpButton(true);
             observableContainer.clearSubscriptions();
+            senseVoicePresenter.reset();
         } else {
             senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
             senseCircleView.getDrawable().setAlpha(0);
@@ -256,13 +258,13 @@ public class SenseVoiceFragment extends InjectionFragment {
                         1);
             showVoiceTipDialog(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD);
             //return to normal wait state
-            questionText.postDelayed(stateSafeExecutor.bind(() -> {
+            questionText.postDelayed(stateSafeExecutor.bind(() ->
                 updateState(R.string.sense_voice_question_temperature,
                             R.color.text_dark,
                             View.VISIBLE,
                             WAIT_STATE,
-                            AnimatorSetHandler.LOOP_ANIMATION);
-            }), LoadingDialogFragment.DURATION_DEFAULT * 3);
+                            AnimatorSetHandler.LOOP_ANIMATION)
+            ), LoadingDialogFragment.DURATION_DEFAULT * 3);
         }
     }
 

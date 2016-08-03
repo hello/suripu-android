@@ -1,5 +1,6 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     private int failCount = 0;
 
     @Nullable
-    public static VoiceResponse getMostRecent(final ArrayList<VoiceResponse> voiceResponses){
+    public static VoiceResponse getMostRecent(@NonNull final ArrayList<VoiceResponse> voiceResponses){
         if(voiceResponses.isEmpty()){
             return null;
         }
