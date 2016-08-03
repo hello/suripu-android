@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.util.Rx;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
@@ -67,6 +68,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
+import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
 public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation,
@@ -121,6 +123,22 @@ public class OnboardingActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
+        if(BuildConfig.DEBUG){
+            final int debugCheckpoint = getIntent().getIntExtra(EXTRA_DEBUG_CHECKPOINT,
+                                                                Constants.DEBUG_CHECKPOINT_NONE);
+            switch(debugCheckpoint){
+                case Constants.DEBUG_CHECKPOINT_SENSE_UPDATE:
+                    showSenseUpdateIntro();
+                    break;
+
+                case Constants.DEBUG_CHECKPOINT_SENSE_VOICE:
+                    showSenseVoice();
+                    break;
+                case Constants.DEBUG_CHECKPOINT_NONE:
+                    Log.e(TAG, "undefined debug checkpoint extra");
+            }
+        }
+
         if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
             final int lastCheckPoint = getLastCheckPoint();
             switch (lastCheckPoint) {
@@ -172,14 +190,6 @@ public class OnboardingActivity extends InjectionActivity
 
                     case Constants.ONBOARDING_CHECKPOINT_SMART_ALARM:
                         showSmartAlarmInfo();
-                        break;
-
-                    case Constants.ONBOARDING_CHECKPOINT_SENSE_UPDATE:
-                        showSenseUpdateIntro();
-                        break;
-
-                    case Constants.ONBOARDING_CHECKPOINT_SENSE_VOICE:
-                        showSenseVoice();
                         break;
                 }
             }

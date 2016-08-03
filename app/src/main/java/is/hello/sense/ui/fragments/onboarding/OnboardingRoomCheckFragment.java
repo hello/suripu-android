@@ -453,7 +453,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //endregion
 
 
-    public void continueOnboarding(@NonNull View sender) {
-        (getFragmentNavigation()).flowFinished(this, Activity.RESULT_OK, null);
+    public void continueOnboarding(@NonNull final View sender) {
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
     }
 }

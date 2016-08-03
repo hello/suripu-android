@@ -120,10 +120,8 @@ public class SenseVoiceFragment extends InjectionFragment {
     public void onDestroyView() {
         super.onDestroyView();
         viewAnimator.onDestroyView();
-        if(toolbar != null){
-            toolbar.onDestroyView();
-            toolbar = null;
-        }
+        toolbar.onDestroyView();
+        toolbar = null;
         title = null;
         subtitle = null;
         tryText = null;
@@ -184,7 +182,6 @@ public class SenseVoiceFragment extends InjectionFragment {
 
         updateUI(false);
         poll();
-        toolbar.setWantsHelpButton(true);
     }
 
     private void onSkip(final View view) {
@@ -204,7 +201,7 @@ public class SenseVoiceFragment extends InjectionFragment {
 
     private void updateUI(final boolean onError){
         if(onError) {
-            toolbar.setWantsHelpButton(true);
+            toolbar.setWantsHelpButton(false);
             observableContainer.clearSubscriptions();
             senseVoicePresenter.reset();
         } else {
@@ -214,7 +211,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                     createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
             title.setVisibility(View.INVISIBLE);
             subtitle.setVisibility(View.INVISIBLE);
-            toolbar.setWantsHelpButton(false);
+            toolbar.setWantsHelpButton(true);
         }
     }
 

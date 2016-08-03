@@ -33,6 +33,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity {
+    public static final String EXTRA_DEBUG_CHECKPOINT = "EXTRA_DEBUG_CHECKPOINT" + DebugActivity.class.getName();
     @Inject ApiSessionManager sessionManager;
     @Inject PreferencesPresenter preferences;
     @Inject PersistentPreferencesPresenter persistentPreferences;
@@ -128,13 +129,13 @@ public class DebugActivity extends InjectionActivity {
 
     private void showSenseUpdate() {
         final Intent onboarding = new Intent(this, OnboardingActivity.class);
-        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE_UPDATE);
+        onboarding.putExtra(DebugActivity.EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_SENSE_UPDATE);
         startActivity(onboarding);
     }
 
     private void showSenseVoice() {
         final Intent onboarding = new Intent(this, OnboardingActivity.class);
-        onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE_VOICE);
+        onboarding.putExtra(DebugActivity.EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_SENSE_VOICE);
         startActivity(onboarding);
     }
 
