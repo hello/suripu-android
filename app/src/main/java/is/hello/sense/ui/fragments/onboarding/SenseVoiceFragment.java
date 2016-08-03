@@ -245,14 +245,14 @@ public class SenseVoiceFragment extends InjectionFragment {
                         R.color.primary,
                         View.GONE,
                         OK_STATE,
-                        1);
+                        0);
             onFinish(true);
         } else{
             updateState(R.string.error_sense_voice_not_detected,
                         R.color.text_dark,
                         View.GONE,
                         FAIL_STATE,
-                        1);
+                        0);
             showVoiceTipDialog(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD);
             //return to normal wait state
             questionText.postDelayed(stateSafeExecutor.bind(() ->

@@ -123,9 +123,9 @@ public class OnboardingActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if(BuildConfig.DEBUG){
-            final int debugCheckpoint = getIntent().getIntExtra(EXTRA_DEBUG_CHECKPOINT,
-                                                                Constants.DEBUG_CHECKPOINT_NONE);
+        if(BuildConfig.DEBUG && getIntent().hasExtra(EXTRA_DEBUG_CHECKPOINT)){
+            final int debugCheckpoint = getIntent()
+                    .getIntExtra(EXTRA_DEBUG_CHECKPOINT,Constants.DEBUG_CHECKPOINT_NONE);
             switch(debugCheckpoint){
                 case Constants.DEBUG_CHECKPOINT_SENSE_UPDATE:
                     showSenseUpdateIntro();
@@ -135,8 +135,10 @@ public class OnboardingActivity extends InjectionActivity
                     showSenseVoice();
                     break;
                 case Constants.DEBUG_CHECKPOINT_NONE:
-                    Log.e(TAG, "undefined debug checkpoint extra");
+                    Log.e(TAG, "onCreate: not a valid debug checkpoint extra state");
+                    break;
             }
+            return;
         }
 
         if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
