@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -186,9 +187,17 @@ public class SenseUpdateFragment extends HardwareFragment {
         hideBlockingActivity(false, () -> {
             updateUI(true);
 
+            int titleRes = R.string.error_update_failed;
+            int messageRes = R.string.error_sense_update_failed_message;
+
+            if(e instanceof ApiException){
+                titleRes = R.string.error_wifi_connection_title;
+                messageRes = R.string.error_wifi_connection_message;
+            }
+
             final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withTitle(R.string.error_update_failed)
-                    .withMessage(StringRef.from(R.string.error_sense_update_failed_message))
+                    .withTitle(titleRes)
+                    .withMessage(StringRef.from(messageRes))
                     .withOperation(operation)
                     .withSupportLink()
                     .build();

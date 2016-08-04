@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
@@ -29,7 +28,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     @Inject SenseVoicePresenter(){}
 
 
-    private final static long pollInterval = 10;
+    public final static long POLL_INTERVAL = 10;
     public final PresenterSubject<VoiceResponse> voiceResponse = this.subject;
     private final AtomicInteger failCount = new AtomicInteger(0);
 
@@ -60,8 +59,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     @Override
     protected Observable<VoiceResponse> provideUpdateObservable() {
-        return Observable.interval(pollInterval, TimeUnit.SECONDS, Schedulers.io())
-                         .flatMap( ignored -> apiService.getOnboardingVoiceResponse())
+        return  apiService.getOnboardingVoiceResponse()
                          .map(SenseVoicePresenter::getMostRecent)
                          .doOnNext(this::updateFailCount);
     }
