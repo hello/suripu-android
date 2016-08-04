@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +39,6 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
@@ -242,7 +243,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
                     final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
                     final SensorState sensor = sensors.get(i);
                     sensorView.clearAnimation();
-                    sensorView.setTint(resources.getColor(sensor.getCondition().colorRes));
+                    sensorView.setTint(ContextCompat.getColor(getActivity(), sensor.getCondition().colorRes));
                     sensorView.setIcon(getFinalIconForSensor(sensor.getName()));
                 }
             }
@@ -305,7 +306,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //region Animating Sense
 
     private void animateSenseToGray() {
-        Drawable senseDrawable = sense.getDrawable();
+        final Drawable senseDrawable = sense.getDrawable();
         if (senseDrawable instanceof TransitionDrawable) {
             ((TransitionDrawable) senseDrawable).reverseTransition(Anime.DURATION_NORMAL);
         }
@@ -452,7 +453,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     //endregion
 
 
-    public void continueOnboarding(@NonNull View sender) {
-        ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
+    public void continueOnboarding(@NonNull final View sender) {
+        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
     }
 }

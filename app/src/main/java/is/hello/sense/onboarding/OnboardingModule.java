@@ -1,6 +1,7 @@
 package is.hello.sense.onboarding;
 
 import dagger.Module;
+import is.hello.sense.graph.presenters.SenseVoicePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
@@ -11,6 +12,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
+import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
 
@@ -26,7 +28,9 @@ import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
         OnboardingSenseColorsFragment.class,
         OnboardingRoomCheckFragment.class,
         SenseUpdateIntroFragment.class,
-        SenseUpdateFragment.class
+        SenseUpdateFragment.class,
+        SenseVoiceFragment.class,
+        SenseVoicePresenter.class,
 
 })
 public class OnboardingModule {

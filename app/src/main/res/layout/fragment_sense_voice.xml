@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:clipChildren="false">
+
+    <include layout="@layout/sub_fragment_onboarding_toolbar" />
+
+    <TextView
+        android:id="@+id/fragment_sense_voice_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x2"
+        android:textAppearance="?attr/senseTextAppearanceHeading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:text="@string/title_sense_voice"/>
+
+    <TextView
+        android:id="@+id/fragment_sense_voice_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:textAppearance="?attr/senseTextAppearanceSubheading"
+        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+        android:text="@string/info_sense_voice_intro"/>
+
+    <FrameLayout
+        android:id="@+id/sense_voice_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false">
+
+        <ImageView
+            android:id="@+id/nightstand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/nightstand"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginTop="170dp"/>
+
+        <ImageView
+            android:id="@+id/animated_circles_view"
+            android:layout_width="@dimen/sense_voice_circles_x3"
+            android:layout_height="@dimen/sense_voice_circles_x3"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:id="@+id/sense_voice_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/sense_voice_selector"
+            android:layout_gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/fragment_sense_voice_try_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginTop="@dimen/x1"
+            android:layout_marginBottom="@dimen/x2"
+            android:gravity="center"
+            android:text="@string/try_it_now"
+            android:textAppearance="?attr/senseTextAppearanceSubheading"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/fragment_sense_voice_question_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:gravity="center"
+            android:text="@string/sense_voice_question_temperature"
+            android:textAppearance="@style/AppTheme.Text.Header.H4"
+            android:visibility="invisible"/>
+
+    </FrameLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/fragment_sense_voice_skip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginTop="@dimen/x3"
+        android:layout_marginBottom="@dimen/x1"
+        android:text="@string/action_try_again_later"
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
+
+    <Button
+        android:id="@+id/fragment_sense_voice_retry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x3"
+        android:text="@string/action_continue"
+        style="@style/AppTheme.Button.Rounded"/>
+
+</LinearLayout>

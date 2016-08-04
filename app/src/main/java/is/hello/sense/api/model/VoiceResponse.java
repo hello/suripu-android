@@ -23,19 +23,19 @@ import is.hello.sense.api.gson.Enums;
 public class VoiceResponse extends ApiResponse{
 
     @SerializedName("datetime_utc")
-    DateTime dateTime;
+    public final DateTime dateTime;
 
     @SerializedName("text")
-    String text;
+    public final String text;
 
     @SerializedName("response_text")
-    String responseText;
+    public final String responseText;
 
     @SerializedName("command")
-    String command;
+    public final String command;
 
     @SerializedName("result")
-    Result result;
+    public final Result result;
 
     public VoiceResponse(final DateTime dateTime,
                          final String text,

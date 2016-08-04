@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.util.Rx;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
@@ -55,6 +56,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
@@ -66,6 +68,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
+import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
 public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation,
@@ -120,6 +123,24 @@ public class OnboardingActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
+        if(BuildConfig.DEBUG && getIntent().hasExtra(EXTRA_DEBUG_CHECKPOINT)){
+            final int debugCheckpoint = getIntent()
+                    .getIntExtra(EXTRA_DEBUG_CHECKPOINT,Constants.DEBUG_CHECKPOINT_NONE);
+            switch(debugCheckpoint){
+                case Constants.DEBUG_CHECKPOINT_SENSE_UPDATE:
+                    showSenseUpdateIntro();
+                    break;
+
+                case Constants.DEBUG_CHECKPOINT_SENSE_VOICE:
+                    showSenseVoice();
+                    break;
+                case Constants.DEBUG_CHECKPOINT_NONE:
+                    Log.e(TAG, "onCreate: not a valid debug checkpoint extra state");
+                    break;
+            }
+            return;
+        }
+
         if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
             final int lastCheckPoint = getLastCheckPoint();
             switch (lastCheckPoint) {
@@ -145,8 +166,8 @@ public class OnboardingActivity extends InjectionActivity
                                                        getString(R.string.dialog_loading_message),
                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
                             bindAndSubscribe(apiService.getAccount(true),
-                                             account -> {
-                                                 showBirthday(account, false);
+                                             nextAccount -> {
+                                                 showBirthday(nextAccount, false);
                                              },
                                              e -> {
                                                  LoadingDialogFragment.close(getFragmentManager());
@@ -252,12 +273,18 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
-        } else if (fragment instanceof SenseUpdateFragment){
-            if(responseCode == Activity.RESULT_CANCELED){
+        } else if(fragment instanceof OnboardingRoomCheckFragment ||
+                fragment instanceof OnboardingSenseColorsFragment) {
+            checkSenseUpdateStatus();
+            showSmartAlarmInfo();
+        } else if (fragment instanceof SenseUpdateFragment) {
+            if (responseCode == Activity.RESULT_CANCELED) {
                 showDone();
-            } else if(responseCode == Activity.RESULT_OK){
-                showDone(); //todo redirect to voice fragment
+            } else if (responseCode == Activity.RESULT_OK) {
+                showSenseVoice(); //todo api check for voice feature
             }
+        } else if (fragment instanceof SenseVoiceFragment) {
+            showDone();
         }
     }
 
@@ -499,7 +526,6 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSmartAlarmInfo() {
-        checkSenseUpdateStatus(); //todo remove
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
@@ -509,25 +535,23 @@ public class OnboardingActivity extends InjectionActivity
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
     }
 
+    public void checkSenseUpdateStatus(){
+        subscribe(apiService.getSenseUpdateStatus(),
+                  otaStatus -> {
+                      Log.d(TAG, "checkSenseUpdateStatus: " + otaStatus.state.name());
+                      preferences.edit().putString(PreferencesPresenter.DEVICE_OTA_STATUS, otaStatus.state.name())
+                                 .apply();
+                  },
+                  Functions.LOG_ERROR);
+    }
+
     public void checkForSenseUpdate() {
-        final String senseOtaStatus = preferences.getString("device_ota_status","missing");
+        final String senseOtaStatus = preferences.getString(PreferencesPresenter.DEVICE_OTA_STATUS,"missing");
         if(senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name())){
             showSenseUpdateIntro();
         } else{
             showDone();
         }
-    }
-
-    public void checkSenseUpdateStatus(){
-        subscribe(apiService.getSenseUpdateStatus(),
-                  otaStatus -> {
-                      Log.d(TAG, "checkSenseUpdateStatus: " + otaStatus.state.name());
-                      preferences.edit().putString("device_ota_status", otaStatus.state.name())
-                              .apply();
-                  },
-                  error -> {
-                      Log.e(TAG, "checkSenseUpdateStatus: ", error);
-                  });
     }
 
     public void showSenseUpdateIntro(){
@@ -536,6 +560,10 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showSenseUpdating(){
         pushFragment(SenseUpdateFragment.newInstance(), null, false);
+    }
+
+    private void showSenseVoice() {
+        pushFragment(new SenseVoiceFragment(), null, false);
     }
 
     public void showDone() {
