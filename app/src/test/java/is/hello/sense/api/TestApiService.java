@@ -37,6 +37,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
+import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
@@ -423,6 +424,11 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse() {
+        return unimplemented(); //todo implement once api is stable
+    }
+
+    @Override
+    public Observable<UserFeatures> getUserFeatures() {
         return unimplemented(); //todo implement once api is stable
     }
 }

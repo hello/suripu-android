@@ -281,7 +281,8 @@ public class OnboardingActivity extends InjectionActivity
             if (responseCode == Activity.RESULT_CANCELED) {
                 showDone();
             } else if (responseCode == Activity.RESULT_OK) {
-                showSenseVoice(); //todo api check for voice feature
+                checkUserFeatures();
+                showSenseVoice();
             }
         } else if (fragment instanceof SenseVoiceFragment) {
             showDone();
@@ -560,6 +561,15 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showSenseUpdating(){
         pushFragment(SenseUpdateFragment.newInstance(), null, false);
+    }
+
+    private void checkUserFeatures() {
+        subscribe(apiService.getUserFeatures(),
+                  features -> {
+                      Log.d(TAG, "checkUserFeatures: " + features);
+                        //preferences.edit().putString(PreferencesPresenter.USER_FEATURES, features.toString());
+                  },
+                  Functions.LOG_ERROR);
     }
 
     private void showSenseVoice() {
