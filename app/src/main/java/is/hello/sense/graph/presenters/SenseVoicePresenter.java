@@ -1,5 +1,6 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -64,11 +65,13 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
                          .doOnNext(this::updateFailCount);
     }
 
+    @MainThread
     public void reset(){
         failCount.set(0);
         voiceResponse.forget();
     }
 
+    @MainThread
     public int getFailCount(){
         return failCount.get();
     }
@@ -87,8 +90,6 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     private void updateFailCount(@Nullable final VoiceResponse voiceResponse){
         if(!hasSuccessful(voiceResponse)){
             failCount.incrementAndGet();
-        } else {
-            failCount.set(0);
         }
         logEvent("failCount = " + failCount);
     }

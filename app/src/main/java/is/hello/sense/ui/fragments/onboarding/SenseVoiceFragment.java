@@ -223,8 +223,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                     .start();
 
             toolbar.setWantsHelpButton(false);
-            observableContainer.clearSubscriptions();
-            senseVoicePresenter.reset();
+            poll(false);
         } else {
             animatorFor(retryButton)
                     .translationY(buttonTranslateY)
