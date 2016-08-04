@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import dagger.Lazy;
 import is.hello.commonsense.util.StringRef;
-import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoiceResponse;
@@ -132,7 +131,7 @@ public class SenseVoiceFragment extends InjectionFragment {
             viewAnimator.onResume();
         }
 
-        if(questionText.getVisibility() == View.VISIBLE){
+        if(retryButton.getVisibility() != View.VISIBLE){
             poll(true);
         }
     }
@@ -161,6 +160,7 @@ public class SenseVoiceFragment extends InjectionFragment {
             onContinue();
             senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
             senseCircleView.getDrawable().setAlpha(0);
+            questionText.setAlpha(0);
         }
         updateUI(false);
         poll(true);
@@ -172,12 +172,6 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void onContinue() {
-        final OnAnimationCompleted showQuestionTextAnimation =
-                isFinished -> {
-                    if (isFinished) {
-                        tryText.setVisibility(View.VISIBLE);
-                    }
-                };
         animatorFor(nightStandView)
                 .alpha(0.4f)
                 .translationY(TRANSLATE_Y.get())
@@ -186,12 +180,15 @@ public class SenseVoiceFragment extends InjectionFragment {
         animatorFor(senseImageView)
                 .scale(1)
                 .translationY(TRANSLATE_Y.get()*0.60f)
-                .addOnAnimationCompleted(showQuestionTextAnimation)
                 .addOnAnimationCompleted(animator -> {
                     if (animator) {
                         senseCircleView.setY(
                                 senseImageView.getY() -
                                         ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2));
+
+                        questionText.setY(
+                                senseCircleView.getY() - questionText.getHeight()
+                                         );
                     }
                 })
                 .start();
@@ -322,18 +319,16 @@ public class SenseVoiceFragment extends InjectionFragment {
                              final int tryVisibility,
                              final int[] imageState,
                              final int repeatCount){
-        questionText.postDelayed(
-                stateSafeExecutor.bind(()-> {
-                    senseImageView.setImageState(imageState, false);
-                    tryText.setVisibility(tryVisibility);
-                }), LoadingDialogFragment.DURATION_DEFAULT);
 
-        //todo animate slide down up of questionText
         animatorFor(questionText)
                 .withStartDelay(LoadingDialogFragment.DURATION_DEFAULT)
                 .slideYAndFade(0, TRANSLATE_Y.get(), questionText.getAlpha(), 0)
+                .addOnAnimationWillStart( willStart -> {
+                    senseImageView.setImageState(imageState, false);
+                })
                 .addOnAnimationCompleted( complete -> {
                     if(complete){
+                        tryText.setVisibility(tryVisibility);
                         questionText.setText(stringRes);
                         questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
                         animatorFor(questionText)

@@ -104,9 +104,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
         Analytics.trackEvent(Analytics.SenseUpdate.EVENT_START, null);
         bindAndSubscribe(apiService.requestSenseUpdate(""),
-                         ignored -> {
-                             Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent.");
-                         },
+                         ignored -> Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent."),
                          e -> presentError(e, "Updating Sense"));
 
         bindAndSubscribe(Observable.interval(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS, Schedulers.io())
@@ -123,11 +121,7 @@ public class SenseUpdateFragment extends HardwareFragment {
 
         bindAndSubscribe(Observable.timer(REQUEST_STATUS_TIMEOUT_SECONDS, TimeUnit.SECONDS, Schedulers.io()),
                          ignored -> {
-                             Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update timeout. Retry to send new request.");
-                             observableContainer.clearSubscriptions();
-                             stateSafeExecutor.execute( () -> {
-                                 presentError(new TimeoutException(), "Sense Update");
-                             });
+                             stateSafeExecutor.execute( () -> presentError(new TimeoutException(), "Sense Update"));
                          },
                          Functions.LOG_ERROR);
 
@@ -141,6 +135,9 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     private void setProgressStatus(final DeviceOTAState.OtaState state) {
+        if(state.equals(DeviceOTAState.OtaState.REQUIRED) || state.equals(DeviceOTAState.OtaState.NOT_REQUIRED)){
+            return;
+        }
         this.progressStatus.post( () -> {
             this.progressStatus.setText(state.state);
         });
@@ -178,12 +175,11 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     public void showHelp(@NonNull final View sender) {
-        //todo replace with sense ota analytics
-        //Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE);
     }
 
     public void presentError(final Throwable e, @NonNull final String operation) {
+        observableContainer.clearSubscriptions();
         hideBlockingActivity(false, () -> {
             updateUI(true);
 

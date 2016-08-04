@@ -28,7 +28,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     @Inject SenseVoicePresenter(){}
 
 
-    public final static long POLL_INTERVAL = 10;
+    public final static long POLL_INTERVAL = 10; //todo test with real 1.5 senses to adjust
     public final PresenterSubject<VoiceResponse> voiceResponse = this.subject;
     private final AtomicInteger failCount = new AtomicInteger(0);
 
@@ -59,7 +59,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     @Override
     protected Observable<VoiceResponse> provideUpdateObservable() {
-        return  apiService.getOnboardingVoiceResponse()
+        return apiService.getOnboardingVoiceResponse()
                          .map(SenseVoicePresenter::getMostRecent)
                          .doOnNext(this::updateFailCount);
     }
