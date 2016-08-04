@@ -44,6 +44,10 @@ public final class Constants {
     public static final int ONBOARDING_CHECKPOINT_PILL = 4;
     public static final int ONBOARDING_CHECKPOINT_SMART_ALARM = 5;
 
+    public static final int DEBUG_CHECKPOINT_NONE = 0;
+    public static final int DEBUG_CHECKPOINT_SENSE_UPDATE = 1;
+    public static final int DEBUG_CHECKPOINT_SENSE_VOICE = 2;
+
     public static final long STALE_INTERVAL_MS = (10 * 60 * 1000); // 10 minutes
 
     /**
@@ -66,5 +70,4 @@ public final class Constants {
     public static final int HTTP_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s
     public static final String HTTP_CACHE_NAME = "is.hello.sense.okhttp.cache";
     public static final int HTTP_CACHE_SIZE = 2024 * 10;
-
 }

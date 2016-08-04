@@ -9,6 +9,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -21,6 +22,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
+import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
@@ -154,7 +156,6 @@ public interface ApiService {
                                                  @NonNull @Body String stupidOkHttp);
 
     //endregion
-
 
     //region Room Conditions
 
@@ -296,6 +297,23 @@ public interface ApiService {
 
     @POST("/v2/store/feedback")
     Observable<Void> trackStoreReview(@NonNull @Body StoreReview review);
+
+    //endregion
+
+    //region Sense Update
+
+    @GET("/v1/ota/status")
+    Observable<DeviceOTAState> getSenseUpdateStatus();
+
+    @POST("/v1/ota/request_ota")
+    Observable<VoidResponse> requestSenseUpdate(@Body String empty);
+
+    //endregion
+
+    //region Voice
+
+    @GET("/v1/speech/onboarding")
+    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
 
     //endregion
 }

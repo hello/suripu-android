@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="center">
+        <shape android:shape="oval">
+            <size android:height="@dimen/sense_voice_circles_x3"
+                  android:width="@dimen/sense_voice_circles_x3"/>
+            <solid android:color="@color/red3"/>
+        </shape>
+    </item>
+    <item android:gravity="center"
+          android:bottom="@dimen/sense_voice_circles_x2_padding"
+          android:top="@dimen/sense_voice_circles_x2_padding"
+          android:right="@dimen/sense_voice_circles_x2_padding"
+          android:left="@dimen/sense_voice_circles_x2_padding">
+        <shape android:shape="oval">
+            <size android:height="@dimen/sense_voice_circles_x2"
+                  android:width="@dimen/sense_voice_circles_x2"/>
+            <solid android:color="@color/red4"/>
+        </shape>
+    </item>
+    <item android:gravity="center"
+          android:bottom="@dimen/sense_voice_circles_x1_padding"
+          android:top="@dimen/sense_voice_circles_x1_padding"
+          android:right="@dimen/sense_voice_circles_x1_padding"
+          android:left="@dimen/sense_voice_circles_x1_padding">
+        <shape android:shape="oval">
+            <size android:height="@dimen/sense_voice_circles_x1"
+                  android:width="@dimen/sense_voice_circles_x1"/>
+            <solid android:color="@color/red5"/>
+        </shape>
+    </item>
+</layer-list>
