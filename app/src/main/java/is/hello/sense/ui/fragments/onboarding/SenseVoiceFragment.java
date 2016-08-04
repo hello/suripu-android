@@ -65,6 +65,8 @@ public class SenseVoiceFragment extends InjectionFragment {
     private ImageView senseImageView;
     private ImageView senseCircleView;
     private View nightStandView;
+    private final Lazy<Integer> FIXED_MARGIN =
+            () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_fixed_margin);
     private final Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
@@ -182,13 +184,13 @@ public class SenseVoiceFragment extends InjectionFragment {
                 .translationY(TRANSLATE_Y.get()*0.60f)
                 .addOnAnimationCompleted(animator -> {
                     if (animator) {
-                        senseCircleView.setY(
-                                senseImageView.getY() -
-                                        ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2));
-
-                        questionText.setY(
-                                senseCircleView.getY() - questionText.getHeight()
-                                         );
+                        stateSafeExecutor.execute(
+                                () -> {
+                                    senseCircleView.setY(
+                                            senseImageView.getY() - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2));
+                                    //todo setY overridden
+                                    questionText.setY(senseCircleView.getY() - questionText.getMeasuredHeight() - FIXED_MARGIN.get());
+                        });
                     }
                 })
                 .start();
@@ -324,16 +326,20 @@ public class SenseVoiceFragment extends InjectionFragment {
                 .withStartDelay(LoadingDialogFragment.DURATION_DEFAULT)
                 .slideYAndFade(0, TRANSLATE_Y.get(), questionText.getAlpha(), 0)
                 .addOnAnimationWillStart( willStart -> {
-                    senseImageView.setImageState(imageState, false);
+                    stateSafeExecutor.execute(() -> {
+                        senseImageView.setImageState(imageState, false);
+                    });
                 })
                 .addOnAnimationCompleted( complete -> {
                     if(complete){
-                        tryText.setVisibility(tryVisibility);
-                        questionText.setText(stringRes);
-                        questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
-                        animatorFor(questionText)
-                                .slideYAndFade(0, - TRANSLATE_Y.get(), 0, 1)
-                                .start();
+                        stateSafeExecutor.execute(()->{
+                            tryText.setVisibility(tryVisibility);
+                            questionText.setText(stringRes);
+                            questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
+                            animatorFor(questionText)
+                                    .slideYAndFade(0, - TRANSLATE_Y.get(), 0, 1)
+                                    .start();
+                        });
                     }
                 })
                 .start();

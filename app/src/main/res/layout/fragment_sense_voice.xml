@@ -70,7 +70,6 @@
             android:id="@+id/fragment_sense_voice_question_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/x4"
             android:gravity="center"
             android:text="@string/sense_voice_question_temperature"
             android:textAppearance="@style/AppTheme.Text.Header.H4"
