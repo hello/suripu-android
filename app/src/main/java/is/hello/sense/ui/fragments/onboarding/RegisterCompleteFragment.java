@@ -32,7 +32,7 @@ public class RegisterCompleteFragment extends Fragment {
         return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_complete_title)
                 .setSubheadingText(R.string.onboarding_complete_message)
-                .setDiagramImage(R.drawable.onboarding_clip_pill)  //todo import the right image once okay
+                .setDiagramImage(R.drawable.onboarding_sense_complete)
                 .setPrimaryButtonText(R.string.action_done)
                 .setPrimaryOnClickListener(this::complete)
                 .setWantsSecondaryButton(false)
