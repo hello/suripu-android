@@ -36,6 +36,8 @@
     <string name="error_peripheral_connection_lost_title">Connection lost</string>
     <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
 
+    <string name="error_wifi_connection_title">No internet connection</string>
+    <string name="error_wifi_connection_message">Your mobile device is not connected to the internet. Check your internet connection and Wi-Fi settings, and try again.</string>
     <string name="error_wifi_connection_failed">Sense could not connect to the WiFi network. Make sure you‘re within range, double check your password, and try again.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the WiFi network you selected.</string>
     <string name="error_wifi_ssl_failure">Sense could not establish a secure connection with SSL to the server.</string>

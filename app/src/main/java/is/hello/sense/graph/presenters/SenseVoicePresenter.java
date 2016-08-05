@@ -1,11 +1,11 @@
 package is.hello.sense.graph.presenters;
 
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -28,7 +28,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     @Inject SenseVoicePresenter(){}
 
 
-    private final static long pollInterval = 10;
+    public final static long POLL_INTERVAL = 8; //todo test with real 1.5 senses to adjust
     public final PresenterSubject<VoiceResponse> voiceResponse = this.subject;
     private int failCount = 0;
 
@@ -59,17 +59,18 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     @Override
     protected Observable<VoiceResponse> provideUpdateObservable() {
-        return Observable.interval(pollInterval, TimeUnit.SECONDS, Schedulers.io())
-                         .flatMap( ignored -> apiService.getOnboardingVoiceResponse())
+        return apiService.getOnboardingVoiceResponse()
                          .map(SenseVoicePresenter::getMostRecent)
                          .doOnNext(this::updateFailCount);
     }
 
+    @MainThread
     public void reset(){
         failCount = 0;
         voiceResponse.forget();
     }
 
+    @MainThread
     public int getFailCount(){
         return failCount;
     }
@@ -88,8 +89,6 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     private void updateFailCount(@Nullable final VoiceResponse voiceResponse){
         if(!hasSuccessful(voiceResponse)){
             failCount++;
-        } else {
-            failCount = 0;
         }
         logEvent("failCount = " + failCount);
     }

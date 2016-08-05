@@ -3,90 +3,92 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:layout_weight="10"
               android:clipChildren="false">
 
     <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
-    <TextView
-        android:id="@+id/fragment_sense_voice_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_marginLeft="@dimen/x3"
-        android:layout_marginRight="@dimen/x3"
-        android:layout_marginBottom="@dimen/x2"
-        android:textAppearance="?attr/senseTextAppearanceHeading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:text="@string/title_sense_voice"/>
-
-    <TextView
-        android:id="@+id/fragment_sense_voice_subtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/x3"
-        android:layout_marginRight="@dimen/x3"
-        android:textAppearance="?attr/senseTextAppearanceSubheading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-        android:text="@string/info_sense_voice_intro"/>
-
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/sense_voice_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginEnd="@dimen/x3"
         android:clipChildren="false">
 
-        <ImageView
-            android:id="@+id/nightstand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/nightstand"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginTop="170dp"/>
-
-        <ImageView
-            android:id="@+id/animated_circles_view"
-            android:layout_width="@dimen/sense_voice_circles_x3"
-            android:layout_height="@dimen/sense_voice_circles_x3"
-            android:layout_gravity="center"/>
-
-        <ImageView
-            android:id="@+id/sense_voice_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/sense_voice_selector"
-            android:layout_gravity="center"
-            />
-
         <TextView
-            android:id="@+id/fragment_sense_voice_try_text"
+            android:id="@+id/fragment_sense_voice_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x3"
-            android:layout_marginRight="@dimen/x3"
             android:layout_marginTop="@dimen/x1"
             android:layout_marginBottom="@dimen/x2"
-            android:gravity="center"
-            android:text="@string/try_it_now"
+            android:layout_alignParentTop="true"
+            android:textAppearance="?attr/senseTextAppearanceHeading"
+            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+            android:text="@string/title_sense_voice"
+            android:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/fragment_sense_voice_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_sense_voice_title"
             android:textAppearance="?attr/senseTextAppearanceSubheading"
-            android:visibility="invisible"/>
+            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+            android:text="@string/info_sense_voice_intro"
+            android:visibility="visible"/>
+
+            <ImageView
+                android:id="@+id/nightstand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/nightstand"
+                android:adjustViewBounds="true"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/animated_circles_view"
+                android:layout_width="@dimen/sense_voice_circles_x3"
+                android:layout_height="@dimen/sense_voice_circles_x3"
+                android:layout_centerHorizontal="true"/>
+
+            <ImageView
+                android:id="@+id/sense_voice_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/sense_voice_selector"
+                android:layout_centerHorizontal="true"
+                android:layout_above="@id/nightstand"
+                android:layout_marginBottom="-20dp"
+                />
+
+
 
         <TextView
             android:id="@+id/fragment_sense_voice_question_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/x3"
-            android:layout_marginRight="@dimen/x3"
             android:gravity="center"
             android:text="@string/sense_voice_question_temperature"
             android:textAppearance="@style/AppTheme.Text.Header.H4"
+            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
             android:visibility="invisible"/>
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/fragment_sense_voice_try_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:layout_marginBottom="@dimen/x2"
+            android:layout_above="@id/fragment_sense_voice_question_text"
+            android:gravity="center"
+            android:text="@string/try_it_now"
+            android:textAppearance="?attr/senseTextAppearanceSubheading"
+            android:visibility="invisible"/>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    </RelativeLayout>
 
     <Button
         android:id="@+id/fragment_sense_voice_skip"

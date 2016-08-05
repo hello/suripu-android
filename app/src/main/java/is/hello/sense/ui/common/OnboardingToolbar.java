@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -174,6 +175,11 @@ public class OnboardingToolbar {
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
         toolbarView.removeViewAt(1);
         toolbarView.addView(view, layoutParams);
+        return this;
+    }
+
+    public OnboardingToolbar setHelpButtonIcon(@DrawableRes final int iconRes){
+        helpButton.setImageResource(iconRes);
         return this;
     }
 

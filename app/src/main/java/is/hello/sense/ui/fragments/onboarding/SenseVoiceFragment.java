@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +21,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import dagger.Lazy;
-import is.hello.go99.animators.OnAnimationCompleted;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.graph.presenters.SenseVoicePresenter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -35,6 +39,8 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.AnimatorSetHandler;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
@@ -59,10 +65,18 @@ public class SenseVoiceFragment extends InjectionFragment {
     private ImageView senseImageView;
     private ImageView senseCircleView;
     private View nightStandView;
+    private final Lazy<Integer> FIXED_MARGIN =
+            () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_fixed_margin);
     private final Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addPresenter(senseVoicePresenter);
+    }
 
     @Nullable
     @Override
@@ -83,6 +97,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         Views.setTimeOffsetOnClickListener(skipButton,this::onSkip);
         toolbar = OnboardingToolbar.of(this, view)
                                    .setOnHelpClickListener(ignored -> showVoiceTipDialog(true))
+                                   .setHelpButtonIcon(R.drawable.info_button_icon_small)
                                    .setWantsHelpButton(false)
                                    .setWantsBackButton(false);
 
@@ -108,12 +123,19 @@ public class SenseVoiceFragment extends InjectionFragment {
     public void onPause() {
         super.onPause();
         viewAnimator.onPause();
+        poll(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        viewAnimator.onResume();
+        if(senseCircleView.getDrawable() != null) {
+            viewAnimator.onResume();
+        }
+
+        if(retryButton.getVisibility() != View.VISIBLE){
+            poll(true);
+        }
     }
 
     @Override
@@ -135,25 +157,23 @@ public class SenseVoiceFragment extends InjectionFragment {
         showVoiceTipDialog(false);
     }
 
-    private void onRetry(final View view) {
-        final OnAnimationCompleted showQuestionTextAnimation =
-                isFinished -> {
-                    if(isFinished){
-                        animatorFor(questionText)
-                                .addOnAnimationWillStart( multiAnimator -> {
-                                    tryText.setTranslationY(-TRANSLATE_Y.get()*2);
-                                    questionText.setTranslationY(TRANSLATE_Y.get()/2);
-                                })
-                                .addOnAnimationCompleted( complete -> {
-                                    if(complete){
-                                        tryText.setVisibility(View.VISIBLE);
-                                    }
-                                })
-                                .translationY(-TRANSLATE_Y.get()/2)
-                                .fadeIn()
-                                .start();
-                    }
-                };
+    private void onRetry(final View view){
+        if(senseCircleView.getDrawable() == null) {
+            onContinue();
+            senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
+            senseCircleView.getDrawable().setAlpha(0);
+            questionText.setAlpha(0);
+        }
+        updateUI(false);
+        poll(true);
+        updateState(R.string.sense_voice_question_temperature,
+                    R.color.text_dark,
+                    View.VISIBLE,
+                    WAIT_STATE,
+                    AnimatorSetHandler.LOOP_ANIMATION);
+    }
+
+    private void onContinue() {
         animatorFor(nightStandView)
                 .alpha(0.4f)
                 .translationY(TRANSLATE_Y.get())
@@ -161,27 +181,19 @@ public class SenseVoiceFragment extends InjectionFragment {
 
         animatorFor(senseImageView)
                 .scale(1)
-                .translationY(TRANSLATE_Y.get()/4)
-                .addOnAnimationCompleted(showQuestionTextAnimation)
+                .translationY(TRANSLATE_Y.get()*0.60f)
+                .addOnAnimationCompleted(animator -> {
+                    if (animator) {
+                        stateSafeExecutor.execute(
+                                () -> {
+                                    senseCircleView.setY(
+                                            senseImageView.getY() - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2));
+                                    //todo setY overridden
+                                    questionText.setY(senseCircleView.getY() - questionText.getMeasuredHeight() - FIXED_MARGIN.get());
+                        });
+                    }
+                })
                 .start();
-
-        animatorFor(senseCircleView)
-                .fadeIn()
-                .translationY(TRANSLATE_Y.get()/4)
-                .start();
-
-        animatorFor(retryButton)
-                .translationY(TRANSLATE_Y.get())
-                .fadeOut(View.INVISIBLE)
-                .start();
-
-        animatorFor(skipButton)
-                .translationY(TRANSLATE_Y.get()*1.25f)
-                .fadeIn()
-                .start();
-
-        updateUI(false);
-        poll();
     }
 
     private void onSkip(final View view) {
@@ -200,13 +212,28 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void updateUI(final boolean onError){
+        final float buttonTranslateY = retryButton.getHeight();
         if(onError) {
+            animatorFor(skipButton)
+                    .slideYAndFade(0, -buttonTranslateY, 1, 1)
+                    .start();
+
+            animatorFor(retryButton)
+                    .slideYAndFade(0, -buttonTranslateY, 0, 1)
+                    .start();
+
             toolbar.setWantsHelpButton(false);
-            observableContainer.clearSubscriptions();
-            senseVoicePresenter.reset();
+            poll(false);
         } else {
-            senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
-            senseCircleView.getDrawable().setAlpha(0);
+            animatorFor(retryButton)
+                    .translationY(buttonTranslateY)
+                    .fadeOut(View.INVISIBLE)
+                    .start();
+
+            animatorFor(skipButton)
+                    .translationY(buttonTranslateY)
+                    .start();
+
             viewAnimator.resetAnimation(
                     createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
             title.setVisibility(View.INVISIBLE);
@@ -216,7 +243,20 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void presentError(final Throwable throwable) {
-        ErrorDialogFragment.presentError(getActivity(), throwable);
+        poll(false);
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+                .withTitle(R.string.error_wifi_connection_title)
+                .withMessage(StringRef.from(R.string.error_wifi_connection_message))
+                .build();
+
+        if(throwable instanceof ApiException){
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        }
+        updateState(R.string.error_sense_voice_problem,
+                    R.color.text_dark,
+                    View.GONE,
+                    FAIL_STATE,
+                    AnimatorSetHandler.LOOP_ANIMATION);
         updateUI(true);
     }
 
@@ -232,11 +272,19 @@ public class SenseVoiceFragment extends InjectionFragment {
         }
     }
 
-    private void poll(){
-        bindAndSubscribe(senseVoicePresenter.voiceResponse,
-                         this::handleVoiceResponse,
-                         this::presentError);
-        senseVoicePresenter.update();
+    private void poll(final boolean start){
+        Log.d(SenseVoiceFragment.class.getName(), "poll: " + start);
+        if(start) {
+            bindAndSubscribe(senseVoicePresenter.voiceResponse,
+                             this::handleVoiceResponse,
+                             this::presentError);
+            bindAndSubscribe(Observable.interval(SenseVoicePresenter.POLL_INTERVAL, TimeUnit.SECONDS, Schedulers.io()),
+                             ignored -> senseVoicePresenter.update(),
+                             this::presentError);
+        } else{
+            observableContainer.clearSubscriptions();
+            senseVoicePresenter.voiceResponse.forget();
+        }
     }
 
     private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
@@ -253,7 +301,9 @@ public class SenseVoiceFragment extends InjectionFragment {
                         View.GONE,
                         FAIL_STATE,
                         0);
-            showVoiceTipDialog(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD);
+            if(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
+                showVoiceTipDialog(true);
+            }
             //return to normal wait state
             questionText.postDelayed(stateSafeExecutor.bind(() ->
                 updateState(R.string.sense_voice_question_temperature,
@@ -270,13 +320,28 @@ public class SenseVoiceFragment extends InjectionFragment {
                              final int tryVisibility,
                              final int[] imageState,
                              final int repeatCount){
-        questionText.postDelayed(
-                stateSafeExecutor.bind(()-> {
-                    senseImageView.setImageState(imageState, false);
-                    tryText.setVisibility(tryVisibility);
-                    questionText.setText(stringRes);
-                    questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
-                }), LoadingDialogFragment.DURATION_DEFAULT);
+
+        animatorFor(questionText)
+                .withStartDelay(LoadingDialogFragment.DURATION_DEFAULT)
+                .slideYAndFade(0, TRANSLATE_Y.get(), questionText.getAlpha(), 0)
+                .addOnAnimationWillStart( willStart -> {
+                    stateSafeExecutor.execute(() -> {
+                        senseImageView.setImageState(imageState, false);
+                    });
+                })
+                .addOnAnimationCompleted( complete -> {
+                    if(complete){
+                        stateSafeExecutor.execute(()->{
+                            tryText.setVisibility(tryVisibility);
+                            questionText.setText(stringRes);
+                            questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
+                            animatorFor(questionText)
+                                    .slideYAndFade(0, - TRANSLATE_Y.get(), 0, 1)
+                                    .start();
+                        });
+                    }
+                })
+                .start();
 
         senseCircleView.setImageState(imageState, false);
         viewAnimator.setRepeatCount(repeatCount);

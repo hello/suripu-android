@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -103,9 +104,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
         Analytics.trackEvent(Analytics.SenseUpdate.EVENT_START, null);
         bindAndSubscribe(apiService.requestSenseUpdate(""),
-                         ignored -> {
-                             Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent.");
-                         },
+                         ignored -> Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent."),
                          e -> presentError(e, "Updating Sense"));
 
         bindAndSubscribe(Observable.interval(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS, Schedulers.io())
@@ -122,11 +121,7 @@ public class SenseUpdateFragment extends HardwareFragment {
 
         bindAndSubscribe(Observable.timer(REQUEST_STATUS_TIMEOUT_SECONDS, TimeUnit.SECONDS, Schedulers.io()),
                          ignored -> {
-                             Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update timeout. Retry to send new request.");
-                             observableContainer.clearSubscriptions();
-                             stateSafeExecutor.execute( () -> {
-                                 presentError(new TimeoutException(), "Sense Update");
-                             });
+                             stateSafeExecutor.execute( () -> presentError(new TimeoutException(), "Sense Update"));
                          },
                          Functions.LOG_ERROR);
 
@@ -140,6 +135,9 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     private void setProgressStatus(final DeviceOTAState.OtaState state) {
+        if(state.equals(DeviceOTAState.OtaState.REQUIRED) || state.equals(DeviceOTAState.OtaState.NOT_REQUIRED)){
+            return;
+        }
         this.progressStatus.post( () -> {
             this.progressStatus.setText(state.state);
         });
@@ -177,18 +175,25 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     public void showHelp(@NonNull final View sender) {
-        //todo replace with sense ota analytics
-        //Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE);
     }
 
     public void presentError(final Throwable e, @NonNull final String operation) {
+        observableContainer.clearSubscriptions();
         hideBlockingActivity(false, () -> {
             updateUI(true);
 
+            int titleRes = R.string.error_update_failed;
+            int messageRes = R.string.error_sense_update_failed_message;
+
+            if(e instanceof ApiException){
+                titleRes = R.string.error_wifi_connection_title;
+                messageRes = R.string.error_wifi_connection_message;
+            }
+
             final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withTitle(R.string.error_update_failed)
-                    .withMessage(StringRef.from(R.string.error_sense_update_failed_message))
+                    .withTitle(titleRes)
+                    .withMessage(StringRef.from(messageRes))
                     .withOperation(operation)
                     .withSupportLink()
                     .build();
