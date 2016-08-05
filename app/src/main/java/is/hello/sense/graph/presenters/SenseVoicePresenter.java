@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -31,7 +30,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     public final static long POLL_INTERVAL = 8; //todo test with real 1.5 senses to adjust
     public final PresenterSubject<VoiceResponse> voiceResponse = this.subject;
-    private final AtomicInteger failCount = new AtomicInteger(0);
+    private int failCount = 0;
 
     @Nullable
     public static VoiceResponse getMostRecent(@NonNull final ArrayList<VoiceResponse> voiceResponses){
@@ -67,13 +66,13 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     @MainThread
     public void reset(){
-        failCount.set(0);
+        failCount = 0;
         voiceResponse.forget();
     }
 
     @MainThread
     public int getFailCount(){
-        return failCount.get();
+        return failCount;
     }
 
     public void updateHasCompletedTutorial(final boolean hasCompleted){
@@ -89,7 +88,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
 
     private void updateFailCount(@Nullable final VoiceResponse voiceResponse){
         if(!hasSuccessful(voiceResponse)){
-            failCount.incrementAndGet();
+            failCount++;
         }
         logEvent("failCount = " + failCount);
     }
