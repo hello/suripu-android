@@ -12,9 +12,11 @@ import javax.inject.Inject;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.api.sessions.UserFeaturesManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.PresenterSubject;
 import is.hello.sense.notifications.NotificationRegistration;
@@ -34,6 +36,8 @@ public class AccountPresenter extends ValuePresenter<Account> {
     ApiSessionManager sessionManager;
     @Inject
     PreferencesPresenter preferences;
+    @Inject
+    UserFeaturesManager userFeaturesManager;
 
     private Boolean withPhoto;
 
@@ -156,6 +160,15 @@ public class AccountPresenter extends ValuePresenter<Account> {
         return apiService.updateAccountPreferences(changes);
     }
 
+    public Observable<UserFeatures> features() { return apiService.getUserFeatures(); }
+
+    public Observable<Void> pullAccountFeatures() {
+        return features().map( feats -> {
+            userFeaturesManager.setFeatures(feats);
+            return null;
+        });
+    }
+
     public Observable<Void> pullAccountPreferences() {
         preferences.logEvent("Pulling preferences from backend");
 
@@ -199,6 +212,7 @@ public class AccountPresenter extends ValuePresenter<Account> {
     //region Logging out
     public void logOut() {
         sessionManager.logOut();
+        userFeaturesManager.setFeatures(null);
         NotificationRegistration.resetAppVersion(context);
         Analytics.signOut();
     }

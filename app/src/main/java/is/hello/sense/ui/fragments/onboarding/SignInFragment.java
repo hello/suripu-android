@@ -204,8 +204,9 @@ public class SignInFragment extends InjectionFragment
 
             final Observable<Account> initializeLocalState =
                     Observable.combineLatest(accountPresenter.pullAccountPreferences(),
+                                             accountPresenter.pullAccountFeatures(),
                                              accountPresenter.latest(),
-                                             (ignored, account) -> account);
+                                             (ignored, ignored2, account) -> account);
 
             bindAndSubscribe(initializeLocalState,
                              account -> {
