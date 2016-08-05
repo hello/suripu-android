@@ -25,10 +25,11 @@ public class UserFeaturesManager {
         this.gson = gson;
     }
 
-    public void setFeatures(@Nullable final UserFeatures userFeatures) throws RuntimeException{
+    public void setFeatures(@Nullable final UserFeatures userFeatures){
         final SharedPreferences.Editor editor = preferences.edit();
         if(userFeatures == null){
             editor.remove(FEATURES_KEY);
+            Logger.info(UserFeaturesManager.class.getName(), "cleared user features");
             return;
         }
 
@@ -37,7 +38,7 @@ public class UserFeaturesManager {
             editor.putString(FEATURES_KEY, serializedFeatures)
                   .apply();
         } catch (final JsonSyntaxException e){
-            throw new RuntimeException(e);
+            Logger.error(UserFeaturesManager.class.getName(), "could not serialize user features", e);
         }
     }
 

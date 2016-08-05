@@ -76,6 +76,7 @@ import rx.functions.Action1;
         this.apiSessionManager = apiSessionManager;
         this.devicesPresenter = devicesPresenter;
         this.bluetoothStack = bluetoothStack;
+
         this.respondToError = e -> {
             if (BuruberiException.isInstabilityLikely(e)) {
                 clearPeripheral();
@@ -483,7 +484,6 @@ import rx.functions.Action1;
             this.peripheral = null;
         }
     }
-
 
     public static class NoConnectedPeripheralException extends BuruberiException {
         public NoConnectedPeripheralException() {

@@ -30,6 +30,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.graph.presenters.UserFeaturesPresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -101,6 +102,8 @@ public class OnboardingActivity extends InjectionActivity
     PreferencesPresenter preferences;
     @Inject
     BluetoothStack bluetoothStack;
+    @Inject
+    UserFeaturesPresenter userFeaturesPresenter;
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -278,12 +281,7 @@ public class OnboardingActivity extends InjectionActivity
             checkSenseUpdateStatus();
             showSmartAlarmInfo();
         } else if (fragment instanceof SenseUpdateFragment) {
-            if (responseCode == Activity.RESULT_CANCELED) {
-                showDone();
-            } else if (responseCode == Activity.RESULT_OK) {
-                checkUserFeatures();
-                showSenseVoice();
-            }
+            checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
             showDone();
         }
@@ -551,7 +549,7 @@ public class OnboardingActivity extends InjectionActivity
         if(senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name())){
             showSenseUpdateIntro();
         } else{
-            showDone();
+            checkHasVoiceFeature();
         }
     }
 
@@ -563,13 +561,12 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(SenseUpdateFragment.newInstance(), null, false);
     }
 
-    private void checkUserFeatures() {
-        subscribe(apiService.getUserFeatures(),
-                  features -> {
-                      Log.d(TAG, "checkUserFeatures: " + features);
-                        //preferences.edit().putString(PreferencesPresenter.USER_FEATURES, features.toString());
-                  },
-                  Functions.LOG_ERROR);
+    private void checkHasVoiceFeature() {
+        if(userFeaturesPresenter.hasVoice()){
+            showSenseVoice();
+        } else {
+            showDone();
+        }
     }
 
     private void showSenseVoice() {

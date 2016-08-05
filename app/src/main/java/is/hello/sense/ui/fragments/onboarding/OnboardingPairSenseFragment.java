@@ -182,7 +182,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
         bindAndSubscribe(hardwarePresenter.pushData(),
-                         ignored -> finishedLinking(),
+                         ignored -> getDeviceFeatures(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
                              getDeviceFeatures();
@@ -192,11 +192,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
 
-        bindAndSubscribe(apiService.getUserFeatures(),
-                         ignored -> {
-                             //todo save to preferences
-                             finishedLinking();
-                         },
+        bindAndSubscribe(userFeaturesPresenter.storeFeaturesInPrefs(),
+                         ignored -> finishedLinking(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
                              finishedLinking();
