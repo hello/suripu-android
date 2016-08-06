@@ -392,9 +392,20 @@ public class ConnectToWiFiFragment extends HardwareFragment
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(hardwarePresenter.pushData(),
-                         ignored -> finished(),
+                         ignored -> getDeviceFeatures(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
+                             getDeviceFeatures();
+                         });
+    }
+
+    private void getDeviceFeatures() {
+        showBlockingActivity(R.string.title_pushing_data);
+
+        bindAndSubscribe(userFeaturesPresenter.storeFeaturesInPrefs(),
+                         ignored -> finished(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
                              finished();
                          });
     }

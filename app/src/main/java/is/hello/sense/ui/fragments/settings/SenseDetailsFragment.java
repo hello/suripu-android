@@ -45,6 +45,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.DevicesPresenter;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.UserFeaturesPresenter;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -73,10 +74,17 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private static final int OPTION_ID_REPLACE_SENSE = 0;
     private static final int OPTION_ID_FACTORY_RESET = 1;
 
-    @Inject DevicesPresenter devicesPresenter;
-    @Inject HardwarePresenter hardwarePresenter;
-    @Inject AccountPresenter accountPresenter;
-    @Inject BluetoothStack bluetoothStack;
+    @Inject
+    DevicesPresenter devicesPresenter;
+    @Inject
+    HardwarePresenter hardwarePresenter;
+    @Inject
+    AccountPresenter accountPresenter;
+    @Inject
+    BluetoothStack bluetoothStack;
+    @Inject
+    UserFeaturesPresenter userFeaturesPresenter;
+
     private TextView pairingMode;
     private TextView changeWiFi;
 
@@ -588,6 +596,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                  powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                                  hardwarePresenter.clearPeripheral();
+                                 userFeaturesPresenter.reset();
                                  finishWithResult(RESULT_REPLACED_DEVICE, null);
 
                              },
@@ -614,6 +623,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                              ignored -> {
                                  Analytics.setSenseId("unpaired");
                                  hardwarePresenter.clearPeripheral();
+                                 userFeaturesPresenter.reset();
                                  finishDeviceReplaced();
                              },
                              this::presentError);

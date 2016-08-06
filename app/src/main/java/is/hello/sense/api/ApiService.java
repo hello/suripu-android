@@ -22,6 +22,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
+import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
@@ -316,4 +317,9 @@ public interface ApiService {
     Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
 
     //endregion
+
+    //region
+
+    @GET("/v2/features")
+    Observable<UserFeatures> getUserFeatures();
 }

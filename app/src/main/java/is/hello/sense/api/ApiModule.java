@@ -39,6 +39,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.PersistentApiSessionManager;
+import is.hello.sense.api.sessions.UserFeaturesManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -99,6 +100,12 @@ public class ApiModule {
     @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context,
                                                                     @NonNull Gson gson) {
         return new PersistentApiSessionManager(context, gson);
+    }
+
+    @Singleton @Provides
+    UserFeaturesManager provideUserFeaturesManager(@NonNull @ApiAppContext final Context context,
+                                                   @NonNull final Gson gson){
+        return new UserFeaturesManager(context, gson);
     }
 
     @Singleton @Provides MarkupProcessor provideMarkupProcessor() {

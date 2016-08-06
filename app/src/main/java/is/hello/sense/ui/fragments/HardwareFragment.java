@@ -13,6 +13,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.graph.presenters.UserFeaturesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -33,6 +34,8 @@ public abstract class HardwareFragment extends InjectionFragment {
     public
     @Inject
     HardwarePresenter hardwarePresenter;
+    @Inject
+    public UserFeaturesPresenter userFeaturesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
 
@@ -220,6 +223,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                                                                                                                     R.string.message_power_cycle_sense_factory_reset);
                                          powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
+                                         userFeaturesPresenter.reset();
                                          getOnboardingActivity().showSetupSense();
                                      });
                                  },
