@@ -39,54 +39,63 @@
             android:text="@string/info_sense_voice_intro"
             android:visibility="visible"/>
 
-            <ImageView
-                android:id="@+id/nightstand"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/nightstand"
-                android:adjustViewBounds="true"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"/>
+        <ImageView
+            android:id="@+id/nightstand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/nightstand"
+            android:adjustViewBounds="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"/>
 
-            <ImageView
-                android:id="@+id/animated_circles_view"
-                android:layout_width="@dimen/sense_voice_circles_x3"
-                android:layout_height="@dimen/sense_voice_circles_x3"
-                android:layout_centerHorizontal="true"/>
+        <ImageView
+            android:id="@+id/animated_circles_view"
+            android:layout_width="@dimen/sense_voice_circles_x3"
+            android:layout_height="@dimen/sense_voice_circles_x3"
+            android:layout_centerHorizontal="true"/>
 
-            <ImageView
-                android:id="@+id/sense_voice_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/sense_voice_selector"
-                android:layout_centerHorizontal="true"
-                android:layout_above="@id/nightstand"
-                android:layout_marginBottom="-20dp"
-                />
+        <ImageView
+            android:id="@+id/sense_voice_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/sense_voice_selector"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/nightstand"
+            android:layout_marginBottom="-20dp"
+            />
 
-
-
-        <TextView
-            android:id="@+id/fragment_sense_voice_question_text"
+        <LinearLayout
+            android:id="@+id/fragment_sense_voice_question_container"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/sense_voice_question_temperature"
-            android:textAppearance="@style/AppTheme.Text.Header.H4"
-            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-            android:visibility="invisible"/>
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/animated_circles_view"
+            android:layout_marginBottom="@dimen/x4">
 
-        <TextView
-            android:id="@+id/fragment_sense_voice_try_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x1"
-            android:layout_marginBottom="@dimen/x2"
-            android:layout_above="@id/fragment_sense_voice_question_text"
-            android:gravity="center"
-            android:text="@string/try_it_now"
-            android:textAppearance="?attr/senseTextAppearanceSubheading"
-            android:visibility="invisible"/>
+            <TextView
+                android:id="@+id/fragment_sense_voice_try_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/x1"
+                android:layout_marginBottom="@dimen/x2"
+                android:gravity="center"
+                android:text="@string/try_it_now"
+                android:textAppearance="?attr/senseTextAppearanceSubheading"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/fragment_sense_voice_question_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/sense_voice_question_temperature"
+                android:textAppearance="@style/AppTheme.Text.Header.H4"
+                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+                android:visibility="visible"/>
+
+
+        </LinearLayout>
 
     </RelativeLayout>
 

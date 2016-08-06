@@ -92,6 +92,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         senseCircleView = (ImageView) animatedViewGroup.findViewById(R.id.animated_circles_view);
         senseImageView = (ImageView) animatedViewGroup.findViewById(R.id.sense_voice_view);
         nightStandView = animatedViewGroup.findViewById(R.id.nightstand);
+        final ViewGroup questionTextGroup = (ViewGroup) animatedViewGroup.findViewById(R.id.fragment_sense_voice_question_container);
 
         Views.setTimeOffsetOnClickListener(retryButton,this::onRetry);
         Views.setTimeOffsetOnClickListener(skipButton,this::onSkip);
@@ -101,12 +102,25 @@ public class SenseVoiceFragment extends InjectionFragment {
                                    .setWantsHelpButton(false)
                                    .setWantsBackButton(false);
 
+        requestCreateViewLayoutChanges(questionTextGroup);
+
+        return view;
+    }
+
+    private void requestCreateViewLayoutChanges(final ViewGroup questionTextGroup) {
         senseImageView.setScaleX(0.6f);
         senseImageView.setScaleY(0.6f);
 
-        retryButton.setText(R.string.action_continue);
+        senseCircleView.requestLayout();
+        senseCircleView.post(stateSafeExecutor.bind(() -> {
+            senseCircleView.setY(
+                    senseImageView.getY() + TRANSLATE_Y.get()*0.6f - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2)
+                                );
+            questionTextGroup.requestLayout();
+            //questionText.setY( senseCircleView.getY() - questionText.getMeasuredHeight() - FIXED_MARGIN.get());
+        }));
 
-        return view;
+        retryButton.setText(R.string.action_continue);
     }
 
     @Override
@@ -182,17 +196,6 @@ public class SenseVoiceFragment extends InjectionFragment {
         animatorFor(senseImageView)
                 .scale(1)
                 .translationY(TRANSLATE_Y.get()*0.60f)
-                .addOnAnimationCompleted(animator -> {
-                    if (animator) {
-                        stateSafeExecutor.execute(
-                                () -> {
-                                    senseCircleView.setY(
-                                            senseImageView.getY() - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2));
-                                    //todo setY overridden
-                                    questionText.setY(senseCircleView.getY() - questionText.getMeasuredHeight() - FIXED_MARGIN.get());
-                        });
-                    }
-                })
                 .start();
     }
 
