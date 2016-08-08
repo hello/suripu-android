@@ -22,7 +22,7 @@ import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.Anime.cancelAll;
 
-public class RegisterCompleteFragment extends Fragment {
+public class OnboardingCompleteFragment extends Fragment {
 
     private final StepHandler stepHandler = new StepHandler(this);
 
@@ -56,9 +56,7 @@ public class RegisterCompleteFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         stepHandler.cancelPending();
-
         cancelAll(message);
     }
 
@@ -66,7 +64,6 @@ public class RegisterCompleteFragment extends Fragment {
         message.setVisibility(View.VISIBLE);
         message.setAlpha(1f);
         stepHandler.postShowComplete();
-
     }
 
     public void complete() {
@@ -74,13 +71,13 @@ public class RegisterCompleteFragment extends Fragment {
     }
 
 
-    static class StepHandler extends Handler {
+    private static class StepHandler extends Handler {
         static final int SHOW_COMPLETE_MESSAGE = 3;
         static final int DELAY = 2 * 1000;
 
-        private final WeakReference<RegisterCompleteFragment> fragment;
+        private final WeakReference<OnboardingCompleteFragment> fragment;
 
-        public StepHandler(@NonNull final RegisterCompleteFragment fragment) {
+        public StepHandler(@NonNull final OnboardingCompleteFragment fragment) {
             super(Looper.getMainLooper());
             this.fragment = new WeakReference<>(fragment);
         }
@@ -98,7 +95,7 @@ public class RegisterCompleteFragment extends Fragment {
             switch (msg.what) {
 
                 case SHOW_COMPLETE_MESSAGE: {
-                    final RegisterCompleteFragment fragment = this.fragment.get();
+                    final OnboardingCompleteFragment fragment = this.fragment.get();
                     if (fragment != null) {
                         fragment.complete();
                     }

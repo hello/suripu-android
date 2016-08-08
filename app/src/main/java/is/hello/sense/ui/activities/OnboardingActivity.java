@@ -44,6 +44,7 @@ import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -55,11 +56,11 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
+import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -228,6 +229,7 @@ public class OnboardingActivity extends InjectionActivity
 
         if (requestCode == EDIT_ALARM_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+                passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
                 checkForSenseUpdate();
             } else {
                 showSmartAlarmInfo();
@@ -276,14 +278,17 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
-        } else if(fragment instanceof OnboardingRoomCheckFragment ||
+        } else if (fragment instanceof OnboardingRoomCheckFragment ||
                 fragment instanceof OnboardingSenseColorsFragment) {
             checkSenseUpdateStatus();
             showSmartAlarmInfo();
+        } else if (fragment instanceof OnboardingSmartAlarmFragment){
+            passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
+            checkForSenseUpdate();
         } else if (fragment instanceof SenseUpdateFragment) {
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
-            showDone();
+            showVoiceDone();
         }
     }
 
@@ -575,7 +580,12 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showDone() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
-        final Fragment fragment = new RegisterCompleteFragment();
+        final Fragment fragment = new OnboardingCompleteFragment();
+        pushFragment(fragment, null, false);
+    }
+
+    public void showVoiceDone() {
+        final Fragment fragment = new VoiceCompleteFragment();
         pushFragment(fragment, null, false);
     }
 
