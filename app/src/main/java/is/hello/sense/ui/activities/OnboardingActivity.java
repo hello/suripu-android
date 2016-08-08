@@ -226,6 +226,7 @@ public class OnboardingActivity extends InjectionActivity
 
         if (requestCode == EDIT_ALARM_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+                passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
                 checkForSenseUpdate();
             } else {
                 showSmartAlarmInfo();
@@ -274,10 +275,13 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
-        } else if(fragment instanceof OnboardingRoomCheckFragment ||
+        } else if (fragment instanceof OnboardingRoomCheckFragment ||
                 fragment instanceof OnboardingSenseColorsFragment) {
             checkSenseUpdateStatus();
             showSmartAlarmInfo();
+        } else if (fragment instanceof OnboardingSmartAlarmFragment){
+            passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
+            checkForSenseUpdate();
         } else if (fragment instanceof SenseUpdateFragment) {
             if (responseCode == Activity.RESULT_CANCELED) {
                 showDone();
@@ -574,7 +578,6 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showVoiceDone() {
-        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
         final Fragment fragment = new VoiceCompleteFragment();
         pushFragment(fragment, null, false);
     }

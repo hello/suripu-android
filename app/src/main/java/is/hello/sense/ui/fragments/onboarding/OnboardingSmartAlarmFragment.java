@@ -12,6 +12,8 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.Analytics;
 
+import static android.app.Activity.RESULT_OK;
+
 public class OnboardingSmartAlarmFragment extends SenseFragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
         if(withAlarm){
             ((OnboardingActivity) getActivity()).showSetAlarmDetail();
         } else{
-            ((OnboardingActivity) getActivity()).checkForSenseUpdate();
+            getFragmentNavigation().flowFinished(this, RESULT_OK, null);
         }
     }
 }
