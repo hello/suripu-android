@@ -43,6 +43,7 @@ import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -284,7 +285,7 @@ public class OnboardingActivity extends InjectionActivity
                 showSenseVoice(); //todo api check for voice feature
             }
         } else if (fragment instanceof SenseVoiceFragment) {
-            showDone();
+            showVoiceDone();
         }
     }
 
@@ -567,6 +568,12 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showDone() {
+        passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
+        final Fragment fragment = new OnboardingCompleteFragment();
+        pushFragment(fragment, null, false);
+    }
+
+    public void showVoiceDone() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
         final Fragment fragment = new RegisterCompleteFragment();
         pushFragment(fragment, null, false);
