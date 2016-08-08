@@ -55,11 +55,11 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
-import is.hello.sense.ui.fragments.onboarding.RegisterCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
+import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -575,7 +575,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showVoiceDone() {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
-        final Fragment fragment = new RegisterCompleteFragment();
+        final Fragment fragment = new VoiceCompleteFragment();
         pushFragment(fragment, null, false);
     }
 

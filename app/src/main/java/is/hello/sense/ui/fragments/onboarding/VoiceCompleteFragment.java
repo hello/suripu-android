@@ -13,7 +13,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.util.Analytics;
 
-public class RegisterCompleteFragment extends Fragment {
+public class VoiceCompleteFragment extends Fragment {
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -38,16 +38,6 @@ public class RegisterCompleteFragment extends Fragment {
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
                 .setToolbarWantsHelpButton(false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     public void complete(final View ignored) {
