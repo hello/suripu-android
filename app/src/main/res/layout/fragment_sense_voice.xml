@@ -92,7 +92,7 @@
                 android:text="@string/sense_voice_question_temperature"
                 android:textAppearance="@style/AppTheme.Text.Header.H4"
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
 
 
         </LinearLayout>

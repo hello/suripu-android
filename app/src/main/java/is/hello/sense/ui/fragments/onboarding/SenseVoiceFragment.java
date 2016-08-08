@@ -42,6 +42,7 @@ import is.hello.sense.util.AnimatorSetHandler;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseVoiceFragment extends InjectionFragment {
@@ -111,13 +112,14 @@ public class SenseVoiceFragment extends InjectionFragment {
         senseImageView.setScaleX(0.6f);
         senseImageView.setScaleY(0.6f);
 
-        senseCircleView.requestLayout();
-        senseCircleView.post(stateSafeExecutor.bind(() -> {
+        senseCircleView.post(stateSafeExecutor.bind( () -> {
+            //move circle view to center after sense is translated
             senseCircleView.setY(
                     senseImageView.getY() + TRANSLATE_Y.get()*0.6f - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2)
                                 );
-            questionTextGroup.requestLayout();
-            //questionText.setY( senseCircleView.getY() - questionText.getMeasuredHeight() - FIXED_MARGIN.get());
+            senseCircleView.invalidate();
+            questionTextGroup.setY( senseCircleView.getY() - questionTextGroup.getMeasuredHeight() - FIXED_MARGIN.get());
+            questionTextGroup.invalidate();
         }));
 
         retryButton.setText(R.string.action_continue);
@@ -138,6 +140,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         super.onPause();
         viewAnimator.onPause();
         poll(false);
+        cancelAll(questionText);
     }
 
     @Override
@@ -184,7 +187,8 @@ public class SenseVoiceFragment extends InjectionFragment {
                     R.color.text_dark,
                     View.VISIBLE,
                     WAIT_STATE,
-                    AnimatorSetHandler.LOOP_ANIMATION);
+                    AnimatorSetHandler.LOOP_ANIMATION,
+                    true);
     }
 
     private void onContinue() {
@@ -259,7 +263,8 @@ public class SenseVoiceFragment extends InjectionFragment {
                     R.color.text_dark,
                     View.GONE,
                     FAIL_STATE,
-                    AnimatorSetHandler.LOOP_ANIMATION);
+                    AnimatorSetHandler.LOOP_ANIMATION,
+                    true);
         updateUI(true);
     }
 
@@ -296,14 +301,16 @@ public class SenseVoiceFragment extends InjectionFragment {
                         R.color.primary,
                         View.GONE,
                         OK_STATE,
-                        0);
+                        0,
+                        false);
             onFinish(true);
         } else{
             updateState(R.string.error_sense_voice_not_detected,
                         R.color.text_dark,
                         View.GONE,
                         FAIL_STATE,
-                        0);
+                        0,
+                        true);
             if(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
                 showVoiceTipDialog(true);
             }
@@ -313,7 +320,8 @@ public class SenseVoiceFragment extends InjectionFragment {
                             R.color.text_dark,
                             View.VISIBLE,
                             WAIT_STATE,
-                            AnimatorSetHandler.LOOP_ANIMATION)
+                            AnimatorSetHandler.LOOP_ANIMATION,
+                            true)
             ), LoadingDialogFragment.DURATION_DEFAULT * 3);
         }
     }
@@ -322,29 +330,42 @@ public class SenseVoiceFragment extends InjectionFragment {
                              @ColorRes final int textColorRes,
                              final int tryVisibility,
                              final int[] imageState,
-                             final int repeatCount){
+                             final int repeatCount,
+                             final boolean animateText){
 
-        animatorFor(questionText)
-                .withStartDelay(LoadingDialogFragment.DURATION_DEFAULT)
-                .slideYAndFade(0, TRANSLATE_Y.get(), questionText.getAlpha(), 0)
-                .addOnAnimationWillStart( willStart -> {
-                    stateSafeExecutor.execute(() -> {
-                        senseImageView.setImageState(imageState, false);
-                    });
-                })
-                .addOnAnimationCompleted( complete -> {
-                    if(complete){
-                        stateSafeExecutor.execute(()->{
-                            tryText.setVisibility(tryVisibility);
-                            questionText.setText(stringRes);
-                            questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
-                            animatorFor(questionText)
-                                    .slideYAndFade(0, - TRANSLATE_Y.get(), 0, 1)
-                                    .start();
+        if (animateText){
+
+            animatorFor(questionText)
+                    .withStartDelay(LoadingDialogFragment.DURATION_DEFAULT)
+                    .translationY(TRANSLATE_Y.get())
+                    .fadeOut(View.INVISIBLE)
+                    .addOnAnimationWillStart(willStart -> {
+                        stateSafeExecutor.execute(() -> {
+                            senseImageView.setImageState(imageState, false);
                         });
-                    }
-                })
-                .start();
+                    })
+                    .addOnAnimationCompleted(complete -> {
+                        if (complete) {
+                            stateSafeExecutor.execute(() -> {
+                                tryText.setVisibility(tryVisibility);
+                                questionText.setText(stringRes);
+                                questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
+                                animatorFor(questionText)
+                                        .translationY(0)
+                                        .fadeIn()
+                                        .start();
+                            });
+                        }
+                    }).start();
+
+        } else {
+            senseImageView.postDelayed(stateSafeExecutor.bind( () -> {
+                senseImageView.setImageState(imageState, false);
+                tryText.setVisibility(tryVisibility);
+                questionText.setText(stringRes);
+                questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
+            }), LoadingDialogFragment.DURATION_DEFAULT);
+        }
 
         senseCircleView.setImageState(imageState, false);
         viewAnimator.setRepeatCount(repeatCount);
