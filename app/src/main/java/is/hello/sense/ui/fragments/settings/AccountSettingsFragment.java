@@ -550,7 +550,7 @@ public class AccountSettingsFragment extends InjectionFragment
         showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();
-        profileImageManager.trimCache();
+        profileImageManager.clear();
         profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
     }
 
@@ -559,7 +559,7 @@ public class AccountSettingsFragment extends InjectionFragment
         currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
         bindAccount(currentAccount);
         onImageCompressedError(e, R.string.error_account_upload_photo_title, R.string.error_account_upload_photo_message);
-        profileImageManager.trimCache();
+        profileImageManager.clear();
     }
 
     private void removePhotoSuccess(final VoidResponse response) {

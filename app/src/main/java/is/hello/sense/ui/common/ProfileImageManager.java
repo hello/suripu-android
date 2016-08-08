@@ -30,6 +30,7 @@ import retrofit.mime.TypedFile;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.CAMERA;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.FACEBOOK;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.GALLERY;
@@ -47,7 +48,8 @@ public class ProfileImageManager {
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
     private static final String PREFS = "profile_image_manager_prefs";
-    private static final String PHOTO_URI = "PHOTO_URI";
+    private static final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
+    private static final String PHOTO_SOURCE_KEY = "PHOTO_SOURCE_KEY";
 
     private final int minOptions;
     private final Fragment fragment;
@@ -56,16 +58,15 @@ public class ProfileImageManager {
     private final ExternalStoragePermission permission;
     private final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
     private final SenseBottomSheet.Option deleteOption;
-    private final SharedPreferences sharedPreferences;
+    private final SharedPreferences preferences;
 
     private boolean showOptions;
-    private Analytics.ProfilePhoto.Source source = null;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
                                 @NonNull final ImageUtil imageUtil,
                                 @NonNull final FilePathUtil filePathUtil) {
         final Context context = fragment.getActivity();
-        this.sharedPreferences = context.getSharedPreferences(PREFS, 0);
+        this.preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         this.fragment = fragment;
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
@@ -104,16 +105,16 @@ public class ProfileImageManager {
         if (!showOptions) {
             return;
         }
-        final BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
-        advancedOptions.setTargetFragment(fragment, REQUEST_CODE_OPTIONS);
-        advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
+        final BottomSheetDialogFragment options = BottomSheetDialogFragment.newInstance(this.options);
+        options.setTargetFragment(fragment, REQUEST_CODE_OPTIONS);
+        options.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
     public void hidePictureOptions(){
-        final BottomSheetDialogFragment bottomSheet = (BottomSheetDialogFragment) fragment.getFragmentManager()
+        final BottomSheetDialogFragment options = (BottomSheetDialogFragment) fragment.getFragmentManager()
                                                     .findFragmentByTag(BottomSheetDialogFragment.TAG);
-        if(bottomSheet != null){
-            bottomSheet.dismissSafely();
+        if(options != null){
+            options.dismissSafely();
         }
     }
 
@@ -130,7 +131,7 @@ public class ProfileImageManager {
     }
 
     /**
-     * @return true if requestCode matched and resultCode.
+     * @return true if requestCode matched.
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
         if (resultCode != Activity.RESULT_OK) {
@@ -147,18 +148,17 @@ public class ProfileImageManager {
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
         } else if (requestCode == REQUEST_CODE_CAMERA) {
-            final String photoUriString = sharedPreferences.getString(PHOTO_URI, null);
-            if (photoUriString == null) {
+            final Uri photoUri = getUri();
+            if (photoUri.equals(Uri.EMPTY)) {
                 setShowOptions(true);
                 //Todo display error that the image uri was lost somehow
                 //getListener().onImageUriFetchError(new Throwable(), R.string.error_account_fetch_image_uri_message, R.string.error_account_fetch_image_uri_title );
                 return true;
             }
-            source = CAMERA; // incase the user took a few days to return.
-            final Uri takePhotoUri = Uri.parse(photoUriString);
-            getListener().onFromCamera(takePhotoUri);
+            saveSource(CAMERA); // in case the user took a few days to return.
+            getListener().onFromCamera(photoUri);
         } else if (requestCode == REQUEST_CODE_GALLERY) {
-            source = GALLERY; // doesn't hurt to be safe
+            saveSource(GALLERY);
             final Uri imageUri = data.getData();
             getListener().onFromGallery(imageUri);
         } else {
@@ -173,7 +173,7 @@ public class ProfileImageManager {
 
     private Observable<TypedFile> compressImageObservable(@Nullable final Uri imageUri) {
         if (imageUri == null || imageUri.equals(Uri.EMPTY)) {
-            return Observable.create((subscriber) -> subscriber.onError(new Throwable("No valid filePath given")));
+            return Observable.error(new Throwable("No valid filePath given"));
         }
 
         final String localPath = filePathUtil.getLocalPath(imageUri);
@@ -187,13 +187,19 @@ public class ProfileImageManager {
                         .observeOn(Rx.mainThreadScheduler());
     }
 
-    public void trimCache() {
+    /**
+     * Trim cache and preferences
+     */
+    public void clear() {
         imageUtil.trimCache();
+        preferences.edit().clear().apply();
     }
 
     //region permission checks
 
-    public void onRequestPermissionResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionResult(final int requestCode,
+                                          @NonNull final String[] permissions,
+                                          @NonNull final int[] grantResults) {
         if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             handleGalleryOption();
         } else {
@@ -226,34 +232,57 @@ public class ProfileImageManager {
     }
 
     private void handleFacebookOption() {
-        source = FACEBOOK;
+        saveSource(FACEBOOK);
         getListener().onImportFromFacebook();
     }
 
     private void handleCameraOption() {
         final File imageFile = imageUtil.createFile(false);
         if (imageFile != null) {
-            source = CAMERA;
+            saveSource(CAMERA);
             final Uri takePhotoUri = Uri.fromFile(imageFile);
-            sharedPreferences.edit().putString(PHOTO_URI, takePhotoUri.toString()).apply();
-            Fetch.imageFromCamera().fetch(fragment, takePhotoUri);
+            saveUri(takePhotoUri);
+            Fetch.imageFromCamera().to(fragment, takePhotoUri);
         }
     }
 
     private void handleGalleryOption() {
         if (permission.isGranted()) {
-            source = GALLERY;
-            Fetch.imageFromGallery().fetch(fragment);
+            saveSource(GALLERY);
+            Fetch.imageFromGallery().to(fragment);
         } else {
             permission.requestPermission();
         }
     }
 
     private void handleRemoveOption() {
+        clear();
         getListener().onRemove();
     }
 
     //endregion
+
+    private void saveUri(@NonNull final Uri uri){
+        preferences.edit()
+                   .putString(PHOTO_URI_KEY, uri.toString())
+                   .apply();
+    }
+
+    @NonNull private Uri getUri() {
+        final String photoUriString = preferences.getString(PHOTO_URI_KEY, "");
+        return photoUriString.isEmpty() ? Uri.EMPTY : Uri.parse(photoUriString);
+    }
+
+    public void saveSource(@NonNull final Source source){
+        preferences.edit()
+                   .putString(PHOTO_SOURCE_KEY, source.name())
+                   .apply();
+    }
+
+    @NonNull private Source getSource(){
+        final String value = preferences.getString(PHOTO_SOURCE_KEY, "");
+        return Source.fromString(value);
+    }
 
     public void compressImage(@Nullable final Uri imageUri) {
         compressImageObservable(imageUri)
@@ -262,7 +291,7 @@ public class ProfileImageManager {
     }
 
     private void compressImageSuccess(@NonNull final TypedFile compressedFile) {
-        getListener().onImageCompressedSuccess(compressedFile, source);
+        getListener().onImageCompressedSuccess(compressedFile, getSource());
 
     }
 

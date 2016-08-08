@@ -13,18 +13,18 @@ public abstract class Fetch {
 
     protected final int requestCode;
 
-    protected Fetch(@NonNull String action) {
+    protected Fetch(@NonNull final String action) {
         this(action, 0);
     }
 
-    protected Fetch(@NonNull String action, int requestCode) {
+    protected Fetch(@NonNull final String action, final int requestCode) {
         this.intent = new Intent(action);
         this.requestCode = requestCode;
     }
 
-    public abstract void fetch(@NonNull Activity to);
+    public abstract void to(@NonNull Activity to);
 
-    public abstract void fetch(@NonNull Fragment to);
+    public abstract void to(@NonNull Fragment to);
 
     public int getRequestCode() {
         return requestCode;
@@ -55,22 +55,22 @@ public abstract class Fetch {
         public static final int REQUEST_CODE_GALLERY = 0x12;
         public static final String type = "image/*";
 
-        protected Image(@NonNull String action, int requestCode) {
+        protected Image(@NonNull final String action, final int requestCode) {
             super(action, requestCode);
         }
 
-        public void fetch(@NonNull Fragment to, @NonNull Uri imageUri) {
+        public void to(@NonNull final Fragment to, @NonNull final Uri imageUri) {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            fetch(to);
+            to(to);
         }
 
         @Override
-        public void fetch(@NonNull Activity to) {
+        public void to(@NonNull final Activity to) {
             to.startActivityForResult(intent, requestCode);
         }
 
         @Override
-        public void fetch(@NonNull Fragment to) {
+        public void to(@NonNull final Fragment to) {
             to.startActivityForResult(intent, requestCode);
         }
     }
