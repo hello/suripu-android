@@ -31,7 +31,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SenseUpdateFragment extends HardwareFragment {
+public class SenseOTAFragment extends HardwareFragment {
 
     @Inject
     ApiService apiService;
@@ -46,8 +46,8 @@ public class SenseUpdateFragment extends HardwareFragment {
     private TextView progressStatus;
     private OnboardingToolbar toolbar;
 
-    public static SenseUpdateFragment newInstance() {
-        return new SenseUpdateFragment();
+    public static SenseOTAFragment newInstance() {
+        return new SenseOTAFragment();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
         Analytics.trackEvent(Analytics.SenseUpdate.EVENT_START, null);
         bindAndSubscribe(apiService.requestSenseUpdate(""),
-                         ignored -> Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent."),
+                         ignored -> Logger.info(SenseOTAFragment.class.getSimpleName(), "Sense update request sent."),
                          e -> presentError(e, "Requesting Sense Update"));
 
         bindAndSubscribe(apiService.getSenseUpdateStatus().repeatWhen(
@@ -113,7 +113,7 @@ public class SenseUpdateFragment extends HardwareFragment {
              sendAnalyticsStatusUpdate(response.state);
              setProgressStatus(response.state);
              if(response.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
-                 Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense updated.");
+                 Logger.info(SenseOTAFragment.class.getSimpleName(), "Sense updated.");
                  done();
              }
         },
@@ -182,7 +182,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         hideBlockingActivity(false, () -> {
             updateUI(true);
 
-            int titleRes = R.string.error_update_failed;
+            final int titleRes = R.string.error_update_failed;
             int messageRes = R.string.error_sense_update_failed_message;
 
             if(ApiException.isNetworkError(e)){

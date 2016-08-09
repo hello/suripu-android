@@ -12,12 +12,12 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
-public class SenseUpdateIntroFragment extends SenseFragment {
+public class SenseOTAIntroFragment extends SenseFragment {
 
     private OnboardingSimpleStepView view;
 
-    public static SenseUpdateIntroFragment newInstance() {
-        return new SenseUpdateIntroFragment();
+    public static SenseOTAIntroFragment newInstance() {
+        return new SenseOTAIntroFragment();
     }
 
     @Override
