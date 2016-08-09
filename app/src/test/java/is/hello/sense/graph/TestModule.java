@@ -35,6 +35,8 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
+import is.hello.sense.graph.presenters.SenseVoicePresenter;
+import is.hello.sense.graph.presenters.SenseVoicePresenterTests;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
@@ -99,6 +101,9 @@ import static org.mockito.Mockito.mock;
 
             PhoneBatteryPresenter.class,
             PhoneBatteryPresenterTests.class,
+
+            SenseVoicePresenter.class,
+            SenseVoicePresenterTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

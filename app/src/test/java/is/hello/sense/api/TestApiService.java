@@ -414,21 +414,21 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<DeviceOTAState> getSenseUpdateStatus() {
-        return unimplemented(); //todo
+        return loadResponse("sense_ota_required", new TypeToken<DeviceOTAState>(){}.getType());
     }
 
     @Override
-    public Observable<VoidResponse> requestSenseUpdate(@Body String empty) {
+    public Observable<VoidResponse> requestSenseUpdate(@Body final String empty) {
         return Observable.just(new VoidResponse());
     }
 
     @Override
     public Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse() {
-        return unimplemented(); //todo implement once api is stable
+        return loadResponse("sense_voice_onboarding", new TypeToken<ArrayList<VoiceResponse>>(){}.getType());
     }
 
     @Override
     public Observable<UserFeatures> getUserFeatures() {
-        return unimplemented(); //todo implement once api is stable
+        return loadResponse("sense_features", new TypeToken<UserFeatures>(){}.getType());
     }
 }
