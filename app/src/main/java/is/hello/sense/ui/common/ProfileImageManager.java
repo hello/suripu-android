@@ -149,7 +149,7 @@ public class ProfileImageManager {
             handlePictureOptionSelection(optionID);
         } else if (requestCode == REQUEST_CODE_CAMERA) {
             final Uri photoUri = getUri();
-            if (photoUri.equals(Uri.EMPTY)) {
+            if (Uri.EMPTY.equals(photoUri)) {
                 setShowOptions(true);
                 //Todo display error that the image uri was lost somehow
                 //getListener().onImageUriFetchError(new Throwable(), R.string.error_account_fetch_image_uri_message, R.string.error_account_fetch_image_uri_title );
@@ -172,7 +172,7 @@ public class ProfileImageManager {
     }
 
     private Observable<TypedFile> compressImageObservable(@Nullable final Uri imageUri) {
-        if (imageUri == null || imageUri.equals(Uri.EMPTY)) {
+        if (imageUri == null || Uri.EMPTY.equals(imageUri)) {
             return Observable.error(new Throwable("No valid filePath given"));
         }
 
