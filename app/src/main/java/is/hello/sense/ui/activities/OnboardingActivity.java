@@ -61,8 +61,8 @@ import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
-import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
-import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -285,9 +285,9 @@ public class OnboardingActivity extends InjectionActivity
         } else if (fragment instanceof OnboardingSmartAlarmFragment){
             passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
             checkForSenseUpdate();
-        } else if ( fragment instanceof SenseUpdateIntroFragment){
+        } else if ( fragment instanceof SenseOTAIntroFragment){
             showSenseUpdating();
-        } else if (fragment instanceof SenseUpdateFragment) {
+        } else if (fragment instanceof SenseOTAFragment) {
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
             showVoiceDone();
@@ -561,11 +561,11 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSenseUpdateIntro(){
-        pushFragment(SenseUpdateIntroFragment.newInstance(), null, false);
+        pushFragment(SenseOTAIntroFragment.newInstance(), null, false);
     }
 
     public void showSenseUpdating(){
-        pushFragment(SenseUpdateFragment.newInstance(), null, false);
+        pushFragment(SenseOTAFragment.newInstance(), null, false);
     }
 
     private void checkHasVoiceFeature() {
