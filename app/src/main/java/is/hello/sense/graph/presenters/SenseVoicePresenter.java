@@ -38,7 +38,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
             return null;
         }
         Collections.sort(voiceResponses,
-                         (thisResponse, otherResponse) -> thisResponse.dateTime.compareTo(otherResponse.dateTime));
+                         (thisResponse, otherResponse) -> otherResponse.dateTime.compareTo(thisResponse.dateTime));
         return voiceResponses.get(0);
     }
 

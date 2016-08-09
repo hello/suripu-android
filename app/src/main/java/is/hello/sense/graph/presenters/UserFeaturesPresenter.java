@@ -19,16 +19,17 @@ import rx.Observable;
 @Singleton
 public class UserFeaturesPresenter extends ValuePresenter<UserFeatures>{
 
-    @Inject
-    ApiService apiService;
-    @Inject
-    UserFeaturesManager userFeaturesManager;
-
+    private final ApiService apiService;
+    private final UserFeaturesManager userFeaturesManager;
     public PresenterSubject<UserFeatures> featureSubject = this.subject;
 
-    @Inject public UserFeaturesPresenter(@NonNull final Context context){
+    @Inject public UserFeaturesPresenter(@NonNull final Context context,
+                                         @NonNull final ApiService apiService,
+                                         @NonNull final UserFeaturesManager userFeaturesManager){
         Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT))
                 .subscribe(ignored -> reset(), Functions.LOG_ERROR);
+        this.apiService = apiService;
+        this.userFeaturesManager = userFeaturesManager;
     }
 
     @Override

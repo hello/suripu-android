@@ -9,11 +9,12 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 
-public class PersistentPreferencesPresenter extends BasePreferencesPresenter {
-    //To make key unique must append device id
+@Singleton public class PersistentPreferencesPresenter extends BasePreferencesPresenter {
+
     public static final String FIRMWARE_UPDATE_LAST_COMPLETED = "firmware_update_last_completed_with_device_id_";
     public static final String SENSE_VOICE_TUTORIAL_HAS_SEEN = "sense_voice_tutorial_has_seen_with_account_id_";
 

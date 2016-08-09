@@ -28,7 +28,8 @@ public class UserFeaturesManager {
     public void setFeatures(@Nullable final UserFeatures userFeatures){
         final SharedPreferences.Editor editor = preferences.edit();
         if(userFeatures == null){
-            editor.remove(FEATURES_KEY);
+            editor.remove(FEATURES_KEY)
+                  .apply();
             Logger.info(UserFeaturesManager.class.getName(), "cleared user features");
             return;
         }

@@ -6,7 +6,7 @@ public class UserFeatures extends ApiResponse {
     @SerializedName("VOICE")
     public final boolean voice;
 
-    UserFeatures(final boolean voice){
+    public UserFeatures(final boolean voice){
         this.voice = voice;
     }
 }

@@ -37,7 +37,7 @@ public class VoiceResponse extends ApiResponse{
     @SerializedName("result")
     public final Result result;
 
-    public VoiceResponse(final DateTime dateTime,
+    public VoiceResponse(@NonNull final DateTime dateTime,
                          final String text,
                          final String responseText,
                          final String command,
