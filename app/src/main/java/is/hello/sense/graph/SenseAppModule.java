@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.SenseUpdateModule;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
@@ -77,7 +78,8 @@ import is.hello.sense.zendesk.ZendeskModule;
             SettingsModule.class,
             UtilityModule.class,
             FacebookApiModule.class,
-            PillModule.class
+            PillModule.class,
+            SenseUpdateModule.class,
     },
     injects = {
         SenseApplication.class,
