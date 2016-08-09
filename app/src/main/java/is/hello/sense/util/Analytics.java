@@ -8,8 +8,6 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +26,7 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
@@ -575,46 +574,20 @@ public class Analytics {
     public interface ProfilePhoto {
         String PROP_SOURCE = "source";
 
-        enum Source implements Parcelable {
+        enum Source implements Enums.FromString {
             FACEBOOK("facebook"),
             CAMERA("camera"),
-            GALLERY("photo library");
+            GALLERY("photo library"),
+            UNKNOWN("unknown");
             private final String src;
             Source(@NonNull final String source){
                 this.src = source;
             }
 
-            public static final Creator<Source> CREATOR = new Creator<Source>() {
-                @Override
-                public Source createFromParcel(final Parcel in) {
-                    final Source source;
-                    final String src = in.readString();
-                    if(src.equals(FACEBOOK.src)){
-                        source = FACEBOOK;
-                    } else if(src.equals(CAMERA.src)){
-                        source = CAMERA;
-                    } else{
-                        source = GALLERY;
-                    }
-
-                    return source;
-                }
-
-                @Override
-                public Source[] newArray(final int size) {
-                    return new Source[size];
-                }
-            };
-
-            @Override
-            public int describeContents() {
-                return 0;
+            public static Source fromString(@NonNull final String value){
+                return Enums.fromString(value, values(), UNKNOWN);
             }
 
-            @Override
-            public void writeToParcel(final Parcel dest, final int flags) {
-                dest.writeString(src);
-            }
         }
 
     }
