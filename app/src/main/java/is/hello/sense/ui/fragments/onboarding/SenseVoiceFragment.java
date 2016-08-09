@@ -38,6 +38,7 @@ import is.hello.sense.ui.common.VoiceHelpDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.AnimatorSetHandler;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -77,6 +78,10 @@ public class SenseVoiceFragment extends InjectionFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(senseVoicePresenter);
+
+        if(savedInstanceState == null){
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_TUTORIAL, null);
+        }
     }
 
     @Nullable
@@ -296,6 +301,8 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
+        sendAnalyticsEvent(voiceResponse);
+
         if(SenseVoicePresenter.hasSuccessful(voiceResponse)){
             updateState(R.string.sense_voice_question_temperature,
                         R.color.primary,
@@ -388,5 +395,11 @@ public class SenseVoiceFragment extends InjectionFragment {
         animSet.setStartDelay(200);
 
         return animSet;
+    }
+
+    private void sendAnalyticsEvent(@NonNull final VoiceResponse voiceResponse){
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_COMMAND,
+                             Analytics.createProperties(Analytics.Onboarding.PROP_VOICE_COMMAND_STATUS,
+                                                        voiceResponse.result));
     }
 }
