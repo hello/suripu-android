@@ -31,7 +31,7 @@ public class VoiceCompleteFragment extends Fragment {
 
         return new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_complete_title)
-                .setSubheadingText(R.string.onboarding_complete_message)
+                .setSubheadingText(R.string.onboarding_voice_complete_message)
                 .setDiagramImage(R.drawable.onboarding_sense_complete)
                 .setPrimaryButtonText(R.string.action_done)
                 .setPrimaryOnClickListener(this::complete)

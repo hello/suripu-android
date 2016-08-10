@@ -138,9 +138,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         if(state.equals(DeviceOTAState.OtaState.REQUIRED) || state.equals(DeviceOTAState.OtaState.NOT_REQUIRED)){
             return;
         }
-        this.progressStatus.post( () -> {
-            this.progressStatus.setText(state.state);
-        });
+        this.progressStatus.post( () -> this.progressStatus.setText(state.state));
     }
 
     private void skipUpdate(){
@@ -157,7 +155,6 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     private void done() {
-        // todo check if voice needed
         Analytics.trackEvent(Analytics.SenseUpdate.EVENT_END, null);
         stateSafeExecutor.execute( () -> {
 
