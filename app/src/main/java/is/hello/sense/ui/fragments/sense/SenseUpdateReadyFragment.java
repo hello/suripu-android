@@ -22,6 +22,7 @@ public class SenseUpdateReadyFragment extends SenseFragment{
                 .setDiagramImage(R.drawable.sense_upgrade_ready)
                 .setPrimaryButtonText(R.string.action_continue)
                 .setPrimaryOnClickListener(ignored -> next())
+                .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false);
     }
 

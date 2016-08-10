@@ -39,10 +39,10 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class OnboardingPairSenseFragment extends HardwareFragment
+public class PairSenseFragment extends HardwareFragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
+    public static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
-    private static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
     private static final int REQUEST_CODE_SHOW_RATIONALE_DIALOG = 0xb2;
 
     private static final int RESULT_EDIT_WIFI = 0x99;
@@ -60,14 +60,14 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private OnboardingSimpleStepView view;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
             this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
         }
 
-        Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
+        final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
         if (isPairOnlySession()) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP, properties);
         } else {
@@ -79,7 +79,9 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
         this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_pair_sense)
                 .setSubheadingText(R.string.info_pair_sense)
@@ -101,28 +103,28 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasLinkedAccount", hasLinkedAccount);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwarePresenter.setWantsHighPowerPreScan(true);
             next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
-            getOnboardingActivity().showSelectWifiNetwork();
+            showSelectWifiNetwork();
         } else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK) {
             locationPermission.requestPermissionWithDialog();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             next();
         } else {
@@ -147,15 +149,19 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                     continueToWifi();
                 }
             }, e -> {
-                Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
+                Logger.error(PairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
                 continueToWifi();
             });
         }, e -> presentError(e, "Turning on LEDs"));
     }
 
     private void continueToWifi() {
-        hideAllActivityForSuccess(() -> getOnboardingActivity().showSelectWifiNetwork(),
+        hideAllActivityForSuccess(this::showSelectWifiNetwork,
                                   e -> presentError(e, "Turning off LEDs"));
+    }
+
+    private void showSelectWifiNetwork() {
+        getFragmentNavigation().flowFinished(this, REQUEST_CODE_EDIT_WIFI, null);
     }
 
     private void linkAccount() {
@@ -170,7 +176,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                                  setDeviceTimeZone();
                              },
                              error -> {
-                                 Logger.error(OnboardingPairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
+                                 Logger.error(PairSenseFragment.class.getSimpleName(), "Could not link Sense to account", error);
                                  presentError(error, OPERATION_LINK_ACCOUNT);
                              });
         }
@@ -179,7 +185,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private void setDeviceTimeZone() {
         showBlockingActivity(R.string.title_setting_time_zone);
 
-        SenseTimeZone timeZone = SenseTimeZone.fromDefault();
+        final SenseTimeZone timeZone = SenseTimeZone.fromDefault();
         bindAndSubscribe(apiService.updateTimeZone(timeZone),
                          ignored -> {
                              Logger.info(ConnectToWiFiFragment.class.getSimpleName(), "Time zone updated.");
@@ -217,10 +223,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                                               hardwarePresenter.clearPeripheral();
                                           }
                                           Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
-                                          getOnboardingActivity().finish();
+                                          getActivity().finish();
                                       } else {
                                           Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
-                                          getOnboardingActivity().showPairPill(true);
+                                          getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
                                       }
                                   },
                                   e -> {
@@ -230,7 +236,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                                   });
     }
 
-    public void showPairingModeHelp(@NonNull View sender) {
+    public void showPairingModeHelp(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
     }
@@ -242,16 +248,16 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         }
 
         showBlockingActivity(R.string.title_scanning_for_sense);
-        Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
+        final Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
         bindAndSubscribe(device, this::tryToPairWith, e -> {
             hardwarePresenter.clearPeripheral();
             presentError(e, "Discovering Sense");
         });
     }
 
-    public void tryToPairWith(@NonNull SensePeripheral device) {
+    public void tryToPairWith(@NonNull final SensePeripheral device) {
         if (BuildConfig.DEBUG) {
-            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+            final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
             dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
@@ -319,7 +325,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
                 Analytics.trackError(e, operation);
             } else {
-                ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
                         .withUnstableBluetoothHelp(getActivity())
                         .withOperation(operation)
                         .build();
@@ -333,8 +339,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         public static final String TAG = TroubleshootSenseDialogFragment.class.getSimpleName();
 
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+            final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
 
             dialog.setTitle(R.string.dialog_title_troubleshoot_sense);
             dialog.setMessage(R.string.dialog_message_troubleshoot_sense);
