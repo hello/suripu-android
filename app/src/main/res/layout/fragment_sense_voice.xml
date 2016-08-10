@@ -107,7 +107,7 @@
         android:layout_marginRight="@dimen/x3"
         android:layout_marginTop="@dimen/x3"
         android:layout_marginBottom="@dimen/x1"
-        android:text="@string/action_try_again_later"
+        android:text="@string/action_do_later"
         style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
 
     <Button

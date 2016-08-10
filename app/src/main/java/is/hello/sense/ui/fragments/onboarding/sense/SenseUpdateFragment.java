@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding.sense;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,7 +20,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.DeviceOTAState;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -77,7 +75,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         Views.setSafeOnClickListener(retryButton, ignored -> requestUpdate());
 
         OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(isPairOnlySession())
+                         .setWantsBackButton(false)
                          .setOnHelpClickListener(this::showHelp);
         return view;
     }
@@ -105,7 +103,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         Analytics.trackEvent(Analytics.SenseUpdate.EVENT_START, null);
         bindAndSubscribe(apiService.requestSenseUpdate(""),
                          ignored -> Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent."),
-                         e -> presentError(e, "Updating Sense"));
+                         e -> presentError(e, "Requesting Sense Update"));
 
         bindAndSubscribe(Observable.interval(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS, Schedulers.io())
                 .flatMap( func -> apiService.getSenseUpdateStatus()),
@@ -117,13 +115,13 @@ public class SenseUpdateFragment extends HardwareFragment {
                                  done();
                              }
                          },
-                         Functions.LOG_ERROR);
+                         e -> presentError(e, "Updating Sense"));
 
         bindAndSubscribe(Observable.timer(REQUEST_STATUS_TIMEOUT_SECONDS, TimeUnit.SECONDS, Schedulers.io()),
                          ignored -> {
-                             stateSafeExecutor.execute( () -> presentError(new TimeoutException(), "Sense Update"));
+                             stateSafeExecutor.execute( () -> presentError(new TimeoutException(), "Updating Sense Timeout"));
                          },
-                         Functions.LOG_ERROR);
+                         e -> presentError(e, "Updating Sense Timeout"));
 
     }
 
@@ -135,12 +133,10 @@ public class SenseUpdateFragment extends HardwareFragment {
     }
 
     private void setProgressStatus(final DeviceOTAState.OtaState state) {
-        if(state.equals(DeviceOTAState.OtaState.REQUIRED) || state.equals(DeviceOTAState.OtaState.NOT_REQUIRED)){
-            return;
+        if(state.equals(DeviceOTAState.OtaState.IN_PROGRESS)){
+            this.progressStatus.post(
+                    stateSafeExecutor.bind(() -> this.progressStatus.setText(R.string.sense_downloading_update)));
         }
-        this.progressStatus.post( () -> {
-            this.progressStatus.setText(state.state);
-        });
     }
 
     private void skipUpdate(){
@@ -148,29 +144,28 @@ public class SenseUpdateFragment extends HardwareFragment {
         alertDialog.setTitle(R.string.title_update_later);
         alertDialog.setMessage(R.string.sense_try_later_dialog_message);
         alertDialog.setNegativeButton(android.R.string.cancel, null);
-        alertDialog.setPositiveButton(R.string.action_ok, (dismiss, which) -> {
-            getFragmentNavigation().flowFinished(this, Activity.RESULT_CANCELED, null);
-            dismiss.dismiss();
+        alertDialog.setPositiveButton(R.string.action_ok, (dialog, which) -> {
+            cancelFlow();
+            dialog.dismiss();
         });
 
         alertDialog.show();
     }
 
     private void done() {
-        // todo check if voice needed
         Analytics.trackEvent(Analytics.SenseUpdate.EVENT_END, null);
         stateSafeExecutor.execute( () -> {
-
-            LoadingDialogFragment.show(getFragmentManager(),
-                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-            getFragmentManager().executePendingTransactions();
-
-            LoadingDialogFragment.closeWithMessageTransition(
-                    getFragmentManager(),
-                    stateSafeExecutor.bind( () -> {
-                        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
-                    }),
-                    R.string.sense_updated);
+            if(userFeaturesPresenter.hasVoice()){
+                LoadingDialogFragment.show(getFragmentManager(),
+                                           null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+                getFragmentManager().executePendingTransactions();
+                LoadingDialogFragment.closeWithMessageTransition(
+                        getFragmentManager(),
+                        stateSafeExecutor.bind(this::finishFlow),
+                        R.string.sense_updated);
+            } else {
+                finishFlow();
+            }
         });
     }
 

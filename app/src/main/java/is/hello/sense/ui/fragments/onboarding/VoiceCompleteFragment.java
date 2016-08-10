@@ -30,8 +30,8 @@ public class VoiceCompleteFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
         return new OnboardingSimpleStepView(this, inflater)
-                .setHeadingText(R.string.onboarding_complete_title)
-                .setSubheadingText(R.string.onboarding_complete_message)
+                .setHeadingText(R.string.onboarding_voice_complete_title)
+                .setSubheadingText(R.string.onboarding_voice_complete_message)
                 .setDiagramImage(R.drawable.onboarding_sense_complete)
                 .setPrimaryButtonText(R.string.action_done)
                 .setPrimaryOnClickListener(this::complete)

@@ -285,6 +285,8 @@ public class OnboardingActivity extends InjectionActivity
         } else if (fragment instanceof OnboardingSmartAlarmFragment){
             passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
             checkForSenseUpdate();
+        } else if ( fragment instanceof SenseUpdateIntroFragment){
+            showSenseUpdating();
         } else if (fragment instanceof SenseUpdateFragment) {
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {

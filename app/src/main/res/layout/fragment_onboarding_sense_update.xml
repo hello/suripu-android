@@ -68,7 +68,7 @@
             android:gravity="center"
             android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
             android:textColor="@color/text_detail_grey"
-            android:text="@string/title_connecting"/>
+            android:text="@string/sense_starting_update"/>
 
         <Button
             android:id="@+id/fragment_onboarding_sense_update_skip"
@@ -78,7 +78,7 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_marginTop="@dimen/x3"
             android:layout_marginBottom="@dimen/x1"
-            android:text="@string/action_try_again_later"
+            android:text="@string/action_do_later"
             style="@style/AppTheme.Button.Borderless.Accent.Bounded"
             android:visibility="gone"/>
 

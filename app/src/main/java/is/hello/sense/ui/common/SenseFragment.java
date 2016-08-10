@@ -1,6 +1,5 @@
 package is.hello.sense.ui.common;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -9,6 +8,9 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class SenseFragment extends Fragment {
 
@@ -50,7 +52,7 @@ public class SenseFragment extends Fragment {
                 new Handler().post(() -> getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, response));
                 getFragmentManager().popBackStackImmediate();
             } else {
-                getActivity().setResult(Activity.RESULT_OK, response);
+                getActivity().setResult(RESULT_OK, response);
                 getActivity().finish();
             }
             return true;
@@ -76,6 +78,21 @@ public class SenseFragment extends Fragment {
             return (FragmentNavigation) getActivity();
         } else {
             return null;
+        }
+    }
+
+    public void finishFlow(){
+        finishFlowWithResult(RESULT_OK);
+    }
+
+    public void cancelFlow(){
+       finishFlowWithResult(RESULT_CANCELED);
+    }
+
+    public void finishFlowWithResult(final int resultCode){
+        final FragmentNavigation fragmentNavigation = getFragmentNavigation();
+        if(fragmentNavigation != null){
+            fragmentNavigation.flowFinished(this, resultCode, null);
         }
     }
 }
