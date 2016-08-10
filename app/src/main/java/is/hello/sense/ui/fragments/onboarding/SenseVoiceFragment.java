@@ -213,8 +213,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         skipButton.setEnabled(false);
         senseVoicePresenter.updateHasCompletedTutorial(success);
         questionText.postDelayed(
-                () -> getFragmentNavigation()
-                        .flowFinished(this, success ? Activity.RESULT_OK : Activity.RESULT_CANCELED, null),
+                () -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
                 success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0);
     }
 

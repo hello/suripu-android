@@ -7,12 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.util.Analytics;
 
-public class SenseUpdateIntroFragment extends HardwareFragment {
+public class SenseUpdateIntroFragment extends SenseFragment {
 
     public static SenseUpdateIntroFragment newInstance() {
         return new SenseUpdateIntroFragment();
@@ -42,8 +42,7 @@ public class SenseUpdateIntroFragment extends HardwareFragment {
                         ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE));
     }
 
-
     public void onContinue(final View ignored) {
-        getOnboardingActivity().showSenseUpdating();
+        finishFlow();
     }
 }

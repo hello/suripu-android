@@ -35,7 +35,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     @Inject
     HardwarePresenter hardwarePresenter;
     @Inject
-    public UserFeaturesPresenter userFeaturesPresenter;
+    protected UserFeaturesPresenter userFeaturesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
 
