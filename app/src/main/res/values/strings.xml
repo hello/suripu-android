@@ -75,7 +75,7 @@
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
     <string name="title_upgrade_sense_voice">Upgrade to Sense with Voice</string>
-    <string name="info_upgrade_sense_voice">The new Sense introduces improved sensors, and Voice — which lets you control Sense just by speaking to it.\n\n
+    <string name="info_upgrade_sense_voice">The new Sense introduces improved sensors, and Voice — which lets you control Sense just by speaking to it.\n
 If you already purchased a new Sense with Voice, make sure it’s plugged in and nearby.</string>
     <string name="action_upgrade_sense_voice_help">Learn more about Sense with Voice</string>
     <string name="title_upgrade_ready_sense_voice">Sense with Voice is ready</string>

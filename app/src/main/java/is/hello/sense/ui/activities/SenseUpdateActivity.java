@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -16,8 +17,11 @@ import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
+import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 
 public class SenseUpdateActivity extends InjectionActivity
         implements FragmentNavigation {
@@ -29,6 +33,8 @@ public class SenseUpdateActivity extends InjectionActivity
 
     private String deviceId;
 
+    @Inject
+    BluetoothStack bluetoothStack;
     @Inject
     DeviceIssuesPresenter deviceIssuesPresenter;
 
@@ -103,6 +109,16 @@ public class SenseUpdateActivity extends InjectionActivity
 
         if(fragment instanceof SenseUpdateIntroFragment) {
             showSenseUpdate();
+        } else if(fragment instanceof BluetoothFragment){
+            showSenseUpdate();
+        }else if(fragment instanceof PairSenseFragment){
+            if(responseCode == PairSenseFragment.REQUEST_CODE_EDIT_WIFI){
+                showSelectWifiNetwork();
+            } else {
+                showSenseUpdateReady();
+            }
+        } else if(fragment instanceof ConnectToWiFiFragment){
+            showSenseUpdateReady();
         }
         
     }
@@ -117,21 +133,28 @@ public class SenseUpdateActivity extends InjectionActivity
     public void onBackPressed() {
         final Fragment topFragment = getTopFragment();
         if (topFragment instanceof OnBackPressedInterceptor) {
-            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
-                return;
-            }
+            ((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back);
+        } else if(topFragment instanceof PairSenseFragment){
+            showSenseUpdateIntro();
+        } else{
+            back();
         }
-
-        back();
     }
 
     public void showSenseUpdateIntro() {
-        pushFragment(new SenseUpdateIntroFragment(), null, true);
+        pushFragment(new SenseUpdateIntroFragment(), null, false);
     }
 
     public void showSenseUpdate() {
-       // Analytics.trackEvent(Analytics.PillUpdate.EVENT_OTA_START, null);
-       pushFragment(new OnboardingPairSenseFragment(), null, false);
+        if(bluetoothStack.isEnabled()) {
+            pushFragment(new PairSenseFragment(), null, false);
+        } else {
+            showBluetoothFragment();
+        }
+    }
+
+    public void showSenseUpdateReady() {
+        pushFragment(new SenseUpdateReadyFragment(), null, false);
     }
 
     private void updatePreferences() {
@@ -142,6 +165,10 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void showBluetoothFragment() {
         pushFragmentAllowingStateLoss(new BluetoothFragment(), null, true);
+    }
+
+    public void showSelectWifiNetwork() {
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(false), null, true);
     }
 
     private void back() {

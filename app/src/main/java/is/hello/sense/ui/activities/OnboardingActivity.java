@@ -46,7 +46,6 @@ import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
@@ -56,6 +55,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
+import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -278,7 +278,13 @@ public class OnboardingActivity extends InjectionActivity
             } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
                 showBirthday(null, true);
             }
-        } else if (fragment instanceof OnboardingRoomCheckFragment ||
+        } else if(fragment instanceof PairSenseFragment){
+            if(responseCode == PairSenseFragment.REQUEST_CODE_EDIT_WIFI){
+                showSelectWifiNetwork();
+            } else {
+                showPairPill(true);
+            }
+        }else if (fragment instanceof OnboardingRoomCheckFragment ||
                 fragment instanceof OnboardingSenseColorsFragment) {
             checkSenseUpdateStatus();
             showSmartAlarmInfo();
@@ -358,7 +364,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showPairSense() {
         if (bluetoothStack.isEnabled()) {
-            pushFragment(new OnboardingPairSenseFragment(), null, false);
+            pushFragment(new PairSenseFragment(), null, false);
         } else {
             pushFragment(BluetoothFragment.newInstance(
                     OnboardingActivity.RESPONSE_SETUP_SENSE), null, false);
@@ -444,7 +450,7 @@ public class OnboardingActivity extends InjectionActivity
             builder.setHeadingText(R.string.title_setup_sense);
             builder.setSubheadingText(R.string.info_setup_sense);
             builder.setDiagramImage(R.drawable.onboarding_sense_intro);
-            builder.setNextFragmentClass(OnboardingPairSenseFragment.class);
+            builder.setNextFragmentClass(PairSenseFragment.class);
             if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP_IN_APP);
             } else {
