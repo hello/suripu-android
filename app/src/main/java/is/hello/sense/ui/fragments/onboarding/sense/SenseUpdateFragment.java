@@ -75,7 +75,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         Views.setSafeOnClickListener(retryButton, ignored -> requestUpdate());
 
         OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(isPairOnlySession())
+                         .setWantsBackButton(false)
                          .setOnHelpClickListener(this::showHelp);
         return view;
     }
