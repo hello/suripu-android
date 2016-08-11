@@ -76,6 +76,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                                                                new AccelerateDecelerateInterpolator());
 
     private Subscription voiceTipSubscription;
+    private Subscription requestDelayedSubscription;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -87,7 +88,7 @@ public class SenseVoiceFragment extends InjectionFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         voiceTipSubscription = Subscriptions.empty();
-        voiceTipSubscription.unsubscribe();
+        requestDelayedSubscription = Subscriptions.empty();
 
         final View view = inflater.inflate(R.layout.fragment_sense_voice, container, false);
         title = (TextView) view.findViewById(R.id.fragment_sense_voice_title);
@@ -140,6 +141,10 @@ public class SenseVoiceFragment extends InjectionFragment {
             viewAnimator.onViewCreated(
                     createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
         }
+
+        bindAndSubscribe(senseVoicePresenter.voiceResponse,
+                         this::handleVoiceResponse,
+                         this::presentError);
     }
 
     @Override
@@ -176,6 +181,8 @@ public class SenseVoiceFragment extends InjectionFragment {
         voiceTipSubscription.unsubscribe();
         voiceTipSubscription = null;
         showVoiceTipDialog(false, null);
+        requestDelayedSubscription.unsubscribe();
+        requestDelayedSubscription = null;
     }
 
     private void onRetry(final View view){
@@ -213,9 +220,11 @@ public class SenseVoiceFragment extends InjectionFragment {
 
     private void onFinish(final boolean success){
         voiceTipSubscription.unsubscribe();
+        requestDelayedSubscription.unsubscribe();
         senseVoicePresenter.reset();
+        toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
-        skipButton.setEnabled(false);
+        skipButton.setVisibility(View.GONE);
         senseVoicePresenter.updateHasCompletedTutorial(success);
         questionText.postDelayed(
                 () -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
@@ -295,21 +304,18 @@ public class SenseVoiceFragment extends InjectionFragment {
     private void poll(final boolean start){
         Log.d(SenseVoiceFragment.class.getName(), "poll: " + start);
         if(start) {
-            bindAndSubscribe(senseVoicePresenter.voiceResponse,
-                             this::handleVoiceResponse,
-                             this::presentError);
             requestDelayed();
         } else{
-            observableContainer.clearSubscriptions();
+            requestDelayedSubscription.unsubscribe();
             senseVoicePresenter.voiceResponse.forget();
         }
     }
 
     private void requestDelayed() {
         //retry once again after a delay respecting fragment lifecycle
-        bind(Observable.timer(SenseVoicePresenter.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
-                .subscribe(ignored -> senseVoicePresenter.update(),
-                           this::presentError);
+        requestDelayedSubscription = bind(Observable.timer(SenseVoicePresenter.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
+                                           .subscribe(ignored -> senseVoicePresenter.update(),
+                                                      this::presentError);
     }
 
     private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
