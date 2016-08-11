@@ -28,7 +28,7 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
     @Inject SenseVoicePresenter(){}
 
 
-    public final static long POLL_INTERVAL = 8; //todo test with real 1.5 senses to adjust
+    public final static long UPDATE_DELAY_SECONDS = 8; //todo test with real 1.5 senses to adjust
     public final PresenterSubject<VoiceResponse> voiceResponse = this.subject;
     private int failCount = 0;
 
@@ -92,5 +92,4 @@ public class SenseVoicePresenter extends ValuePresenter<VoiceResponse> {
         }
         logEvent("failCount = " + failCount);
     }
-
 }

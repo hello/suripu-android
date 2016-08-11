@@ -39,7 +39,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.AnimatorSetHandler;
-import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
@@ -305,10 +304,8 @@ public class SenseVoiceFragment extends InjectionFragment {
             bindAndSubscribe(senseVoicePresenter.voiceResponse,
                              this::handleVoiceResponse,
                              this::presentError);
-            bindAndSubscribe(Observable.interval(SenseVoicePresenter.POLL_INTERVAL, TimeUnit.SECONDS),
-                             ignored -> senseVoicePresenter.update(),
-                             this::presentError);
-        } else {
+            senseVoicePresenter.update();
+        } else{
             observableContainer.clearSubscriptions();
             senseVoicePresenter.voiceResponse.forget();
         }
@@ -342,6 +339,9 @@ public class SenseVoiceFragment extends InjectionFragment {
                             AnimatorSetHandler.LOOP_ANIMATION,
                             true)
             ), LoadingDialogFragment.DURATION_DEFAULT * 3);
+
+            //retry again
+            senseVoicePresenter.update();
         }
     }
 
