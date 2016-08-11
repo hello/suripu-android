@@ -39,6 +39,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.AnimatorSetHandler;
+import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
@@ -145,7 +146,6 @@ public class SenseVoiceFragment extends InjectionFragment {
     public void onPause() {
         super.onPause();
         viewAnimator.onPause();
-        poll(false);
         cancelAll(questionText);
     }
 
@@ -154,11 +154,6 @@ public class SenseVoiceFragment extends InjectionFragment {
         super.onResume();
         if(senseCircleView.getDrawable() != null) {
             viewAnimator.onResume();
-        }
-
-        if(retryButton.getVisibility() != View.VISIBLE &&
-                voiceTipSubscription.isUnsubscribed()){
-            poll(true);
         }
     }
 
@@ -239,7 +234,6 @@ public class SenseVoiceFragment extends InjectionFragment {
                     .start();
 
             toolbar.setWantsHelpButton(false);
-            poll(false);
         } else {
             animatorFor(retryButton)
                     .translationY(buttonTranslateY)
@@ -304,11 +298,18 @@ public class SenseVoiceFragment extends InjectionFragment {
             bindAndSubscribe(senseVoicePresenter.voiceResponse,
                              this::handleVoiceResponse,
                              this::presentError);
-            senseVoicePresenter.update();
+            requestDelayed();
         } else{
             observableContainer.clearSubscriptions();
             senseVoicePresenter.voiceResponse.forget();
         }
+    }
+
+    private void requestDelayed() {
+        //retry once again after a delay respecting fragment lifecycle
+        bind(Observable.timer(SenseVoicePresenter.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
+                .subscribe(ignored -> senseVoicePresenter.update(),
+                           this::presentError);
     }
 
     private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
@@ -340,8 +341,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                             true)
             ), LoadingDialogFragment.DURATION_DEFAULT * 3);
 
-            //retry again
-            senseVoicePresenter.update();
+            requestDelayed();
         }
     }
 
