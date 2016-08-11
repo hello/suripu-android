@@ -75,11 +75,14 @@ public class SenseVoiceFragment extends InjectionFragment {
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
 
-    private Subscription voiceTipSubscription = Subscriptions.unsubscribed();
+    private Subscription voiceTipSubscription;
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(senseVoicePresenter);
+
+        voiceTipSubscription = Subscriptions.empty();
+        voiceTipSubscription.unsubscribe();
     }
 
     @Nullable
@@ -175,6 +178,8 @@ public class SenseVoiceFragment extends InjectionFragment {
         skipButton = null;
         senseCircleView = null;
         senseImageView = null;
+        voiceTipSubscription.unsubscribe();
+        voiceTipSubscription = null;
         showVoiceTipDialog(false, null);
     }
 
