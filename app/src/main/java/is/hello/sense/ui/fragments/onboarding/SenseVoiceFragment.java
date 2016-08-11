@@ -40,7 +40,9 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.AnimatorSetHandler;
 import rx.Observable;
-import rx.schedulers.Schedulers;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.subscriptions.Subscriptions;
 
 import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -73,6 +75,7 @@ public class SenseVoiceFragment extends InjectionFragment {
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
 
+    private Subscription voiceTipSubscription = Subscriptions.unsubscribed();
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +101,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         Views.setTimeOffsetOnClickListener(retryButton,this::onRetry);
         Views.setTimeOffsetOnClickListener(skipButton,this::onSkip);
         toolbar = OnboardingToolbar.of(this, view)
-                                   .setOnHelpClickListener(ignored -> showVoiceTipDialog(true))
+                                   .setOnHelpClickListener(ignored -> showVoiceTipDialog(true, this::poll))
                                    .setHelpButtonIcon(R.drawable.info_button_icon_small)
                                    .setWantsHelpButton(false)
                                    .setWantsBackButton(false);
@@ -150,7 +153,8 @@ public class SenseVoiceFragment extends InjectionFragment {
             viewAnimator.onResume();
         }
 
-        if(retryButton.getVisibility() != View.VISIBLE){
+        if(retryButton.getVisibility() != View.VISIBLE &&
+                voiceTipSubscription.isUnsubscribed()){
             poll(true);
         }
     }
@@ -171,7 +175,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         skipButton = null;
         senseCircleView = null;
         senseImageView = null;
-        showVoiceTipDialog(false);
+        showVoiceTipDialog(false, null);
     }
 
     private void onRetry(final View view){
@@ -208,6 +212,7 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void onFinish(final boolean success){
+        voiceTipSubscription.unsubscribe();
         senseVoicePresenter.reset();
         retryButton.setEnabled(false);
         skipButton.setEnabled(false);
@@ -250,12 +255,13 @@ public class SenseVoiceFragment extends InjectionFragment {
 
     private void presentError(final Throwable throwable) {
         poll(false);
+        voiceTipSubscription.unsubscribe();
         final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
                 .withTitle(R.string.error_wifi_connection_title)
                 .withMessage(StringRef.from(R.string.error_wifi_connection_message))
                 .build();
 
-        if(throwable instanceof ApiException){
+        if(ApiException.isNetworkError(throwable)){
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }
         updateState(R.string.error_sense_voice_problem,
@@ -267,7 +273,8 @@ public class SenseVoiceFragment extends InjectionFragment {
         updateUI(true);
     }
 
-    private void showVoiceTipDialog(final boolean shouldShow) {
+    private void showVoiceTipDialog(final boolean shouldShow,
+                                    @Nullable final Action1<Boolean> isShownAction) {
         VoiceHelpDialogFragment bottomSheet =
                 (VoiceHelpDialogFragment) getFragmentManager()
                         .findFragmentByTag(VoiceHelpDialogFragment.TAG);
@@ -275,6 +282,14 @@ public class SenseVoiceFragment extends InjectionFragment {
             bottomSheet.dismissSafely();
         } else if(bottomSheet == null && shouldShow){
             bottomSheet = VoiceHelpDialogFragment.newInstance();
+
+            if(isShownAction != null) {
+                voiceTipSubscription = bottomSheet.subject
+                        .subscribe(isShownAction,
+                                   this::presentError,
+                                   () -> voiceTipSubscription.unsubscribe());
+            }
+
             bottomSheet.showAllowingStateLoss(getFragmentManager(), VoiceHelpDialogFragment.TAG);
         }
     }
@@ -285,7 +300,7 @@ public class SenseVoiceFragment extends InjectionFragment {
             bindAndSubscribe(senseVoicePresenter.voiceResponse,
                              this::handleVoiceResponse,
                              this::presentError);
-            bindAndSubscribe(Observable.interval(SenseVoicePresenter.POLL_INTERVAL, TimeUnit.SECONDS, Schedulers.io()),
+            bindAndSubscribe(Observable.interval(SenseVoicePresenter.POLL_INTERVAL, TimeUnit.SECONDS),
                              ignored -> senseVoicePresenter.update(),
                              this::presentError);
         } else{
@@ -311,7 +326,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                         0,
                         true);
             if(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
-                showVoiceTipDialog(true);
+                showVoiceTipDialog(true, this::poll);
             }
             //return to normal wait state
             questionText.postDelayed(stateSafeExecutor.bind(() ->
