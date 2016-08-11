@@ -181,7 +181,7 @@ public class SenseUpdateFragment extends HardwareFragment {
             int titleRes = R.string.error_update_failed;
             int messageRes = R.string.error_sense_update_failed_message;
 
-            if(e instanceof ApiException){
+            if(ApiException.isNetworkError(e)){
                 titleRes = R.string.error_wifi_connection_title;
                 messageRes = R.string.error_wifi_connection_message;
             }

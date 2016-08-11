@@ -38,8 +38,6 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
         subscriptions.clear();
     }
 
-
-
     @Override
     public boolean hasSubscriptions() {
         return !subscriptions.isEmpty();
