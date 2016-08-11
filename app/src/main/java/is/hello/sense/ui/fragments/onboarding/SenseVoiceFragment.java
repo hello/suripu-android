@@ -76,18 +76,19 @@ public class SenseVoiceFragment extends InjectionFragment {
                                                                new AccelerateDecelerateInterpolator());
 
     private Subscription voiceTipSubscription;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(senseVoicePresenter);
-
-        voiceTipSubscription = Subscriptions.empty();
-        voiceTipSubscription.unsubscribe();
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        voiceTipSubscription = Subscriptions.empty();
+        voiceTipSubscription.unsubscribe();
+
         final View view = inflater.inflate(R.layout.fragment_sense_voice, container, false);
         title = (TextView) view.findViewById(R.id.fragment_sense_voice_title);
         subtitle = (TextView) view.findViewById(R.id.fragment_sense_voice_subtitle);
@@ -291,8 +292,7 @@ public class SenseVoiceFragment extends InjectionFragment {
             if(isShownAction != null) {
                 voiceTipSubscription = bottomSheet.subject
                         .subscribe(isShownAction,
-                                   this::presentError,
-                                   () -> voiceTipSubscription.unsubscribe());
+                                   this::presentError);
             }
 
             bottomSheet.showAllowingStateLoss(getFragmentManager(), VoiceHelpDialogFragment.TAG);
@@ -308,7 +308,7 @@ public class SenseVoiceFragment extends InjectionFragment {
             bindAndSubscribe(Observable.interval(SenseVoicePresenter.POLL_INTERVAL, TimeUnit.SECONDS),
                              ignored -> senseVoicePresenter.update(),
                              this::presentError);
-        } else{
+        } else {
             observableContainer.clearSubscriptions();
             senseVoicePresenter.voiceResponse.forget();
         }
