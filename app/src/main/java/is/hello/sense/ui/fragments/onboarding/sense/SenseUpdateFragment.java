@@ -30,7 +30,6 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 public class SenseUpdateFragment extends HardwareFragment {
 
@@ -39,12 +38,12 @@ public class SenseUpdateFragment extends HardwareFragment {
 
     private static final int REQUEST_STATUS_CHECK_INTERVAL_SECONDS = 5;
     private static final long REQUEST_STATUS_TIMEOUT_SECONDS = 150;
+    private static final long REQUEST_STATUS_TIMEOUT_INTERVAL = 1;
 
     private ProgressBar progressBar;
     private Button retryButton;
     private Button skipButton;
     private TextView progressStatus;
-
 
 
     public static SenseUpdateFragment newInstance() {
@@ -105,21 +104,24 @@ public class SenseUpdateFragment extends HardwareFragment {
                          ignored -> Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense update request sent."),
                          e -> presentError(e, "Requesting Sense Update"));
 
-        bindAndSubscribe(Observable.interval(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS, Schedulers.io())
-                .flatMap( func -> apiService.getSenseUpdateStatus()),
-                         response -> {
-                             sendAnalyticsStatusUpdate(response.state);
-                             setProgressStatus(response.state);
-                             if(response.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
-                                 Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense updated.");
-                                 done();
-                             }
-                         },
-                         e -> presentError(e, "Updating Sense"));
+        bindAndSubscribe(apiService.getSenseUpdateStatus().repeatWhen(
+                onComplete -> onComplete.delay(REQUEST_STATUS_CHECK_INTERVAL_SECONDS, TimeUnit.SECONDS,
+                                               observeScheduler)
+        ), response -> {
+             sendAnalyticsStatusUpdate(response.state);
+             setProgressStatus(response.state);
+             if(response.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
+                 Logger.info(SenseUpdateFragment.class.getSimpleName(), "Sense updated.");
+                 done();
+             }
+        },
+         e -> presentError(e, "Updating Sense"));
 
-        bindAndSubscribe(Observable.timer(REQUEST_STATUS_TIMEOUT_SECONDS, TimeUnit.SECONDS, Schedulers.io()),
-                         ignored -> {
-                             stateSafeExecutor.execute( () -> presentError(new TimeoutException(), "Updating Sense Timeout"));
+        bindAndSubscribe(Observable.interval(REQUEST_STATUS_TIMEOUT_INTERVAL, TimeUnit.SECONDS),
+                         tickSeconds -> {
+                             if(REQUEST_STATUS_TIMEOUT_SECONDS == tickSeconds) {
+                                 stateSafeExecutor.execute(() -> presentError(new TimeoutException(), "Updating Sense Timeout"));
+                             }
                          },
                          e -> presentError(e, "Updating Sense Timeout"));
 
