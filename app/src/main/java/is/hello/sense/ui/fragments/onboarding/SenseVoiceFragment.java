@@ -224,7 +224,8 @@ public class SenseVoiceFragment extends InjectionFragment {
         senseVoicePresenter.reset();
         toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
-        skipButton.setVisibility(View.GONE);
+        skipButton.setEnabled(false);
+        skipButton.setVisibility(View.INVISIBLE);
         senseVoicePresenter.updateHasCompletedTutorial(success);
         questionText.postDelayed(
                 () -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
@@ -328,7 +329,11 @@ public class SenseVoiceFragment extends InjectionFragment {
                         false);
             onFinish(true);
         } else{
-            updateState(R.string.error_sense_voice_not_detected,
+            @StringRes final int errorText = voiceResponse == null ?
+                    R.string.error_sense_voice_problem :
+                    R.string.error_sense_voice_not_detected;
+
+            updateState(errorText,
                         R.color.text_dark,
                         View.GONE,
                         FAIL_STATE,
