@@ -15,6 +15,8 @@ import is.hello.sense.util.Analytics;
 
 public class VoiceCompleteFragment extends Fragment {
 
+    private OnboardingSimpleStepView view;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +31,7 @@ public class VoiceCompleteFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view =  new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_voice_complete_title)
                 .setSubheadingText(R.string.onboarding_voice_complete_message)
                 .setDiagramImage(R.drawable.onboarding_sense_complete)
@@ -38,6 +40,15 @@ public class VoiceCompleteFragment extends Fragment {
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
                 .setToolbarWantsHelpButton(false);
+
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.view.destroy();
+        this.view = null;
     }
 
     public void complete(final View ignored) {

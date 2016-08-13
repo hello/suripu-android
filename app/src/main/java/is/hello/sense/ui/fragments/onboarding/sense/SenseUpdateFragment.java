@@ -44,7 +44,7 @@ public class SenseUpdateFragment extends HardwareFragment {
     private Button retryButton;
     private Button skipButton;
     private TextView progressStatus;
-
+    private OnboardingToolbar toolbar;
 
     public static SenseUpdateFragment newInstance() {
         return new SenseUpdateFragment();
@@ -73,7 +73,7 @@ public class SenseUpdateFragment extends HardwareFragment {
         this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_sense_update_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> requestUpdate());
 
-        OnboardingToolbar.of(this, view)
+        this.toolbar = OnboardingToolbar.of(this, view)
                          .setWantsBackButton(false)
                          .setOnHelpClickListener(this::showHelp);
         return view;
@@ -94,6 +94,8 @@ public class SenseUpdateFragment extends HardwareFragment {
         retryButton = null;
         skipButton.setOnClickListener(null);
         skipButton = null;
+        toolbar.onDestroyView();
+        toolbar = null;
     }
 
     private void requestUpdate() {

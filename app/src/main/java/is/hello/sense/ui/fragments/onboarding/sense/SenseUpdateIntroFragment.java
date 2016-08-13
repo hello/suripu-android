@@ -14,6 +14,8 @@ import is.hello.sense.util.Analytics;
 
 public class SenseUpdateIntroFragment extends SenseFragment {
 
+    private OnboardingSimpleStepView view;
+
     public static SenseUpdateIntroFragment newInstance() {
         return new SenseUpdateIntroFragment();
     }
@@ -30,7 +32,7 @@ public class SenseUpdateIntroFragment extends SenseFragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view =  new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_sense_update)
                 .setSubheadingText(R.string.subtitle_sense_update)
                 .setDiagramImage(R.drawable.onboarding_sense_ota)
@@ -40,6 +42,14 @@ public class SenseUpdateIntroFragment extends SenseFragment {
                 .setToolbarWantsBackButton(false)
                 .setToolbarOnHelpClickListener(
                         ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE));
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view.destroy();
+        view = null;
     }
 
     public void onContinue(final View ignored) {

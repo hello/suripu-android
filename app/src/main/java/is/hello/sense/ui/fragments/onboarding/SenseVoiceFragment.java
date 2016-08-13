@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -44,7 +45,6 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
-import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseVoiceFragment extends InjectionFragment {
@@ -68,9 +68,7 @@ public class SenseVoiceFragment extends InjectionFragment {
     private ImageView senseImageView;
     private ImageView senseCircleView;
     private View nightStandView;
-    private final Lazy<Integer> FIXED_MARGIN =
-            () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_fixed_margin);
-    private final Lazy<Integer> TRANSLATE_Y =
+    private Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
@@ -126,7 +124,8 @@ public class SenseVoiceFragment extends InjectionFragment {
                     senseImageView.getY() + TRANSLATE_Y.get()*0.6f - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2)
                                 );
             senseCircleView.invalidate();
-            questionTextGroup.setY( senseCircleView.getY() - questionTextGroup.getMeasuredHeight() - FIXED_MARGIN.get());
+            questionTextGroup.setY( senseCircleView.getY() - questionTextGroup.getMeasuredHeight() -
+                                            getResources().getDimensionPixelSize(R.dimen.sense_voice_fixed_margin));
             questionTextGroup.invalidate();
         }));
 
@@ -151,7 +150,7 @@ public class SenseVoiceFragment extends InjectionFragment {
     public void onPause() {
         super.onPause();
         viewAnimator.onPause();
-        cancelAll(questionText);
+        //cancelAll(questionText);
     }
 
     @Override
@@ -178,11 +177,13 @@ public class SenseVoiceFragment extends InjectionFragment {
         skipButton = null;
         senseCircleView = null;
         senseImageView = null;
+        nightStandView = null;
         voiceTipSubscription.unsubscribe();
         voiceTipSubscription = null;
         showVoiceTipDialog(false, null);
         requestDelayedSubscription.unsubscribe();
         requestDelayedSubscription = null;
+        TRANSLATE_Y = null;
     }
 
     private void onRetry(final View view){
@@ -224,16 +225,15 @@ public class SenseVoiceFragment extends InjectionFragment {
         senseVoicePresenter.reset();
         toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
-        skipButton.setEnabled(false);
         skipButton.setVisibility(View.INVISIBLE);
         senseVoicePresenter.updateHasCompletedTutorial(success);
-        questionText.postDelayed(
-                () -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
-                success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0);
+        bindAndSubscribe(Observable.timer(success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0, TimeUnit.MILLISECONDS),
+                ignored -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
+                this::presentError);
     }
 
     private void updateUI(final boolean onError){
-        final float buttonTranslateY = retryButton.getHeight();
+        final float buttonTranslateY = retryButton.getMeasuredHeight();
         if(onError) {
             animatorFor(skipButton)
                     .slideYAndFade(0, -buttonTranslateY, 1, 1)
@@ -326,7 +326,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                         View.GONE,
                         OK_STATE,
                         0,
-                        false);
+                        Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
             onFinish(true);
         } else{
             @StringRes final int errorText = voiceResponse == null ?
@@ -343,7 +343,7 @@ public class SenseVoiceFragment extends InjectionFragment {
                 showVoiceTipDialog(true, this::poll);
             }
             //return to normal wait state
-            questionText.postDelayed(stateSafeExecutor.bind(() ->
+            questionText.postOnAnimationDelayed(stateSafeExecutor.bind(() ->
                 updateState(R.string.sense_voice_question_temperature,
                             R.color.text_dark,
                             View.VISIBLE,
