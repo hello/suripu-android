@@ -19,6 +19,7 @@ import rx.Observable;
 @Singleton
 public class UserFeaturesPresenter extends ValuePresenter<UserFeatures>{
 
+    public static final int DEFAULT_NUM_RETRIES = 2;
     private final ApiService apiService;
     private final UserFeaturesManager userFeaturesManager;
     public PresenterSubject<UserFeatures> featureSubject = this.subject;
@@ -49,13 +50,25 @@ public class UserFeaturesPresenter extends ValuePresenter<UserFeatures>{
 
     /**
      * Circumvents the presenter subject to store features in preferences.
+     * Retries {@link this#DEFAULT_NUM_RETRIES} times on error.
      * @return Void Observable
      */
     public Observable<Void> storeFeaturesInPrefs() {
-        return provideUpdateObservable().map( features -> {
-            setFeatures(features);
-            return null;
-        });
+        return storeFeaturesInPrefs(DEFAULT_NUM_RETRIES);
+    }
+
+    /**
+     * Circumvents the presenter subject to store features in preferences.
+     * @param numRetries is the number of retry attempts to make if an error is thrown
+     * @return Void Observable
+     */
+    public Observable<Void> storeFeaturesInPrefs(final int numRetries) {
+        return provideUpdateObservable()
+                .retry(numRetries)
+                .map( features -> {
+                    setFeatures(features);
+                    return null;
+                });
     }
 
     public boolean hasVoice(){
