@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import dagger.Lazy;
 import is.hello.commonsense.util.StringRef;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoiceResponse;
@@ -187,32 +188,44 @@ public class SenseVoiceFragment extends InjectionFragment {
     }
 
     private void onRetry(final View view){
-        if(senseCircleView.getDrawable() == null) {
-            onContinue();
-            senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
-            senseCircleView.getDrawable().setAlpha(0);
-            questionText.setAlpha(0);
-        }
-        updateUI(false);
-        poll(true);
-        updateState(R.string.sense_voice_question_temperature,
-                    R.color.text_dark,
-                    View.VISIBLE,
-                    WAIT_STATE,
-                    AnimatorSetHandler.LOOP_ANIMATION,
-                    true);
+        getAnimatorContext().transaction(
+                transaction -> {
+                    if(senseCircleView.getDrawable() == null) {
+                        onContinue(transaction);
+                    }
+                    updateButtons(false, transaction);
+                }, complete -> {
+                    if(complete) {
+                        poll(true);
+                        updateState(R.string.sense_voice_question_temperature,
+                                    R.color.text_dark,
+                                    View.VISIBLE,
+                                    WAIT_STATE,
+                                    AnimatorSetHandler.LOOP_ANIMATION,
+                                    true);
+                    }
+                });
     }
 
-    private void onContinue() {
-        animatorFor(nightStandView)
-                .alpha(0.4f)
-                .translationY(TRANSLATE_Y.get())
-                .start();
+    private void onContinue(@NonNull final AnimatorContext.Transaction transaction) {
 
-        animatorFor(senseImageView)
+        transaction.animatorFor(nightStandView)
+                .alpha(0.4f)
+                .translationY(TRANSLATE_Y.get());
+
+        transaction.animatorFor(senseImageView)
                 .scale(1)
-                .translationY(TRANSLATE_Y.get()*0.60f)
-                .start();
+                .translationY(TRANSLATE_Y.get()*0.60f);
+
+        transaction.animatorFor(title)
+                .fadeOut(View.INVISIBLE);
+
+        transaction.animatorFor(subtitle)
+                .fadeOut(View.INVISIBLE);
+
+        senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
+        senseCircleView.getDrawable().setAlpha(0);
+        questionText.setAlpha(0);
     }
 
     private void onSkip(final View view) {
@@ -225,6 +238,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         senseVoicePresenter.reset();
         toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
+        skipButton.setEnabled(false);
         skipButton.setVisibility(View.INVISIBLE);
         senseVoicePresenter.updateHasCompletedTutorial(success);
         bindAndSubscribe(Observable.timer(success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0, TimeUnit.MILLISECONDS),
@@ -232,33 +246,22 @@ public class SenseVoiceFragment extends InjectionFragment {
                 this::presentError);
     }
 
-    private void updateUI(final boolean onError){
+    private void updateButtons(final boolean onError, @NonNull final AnimatorContext.Transaction transaction){
         final float buttonTranslateY = retryButton.getMeasuredHeight();
+        toolbar.setWantsHelpButton(!onError);
         if(onError) {
-            animatorFor(skipButton)
-                    .slideYAndFade(0, -buttonTranslateY, 1, 1)
-                    .start();
+            transaction.animatorFor(skipButton)
+                       .slideYAndFade(0, -buttonTranslateY, 1, 1);
 
-            animatorFor(retryButton)
-                    .slideYAndFade(0, -buttonTranslateY, 0, 1)
-                    .start();
-
-            toolbar.setWantsHelpButton(false);
+            transaction.animatorFor(retryButton)
+                       .slideYAndFade(0, -buttonTranslateY, 0, 1);
         } else {
-            animatorFor(retryButton)
-                    .translationY(buttonTranslateY)
-                    .fadeOut(View.INVISIBLE)
-                    .start();
+            transaction.animatorFor(retryButton)
+                       .translationY(buttonTranslateY)
+                       .fadeOut(View.INVISIBLE);
 
-            animatorFor(skipButton)
-                    .translationY(buttonTranslateY)
-                    .start();
-
-            viewAnimator.resetAnimation(
-                    createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
-            title.setVisibility(View.INVISIBLE);
-            subtitle.setVisibility(View.INVISIBLE);
-            toolbar.setWantsHelpButton(true);
+            transaction.animatorFor(skipButton)
+                       .translationY(buttonTranslateY);
         }
     }
 
@@ -279,7 +282,8 @@ public class SenseVoiceFragment extends InjectionFragment {
                     FAIL_STATE,
                     AnimatorSetHandler.LOOP_ANIMATION,
                     true);
-        updateUI(true);
+        getAnimatorContext().transaction(
+                transaction -> updateButtons(true,transaction), null);
     }
 
     private void showVoiceTipDialog(final boolean shouldShow,
