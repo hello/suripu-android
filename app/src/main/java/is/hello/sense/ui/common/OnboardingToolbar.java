@@ -47,6 +47,7 @@ public class OnboardingToolbar {
     public void onDestroyView() {
         backButton.setOnClickListener(null);
         helpButton.setOnClickListener(null);
+        helpButton.setOnLongClickListener(null);
         onHelpClickListener = null;
         onHelpLongClickListener = null;
     }

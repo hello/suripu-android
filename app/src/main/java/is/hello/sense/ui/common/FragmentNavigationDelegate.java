@@ -23,7 +23,7 @@ import is.hello.sense.util.StateSafeExecutor;
 public final class FragmentNavigationDelegate implements FragmentManager.OnBackStackChangedListener {
     public static final String SAVED_STATUS_BAR_COLOR = FragmentNavigationDelegate.class.getName() + "#SAVED_STATUS_BAR_COLOR";
 
-    private final @NonNull SenseActivity activity;
+    private SenseActivity activity;
     private final @IdRes int containerId;
     private final @Nullable StateSafeExecutor stateSafeExecutor;
 
@@ -32,9 +32,9 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
 
     //region Lifecycle
 
-    public FragmentNavigationDelegate(@NonNull SenseActivity activity,
-                                      @IdRes int containerId,
-                                      @Nullable StateSafeExecutor stateSafeExecutor) {
+    public FragmentNavigationDelegate(@NonNull final SenseActivity activity,
+                                      @IdRes final int containerId,
+                                      @Nullable final StateSafeExecutor stateSafeExecutor) {
         this.activity = activity;
         this.containerId = containerId;
         this.stateSafeExecutor = stateSafeExecutor;
@@ -45,11 +45,11 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         }
     }
 
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putInt(SAVED_STATUS_BAR_COLOR, Windows.getStatusBarColor(activity.getWindow()));
     }
 
-    public void onRestoreInstanceState(@NonNull Bundle inState) {
+    public void onRestoreInstanceState(@NonNull final Bundle inState) {
         final @ColorInt int statusBarColor = inState.getInt(SAVED_STATUS_BAR_COLOR);
         Windows.setStatusBarColor(activity.getWindow(), statusBarColor);
     }
@@ -61,6 +61,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
                 statusBarAnimator.cancel();
             }
         }
+        activity = null;
     }
 
     //endregion
