@@ -91,6 +91,7 @@ public class TimelineFragment extends InjectionFragment
     private static final int ID_EVENT_ADJUST_TIME = 1;
     private static final int ID_EVENT_REMOVE = 2;
     private static final int ID_EVENT_INCORRECT = 3;
+    private static final double TOOL_TIP_HEIGHT_MULTIPLIER = 3.25; // 3 for top+bottom+text height. .25 for a little white space.
 
 
     @Inject
@@ -180,7 +181,7 @@ public class TimelineFragment extends InjectionFragment
         final Resources resources = getResources();
         // This value will change based on screen density. Using a static value will not solve this for all phones.
         // Since we know the text and top/bottom padding size, the 3 of those combined will create enough space.
-        toolTipHeight = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.gap_medium), resources.getDisplayMetrics()) * 3.25);
+        toolTipHeight = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.x2), resources.getDisplayMetrics()) * TOOL_TIP_HEIGHT_MULTIPLIER);
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
