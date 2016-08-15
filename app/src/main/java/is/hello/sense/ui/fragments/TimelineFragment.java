@@ -118,7 +118,7 @@ public class TimelineFragment extends InjectionFragment
     private TimelineAdapter adapter;
     private StaggeredFadeItemAnimator itemAnimator;
     private ColorDrawableCompat backgroundFill;
-    private final ScrollListener scrollListener = new ScrollListener();
+    private ScrollListener scrollListener = new ScrollListener();
     private int toolTipHeight;
 
 
@@ -356,6 +356,7 @@ public class TimelineFragment extends InjectionFragment
         this.adapter = null;
         this.itemAnimator = null;
         this.backgroundFill = null;
+        scrollListener = null;
 
         dismissVisibleOverlaysAndDialogs();
     }
