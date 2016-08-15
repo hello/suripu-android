@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,6 @@ import is.hello.sense.graph.presenters.UnreadStatePresenter;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -118,6 +118,9 @@ public class TimelineFragment extends InjectionFragment
     private TimelineAdapter adapter;
     private StaggeredFadeItemAnimator itemAnimator;
     private ColorDrawableCompat backgroundFill;
+    private final ScrollListener scrollListener = new ScrollListener();
+    private int toolTipHeight;
+
 
     private
     @Nullable
@@ -166,7 +169,6 @@ public class TimelineFragment extends InjectionFragment
 
         timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(timelinePresenter);
-
         setRetainInstance(true);
     }
 
@@ -176,10 +178,13 @@ public class TimelineFragment extends InjectionFragment
         final View view = inflater.inflate(R.layout.fragment_timeline, container, false);
 
         final Resources resources = getResources();
+        // This value will change based on screen density. Using a static value will not solve this for all phones.
+        // Since we know the text and top/bottom padding size, the 3 of those combined will create enough space.
+        toolTipHeight = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.gap_medium), resources.getDisplayMetrics()) * 3.25);
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_timeline_recycler);
         recyclerView.setHasFixedSize(true);
-        recyclerView.addOnScrollListener(new ScrollListener());
+        recyclerView.addOnScrollListener(scrollListener);
 
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -372,7 +377,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode,@NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             share();
         } else {
@@ -427,7 +432,7 @@ public class TimelineFragment extends InjectionFragment
                          timeline -> Share.image(
                                  TimelineImageGenerator
                                          .createShareableTimeline(getActivity(), timeline))
-                              .send(this),
+                                          .send(this),
                          e -> Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e));
     }
 
@@ -652,7 +657,7 @@ public class TimelineFragment extends InjectionFragment
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
-                    header.setAction(R.string.action_timeline_bad_data_support,null);
+                    header.setAction(R.string.action_timeline_bad_data_support, null);
 
                     final Activity activity = getActivity();
                     if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
@@ -701,6 +706,23 @@ public class TimelineFragment extends InjectionFragment
 
 
     //region Acting on Items
+    private void scrollForSpace(final int position, final View view, @NonNull final TimelineEvent event, final int dy) {
+        recyclerView.removeOnScrollListener(scrollListener);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    recyclerView.removeOnScrollListener(this);
+                    onSegmentItemClicked(position, view, event);
+                    recyclerView.addOnScrollListener(scrollListener);
+                }
+            }
+        });
+        recyclerView.smoothScrollBy(0, dy);
+
+    }
+
 
     @Override
     public void onSegmentItemClicked(final int position, final View view, @NonNull final TimelineEvent event) {
@@ -709,7 +731,11 @@ public class TimelineFragment extends InjectionFragment
             animateShow = false;
             infoOverlay.dismiss(false);
         }
-
+        if (view.getY() < toolTipHeight) {
+            final int dy = toolTipHeight - (int) view.getY();
+            scrollForSpace(position, view, event, -dy);
+            return;
+        }
         this.infoOverlay = new TimelineInfoOverlay(getActivity(), getAnimatorContext());
         infoOverlay.setOnDismiss(sender -> {
             if (sender == infoOverlay) {
@@ -840,8 +866,8 @@ public class TimelineFragment extends InjectionFragment
 
     private void completeAdjustTime(@NonNull final TimelineEvent event, @NonNull final LocalTime newTime) {
         final LoadingDialogFragment dialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                          getString(R.string.dialog_loading_message),
-                                                                          LoadingDialogFragment.OPAQUE_BACKGROUND);
+                                                                                getString(R.string.dialog_loading_message),
+                                                                                LoadingDialogFragment.OPAQUE_BACKGROUND);
         dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                          ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null),
@@ -868,8 +894,6 @@ public class TimelineFragment extends InjectionFragment
     }
 
     //endregion
-
-
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
