@@ -611,6 +611,8 @@
     <string name="sense_downloading_update">Downloading update…</string>
     <string name="sense_updated">Sense updated</string>
     <string name="sense_try_later_dialog_message">Sense will try again at a later time. You can begin using Sense, but some features may not be available until the update is complete.</string>
+    <string name="sense_voice_new_pill_title">Sense with Voice is ready</string>
+    <string name="sense_voice_new_pill_message">Your new Sense with Voice is set up and is currently paired with your original Sleep Pill. Next, you’ll pair your new Sleep Pill.</string>
 
     <string name="voice_result_none">none</string>
     <string name="voice_result_ok">ok</string>
