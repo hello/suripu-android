@@ -266,8 +266,7 @@ public class SenseVoiceFragment extends InjectionFragment {
         poll(false);
         voiceTipSubscription.unsubscribe();
         final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
-                .withTitle(R.string.error_wifi_connection_title)
-                .withMessage(StringRef.from(R.string.error_wifi_connection_message))
+                .withMessage(StringRef.from(R.string.error_internet_connection_generic_message))
                 .build();
 
         if(ApiException.isNetworkError(throwable)){
