@@ -63,6 +63,7 @@ import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
+import is.hello.sense.ui.fragments.settings.PairNewPillFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -170,9 +171,7 @@ public class OnboardingActivity extends InjectionActivity
                                                        getString(R.string.dialog_loading_message),
                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
                             bindAndSubscribe(apiService.getAccount(true),
-                                             nextAccount -> {
-                                                 showBirthday(nextAccount, false);
-                                             },
+                                             nextAccount -> showBirthday(nextAccount, false),
                                              e -> {
                                                  LoadingDialogFragment.close(getFragmentManager());
                                                  ErrorDialogFragment.presentError(this, e);
@@ -365,6 +364,10 @@ public class OnboardingActivity extends InjectionActivity
         }
     }
 
+    public void showPairNewPillFragment(){
+        pushFragment(new PairNewPillFragment(), null, false);
+    }
+
     public void showGetStarted(final boolean overrideDeviceUnsupported) {
         if (!overrideDeviceUnsupported && !hardwarePresenter.isDeviceSupported()) {
             pushFragment(new OnboardingUnsupportedDeviceFragment(), null, true);
@@ -471,9 +474,7 @@ public class OnboardingActivity extends InjectionActivity
                              devicesInfo -> {
                                  Logger.info(TAG, "Loaded devices info");
                                  Analytics.setSenseId(devicesInfo.getSenseId());
-                             }, e -> {
-                        Logger.error(TAG, "Failed to silently load devices info, will retry later", e);
-                    });
+                             }, e -> Logger.error(TAG, "Failed to silently load devices info, will retry later", e));
 
             final SimpleStepFragment.Builder builder =
                     new SimpleStepFragment.Builder(this);
