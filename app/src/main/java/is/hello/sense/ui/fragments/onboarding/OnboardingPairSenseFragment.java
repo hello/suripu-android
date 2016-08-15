@@ -215,8 +215,10 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                                           Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
                                           if (BuildConfig.DEBUG && showPairNewPill) {
                                               getOnboardingActivity().showPairNewPillFragment();
-                                          } else if (shouldReleasePeripheralOnPair()) {
-                                              hardwarePresenter.clearPeripheral();
+                                          } else {
+                                              if (shouldReleasePeripheralOnPair()) {
+                                                  hardwarePresenter.clearPeripheral();
+                                              }
                                               getOnboardingActivity().finish();
                                           }
                                       } else {
