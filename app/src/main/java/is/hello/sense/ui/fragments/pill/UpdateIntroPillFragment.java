@@ -31,6 +31,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
 
     private Button primaryButton;
     private final ViewAnimator viewAnimator = new ViewAnimator();
+    private OnboardingSimpleStepView view;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View animatedView = viewAnimator.inflateView(inflater, container, R.layout.pill_ota_view, R.id.blue_box_view);
-        final ViewGroup view = new OnboardingSimpleStepView(this, inflater)
+        this.view = new OnboardingSimpleStepView(this, inflater)
                 .setAnimatedView(animatedView)
                 .setHeadingText(R.string.title_update_sleep_pill)
                 .setSubheadingText(R.string.info_update_sleep_pill)
@@ -84,6 +85,8 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
         primaryButton = null;
         viewAnimator.onDestroyView();
         phoneBatteryPresenter.enoughBattery.forget();
+        view.destroy();
+        view = null;
     }
 
     @Override

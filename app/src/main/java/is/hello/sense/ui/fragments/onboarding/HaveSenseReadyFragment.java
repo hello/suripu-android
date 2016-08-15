@@ -15,6 +15,7 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Analytics;
 
 public class HaveSenseReadyFragment extends SenseFragment {
+    private OnboardingSimpleStepView view;
     //region Lifecycle
 
 
@@ -30,7 +31,7 @@ public class HaveSenseReadyFragment extends SenseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_have_sense_ready)
                 .setSubheadingText(R.string.info_have_sense_ready)
                 .setDiagramImage(R.drawable.onboarding_sense_grey)
@@ -41,6 +42,14 @@ public class HaveSenseReadyFragment extends SenseFragment {
                 .setSecondaryButtonText(R.string.action_buy_sense)
                 .setSecondaryOnClickListener(this::showBuySense)
                 .withSecondaryOnBottom();
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.view.destroy();
+        this.view = null;
     }
 
     //endregion

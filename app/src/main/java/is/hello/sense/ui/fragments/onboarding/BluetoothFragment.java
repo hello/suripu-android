@@ -18,6 +18,7 @@ import is.hello.sense.util.Analytics;
 
 public class BluetoothFragment extends HardwareFragment {
     private static final String ARG_NEXT_SCREEN_ID = BluetoothFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
+    private OnboardingSimpleStepView view;
 
     public static BluetoothFragment newInstance(final int nextScreenId) {
         final BluetoothFragment fragment = new BluetoothFragment();
@@ -41,7 +42,7 @@ public class BluetoothFragment extends HardwareFragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view =  new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.action_turn_on_ble)
                 .setSubheadingText(R.string.info_turn_on_bluetooth)
                 .setPrimaryButtonText(R.string.action_turn_on_ble)
@@ -50,6 +51,7 @@ public class BluetoothFragment extends HardwareFragment {
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
                 .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH));
+        return view;
     }
 
     @Override
@@ -61,6 +63,12 @@ public class BluetoothFragment extends HardwareFragment {
                          Functions.LOG_ERROR);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.view.destroy();
+        this.view = null;
+    }
 
     public void done() {
         hideBlockingActivity(true, () -> {

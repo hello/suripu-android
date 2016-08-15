@@ -62,7 +62,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         this.subheadingText = (TextView) contents.findViewById(R.id.view_onboarding_simple_step_subheading);
     }
 
-    public OnboardingSimpleStepView configure(@NonNull Action1<OnboardingSimpleStepView> visitor) {
+    public OnboardingSimpleStepView configure(@NonNull final Action1<OnboardingSimpleStepView> visitor) {
         visitor.call(this);
         return this;
     }
