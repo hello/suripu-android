@@ -23,6 +23,7 @@ import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
@@ -140,7 +141,7 @@ public class SenseUpdateActivity extends InjectionActivity
         } else if (fragment instanceof SenseVoiceFragment) {
             showVoiceDone();
         } else if (fragment instanceof VoiceCompleteFragment){
-            //todo showSenseResetOriginal();
+            showResetOriginalSense();
         }
         
     }
@@ -193,6 +194,8 @@ public class SenseUpdateActivity extends InjectionActivity
         pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(false), null, true);
     }
 
+
+
     public void checkSenseOTAStatus(){
         subscribe(senseOTAStatusPresenter.storeInPrefs(),
                   Functions.NO_OP,
@@ -219,7 +222,7 @@ public class SenseUpdateActivity extends InjectionActivity
         if(userFeaturesPresenter.hasVoice()){
             showSenseVoice();
         } else {
-            //todo redirect to reset original sense
+            showResetOriginalSense();
         }
     }
 
@@ -230,6 +233,10 @@ public class SenseUpdateActivity extends InjectionActivity
     public void showVoiceDone() {
         final Fragment fragment = new VoiceCompleteFragment();
         pushFragment(fragment, null, false);
+    }
+
+    public void showResetOriginalSense() {
+        pushFragment(new SenseResetOriginalFragment(), null, false);
     }
 
     private void back() {

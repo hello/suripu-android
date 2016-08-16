@@ -173,6 +173,11 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
+    public static void showResetSenseMoreInfoPage(@NonNull final Activity from){
+        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/213033483");
+        openUri(from, supportUrl);
+    }
+
     public static void showAppSettings(@NonNull final Activity from) {
         try {
             from.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
