@@ -77,7 +77,8 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Show Room Check", this::showRoomCheck));
         adapter.add(new DetailItem("Show Onboarding Smart Alarm", this::showOnboardingSmartAlarm));
         adapter.add(new DetailItem("Show Update Pill", this::showUpdatePill));
-        adapter.add(new DetailItem("Show Sense Update", this::showSenseUpdate));
+        adapter.add(new DetailItem("Show Sense OTA Update", this::showSenseOTA));
+        adapter.add(new DetailItem("Show New Sense Update", this::showNewSenseUpdate));
         adapter.add(new DetailItem("Show Sense Voice", this::showSenseVoice));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
@@ -123,11 +124,11 @@ public class DebugActivity extends InjectionActivity {
     }
 
     public void showUpdatePill(){
-        final Intent onboarding = new Intent(this, PillUpdateActivity.class);
-        startActivity(onboarding);
+        final Intent pillUpdate = new Intent(this, PillUpdateActivity.class);
+        startActivity(pillUpdate);
     }
 
-    private void showSenseUpdate() {
+    private void showSenseOTA() {
         final Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(DebugActivity.EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_SENSE_UPDATE);
         startActivity(onboarding);
@@ -137,6 +138,11 @@ public class DebugActivity extends InjectionActivity {
         final Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(DebugActivity.EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_SENSE_VOICE);
         startActivity(onboarding);
+    }
+
+    private void showNewSenseUpdate() {
+        final Intent senseUpdate = new Intent(this, SenseUpdateActivity.class);
+        startActivity(senseUpdate);
     }
 
     public void viewLog() {

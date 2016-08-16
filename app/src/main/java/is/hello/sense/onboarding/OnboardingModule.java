@@ -5,16 +5,16 @@ import is.hello.sense.graph.presenters.SenseVoicePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
+import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
-import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateFragment;
-import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
 
 @Module(complete = false, injects = {
         OnboardingActivity.class,
@@ -23,12 +23,12 @@ import is.hello.sense.ui.fragments.onboarding.sense.SenseUpdateIntroFragment;
         BluetoothFragment.class,
         OnboardingRegisterAudioFragment.class,
         OnboardingUnsupportedDeviceFragment.class,
-        OnboardingPairSenseFragment.class,
+        PairSenseFragment.class,
         OnboardingPairPillFragment.class,
         OnboardingSenseColorsFragment.class,
         OnboardingRoomCheckFragment.class,
-        SenseUpdateIntroFragment.class,
-        SenseUpdateFragment.class,
+        SenseOTAIntroFragment.class,
+        SenseOTAFragment.class,
         SenseVoiceFragment.class,
         SenseVoicePresenter.class,
 
