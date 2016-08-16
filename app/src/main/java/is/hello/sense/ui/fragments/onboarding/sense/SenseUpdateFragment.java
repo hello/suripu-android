@@ -186,8 +186,7 @@ public class SenseUpdateFragment extends HardwareFragment {
             int messageRes = R.string.error_sense_update_failed_message;
 
             if(ApiException.isNetworkError(e)){
-                titleRes = R.string.error_wifi_connection_title;
-                messageRes = R.string.error_wifi_connection_message;
+                messageRes = R.string.error_internet_connection_generic_message;
             }
 
             final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
