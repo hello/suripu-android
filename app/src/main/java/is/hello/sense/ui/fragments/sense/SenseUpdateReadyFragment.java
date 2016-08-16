@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.sense;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,21 +12,27 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 public class SenseUpdateReadyFragment extends SenseFragment{
 
+    private OnboardingSimpleStepView view;
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view =  new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_upgrade_ready_sense_voice)
                 .setSubheadingText(R.string.info_upgrade_ready_sense_voice)
                 .setDiagramImage(R.drawable.sense_upgrade_ready)
                 .setPrimaryButtonText(R.string.action_continue)
-                .setPrimaryOnClickListener(ignored -> next())
+                .setPrimaryOnClickListener(ignored -> finishFlow())
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false);
+
+        return view;
     }
 
-
-    private void next() {
-        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view.destroy();
+        view = null;
     }
 }

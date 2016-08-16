@@ -147,7 +147,7 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void showSenseUpdate() {
         if(bluetoothStack.isEnabled()) {
-            pushFragment(new PairSenseFragment(), null, false);
+            pushFragment(PairSenseFragment.newUpdateInstance(), null, false);
         } else {
             showBluetoothFragment();
         }

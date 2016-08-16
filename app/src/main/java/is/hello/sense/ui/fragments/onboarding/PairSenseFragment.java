@@ -49,15 +49,25 @@ public class PairSenseFragment extends HardwareFragment
 
     private static final int LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI = 3;
     private static final String OPERATION_LINK_ACCOUNT = "Linking account";
+    private static final String ARG_PAIR_NEW_SENSE = "pair_new_sense" + PairSenseFragment.class.getName();
 
     @Inject
     ApiService apiService;
 
     private int linkAccountFailures = 0;
     private boolean hasLinkedAccount = false;
+    private boolean pairNewSenseSession = false;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     private OnboardingSimpleStepView view;
+
+    public static PairSenseFragment newUpdateInstance() {
+        final PairSenseFragment fragment = new PairSenseFragment();
+        final Bundle arguments = new Bundle();
+        arguments.putBoolean(ARG_PAIR_NEW_SENSE, true);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -66,6 +76,8 @@ public class PairSenseFragment extends HardwareFragment
         if (savedInstanceState != null) {
             this.hasLinkedAccount = savedInstanceState.getBoolean("hasLinkedAccount", false);
         }
+
+        setPairNewSenseSession();
 
         final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
         if (isPairOnlySession()) {
@@ -82,9 +94,10 @@ public class PairSenseFragment extends HardwareFragment
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
+
         this.view = new OnboardingSimpleStepView(this, inflater)
-                .setHeadingText(R.string.title_pair_sense)
-                .setSubheadingText(R.string.info_pair_sense)
+                .setHeadingText( pairNewSenseSession ?  R.string.title_pair_new_sense : R.string.title_pair_sense)
+                .setSubheadingText( pairNewSenseSession ? R.string.info_pair_new_sense : R.string.info_pair_sense)
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
                 .setSecondaryOnClickListener(this::showPairingModeHelp)
@@ -236,6 +249,13 @@ public class PairSenseFragment extends HardwareFragment
                                   });
     }
 
+    private void setPairNewSenseSession() {
+        final Bundle arguments = getArguments();
+        if(arguments != null){
+            this.pairNewSenseSession = arguments.getBoolean(ARG_PAIR_NEW_SENSE);
+        }
+    }
+
     public void showPairingModeHelp(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
@@ -333,7 +353,6 @@ public class PairSenseFragment extends HardwareFragment
             }
         });
     }
-
 
     public static class TroubleshootSenseDialogFragment extends DialogFragment {
         public static final String TAG = TroubleshootSenseDialogFragment.class.getSimpleName();
