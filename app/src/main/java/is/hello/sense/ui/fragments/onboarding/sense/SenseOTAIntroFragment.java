@@ -24,7 +24,7 @@ public class SenseOTAIntroFragment extends SenseFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.SenseUpdate.EVENT_ENTER, null);
+        Analytics.trackEvent(Analytics.SenseOTA.EVENT_ENTER, null);
 
         setRetainInstance(true);
     }
