@@ -669,7 +669,7 @@ public class Analytics {
      *
      *  {@link this#EVENT_END} - Fire when the status returned becomes 'COMPLETE'
      */
-    public interface SenseUpdate {
+    public interface SenseOTA {
         String EVENT_ENTER = "Sense DFU";
         String EVENT_START = "Sense DFU begin";
         String EVENT_STATUS = "Sense DFU Status";
