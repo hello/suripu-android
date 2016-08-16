@@ -101,7 +101,7 @@ public class SenseOTAFragment extends HardwareFragment {
     private void requestUpdate() {
         updateUI(false);
         //todo maybe implement NullBodyAwareOkHttpClient https://github.com/wikimedia/apps-android-wikipedia/commit/f1a50adf0bcb550114cf0df42283d206ed7e45d7
-        Analytics.trackEvent(Analytics.SenseUpdate.EVENT_START, null);
+        Analytics.trackEvent(Analytics.SenseOTA.EVENT_START, null);
         bindAndSubscribe(apiService.requestSenseUpdate(""),
                          ignored -> Logger.info(SenseOTAFragment.class.getSimpleName(), "Sense update request sent."),
                          e -> presentError(e, "Requesting Sense Update"));
@@ -131,8 +131,8 @@ public class SenseOTAFragment extends HardwareFragment {
 
     private void sendAnalyticsStatusUpdate(final DeviceOTAState.OtaState state) {
         if(!this.progressStatus.getText().equals(state.name())){
-            Analytics.trackEvent(Analytics.SenseUpdate.EVENT_STATUS,
-                                 Analytics.createProperties(Analytics.SenseUpdate.PROPERTY_NAME, state.name()));
+            Analytics.trackEvent(Analytics.SenseOTA.EVENT_STATUS,
+                                 Analytics.createProperties(Analytics.SenseOTA.PROPERTY_NAME, state.name()));
         }
     }
 
@@ -157,7 +157,7 @@ public class SenseOTAFragment extends HardwareFragment {
     }
 
     private void done() {
-        Analytics.trackEvent(Analytics.SenseUpdate.EVENT_END, null);
+        Analytics.trackEvent(Analytics.SenseOTA.EVENT_END, null);
         stateSafeExecutor.execute( () -> {
             if(userFeaturesPresenter.hasVoice()){
                 LoadingDialogFragment.show(getFragmentManager(),
