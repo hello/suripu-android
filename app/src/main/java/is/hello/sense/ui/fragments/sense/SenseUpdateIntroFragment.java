@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.sense;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,28 +14,35 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 public class SenseUpdateIntroFragment extends SenseFragment{
 
+    private OnboardingSimpleStepView view;
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_upgrade_sense_voice)
                 .setSubheadingText(R.string.info_upgrade_sense_voice)
                 .setDiagramImage(R.drawable.sense_upgrade_intro)
                 .setDiagramEdgeToEdge(false)
                 .setPrimaryButtonText(R.string.action_set_up)
-                .setPrimaryOnClickListener(ignored -> next())
+                .setPrimaryOnClickListener(ignored -> finishFlow())
                 .setSecondaryButtonText(R.string.action_upgrade_sense_voice_help)
                 .setSecondaryOnClickListener(this::showSenseVoiceHelp)
                 .setToolbarWantsBackButton(true);
+
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view.destroy();
+        view = null;
     }
 
     private void showSenseVoiceHelp(final View view) {
         //todo replace with proper uri
         //Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
         UserSupport.openUri(getActivity(), Uri.parse(UserSupport.ORDER_URL));
-    }
-
-    private void next() {
-        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
     }
 }
