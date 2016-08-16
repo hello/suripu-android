@@ -132,7 +132,7 @@ public class SenseUpdateFragment extends HardwareFragment {
     private void sendAnalyticsStatusUpdate(final DeviceOTAState.OtaState state) {
         if(!this.progressStatus.getText().equals(state.name())){
             Analytics.trackEvent(Analytics.SenseUpdate.EVENT_STATUS,
-                                 Analytics.createProperties(Analytics.SenseUpdate.PROPERY_NAME, state.name()));
+                                 Analytics.createProperties(Analytics.SenseUpdate.PROPERTY_NAME, state.name()));
         }
     }
 
