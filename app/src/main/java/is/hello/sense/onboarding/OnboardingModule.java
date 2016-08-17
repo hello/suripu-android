@@ -1,7 +1,7 @@
 package is.hello.sense.onboarding;
 
 import dagger.Module;
-import is.hello.sense.graph.presenters.SenseVoicePresenter;
+import is.hello.sense.SenseOTAModule;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
@@ -12,11 +12,12 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
-import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
-import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
-import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
 
-@Module(complete = false, injects = {
+@Module(complete = false,
+        includes = {
+                SenseOTAModule.class
+        },
+        injects = {
         OnboardingActivity.class,
         OnboardingRegisterWeightFragment.class,
         OnboardingRegisterHeightFragment.class,
@@ -27,10 +28,6 @@ import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
         OnboardingPairPillFragment.class,
         OnboardingSenseColorsFragment.class,
         OnboardingRoomCheckFragment.class,
-        SenseOTAIntroFragment.class,
-        SenseOTAFragment.class,
-        SenseVoiceFragment.class,
-        SenseVoicePresenter.class,
 
 })
 public class OnboardingModule {

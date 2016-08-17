@@ -11,7 +11,10 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
+import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
+import is.hello.sense.graph.presenters.UserFeaturesPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -20,6 +23,10 @@ import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
+import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
+import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 
@@ -37,6 +44,10 @@ public class SenseUpdateActivity extends InjectionActivity
     BluetoothStack bluetoothStack;
     @Inject
     DeviceIssuesPresenter deviceIssuesPresenter;
+    @Inject
+    SenseOTAStatusPresenter senseOTAStatusPresenter;
+    @Inject
+    UserFeaturesPresenter userFeaturesPresenter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -107,9 +118,7 @@ public class SenseUpdateActivity extends InjectionActivity
             return;
         }
 
-        if(fragment instanceof SenseUpdateIntroFragment) {
-            showSenseUpdate();
-        } else if(fragment instanceof BluetoothFragment){
+        if(fragment instanceof SenseUpdateIntroFragment || fragment instanceof BluetoothFragment){
             showSenseUpdate();
         }else if(fragment instanceof PairSenseFragment){
             if(responseCode == PairSenseFragment.REQUEST_CODE_EDIT_WIFI){
@@ -119,6 +128,19 @@ public class SenseUpdateActivity extends InjectionActivity
             }
         } else if(fragment instanceof ConnectToWiFiFragment){
             showSenseUpdateReady();
+        } else if(fragment instanceof SenseUpdateReadyFragment){
+            checkSenseOTAStatus();
+        }
+
+        //todo show pair new pill handling before ota flow
+        else if ( fragment instanceof SenseOTAIntroFragment){
+            showSenseOTAStart();
+        } else if (fragment instanceof SenseOTAFragment) {
+            checkHasVoiceFeature();
+        } else if (fragment instanceof SenseVoiceFragment) {
+            showVoiceDone();
+        } else if (fragment instanceof VoiceCompleteFragment){
+            //todo showSenseResetOriginal();
         }
         
     }
@@ -169,6 +191,45 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void showSelectWifiNetwork() {
         pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(false), null, true);
+    }
+
+    public void checkSenseOTAStatus(){
+        subscribe(senseOTAStatusPresenter.storeInPrefs(),
+                  Functions.NO_OP,
+                  Functions.LOG_ERROR);
+    }
+
+    public void checkForSenseOTA() {
+        if(senseOTAStatusPresenter.isOTARequired()){
+            showSenseUpdateIntro();
+        } else{
+            checkHasVoiceFeature();
+        }
+    }
+
+    public void showSenseOTAIntro(){
+        pushFragment(SenseOTAIntroFragment.newInstance(), null, false);
+    }
+
+    public void showSenseOTAStart() {
+        pushFragment(SenseOTAFragment.newInstance(), null, false);
+    }
+
+    private void checkHasVoiceFeature() {
+        if(userFeaturesPresenter.hasVoice()){
+            showSenseVoice();
+        } else {
+            //todo redirect to reset original sense
+        }
+    }
+
+    private void showSenseVoice() {
+        pushFragment(new SenseVoiceFragment(), null, false);
+    }
+
+    public void showVoiceDone() {
+        final Fragment fragment = new VoiceCompleteFragment();
+        pushFragment(fragment, null, false);
     }
 
     private void back() {
