@@ -52,19 +52,30 @@ public abstract class HardwareFragment extends InjectionFragment {
 
     //region Activity
 
-    protected void showBlockingActivity(@StringRes int titleRes) {
+    protected void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
-            stateSafeExecutor.execute(() -> {
-                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                        getString(titleRes),
-                                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
-            });
+            stateSafeExecutor.execute(() -> this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+                                                                                                    getString(titleRes),
+                                                                                                    LoadingDialogFragment.OPAQUE_BACKGROUND));
         } else {
-                loadingDialogFragment.setTitle(getString(titleRes));
+            loadingDialogFragment.setTitle(getString(titleRes));
         }
     }
 
-    protected void hideBlockingActivity(boolean success, @NonNull Runnable onCompletion) {
+    protected void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
+        stateSafeExecutor
+                .execute(() -> LoadingDialogFragment
+                        .closeWithMessageTransition(getFragmentManager(),
+                                                    () -> {
+                                                        this.loadingDialogFragment = null;
+                                                        if (onCompletion != null) {
+                                                            stateSafeExecutor.execute(onCompletion);
+                                                        }
+                                                    },
+                                                    text));
+    }
+
+    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
         stateSafeExecutor.execute(() -> {
             if (success) {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
@@ -80,8 +91,8 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
 
-    protected void showHardwareActivity(@NonNull Runnable onCompletion,
-                                        @NonNull Action1<Throwable> onError) {
+    protected void showHardwareActivity(@NonNull final Runnable onCompletion,
+                                        @NonNull final Action1<Throwable> onError) {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY),
                          ignored -> onCompletion.run(),
                          e -> {
@@ -90,8 +101,8 @@ public abstract class HardwareFragment extends InjectionFragment {
                          });
     }
 
-    protected void hideHardwareActivity(@NonNull Runnable onCompletion,
-                                        @Nullable Action1<Throwable> onError) {
+    protected void hideHardwareActivity(@NonNull final Runnable onCompletion,
+                                        @Nullable final Action1<Throwable> onError) {
         if (hardwarePresenter.isConnected()) {
             bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
@@ -108,7 +119,7 @@ public abstract class HardwareFragment extends InjectionFragment {
         }
     }
 
-    protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
+    protected void completeHardwareActivity(@NonNull final Runnable onCompletion) {
         bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.STOP),
                          ignored -> onCompletion.run(),
                          e -> {
@@ -119,14 +130,14 @@ public abstract class HardwareFragment extends InjectionFragment {
     }
 
 
-    protected void hideAllActivityForSuccess(@NonNull Runnable onCompletion,
-                                             @NonNull Action1<Throwable> onError) {
+    protected void hideAllActivityForSuccess(@NonNull final Runnable onCompletion,
+                                             @NonNull final Action1<Throwable> onError) {
         hideHardwareActivity(() -> hideBlockingActivity(true, onCompletion),
                              e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
-    protected void hideAllActivityForFailure(@NonNull Runnable onCompletion) {
-        Runnable next = () -> hideBlockingActivity(false, onCompletion);
+    protected void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
+        final Runnable next = () -> hideBlockingActivity(false, onCompletion);
         hideHardwareActivity(next, ignored -> next.run());
     }
 
@@ -142,7 +153,7 @@ public abstract class HardwareFragment extends InjectionFragment {
 
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SUPPORT_OPTIONS, null);
 
-        SenseBottomSheet options = new SenseBottomSheet(getActivity());
+        final SenseBottomSheet options = new SenseBottomSheet(getActivity());
         options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
                                   .setTitle(R.string.action_factory_reset)
@@ -186,7 +197,7 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected void promptForRecoveryFactoryReset() {
         Analytics.trackEvent(Analytics.Backside.EVENT_FACTORY_RESET, null);
 
-        SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
+        final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
         confirmation.setTitle(R.string.dialog_title_factory_reset);
         confirmation.setMessage(R.string.dialog_message_factory_reset);
         confirmation.setNegativeButton(android.R.string.cancel, null);
@@ -213,28 +224,24 @@ public abstract class HardwareFragment extends InjectionFragment {
                              },
                              this::presentFactoryResetError);
         } else {
-            showHardwareActivity(() -> {
-                bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
-                                 ignored -> {
-                                     hideBlockingActivity(true, () -> {
-                                         Analytics.setSenseId("unpaired");
+            showHardwareActivity(() -> bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
+                                                        ignored -> hideBlockingActivity(true, () -> {
+                                                            Analytics.setSenseId("unpaired");
 
-                                         MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
-                                                                                                                    R.string.message_power_cycle_sense_factory_reset);
-                                         powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+                                                            MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                                                                                                                       R.string.message_power_cycle_sense_factory_reset);
+                                                            powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
-                                         userFeaturesPresenter.reset();
-                                         getOnboardingActivity().showSetupSense();
-                                     });
-                                 },
-                                 this::presentFactoryResetError);
-            }, this::presentFactoryResetError);
+                                                            userFeaturesPresenter.reset();
+                                                            getOnboardingActivity().showSetupSense();
+                                                        }),
+                                                        this::presentFactoryResetError), this::presentFactoryResetError);
         }
     }
 
-    private void presentFactoryResetError(Throwable e) {
+    private void presentFactoryResetError(final Throwable e) {
         hideBlockingActivity(false, () -> {
-            ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation("Recovery Factory Reset")
                     .withSupportLink()
                     .build();

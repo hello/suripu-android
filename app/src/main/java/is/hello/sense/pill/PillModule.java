@@ -2,6 +2,7 @@ package is.hello.sense.pill;
 
 import dagger.Module;
 import is.hello.sense.ui.activities.PillUpdateActivity;
+import is.hello.sense.ui.fragments.onboarding.PairPillFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdateIntroPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
@@ -11,7 +12,8 @@ import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
                 PillUpdateActivity.class,
                 UpdateIntroPillFragment.class,
                 UpdateReadyPillFragment.class,
-                ConnectPillFragment.class
+                ConnectPillFragment.class,
+                PairPillFragment.class
         }
 )
 public class PillModule {
