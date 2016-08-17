@@ -9,11 +9,14 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 
 @Module(
         complete = false,
+        includes = {
+                SenseOTAModule.class
+        },
         injects = {
                 SenseUpdateActivity.class,
                 SenseUpdateIntroFragment.class,
                 PairSenseFragment.class,
-                SenseUpdateReadyFragment.class
+                SenseUpdateReadyFragment.class,
         }
 )
 public class SenseUpdateModule {
