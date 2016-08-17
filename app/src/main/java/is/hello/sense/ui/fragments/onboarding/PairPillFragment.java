@@ -125,7 +125,7 @@ public class PairPillFragment extends HardwareFragment {
 
     private void showPairingModeHelp(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
+        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
     private void hideBlockingActivityWithDelay(@NonNull final Runnable runnable) {
