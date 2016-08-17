@@ -40,7 +40,7 @@ public final class SimpleStepFragment extends SenseFragment {
     private static final String ARG_EXIT_ANIMATION_NAME = SimpleStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
     private static final String ARG_NEXT_WANTS_BACK_STACK = SimpleStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
 
-    private UserSupport.OnboardingStep helpOnboardingStep;
+    private UserSupport.HelpStep helpStep;
     private OnboardingSimpleStepView stepView;
     private @Nullable ExitAnimationProvider exitAnimationProvider;
 
@@ -59,7 +59,7 @@ public final class SimpleStepFragment extends SenseFragment {
         }
 
         final String helpStepName = getArguments().getString(ARG_HELP_STEP);
-        this.helpOnboardingStep = UserSupport.OnboardingStep.fromString(helpStepName);
+        this.helpStep = UserSupport.HelpStep.fromString(helpStepName);
     }
 
     @Nullable
@@ -145,7 +145,7 @@ public final class SimpleStepFragment extends SenseFragment {
     }
 
     public void help(@NonNull final View sender) {
-        UserSupport.showForOnboardingStep(getActivity(), helpOnboardingStep);
+        UserSupport.showForHelpStep(getActivity(), helpStep);
     }
 
 
@@ -239,7 +239,7 @@ public final class SimpleStepFragment extends SenseFragment {
             return this;
         }
 
-        public Builder setHelpStep(@NonNull final UserSupport.OnboardingStep step) {
+        public Builder setHelpStep(@NonNull final UserSupport.HelpStep step) {
             arguments.putString(ARG_HELP_STEP, step.toString());
             return this;
         }

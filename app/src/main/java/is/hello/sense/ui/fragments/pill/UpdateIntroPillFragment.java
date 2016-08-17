@@ -54,7 +54,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
                 .setSecondaryButtonText(R.string.action_cancel)
                 .setWantsSecondaryButton(true)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL));
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.UPDATE_PILL));
         this.primaryButton = (Button) view.findViewById(R.id.view_onboarding_simple_step_primary);
         return view;
     }
