@@ -170,7 +170,7 @@ public class ConnectToWiFiFragment extends HardwareFragment
             setHasOptionsMenu(true);
         } else {
             toolbar.setWantsBackButton(true)
-                   .setOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.SIGN_INTO_WIFI))
+                   .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.SIGN_INTO_WIFI))
                    .setOnHelpLongClickListener(ignored -> {
                        showSupportOptions();
                        return true;
@@ -215,8 +215,8 @@ public class ConnectToWiFiFragment extends HardwareFragment
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_help: {
-                UserSupport.showForOnboardingStep(getActivity(),
-                                                  UserSupport.OnboardingStep.SIGN_INTO_WIFI);
+                UserSupport.showForHelpStep(getActivity(),
+                                            UserSupport.HelpStep.SIGN_INTO_WIFI);
                 return true;
             }
             default: {

@@ -50,7 +50,7 @@ public class BluetoothFragment extends HardwareFragment {
                 .setPrimaryOnClickListener(this::turnOn)
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.BLUETOOTH));
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.BLUETOOTH));
         return view;
     }
 

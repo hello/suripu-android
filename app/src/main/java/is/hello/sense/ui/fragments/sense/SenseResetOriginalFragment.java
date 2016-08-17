@@ -33,7 +33,7 @@ public class SenseResetOriginalFragment extends InjectionFragment{
     }
 
     private void onHelp(final View ignored) {
-        UserSupport.showResetSenseMoreInfoPage(getActivity());
+        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.RESET_ORIGINAL_SENSE);
     }
 
     private void onDone(final View ignored) {
