@@ -12,6 +12,7 @@ import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.util.SkippableFlow;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 
@@ -37,7 +38,7 @@ public abstract class OnboardingSenseHardwareFragment extends BaseHardwareFragme
                                       .setTitle("Debug")
                                       .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                       .setDescription("If you're adventurous, but here there be dragons."));
-            if (!isPairOnlySession()) {
+            if (!isPairOnlySession() && getActivity() instanceof SkippableFlow) {
                 options.addOption(new SenseBottomSheet.Option(2)
                                           .setTitle("Skip to End")
                                           .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
@@ -55,7 +56,7 @@ public abstract class OnboardingSenseHardwareFragment extends BaseHardwareFragme
                     break;
                 }
                 case 2: {
-                    getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_REGISTER); //todo return a flow result. Requires activity changes
+                    ((SkippableFlow) getActivity()).skipToEnd();
                     break;
                 }
                 default: {
@@ -100,9 +101,9 @@ public abstract class OnboardingSenseHardwareFragment extends BaseHardwareFragme
                                                         ignored -> hideBlockingActivity(true, () -> {
                                                             Analytics.setSenseId("unpaired");
 
-                                                            MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
-                                                                                                                                       R.string.message_power_cycle_sense_factory_reset);
-                                                            powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+                                         final MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                                                                                                          R.string.message_power_cycle_sense_factory_reset);
+                                         powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                                                             userFeaturesPresenter.reset();
                                                             getOnboardingActivity().showSetupSense(); //todo return a flow result. Requires activity changes
@@ -120,6 +121,8 @@ public abstract class OnboardingSenseHardwareFragment extends BaseHardwareFragme
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
+
+    //endregion
 
 
     protected OnboardingActivity getOnboardingActivity() {
