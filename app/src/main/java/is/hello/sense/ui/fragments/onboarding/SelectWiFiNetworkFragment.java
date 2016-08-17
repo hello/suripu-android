@@ -127,8 +127,8 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
         } else {
             toolbar.setWantsBackButton(false)
                    .setOnHelpClickListener(ignored -> {
-                       UserSupport.showForOnboardingStep(getActivity(),
-                                                         UserSupport.OnboardingStep.WIFI_SCAN);
+                       UserSupport.showForHelpStep(getActivity(),
+                                                   UserSupport.HelpStep.WIFI_SCAN);
                    })
                    .setOnHelpLongClickListener(ignored -> {
                        showSupportOptions();
@@ -172,7 +172,7 @@ public class SelectWiFiNetworkFragment extends HardwareFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_help: {
-                UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.WIFI_SCAN);
+                UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.WIFI_SCAN);
                 return true;
             }
             default: {

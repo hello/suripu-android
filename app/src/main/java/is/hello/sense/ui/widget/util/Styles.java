@@ -43,12 +43,20 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
+
+import static is.hello.sense.ui.common.UserSupport.DeviceIssue;
+import static is.hello.sense.ui.common.UserSupport.HelpStep;
+import static is.hello.sense.ui.common.UserSupport.showAppSettings;
+import static is.hello.sense.ui.common.UserSupport.showContactForm;
+import static is.hello.sense.ui.common.UserSupport.showForDeviceIssue;
+import static is.hello.sense.ui.common.UserSupport.showForHelpStep;
+import static is.hello.sense.ui.common.UserSupport.showSupportedDevices;
+import static is.hello.sense.ui.common.UserSupport.showUserGuide;
 
 public final class Styles {
     public static final float LETTER_SPACING_SECTION_HEADING_LARGE = 0.2f;
@@ -273,32 +281,32 @@ public final class Styles {
             final SimpleClickableSpan clickableSpan;
             switch (url) {
                 case "#user-guide": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showUserGuide(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showUserGuide(activity));
                     break;
                 }
 
                 case "#contact": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showContactForm(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showContactForm(activity));
                     break;
                 }
 
                 case "#second-pill": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL));
+                    clickableSpan = new SimpleClickableSpan(v -> showForDeviceIssue(activity, DeviceIssue.PAIRING_2ND_PILL));
                     break;
                 }
 
                 case "#supported-devices": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showSupportedDevices(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showSupportedDevices(activity));
                     break;
                 }
 
                 case "#settings": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showAppSettings(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showAppSettings(activity));
                     break;
                 }
 
                 case "#facebook-autofill":{
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showFacebookAutoFillMoreInfoPage(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showForHelpStep(activity, HelpStep.AUTO_FILL_FACEBOOK));
                     break;
                 }
 

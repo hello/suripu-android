@@ -174,7 +174,7 @@ public class SenseOTAFragment extends HardwareFragment {
     }
 
     public void showHelp(@NonNull final View sender) {
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE);
+        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.UPDATING_SENSE);
     }
 
     public void presentError(final Throwable e, @NonNull final String operation) {

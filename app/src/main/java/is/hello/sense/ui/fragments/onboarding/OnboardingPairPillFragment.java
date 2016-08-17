@@ -165,7 +165,7 @@ public class OnboardingPairPillFragment extends HardwareFragment {
     }
 
     public void help(@NonNull View sender) {
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PILL_PAIRING);
+        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PILL_PAIRING);
     }
 
     public void pairPill() {

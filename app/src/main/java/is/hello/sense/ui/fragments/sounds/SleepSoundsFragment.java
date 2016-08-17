@@ -109,7 +109,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
             // send a play event no matter and track errors, if any, from the request
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_PLAY,
-                                 Analytics.createProperties(Analytics.SleepSounds.PROP_SLEEP_SOUDNS_SOUND_ID, sound.getId(),
+                                 Analytics.createProperties(Analytics.SleepSounds.PROP_SLEEP_SOUNDS_SOUND_ID, sound.getId(),
                                                             Analytics.SleepSounds.PROP_SLEEP_SOUNDS_DURATION_ID, duration.getId(),
                                                             Analytics.SleepSounds.PROP_SLEEP_SOUNDS_VOLUME, volume.getVolume()));
 

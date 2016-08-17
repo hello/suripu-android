@@ -104,7 +104,7 @@ public class PairSenseFragment extends HardwareFragment
                 .setPrimaryOnClickListener(ignored -> next())
                 .setToolbarWantsBackButton(true)
                 .setToolbarOnHelpClickListener(ignored -> {
-                    UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_SENSE_BLE);
+                    UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_SENSE_BLE);
                 })
                 .setToolbarOnHelpLongClickListener(ignored -> {
                     showSupportOptions();
@@ -258,7 +258,7 @@ public class PairSenseFragment extends HardwareFragment
 
     public void showPairingModeHelp(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_MODE);
+        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
     public void next() {
@@ -366,7 +366,7 @@ public class PairSenseFragment extends HardwareFragment
 
             dialog.setPositiveButton(android.R.string.ok, null);
             dialog.setNegativeButton(R.string.action_help, (sender, which) -> {
-                UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.PAIRING_SENSE_BLE);
+                UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_SENSE_BLE);
             });
 
             return dialog;

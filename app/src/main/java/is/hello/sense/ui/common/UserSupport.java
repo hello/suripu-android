@@ -108,12 +108,12 @@ public class UserSupport {
         from.startActivity(builder.toIntent());
     }
 
-    public static void showForOnboardingStep(@NonNull final Activity from, @NonNull final OnboardingStep onboardingStep) {
+    public static void showForHelpStep(@NonNull final Activity from, @NonNull final HelpStep helpStep) {
         final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
-                                                                 onboardingStep.toProperty());
+                                                                 helpStep.toProperty());
         Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, properties);
 
-        openUri(from, onboardingStep.getUri());
+        openUri(from, helpStep.getUri());
     }
 
     public static void showForDeviceIssue(@NonNull final Activity from, @NonNull final DeviceIssue issue) {
@@ -163,18 +163,8 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
-    public static void showFacebookAutoFillMoreInfoPage(@NonNull final Activity from) {
-        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210329423");
-        openUri(from, supportUrl);
-    }
-
     public static void showLearnMore(@NonNull final Context from, @StringRes final int stringRes) {
         final Uri supportUrl = Uri.parse(from.getString(stringRes));
-        openUri(from, supportUrl);
-    }
-
-    public static void showResetSenseMoreInfoPage(@NonNull final Activity from){
-        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/213033483");
         openUri(from, supportUrl);
     }
 
@@ -234,7 +224,7 @@ public class UserSupport {
         }
     }
 
-    public enum OnboardingStep {
+    public enum HelpStep {
         INFO(""),
         DEMOGRAPHIC_QUESTIONS("https://support.hello.is/hc/en-us/articles/204796959"),
         BLUETOOTH("https://support.hello.is/hc/en-us/articles/205493335"),
@@ -248,11 +238,13 @@ public class UserSupport {
         PILL_PLACEMENT("https://support.hello.is/hc/en-us/articles/205493045"),
         ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
         UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163"),
-        UPDATING_SENSE("https://support.hello.is/hc/en-us/articles/211890643");
+        UPDATING_SENSE("https://support.hello.is/hc/en-us/articles/211890643"),
+        RESET_ORIGINAL_SENSE("https://support.hello.is/hc/en-us/articles/213033483"),
+        AUTO_FILL_FACEBOOK("https://support.hello.is/hc/en-us/articles/210329423");
 
         private final String url;
 
-        OnboardingStep(@NonNull final String url) {
+        HelpStep(@NonNull final String url) {
             this.url = url;
         }
 
@@ -264,7 +256,7 @@ public class UserSupport {
             return toString().toLowerCase();
         }
 
-        public static OnboardingStep fromString(@Nullable final String string) {
+        public static HelpStep fromString(@Nullable final String string) {
             return Enums.fromString(string, values(), INFO);
         }
     }
