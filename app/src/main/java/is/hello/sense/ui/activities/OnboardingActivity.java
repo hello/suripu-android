@@ -67,6 +67,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.SkippableFlow;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -74,6 +75,7 @@ import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
 public class OnboardingActivity extends InjectionActivity
         implements FragmentNavigation,
+        SkippableFlow,
         SimpleStepFragment.ExitAnimationProviderActivity,
         AccountEditor.Container {
     public static final String TAG = OnboardingActivity.class.getName();
@@ -245,6 +247,15 @@ public class OnboardingActivity extends InjectionActivity
 
         navigationDelegate.onDestroy();
     }
+
+    //region SkippableFlow interface
+
+    @Override
+    public void skipToEnd() {
+        showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+    }
+
+    //endregion
 
     @Override
     public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {

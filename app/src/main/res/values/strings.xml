@@ -199,6 +199,8 @@ If you already purchased a new Sense with Voice, make sure it’s plugged in and
     <string name="title_waiting_for_sense">Waiting for Sense</string>
     <string name="title_clearing_bond">Preparing…</string>
     <string name="title_connecting">Connecting with Sense</string>
+    <string name="title_pairing_with_sense">Pairing with Sense</string>
+    <string name="title_paired">Paired</string>
     <string name="title_discovering_services">Pairing</string>
     <string name="title_linking_account">Linking your account</string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>

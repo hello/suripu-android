@@ -24,16 +24,17 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.PairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
-import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
+import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
+import is.hello.sense.util.SkippableFlow;
 
 public class SenseUpdateActivity extends InjectionActivity
-        implements FragmentNavigation {
+        implements FragmentNavigation, SkippableFlow {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
     public static final String EXTRA_DEVICE_ID = SenseUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
     public static final int REQUEST_CODE = 0xbeef;
@@ -92,6 +93,15 @@ public class SenseUpdateActivity extends InjectionActivity
         super.onDestroy();
         navigationDelegate.onDestroy();
     }
+
+    //region SkippableFlow interface
+
+    @Override
+    public void skipToEnd() {
+        //todo point to showHomeActivity()
+    }
+
+    //endregion
 
     @Override
     public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
@@ -176,7 +186,7 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void showSenseUpdate() {
         if (bluetoothStack.isEnabled()) {
-            pushFragment(PairSenseFragment.newUpdateInstance(), null, false);
+            pushFragment(new PairSenseFragment(), null, false);
         } else {
             showBluetoothFragment();
         }
@@ -201,7 +211,7 @@ public class SenseUpdateActivity extends InjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(false), null, true);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(true), null, true);
     }
 
 
