@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,12 +16,12 @@ import com.segment.analytics.Properties;
 import java.lang.ref.WeakReference;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.Anime.cancelAll;
 
-public class OnboardingCompleteFragment extends Fragment {
+public class OnboardingCompleteFragment extends SenseFragment {
 
     private final StepHandler stepHandler = new StepHandler(this);
 
@@ -67,7 +66,7 @@ public class OnboardingCompleteFragment extends Fragment {
     }
 
     public void complete() {
-        ((OnboardingActivity) getActivity()).showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+        finishFlow();
     }
 
 

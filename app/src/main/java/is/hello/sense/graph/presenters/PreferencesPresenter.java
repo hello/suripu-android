@@ -56,7 +56,6 @@ import rx.Observable;
     public static final String SENSE_ALERT_LAST_SHOWN = "sense_alert_last_shown";
     public static final String PILL_MISSING_ALERT_LAST_SHOWN = "pill_missing_alert_last_shown";
     public static final String PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN = "pill_firmware_update_alert_last_shown";
-    public static final String DEVICE_OTA_STATUS = "device_ota_status";
 
     public @Inject PreferencesPresenter(@NonNull Context context,
                                         @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {

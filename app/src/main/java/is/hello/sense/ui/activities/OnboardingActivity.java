@@ -25,11 +25,11 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
 import is.hello.sense.graph.presenters.UserFeaturesPresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -105,6 +105,8 @@ public class OnboardingActivity extends InjectionActivity
     BluetoothStack bluetoothStack;
     @Inject
     UserFeaturesPresenter userFeaturesPresenter;
+    @Inject
+    SenseOTAStatusPresenter senseOTAStatusPresenter;
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -297,6 +299,9 @@ public class OnboardingActivity extends InjectionActivity
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
             showVoiceDone();
+        } else if (fragment instanceof OnboardingCompleteFragment ||
+                fragment instanceof VoiceCompleteFragment){
+            showHomeActivity(OnboardingActivity.FLOW_REGISTER);
         }
     }
 
@@ -548,18 +553,13 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void checkSenseUpdateStatus(){
-        subscribe(apiService.getSenseUpdateStatus(),
-                  otaStatus -> {
-                      Log.d(TAG, "checkSenseUpdateStatus: " + otaStatus.state.name());
-                      preferences.edit().putString(PreferencesPresenter.DEVICE_OTA_STATUS, otaStatus.state.name())
-                                 .apply();
-                  },
+        subscribe(senseOTAStatusPresenter.storeInPrefs(),
+                  Functions.NO_OP,
                   Functions.LOG_ERROR);
     }
 
     public void checkForSenseUpdate() {
-        final String senseOtaStatus = preferences.getString(PreferencesPresenter.DEVICE_OTA_STATUS,"missing");
-        if(senseOtaStatus.equals(DeviceOTAState.OtaState.REQUIRED.name())){
+        if(senseOTAStatusPresenter.isOTARequired()){
             showSenseUpdateIntro();
         } else{
             checkHasVoiceFeature();
