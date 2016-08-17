@@ -461,7 +461,7 @@ public class OnboardingActivity extends InjectionActivity
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
             }
-            builder.setHelpStep(UserSupport.OnboardingStep.SETTING_UP_SENSE);
+            builder.setHelpStep(UserSupport.HelpStep.SETTING_UP_SENSE);
             pushFragment(builder.toFragment(), null, false);
         } else {
             pushFragment(BluetoothFragment.newInstance(
@@ -515,7 +515,7 @@ public class OnboardingActivity extends InjectionActivity
         builder.setDiagramImage(R.drawable.onboarding_clip_pill);
         builder.setCompact(true);
         builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
-        builder.setHelpStep(UserSupport.OnboardingStep.PILL_PLACEMENT);
+        builder.setHelpStep(UserSupport.HelpStep.PILL_PLACEMENT);
 
         builder.setNextFragmentClass(OnboardingSenseColorsFragment.class);
 

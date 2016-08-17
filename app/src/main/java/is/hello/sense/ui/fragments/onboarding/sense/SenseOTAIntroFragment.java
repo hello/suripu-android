@@ -41,7 +41,7 @@ public class SenseOTAIntroFragment extends SenseFragment {
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false)
                 .setToolbarOnHelpClickListener(
-                        ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATING_SENSE));
+                        ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.UPDATING_SENSE));
         return view;
     }
 

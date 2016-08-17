@@ -129,6 +129,12 @@ If you already purchased a new Sense with Voice, make sure it’s plugged in and
     <string name="info_sense_colors_bad">Sense glows red when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
     <string name="title_sense_colors_end">Just wave.</string>
     <string name="info_sense_colors_end">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
+
+    <string name="title_sense_reset_original">Reset your original Sense</string>
+    <string name="info_sense_reset_original_intro">Resetting your original Sense will return it to factory settings.</string>
+    <string name="info_sense_reset_original_done">Plug your original Sense into a power outlet, and it will automatically reset within the next two hours.\nThere’s nothing else you need to do — you’ll know it’s finished when it glows purple. </string>
+    <string name="action_reset_sense">Reset Sense</string>
+
     <string name="onboarding_complete_title">You’re all set.</string>
     <string name="onboarding_voice_complete_title">You’re all set</string>
     <string name="onboarding_voice_complete_message">Sense is now ready to use. All you need to do now is sleep.</string>
