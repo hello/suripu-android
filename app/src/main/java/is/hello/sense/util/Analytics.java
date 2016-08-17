@@ -403,6 +403,17 @@ public class Analytics {
         String EVENT_FIRST_ALARM = "Onboarding First Alarm";
 
         /**
+         * When user has voice feature and enters screen to test voice command
+         */
+        String EVENT_VOICE_TUTORIAL = "Onboarding Voice Tutorial";
+
+        /**
+         * Status of voice command returned
+         */
+        String EVENT_VOICE_COMMAND = "Onboarding Voice Command";
+        String PROP_VOICE_COMMAND_STATUS = "status";
+
+        /**
          * When user lands on the last onboarding Screen
          */
         String EVENT_END = "Onboarding End";
@@ -654,16 +665,16 @@ public class Analytics {
      *
      *  {@link this#EVENT_START} - fire when user taps on continue and a force ota is triggered
      *
-     *  {@link this#EVENT_STATUS} - Fire when the status changes from the previous status.\nProperties: { {@link this#PROPERY_NAME}: <enum>value from server</enum>}
+     *  {@link this#EVENT_STATUS} - Fire when the status changes from the previous status.\nProperties: { {@link this#PROPERTY_NAME}: <enum>value from server</enum>}
      *
      *  {@link this#EVENT_END} - Fire when the status returned becomes 'COMPLETE'
      */
-    public interface SenseUpdate {
+    public interface SenseOTA {
         String EVENT_ENTER = "Sense DFU";
         String EVENT_START = "Sense DFU begin";
         String EVENT_STATUS = "Sense DFU Status";
         String EVENT_END = "Sense DFU end";
-        String PROPERY_NAME = "status";
+        String PROPERTY_NAME = "status";
     }
 
 
