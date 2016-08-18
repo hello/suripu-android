@@ -13,9 +13,9 @@ import dagger.Provides;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
+import is.hello.sense.ui.fragments.pill.UpdatePairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
-import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
 @Module(complete = false, injects = {
@@ -23,7 +23,8 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
         RegisterFragment.class,
         ListActivity.class,
         PhoneBatteryPresenter.class,
-        ConnectPillFragment.class
+        ConnectPillFragment.class,
+        UpdatePairPillFragment.class
 })
 public class UtilityModule {
 
@@ -74,7 +75,7 @@ public class UtilityModule {
 
     @Provides
     @Singleton
-    BatteryUtil providesBatteryUtil(@NonNull final Context context){
+    BatteryUtil providesBatteryUtil(@NonNull final Context context) {
         return new BatteryUtil(context);
     }
 

@@ -9,7 +9,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
-import is.hello.sense.ui.fragments.onboarding.PairPillFragment;
+import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
@@ -26,7 +26,7 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
                 PairSenseFragment.class,
                 SenseUpdateReadyFragment.class,
                 SenseResetOriginalFragment.class,
-                PairPillFragment.class
+                UnpairPillFragment.class
         }
 )
 public class SenseUpdateModule {

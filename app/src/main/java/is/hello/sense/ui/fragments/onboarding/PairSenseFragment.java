@@ -32,14 +32,13 @@ import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class PairSenseFragment extends HardwareFragment
+public class PairSenseFragment extends OnboardingSenseHardwareFragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
     public static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;

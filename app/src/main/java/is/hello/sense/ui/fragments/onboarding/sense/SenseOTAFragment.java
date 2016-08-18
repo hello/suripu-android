@@ -24,14 +24,14 @@ import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class SenseOTAFragment extends HardwareFragment {
+public class SenseOTAFragment extends BaseHardwareFragment {
 
     @Inject
     ApiService apiService;

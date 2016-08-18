@@ -15,7 +15,7 @@
         <include layout="@layout/sub_fragment_onboarding_toolbar" />
 
         <TextView
-            android:id="@+id/fragment_onboarding_pair_pill_title"
+            android:id="@+id/fragment_pair_pill_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
@@ -27,7 +27,7 @@
             android:text="@string/title_pair_pill"/>
 
         <TextView
-            android:id="@+id/fragment_onboarding_pair_pill_subhead"
+            android:id="@+id/fragment_pair_pill_subhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x3"
@@ -42,7 +42,7 @@
             android:layout_weight="1" />
 
         <is.hello.sense.ui.widget.DiagramVideoView
-            android:id="@+id/fragment_onboarding_pair_pill_diagram"
+            android:id="@+id/fragment_pair_pill_diagram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:senseAutoStart="false"
@@ -56,14 +56,14 @@
             android:layout_weight="1" />
 
         <ProgressBar
-            android:id="@+id/fragment_onboarding_pair_pill_activity"
+            android:id="@+id/fragment_pair_pill_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             style="@style/AppTheme.ProgressBar.Small" />
 
         <ProgressBar
-            android:id="@+id/fragment_onboarding_pair_pill_progress_determinate"
+            android:id="@+id/fragment_pair_pill_progress_determinate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -71,7 +71,7 @@
             android:visibility="gone"/>
 
         <TextView
-            android:id="@+id/fragment_onboarding_pair_pill_status"
+            android:id="@+id/fragment_pair_pill_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x2"
@@ -84,7 +84,7 @@
             android:text="@string/label_searching_for_pill"/>
 
         <Button
-            android:id="@+id/fragment_onboarding_pair_pill_skip"
+            android:id="@+id/fragment_pair_pill_skip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x3"
@@ -96,7 +96,7 @@
             android:visibility="gone"/>
 
         <Button
-            android:id="@+id/fragment_onboarding_pair_pill_retry"
+            android:id="@+id/fragment_pair_pill_retry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x3"
