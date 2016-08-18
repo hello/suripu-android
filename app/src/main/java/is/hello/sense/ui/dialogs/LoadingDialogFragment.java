@@ -9,6 +9,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,7 +28,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public final class LoadingDialogFragment extends SenseDialogFragment {
     public static final String TAG = LoadingDialogFragment.class.getSimpleName();
 
-    private static final long DURATION_DONE_MESSAGE = 2 * 1000;
+    public static final long DURATION_DONE_MESSAGE = 2 * 1000;
     public static final long DURATION_DEFAULT = 1000;
 
     private static final String ARG_TITLE = LoadingDialogFragment.class.getName() + ".ARG_TITLE";
@@ -150,7 +151,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
             @Config final int flags = arguments.getInt(ARG_FLAGS, DEFAULTS);
 
             if ((flags & OPAQUE_BACKGROUND) == OPAQUE_BACKGROUND) {
-                root.setBackgroundColor(getResources().getColor(R.color.background));
+                root.setBackgroundColor(ContextCompat.getColor(root.getContext(), R.color.background));
             }
 
             titleText.setText(arguments.getString(ARG_TITLE));

@@ -183,7 +183,7 @@ public class RegisterFragment extends InjectionFragment
             Views.setSafeOnClickListener(selectHost, ignored -> {
                 try {
                     startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
-                } catch (ClassNotFoundException e) {
+                } catch (final ClassNotFoundException e) {
                     Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
                 }
             });
@@ -464,7 +464,7 @@ public class RegisterFragment extends InjectionFragment
     //endregion
 
     //region Facebook presenter
-    private void bindFacebookProfile(@NonNull final Boolean onlyPhoto) {
+    private void bindFacebookProfile(final boolean onlyPhoto) {
         if (!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,
                              this::onFacebookProfileSuccess,
@@ -481,6 +481,7 @@ public class RegisterFragment extends InjectionFragment
         final String email = profile.getEmail();
         if (!TextUtils.isEmpty(facebookImageUrl)) {
             updateProfileImage(Uri.parse(facebookImageUrl));
+            profileImageManager.saveSource(Analytics.ProfilePhoto.Source.FACEBOOK);
         }
         if (!TextUtils.isEmpty(firstName)) {
             firstNameTextLET.setInputText(firstName);
@@ -492,7 +493,7 @@ public class RegisterFragment extends InjectionFragment
         if (!TextUtils.isEmpty(email)) {
             emailTextLET.setInputText(email);
         }
-        //Todo should? passwordTextLET.requestFocus();
+
         profileImageManager.setShowOptions(true);
 
     }
@@ -570,17 +571,17 @@ public class RegisterFragment extends InjectionFragment
 
 
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
-        profileImageManager.trimCache();
+        profileImageManager.clear();
         goToNextScreen();
     }
 
     private void updateProfilePictureError(@NonNull final Throwable e) {
         Analytics.trackError(e, "Onboarding photo upload api");
-        profileImageManager.trimCache();
+        profileImageManager.clear();
         goToNextScreen();
     }
 
-    public static class FocusClickListener implements View.OnClickListener {
+    private static class FocusClickListener implements View.OnClickListener {
 
         private final ViewGroup container;
         private final

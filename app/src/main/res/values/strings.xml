@@ -27,6 +27,12 @@
     <string name="device_state_normal">Good</string>
     <string name="device_state_low_battery">Low</string>
     <string name="device_state_unknown">Unknown</string>
+    <string name="device_ota_state_not_required">Not required</string>
+    <string name="device_ota_state_required">Required</string>
+    <string name="device_ota_state_response_sent">Response sent</string>
+    <string name="device_ota_state_in_progress">In progress</string>
+    <string name="device_ota_state_complete">Complete</string>
+    <string name="device_ota_state_error">Error</string>
 
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
@@ -114,8 +120,10 @@
     <string name="info_sense_colors_bad">Sense glows red when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
     <string name="title_sense_colors_end">Just wave.</string>
     <string name="info_sense_colors_end">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
-    <string name="onboarding_done_message_1">You’re all set up</string>
-    <string name="onboarding_done_message_2">Now, all you need to\ndo is sleep</string>
+    <string name="onboarding_complete_title">You’re all set.</string>
+    <string name="onboarding_voice_complete_title">You’re all set</string>
+    <string name="onboarding_voice_complete_message">Sense is now ready to use. All you need to do now is sleep.</string>
+
     <string name="checking_condition_temperature">Checking Temperature</string>
     <string name="checking_condition_humidity">Checking Humidity</string>
     <string name="checking_condition_airquality">Checking Air Quality</string>
@@ -587,7 +595,26 @@
     </string>
     <string name="message_no_pills">No Pills Found</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_sense_voice">Sense with Voice</string>
+    <string name="info_sense_voice_intro">Speak to Sense to set alarms, check the conditions in your room, and more.</string>
+    <string name="try_it_now">Try it now:</string>
+    <string name="sense_voice_question_temperature">\"Hey Sense…<br>what\'s the temperature?\"</br></string>
+    <string name="title_voice_tip">Voice Tip</string>
+    <string name="info_voice_tip">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.</string>
+    <string name="info_voice_tip_with_support">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.\n\nIf you are still having trouble, please contact <a href="#voice-support">support</a>.</string>
+    <string name="title_update_later">Update later</string>
+    <string name="title_sense_update">Update your Sense</string>
+    <string name="subtitle_sense_update">Sense needs an update before use. This will take up to 3 minutes.</string>
+    <string name="title_sense_updating">Updating your Sense</string>
+    <string name="subtitle_sense_updating">Sense is currently updating. This will take up to 3 minutes.</string>
+    <string name="sense_starting_update">Starting update…</string>
+    <string name="sense_downloading_update">Downloading update…</string>
+    <string name="sense_updated">Sense updated</string>
+    <string name="sense_try_later_dialog_message">Sense will try again at a later time. You can begin using Sense, but some features may not be available until the update is complete.</string>
 
+    <string name="voice_result_none">none</string>
+    <string name="voice_result_ok">ok</string>
+    <string name="voice_result_rejected">rejected</string>
+    <string name="voice_result_try_again">try again</string>
+    <string name="voice_result_unknown">unknown</string>
 </resources>

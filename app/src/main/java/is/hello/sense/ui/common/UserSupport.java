@@ -25,6 +25,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class UserSupport {
+    public static final String TAG = UserSupport.class.getName();
     public static final String ORDER_URL = "https://store.hello.is";
     public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
@@ -66,7 +67,7 @@ public class UserSupport {
                     .build();
             from.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
         } catch (final ActivityNotFoundException e) {
-            Logger.info(UserSupport.class.getSimpleName(), "Market unavailable", e);
+            Logger.info(TAG, "Market unavailable", e);
 
             final Uri webUri = new Uri.Builder()
                     .scheme("http")
@@ -186,14 +187,14 @@ public class UserSupport {
     }
 
     public static void showUpdatePill(@NonNull final Activity from) {
-        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill()");
+        Logger.debug(TAG,"showUpdatePill()");
         from.startActivityForResult(
                 new Intent(from, PillUpdateActivity.class),
                 PillUpdateActivity.REQUEST_CODE);
     }
 
     public static void showUpdatePill(@NonNull final Fragment from, @NonNull final String deviceId) {
-        Logger.debug(UserSupport.class.getSimpleName(),"showUpdatePill() from fragment " + from.getClass().getName());
+        Logger.debug(TAG,"showUpdatePill() from fragment " + from.getClass().getName());
         from.startActivityForResult(
                 new Intent(from.getActivity(), PillUpdateActivity.class)
                         .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId),
@@ -241,7 +242,8 @@ public class UserSupport {
         PILL_PAIRING("https://support.hello.is/hc/en-us/articles/204797129"),
         PILL_PLACEMENT("https://support.hello.is/hc/en-us/articles/205493045"),
         ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
-        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163");
+        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163"),
+        UPDATING_SENSE("https://support.hello.is/hc/en-us/articles/211890643");
 
         private final String url;
 

@@ -27,6 +27,7 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SenseCache;
@@ -53,7 +54,6 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
         super.onCreate(savedInstanceState);
         if (!bluetoothStack.isEnabled()) {
             cancel(true);
-            return;
         }
     }
 
@@ -187,8 +187,10 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
 
     private void pillFound(@NonNull final PillPeripheral pillPeripheral) {
         setStatus(R.string.message_sleep_pill_connected);
+        diagram.suspendPlayback(true);
         activityStatus.post(() -> activityIndicator.setActivated(true));
-        activityStatus.postDelayed(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null), 1500);
+        activityStatus.postDelayed(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null),
+                                   LoadingDialogFragment.DURATION_DONE_MESSAGE);
     }
 
     private void setStatus(@StringRes final int text) {

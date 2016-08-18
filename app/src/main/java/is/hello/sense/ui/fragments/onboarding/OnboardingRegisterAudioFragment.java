@@ -24,6 +24,7 @@ import rx.Observable;
 public class OnboardingRegisterAudioFragment extends InjectionFragment {
     @Inject ApiService apiService;
     @Inject PreferencesPresenter preferences;
+    private OnboardingSimpleStepView view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_title_enhanced_audio)
                 .setSubheadingText(R.string.onboarding_info_enhanced_audio)
                 .setDiagramImage(R.drawable.onboarding_enhanced_audio)
@@ -46,8 +47,15 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
                 .setSecondaryOnClickListener(this::optOut)
                 .setToolbarWantsBackButton(false)
                 .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.ENHANCED_AUDIO));
+        return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.view.destroy();
+        this.view = null;
+    }
 
     public void optIn(@NonNull View sender) {
         updateEnhancedAudioEnabled(true);

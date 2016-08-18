@@ -66,7 +66,7 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
     @Override
     protected Observable<FacebookProfile> provideUpdateObservable() {
         return apiService.getProfile(queryParams, true, getAuthTokenString())
-                         .doOnNext(profile ->
+                         .doOnNext(facebookProfile ->
                                            logEvent("fetched profile from facebook")
                                   );
     }
@@ -106,7 +106,6 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
                                 @Override
                                 public void onError(final FacebookException exception) {
                                     // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
-                                    // consider presenting an error dialog here.
                                     Logger.debug(FacebookPresenter.class.getSimpleName(), "login failed", exception.fillInStackTrace());
                                     profile.onError(exception);
                                 }
@@ -115,13 +114,13 @@ public class FacebookPresenter extends ValuePresenter<FacebookProfile> {
 
     /**
      * Default requests only profile photo from facebook user
-     * Use {@link FacebookPresenter#login(Fragment, Boolean)} for more profile permissions
+     * Use {@link FacebookPresenter#login(Fragment, boolean)} for more profile permissions
      */
     public void login(@NonNull final Fragment container) {
         login(container, true);
     }
 
-    public void login(@NonNull final Fragment container, @NonNull final Boolean requestOnlyPhoto) {
+    public void login(@NonNull final Fragment container, final boolean requestOnlyPhoto) {
         if(!isConnected()){
             //Which exception would be more helpful to throw here?
             profile.onError(new Exception("No internet connection found"));

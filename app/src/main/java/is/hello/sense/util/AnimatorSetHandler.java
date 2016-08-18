@@ -8,8 +8,10 @@ import android.support.annotation.NonNull;
 import java.lang.ref.WeakReference;
 
 public class AnimatorSetHandler extends Handler {
+    public static final int LOOP_ANIMATION = -1;
     private final long callbackDelay;
     private final Runnable callback;
+    private int repeatCount;
 
     /**
      * @param animatorSet should only be used when duration is set
@@ -19,17 +21,28 @@ public class AnimatorSetHandler extends Handler {
     }
 
     public AnimatorSetHandler(final long callbackDelay, @NonNull final AnimatorSet animatorSet){
+        this(callbackDelay, LOOP_ANIMATION, animatorSet);
+    }
+
+    public AnimatorSetHandler(final long callbackDelay,
+                              final int repeatCount,
+                              @NonNull final AnimatorSet animatorSet){
         super(Looper.getMainLooper());
         final WeakReference<AnimatorSet> animatorSetWeakReference = new WeakReference<>(animatorSet);
         final WeakReference<AnimatorSetHandler> handlerWeakReference = new WeakReference<>(this);
         this.callbackDelay = callbackDelay;
+        this.repeatCount = repeatCount;
         this.callback = () -> {
-            if(animatorSetWeakReference.get() != null
-                    && !animatorSetWeakReference.get().isStarted()) {
-                animatorSetWeakReference.get().start();
+            final AnimatorSet animatorSetRef = animatorSetWeakReference.get();
+            if(animatorSetRef != null && !animatorSetRef.isStarted()) {
+                animatorSetRef.start();
             }
-            if(handlerWeakReference.get() != null) {
-                handlerWeakReference.get().start();
+            final AnimatorSetHandler handlerRef = handlerWeakReference.get();
+            if(handlerRef != null && handlerRef.repeatCount != 0) {
+                handlerRef.start();
+                if(handlerRef.repeatCount != LOOP_ANIMATION) {
+                    handlerRef.repeatCount--;
+                }
             }
         };
     }

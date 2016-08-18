@@ -21,9 +21,8 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.util.Analytics;
 
 import static is.hello.go99.Anime.cancelAll;
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class RegisterCompleteFragment extends Fragment {
+public class OnboardingCompleteFragment extends Fragment {
 
     private final StepHandler stepHandler = new StepHandler(this);
 
@@ -57,40 +56,14 @@ public class RegisterCompleteFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         stepHandler.cancelPending();
-
         cancelAll(message);
     }
 
     private void init() {
         message.setVisibility(View.VISIBLE);
         message.setAlpha(1f);
-        stepHandler.postShowSecond();
-
-    }
-
-    public void showSecondMessage() {
-        animatorFor(message)
-                .fadeOut(View.INVISIBLE)
-                .addOnAnimationCompleted(finished1 -> {
-                    if (!finished1) {
-                        return;
-                    }
-
-                    message.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.onboarding_done_moon, 0, 0);
-                    message.setText(R.string.onboarding_done_message_2);
-
-                    animatorFor(message)
-                            .fadeIn()
-                            .addOnAnimationCompleted(finished2 -> {
-                                if (finished2) {
-                                    stepHandler.postShowComplete();
-                                }
-                            })
-                            .start();
-                })
-                .start();
+        stepHandler.postShowComplete();
     }
 
     public void complete() {
@@ -98,25 +71,19 @@ public class RegisterCompleteFragment extends Fragment {
     }
 
 
-    static class StepHandler extends Handler {
-        static final int MSG_SHOW_SECOND = 2;
+    private static class StepHandler extends Handler {
         static final int SHOW_COMPLETE_MESSAGE = 3;
         static final int DELAY = 2 * 1000;
 
-        private final WeakReference<RegisterCompleteFragment> fragment;
+        private final WeakReference<OnboardingCompleteFragment> fragment;
 
-        public StepHandler(@NonNull final RegisterCompleteFragment fragment) {
+        public StepHandler(@NonNull final OnboardingCompleteFragment fragment) {
             super(Looper.getMainLooper());
             this.fragment = new WeakReference<>(fragment);
         }
 
         void cancelPending() {
-            removeMessages(MSG_SHOW_SECOND);
             removeMessages(SHOW_COMPLETE_MESSAGE);
-        }
-
-        void postShowSecond() {
-            sendEmptyMessageDelayed(MSG_SHOW_SECOND, DELAY);
         }
 
         void postShowComplete() {
@@ -126,16 +93,9 @@ public class RegisterCompleteFragment extends Fragment {
         @Override
         public void handleMessage(final Message msg) {
             switch (msg.what) {
-                case MSG_SHOW_SECOND: {
-                    final RegisterCompleteFragment fragment = this.fragment.get();
-                    if (fragment != null) {
-                        fragment.showSecondMessage();
-                    }
-                    break;
-                }
 
                 case SHOW_COMPLETE_MESSAGE: {
-                    final RegisterCompleteFragment fragment = this.fragment.get();
+                    final OnboardingCompleteFragment fragment = this.fragment.get();
                     if (fragment != null) {
                         fragment.complete();
                     }

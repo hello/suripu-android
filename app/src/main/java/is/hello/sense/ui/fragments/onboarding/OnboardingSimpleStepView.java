@@ -30,15 +30,15 @@ import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor") // This is intentional
 public class OnboardingSimpleStepView extends RelativeLayout {
-    public final OnboardingToolbar toolbar;
+    public OnboardingToolbar toolbar;
 
-    public final Button primaryButton;
-    public final Button secondaryButton;
+    public  Button primaryButton;
+    public  Button secondaryButton;
 
-    public final ScrollView contentsScrollView;
-    public final LinearLayout contents;
-    public final TextView headingText;
-    public final TextView subheadingText;
+    public  ScrollView contentsScrollView;
+    public  LinearLayout contents;
+    public  TextView headingText;
+    public  TextView subheadingText;
     public /*lazy*/ ImageView diagramImage;
     public /*lazy*/ DiagramVideoView diagramVideo;
 
@@ -62,7 +62,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         this.subheadingText = (TextView) contents.findViewById(R.id.view_onboarding_simple_step_subheading);
     }
 
-    public OnboardingSimpleStepView configure(@NonNull Action1<OnboardingSimpleStepView> visitor) {
+    public OnboardingSimpleStepView configure(@NonNull final Action1<OnboardingSimpleStepView> visitor) {
         visitor.call(this);
         return this;
     }
@@ -79,6 +79,24 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         if(secondaryButton.hasOnClickListeners()){
             secondaryButton.setOnClickListener(null);
         }
+
+        if(toolbar != null){
+            toolbar.onDestroyView();
+            toolbar = null;
+        }
+
+        diagramImage = null;
+        if(diagramVideo != null) {
+            diagramVideo.destroy();
+            diagramVideo = null;
+        }
+
+        primaryButton = null;
+        secondaryButton = null;
+        contentsScrollView = null;
+        contents = null;
+        headingText = null;
+        subheadingText = null;
     }
 
     //endregion

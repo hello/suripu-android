@@ -66,7 +66,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
 
     //region Lifecycle
 
-    public static TicketSubmitFragment newInstance(@NonNull SupportTopic topic) {
+    public static TicketSubmitFragment newInstance(@NonNull final SupportTopic topic) {
         final TicketSubmitFragment fragment = new TicketSubmitFragment();
 
         final Bundle arguments = new Bundle();
@@ -77,7 +77,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -93,7 +93,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_contact_us, container, false);
 
         this.text = (EditText) view.findViewById(R.id.fragment_contact_us_text);
@@ -135,14 +135,14 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         attachmentPicker.saveInstanceState(outState);
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         if (externalStoragePermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             showAttachOptions();
         } else {
@@ -156,7 +156,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     //region Menu
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.menu_contact_us, menu);
 
         this.addAttachmentItem = menu.findItem(R.id.action_add_attachment);
@@ -164,7 +164,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_send: {
                 send();
@@ -183,7 +183,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(final Menu menu) {
         final boolean hasText = !TextUtils.isEmpty(text.getText());
         final boolean uploadsInactive = imageUploadHelper.isImageUploadCompleted();
         addAttachmentItem.setEnabled(uploadsInactive);
@@ -216,7 +216,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent response) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent response) {
         super.onActivityResult(requestCode, resultCode, response);
 
         final List<File> files = attachmentPicker.getFilesFromResult(requestCode, resultCode, response);
@@ -226,17 +226,17 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     }
 
     @Override
-    public void allImagesUploaded(Map<File, UploadResponse> map) {
+    public void allImagesUploaded(final Map<File, UploadResponse> map) {
         stateSafeExecutor.execute(() -> getActivity().invalidateOptionsMenu());
     }
 
     @Override
-    public void imageUploaded(UploadResponse uploadResponse, File file) {
+    public void imageUploaded(final UploadResponse uploadResponse, final File file) {
         stateSafeExecutor.execute(() -> attachmentHost.setAttachmentUploaded(file));
     }
 
     @Override
-    public void imageUploadError(ErrorResponse errorResponse, File file) {
+    public void imageUploadError(final ErrorResponse errorResponse, final File file) {
         stateSafeExecutor.execute(() -> {
             Analytics.trackError(errorResponse.getReason(), ErrorResponse.class.getCanonicalName(),
                                  errorResponse.getResponseBody(), "Zendesk Attachment Upload", false);
@@ -296,12 +296,7 @@ public class TicketSubmitFragment extends InjectionFragment implements TextWatch
     @NonNull
     @Override
     public DialogInterface.OnClickListener clickListener() {
-        return new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                UserSupport.showStoragePermissionMoreInfoPage(getActivity());
-            }
-        };
+        return (dialog, which) -> UserSupport.showStoragePermissionMoreInfoPage(getActivity());
     }
 
     //endregion

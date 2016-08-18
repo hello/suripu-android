@@ -57,6 +57,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     private boolean hasLinkedAccount = false;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
+    private OnboardingSimpleStepView view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class OnboardingPairSenseFragment extends HardwareFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new OnboardingSimpleStepView(this, inflater)
+        this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_pair_sense)
                 .setSubheadingText(R.string.info_pair_sense)
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
@@ -95,6 +96,8 @@ public class OnboardingPairSenseFragment extends HardwareFragment
                     return true;
                 })
                 .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR));
+
+        return view;
     }
 
     @Override
@@ -125,6 +128,13 @@ public class OnboardingPairSenseFragment extends HardwareFragment
         } else {
             locationPermission.showEnableInstructionsDialog();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.view.destroy();
+        this.view = null;
     }
 
     private void checkConnectivityAndContinue() {
@@ -181,11 +191,21 @@ public class OnboardingPairSenseFragment extends HardwareFragment
 
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
-
         bindAndSubscribe(hardwarePresenter.pushData(),
-                         ignored -> finishedLinking(),
+                         ignored -> getDeviceFeatures(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push data from Sense, ignoring.", error);
+                             getDeviceFeatures();
+                         });
+    }
+
+    private void getDeviceFeatures() {
+        showBlockingActivity(R.string.title_pushing_data);
+
+        bindAndSubscribe(userFeaturesPresenter.storeFeaturesInPrefs(),
+                         ignored -> finishedLinking(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
                              finishedLinking();
                          });
     }

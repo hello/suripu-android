@@ -166,6 +166,14 @@
 
     <dimen name="profile_image_size">104dp</dimen>
 
+    <dimen name="sense_voice_circles_x1">146dp</dimen>
+    <dimen name="sense_voice_circles_x2">192dp</dimen>
+    <dimen name="sense_voice_circles_x3">236dp</dimen>
+    <dimen name="sense_voice_circles_x1_padding">44dp</dimen>
+    <dimen name="sense_voice_circles_x2_padding">21dp</dimen>
+    <dimen name="sense_voice_translate_y">50dp</dimen>
+    <dimen name="sense_voice_fixed_margin">36px</dimen> <!-- px not typo -->
+
     <!-- Graphs -->
 
     <dimen name="graph_point_size">5dp</dimen>

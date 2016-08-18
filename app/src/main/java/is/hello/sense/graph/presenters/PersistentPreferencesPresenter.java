@@ -9,12 +9,14 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 
-public class PersistentPreferencesPresenter extends BasePreferencesPresenter {
-    //To make key unique must append device id
+@Singleton public class PersistentPreferencesPresenter extends BasePreferencesPresenter {
+
     public static final String FIRMWARE_UPDATE_LAST_COMPLETED = "firmware_update_last_completed_with_device_id_";
+    public static final String SENSE_VOICE_TUTORIAL_HAS_SEEN = "sense_voice_tutorial_has_seen_with_account_id_";
 
     public @Inject PersistentPreferencesPresenter(@NonNull final Context context,
                                                   @NonNull @PersistentSharedPreferences final SharedPreferences sharedPreferences){
@@ -37,9 +39,23 @@ public class PersistentPreferencesPresenter extends BasePreferencesPresenter {
               .apply();
     }
 
+    public boolean hasCompletedVoiceTutorial(@NonNull final String accountId){
+        return getBoolean(getHasSeenVoiceTutorialKey(accountId), false);
+    }
+
+    public void setHasCompletedVoiceTutorial(@NonNull final String accountId, final boolean hasSeen){
+        edit().putBoolean(
+                getHasSeenVoiceTutorialKey(accountId),
+                hasSeen)
+              .apply();
+    }
+
     private String getLastUpdatedDeviceKey(@NonNull final String deviceId){
         return PersistentPreferencesPresenter.FIRMWARE_UPDATE_LAST_COMPLETED + deviceId;
     }
 
+    private String getHasSeenVoiceTutorialKey(@NonNull final String accountId) {
+        return PersistentPreferencesPresenter.SENSE_VOICE_TUTORIAL_HAS_SEEN + accountId;
+    }
 
 }

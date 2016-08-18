@@ -33,6 +33,7 @@ import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.presenters.AccountPresenter;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.graph.presenters.UserFeaturesPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -62,6 +63,8 @@ public class SignInFragment extends InjectionFragment
     AccountPresenter accountPresenter;
     @Inject
     PreferencesPresenter preferences;
+    @Inject
+    UserFeaturesPresenter userFeaturesPresenter;
 
     private LabelEditText emailTextLET;
     private LabelEditText passwordTextLET;
@@ -204,8 +207,9 @@ public class SignInFragment extends InjectionFragment
 
             final Observable<Account> initializeLocalState =
                     Observable.combineLatest(accountPresenter.pullAccountPreferences(),
+                                             userFeaturesPresenter.storeFeaturesInPrefs(),
                                              accountPresenter.latest(),
-                                             (ignored, account) -> account);
+                                             (ignored, ignored2, account) -> account);
 
             bindAndSubscribe(initializeLocalState,
                              account -> {

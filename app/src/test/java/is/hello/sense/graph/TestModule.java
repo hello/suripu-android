@@ -17,6 +17,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
+import is.hello.sense.api.sessions.UserFeaturesManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.graph.presenters.AccountPresenter;
@@ -27,6 +28,8 @@ import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.graph.presenters.HardwarePresenterTests;
 import is.hello.sense.graph.presenters.InsightsPresenter;
 import is.hello.sense.graph.presenters.InsightsPresenterTests;
+import is.hello.sense.graph.presenters.PersistentPreferencesPresenter;
+import is.hello.sense.graph.presenters.PersistentPreferencesPresenterTests;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
 import is.hello.sense.graph.presenters.PhoneBatteryPresenterTests;
 import is.hello.sense.graph.presenters.PreferencesPresenter;
@@ -35,11 +38,15 @@ import is.hello.sense.graph.presenters.QuestionsPresenter;
 import is.hello.sense.graph.presenters.QuestionsPresenterTests;
 import is.hello.sense.graph.presenters.RoomConditionsPresenter;
 import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
+import is.hello.sense.graph.presenters.SenseVoicePresenter;
+import is.hello.sense.graph.presenters.SenseVoicePresenterTests;
 import is.hello.sense.graph.presenters.SmartAlarmPresenter;
 import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
 import is.hello.sense.graph.presenters.TimelinePresenter;
 import is.hello.sense.graph.presenters.TimelinePresenterTests;
 import is.hello.sense.graph.presenters.UnreadStatePresenterTests;
+import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.graph.presenters.UserFeaturesPresenterTests;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
 import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
 import is.hello.sense.graph.presenters.questions.ApiQuestionProviderTests;
@@ -58,47 +65,57 @@ import static org.mockito.Mockito.mock;
 @Module(
     library = true,
     injects = {
-        TimelinePresenterTests.class,
-        TimelinePresenter.class,
+            TimelinePresenterTests.class,
+            TimelinePresenter.class,
 
-        QuestionsPresenterTests.class,
-        QuestionsPresenter.class,
-        ApiQuestionProviderTests.class,
+            QuestionsPresenterTests.class,
+            QuestionsPresenter.class,
+            ApiQuestionProviderTests.class,
 
-        RoomConditionsPresenterTests.class,
-        RoomConditionsPresenter.class,
+            RoomConditionsPresenterTests.class,
+            RoomConditionsPresenter.class,
 
-        HardwarePresenter.class,
-        HardwarePresenterTests.class,
+            HardwarePresenter.class,
+            HardwarePresenterTests.class,
 
-        InsightsPresenter.class,
-        InsightsPresenterTests.class,
+            InsightsPresenter.class,
+            InsightsPresenterTests.class,
 
-        PreferencesPresenter.class,
-        PreferencesPresenterTests.class,
+            PreferencesPresenter.class,
+            PreferencesPresenterTests.class,
 
-        AccountPresenter.class,
-        AccountPresenterTests.class,
+            PersistentPreferencesPresenter.class,
+            PersistentPreferencesPresenterTests.class,
 
-        SmartAlarmPresenter.class,
-        SmartAlarmPresenterTests.class,
-        SmartAlarmAdapterTests.class,
+            UserFeaturesManager.class,
+            UserFeaturesPresenter.class,
+            UserFeaturesPresenterTests.class,
 
-        DateFormatterTests.class,
-        UnitFormatterTests.class,
+            AccountPresenter.class,
+            AccountPresenterTests.class,
 
-        ZoomedOutTimelinePresenterTests.class,
-        ZoomedOutTimelinePresenter.class,
+            SmartAlarmPresenter.class,
+            SmartAlarmPresenterTests.class,
+            SmartAlarmAdapterTests.class,
 
-        DeviceIssuesPresenter.class,
-        DeviceIssuesPresenterTests.class,
+            DateFormatterTests.class,
+            UnitFormatterTests.class,
 
-        LocalUsageTrackerTests.class,
-        ReviewQuestionProviderTests.class,
-        UnreadStatePresenterTests.class,
+            ZoomedOutTimelinePresenterTests.class,
+            ZoomedOutTimelinePresenter.class,
+
+            DeviceIssuesPresenter.class,
+            DeviceIssuesPresenterTests.class,
+
+            LocalUsageTrackerTests.class,
+            ReviewQuestionProviderTests.class,
+            UnreadStatePresenterTests.class,
 
             PhoneBatteryPresenter.class,
             PhoneBatteryPresenterTests.class,
+
+            SenseVoicePresenter.class,
+            SenseVoicePresenterTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -161,5 +178,10 @@ public final class TestModule {
                 .when(batteryUtil)
                 .getBatteryPercentage();
         return batteryUtil;
+    }
+
+    @Singleton @Provides UserFeaturesManager provideUserFeaturesManager(
+            @NonNull final Context context, @NonNull final Gson gson){
+        return new UserFeaturesManager(context, gson);
     }
 }
