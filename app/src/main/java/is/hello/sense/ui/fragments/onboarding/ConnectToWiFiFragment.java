@@ -44,7 +44,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -54,7 +53,7 @@ import is.hello.sense.util.Logger;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-public class ConnectToWiFiFragment extends HardwareFragment
+public class ConnectToWiFiFragment extends OnboardingSenseHardwareFragment
         implements AdapterView.OnItemSelectedListener {
     public static final String ARG_USE_IN_APP_EVENTS = ConnectToWiFiFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
     public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
@@ -323,8 +322,8 @@ public class ConnectToWiFiFragment extends HardwareFragment
             }
 
             final Properties properties = Analytics.createProperties(
-                Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
-            );
+                    Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
+                                                                    );
             final String updateEvent;
             if (useInAppEvents) {
                 Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
@@ -337,10 +336,10 @@ public class ConnectToWiFiFragment extends HardwareFragment
             final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password), status -> {
                 Properties updateProperties = Analytics.createProperties(
-                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
-                    Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
-                    Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
-                );
+                        Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
+                        Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
+                        Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
+                                                                        );
                 Analytics.trackEvent(updateEvent, updateProperties);
 
                 lastState.set(status);
