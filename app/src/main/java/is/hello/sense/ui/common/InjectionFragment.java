@@ -1,7 +1,7 @@
 package is.hello.sense.ui.common;
 
-import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,11 +37,11 @@ public class InjectionFragment extends SenseFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(final Context context) {
+        super.onAttach(context);
 
-        if (animatorContext == null && activity instanceof AnimatorContext.Scene) {
-            this.animatorContext = ((AnimatorContext.Scene) activity).getAnimatorContext();
+        if (animatorContext == null && context instanceof AnimatorContext.Scene) {
+            this.animatorContext = ((AnimatorContext.Scene) context).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
     }
@@ -55,7 +55,7 @@ public class InjectionFragment extends SenseFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -64,7 +64,7 @@ public class InjectionFragment extends SenseFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         presenterContainer.onSaveState(outState);
