@@ -24,11 +24,11 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.PairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
-import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
+import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 
@@ -148,6 +148,8 @@ public class SenseUpdateActivity extends InjectionActivity
             showVoiceDone();
         } else if (fragment instanceof VoiceCompleteFragment){
             showResetOriginalSense();
+        } else if ( fragment instanceof SenseResetOriginalFragment){
+            showHomeActivity();
         }
         
     }
@@ -247,6 +249,14 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void showResetOriginalSense() {
         pushFragment(new SenseResetOriginalFragment(), null, false);
+    }
+
+    public void showHomeActivity(){
+        setResult(RESULT_OK);
+        final Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void back() {
