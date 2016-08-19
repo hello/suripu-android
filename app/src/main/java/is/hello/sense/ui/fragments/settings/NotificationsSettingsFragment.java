@@ -22,8 +22,8 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
@@ -40,9 +40,9 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
     private static final int MSG_PUSH_PREFERENCES = 0x5;
 
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
 
@@ -88,12 +88,12 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
 
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
         this.pushScoreItem =
-                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_sleep_score), () -> updatePreference(PreferencesPresenter.PUSH_SCORE_ENABLED, pushScoreItem));
+                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_sleep_score), () -> updatePreference(PreferencesInteractor.PUSH_SCORE_ENABLED, pushScoreItem));
         adapter.add(pushScoreItem);
 
         decoration.addBottomInset(adapter.getItemCount(), verticalPadding);
         this.pushAlertConditionsItem =
-                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_alert_conditions), () -> updatePreference(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, pushAlertConditionsItem));
+                new SettingsRecyclerAdapter.ToggleItem(getString(R.string.notification_setting_alert_conditions), () -> updatePreference(PreferencesInteractor.PUSH_ALERT_CONDITIONS_ENABLED, pushAlertConditionsItem));
         adapter.add(pushAlertConditionsItem);
 
         recyclerView.setAdapter(adapter);
@@ -111,13 +111,13 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
                          this::pullingPreferencesFailed);
 
         final Observable<Boolean> pushScore =
-                preferences.observableBoolean(PreferencesPresenter.PUSH_SCORE_ENABLED, true);
+                preferences.observableBoolean(PreferencesInteractor.PUSH_SCORE_ENABLED, true);
         bindAndSubscribe(pushScore,
                          pushScoreItem::setValue,
                          Functions.LOG_ERROR);
 
         final Observable<Boolean> pushAlertConditions =
-                preferences.observableBoolean(PreferencesPresenter.PUSH_ALERT_CONDITIONS_ENABLED, true);
+                preferences.observableBoolean(PreferencesInteractor.PUSH_ALERT_CONDITIONS_ENABLED, true);
         bindAndSubscribe(pushAlertConditions,
                          pushAlertConditionsItem::setValue,
                          Functions.LOG_ERROR);

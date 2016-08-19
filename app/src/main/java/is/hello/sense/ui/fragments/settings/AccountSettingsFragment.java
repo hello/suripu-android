@@ -32,9 +32,9 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.FacebookPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.FacebookInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.adapter.AccountSettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.AccountEditor;
@@ -69,15 +69,15 @@ public class AccountSettingsFragment extends InjectionFragment
     @Inject
     Picasso picasso;
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
     @Inject
     DateFormatter dateFormatter;
     @Inject
     UnitFormatter unitFormatter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    FacebookPresenter facebookPresenter;
+    FacebookInteractor facebookPresenter;
     @Inject
     ProfileImageManager.Builder builder;
 
@@ -418,7 +418,7 @@ public class AccountSettingsFragment extends InjectionFragment
         bindAndSubscribe(accountPresenter.updatePreferences(accountPreferences),
                          ignored -> {
                              preferences.edit()
-                                        .putBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED,
+                                        .putBoolean(PreferencesInteractor.ENHANCED_AUDIO_ENABLED,
                                                     accountPreferences.enhancedAudioEnabled)
                                         .apply();
                              hideLoadingIndicator();

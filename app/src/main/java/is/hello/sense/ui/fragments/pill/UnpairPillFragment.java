@@ -14,7 +14,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
@@ -28,7 +28,7 @@ public class UnpairPillFragment extends BaseHardwareFragment {
     private OnboardingSimpleStepView view = null;
 
     @Inject
-    DevicesPresenter devicesPresenter;
+    DevicesInteractor devicesPresenter;
 
     @Nullable
     @Override

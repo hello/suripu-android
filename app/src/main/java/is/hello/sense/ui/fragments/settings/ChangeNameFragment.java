@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.widget.LabelEditText;
@@ -51,13 +51,13 @@ public class ChangeNameFragment extends SenseFragment implements Analytics.OnEve
     }
 
     public void submit(@NonNull View sender) {
-        final String firstName = AccountPresenter.normalizeInput(firstNameLET.getInputText());
-        final String lastName = AccountPresenter.normalizeInput(lastNameLET.getInputText());
+        final String firstName = AccountInteractor.normalizeInput(firstNameLET.getInputText());
+        final String lastName = AccountInteractor.normalizeInput(lastNameLET.getInputText());
         firstNameLET.setInputText(firstName);
         lastNameLET.setInputText(lastName);
         //Todo Currently no validation for lastName
         // Todo suggest updating the error validation animation
-        if (!AccountPresenter.validateName(firstName)) {
+        if (!AccountInteractor.validateName(firstName)) {
             firstNameLET.setError(R.string.invalid_first_name);
             firstNameLET.requestFocus();
             animatorFor(firstNameLET)

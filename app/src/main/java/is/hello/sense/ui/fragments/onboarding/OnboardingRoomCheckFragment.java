@@ -38,7 +38,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.interactors.RoomConditionsInteractor;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
@@ -57,7 +57,8 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public class OnboardingRoomCheckFragment extends InjectionFragment {
     private static final long CONDITION_VISIBLE_MS = 2500;
 
-    @Inject RoomConditionsPresenter presenter;
+    @Inject
+    RoomConditionsInteractor presenter;
     @Inject UnitFormatter unitFormatter;
 
     private ImageView sense;
@@ -417,7 +418,7 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         }
     }
 
-    public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
+    public void bindConditions(@NonNull RoomConditionsInteractor.Result current) {
         sensors.clear();
         sensors.addAll(current.conditions.toList());
 

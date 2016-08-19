@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
+import is.hello.sense.interactors.PhoneBatteryInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
 import is.hello.sense.ui.fragments.pill.UpdatePairPillFragment;
@@ -22,7 +22,7 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
         AccountSettingsFragment.class,
         RegisterFragment.class,
         ListActivity.class,
-        PhoneBatteryPresenter.class,
+        PhoneBatteryInteractor.class,
         ConnectPillFragment.class,
         UpdatePairPillFragment.class
 })

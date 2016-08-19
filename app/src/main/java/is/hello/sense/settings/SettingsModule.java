@@ -1,7 +1,7 @@
 package is.hello.sense.settings;
 
 import dagger.Module;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
@@ -16,7 +16,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         ChangePasswordFragment.class,
         ChangeEmailFragment.class,
         UnitSettingsFragment.class,
-        AccountPresenter.class,
+        AccountInteractor.class,
         NotificationsSettingsFragment.class,
         DeviceTimeZoneFragment.class
 })

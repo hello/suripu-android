@@ -7,7 +7,7 @@ import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.fragments.support.TicketSubmitFragment;
 
 @Module(complete = false, injects = {
-        TicketsPresenter.class,
+        TicketsInteractor.class,
         TicketSelectTopicFragment.class,
         TicketSubmitFragment.class,
         TicketListFragment.class,
