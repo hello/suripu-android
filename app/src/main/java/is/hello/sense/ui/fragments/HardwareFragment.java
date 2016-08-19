@@ -24,6 +24,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.SkippableFlow;
 import rx.functions.Action1;
 
 /**
@@ -38,8 +39,6 @@ public abstract class HardwareFragment extends InjectionFragment {
     protected UserFeaturesPresenter userFeaturesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
-
-
 
     protected boolean isPairOnlySession() {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
@@ -129,10 +128,10 @@ public abstract class HardwareFragment extends InjectionFragment {
                          });
     }
 
-
-    protected void hideAllActivityForSuccess(@NonNull final Runnable onCompletion,
+    protected void hideAllActivityForSuccess(@StringRes final int messageRes,
+                                             @NonNull final Runnable onCompletion,
                                              @NonNull final Action1<Throwable> onError) {
-        hideHardwareActivity(() -> hideBlockingActivity(true, onCompletion),
+        hideHardwareActivity(() -> hideBlockingActivity(messageRes, onCompletion),
                              e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
@@ -164,7 +163,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                                       .setTitle("Debug")
                                       .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                       .setDescription("If you're adventurous, but here there be dragons."));
-            if (!isPairOnlySession()) {
+            if (!isPairOnlySession() && getActivity() instanceof SkippableFlow) {
                 options.addOption(new SenseBottomSheet.Option(2)
                                           .setTitle("Skip to End")
                                           .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
@@ -182,7 +181,7 @@ public abstract class HardwareFragment extends InjectionFragment {
                     break;
                 }
                 case 2: {
-                    getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+                    ((SkippableFlow) getActivity()).skipToEnd();
                     break;
                 }
                 default: {
@@ -228,9 +227,9 @@ public abstract class HardwareFragment extends InjectionFragment {
                                                         ignored -> hideBlockingActivity(true, () -> {
                                                             Analytics.setSenseId("unpaired");
 
-                                                            MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
-                                                                                                                                       R.string.message_power_cycle_sense_factory_reset);
-                                                            powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+                                         final MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                                                                                                          R.string.message_power_cycle_sense_factory_reset);
+                                         powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                                                             userFeaturesPresenter.reset();
                                                             getOnboardingActivity().showSetupSense();
