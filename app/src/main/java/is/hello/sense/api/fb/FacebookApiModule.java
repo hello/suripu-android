@@ -16,12 +16,12 @@ import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.gson.ApiGsonConverter;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.ErrorResponse;
-import is.hello.sense.graph.presenters.FacebookPresenter;
+import is.hello.sense.interactors.FacebookInteractor;
 import is.hello.sense.util.Logger;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
-@Module(complete = false, injects = {FacebookPresenter.class})
+@Module(complete = false, injects = {FacebookInteractor.class})
 public class FacebookApiModule {
 
     static final String FACEBOOK_BASE_URL = "https://graph.facebook.com/v2.6";

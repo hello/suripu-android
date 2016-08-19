@@ -21,7 +21,7 @@ import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -122,7 +122,7 @@ public class ChangePasswordFragment extends InjectionFragment implements Analyti
             return;
         }
 
-        if (!AccountPresenter.validatePassword(newPasswordLET.getInputText())) {
+        if (!AccountInteractor.validatePassword(newPasswordLET.getInputText())) {
             final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder()
                     .withMessage(StringRef.from(R.string.error_account_password_too_short))
                     .build();

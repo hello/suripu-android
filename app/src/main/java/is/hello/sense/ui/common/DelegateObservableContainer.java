@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
@@ -52,7 +52,7 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     @Override
     public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
         Observable<T> bound;
-        if (toBind instanceof PresenterSubject) {
+        if (toBind instanceof InteractorSubject) {
             bound = toBind.lift(new Rx.OperatorUnbufferedObserveOn<>(scheduler));
         } else {
             bound = toBind.observeOn(scheduler);

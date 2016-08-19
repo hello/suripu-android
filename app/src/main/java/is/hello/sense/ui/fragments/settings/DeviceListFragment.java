@@ -25,8 +25,8 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -55,9 +55,9 @@ public class DeviceListFragment extends InjectionFragment
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
     @Inject
-    DevicesPresenter devicesPresenter;
+    DevicesInteractor devicesPresenter;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;

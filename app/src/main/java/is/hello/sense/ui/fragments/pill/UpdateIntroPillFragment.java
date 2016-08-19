@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
+import is.hello.sense.interactors.PhoneBatteryInteractor;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
@@ -27,7 +27,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    PhoneBatteryPresenter phoneBatteryPresenter;
+    PhoneBatteryInteractor phoneBatteryPresenter;
 
     private Button primaryButton;
     private final ViewAnimator viewAnimator = new ViewAnimator();

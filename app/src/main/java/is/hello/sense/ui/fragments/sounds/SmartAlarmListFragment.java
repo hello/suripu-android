@@ -30,8 +30,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
@@ -52,9 +52,9 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     private static final int DELETE_REQUEST_CODE = 0x11;
 
     @Inject
-    SmartAlarmPresenter smartAlarmPresenter;
+    SmartAlarmInteractor smartAlarmPresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
     DateFormatter dateFormatter;
 
@@ -222,7 +222,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         finishLoading();
 
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
-        if (e instanceof SmartAlarmPresenter.DayOverlapError) {
+        if (e instanceof SmartAlarmInteractor.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         }
         final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();

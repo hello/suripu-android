@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -26,7 +26,7 @@ import is.hello.sense.util.Logger;
 
 public class OnboardingRegisterWeightFragment extends SenseFragment {
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
 
     private ScaleView scale;
     private TextView scaleReading;
@@ -60,7 +60,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
         this.scaleReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_weight_scale_reading);
 
         final boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        final boolean useGrams = preferences.getBoolean(PreferencesPresenter.USE_GRAMS, defaultMetric);
+        final boolean useGrams = preferences.getBoolean(PreferencesInteractor.USE_GRAMS, defaultMetric);
         if (useGrams) {
             scale.setOnValueChangedListener(pounds -> {
                 final int kilograms = (int) UnitOperations.poundsToKilograms(pounds);

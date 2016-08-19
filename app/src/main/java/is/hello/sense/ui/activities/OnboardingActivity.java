@@ -27,10 +27,10 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -100,15 +100,15 @@ public class OnboardingActivity extends InjectionActivity
     @Inject
     ApiService apiService;
     @Inject
-    HardwarePresenter hardwarePresenter;
+    HardwareInteractor hardwarePresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    UserFeaturesPresenter userFeaturesPresenter;
+    UserFeaturesInteractor userFeaturesPresenter;
     @Inject
-    SenseOTAStatusPresenter senseOTAStatusPresenter;
+    SenseOTAStatusInteractor senseOTAStatusPresenter;
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -359,14 +359,14 @@ public class OnboardingActivity extends InjectionActivity
         if (getIntent().hasExtra(EXTRA_START_CHECKPOINT)) {
             return getIntent().getIntExtra(EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_NONE);
         } else {
-            return preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+            return preferences.getInt(PreferencesInteractor.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
         }
     }
 
     public void passedCheckPoint(final int checkPoint) {
         preferences
                 .edit()
-                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, checkPoint)
+                .putInt(PreferencesInteractor.LAST_ONBOARDING_CHECK_POINT, checkPoint)
                 .apply();
 
         getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -615,7 +615,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showHomeActivity(@Flow final int fromFlow) {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
+                   .putBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, true)
                    .apply();
 
         hardwarePresenter.clearPeripheral();

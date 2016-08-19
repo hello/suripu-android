@@ -41,9 +41,9 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.TimelinePresenter;
-import is.hello.sense.graph.presenters.UnreadStatePresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.TimelineInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
@@ -95,13 +95,13 @@ public class TimelineFragment extends InjectionFragment
 
 
     @Inject
-    TimelinePresenter timelinePresenter;
+    TimelineInteractor timelinePresenter;
     @Inject
     DateFormatter dateFormatter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    UnreadStatePresenter unreadStatePresenter;
+    UnreadStateInteractor unreadStatePresenter;
     @Inject
     LocalUsageTracker localUsageTracker;
 
@@ -652,7 +652,7 @@ public class TimelineFragment extends InjectionFragment
             transitionIntoNoDataState(header -> {
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
-                        preferences.getLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE);
+                        preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
                 final boolean isAccountNew = (creationDate == null ||
                         creationDate.equals(LocalDate.now()));
                 if (isAccountNew) {

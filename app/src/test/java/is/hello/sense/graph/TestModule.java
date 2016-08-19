@@ -20,39 +20,39 @@ import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.api.sessions.UserFeaturesManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.AccountPresenterTests;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenterTests;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.HardwarePresenterTests;
-import is.hello.sense.graph.presenters.InsightsPresenter;
-import is.hello.sense.graph.presenters.InsightsPresenterTests;
-import is.hello.sense.graph.presenters.PersistentPreferencesPresenter;
-import is.hello.sense.graph.presenters.PersistentPreferencesPresenterTests;
-import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
-import is.hello.sense.graph.presenters.PhoneBatteryPresenterTests;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenterTests;
-import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.graph.presenters.QuestionsPresenterTests;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
-import is.hello.sense.graph.presenters.RoomConditionsPresenterTests;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenterTests;
-import is.hello.sense.graph.presenters.SenseVoicePresenter;
-import is.hello.sense.graph.presenters.SenseVoicePresenterTests;
-import is.hello.sense.graph.presenters.SmartAlarmPresenter;
-import is.hello.sense.graph.presenters.SmartAlarmPresenterTests;
-import is.hello.sense.graph.presenters.TimelinePresenter;
-import is.hello.sense.graph.presenters.TimelinePresenterTests;
-import is.hello.sense.graph.presenters.UnreadStatePresenterTests;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenterTests;
-import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
-import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenterTests;
-import is.hello.sense.graph.presenters.questions.ApiQuestionProviderTests;
-import is.hello.sense.graph.presenters.questions.ReviewQuestionProviderTests;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.AccountInteractorTests;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.DeviceIssuesInteractorTests;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.HardwareInteractorTests;
+import is.hello.sense.interactors.InsightsInteractor;
+import is.hello.sense.interactors.InsightsInteractorTests;
+import is.hello.sense.interactors.PersistentPreferencesInteractor;
+import is.hello.sense.interactors.PersistentPreferencesInteractorTests;
+import is.hello.sense.interactors.PhoneBatteryInteractor;
+import is.hello.sense.interactors.PhoneBatteryInteractorTests;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.PreferencesInteractorTests;
+import is.hello.sense.interactors.QuestionsInteractor;
+import is.hello.sense.interactors.QuestionsInteractorTests;
+import is.hello.sense.interactors.RoomConditionsInteractor;
+import is.hello.sense.interactors.RoomConditionsInteractorTests;
+import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.SenseOTAStatusInteractorTests;
+import is.hello.sense.interactors.SenseVoiceInteractor;
+import is.hello.sense.interactors.SenseVoiceInteractorTests;
+import is.hello.sense.interactors.SmartAlarmInteractor;
+import is.hello.sense.interactors.SmartAlarmInteractorTests;
+import is.hello.sense.interactors.TimelineInteractor;
+import is.hello.sense.interactors.TimelineInteractorTests;
+import is.hello.sense.interactors.UnreadStateInteractorTests;
+import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractorTests;
+import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
+import is.hello.sense.interactors.ZoomedOutTimelineInteractorTests;
+import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
+import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
@@ -67,60 +67,60 @@ import static org.mockito.Mockito.mock;
 @Module(
     library = true,
     injects = {
-            TimelinePresenterTests.class,
-            TimelinePresenter.class,
+            TimelineInteractorTests.class,
+            TimelineInteractor.class,
 
-            QuestionsPresenterTests.class,
-            QuestionsPresenter.class,
+            QuestionsInteractorTests.class,
+            QuestionsInteractor.class,
             ApiQuestionProviderTests.class,
 
-            RoomConditionsPresenterTests.class,
-            RoomConditionsPresenter.class,
+            RoomConditionsInteractorTests.class,
+            RoomConditionsInteractor.class,
 
-            HardwarePresenter.class,
-            HardwarePresenterTests.class,
+            HardwareInteractor.class,
+            HardwareInteractorTests.class,
 
-            InsightsPresenter.class,
-            InsightsPresenterTests.class,
+            InsightsInteractor.class,
+            InsightsInteractorTests.class,
 
-            PreferencesPresenter.class,
-            PreferencesPresenterTests.class,
+            PreferencesInteractor.class,
+            PreferencesInteractorTests.class,
 
-            PersistentPreferencesPresenter.class,
-            PersistentPreferencesPresenterTests.class,
+            PersistentPreferencesInteractor.class,
+            PersistentPreferencesInteractorTests.class,
 
             UserFeaturesManager.class,
-            UserFeaturesPresenter.class,
-            UserFeaturesPresenterTests.class,
+            UserFeaturesInteractor.class,
+            UserFeaturesInteractorTests.class,
 
-            AccountPresenter.class,
-            AccountPresenterTests.class,
+            AccountInteractor.class,
+            AccountInteractorTests.class,
 
-            SmartAlarmPresenter.class,
-            SmartAlarmPresenterTests.class,
+            SmartAlarmInteractor.class,
+            SmartAlarmInteractorTests.class,
             SmartAlarmAdapterTests.class,
 
             DateFormatterTests.class,
             UnitFormatterTests.class,
 
-            ZoomedOutTimelinePresenterTests.class,
-            ZoomedOutTimelinePresenter.class,
+            ZoomedOutTimelineInteractorTests.class,
+            ZoomedOutTimelineInteractor.class,
 
-            DeviceIssuesPresenter.class,
-            DeviceIssuesPresenterTests.class,
+            DeviceIssuesInteractor.class,
+            DeviceIssuesInteractorTests.class,
 
             LocalUsageTrackerTests.class,
             ReviewQuestionProviderTests.class,
-            UnreadStatePresenterTests.class,
+            UnreadStateInteractorTests.class,
 
-            PhoneBatteryPresenter.class,
-            PhoneBatteryPresenterTests.class,
+            PhoneBatteryInteractor.class,
+            PhoneBatteryInteractorTests.class,
 
-            SenseVoicePresenter.class,
-            SenseVoicePresenterTests.class,
+            SenseVoiceInteractor.class,
+            SenseVoiceInteractorTests.class,
 
-            SenseOTAStatusPresenter.class,
-            SenseOTAStatusPresenterTests.class,
+            SenseOTAStatusInteractor.class,
+            SenseOTAStatusInteractorTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

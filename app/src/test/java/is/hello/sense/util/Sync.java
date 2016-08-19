@@ -7,7 +7,7 @@ import org.junit.Assert;
 
 import java.util.Iterator;
 
-import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -33,11 +33,11 @@ public final class Sync<T> implements Iterable<T> {
     /**
      * Wraps an unbounded source observable.
      * <p/>
-     * This method <b>does not</b> work PresenterSubject.
+     * This method <b>does not</b> work InteractorSubject.
      */
     public static <T> Sync<T> wrap(@NonNull final Observable<T> source) {
-        if (source instanceof PresenterSubject) {
-            throw new IllegalArgumentException("of(Observable) cannot be used with PresenterSubject!");
+        if (source instanceof InteractorSubject) {
+            throw new IllegalArgumentException("of(Observable) cannot be used with InteractorSubject!");
         }
 
         return new Sync<>(source);
@@ -47,7 +47,7 @@ public final class Sync<T> implements Iterable<T> {
      * Wraps a presenter subject, converting it to a bounded observable
      * by <code>take</code>ing a given number of emitted values from it.
      */
-    public static <T> Sync<T> wrap(final int limit, @NonNull final PresenterSubject<T> source) {
+    public static <T> Sync<T> wrap(final int limit, @NonNull final InteractorSubject<T> source) {
         return new Sync<>(source.take(limit));
     }
 
@@ -55,7 +55,7 @@ public final class Sync<T> implements Iterable<T> {
      * Wraps a presenter subject, converting it to a bounded observable
      * by <code>take</code>ing one emitted value from it.
      */
-    public static <T> Sync<T> wrap(@NonNull final PresenterSubject<T> source) {
+    public static <T> Sync<T> wrap(@NonNull final InteractorSubject<T> source) {
         return wrap(1, source);
     }
 
@@ -63,7 +63,7 @@ public final class Sync<T> implements Iterable<T> {
      * Wraps a given observable, <code>take</code>ing one emitted value from it,
      * and firing a given action block before returning.
      * <p/>
-     * This method should be used with ValuePresenter subclasses when updating them:
+     * This method should be used with ValueInteractor subclasses when updating them:
      * <pre>
      *     Account account = Sync.wrapAfter(presenter::update, presenter.account).last();
      * </pre>
@@ -212,10 +212,10 @@ public final class Sync<T> implements Iterable<T> {
     /**
      * Shorthand for <code>Sync.wrap(subject).last();</code>.
      *
-     * @see #wrap(is.hello.sense.graph.PresenterSubject)
+     * @see #wrap(InteractorSubject)
      * @see #last()
      */
-    public static <T> T next(@NonNull final PresenterSubject<T> source) {
+    public static <T> T next(@NonNull final InteractorSubject<T> source) {
         return wrap(source).last();
     }
 

@@ -15,8 +15,8 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -33,9 +33,10 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
 
     private static final int OPTION_ID_REPLACE_PILL = 0;
 
-    @Inject DevicesPresenter devicesPresenter;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DevicesInteractor devicesPresenter;
+    @Inject
+    DeviceIssuesInteractor deviceIssuesPresenter;
 
     //region Lifecycle
 
