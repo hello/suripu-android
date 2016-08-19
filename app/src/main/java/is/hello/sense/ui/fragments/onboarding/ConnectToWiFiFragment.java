@@ -148,11 +148,8 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         } else {
             this.toolbar = OnboardingToolbar.of(this, view);
             this.toolbar.setWantsBackButton(true)
-                   .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.SIGN_INTO_WIFI))
-                   .setOnHelpLongClickListener(ignored -> {
-                       showSupportOptions();
-                       return true;
-                   });
+                   .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.SIGN_INTO_WIFI));
+                    //todo add back support options after refactor
         }
 
         return view;

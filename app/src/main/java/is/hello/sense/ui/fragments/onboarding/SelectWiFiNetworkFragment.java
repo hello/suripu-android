@@ -24,10 +24,12 @@ import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class SelectWiFiNetworkFragment extends OnboardingSenseHardwareFragment
+public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         implements AdapterView.OnItemClickListener {
     public static final String ARG_USE_IN_APP_EVENTS = SelectWiFiNetworkFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
@@ -124,11 +126,7 @@ public class SelectWiFiNetworkFragment extends OnboardingSenseHardwareFragment
             this.toolbar = OnboardingToolbar.of(this, view);
             toolbar.setWantsBackButton(false)
                    .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(),
-                                                                                  UserSupport.HelpStep.WIFI_SCAN))
-                   .setOnHelpLongClickListener(ignored -> {
-                       showSupportOptions();
-                       return true;
-                   });
+                                                                                  UserSupport.HelpStep.WIFI_SCAN));
             setHasOptionsMenu(false);
         }
 

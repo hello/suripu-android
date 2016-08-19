@@ -23,7 +23,6 @@ import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
         OnboardingRegisterHeightFragment.class,
         BluetoothFragment.class,
         OnboardingRegisterAudioFragment.class,
-        OnboardingUnsupportedDeviceFragment.class,
         PairSenseFragment.class,
         OnboardingPairPillFragment.class,
         OnboardingSenseColorsFragment.class,
