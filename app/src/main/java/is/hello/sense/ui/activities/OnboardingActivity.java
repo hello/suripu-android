@@ -313,6 +313,8 @@ public class OnboardingActivity extends InjectionActivity
         } else if (fragment instanceof OnboardingCompleteFragment ||
                 fragment instanceof VoiceCompleteFragment){
             showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+        }else if (fragment instanceof OnboardingUnsupportedDeviceFragment){
+            showGetStarted(true);
         }
     }
 
