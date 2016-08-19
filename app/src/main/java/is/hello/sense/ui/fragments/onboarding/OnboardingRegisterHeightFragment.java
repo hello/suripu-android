@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -25,7 +25,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class OnboardingRegisterHeightFragment extends SenseFragment {
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesInteractor preferences;
 
     private ScaleView scale;
     private TextView scaleReading;
@@ -58,7 +59,7 @@ public class OnboardingRegisterHeightFragment extends SenseFragment {
         this.scaleReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_height_scale_reading);
 
         boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        boolean useCentimeters = preferences.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultMetric);
+        boolean useCentimeters = preferences.getBoolean(PreferencesInteractor.USE_CENTIMETERS, defaultMetric);
         if (useCentimeters) {
             scale.setOnValueChangedListener(centimeters -> {
                 scaleReading.setText(getString(R.string.height_cm_fmt, centimeters));

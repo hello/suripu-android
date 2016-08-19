@@ -49,7 +49,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -70,7 +70,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private static final int GRID_COLUMNS_PER_ROW = 2;
 
     @Inject DateFormatter dateFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesInteractor preferences;
 
     private @Nullable MarkupString summary;
     private ScoreCondition scoreCondition;

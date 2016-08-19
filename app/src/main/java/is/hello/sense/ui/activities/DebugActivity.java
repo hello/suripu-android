@@ -18,8 +18,8 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PersistentPreferencesPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PersistentPreferencesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter.DetailItem;
@@ -35,8 +35,10 @@ import is.hello.sense.util.SessionLogger;
 public class DebugActivity extends InjectionActivity {
     public static final String EXTRA_DEBUG_CHECKPOINT = "EXTRA_DEBUG_CHECKPOINT" + DebugActivity.class.getName();
     @Inject ApiSessionManager sessionManager;
-    @Inject PreferencesPresenter preferences;
-    @Inject PersistentPreferencesPresenter persistentPreferences;
+    @Inject
+    PreferencesInteractor preferences;
+    @Inject
+    PersistentPreferencesInteractor persistentPreferences;
     @Inject LocalUsageTracker localUsageTracker;
     @Inject ApiEndpoint apiEndpoint;
 
@@ -175,7 +177,7 @@ public class DebugActivity extends InjectionActivity {
 
     public void reEnableReviewPrompt() {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)
+                   .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)
                    .apply();
         localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         Toast.makeText(getApplicationContext(), "Review prompt re-enabled", Toast.LENGTH_SHORT).show();
@@ -183,7 +185,7 @@ public class DebugActivity extends InjectionActivity {
 
     public void reEnableAmazonReviewPrompt() {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false)
+                   .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false)
                    .apply();
         localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         Toast.makeText(getApplicationContext(), "Amazon Review prompt re-enabled", Toast.LENGTH_SHORT).show();

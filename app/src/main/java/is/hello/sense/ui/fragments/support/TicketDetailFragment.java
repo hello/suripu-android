@@ -57,7 +57,7 @@ import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.zendesk.AttachmentPicker;
-import is.hello.sense.zendesk.TicketDetailPresenter;
+import is.hello.sense.zendesk.TicketDetailInteractor;
 
 public class TicketDetailFragment extends InjectionFragment
         implements ImageUploadHelper.ImageUploadProgressListener, TextWatcher, Permission.PermissionDialogResources,
@@ -66,7 +66,7 @@ public class TicketDetailFragment extends InjectionFragment
     private static final String ARG_TICKET_SUBJECT = TicketDetailFragment.class.getName() + ".ARG_TICKET_SUBJECT";
 
     @Inject
-    TicketDetailPresenter presenter;
+    TicketDetailInteractor presenter;
 
     private AttachmentPicker attachmentPicker;
     private ImageUploadHelper imageUploadHelper;

@@ -3,7 +3,7 @@ package is.hello.sense.presenters;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
-import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.ui.common.UserSupport;
 
@@ -41,7 +41,7 @@ public class SenseResetOriginalPresenter
         interactor.update();
     }
 
-    public PresenterSubject<Boolean> getInteractorSubject(){
+    public InteractorSubject<Boolean> getInteractorSubject(){
         return interactor.resetResult;
     }
 

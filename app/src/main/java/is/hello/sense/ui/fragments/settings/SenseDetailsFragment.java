@@ -42,10 +42,10 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -75,15 +75,15 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private static final int OPTION_ID_FACTORY_RESET = 1;
 
     @Inject
-    DevicesPresenter devicesPresenter;
+    DevicesInteractor devicesPresenter;
     @Inject
-    HardwarePresenter hardwarePresenter;
+    HardwareInteractor hardwarePresenter;
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    UserFeaturesPresenter userFeaturesPresenter;
+    UserFeaturesInteractor userFeaturesPresenter;
 
     private TextView pairingMode;
     private TextView changeWiFi;
@@ -149,7 +149,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
-        IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        IntentFilter fatalErrors = new IntentFilter(HardwareInteractor.ACTION_CONNECTION_LOST);
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(PERIPHERAL_CLEARED, fatalErrors);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

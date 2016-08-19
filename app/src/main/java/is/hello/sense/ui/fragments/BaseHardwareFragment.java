@@ -7,8 +7,8 @@ import android.support.annotation.StringRes;
 import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -22,9 +22,9 @@ import rx.functions.Action1;
 public abstract class BaseHardwareFragment extends InjectionFragment {
     public
     @Inject
-    HardwarePresenter hardwarePresenter;
+    HardwareInteractor hardwarePresenter;
     @Inject
-    protected UserFeaturesPresenter userFeaturesPresenter;
+    protected UserFeaturesInteractor userFeaturesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
 

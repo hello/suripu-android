@@ -12,9 +12,9 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -48,11 +48,11 @@ public class SenseUpdateActivity extends InjectionActivity
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
-    SenseOTAStatusPresenter senseOTAStatusPresenter;
+    SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
-    UserFeaturesPresenter userFeaturesPresenter;
+    UserFeaturesInteractor userFeaturesPresenter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

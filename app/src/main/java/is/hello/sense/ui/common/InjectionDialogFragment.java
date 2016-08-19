@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.SenseApplication;
-import is.hello.sense.graph.presenters.Presenter;
-import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.interactors.Interactor;
+import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.util.StateSafeScheduler;
 import rx.Observable;
 import rx.Subscription;
@@ -20,7 +20,7 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
     protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
     protected final DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
 
-    protected final PresenterContainer presenterContainer = new PresenterContainer();
+    protected final InteractorContainer interactorContainer = new InteractorContainer();
 
     public InjectionDialogFragment() {
         SenseApplication.getInstance().inject(this);
@@ -32,7 +32,7 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            presenterContainer.onRestoreState(savedInstanceState);
+            interactorContainer.onRestoreState(savedInstanceState);
         }
     }
 
@@ -40,21 +40,21 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        presenterContainer.onSaveState(outState);
+        interactorContainer.onSaveState(outState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        presenterContainer.onContainerResumed();
+        interactorContainer.onContainerResumed();
     }
 
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        presenterContainer.onTrimMemory(level);
+        interactorContainer.onTrimMemory(level);
     }
 
     @Override
@@ -68,12 +68,12 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
     public void onDestroy() {
         super.onDestroy();
 
-        presenterContainer.onContainerDestroyed();
+        interactorContainer.onContainerDestroyed();
     }
 
 
-    public void addPresenter(@NonNull Presenter presenter) {
-        presenterContainer.addPresenter(presenter);
+    public void addPresenter(@NonNull Interactor interactor) {
+        interactorContainer.addPresenter(interactor);
     }
 
     @Override

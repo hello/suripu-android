@@ -34,10 +34,10 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.PresenterContainer;
-import is.hello.sense.graph.presenters.UnreadStatePresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.InteractorContainer;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -75,16 +75,16 @@ public class HomeActivity extends ScopedInjectionActivity
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
 
-    private final PresenterContainer presenterContainer = new PresenterContainer();
+    private final InteractorContainer interactorContainer = new InteractorContainer();
 
     @Inject
     ApiService apiService;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    UnreadStatePresenter unreadStatePresenter;
+    UnreadStateInteractor unreadStatePresenter;
     @Inject
     LocalUsageTracker localUsageTracker;
 
@@ -139,13 +139,13 @@ public class HomeActivity extends ScopedInjectionActivity
         setContentView(R.layout.activity_home);
 
         deviceIssuesPresenter.bindScope(this);
-        presenterContainer.addPresenter(deviceIssuesPresenter);
+        interactorContainer.addPresenter(deviceIssuesPresenter);
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
             this.showBackside = false;
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
-            presenterContainer.onRestoreState(savedInstanceState);
+            interactorContainer.onRestoreState(savedInstanceState);
         } else {
             this.showBackside = (getOnboardingFlow() == OnboardingActivity.FLOW_SIGN_IN);
 
@@ -247,7 +247,7 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onSaveInstanceState(outState);
 
         outState.putLong("lastUpdated", lastUpdated);
-        presenterContainer.onSaveState(outState);
+        interactorContainer.onSaveState(outState);
     }
 
     @Override
@@ -285,14 +285,14 @@ public class HomeActivity extends ScopedInjectionActivity
             unreadStatePresenter.update();
         }
 
-        presenterContainer.onContainerResumed();
+        interactorContainer.onContainerResumed();
     }
 
     @Override
     public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
 
-        presenterContainer.onTrimMemory(level);
+        interactorContainer.onTrimMemory(level);
     }
 
     @Override
@@ -303,7 +303,7 @@ public class HomeActivity extends ScopedInjectionActivity
         viewPager.removeOnPageChangeListener(this);
 
         if (isFinishing()) {
-            presenterContainer.onContainerDestroyed();
+            interactorContainer.onContainerDestroyed();
         }
     }
 
@@ -526,8 +526,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Device Issues
 
-    public void bindDeviceIssue(@NonNull final DeviceIssuesPresenter.Issue issue) {
-        if (issue == DeviceIssuesPresenter.Issue.NONE ||
+    public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE ||
                 getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
             return;
         }

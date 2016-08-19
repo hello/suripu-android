@@ -31,9 +31,9 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -60,11 +60,11 @@ public class SignInFragment extends InjectionFragment
     @Inject
     ApiService apiService;
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    UserFeaturesPresenter userFeaturesPresenter;
+    UserFeaturesInteractor userFeaturesPresenter;
 
     private LabelEditText emailTextLET;
     private LabelEditText passwordTextLET;
@@ -192,7 +192,7 @@ public class SignInFragment extends InjectionFragment
             return;
         }
 
-        final String email = AccountPresenter.normalizeInput(emailTextLET.getInputText());
+        final String email = AccountInteractor.normalizeInput(emailTextLET.getInputText());
         this.emailTextLET.setInputText(email);
 
         final String password = this.passwordTextLET.getInputText();
@@ -249,7 +249,7 @@ public class SignInFragment extends InjectionFragment
     //region Next button state control
 
     private boolean inputIsInvalid(final boolean showErrors) {
-        if (emailTextLET.isInputEmpty() || !AccountPresenter.validateEmail(emailTextLET.getInputText())) {
+        if (emailTextLET.isInputEmpty() || !AccountInteractor.validateEmail(emailTextLET.getInputText())) {
             if (showErrors) {
                 emailTextLET.setError(R.string.invalid_email); // todo confirm this error message.
             }
