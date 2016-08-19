@@ -129,6 +129,12 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
         hideHardwareActivity(next, ignored -> next.run());
     }
 
+    protected void hideAllActivityForSuccess(@StringRes final int messageRes,
+                                             @NonNull final Runnable onCompletion,
+                                             @NonNull final Action1<Throwable> onError) {
+        hideHardwareActivity(() -> hideBlockingActivity(messageRes, onCompletion),
+                             e -> hideBlockingActivity(false, () -> onError.call(e)));
+    }
     //endregion
 
 
