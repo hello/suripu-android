@@ -27,7 +27,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 
 public class OnboardingToolbar {
-    private final Fragment fragment;
+    private Fragment fragment;
     private final FrameLayout toolbarView;
 
     private final ImageButton backButton;
@@ -50,6 +50,7 @@ public class OnboardingToolbar {
         helpButton.setOnLongClickListener(null);
         onHelpClickListener = null;
         onHelpLongClickListener = null;
+        fragment = null;
     }
 
     private OnboardingToolbar(@NonNull final Fragment fragment, @NonNull final View toolbarView) {

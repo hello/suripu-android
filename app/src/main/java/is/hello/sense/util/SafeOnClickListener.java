@@ -15,14 +15,14 @@ public class SafeOnClickListener implements View.OnClickListener {
     private final @NonNull View.OnClickListener target;
     private long lastInvocation;
 
-    public SafeOnClickListener(@Nullable StateSafeExecutor stateSafeExecutor,
-                               @NonNull View.OnClickListener target) {
+    public SafeOnClickListener(@Nullable final StateSafeExecutor stateSafeExecutor,
+                               @NonNull final View.OnClickListener target) {
         this.target = target;
         this.stateSafeExecutor = stateSafeExecutor;
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if ((AnimationUtils.currentAnimationTimeMillis() - lastInvocation) > ViewConfiguration.getDoubleTapTimeout()) {
             if (stateSafeExecutor != null) {
                 stateSafeExecutor.execute(() -> target.onClick(view));
