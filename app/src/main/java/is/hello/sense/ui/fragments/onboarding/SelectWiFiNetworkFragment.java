@@ -24,11 +24,10 @@ import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class SelectWiFiNetworkFragment extends HardwareFragment
+public class SelectWiFiNetworkFragment extends OnboardingSenseHardwareFragment
         implements AdapterView.OnItemClickListener {
     public static final String ARG_USE_IN_APP_EVENTS = SelectWiFiNetworkFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
