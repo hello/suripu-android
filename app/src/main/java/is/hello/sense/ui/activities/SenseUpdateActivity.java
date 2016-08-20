@@ -15,12 +15,13 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
+import is.hello.sense.ui.fragments.pill.PairPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdatePairPillConfirmationFragment;
-import is.hello.sense.ui.fragments.pill.UpdatePairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
@@ -67,7 +68,9 @@ public class SenseUpdateActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
             getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            showSenseUpdateIntro();
+            //showSenseUpdateIntro();
+            showUpdatePairPillFragment();
+
         }
 
         getDeviceIdFromIntent(getIntent());
@@ -146,7 +149,7 @@ public class SenseUpdateActivity extends InjectionActivity
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
             showUpdatePairPillFragment();
-        } else if (fragment instanceof UpdatePairPillFragment) {
+        } else if (fragment instanceof PairPillFragment) {
             showUpdatePairPillConfirmationFragment();
         } else if (fragment instanceof UpdatePairPillConfirmationFragment) {
             checkForSenseOTA();
@@ -158,7 +161,7 @@ public class SenseUpdateActivity extends InjectionActivity
             showVoiceDone();
         } else if (fragment instanceof VoiceCompleteFragment) {
             showResetOriginalSense();
-        } else if ( fragment instanceof SenseResetOriginalFragment){
+        } else if (fragment instanceof SenseResetOriginalFragment) {
             showHomeActivity();
         }
 
@@ -201,7 +204,7 @@ public class SenseUpdateActivity extends InjectionActivity
     }
 
     private void showUpdatePairPillFragment() {
-        pushFragment(new UpdatePairPillFragment(), null, true);
+        pushFragment(PairPillFragment.newInstance(new UpdatePairPillPresenter()), null, false);
     }
 
     private void showUpdatePairPillConfirmationFragment() {
@@ -266,7 +269,7 @@ public class SenseUpdateActivity extends InjectionActivity
         pushFragment(new SenseResetOriginalFragment(), null, false);
     }
 
-    public void showHomeActivity(){
+    public void showHomeActivity() {
         setResult(RESULT_OK);
         final Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

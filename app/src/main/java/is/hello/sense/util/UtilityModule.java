@@ -13,7 +13,6 @@ import dagger.Provides;
 import is.hello.sense.interactors.PhoneBatteryInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
-import is.hello.sense.ui.fragments.pill.UpdatePairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
@@ -23,8 +22,7 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
         RegisterFragment.class,
         ListActivity.class,
         PhoneBatteryInteractor.class,
-        ConnectPillFragment.class,
-        UpdatePairPillFragment.class
+        ConnectPillFragment.class
 })
 public class UtilityModule {
 

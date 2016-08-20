@@ -9,6 +9,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.fragments.pill.PairPillFragment;
 import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
@@ -26,20 +28,26 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
                 PairSenseFragment.class,
                 SenseUpdateReadyFragment.class,
                 SenseResetOriginalFragment.class,
-                UnpairPillFragment.class
+                UnpairPillFragment.class,
+                PairPillFragment.class,
+                BaseHardwareFragment.class
         }
 )
 public class SenseUpdateModule {
 
-    @Provides @Singleton
-    SenseResetOriginalInteractor providesSenseResetOriginalInteractor(final ApiService apiService){
+    @Provides
+    @Singleton
+    SenseResetOriginalInteractor providesSenseResetOriginalInteractor(final ApiService apiService) {
         return new SenseResetOriginalInteractor(apiService);
     }
 
-    @Provides @Singleton
-    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final SenseResetOriginalInteractor interactor){
+    @Provides
+    @Singleton
+    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final SenseResetOriginalInteractor interactor) {
         final SenseResetOriginalPresenter presenter = new SenseResetOriginalPresenter(interactor);
         // todo interactor.setInteractorOutput(presenter);
         return presenter;
     }
+
+
 }

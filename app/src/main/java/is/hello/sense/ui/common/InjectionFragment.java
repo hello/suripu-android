@@ -129,7 +129,7 @@ public class InjectionFragment extends SenseFragment
 
 
     public void addPresenter(@NonNull Interactor interactor) {
-        interactorContainer.addPresenter(interactor);
+        interactorContainer.addInteractor(interactor);
     }
 
 

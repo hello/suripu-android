@@ -14,7 +14,8 @@ import java.util.List;
  * @see Interactor
  */
 public class InteractorContainer {
-    @VisibleForTesting final List<Interactor> interactors = new ArrayList<>();
+    @VisibleForTesting
+    final List<Interactor> interactors = new ArrayList<>();
 
     //region Lifecycle
 
@@ -22,7 +23,7 @@ public class InteractorContainer {
      * @see Interactor#onContainerDestroyed()
      */
     public void onContainerDestroyed() {
-        for (Interactor interactor : interactors) {
+        for (final Interactor interactor : interactors) {
             interactor.onContainerDestroyed();
         }
     }
@@ -31,7 +32,7 @@ public class InteractorContainer {
      * @see Interactor#onContainerResumed()
      */
     public void onContainerResumed() {
-        for (Interactor interactor : interactors) {
+        for (final Interactor interactor : interactors) {
             interactor.onContainerResumed();
         }
     }
@@ -39,8 +40,8 @@ public class InteractorContainer {
     /**
      * @see Interactor#onTrimMemory(int)
      */
-    public void onTrimMemory(int level) {
-        for (Interactor interactor : interactors) {
+    public void onTrimMemory(final int level) {
+        for (final Interactor interactor : interactors) {
             interactor.onTrimMemory(level);
         }
     }
@@ -48,13 +49,13 @@ public class InteractorContainer {
     /**
      * @see Interactor#onRestoreState(android.os.Bundle)
      */
-    public void onRestoreState(@NonNull Bundle inState) {
-        for (Interactor interactor : interactors) {
+    public void onRestoreState(@NonNull final Bundle inState) {
+        for (final Interactor interactor : interactors) {
             if (interactor.isStateRestored()) {
                 continue;
             }
 
-            Bundle savedState = inState.getParcelable(interactor.getSavedStateKey());
+            final Bundle savedState = inState.getParcelable(interactor.getSavedStateKey());
             if (savedState != null) {
                 interactor.onRestoreState(savedState);
             }
@@ -64,9 +65,9 @@ public class InteractorContainer {
     /**
      * @see Interactor#onSaveState()
      */
-    public void onSaveState(Bundle outState) {
-        for (Interactor interactor : interactors) {
-            Bundle savedState = interactor.onSaveState();
+    public void onSaveState(final Bundle outState) {
+        for (final Interactor interactor : interactors) {
+            final Bundle savedState = interactor.onSaveState();
             if (savedState != null) {
                 outState.putParcelable(interactor.getSavedStateKey(), savedState);
             }
@@ -79,7 +80,7 @@ public class InteractorContainer {
     /**
      * Add a child interactor to the container.
      */
-    public void addPresenter(@NonNull Interactor interactor) {
+    public void addInteractor(@NonNull final Interactor interactor) {
         interactors.add(interactor);
     }
 }

@@ -73,7 +73,7 @@ public class InjectionDialogFragment extends SenseDialogFragment implements Obse
 
 
     public void addPresenter(@NonNull Interactor interactor) {
-        interactorContainer.addPresenter(interactor);
+        interactorContainer.addInteractor(interactor);
     }
 
     @Override

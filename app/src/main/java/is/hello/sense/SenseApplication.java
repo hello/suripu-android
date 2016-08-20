@@ -106,9 +106,7 @@ public class SenseApplication extends Application {
     public void buildGraph() {
         this.graph = ObjectGraph.create(
                 new ApiModule(this),
-                new SenseAppModule(this),
-                new BluetoothModule(),
-                new ZendeskModule()
+                new SenseAppModule(this)
         );
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_BUILT_GRAPH));
 

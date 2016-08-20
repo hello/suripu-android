@@ -14,7 +14,6 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
-
 /**
  * Extends InjectionFragment to add support for displaying
  * in-app and on Sense loading indicators.
@@ -27,7 +26,6 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
     protected UserFeaturesInteractor userFeaturesPresenter;
 
     private LoadingDialogFragment loadingDialogFragment;
-
 
     protected boolean isPairOnlySession() {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);

@@ -45,7 +45,6 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
@@ -510,10 +509,10 @@ public class OnboardingActivity extends InjectionActivity
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             }
-            builder.setNextFragmentClass(OnboardingPairPillFragment.class);
+        // todo replace here    builder.setNextFragmentClass(OnboardingPairPillFragment.class);
             pushFragment(builder.toFragment(), null, false);
         } else {
-            pushFragment(new OnboardingPairPillFragment(), null, false);
+         // todo replace here   pushFragment(new OnboardingPairPillFragment(), null, false);
         }
     }
 

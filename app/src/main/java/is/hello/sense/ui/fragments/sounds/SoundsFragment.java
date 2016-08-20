@@ -62,7 +62,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        interactorContainer.addPresenter(sleepSoundsPresenter);
+        interactorContainer.addInteractor(sleepSoundsPresenter);
     }
 
     @Nullable
