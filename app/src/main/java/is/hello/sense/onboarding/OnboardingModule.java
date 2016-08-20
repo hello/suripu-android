@@ -1,10 +1,12 @@
 package is.hello.sense.onboarding;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
+import dagger.Provides;
 import is.hello.sense.SenseOTAModule;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
@@ -18,16 +20,22 @@ import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
                 SenseOTAModule.class
         },
         injects = {
-        OnboardingActivity.class,
-        OnboardingRegisterWeightFragment.class,
-        OnboardingRegisterHeightFragment.class,
-        BluetoothFragment.class,
-        OnboardingRegisterAudioFragment.class,
-        PairSenseFragment.class,
-        OnboardingPairPillFragment.class,
-        OnboardingSenseColorsFragment.class,
-        OnboardingRoomCheckFragment.class,
+                OnboardingActivity.class,
+                OnboardingRegisterWeightFragment.class,
+                OnboardingRegisterHeightFragment.class,
+                BluetoothFragment.class,
+                OnboardingRegisterAudioFragment.class,
+                PairSenseFragment.class,
+                OnboardingSenseColorsFragment.class,
+                OnboardingRoomCheckFragment.class,
 
-})
+        })
 public class OnboardingModule {
+
+   /* @Provides
+    @Singleton
+    OnboardingPillPresenter provideOnboardingPillPresenter() {
+        final OnboardingPillPresenter presenter = new OnboardingPillPresenter();
+        return presenter;
+    }*/
 }
