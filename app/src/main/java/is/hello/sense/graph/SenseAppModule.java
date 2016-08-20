@@ -34,12 +34,15 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.pill.PillModule;
+import is.hello.sense.presenters.BaseHardwarePresenter;
+import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
@@ -69,75 +72,78 @@ import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
-    includes = {
-            ApiModule.class,
-            BluetoothModule.class,
-            ZendeskModule.class,
-            DebugModule.class,
-            OnboardingModule.class,
-            SettingsModule.class,
-            UtilityModule.class,
-            FacebookApiModule.class,
-            PillModule.class,
-            SenseUpdateModule.class,
-    },
-    injects = {
-        SenseApplication.class,
-        NotificationReceiver.class,
+        includes = {
+                ApiModule.class,
+                BluetoothModule.class,
+                ZendeskModule.class,
+                DebugModule.class,
+                OnboardingModule.class,
+                SettingsModule.class,
+                UtilityModule.class,
+                FacebookApiModule.class,
+                PillModule.class,
+                SenseUpdateModule.class,
+        },
+        injects = {
+                SenseApplication.class,
+                NotificationReceiver.class,
 
-        DebugActivity.class,
-        PreferencesInteractor.class,
-        NotificationRegistration.class,
-        UnreadStateInteractor.class,
+                DebugActivity.class,
+                PreferencesInteractor.class,
+                NotificationRegistration.class,
+                UnreadStateInteractor.class,
 
-        LaunchActivity.class,
-        HomeActivity.class,
+                LaunchActivity.class,
+                HomeActivity.class,
 
-        SignInFragment.class,
-        RegisterFragment.class,
-        HardwareInteractor.class,
-        SelectWiFiNetworkFragment.class,
-        ConnectToWiFiFragment.class,
+                SignInFragment.class,
+                RegisterFragment.class,
+                HardwareInteractor.class,
+                SelectWiFiNetworkFragment.class,
+                ConnectToWiFiFragment.class,
 
-        HardwareFragmentActivity.class,
-        DeviceListFragment.class,
-        DevicesInteractor.class,
-        DeviceIssuesInteractor.class,
-        SenseDetailsFragment.class,
-        PillDetailsFragment.class,
+                HardwareFragmentActivity.class,
+                DeviceListFragment.class,
+                DevicesInteractor.class,
+                DeviceIssuesInteractor.class,
+                SenseDetailsFragment.class,
+                PillDetailsFragment.class,
 
-        TimelineFragment.class,
-        TimelineInteractor.class,
-        TimelineInfoFragment.class,
-        ZoomedOutTimelineFragment.class,
-        ZoomedOutTimelineInteractor.class,
+                TimelineFragment.class,
+                TimelineInteractor.class,
+                TimelineInfoFragment.class,
+                ZoomedOutTimelineFragment.class,
+                ZoomedOutTimelineInteractor.class,
 
-        QuestionsInteractor.class,
-        QuestionsDialogFragment.class,
+                QuestionsInteractor.class,
+                QuestionsDialogFragment.class,
 
-        BacksideFragment.class,
-        InsightsInteractor.class,
-        InsightsFragment.class,
-        InsightInfoInteractor.class,
-        InsightInfoFragment.class,
-        RoomConditionsFragment.class,
-        RoomConditionsInteractor.class,
-        SensorHistoryFragment.class,
-        SensorHistoryInteractor.class,
-        TrendsInteractor.class,
-        TrendsFragment.class,
-        SmartAlarmDetailActivity.class,
-        SmartAlarmListFragment.class,
-        SleepSoundsFragment.class,
-        SoundsFragment.class,
-        SmartAlarmDetailFragment.class,
-        SmartAlarmSoundDialogFragment.class,
-        SmartAlarmInteractor.class,
-        SleepSoundsInteractor.class,
-        SleepDurationsInteractor.class,
-        ListActivity.class,
-        SleepSoundsPlayerView.class
-    }
+                BacksideFragment.class,
+                InsightsInteractor.class,
+                InsightsFragment.class,
+                InsightInfoInteractor.class,
+                InsightInfoFragment.class,
+                RoomConditionsFragment.class,
+                RoomConditionsInteractor.class,
+                SensorHistoryFragment.class,
+                SensorHistoryInteractor.class,
+                TrendsInteractor.class,
+                TrendsFragment.class,
+                SmartAlarmDetailActivity.class,
+                SmartAlarmListFragment.class,
+                SleepSoundsFragment.class,
+                SoundsFragment.class,
+                SmartAlarmDetailFragment.class,
+                SmartAlarmSoundDialogFragment.class,
+                SmartAlarmInteractor.class,
+                SleepSoundsInteractor.class,
+                SleepDurationsInteractor.class,
+                ListActivity.class,
+                SleepSoundsPlayerView.class,
+                SenseUpdateActivity.class,
+                BaseHardwarePresenter.class,
+                UpdatePairPillPresenter.class
+        }
 )
 @SuppressWarnings("UnusedDeclaration")
 public class SenseAppModule {
@@ -147,15 +153,20 @@ public class SenseAppModule {
         this.applicationContext = context;
     }
 
-    @Provides Context provideApplicationContext() {
+    @Provides
+    Context provideApplicationContext() {
         return applicationContext;
     }
 
-    @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
+    @Provides
+    @GlobalSharedPreferences
+    SharedPreferences provideGlobalSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(applicationContext);
     }
 
-    @Provides @PersistentSharedPreferences SharedPreferences providePersistentSharedPreferences(@NonNull Context context){
+    @Provides
+    @PersistentSharedPreferences
+    SharedPreferences providePersistentSharedPreferences(@NonNull Context context) {
         return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
     }
 }

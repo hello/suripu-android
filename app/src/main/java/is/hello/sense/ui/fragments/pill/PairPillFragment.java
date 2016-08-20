@@ -2,8 +2,6 @@ package is.hello.sense.ui.fragments.pill;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,56 +13,71 @@ import android.widget.TextView;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
-import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BaseHardwarePresenterFragment;
+import is.hello.sense.presenters.BasePairPillPresenter;
+import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
-public abstract class BasePairPillFragment extends BaseHardwareFragment {
+public class PairPillFragment<T extends BasePairPillPresenter> extends BaseHardwarePresenterFragment<T>
+        implements BasePairPillPresenter.Output {
     protected ProgressBar activityIndicator;
     protected TextView activityStatus;
 
     protected DiagramVideoView diagram;
     protected Button skipButton;
     protected Button retryButton;
-
     protected boolean isPairing = false;
 
+    public static PairPillFragment newInstance(@NonNull final UpdatePairPillPresenter presenter) {
+        final PairPillFragment fragment = new PairPillFragment<UpdatePairPillPresenter>();
+        final Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_PRESENTER_KEY, presenter);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
-    @Nullable
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        presenter.trackOnCreate();
+    }
+
+    @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_pair_pill, container, false);
-        ((TextView) view.findViewById(R.id.fragment_pair_pill_title)).setText(getTitleRes());
-        ((TextView) view.findViewById(R.id.fragment_pair_pill_subhead)).setText(getSubTitleRes());
+        presenter.setView(this);
+        ((TextView) view.findViewById(R.id.fragment_pair_pill_subhead)).setText(presenter.getSubTitleRes());
+        ((TextView) view.findViewById(R.id.fragment_pair_pill_title)).setText(presenter.getTitleRes());
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_pair_pill_status);
 
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_pair_pill_diagram);
 
         this.skipButton = (Button) view.findViewById(R.id.fragment_pair_pill_skip);
-        Views.setSafeOnClickListener(skipButton, ignored -> skipPairingPill());
+        Views.setSafeOnClickListener(skipButton, ignored -> presenter.skipPairingPill(getActivity()));
 
         this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
-        Views.setSafeOnClickListener(retryButton, ignored -> pairPill());
-
+        Views.setSafeOnClickListener(retryButton, ignored -> presenter.pairPill());
         initialize(view);
         return view;
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
 
         if (!isPairing) {
-            pairPill();
+            presenter.pairPill();
         }
     }
 
@@ -84,14 +97,19 @@ public abstract class BasePairPillFragment extends BaseHardwareFragment {
         this.retryButton = null;
     }
 
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        return super.onInterceptBackPressed(defaultBehavior);
+    }
+
     protected void initialize(@NonNull final View view) {
         OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(wantsBackButton())
+                         .setWantsBackButton(presenter.wantsBackButton())
                          .setOnHelpClickListener(this::help);
 
         if (BuildConfig.DEBUG) {
             diagram.setOnLongClickListener(ignored -> {
-                skipPairingPill();
+                presenter.skipPairingPill(getActivity());
                 return true;
             });
             diagram.setBackgroundResource(R.drawable.selectable_dark);
@@ -99,23 +117,32 @@ public abstract class BasePairPillFragment extends BaseHardwareFragment {
 
     }
 
-    protected abstract boolean wantsBackButton();
+    @Override
+    public void finishedPairing(final boolean success) {
+        LoadingDialogFragment.show(getFragmentManager(),
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+        getFragmentManager().executePendingTransactions();
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> presenter.execute(() -> {
+            presenter.finishedPairingAction(getActivity(), success);
 
-    protected abstract void finishedPairing(boolean success);
+        }));
+    }
 
-    protected abstract void skipPairingPill();
-
-    @StringRes
-    protected abstract int getTitleRes();
-
-    @StringRes
-    protected abstract int getSubTitleRes();
+    @Override
+    public void animateDiagram(final boolean animate) {
+        if (animate) {
+            diagram.startPlayback();
+        } else {
+            diagram.startPlayback();
+        }
+    }
 
     protected void help(@NonNull final View sender) {
         UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PILL_PAIRING);
     }
 
-    protected void beginPairing() {
+    @Override
+    public void showPillPairing() {
         this.isPairing = true;
 
         activityIndicator.setVisibility(View.VISIBLE);
@@ -125,47 +152,16 @@ public abstract class BasePairPillFragment extends BaseHardwareFragment {
         retryButton.setVisibility(View.GONE);
     }
 
-    public void pairPill() {
-        beginPairing();
-
-        if (!hardwarePresenter.hasPeripheral()) {
-            showBlockingActivity(R.string.title_scanning_for_sense);
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
-            return;
-        }
-
-        if (!hardwarePresenter.isConnected()) {
-            showBlockingActivity(R.string.title_scanning_for_sense);
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == ConnectProgress.CONNECTED) {
-                    pairPill();
-                } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
-                }
-            }, this::presentError);
-            return;
-        }
-
-        showBlockingActivity(R.string.title_waiting_for_sense);
-        showHardwareActivity(() -> {
-            diagram.startPlayback();
-            hideBlockingActivity(false, () -> {
-                bindAndSubscribe(hardwarePresenter.linkPill(),
-                                 ignored -> completeHardwareActivity(() -> finishedPairing(true)),
-                                 this::presentError);
-            });
-        }, this::presentError);
-    }
-
+    @Override
     public void presentError(final Throwable e) {
         this.isPairing = false;
 
         diagram.suspendPlayback(true);
-        hideAllActivityForFailure(() -> {
+        presenter.hideAllActivityForFailure(() -> {
             activityIndicator.setVisibility(View.GONE);
             activityStatus.setVisibility(View.GONE);
 
-            if (!isPairOnlySession()) {
+            if (presenter.showSkipButtonOnError()) {
                 skipButton.setVisibility(View.VISIBLE);
             }
             retryButton.setVisibility(View.VISIBLE);
@@ -190,4 +186,5 @@ public abstract class BasePairPillFragment extends BaseHardwareFragment {
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
     }
+
 }

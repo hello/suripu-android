@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.sense;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 
 public class SenseResetOriginalFragment extends InjectionFragment
-        implements SenseResetOriginalPresenter.SenseResetOriginalPresenterOutput {
+        implements SenseResetOriginalPresenter.Output {
 
     @Inject
     SenseResetOriginalPresenter presenter;
@@ -104,6 +105,11 @@ public class SenseResetOriginalFragment extends InjectionFragment
     @Override
     public void onNetworkCallFailure(@NonNull final Throwable e) {
         ErrorDialogFragment.presentError(getActivity(), e);
+    }
+
+    @Override
+    public void showBlockingActivity(@StringRes int titleRes) {
+     //todo remove this after extending base hardware presenter
     }
 
     //endregion
