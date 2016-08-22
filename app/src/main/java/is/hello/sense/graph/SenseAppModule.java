@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
-import is.hello.sense.SenseUpdateModule;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
@@ -32,17 +31,14 @@ import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
-import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
-import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
-import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
@@ -55,9 +51,7 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
-import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
@@ -72,21 +66,19 @@ import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
-        includes = {
-                ApiModule.class,
-                BluetoothModule.class,
-                ZendeskModule.class,
-                DebugModule.class,
-                OnboardingModule.class,
-                SettingsModule.class,
-                UtilityModule.class,
-                FacebookApiModule.class,
-                PillModule.class,
-                SenseUpdateModule.class,
-        },
-        injects = {
-                SenseApplication.class,
-                NotificationReceiver.class,
+    includes = {
+            ApiModule.class,
+            BluetoothModule.class,
+            ZendeskModule.class,
+            DebugModule.class,
+            SettingsModule.class,
+            UtilityModule.class,
+            FacebookApiModule.class,
+            PillModule.class,
+    },
+    injects = {
+        SenseApplication.class,
+        NotificationReceiver.class,
 
                 DebugActivity.class,
                 PreferencesInteractor.class,
@@ -99,8 +91,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 SignInFragment.class,
                 RegisterFragment.class,
                 HardwareInteractor.class,
-                SelectWiFiNetworkFragment.class,
-                ConnectToWiFiFragment.class,
 
                 HardwareFragmentActivity.class,
                 DeviceListFragment.class,
@@ -140,9 +130,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 SleepDurationsInteractor.class,
                 ListActivity.class,
                 SleepSoundsPlayerView.class,
-                SenseUpdateActivity.class,
                 BaseHardwarePresenter.class,
-                UpdatePairPillPresenter.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")

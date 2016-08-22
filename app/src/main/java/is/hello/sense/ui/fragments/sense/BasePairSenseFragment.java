@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments.sense;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 
 import com.segment.analytics.Properties;
@@ -14,6 +13,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -26,7 +26,11 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SkippableFlow;
 
-public abstract class BasePairSenseFragment extends BaseHardwareFragment {
+public abstract class BasePairSenseFragment extends BaseHardwareFragment
+implements BasePairSensePresenter.Output{
+
+    @Inject
+    protected BasePairSensePresenter presenter;
 
     @Inject
     ApiService apiService;
@@ -60,27 +64,13 @@ public abstract class BasePairSenseFragment extends BaseHardwareFragment {
         return getActivity() instanceof SenseUpdateActivity;
     }
 
-    protected
-    @StringRes
-    int getOnFinishedSuccessMessage() {
-        return isPairUpgradedSenseSession() ? R.string.title_paired : R.string.action_done;
-    }
-
     protected void sendOnCreateAnalytics(final boolean pairOnlySession) {
         final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
-        if (pairOnlySession) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP, properties);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_SENSE, properties);
-        }
+        Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), properties);
     }
 
-    protected void sendOnFinishedAnalytics(final boolean pairOnlySession) {
-        if (pairOnlySession) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_PAIRED, null);
-        }
+    protected void sendOnFinishedAnalytics() {
+        Analytics.trackEvent(presenter.getOnFinishAnalyticsEvent(), null);
     }
 
     public void linkAccount() {
