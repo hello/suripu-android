@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
@@ -22,6 +23,17 @@ public abstract class ScopedInjectionFragment extends InjectionFragment{
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
         } catch (final ClassCastException e){
             throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
+        }
+
+    }
+
+    @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+        try{
+            ((ScopedInjectionActivity) activity).injectToScopedGraph(this);
+        } catch (final ClassCastException e){
+            throw new ClassCastException(activity.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
 
     }
