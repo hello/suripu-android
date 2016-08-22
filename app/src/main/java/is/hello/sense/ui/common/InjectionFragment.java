@@ -1,5 +1,6 @@
 package is.hello.sense.ui.common;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -33,7 +34,13 @@ public class InjectionFragment extends SenseFragment
 
 
     public InjectionFragment() {
-        SenseApplication.getInstance().inject(this);
+        if(shouldInjectToMainGraphObject()) {
+            SenseApplication.getInstance().inject(this);
+        }
+    }
+
+    protected boolean shouldInjectToMainGraphObject() {
+        return true;
     }
 
     @Override
@@ -42,6 +49,19 @@ public class InjectionFragment extends SenseFragment
 
         if (animatorContext == null && context instanceof AnimatorContext.Scene) {
             this.animatorContext = ((AnimatorContext.Scene) context).getAnimatorContext();
+            this.animatorContextFromActivity = true;
+        }
+    }
+
+    /**
+     * For devices with API level below 23
+     */
+    @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+
+        if (animatorContext == null && activity instanceof AnimatorContext.Scene) {
+            this.animatorContext = ((AnimatorContext.Scene) activity).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
     }

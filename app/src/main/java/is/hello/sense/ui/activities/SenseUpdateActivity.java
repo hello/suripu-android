@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
+import is.hello.sense.SenseUpdateModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
@@ -18,25 +22,24 @@ import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
-import is.hello.sense.ui.fragments.pill.PairPillFragment;
-import is.hello.sense.ui.fragments.pill.UpdatePairPillConfirmationFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
-import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
+import is.hello.sense.ui.fragments.pill.PairPillFragment;
+import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
+import is.hello.sense.ui.fragments.pill.UpdatePairPillConfirmationFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 import is.hello.sense.util.SkippableFlow;
 
-public class SenseUpdateActivity extends InjectionActivity
+public class SenseUpdateActivity extends ScopedInjectionActivity
         implements FragmentNavigation, SkippableFlow {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
     public static final String EXTRA_DEVICE_ID = SenseUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
@@ -54,6 +57,11 @@ public class SenseUpdateActivity extends InjectionActivity
     SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
     UserFeaturesInteractor userFeaturesPresenter;
+
+    @Override
+    public List<Object> getModules(){
+        return Arrays.asList(new SenseUpdateModule());
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -97,6 +105,7 @@ public class SenseUpdateActivity extends InjectionActivity
     protected void onDestroy() {
         super.onDestroy();
         navigationDelegate.onDestroy();
+        destroyScopedGraph();
     }
 
     //region SkippableFlow interface
@@ -148,6 +157,7 @@ public class SenseUpdateActivity extends InjectionActivity
         } else if (fragment instanceof SenseUpdateReadyFragment) {
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
+            checkSenseOTAStatus();
             showUpdatePairPillFragment();
         } else if (fragment instanceof PairPillFragment) {
             showUpdatePairPillConfirmationFragment();
@@ -234,7 +244,7 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void checkForSenseOTA() {
         if (senseOTAStatusPresenter.isOTARequired()) {
-            showSenseUpdateIntro();
+            showSenseOTAIntro();
         } else {
             checkHasVoiceFeature();
         }

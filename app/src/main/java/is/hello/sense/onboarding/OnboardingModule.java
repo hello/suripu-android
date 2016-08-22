@@ -5,6 +5,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseOTAModule;
+import is.hello.sense.presenters.BasePairSensePresenter;
+import is.hello.sense.presenters.OnboardingPairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -21,6 +23,7 @@ import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
         },
         injects = {
                 OnboardingActivity.class,
+                OnboardingUnsupportedDeviceFragment.class,
                 OnboardingRegisterWeightFragment.class,
                 OnboardingRegisterHeightFragment.class,
                 BluetoothFragment.class,
@@ -32,10 +35,9 @@ import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
         })
 public class OnboardingModule {
 
-   /* @Provides
-    @Singleton
-    OnboardingPillPresenter provideOnboardingPillPresenter() {
-        final OnboardingPillPresenter presenter = new OnboardingPillPresenter();
-        return presenter;
-    }*/
+        @Provides
+        @Singleton
+        BasePairSensePresenter providesOnboardingPairSensePresenter(final HardwarePresenter hardwarePresenter){
+                return new OnboardingPairSensePresenter(hardwarePresenter);
+        }
 }

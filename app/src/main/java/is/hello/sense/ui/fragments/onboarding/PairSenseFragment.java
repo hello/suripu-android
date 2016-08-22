@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v13.app.FragmentCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,10 +62,10 @@ public class PairSenseFragment extends BasePairSenseFragment
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        //todo refactor so there are no conditional statements here
+
         this.view = new OnboardingSimpleStepView(this, inflater)
-                .setHeadingText(isPairUpgradedSenseSession() ?  R.string.title_pair_new_sense : R.string.title_pair_sense)
-                .setSubheadingText(isPairUpgradedSenseSession() ? R.string.info_pair_new_sense : R.string.info_pair_sense)
+                .setHeadingText(presenter.getTitleRes())
+                .setSubheadingText(presenter.getSubtitleRes())
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
                 .setSecondaryOnClickListener(this::showPairingModeHelp)
@@ -131,7 +130,7 @@ public class PairSenseFragment extends BasePairSenseFragment
     }
 
     private void continueToWifi() {
-        hideAllActivityForSuccess(getOnFinishedSuccessMessage(),
+        hideAllActivityForSuccess(presenter.getFinishedRes(),
                                   this::showSelectWifiNetwork,
                                   e -> presentError(e, "Turning off LEDs"));
     }
@@ -142,9 +141,9 @@ public class PairSenseFragment extends BasePairSenseFragment
 
     @Override
     protected void onFinished() {
-        hideAllActivityForSuccess( getOnFinishedSuccessMessage(),
+        hideAllActivityForSuccess(presenter.getFinishedRes(),
                                    () -> {
-                                       sendOnFinishedAnalytics(isPairOnlySession());
+                                       sendOnFinishedAnalytics();
                                        if (isPairOnlySession()) {
                                           if (shouldReleasePeripheralOnPair()) {
                                               hardwarePresenter.clearPeripheral();
@@ -248,7 +247,7 @@ public class PairSenseFragment extends BasePairSenseFragment
                              },
                              e -> presentError(e, "Clearing Bond"));
         } else {
-            showBlockingActivity(getPairingMessage());
+            showBlockingActivity(presenter.getPairingRes());
             bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
                 if (status == ConnectProgress.CONNECTED) {
                     checkConnectivityAndContinue();
@@ -257,10 +256,6 @@ public class PairSenseFragment extends BasePairSenseFragment
                 }
             }, e -> presentError(e, "Connecting to Sense"));
         }
-    }
-
-    public @StringRes int getPairingMessage(){
-        return isPairUpgradedSenseSession() ? R.string.title_pairing_with_sense : R.string.title_connecting;
     }
 
 }

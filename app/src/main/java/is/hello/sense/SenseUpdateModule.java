@@ -7,12 +7,17 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
+import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
+import is.hello.sense.presenters.UpdatePairSensePresenter;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
+import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
 import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
-import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
@@ -30,7 +35,10 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
                 SenseResetOriginalFragment.class,
                 UnpairPillFragment.class,
                 PairPillFragment.class,
-                BaseHardwareFragment.class
+                BaseHardwareFragment.class,
+                BluetoothFragment.class,
+                ConnectToWiFiFragment.class,
+                SelectWiFiNetworkFragment.class,
         }
 )
 public class SenseUpdateModule {
@@ -50,4 +58,9 @@ public class SenseUpdateModule {
     }
 
 
+
+    @Provides @Singleton
+    BasePairSensePresenter providesUpdatePairSensePresenter(final HardwarePresenter hardwarePresenter){
+        return new UpdatePairSensePresenter(hardwarePresenter);
+    }
 }
