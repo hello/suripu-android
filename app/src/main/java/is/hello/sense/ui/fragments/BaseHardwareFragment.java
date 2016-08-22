@@ -10,7 +10,6 @@ import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
@@ -18,7 +17,7 @@ import rx.functions.Action1;
  * Extends InjectionFragment to add support for displaying
  * in-app and on Sense loading indicators.
  */
-public abstract class BaseHardwareFragment extends InjectionFragment {
+public abstract class BaseHardwareFragment extends ScopedInjectionFragment {
     public
     @Inject
     HardwareInteractor hardwarePresenter;

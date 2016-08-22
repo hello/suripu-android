@@ -392,9 +392,9 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
     @Override
     public void onFinished(){
-        sendOnFinishedAnalytics(isPairOnlySession());
+        sendOnFinishedAnalytics();
 
-        hideAllActivityForSuccess(getOnFinishedSuccessMessage(), () -> {
+        hideAllActivityForSuccess(presenter.getFinishedRes(), () -> {
             if (useInAppEvents){
                 hardwarePresenter.clearPeripheral();
                 getActivity().finish();

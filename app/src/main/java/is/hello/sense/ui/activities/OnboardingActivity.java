@@ -16,6 +16,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,10 +33,10 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -72,7 +74,7 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
-public class OnboardingActivity extends InjectionActivity
+public class OnboardingActivity extends ScopedInjectionActivity
         implements FragmentNavigation,
         SkippableFlow,
         SimpleStepFragment.ExitAnimationProviderActivity,
@@ -114,6 +116,16 @@ public class OnboardingActivity extends InjectionActivity
     private
     @Nullable
     Account account;
+
+    @Override
+    List<Object> getModules() {
+        return Collections.singletonList(new OnboardingModule());
+    }
+
+    @Override
+    protected boolean shouldInjectToMainGraphObject() {
+        return false;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
