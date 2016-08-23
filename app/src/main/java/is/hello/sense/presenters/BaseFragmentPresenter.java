@@ -6,9 +6,11 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
+import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.presenters.outputs.BaseOutput;
 
-public class BaseFragmentPresenter<T extends BaseOutput> extends BasePresenter<T> {
+public  abstract class BaseFragmentPresenter<T extends BaseOutput> extends BasePresenter<T> {
+    protected final InteractorContainer interactorContainer = new InteractorContainer();
 
     public BaseFragmentPresenter(){
         //todo erase after Simon updates

@@ -4,15 +4,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Logger;
 
-public abstract class ScopedPresenter<T extends Output> {
+public abstract class ScopedPresenter<T extends BaseOutput> {
 
     private boolean stateRestored = false;
     protected T view;
 
     /**
-     * @param view Bind reference to PresenterOutput
+     * @param view Bind reference to PresenterOutput.
+     * See {@link is.hello.sense.ui.fragments.ScopedInjectionFragment.ScopedPresenterContainer#onCreate(BaseOutput)}
      */
     public void setView(final T view){
         this.view = view;
@@ -54,6 +56,7 @@ public abstract class ScopedPresenter<T extends Output> {
     protected void logEvent(@NonNull String event) {
         Logger.debug("scopedPresenters", getClass().getSimpleName() + ": " + event);
     }
+
 
     //endregion
 }

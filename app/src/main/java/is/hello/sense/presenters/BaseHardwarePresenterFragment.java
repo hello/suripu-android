@@ -8,7 +8,7 @@ import is.hello.sense.presenters.outputs.BaseHardwareOutput;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 
-public class BaseHardwarePresenterFragment<T extends BaseHardwarePresenter> extends BasePresenterFragment<T>
+public class BaseHardwarePresenterFragment extends BasePresenterFragment
         implements BaseHardwareOutput {
 
     @Override
