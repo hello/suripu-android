@@ -50,13 +50,13 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -451,10 +451,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
         if (updatedBy instanceof OnboardingRegisterBirthdayFragment) {
             pushFragment(new OnboardingRegisterGenderFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterGenderFragment) {
-            pushFragment(new OnboardingRegisterHeightFragment(), null, true);
-        } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
-            pushFragment(new OnboardingRegisterWeightFragment(), null, true);
-        } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
+            pushFragment(new RegisterHeightFragment(), null, true);
+        } else if (updatedBy instanceof RegisterHeightFragment) {
+            pushFragment(new RegisterWeightFragment(), null, true);
+        } else if (updatedBy instanceof RegisterWeightFragment) {
             final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
@@ -494,8 +494,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        final boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(pairOnly), null, true);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
     }
 
     public void showPairPill(final boolean showIntroduction) {

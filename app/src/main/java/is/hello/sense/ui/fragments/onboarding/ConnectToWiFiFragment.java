@@ -386,7 +386,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         if (!sendAccessToken) {
             super.finishUpOperations();
         } else {
-            super.linkAccount();
+            presenter.checkLinkedAccount();
         }
     }
 

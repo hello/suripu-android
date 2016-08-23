@@ -8,6 +8,7 @@ import dagger.Provides;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
+import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
@@ -62,5 +63,10 @@ public class SenseUpdateModule {
     @Provides @Singleton
     BasePairSensePresenter providesUpdatePairSensePresenter(final HardwarePresenter hardwarePresenter){
         return new UpdatePairSensePresenter(hardwarePresenter);
+    }
+
+    @Provides @Singleton
+    SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(){
+        return new SelectWifiNetworkPresenter.Settings();
     }
 }

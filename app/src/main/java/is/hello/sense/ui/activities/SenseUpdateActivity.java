@@ -232,7 +232,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(true), null, true);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
     }
 
 

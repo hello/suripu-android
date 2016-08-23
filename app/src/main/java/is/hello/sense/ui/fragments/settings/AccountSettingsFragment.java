@@ -47,8 +47,8 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
@@ -388,14 +388,14 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     public void changeHeight() {
-        final OnboardingRegisterHeightFragment fragment = new OnboardingRegisterHeightFragment();
+        final RegisterHeightFragment fragment = new RegisterHeightFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_height), true);
     }
 
     public void changeWeight() {
-        final OnboardingRegisterWeightFragment fragment = new OnboardingRegisterWeightFragment();
+        final RegisterWeightFragment fragment = new RegisterWeightFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_weight), true);

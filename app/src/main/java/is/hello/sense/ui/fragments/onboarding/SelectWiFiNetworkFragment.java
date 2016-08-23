@@ -17,24 +17,24 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
+
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
+import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
-import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         implements AdapterView.OnItemClickListener {
-    public static final String ARG_USE_IN_APP_EVENTS = SelectWiFiNetworkFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
 
-    private boolean useInAppEvents;
     private boolean sendAccessToken;
 
     private WifiNetworkAdapter networkAdapter;
@@ -47,13 +47,14 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
     private OnboardingToolbar toolbar;
     private View otherNetworkView;
 
+    @Inject
+    SelectWifiNetworkPresenter presenter;
 
     //region Lifecycle
 
-    public static SelectWiFiNetworkFragment newOnboardingInstance(final boolean useInAppEvents) {
+    public static SelectWiFiNetworkFragment newOnboardingInstance() {
         final SelectWiFiNetworkFragment fragment = new SelectWiFiNetworkFragment();
         final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_USE_IN_APP_EVENTS, useInAppEvents);
         arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, true);
         fragment.setArguments(arguments);
         return fragment;
@@ -61,7 +62,6 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
 
     public static Bundle createSettingsArguments() {
         final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_USE_IN_APP_EVENTS, true);
         arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, false);
         return arguments;
     }
@@ -69,18 +69,15 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addScopedPresenter(presenter);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
         addPresenter(hardwarePresenter);
 
-        this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
-        if (useInAppEvents) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI, null);
-        }
+        Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), null);
+
 
         setRetainInstance(true);
     }
@@ -112,7 +109,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         this.rescanButton = (Button) view.findViewById(R.id.fragment_select_wifi_rescan);
         rescanButton.setEnabled(false);
         Views.setSafeOnClickListener(rescanButton, ignored -> {
-            sendOnRescanAnalytics(useInAppEvents);
+            sendOnRescanAnalytics();
             rescan(true);
         });
 
@@ -138,7 +135,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (networkAdapter.getCount() == 0) {
-            sendOnScanAnalytics(useInAppEvents);
+            sendOnScanAnalytics();
             rescan(false);
         } else {
             scanningIndicatorLabel.setVisibility(View.GONE);
@@ -201,26 +198,17 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         final ConnectToWiFiFragment nextFragment = new ConnectToWiFiFragment();
         final Bundle arguments = new Bundle();
         arguments.putSerializable(ConnectToWiFiFragment.ARG_SCAN_RESULT, network);
-        arguments.putBoolean(ConnectToWiFiFragment.ARG_USE_IN_APP_EVENTS, useInAppEvents);
         arguments.putBoolean(ConnectToWiFiFragment.ARG_SEND_ACCESS_TOKEN, sendAccessToken);
         nextFragment.setArguments(arguments);
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
     }
 
-    public void sendOnScanAnalytics(final boolean isInApp){
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
-        }
+    public void sendOnScanAnalytics(){
+        Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
     }
 
-    private void sendOnRescanAnalytics(final boolean isInApp) {
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN, null);
-        }
+    private void sendOnRescanAnalytics() {
+        Analytics.trackEvent(presenter.getOnRescanAnalyticsEvent(), null);
     }
 
 

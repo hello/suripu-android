@@ -39,4 +39,9 @@ public class UpdatePairSensePresenter extends BasePairSensePresenter {
     public String getOnFinishAnalyticsEvent() {
         return Analytics.Onboarding.EVENT_SENSE_PAIRED_IN_APP;
     }
+
+    @Override
+    public boolean shouldShowPairDialog() {
+        return true;
+    }
 }

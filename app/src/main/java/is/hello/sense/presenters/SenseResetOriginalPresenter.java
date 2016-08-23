@@ -8,7 +8,8 @@ import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
 
-public class SenseResetOriginalPresenter extends BasePresenter<SenseResetOriginalPresenter.Output> {
+public class SenseResetOriginalPresenter
+        extends BasePresenter<SenseResetOriginalPresenter.Output> {
 
     private final SenseResetOriginalInteractor interactor;
     private Output view;
