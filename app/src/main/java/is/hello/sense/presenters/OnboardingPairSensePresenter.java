@@ -42,6 +42,16 @@ public class OnboardingPairSensePresenter extends BasePairSensePresenter {
     }
 
     @Override
+    protected boolean shouldFinishFlow() {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldClearPeripheral() {
+        return true;
+    }
+
+    @Override
     public boolean shouldShowPairDialog() {
         return BuildConfig.DEBUG;
     }

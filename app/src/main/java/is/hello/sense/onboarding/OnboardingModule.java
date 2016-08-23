@@ -8,7 +8,6 @@ import is.hello.sense.SenseOTAModule;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.OnboardingPairSensePresenter;
-import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -22,7 +21,8 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
 
 @Module(complete = false,
         includes = {
-                SenseOTAModule.class
+                SenseOTAModule.class,
+                OnboardingWifiModule.class
         },
         injects = {
                 OnboardingActivity.class,
@@ -43,10 +43,5 @@ public class OnboardingModule {
     @Singleton
     BasePairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor){
             return new OnboardingPairSensePresenter(hardwareInteractor);
-    }
-
-    @Provides @Singleton
-    SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(){
-        return new SelectWifiNetworkPresenter.Onboarding();
     }
 }

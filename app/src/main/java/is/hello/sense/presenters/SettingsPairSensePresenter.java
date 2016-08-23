@@ -4,30 +4,30 @@ import is.hello.sense.R;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.util.Analytics;
 
-public class UpdatePairSensePresenter extends BasePairSensePresenter {
+public class SettingsPairSensePresenter extends BasePairSensePresenter {
 
-    public UpdatePairSensePresenter(final HardwarePresenter hardwarePresenter) {
+    public SettingsPairSensePresenter(final HardwarePresenter hardwarePresenter) {
         super(hardwarePresenter);
     }
 
     @Override
     public int getTitleRes() {
-        return R.string.title_pair_new_sense;
+        return R.string.title_pair_sense;
     }
 
     @Override
     public int getSubtitleRes() {
-        return R.string.info_pair_new_sense;
+        return R.string.info_pair_sense;
     }
 
     @Override
     public int getPairingRes() {
-        return R.string.title_pairing_with_sense;
+        return R.string.title_connecting;
     }
 
     @Override
     public int getFinishedRes() {
-        return R.string.title_paired;
+        return R.string.action_done;
     }
 
     @Override
@@ -42,16 +42,16 @@ public class UpdatePairSensePresenter extends BasePairSensePresenter {
 
     @Override
     protected boolean shouldFinishFlow() {
-        return false;
+        return true;
     }
 
     @Override
     protected boolean shouldClearPeripheral() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean shouldShowPairDialog() {
-        return true;
+        return false;
     }
 }

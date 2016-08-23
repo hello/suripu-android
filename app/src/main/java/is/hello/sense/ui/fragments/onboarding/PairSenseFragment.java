@@ -47,7 +47,7 @@ public class PairSenseFragment extends BasePairSenseFragment
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        sendOnCreateAnalytics(isPairOnlySession());
+        sendOnCreateAnalytics();
 
         setRetainInstance(true);
     }
@@ -139,14 +139,7 @@ public class PairSenseFragment extends BasePairSenseFragment
         hideAllActivityForSuccess(presenter.getFinishedRes(),
                                    () -> {
                                        sendOnFinishedAnalytics();
-                                       if (isPairOnlySession()) {
-                                          if (shouldReleasePeripheralOnPair()) {
-                                              hardwarePresenter.clearPeripheral();
-                                          }
-                                           getActivity().finish();
-                                       } else {
-                                           finishFlow();
-                                       }
+                                       presenter.onPairSuccess();
                                   },
                                   e -> {
                                       Log.e("Error", "E: " + e.getLocalizedMessage());

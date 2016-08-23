@@ -47,7 +47,7 @@ import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.permissions.LocationPermission;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -448,8 +448,8 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
         Analytics.trackEvent(Analytics.Backside.EVENT_EDIT_WIFI, null);
 
-        final FragmentNavigationActivity.Builder builder =
-                new FragmentNavigationActivity.Builder(getActivity());
+        final SettingsActivity.Builder builder =
+                new SettingsActivity.Builder(getActivity());
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWiFiNetworkFragment.class);
         builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());

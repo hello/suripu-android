@@ -30,11 +30,6 @@ public abstract class BaseHardwareFragment extends ScopedInjectionFragment {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
     }
 
-    protected boolean shouldReleasePeripheralOnPair() {
-        return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, true);
-    }
-
-
     //region Activity
 
     protected void showBlockingActivity(@StringRes final int titleRes) {
