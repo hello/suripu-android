@@ -25,7 +25,7 @@ public abstract class BasePairSensePresenter extends ScopedPresenter<BasePairSen
 
     @Override
     public void onDestroy() {
-        hardwarePresenter.clearPeripheral();
+
     }
 
     @Nullable
@@ -57,8 +57,23 @@ public abstract class BasePairSensePresenter extends ScopedPresenter<BasePairSen
 
     public abstract String getOnFinishAnalyticsEvent();
 
+    protected abstract boolean shouldFinishFlow();
+
+    protected abstract boolean shouldClearPeripheral();
+
     public boolean shouldShowPairDialog() {
         return false;
+    }
+
+    public void onPairSuccess(){
+        if(shouldClearPeripheral()){
+            hardwarePresenter.clearPeripheral();
+        }
+        if(shouldFinishFlow()){
+            view.finishPairFlow();
+        } else {
+            view.finishActivity();
+        }
     }
 
     public void checkLinkedAccount() {
@@ -95,12 +110,16 @@ public abstract class BasePairSensePresenter extends ScopedPresenter<BasePairSen
             }
     }
 
-    public interface Output {
+    public interface Output extends is.hello.sense.presenters.Output{
 
         void showBlockingMessage(@StringRes int blockingRes);
 
         void finishUpOperations();
 
         void requestLinkAccount();
+
+        void finishPairFlow();
+
+        void finishActivity();
     }
 }

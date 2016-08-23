@@ -8,9 +8,9 @@ import dagger.Provides;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
-import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
+import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
@@ -26,7 +26,8 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 @Module(
         complete = false,
         includes = {
-                SenseOTAModule.class
+                SenseOTAModule.class,
+                SettingsWifiModule.class
         },
         injects = {
                 SenseUpdateActivity.class,
@@ -63,10 +64,5 @@ public class SenseUpdateModule {
     @Provides @Singleton
     BasePairSensePresenter providesUpdatePairSensePresenter(final HardwarePresenter hardwarePresenter){
         return new UpdatePairSensePresenter(hardwarePresenter);
-    }
-
-    @Provides @Singleton
-    SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(){
-        return new SelectWifiNetworkPresenter.Settings();
     }
 }

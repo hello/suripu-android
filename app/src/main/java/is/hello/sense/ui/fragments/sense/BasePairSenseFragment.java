@@ -55,7 +55,7 @@ implements BasePairSensePresenter.Output{
         super.onSaveInstanceState(outState);
     }
 
-    protected void sendOnCreateAnalytics(final boolean pairOnlySession) {
+    protected void sendOnCreateAnalytics() {
         final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), properties);
     }
@@ -84,6 +84,16 @@ implements BasePairSensePresenter.Output{
     @Override
     public void finishUpOperations() {
         setDeviceTimeZone();
+    }
+
+    @Override
+    public void finishPairFlow(){
+        finishFlow();
+    }
+
+    @Override
+    public void finishActivity(){
+        getActivity().finish();
     }
 
     private void setDeviceTimeZone() {

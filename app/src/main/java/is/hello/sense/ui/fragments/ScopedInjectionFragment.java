@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.sense.presenters.Output;
 import is.hello.sense.presenters.ScopedPresenter;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -15,7 +17,8 @@ import is.hello.sense.ui.common.InjectionFragment;
 /**
  * To be used when injecting fragments to a scoped object graph instead of application level graph.
  */
-public abstract class ScopedInjectionFragment extends InjectionFragment{
+public abstract class ScopedInjectionFragment extends InjectionFragment
+implements Output{
 
     private final ScopedPresenterContainer scopedPresenterContainer = new ScopedPresenterContainer();
 
@@ -44,6 +47,12 @@ public abstract class ScopedInjectionFragment extends InjectionFragment{
             throw new ClassCastException(activity.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
 
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        scopedPresenterContainer.onViewCreated(this);
     }
 
     @Override
@@ -104,6 +113,12 @@ public abstract class ScopedInjectionFragment extends InjectionFragment{
                 if (savedState != null) {
                     outState.putParcelable(presenter.getSavedStateKey(), savedState);
                 }
+            }
+        }
+
+        public void onViewCreated(final Output view) {
+            for(final ScopedPresenter p : presenters){
+                p.setView(view);
             }
         }
     }

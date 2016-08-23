@@ -30,12 +30,15 @@ import com.segment.analytics.Properties;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.inject.Inject;
+
 import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
+import is.hello.sense.presenters.ConnectWifiPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -49,14 +52,12 @@ import is.hello.sense.util.EditorActionHandler;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
 public class ConnectToWiFiFragment extends BasePairSenseFragment
-        implements AdapterView.OnItemSelectedListener {
-    public static final String ARG_USE_IN_APP_EVENTS = ConnectToWiFiFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
+        implements AdapterView.OnItemSelectedListener, ConnectWifiPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
     public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
-    private boolean useInAppEvents;
     private boolean sendAccessToken;
 
     private EditText networkName;
@@ -70,6 +71,8 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     private boolean hasSentAccessToken = false;
     private OnboardingToolbar toolbar;
 
+    @Inject
+    ConnectWifiPresenter wifiPresenter;
 
     //region Lifecycle
 
@@ -77,7 +80,6 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
         this.network = (wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
@@ -85,7 +87,8 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
             this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
             this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
         }
-        sendOnCreateAnalytics(useInAppEvents);
+        addScopedPresenter(wifiPresenter);
+        sendOnCreateAnalytics();
 
         setRetainInstance(true);
     }
@@ -316,9 +319,9 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
                 return;
             }
 
-            sendWifiCredentialsSubmittedAnalytics(securityType, useInAppEvents);
+            sendWifiCredentialsSubmittedAnalytics(securityType);
 
-            final String updateEvent = getWifiAnalyticsEventString(useInAppEvents);
+            final String updateEvent = wifiPresenter.getWifiAnalyticsEvent();
             final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
             bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password),
                              status -> {
@@ -347,39 +350,20 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     }
 
     @Override
-    public void sendOnCreateAnalytics(final boolean isInApp){
+    public void sendOnCreateAnalytics(){
         final boolean hasNetwork = network != null;
         final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,
                                                                  !hasNetwork);
         final int rssi = hasNetwork ? network.getRssi() : 0;
         properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
-
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP, properties);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, properties);
-        }
+        Analytics.trackEvent(wifiPresenter.getOnCreateAnalyticsEvent(), properties);
     }
 
-    private void sendWifiCredentialsSubmittedAnalytics(final sec_type securityType, final boolean isInApp) {
+    private void sendWifiCredentialsSubmittedAnalytics(final sec_type securityType){
         final Properties properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
                                                                 );
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
-        }
-    }
-
-    private String getWifiAnalyticsEventString(final boolean isInApp){
-        final String updateEvent;
-        if (isInApp) {
-            updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
-        } else {
-            updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
-        }
-        return updateEvent;
+        Analytics.trackEvent(wifiPresenter.getOnSubmitWifiCredentialsAnalyticsEvent(), properties);
     }
 
     private void sendAccessToken() {
@@ -394,14 +378,9 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     public void onFinished(){
         sendOnFinishedAnalytics();
 
-        hideAllActivityForSuccess(presenter.getFinishedRes(), () -> {
-            if (useInAppEvents){
-                hardwarePresenter.clearPeripheral();
-                getActivity().finish();
-            }else {
-                finishFlow();
-            }
-        }, e -> presentError(e, "Turning off LEDs"));
+        hideAllActivityForSuccess(presenter.getFinishedRes(),
+                                  () -> presenter.onPairSuccess(),
+                                  e -> presentError(e, "Turning off LEDs"));
     }
 
     @Override

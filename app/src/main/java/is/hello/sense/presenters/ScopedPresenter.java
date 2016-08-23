@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.util.Logger;
 
-public abstract class ScopedPresenter<T> {
+public abstract class ScopedPresenter<T extends Output> {
 
     private boolean stateRestored = false;
     protected T view;
