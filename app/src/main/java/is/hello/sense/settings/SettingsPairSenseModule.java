@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.SettingsPairSensePresenter;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
@@ -19,7 +19,7 @@ public class SettingsPairSenseModule {
 
     @Provides
     @Singleton
-    BasePairSensePresenter providesSettingsPairSensePresenter(final HardwarePresenter hardwarePresenter){
-        return new SettingsPairSensePresenter(hardwarePresenter);
+    BasePairSensePresenter providesSettingsPairSensePresenter(final HardwareInteractor hardwareInteractor){
+        return new SettingsPairSensePresenter(hardwareInteractor);
     }
 }
