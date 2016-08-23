@@ -27,7 +27,7 @@ public class SenseResetOriginalFragment extends ScopedInjectionFragment
     private OnboardingSimpleStepView view;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addScopedPresenter(presenter);
     }
@@ -44,7 +44,7 @@ public class SenseResetOriginalFragment extends ScopedInjectionFragment
                 .setSecondaryOnClickListener(this::onDone)
                 .setPrimaryButtonText(R.string.action_reset_sense)
                 .setPrimaryOnClickListener(this::onNext);
-        presenter.setView(this);
+        //presenter.setView(this);
         return view;
     }
 

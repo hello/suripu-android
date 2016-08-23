@@ -15,7 +15,7 @@ public abstract class SelectWifiNetworkPresenter extends ScopedPresenter<SelectW
 
     public abstract String getOnRescanAnalyticsEvent();
 
-    public interface Output {
+    public interface Output extends is.hello.sense.presenters.Output{
 
     }
 

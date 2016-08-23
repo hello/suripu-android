@@ -32,7 +32,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class SelectWiFiNetworkFragment extends BaseHardwareFragment
-        implements AdapterView.OnItemClickListener {
+        implements AdapterView.OnItemClickListener, SelectWifiNetworkPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
 
     private boolean sendAccessToken;
