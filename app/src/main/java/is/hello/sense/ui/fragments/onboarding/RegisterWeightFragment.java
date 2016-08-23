@@ -24,7 +24,7 @@ import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterWeightFragment extends SenseFragment {
+public class RegisterWeightFragment extends SenseFragment {
     @Inject
     PreferencesInteractor preferences;
 
@@ -33,7 +33,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
 
     private boolean hasAnimated = false;
 
-    public OnboardingRegisterWeightFragment() {
+    public RegisterWeightFragment(){
         SenseApplication.getInstance().inject(this);
     }
 
@@ -123,6 +123,13 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
         outState.putBoolean("hasAnimated", true);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        scale.onDestroyView();
+        scale = null;
+        scaleReading = null;
+    }
 
     public void next() {
         final AccountEditor.Container container = AccountEditor.getContainer(this);
@@ -133,7 +140,7 @@ public class OnboardingRegisterWeightFragment extends SenseFragment {
                 container.getAccount().setWeight(grams);
             }
         } catch (final NumberFormatException e) {
-            Logger.warn(OnboardingRegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);
+            Logger.warn(RegisterWeightFragment.class.getSimpleName(), "Invalid input fed to weight fragment, ignoring", e);
         } finally {
             container.onAccountUpdated(this);
         }

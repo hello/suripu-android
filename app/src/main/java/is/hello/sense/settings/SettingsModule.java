@@ -2,6 +2,8 @@ package is.hello.sense.settings;
 
 import dagger.Module;
 import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
@@ -15,6 +17,8 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         AccountSettingsFragment.class,
         ChangePasswordFragment.class,
         ChangeEmailFragment.class,
+        RegisterWeightFragment.class,
+        OnboardingRegisterHeightFragment.RegisterHeightFragment.class,
         UnitSettingsFragment.class,
         AccountInteractor.class,
         NotificationsSettingsFragment.class,

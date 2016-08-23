@@ -11,13 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
-import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.permissions.LocationPermission;
@@ -27,7 +24,6 @@ import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.dialogs.TroubleshootSenseDialogFragment;
 import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -114,11 +110,10 @@ public class PairSenseFragment extends BasePairSenseFragment
     }
 
     private void checkConnectivityAndContinue() {
-        showBlockingActivity(R.string.title_checking_connectivity);
         showHardwareActivity(() -> {
             bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    super.linkAccount();
+                    presenter.checkLinkedAccount();
                 } else {
                     continueToWifi();
                 }
@@ -223,7 +218,7 @@ public class PairSenseFragment extends BasePairSenseFragment
     }
 
     public void tryToPairWith(@NonNull final SensePeripheral device) {
-        if (BuildConfig.DEBUG || isPairUpgradedSenseSession()) {
+        if (presenter.shouldShowPairDialog()) {
             final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
@@ -237,24 +232,18 @@ public class PairSenseFragment extends BasePairSenseFragment
     }
 
     public void completePeripheralPair() {
-        Analytics.setSenseId(hardwarePresenter.getDeviceId());
-
-        if (hardwarePresenter.getBondStatus() == GattPeripheral.BOND_BONDED) {
-            showBlockingActivity(R.string.title_clearing_bond);
+        if (presenter.hasPeripheralPair()) {
             bindAndSubscribe(hardwarePresenter.clearBond(),
-                             ignored -> {
-                                 completePeripheralPair();
-                             },
+                             ignored -> presenter.hasPeripheralPair()
+                             ,
                              e -> presentError(e, "Clearing Bond"));
         } else {
-            showBlockingActivity(presenter.getPairingRes());
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status == ConnectProgress.CONNECTED) {
-                    checkConnectivityAndContinue();
-                } else {
-                    showBlockingActivity(Styles.getConnectStatusMessage(status));
-                }
-            }, e -> presentError(e, "Connecting to Sense"));
+            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
+                             status -> {
+                                 if(presenter.hasConnectivity(status)){
+                                     checkConnectivityAndContinue();
+                                 }},
+                             e -> presentError(e, "Connecting to Sense"));
         }
     }
 
