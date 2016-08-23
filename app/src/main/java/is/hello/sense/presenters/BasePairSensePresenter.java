@@ -1,32 +1,44 @@
 package is.hello.sense.presenters;
 
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.commonsense.util.ConnectProgress;
+import is.hello.sense.R;
 import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Analytics;
 
-public abstract class BasePairSensePresenter implements PresenterOutputLifecycle<BasePairSensePresenter.Output>{
+public abstract class BasePairSensePresenter extends ScopedPresenter<BasePairSensePresenter.Output> {
 
 
+    protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
     private final HardwarePresenter hardwarePresenter;
-    private Output view;
+    private boolean linkedAccount = false;
 
     public BasePairSensePresenter(final HardwarePresenter hardwarePresenter){
         this.hardwarePresenter = hardwarePresenter;
     }
 
     @Override
-    public void setView(final Output view) {
-        this.view = view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        view = null;
-    }
-
-    @Override
     public void onDestroy() {
         hardwarePresenter.clearPeripheral();
+    }
+
+    @Nullable
+    @Override
+    public Bundle onSaveState() {
+        final Bundle state = new Bundle();
+        state.putBoolean(ARG_HAS_LINKED_ACCOUNT, linkedAccount);
+        return state;
+    }
+
+    @Override
+    public void onRestoreState(@NonNull final Bundle savedState) {
+        linkedAccount = savedState.getBoolean(ARG_HAS_LINKED_ACCOUNT);
     }
 
     @StringRes
@@ -45,7 +57,50 @@ public abstract class BasePairSensePresenter implements PresenterOutputLifecycle
 
     public abstract String getOnFinishAnalyticsEvent();
 
+    public boolean shouldShowPairDialog() {
+        return false;
+    }
+
+    public void checkLinkedAccount() {
+        if(linkedAccount){
+            view.finishUpOperations();
+        } else {
+            view.requestLinkAccount();
+        }
+    }
+
+    public void updateLinkedAccount() {
+        this.linkedAccount = true;
+        view.finishUpOperations();
+    }
+
+    public boolean hasPeripheralPair() {
+        Analytics.setSenseId(hardwarePresenter.getDeviceId());
+        if (hardwarePresenter.getBondStatus() == GattPeripheral.BOND_BONDED) {
+            view.showBlockingMessage(R.string.title_clearing_bond);
+            return true;
+        } else {
+            view.showBlockingMessage(getPairingRes());
+            return false;
+        }
+    }
+
+    public boolean hasConnectivity(final ConnectProgress status) {
+            if (status == ConnectProgress.CONNECTED) {
+                view.showBlockingMessage(R.string.title_checking_connectivity);
+                return true;
+            } else {
+                view.showBlockingMessage(Styles.getConnectStatusMessage(status));
+                return false;
+            }
+    }
+
     public interface Output {
 
+        void showBlockingMessage(@StringRes int blockingRes);
+
+        void finishUpOperations();
+
+        void requestLinkAccount();
     }
 }

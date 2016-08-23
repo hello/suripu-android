@@ -24,7 +24,7 @@ import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingRegisterHeightFragment extends SenseFragment {
+public class RegisterHeightFragment extends SenseFragment {
     @Inject
     PreferencesInteractor preferences;
 
@@ -33,7 +33,7 @@ public class OnboardingRegisterHeightFragment extends SenseFragment {
 
     private boolean hasAnimated = false;
 
-    public OnboardingRegisterHeightFragment() {
+    public RegisterHeightFragment(){
         SenseApplication.getInstance().inject(this);
     }
 
@@ -114,6 +114,13 @@ public class OnboardingRegisterHeightFragment extends SenseFragment {
         outState.putBoolean("hasAnimated", true);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        scale.onDestroyView();
+        scale = null;
+        scaleReading = null;
+    }
 
     public void next() {
         try {
@@ -123,7 +130,7 @@ public class OnboardingRegisterHeightFragment extends SenseFragment {
             }
             container.onAccountUpdated(this);
         } catch (NumberFormatException e) {
-            Logger.warn(OnboardingRegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);
+            Logger.warn(RegisterHeightFragment.class.getSimpleName(), "Invalid input fed to height fragment, ignoring.", e);
         }
     }
 }

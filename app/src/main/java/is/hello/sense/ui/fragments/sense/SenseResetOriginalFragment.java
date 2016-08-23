@@ -12,19 +12,25 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.ScopedInjectionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 
-public class SenseResetOriginalFragment extends InjectionFragment
+public class SenseResetOriginalFragment extends ScopedInjectionFragment
         implements SenseResetOriginalPresenter.Output {
 
     @Inject
     SenseResetOriginalPresenter presenter;
 
     private OnboardingSimpleStepView view;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addScopedPresenter(presenter);
+    }
 
     @Nullable
     @Override
@@ -68,7 +74,6 @@ public class SenseResetOriginalFragment extends InjectionFragment
         super.onDestroyView();
         view.destroy();
         view = null;
-        presenter.onDestroyView();
     }
 
     @Override
@@ -76,7 +81,6 @@ public class SenseResetOriginalFragment extends InjectionFragment
         super.onDestroy();
         // Any other call to this method is due to configuration change or low memory.
         // We want to release the presenter only when the fragment is truly done.
-        presenter.onDestroy();
         presenter = null;
         stateSafeExecutor.clearPending();
     }

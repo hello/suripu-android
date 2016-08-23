@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.sense;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 
 import com.segment.analytics.Properties;
@@ -15,7 +16,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
@@ -36,8 +36,6 @@ implements BasePairSensePresenter.Output{
     ApiService apiService;
 
     protected static final String OPERATION_LINK_ACCOUNT = "Linking account";
-    protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
-    protected boolean hasLinkedAccount = false;
 
     public abstract void presentError(final Throwable e, final String operation);
 
@@ -49,19 +47,12 @@ implements BasePairSensePresenter.Output{
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            this.hasLinkedAccount = savedInstanceState.getBoolean(ARG_HAS_LINKED_ACCOUNT, false);
-        }
+        addScopedPresenter(presenter);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(ARG_HAS_LINKED_ACCOUNT, hasLinkedAccount);
-    }
-
-    protected boolean isPairUpgradedSenseSession() {
-        return getActivity() instanceof SenseUpdateActivity;
     }
 
     protected void sendOnCreateAnalytics(final boolean pairOnlySession) {
@@ -73,24 +64,24 @@ implements BasePairSensePresenter.Output{
         Analytics.trackEvent(presenter.getOnFinishAnalyticsEvent(), null);
     }
 
-    public void linkAccount() {
-        if (hasLinkedAccount) {
-            finishUpOperations();
-        } else {
-            showBlockingActivity(R.string.title_linking_account);
-
-            bindAndSubscribe(hardwarePresenter.linkAccount(),
-                             ignored -> {
-                                 this.hasLinkedAccount = true;
-                                 finishUpOperations();
-                             },
-                             error -> {
-                                 Logger.error(getClass().getSimpleName(), "Could not link Sense to account", error);
-                                 presentError(error, OPERATION_LINK_ACCOUNT);
-                             });
-        }
+    @Override
+    public void showBlockingMessage(@StringRes final int blockingRes){
+        showBlockingActivity(blockingRes);
     }
 
+    @Override
+    public void requestLinkAccount(){
+        showBlockingActivity(R.string.title_linking_account);
+
+        bindAndSubscribe(hardwarePresenter.linkAccount(),
+                         ignored -> presenter.updateLinkedAccount(),
+                         error -> {
+                             Logger.error(getClass().getSimpleName(), "Could not link Sense to account", error);
+                             presentError(error, OPERATION_LINK_ACCOUNT);
+                         });
+    }
+
+    @Override
     public void finishUpOperations() {
         setDeviceTimeZone();
     }

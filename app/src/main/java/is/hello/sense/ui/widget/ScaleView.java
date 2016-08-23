@@ -36,8 +36,8 @@ public class ScaleView extends FrameLayout {
 
 
     private final Paint linePaint = new Paint();
-    private float diamondHalf;
-    private int segmentSize;
+    private final float diamondHalf;
+    private final int segmentSize;
     private int scaleInset;
 
     private final RecyclerView recyclerView;
@@ -182,6 +182,12 @@ public class ScaleView extends FrameLayout {
             canvas.drawRect(0f, midY - diamondHalf, width, midY + diamondHalf, linePaint);
         } else {
             canvas.drawRect(midX - diamondHalf, 0f, midX + diamondHalf, height, linePaint);
+        }
+    }
+
+    public void onDestroyView() {
+        if(onValueChangedListener != null){
+            onValueChangedListener = null;
         }
     }
 

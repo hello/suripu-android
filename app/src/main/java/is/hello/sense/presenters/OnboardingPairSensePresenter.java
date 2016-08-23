@@ -1,5 +1,6 @@
 package is.hello.sense.presenters;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.graph.presenters.HardwarePresenter;
 import is.hello.sense.util.Analytics;
@@ -38,5 +39,10 @@ public class OnboardingPairSensePresenter extends BasePairSensePresenter {
     @Override
     public String getOnFinishAnalyticsEvent() {
         return Analytics.Onboarding.EVENT_SENSE_PAIRED;
+    }
+
+    @Override
+    public boolean shouldShowPairDialog() {
+        return BuildConfig.DEBUG;
     }
 }
