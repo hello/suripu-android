@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
@@ -61,8 +62,9 @@ public class SenseUpdateModule {
 
 
 
-    @Provides @Singleton
-    BasePairSensePresenter providesUpdatePairSensePresenter(final HardwarePresenter hardwarePresenter){
-        return new UpdatePairSensePresenter(hardwarePresenter);
+    @Provides
+    @Singleton
+    BasePairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor){
+        return new UpdatePairSensePresenter(interactor);
     }
 }

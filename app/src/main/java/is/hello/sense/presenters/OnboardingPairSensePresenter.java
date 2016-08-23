@@ -2,13 +2,13 @@ package is.hello.sense.presenters;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairSensePresenter extends BasePairSensePresenter {
 
-    public OnboardingPairSensePresenter(final HardwarePresenter hardwarePresenter) {
-        super(hardwarePresenter);
+    public OnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor) {
+        super(hardwareInteractor);
     }
 
     @Override

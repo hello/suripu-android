@@ -44,7 +44,6 @@ public class SenseResetOriginalFragment extends ScopedInjectionFragment
                 .setSecondaryOnClickListener(this::onDone)
                 .setPrimaryButtonText(R.string.action_reset_sense)
                 .setPrimaryOnClickListener(this::onNext);
-        //presenter.setView(this);
         return view;
     }
 
@@ -74,15 +73,6 @@ public class SenseResetOriginalFragment extends ScopedInjectionFragment
         super.onDestroyView();
         view.destroy();
         view = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // Any other call to this method is due to configuration change or low memory.
-        // We want to release the presenter only when the fragment is truly done.
-        presenter = null;
-        stateSafeExecutor.clearPending();
     }
 
     //region PresenterOutput implementation

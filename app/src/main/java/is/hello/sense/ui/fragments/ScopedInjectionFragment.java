@@ -4,21 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.presenters.Output;
 import is.hello.sense.presenters.ScopedPresenter;
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.SenseFragment;
 
 /**
  * To be used when injecting fragments to a scoped object graph instead of application level graph.
  */
-public abstract class ScopedInjectionFragment extends InjectionFragment
-implements Output{
+public abstract class ScopedInjectionFragment extends SenseFragment
+implements BaseOutput{
 
     private final ScopedPresenterContainer scopedPresenterContainer = new ScopedPresenterContainer();
 
@@ -49,10 +48,12 @@ implements Output{
 
     }
 
+
+
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        scopedPresenterContainer.onViewCreated(this);
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        scopedPresenterContainer.onCreate(this);
     }
 
     @Override
@@ -116,7 +117,7 @@ implements Output{
             }
         }
 
-        public void onViewCreated(final Output view) {
+        public void onCreate(final BaseOutput view) {
             for(final ScopedPresenter p : presenters){
                 p.setView(view);
             }

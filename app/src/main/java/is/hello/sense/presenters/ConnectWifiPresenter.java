@@ -16,7 +16,7 @@ public abstract class ConnectWifiPresenter extends ScopedPresenter<ConnectWifiPr
     public abstract String getWifiAnalyticsEvent();
 
 
-    public interface Output extends is.hello.sense.presenters.Output{
+    public interface Output extends is.hello.sense.presenters.outputs.Output {
 
     }
 

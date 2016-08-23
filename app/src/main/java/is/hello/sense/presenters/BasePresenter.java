@@ -1,15 +1,10 @@
 package is.hello.sense.presenters;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import is.hello.sense.interactors.Interactor;
-import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.DelegateObservableContainer;
 import is.hello.sense.ui.common.ObservableContainer;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.StateSafeExecutor;
 import is.hello.sense.util.StateSafeScheduler;
 import rx.Observable;
@@ -17,15 +12,13 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public abstract class BasePresenter<S extends BaseOutput>
-        implements Presenter, ObservableContainer, StateSafeExecutor.Resumes, PresenterOutputLifecycle<S> {
+public abstract class BasePresenter<S extends BaseOutput> extends ScopedPresenter<S>
+        implements Presenter, ObservableContainer, StateSafeExecutor.Resumes {
 
-    protected S viewOutput;
-    protected static final Func1<BasePresenter, Boolean> FRAGMENT_VALIDATOR = BasePresenter::isResumed; //todo add more
+    protected static final Func1<BasePresenter, Boolean> VALIDATOR = BasePresenter::isResumed; //todo add more
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
-    protected final DelegateObservableContainer<BasePresenter> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
-    protected final InteractorContainer interactorContainer = new InteractorContainer();
+    protected final DelegateObservableContainer<BasePresenter> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, VALIDATOR);
 
     // region ObservableContainer
     @NonNull
@@ -65,24 +58,8 @@ public abstract class BasePresenter<S extends BaseOutput>
     //region StateSafeExecutor.Resumes
     @Override
     public boolean isResumed() {
-        return viewOutput != null && viewOutput.isResumed();
+        return view != null && view.isResumed();
     }
     //endregion
 
-    //region PresenterOutputLifecycle
-
-    public void setView(final S view) {
-        this.viewOutput = view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        this.viewOutput = null;
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-    //endregion
 }

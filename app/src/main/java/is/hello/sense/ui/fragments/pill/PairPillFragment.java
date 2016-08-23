@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
@@ -18,7 +19,6 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.BasePairPillPresenter;
-import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -26,8 +26,11 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
 
-public class PairPillFragment<T extends BasePairPillPresenter> extends BaseHardwarePresenterFragment<T>
+public class PairPillFragment extends BaseHardwarePresenterFragment
         implements BasePairPillPresenter.Output {
+
+    @Inject
+    BasePairPillPresenter presenter;
     protected ProgressBar activityIndicator;
     protected TextView activityStatus;
 
@@ -36,17 +39,10 @@ public class PairPillFragment<T extends BasePairPillPresenter> extends BaseHardw
     protected Button retryButton;
     protected boolean isPairing = false;
 
-    public static PairPillFragment newInstance(@NonNull final UpdatePairPillPresenter presenter) {
-        final PairPillFragment fragment = new PairPillFragment<UpdatePairPillPresenter>();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_PRESENTER_KEY, presenter);
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addScopedPresenter(presenter);
         presenter.trackOnCreate();
     }
 
@@ -54,7 +50,6 @@ public class PairPillFragment<T extends BasePairPillPresenter> extends BaseHardw
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_pair_pill, container, false);
-        presenter.setView(this);
         ((TextView) view.findViewById(R.id.fragment_pair_pill_subhead)).setText(presenter.getSubTitleRes());
         ((TextView) view.findViewById(R.id.fragment_pair_pill_title)).setText(presenter.getTitleRes());
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_pair_pill_activity);
