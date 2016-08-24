@@ -8,6 +8,7 @@ import dagger.Provides;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
@@ -64,13 +65,16 @@ public class SenseUpdateModule {
 
     @Provides
     @Singleton
-    BasePairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor){
-        return new UpdatePairSensePresenter(interactor);
+    BasePairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor,
+                                                            final UserFeaturesInteractor userFeaturesInteractor,
+                                                            final ApiService apiService){
+        return new UpdatePairSensePresenter(interactor, userFeaturesInteractor, apiService);
     }
 
     @Provides
     @Singleton
-    BasePairPillPresenter providesUpdatePairPillPresenter(){
-        return new UpdatePairPillPresenter();
+    BasePairPillPresenter providesUpdatePairPillPresenter(final HardwareInteractor interactor,
+                                                          final UserFeaturesInteractor userFeaturesInteractor){
+        return new UpdatePairPillPresenter(interactor, userFeaturesInteractor);
     }
 }

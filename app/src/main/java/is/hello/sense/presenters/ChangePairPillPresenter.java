@@ -7,10 +7,17 @@ import android.support.annotation.NonNull;
 import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
 public class ChangePairPillPresenter extends BasePairPillPresenter {
+
+    public ChangePairPillPresenter(final HardwareInteractor hardwareInteractor,
+                                   final UserFeaturesInteractor userFeaturesInteractor) {
+        super(hardwareInteractor,
+              userFeaturesInteractor);
+    }
 
     @Override
     public void trackOnCreate() {

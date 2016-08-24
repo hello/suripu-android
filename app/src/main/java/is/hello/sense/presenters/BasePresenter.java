@@ -12,6 +12,13 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
+/**
+ * Contains {@link ObservableContainer},
+ * {@link StateSafeExecutor},
+ * {@link StateSafeScheduler},
+ * {@link DelegateObservableContainer}
+ * @param <T> indicates the generic type of {@link BaseOutput} that the Presenter will expect its view to implement
+ */
 public abstract class BasePresenter<T extends BaseOutput>
         implements
         Presenter,

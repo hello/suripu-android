@@ -1,10 +1,10 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v13.app.FragmentCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,11 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.commonsense.bluetooth.SensePeripheral;
-import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -26,19 +24,9 @@ import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
-import rx.Observable;
 
 public class PairSenseFragment extends BasePairSenseFragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
-    public static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
-    private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
-    private static final int REQUEST_CODE_SHOW_RATIONALE_DIALOG = 0xb2;
-
-    private static final int RESULT_EDIT_WIFI = 0x99;
-
-    private static final int LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI = 3;
-
-    private int linkAccountFailures = 0;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     private OnboardingSimpleStepView view;
@@ -74,7 +62,7 @@ public class PairSenseFragment extends BasePairSenseFragment
                     showSupportOptions();
                     return true;
                 })
-                .configure(b -> subscribe(hardwareInteractor.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR));
+                .configure(b -> presenter.provideBluetoothEnabledSubscription(b.primaryButton::setEnabled));
 
         return view;
     }
@@ -82,15 +70,7 @@ public class PairSenseFragment extends BasePairSenseFragment
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
-            hardwareInteractor.setWantsHighPowerPreScan(true);
-            next();
-        } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
-            showSelectWifiNetwork();
-        } else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK) {
-            locationPermission.requestPermissionWithDialog();
-        }
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -107,6 +87,11 @@ public class PairSenseFragment extends BasePairSenseFragment
         super.onDestroyView();
         this.view.destroy();
         this.view = null;
+    }
+
+    @Override
+    public void requestPermissionWithDialog() {
+        locationPermission.requestPermissionWithDialog();
     }
 
     private void checkConnectivityAndContinue() {
@@ -130,12 +115,8 @@ public class PairSenseFragment extends BasePairSenseFragment
                                   e -> presentError(e, "Turning off LEDs"));
     }
 
-    private void showSelectWifiNetwork() {
-        getFragmentNavigation().flowFinished(this, REQUEST_CODE_EDIT_WIFI, null);
-    }
-
     @Override
-    protected void onFinished() {
+    public void onFinished() {
         hideAllActivityForSuccess(presenter.getFinishedRes(),
                                    () -> {
                                        sendOnFinishedAnalytics();
@@ -148,47 +129,42 @@ public class PairSenseFragment extends BasePairSenseFragment
     }
 
     @Override
-    public void presentError(final Throwable e, @NonNull final String operation) {
-        hideAllActivityForFailure(() -> {
-            if (OPERATION_LINK_ACCOUNT.equals(operation)) {
-                this.linkAccountFailures++;
-                if (linkAccountFailures >= LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI) {
-                    final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                            .withMessage(StringRef.from(R.string.error_link_account_failed_multiple_times))
-                            .withAction(RESULT_EDIT_WIFI, R.string.action_select_wifi_network)
-                            .withOperation(operation)
-                            .withSupportLink()
-                            .build();
+    public void presentError(final StringRef message,
+                             final int actionResultCode,
+                             @StringRes final int actionStringRes,
+                             final String operation,
+                             final int requestCode) {
+        final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                .withMessage(message)
+                .withAction(actionResultCode, actionStringRes)
+                .withOperation(operation)
+                .withSupportLink()
+                .build();
 
-                    dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_WIFI);
-                    dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        dialogFragment.setTargetFragment(this, requestCode);
+        dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
 
-                    Analytics.trackError(e, operation);
-                    return;
-                }
-            }
+    @Override
+    public void presentHighPowerErrorDialog(int requestCode) {
+        final PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
+        dialogFragment.setTargetFragment(this, requestCode);
+        dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
+    }
 
-            if (e instanceof SenseNotFoundError) {
-                hardwareInteractor.trackPeripheralNotFound();
+    @Override
+    public void presentTroubleShootingDialog() {
+        final TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
+        dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+    }
 
-                if (hardwareInteractor.shouldPromptForHighPowerScan()) {
-                    final PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
-                    dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
-                    dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
-                } else {
-                    final TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
-                    dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
-                }
-
-                Analytics.trackError(e, operation);
-            } else {
-                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                        .withUnstableBluetoothHelp(getActivity())
-                        .withOperation(operation)
-                        .build();
-                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-            }
-        });
+    @Override
+    public void presentUnstableBluetoothDialog(final Throwable e, @NonNull final String operation) {
+        final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                .withUnstableBluetoothHelp(getActivity())
+                .withOperation(operation)
+                .build();
+        dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void showPairingModeHelp(@NonNull final View sender) {
@@ -201,13 +177,7 @@ public class PairSenseFragment extends BasePairSenseFragment
             locationPermission.requestPermissionWithDialog();
             return;
         }
-
-        showBlockingActivity(R.string.title_scanning_for_sense);
-        final Observable<SensePeripheral> device = hardwareInteractor.closestPeripheral();
-        bindAndSubscribe(device, this::tryToPairWith, e -> {
-            hardwareInteractor.clearPeripheral();
-            presentError(e, "Discovering Sense");
-        });
+        presenter.onLocationPermissionGranted();
     }
 
     public void tryToPairWith(@NonNull final SensePeripheral device) {
@@ -226,12 +196,12 @@ public class PairSenseFragment extends BasePairSenseFragment
 
     public void completePeripheralPair() {
         if (presenter.hasPeripheralPair()) {
-            bindAndSubscribe(hardwareInteractor.clearBond(),
+            presenter.bindAndSubscribe(hardwareInteractor.clearBond(),
                              ignored -> presenter.hasPeripheralPair()
                              ,
                              e -> presentError(e, "Clearing Bond"));
         } else {
-            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
+            presenter.bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              status -> {
                                  if(presenter.hasConnectivity(status)){
                                      checkConnectivityAndContinue();
@@ -239,5 +209,4 @@ public class PairSenseFragment extends BasePairSenseFragment
                              e -> presentError(e, "Connecting to Sense"));
         }
     }
-
 }

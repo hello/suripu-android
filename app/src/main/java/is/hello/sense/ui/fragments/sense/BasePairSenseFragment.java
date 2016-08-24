@@ -9,11 +9,9 @@ import com.segment.analytics.Properties;
 
 import javax.inject.Inject;
 
-import is.hello.commonsense.util.ConnectProgress;
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -23,7 +21,6 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
-import is.hello.sense.util.Logger;
 import is.hello.sense.util.SkippableFlow;
 
 public abstract class BasePairSenseFragment extends BaseHardwareFragment
@@ -31,18 +28,6 @@ implements BasePairSensePresenter.Output{
 
     @Inject
     protected BasePairSensePresenter presenter;
-
-    @Inject
-    ApiService apiService;
-
-    protected static final String OPERATION_LINK_ACCOUNT = "Linking account";
-
-    public abstract void presentError(final Throwable e, final String operation);
-
-    /**
-     * Will be called when {@link this#finishUpOperations()} completes
-     */
-    protected abstract void onFinished();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -64,31 +49,11 @@ implements BasePairSensePresenter.Output{
         Analytics.trackEvent(presenter.getOnFinishAnalyticsEvent(), null);
     }
 
-    @Override
-    public void showBlockingMessage(@StringRes final int blockingRes){
-        showBlockingActivity(blockingRes);
-    }
+    /**region {@link BasePairSensePresenter.Output}**/
 
     @Override
-    public void requestLinkAccount(){
-        showBlockingActivity(R.string.title_linking_account);
-
-        bindAndSubscribe(hardwareInteractor.linkAccount(),
-                         ignored -> presenter.updateLinkedAccount(),
-                         error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not link Sense to account", error);
-                             presentError(error, OPERATION_LINK_ACCOUNT);
-                         });
-    }
-
-    @Override
-    public void finishUpOperations() {
-        setDeviceTimeZone();
-    }
-
-    @Override
-    public void finishPairFlow(){
-        finishFlow();
+    public void finishPairFlow(final int resultCode){
+        finishFlowWithResult(resultCode);
     }
 
     @Override
@@ -96,41 +61,16 @@ implements BasePairSensePresenter.Output{
         getActivity().finish();
     }
 
-    private void setDeviceTimeZone() {
-        showBlockingActivity(R.string.title_setting_time_zone);
+    @Override
+    public abstract void presentError(StringRef message,
+                                      int resultCode,
+                                      @StringRes int actionStringRes,
+                                      String operation,
+                                      int requestCode);
+    @Override
+    public abstract void onFinished();
 
-        final SenseTimeZone timeZone = SenseTimeZone.fromDefault();
-        bindAndSubscribe(apiService.updateTimeZone(timeZone),
-                         ignored -> {
-                             Logger.info(getClass().getSimpleName(), "Time zone updated.");
-
-                             pushDeviceData();
-                         },
-                         e -> presentError(e, "Updating time zone"));
-    }
-
-    private void pushDeviceData() {
-        showBlockingActivity(R.string.title_pushing_data);
-
-        bindAndSubscribe(hardwareInteractor.pushData(),
-                         ignored -> getDeviceFeatures(),
-                         error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
-                             getDeviceFeatures();
-                         });
-    }
-
-    private void getDeviceFeatures() {
-        showBlockingActivity(R.string.title_pushing_data);
-
-        bindAndSubscribe(userFeaturesInteractor.storeFeaturesInPrefs(),
-                         ignored -> onFinished(),
-                         error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
-                             onFinished();
-                         });
-    }
-
+    //end region
 
     protected void showSupportOptions() {
         if (isPairOnlySession() || getOnboardingActivity() == null) {
@@ -187,28 +127,13 @@ implements BasePairSensePresenter.Output{
         confirmation.setMessage(R.string.dialog_message_factory_reset);
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setPositiveButton(R.string.action_factory_reset,
-                                       (ignored, which) -> performRecoveryFactoryReset());
+                                       (ignored, which) -> presenter.performRecoveryFactoryReset());
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmation.show();
     }
 
     private void performRecoveryFactoryReset() {
-        showBlockingActivity(R.string.dialog_loading_message);
 
-        if (!hardwareInteractor.hasPeripheral()) {
-            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
-                             ignored -> performRecoveryFactoryReset(),
-                             this::presentFactoryResetError);
-        } else if (!hardwareInteractor.isConnected()) {
-            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
-                             state -> {
-                                 if (state != ConnectProgress.CONNECTED) {
-                                     return;
-                                 }
-                                 performRecoveryFactoryReset();
-                             },
-                             this::presentFactoryResetError);
-        } else {
             showHardwareActivity(() -> bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
                                                         ignored -> hideBlockingActivity(true, () -> {
                                                             Analytics.setSenseId("unpaired");
@@ -221,7 +146,6 @@ implements BasePairSensePresenter.Output{
                                                             getOnboardingActivity().showSetupSense(); //todo return a flow result. Requires activity changes
                                                         }),
                                                         this::presentFactoryResetError), this::presentFactoryResetError);
-        }
     }
 
     private void presentFactoryResetError(final Throwable e) {
