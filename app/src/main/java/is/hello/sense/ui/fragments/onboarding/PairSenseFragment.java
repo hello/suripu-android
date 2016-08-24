@@ -74,7 +74,7 @@ public class PairSenseFragment extends BasePairSenseFragment
                     showSupportOptions();
                     return true;
                 })
-                .configure(b -> subscribe(hardwarePresenter.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR));
+                .configure(b -> subscribe(hardwareInteractor.bluetoothEnabled, b.primaryButton::setEnabled, Functions.LOG_ERROR));
 
         return view;
     }
@@ -84,7 +84,7 @@ public class PairSenseFragment extends BasePairSenseFragment
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
-            hardwarePresenter.setWantsHighPowerPreScan(true);
+            hardwareInteractor.setWantsHighPowerPreScan(true);
             next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
             showSelectWifiNetwork();
@@ -111,7 +111,7 @@ public class PairSenseFragment extends BasePairSenseFragment
 
     private void checkConnectivityAndContinue() {
         showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.currentWifiNetwork(), network -> {
+            bindAndSubscribe(hardwareInteractor.currentWifiNetwork(), network -> {
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
                     presenter.checkLinkedAccount();
                 } else {
@@ -169,9 +169,9 @@ public class PairSenseFragment extends BasePairSenseFragment
             }
 
             if (e instanceof SenseNotFoundError) {
-                hardwarePresenter.trackPeripheralNotFound();
+                hardwareInteractor.trackPeripheralNotFound();
 
-                if (hardwarePresenter.shouldPromptForHighPowerScan()) {
+                if (hardwareInteractor.shouldPromptForHighPowerScan()) {
                     final PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
                     dialogFragment.setTargetFragment(this, REQUEST_CODE_HIGH_POWER_RETRY);
                     dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
@@ -203,9 +203,9 @@ public class PairSenseFragment extends BasePairSenseFragment
         }
 
         showBlockingActivity(R.string.title_scanning_for_sense);
-        final Observable<SensePeripheral> device = hardwarePresenter.closestPeripheral();
+        final Observable<SensePeripheral> device = hardwareInteractor.closestPeripheral();
         bindAndSubscribe(device, this::tryToPairWith, e -> {
-            hardwarePresenter.clearPeripheral();
+            hardwareInteractor.clearPeripheral();
             presentError(e, "Discovering Sense");
         });
     }
@@ -216,7 +216,7 @@ public class PairSenseFragment extends BasePairSenseFragment
             dialog.setTitle(R.string.debug_title_confirm_sense_pair);
             dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
             dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
-            dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> hideBlockingActivity(false, hardwarePresenter::clearPeripheral));
+            dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> hideBlockingActivity(false, hardwareInteractor::clearPeripheral));
             dialog.setCancelable(false);
             dialog.show();
         } else {
@@ -226,12 +226,12 @@ public class PairSenseFragment extends BasePairSenseFragment
 
     public void completePeripheralPair() {
         if (presenter.hasPeripheralPair()) {
-            bindAndSubscribe(hardwarePresenter.clearBond(),
+            bindAndSubscribe(hardwareInteractor.clearBond(),
                              ignored -> presenter.hasPeripheralPair()
                              ,
                              e -> presentError(e, "Clearing Bond"));
         } else {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              status -> {
                                  if(presenter.hasConnectivity(status)){
                                      checkConnectivityAndContinue();

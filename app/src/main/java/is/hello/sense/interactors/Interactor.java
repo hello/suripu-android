@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.ui.common.StateSaveable;
 import is.hello.sense.util.Logger;
 
-public abstract class Interactor {
+public abstract class Interactor implements StateSaveable {
     /**
      * The first level at which Presenters will begin
      * quietly forgetting data which can be recreated.
@@ -53,7 +54,7 @@ public abstract class Interactor {
      * any resources destroyed in response to memory pressure.
      * @see android.content.ComponentCallbacks2
      */
-    public void onTrimMemory(int level) {
+    public void onTrimMemory(final int level) {
         logEvent("onTrimMemory(" + level + ")");
         if (level >= BASE_TRIM_LEVEL) {
             this.forgotDataForLowMemory = onForgetDataForLowMemory();
@@ -79,21 +80,24 @@ public abstract class Interactor {
 
 
     //region State Restoration
-
+    @Override
     public boolean isStateRestored() {
         return stateRestored;
     }
 
-    public void onRestoreState(@NonNull Bundle savedState) {
+    @Override
+    public void onRestoreState(@NonNull final Bundle savedState) {
         logEvent("onRestoreState(" + savedState + ")");
         this.stateRestored = true;
     }
 
+    @Override
     public @Nullable Bundle onSaveState() {
         logEvent("onSaveState()");
         return null;
     }
 
+    @Override
     public @NonNull String getSavedStateKey() {
         return getClass().getSimpleName() + "#instanceState";
     }
@@ -103,8 +107,8 @@ public abstract class Interactor {
 
     //region Logging
 
-    protected void logEvent(@NonNull String event) {
-        Logger.debug("is/hello/sense/interactorsssss", getClass().getSimpleName() + ": " + event);
+    protected void logEvent(@NonNull final String event) {
+        Logger.debug("is/hello/sense/interactors", getClass().getSimpleName() + ": " + event);
     }
 
     //endregion

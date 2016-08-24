@@ -12,13 +12,31 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public abstract class BasePresenter<S extends BaseOutput> extends ScopedPresenter<S>
-        implements Presenter, ObservableContainer, StateSafeExecutor.Resumes {
+public abstract class BasePresenter<T extends BaseOutput>
+        implements
+        Presenter,
+        PresenterOutputLifecycle<T>,
+        ObservableContainer,
+        StateSafeExecutor.Resumes {
 
     protected static final Func1<BasePresenter, Boolean> VALIDATOR = BasePresenter::isResumed; //todo add more
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
     protected final DelegateObservableContainer<BasePresenter> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, VALIDATOR);
+
+    //region Presenter
+    protected T view;
+
+    public void setView(final T view){
+        this.view = view;
+    }
+
+    public void onDestroyView(){
+        this.view = null;
+    }
+
+    public abstract void onDestroy();
+    //endregion
 
     // region ObservableContainer
     @NonNull

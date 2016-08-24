@@ -159,7 +159,7 @@ public class SenseOTAFragment extends BaseHardwareFragment {
     private void done() {
         Analytics.trackEvent(Analytics.SenseOTA.EVENT_END, null);
         stateSafeExecutor.execute( () -> {
-            if(userFeaturesPresenter.hasVoice()){
+            if(userFeaturesInteractor.hasVoice()){
                 LoadingDialogFragment.show(getFragmentManager(),
                                            null, LoadingDialogFragment.OPAQUE_BACKGROUND);
                 getFragmentManager().executePendingTransactions();

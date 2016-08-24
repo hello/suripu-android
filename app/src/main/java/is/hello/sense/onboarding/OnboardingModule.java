@@ -6,7 +6,9 @@ import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseOTAModule;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.BasePairSensePresenter;
+import is.hello.sense.presenters.OnboardingPairPillPresenter;
 import is.hello.sense.presenters.OnboardingPairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
@@ -43,5 +45,11 @@ public class OnboardingModule {
     @Singleton
     BasePairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor){
             return new OnboardingPairSensePresenter(hardwareInteractor);
+    }
+
+    @Provides
+    @Singleton
+    BasePairPillPresenter providesOnboardingPairPillPresenter(){
+        return new OnboardingPairPillPresenter();
     }
 }

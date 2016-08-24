@@ -8,18 +8,26 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.outputs.BaseHardwareOutput;
-import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
-public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extends BaseFragmentPresenter<T> {
+public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extends ScopedPresenter<T> {
     @Inject
-    HardwareInteractor hardwareInteractor;
+    protected HardwareInteractor hardwareInteractor;
+
+    @Inject
+    protected UserFeaturesInteractor userFeaturesInteractor;
 
     public BaseHardwarePresenter() {
         super();
         addInteractor(hardwareInteractor);
+    }
+
+    @Override
+    public void onDestroy(){
+        hardwareInteractor.onContainerDestroyed();
     }
 
     protected void showHardwareActivity(@NonNull final Runnable onCompletion,
@@ -63,20 +71,20 @@ public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extend
 
     protected void hideAllActivityForSuccess(@NonNull final Runnable onCompletion,
                                              @NonNull final Action1<Throwable> onError) {
-        hideHardwareActivity(() -> viewOutput.hideBlockingActivity(true, onCompletion),
-                             e -> viewOutput.hideBlockingActivity(false, () -> onError.call(e)));
+        hideHardwareActivity(() -> view.hideBlockingActivity(true, onCompletion),
+                             e -> view.hideBlockingActivity(false, () -> onError.call(e)));
     }
 
     public void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
-        final Runnable next = () -> viewOutput.hideBlockingActivity(false, onCompletion);
+        final Runnable next = () -> view.hideBlockingActivity(false, onCompletion);
         hideHardwareActivity(next, ignored -> next.run());
     }
 
     protected void hideAllActivityForSuccess(@StringRes final int messageRes,
                                              @NonNull final Runnable onCompletion,
                                              @NonNull final Action1<Throwable> onError) {
-        hideHardwareActivity(() -> viewOutput.hideBlockingActivity(messageRes, onCompletion),
-                             e -> viewOutput.hideBlockingActivity(false, () -> onError.call(e)));
+        hideHardwareActivity(() -> view.hideBlockingActivity(messageRes, onCompletion),
+                             e -> view.hideBlockingActivity(false, () -> onError.call(e)));
     }
 
 }

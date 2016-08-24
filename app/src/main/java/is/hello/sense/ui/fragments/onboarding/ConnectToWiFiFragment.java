@@ -294,15 +294,15 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
         showBlockingActivity(R.string.title_connecting_network);
 
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+        if (!hardwareInteractor.hasPeripheral()) {
+            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> sendWifiCredentials(),
                              e -> presentError(e, "Discovery"));
             return;
         }
 
-        if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+        if (!hardwareInteractor.isConnected()) {
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral(), status -> {
                 if (status != ConnectProgress.CONNECTED) {
                     return;
                 }
@@ -323,7 +323,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
             final String updateEvent = wifiPresenter.getWifiAnalyticsEvent();
             final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password),
+            bindAndSubscribe(hardwareInteractor.sendWifiCredentials(networkName, securityType, password),
                              status -> {
                                 final Properties updateProperties = Analytics.createProperties(
                                     Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),

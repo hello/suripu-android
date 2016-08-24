@@ -72,7 +72,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         addScopedPresenter(presenter);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
-        addPresenter(hardwarePresenter);
+        addPresenter(hardwareInteractor);
 
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
@@ -223,15 +223,15 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         rescanButton.setEnabled(false);
         networkAdapter.clear();
 
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+        if (!hardwareInteractor.hasPeripheral()) {
+            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> rescan(sendCountryCode),
                              this::peripheralRediscoveryFailed);
             return;
         }
 
-        if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
+        if (!hardwareInteractor.isConnected()) {
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral(), status -> {
                 if (status != ConnectProgress.CONNECTED) {
                     return;
                 }
@@ -243,7 +243,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         }
 
         showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(sendCountryCode),
+            bindAndSubscribe(hardwareInteractor.scanForWifiNetworks(sendCountryCode),
                              this::bindScanResults,
                              this::scanResultsUnavailable);
         }, this::scanResultsUnavailable);
