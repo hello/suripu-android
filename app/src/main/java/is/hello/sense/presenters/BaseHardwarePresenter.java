@@ -4,30 +4,52 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import javax.inject.Inject;
-
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.outputs.BaseHardwareOutput;
 import is.hello.sense.util.Logger;
+import rx.Subscription;
 import rx.functions.Action1;
 
+/**
+ * Contains methods for wrapping loading dialog fragments Runnables
+ * with {@link is.hello.sense.util.StateSafeExecutor#}
+ * @param <T>
+ */
 public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extends ScopedPresenter<T> {
-    @Inject
+
     protected HardwareInteractor hardwareInteractor;
 
-    @Inject
     protected UserFeaturesInteractor userFeaturesInteractor;
 
-    public BaseHardwarePresenter() {
+    public BaseHardwarePresenter(final HardwareInteractor hardwareInteractor,
+                                 final UserFeaturesInteractor userFeaturesInteractor) {
         super();
+        this.hardwareInteractor = hardwareInteractor;
+        this.userFeaturesInteractor = userFeaturesInteractor;
         addInteractor(hardwareInteractor);
     }
 
+    //todo figure out appropriate lifecycle to remove association with Interactors
     @Override
     public void onDestroy(){
-        hardwareInteractor.onContainerDestroyed();
+        userFeaturesInteractor.reset();
+        userFeaturesInteractor = null;
+        hardwareInteractor = null;
+    }
+
+    protected void showBlockingActivity(@StringRes final int titleRes){
+        execute(() -> view.showBlockingActivity(titleRes));
+    }
+
+    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onComplete){
+        execute(() -> view.hideBlockingActivity(success, bind(onComplete)));
+    }
+
+    protected void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete){
+        execute(() -> view.hideBlockingActivity(messageRes, bind(onComplete)));
     }
 
     protected void showHardwareActivity(@NonNull final Runnable onCompletion,
@@ -71,20 +93,23 @@ public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extend
 
     protected void hideAllActivityForSuccess(@NonNull final Runnable onCompletion,
                                              @NonNull final Action1<Throwable> onError) {
-        hideHardwareActivity(() -> view.hideBlockingActivity(true, onCompletion),
-                             e -> view.hideBlockingActivity(false, () -> onError.call(e)));
+        hideHardwareActivity(() -> hideBlockingActivity(true, onCompletion),
+                             e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
     public void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
-        final Runnable next = () -> view.hideBlockingActivity(false, onCompletion);
+        final Runnable next = () -> hideBlockingActivity(false, onCompletion);
         hideHardwareActivity(next, ignored -> next.run());
     }
 
     protected void hideAllActivityForSuccess(@StringRes final int messageRes,
                                              @NonNull final Runnable onCompletion,
                                              @NonNull final Action1<Throwable> onError) {
-        hideHardwareActivity(() -> view.hideBlockingActivity(messageRes, onCompletion),
-                             e -> view.hideBlockingActivity(false, () -> onError.call(e)));
+        hideHardwareActivity(() -> hideBlockingActivity(messageRes, onCompletion),
+                             e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
+    public Subscription provideBluetoothEnabledSubscription(final Action1<Boolean> action) {
+        return subscribe(hardwareInteractor.bluetoothEnabled, action, Functions.LOG_ERROR);
+    }
 }

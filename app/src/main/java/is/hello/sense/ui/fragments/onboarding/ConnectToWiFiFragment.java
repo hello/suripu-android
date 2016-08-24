@@ -313,7 +313,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
             return;
         }
 
-        showHardwareActivity(() -> {
+        presenter.showHardwareActivity(() -> {
             if (hasConnectedToNetwork) {
                 sendAccessToken();
                 return;
@@ -368,7 +368,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
     private void sendAccessToken() {
         if (!sendAccessToken) {
-            super.finishUpOperations();
+            presenter.finishUpOperations();
         } else {
             presenter.checkLinkedAccount();
         }
@@ -383,9 +383,9 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
                                   e -> presentError(e, "Turning off LEDs"));
     }
 
-    @Override
+
     public void presentError(final Throwable e, @NonNull final String operation) {
-        hideAllActivityForFailure(() -> {
+        presenter.hideAllActivityForFailure(() -> {
             final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation(operation);
 

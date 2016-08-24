@@ -8,4 +8,5 @@ public interface BaseOutput extends StateSafeExecutor.Resumes {
     boolean isResumed();
 
     void showBlockingActivity(@StringRes final int titleRes);
+
 }

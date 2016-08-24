@@ -1,17 +1,22 @@
 package is.hello.sense.presenters;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 
 import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairPillPresenter extends BasePairPillPresenter {
+
+    public OnboardingPairPillPresenter(final HardwareInteractor interactor,
+                                       final UserFeaturesInteractor userFeaturesInteractor){
+        super(interactor, userFeaturesInteractor);
+    }
 
     @Override
     public void trackOnCreate() {
