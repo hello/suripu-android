@@ -5,7 +5,9 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseOTAModule;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.OnboardingPairPillPresenter;
@@ -43,13 +45,16 @@ public class OnboardingModule {
 
     @Provides
     @Singleton
-    BasePairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor){
-            return new OnboardingPairSensePresenter(hardwareInteractor);
+    BasePairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor interactor,
+                                                                final UserFeaturesInteractor userFeaturesInteractor,
+                                                                final ApiService apiService){
+            return new OnboardingPairSensePresenter(interactor, userFeaturesInteractor, apiService);
     }
 
     @Provides
     @Singleton
-    BasePairPillPresenter providesOnboardingPairPillPresenter(){
-        return new OnboardingPairPillPresenter();
+    BasePairPillPresenter providesOnboardingPairPillPresenter(final HardwareInteractor interactor,
+                                                              final UserFeaturesInteractor userFeaturesInteractor){
+        return new OnboardingPairPillPresenter(interactor, userFeaturesInteractor);
     }
 }

@@ -1,13 +1,19 @@
 package is.hello.sense.presenters;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
 public class SettingsPairSensePresenter extends BasePairSensePresenter {
 
-    public SettingsPairSensePresenter(final HardwareInteractor hardwareInteractor) {
-        super(hardwareInteractor);
+    public SettingsPairSensePresenter(final HardwareInteractor hardwareInteractor,
+                                      final UserFeaturesInteractor userFeaturesInteractor,
+                                      final ApiService apiService) {
+        super(hardwareInteractor,
+              userFeaturesInteractor,
+              apiService);
     }
 
     @Override

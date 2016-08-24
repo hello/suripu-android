@@ -8,6 +8,10 @@ import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.StateSaveable;
 
+/**
+ * Contains {@link InteractorContainer}
+ * @param <T> see {@link BasePresenter}
+ */
 public abstract class BaseFragmentPresenter<T extends BaseOutput> extends BasePresenter<T>
         implements StateSaveable {
     protected final InteractorContainer interactorContainer = new InteractorContainer();
@@ -19,6 +23,12 @@ public abstract class BaseFragmentPresenter<T extends BaseOutput> extends BasePr
     @Override
     public void onRestoreState(@NonNull final Bundle savedInstanceState) {
         interactorContainer.onRestoreState(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        interactorContainer.onContainerDestroyed();
     }
 
     public void onResume() {
@@ -40,5 +50,9 @@ public abstract class BaseFragmentPresenter<T extends BaseOutput> extends BasePr
 
     public void execute(@NonNull final Runnable runnable) {
         stateSafeExecutor.execute(runnable);
+    }
+
+    public Runnable bind(@NonNull final Runnable runnable) {
+        return stateSafeExecutor.bind(runnable);
     }
 }

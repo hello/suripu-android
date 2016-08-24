@@ -1,9 +1,9 @@
 package is.hello.sense.presenters;
 
-import is.hello.sense.presenters.outputs.BaseOutput;
+import is.hello.sense.presenters.outputs.BaseHardwareOutput;
 import is.hello.sense.util.Analytics;
 
-public abstract class ConnectWifiPresenter extends ScopedPresenter<ConnectWifiPresenter.Output>{
+public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<ConnectWifiPresenter.Output>{
 
     @Override
     public void onDestroy() {
@@ -17,7 +17,7 @@ public abstract class ConnectWifiPresenter extends ScopedPresenter<ConnectWifiPr
     public abstract String getWifiAnalyticsEvent();
 
 
-    public interface Output extends BaseOutput{
+    public interface Output extends BaseHardwareOutput{
 
     }
 

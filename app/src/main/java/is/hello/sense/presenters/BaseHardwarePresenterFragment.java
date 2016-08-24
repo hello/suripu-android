@@ -13,30 +13,27 @@ public class BaseHardwarePresenterFragment extends BasePresenterFragment
 
     @Override
     public void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
-        presenter.execute(() -> LoadingDialogFragment
-                .closeWithMessageTransition(getFragmentManager(),
+        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(),
                                             () -> {
-                                                this.loadingDialogFragment = null;
+                                                loadingDialogFragment = null;
                                                 if (onCompletion != null) {
                                                     presenter.execute(onCompletion);
                                                 }
                                             },
-                                            text));
+                                            text);
     }
 
     @Override
     public void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
-        presenter.execute(() -> {
-            if (success) {
-                LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
-                    this.loadingDialogFragment = null;
-                    presenter.execute(onCompletion);
-                });
-            } else {
-                LoadingDialogFragment.close(getFragmentManager());
+        if (success) {
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                 this.loadingDialogFragment = null;
-                onCompletion.run();
-            }
-        });
+                presenter.execute(onCompletion);
+            });
+        } else {
+            LoadingDialogFragment.close(getFragmentManager());
+            this.loadingDialogFragment = null;
+            onCompletion.run();
+        }
     }
 }
