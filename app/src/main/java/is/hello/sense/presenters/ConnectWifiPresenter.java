@@ -1,5 +1,6 @@
 package is.hello.sense.presenters;
 
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Analytics;
 
 public abstract class ConnectWifiPresenter extends ScopedPresenter<ConnectWifiPresenter.Output>{
@@ -16,7 +17,7 @@ public abstract class ConnectWifiPresenter extends ScopedPresenter<ConnectWifiPr
     public abstract String getWifiAnalyticsEvent();
 
 
-    public interface Output extends is.hello.sense.presenters.outputs.Output {
+    public interface Output extends BaseOutput{
 
     }
 

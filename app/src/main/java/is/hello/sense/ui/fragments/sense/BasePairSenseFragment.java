@@ -73,7 +73,7 @@ implements BasePairSensePresenter.Output{
     public void requestLinkAccount(){
         showBlockingActivity(R.string.title_linking_account);
 
-        bindAndSubscribe(hardwarePresenter.linkAccount(),
+        bindAndSubscribe(hardwareInteractor.linkAccount(),
                          ignored -> presenter.updateLinkedAccount(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not link Sense to account", error);
@@ -112,7 +112,7 @@ implements BasePairSensePresenter.Output{
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
 
-        bindAndSubscribe(hardwarePresenter.pushData(),
+        bindAndSubscribe(hardwareInteractor.pushData(),
                          ignored -> getDeviceFeatures(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
@@ -123,7 +123,7 @@ implements BasePairSensePresenter.Output{
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
 
-        bindAndSubscribe(userFeaturesPresenter.storeFeaturesInPrefs(),
+        bindAndSubscribe(userFeaturesInteractor.storeFeaturesInPrefs(),
                          ignored -> onFinished(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
@@ -195,12 +195,12 @@ implements BasePairSensePresenter.Output{
     private void performRecoveryFactoryReset() {
         showBlockingActivity(R.string.dialog_loading_message);
 
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
+        if (!hardwareInteractor.hasPeripheral()) {
+            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> performRecoveryFactoryReset(),
                              this::presentFactoryResetError);
-        } else if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(),
+        } else if (!hardwareInteractor.isConnected()) {
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              state -> {
                                  if (state != ConnectProgress.CONNECTED) {
                                      return;
@@ -209,7 +209,7 @@ implements BasePairSensePresenter.Output{
                              },
                              this::presentFactoryResetError);
         } else {
-            showHardwareActivity(() -> bindAndSubscribe(hardwarePresenter.unsafeFactoryReset(),
+            showHardwareActivity(() -> bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
                                                         ignored -> hideBlockingActivity(true, () -> {
                                                             Analytics.setSenseId("unpaired");
 
@@ -217,7 +217,7 @@ implements BasePairSensePresenter.Output{
                                                                                                                                              R.string.message_power_cycle_sense_factory_reset);
                                                             powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
-                                                            userFeaturesPresenter.reset();
+                                                            userFeaturesInteractor.reset();
                                                             getOnboardingActivity().showSetupSense(); //todo return a flow result. Requires activity changes
                                                         }),
                                                         this::presentFactoryResetError), this::presentFactoryResetError);

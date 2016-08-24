@@ -19,7 +19,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -214,7 +213,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     private void showUpdatePairPillFragment() {
-        pushFragment(PairPillFragment.newInstance(new UpdatePairPillPresenter()), null, false);
+        pushFragment(new PairPillFragment(), null, false);
     }
 
     private void showUpdatePairPillConfirmationFragment() {

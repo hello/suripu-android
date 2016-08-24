@@ -23,9 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -37,9 +35,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
-import is.hello.sense.functional.Lists;
-import is.hello.sense.interactors.RoomConditionsInteractor;
-import is.hello.sense.ui.fragments.ScopedInjectionFragment;
+import is.hello.sense.presenters.RoomCheckPresenter;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -49,16 +46,15 @@ import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
-import rx.Scheduler;
 
 import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
-    private static final long CONDITION_VISIBLE_MS = 2500;
+public class OnboardingRoomCheckFragment extends BasePresenterFragment
+implements RoomCheckPresenter.Output{
 
     @Inject
-    RoomConditionsInteractor presenter;
+    RoomCheckPresenter presenter;
     @Inject UnitFormatter unitFormatter;
 
     private ImageView sense;
@@ -66,13 +62,9 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
     private LinearLayout dynamicContent;
     private TextView status;
     private SensorTickerView scoreTicker;
-
+    //todo refactor
     private int startColor;
     private boolean animationCompleted = false;
-
-    private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
-
-    private final List<SensorState> sensors = new ArrayList<>();
 
     private Resources resources;
     private Drawable graySense;
@@ -80,23 +72,25 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
     private @Nullable ValueAnimator scoreAnimator;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.animationCompleted = (savedInstanceState != null);
 
         this.resources = getResources();
         this.graySense = ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_grey, null);
-        this.startColor = resources.getColor(Condition.ALERT.colorRes);
+        this.startColor = ContextCompat.getColor(getActivity(),Condition.ALERT.colorRes);
 
-        addPresenter(presenter);
+        addScopedPresenter(presenter);
 
         setRetainInstance(true);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
@@ -105,7 +99,7 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
         this.dynamicContent = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_content);
         this.status = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_status);
 
-        AnimatorContext animatorContext = getAnimatorContext();
+        final AnimatorContext animatorContext = getAnimatorContext();
         this.scoreTicker = (SensorTickerView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_ticker);
         scoreTicker.setAnimatorContext(animatorContext);
 
@@ -117,11 +111,9 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (animationCompleted) {
-            jumpToEnd(false);
+            presenter.jumpToEnd(false);
         } else {
-            bindAndSubscribe(presenter.latest(),
-                             this::bindConditions,
-                             this::conditionsUnavailable);
+            presenter.bindAndSubscribeInteractorLatest();
         }
     }
 
@@ -129,7 +121,7 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
     public void onPause() {
         super.onPause();
 
-        jumpToEnd(false);
+        presenter.jumpToEnd(false);
     }
 
     @Override
@@ -141,18 +133,14 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
 
 
     //region Scene Animation
-
-    private void showConditionAt(int position) {
-        if (position >= sensors.size()) {
-            jumpToEnd(true);
-            return;
-        }
-
+    @Override
+    public void showConditionAt(final int position,
+                                final SensorState currentPositionSensor) {
         animateSenseToGray();
 
-        final SensorState sensor = sensors.get(position);
+
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
-        final String sensorName = sensor.getName();
+        final String sensorName = currentPositionSensor.getName();
 
         status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_SectionHeading_Large);
         status.setText(getStatusStringForSensor(sensorName));
@@ -160,9 +148,9 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
         this.animatingSensorView = sensorView;
         sensorView.fadeInProgressIndicator(() -> {
             int convertedValue = 0;
-            if (sensor.getValue() != null) {
+            if (currentPositionSensor.getValue() != null) {
                 UnitConverter converter = unitFormatter.getUnitConverterForSensor(sensorName);
-                convertedValue = (int) converter.convert(sensor.getValue().longValue());
+                convertedValue = (int) converter.convert(currentPositionSensor.getValue().longValue());
             }
             final String unitSuffix = unitFormatter.getUnitSuffixForSensor(sensorName);
             final long duration = scoreTicker.animateToValue(convertedValue, unitSuffix, finishedTicker -> {
@@ -181,13 +169,11 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
                             status.setText(null);
                             status.setTransformationMethod(null);
                             Drawing.setLetterSpacing(status, 0f);
-                            status.setText(sensor.getMessage());
+                            status.setText(currentPositionSensor.getMessage());
 
-                            animateSenseCondition(sensor.getCondition(), false);
+                            animateSenseCondition(currentPositionSensor.getCondition(), false);
                             sensorView.transitionToIcon(getFinalIconForSensor(sensorName), () -> {
-                                deferWorker.schedule(() -> showConditionAt(position + 1),
-                                                     CONDITION_VISIBLE_MS,
-                                                     TimeUnit.MILLISECONDS);
+                                presenter.showConditionAt(position + 1);
                             });
 
                             animatorFor(status, getAnimatorContext())
@@ -197,8 +183,7 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
                         .start();
             });
 
-
-            final int endColor = resources.getColor(sensor.getCondition().colorRes);
+            final int endColor = ContextCompat.getColor(getActivity(), currentPositionSensor.getCondition().colorRes);
             this.scoreAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
             scoreAnimator.setDuration(duration);
             scoreAnimator.addUpdateListener(a -> {
@@ -222,30 +207,29 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
         });
     }
 
-    private void jumpToEnd(boolean animate) {
+    @Override
+    public void updateSensorView(final List<SensorState> sensors) {
+        for (int i = 0; i < sensors.size(); i++) {
+            final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
+            final SensorState sensor = sensors.get(i);
+            sensorView.clearAnimation();
+            sensorView.setTint(ContextCompat.getColor(getActivity(), sensor.getCondition().colorRes));
+            sensorView.setIcon(getFinalIconForSensor(sensor.getName()));
+        }
+    }
+
+    @Override
+    public void jumpToEnd(final boolean animate) {
         this.animationCompleted = true;
-        deferWorker.unsubscribe();
         stopAnimations();
 
-        stateSafeExecutor.execute(() -> {
-            final int conditionCount = sensors.size();
-            if (conditionCount > 0) {
-                final int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
-                final int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
-                final int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
-                final Condition averageCondition = Condition.values()[conditionOrdinal];
+        presenter.execute(() -> {
+            final Condition averageCondition = presenter.calculateAverageCondition();
+            if(averageCondition != null) {
                 if (animate) {
                     animateSenseCondition(averageCondition, true);
                 } else {
                     sense.setImageDrawable(getConditionDrawable(averageCondition));
-                }
-
-                for (int i = 0; i < conditionCount; i++) {
-                    final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
-                    final SensorState sensor = sensors.get(i);
-                    sensorView.clearAnimation();
-                    sensorView.setTint(ContextCompat.getColor(getActivity(), sensor.getCondition().colorRes));
-                    sensorView.setIcon(getFinalIconForSensor(sensor.getName()));
                 }
             }
 
@@ -418,17 +402,15 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
         }
     }
 
-    public void bindConditions(@NonNull final RoomConditionsInteractor.Result current) {
-        sensors.clear();
-        sensors.addAll(current.conditions.toList());
-
+    @Override
+    public void bindConditions(@NonNull final List<SensorState> sensors) {
         sensorViewContainer.removeAllViews();
 
         final Context context = getActivity();
         final Resources resources = getResources();
         final LinearLayout.LayoutParams layoutParams
                 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
-        for (SensorState sensor : sensors) {
+        for (final SensorState sensor : sensors) {
             final SensorConditionView conditionView = new SensorConditionView(context);
             final int iconForSensor = getInitialIconForSensor(sensor.getName());
             final Drawable iconDrawable = ResourcesCompat.getDrawable(resources, iconForSensor, null);
@@ -437,16 +419,15 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
             sensorViewContainer.addView(conditionView, layoutParams);
         }
 
-
-        showConditionAt(0);
+        presenter.showConditionAt(0);
     }
 
-    public void conditionsUnavailable(Throwable e) {
+    @Override
+    public void unavailableConditions(Throwable e) {
         Analytics.trackError(e, "Room check");
         Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
         sensorViewContainer.removeAllViews();
-        sensors.clear();
 
         jumpToEnd(true);
     }
@@ -456,5 +437,10 @@ public class OnboardingRoomCheckFragment extends ScopedInjectionFragment {
 
     public void continueOnboarding(@NonNull final View sender) {
         getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
+    }
+
+    @Override
+    public void showBlockingActivity(@StringRes int titleRes) {
+
     }
 }

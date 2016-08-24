@@ -3,19 +3,15 @@ package is.hello.sense.presenters;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.presenters.outputs.BaseHardwareOutput;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 
 public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePairPillPresenter.Output> {
-    protected LoadingDialogFragment loadingDialogFragment;
-
 
     public abstract void trackOnCreate();
 
@@ -41,7 +37,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
         confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
-            completeHardwareActivity(() -> viewOutput.finishedPairing(false));
+            completeHardwareActivity(() -> view.finishedPairing(false));
         });
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -50,38 +46,38 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     @Override
     public boolean isResumed() {
-        return viewOutput != null && viewOutput.isResumed();
+        return view != null && view.isResumed();
     }
 
     public void pairPill() {
-        viewOutput.showPillPairing();
+        view.showPillPairing();
         if (!hardwareInteractor.hasPeripheral()) {
-            viewOutput.showBlockingActivity(R.string.title_scanning_for_sense);
-            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(), ignored -> pairPill(), viewOutput::presentError);
+            view.showBlockingActivity(R.string.title_scanning_for_sense);
+            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(), ignored -> pairPill(), view::presentError);
             return;
         }
 
         if (!hardwareInteractor.isConnected()) {
-            viewOutput.showBlockingActivity(R.string.title_scanning_for_sense);
+            view.showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwareInteractor.connectToPeripheral(), status -> {
                 if (status == ConnectProgress.CONNECTED) {
                     pairPill();
                 } else {
-                    viewOutput.showBlockingActivity(Styles.getConnectStatusMessage(status));
+                    view.showBlockingActivity(Styles.getConnectStatusMessage(status));
                 }
-            }, viewOutput::presentError);
+            }, view::presentError);
             return;
         }
 
-        viewOutput.showBlockingActivity(R.string.title_waiting_for_sense);
+        view.showBlockingActivity(R.string.title_waiting_for_sense);
         showHardwareActivity(() -> {
-            viewOutput.animateDiagram(true);
-            viewOutput.hideBlockingActivity(false, () -> {
+            view.animateDiagram(true);
+            view.hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwareInteractor.linkPill(),
-                                 ignored -> completeHardwareActivity(() -> viewOutput.finishedPairing(true)),
-                                 viewOutput::presentError);
+                                 ignored -> completeHardwareActivity(() -> view.finishedPairing(true)),
+                                 view::presentError);
             });
-        }, viewOutput::presentError);
+        }, view::presentError);
 
     }
 
