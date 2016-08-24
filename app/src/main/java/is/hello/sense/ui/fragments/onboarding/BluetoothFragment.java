@@ -58,7 +58,7 @@ public class BluetoothFragment extends BaseHardwareFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(hardwarePresenter.bluetoothEnabled.filter(Functions.IS_TRUE),
+        bindAndSubscribe(hardwareInteractor.bluetoothEnabled.filter(Functions.IS_TRUE),
                          ignored -> done(),
                          Functions.LOG_ERROR);
     }
@@ -90,7 +90,7 @@ public class BluetoothFragment extends BaseHardwareFragment {
 
     public void turnOn(@NonNull final View sender) {
         showBlockingActivity(R.string.title_turning_on);
-        bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {
+        bindAndSubscribe(hardwareInteractor.turnOnBluetooth(), ignored -> {
         }, this::presentError);
     }
 

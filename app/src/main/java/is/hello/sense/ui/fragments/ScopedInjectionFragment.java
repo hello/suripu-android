@@ -22,11 +22,6 @@ implements BaseOutput{
     private final ScopedPresenterContainer scopedPresenterContainer = new ScopedPresenterContainer();
 
     @Override
-    protected boolean shouldInjectToMainGraphObject() {
-        return false;
-    }
-
-    @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
         try{
@@ -34,7 +29,6 @@ implements BaseOutput{
         } catch (final ClassCastException e){
             throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
-
     }
 
     @Override
@@ -48,12 +42,24 @@ implements BaseOutput{
 
     }
 
-
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         scopedPresenterContainer.onCreate(this);
+    }
+
+    @Override
+    public void onActivityCreated(final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null){
+            scopedPresenterContainer.onRestoreState(savedInstanceState);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        scopedPresenterContainer.onSaveState(outState);
     }
 
     @Override
@@ -68,6 +74,12 @@ implements BaseOutput{
         // Any other call to this method is due to configuration change or low memory.
         // We want to release the presenter only when the fragment is truly done.
         scopedPresenterContainer.onDestroy();
+    }
+
+    @Override
+    public void onTrimMemory(final int level) {
+        super.onTrimMemory(level);
+        scopedPresenterContainer.onTrimMemory(level);
     }
 
     protected void addScopedPresenter(final ScopedPresenter presenter) {
@@ -114,12 +126,19 @@ implements BaseOutput{
                 if (savedState != null) {
                     outState.putParcelable(presenter.getSavedStateKey(), savedState);
                 }
+                presenter.onSaveInteractorState(outState);
             }
         }
 
         public void onCreate(final BaseOutput view) {
             for(final ScopedPresenter p : presenters){
                 p.setView(view);
+            }
+        }
+
+        public void onTrimMemory(final int level) {
+            for(final ScopedPresenter p : presenters){
+                p.onTrimMemory(level);
             }
         }
     }

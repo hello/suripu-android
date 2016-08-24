@@ -13,7 +13,7 @@ import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-public abstract class BasePairSensePresenter extends BasePresenter<BasePairSensePresenter.Output> {
+public abstract class BasePairSensePresenter extends ScopedPresenter<BasePairSensePresenter.Output> {
 
 
     protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";

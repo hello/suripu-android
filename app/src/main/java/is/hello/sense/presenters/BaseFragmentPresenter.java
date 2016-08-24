@@ -2,25 +2,22 @@ package is.hello.sense.presenters;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.presenters.outputs.BaseOutput;
+import is.hello.sense.ui.common.StateSaveable;
 
-public  abstract class BaseFragmentPresenter<T extends BaseOutput> extends BasePresenter<T> {
+public abstract class BaseFragmentPresenter<T extends BaseOutput> extends BasePresenter<T>
+        implements StateSaveable {
     protected final InteractorContainer interactorContainer = new InteractorContainer();
 
     public BaseFragmentPresenter(){
-        //todo erase after Simon updates
-        SenseApplication.getInstance().inject(this);
+
     }
 
-    public void restoreState(@Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            return;
-        }
+    @Override
+    public void onRestoreState(@NonNull final Bundle savedInstanceState) {
         interactorContainer.onRestoreState(savedInstanceState);
     }
 
@@ -29,7 +26,7 @@ public  abstract class BaseFragmentPresenter<T extends BaseOutput> extends BaseP
         interactorContainer.onContainerResumed();
     }
 
-    public void onSaveState(@NonNull final Bundle outState) {
+    public void onSaveInteractorState(@NonNull final Bundle outState) {
         interactorContainer.onSaveState(outState);
     }
 
