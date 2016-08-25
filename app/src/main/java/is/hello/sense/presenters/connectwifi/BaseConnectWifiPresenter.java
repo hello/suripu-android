@@ -237,7 +237,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     }
 
 
-    public interface Output extends BasePairSensePresenter.Output {
+    public interface Output extends BasePairSensePresenter.Output{
 
         void setNetworkPassword(int visibility,
                                 boolean requestFocus,
