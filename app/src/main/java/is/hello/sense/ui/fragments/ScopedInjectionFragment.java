@@ -21,11 +21,18 @@ implements BaseOutput{
 
     private final ScopedPresenterContainer scopedPresenterContainer = new ScopedPresenterContainer();
 
+    /**
+     * Will be called after injection of this fragment is made to the scoped object graph
+     * which occurs after onAttach and before {@link this#onCreate(Bundle)}
+     */
+    public abstract void onInjected();
+
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
         try{
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
+            onInjected();
         } catch (final ClassCastException e){
             throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
@@ -36,16 +43,26 @@ implements BaseOutput{
         super.onAttach(activity);
         try{
             ((ScopedInjectionActivity) activity).injectToScopedGraph(this);
+            onInjected();
         } catch (final ClassCastException e){
             throw new ClassCastException(activity.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
 
     }
 
+    /**
+     * Releases references to presenters in container
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        scopedPresenterContainer.clear();
+    }
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        scopedPresenterContainer.onCreate(this);
+        scopedPresenterContainer.setView(this);
     }
 
     @Override
@@ -72,7 +89,6 @@ implements BaseOutput{
     public void onDestroy() {
         super.onDestroy();
         // Any other call to this method is due to configuration change or low memory.
-        // We want to release the presenter only when the fragment is truly done.
         scopedPresenterContainer.onDestroy();
     }
 
@@ -86,7 +102,6 @@ implements BaseOutput{
         scopedPresenterContainer.add(presenter);
     }
 
-    //todo if it is only possible to inject one presenter at a time this can be removed
     public static class ScopedPresenterContainer {
         final List<BasePresenter> presenters = new ArrayList<>();
 
@@ -100,7 +115,6 @@ implements BaseOutput{
             for(final BasePresenter p : presenters){
                 p.onDestroy();
             }
-            presenters.clear();
         }
 
         public void add(final BasePresenter presenter) {
@@ -130,7 +144,7 @@ implements BaseOutput{
             }
         }
 
-        public void onCreate(final BaseOutput view) {
+        public void setView(final BaseOutput view) {
             for(final BasePresenter p : presenters){
                 p.setView(view);
             }
@@ -140,6 +154,10 @@ implements BaseOutput{
             for(final BasePresenter p : presenters){
                 p.onTrimMemory(level);
             }
+        }
+
+        public void clear() {
+            presenters.clear();
         }
     }
 }

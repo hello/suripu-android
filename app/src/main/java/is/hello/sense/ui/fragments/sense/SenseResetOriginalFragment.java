@@ -26,6 +26,11 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     private OnboardingSimpleStepView view;
 
     @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addScopedPresenter(presenter);

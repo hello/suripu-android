@@ -72,6 +72,11 @@ implements RoomCheckPresenter.Output{
     private @Nullable ValueAnimator scoreAnimator;
 
     @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -80,8 +85,6 @@ implements RoomCheckPresenter.Output{
         this.resources = getResources();
         this.graySense = ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_grey, null);
         this.startColor = ContextCompat.getColor(getActivity(),Condition.ALERT.colorRes);
-
-        addScopedPresenter(presenter);
 
         setRetainInstance(true);
     }
@@ -237,14 +240,14 @@ implements RoomCheckPresenter.Output{
         });
     }
 
-    private void showCompletion(boolean animate) {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        OnAnimationCompleted atEnd = finishedTransitionIn -> {
+    private void showCompletion(final boolean animate) {
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final OnAnimationCompleted atEnd = finishedTransitionIn -> {
             if (!finishedTransitionIn) {
                 return;
             }
 
-            Button continueButton = (Button) dynamicContent.findViewById(R.id.sub_fragment_room_check_end_continue);
+            final Button continueButton = (Button) dynamicContent.findViewById(R.id.sub_fragment_room_check_end_continue);
             Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
         };
         if (animate) {
@@ -297,7 +300,7 @@ implements RoomCheckPresenter.Output{
         }
     }
 
-    private Drawable getConditionDrawable(@NonNull Condition condition) {
+    private Drawable getConditionDrawable(@NonNull final Condition condition) {
         switch (condition) {
             case ALERT: {
                 return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_red, null);
@@ -333,7 +336,7 @@ implements RoomCheckPresenter.Output{
 
     //region Binding
 
-    private @StringRes int getStatusStringForSensor(@NonNull String sensorName) {
+    private @StringRes int getStatusStringForSensor(@NonNull final String sensorName) {
         switch (sensorName) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
                 return R.string.checking_condition_temperature;
@@ -356,7 +359,7 @@ implements RoomCheckPresenter.Output{
         }
     }
 
-    private @DrawableRes int getInitialIconForSensor(@NonNull String sensorName) {
+    private @DrawableRes int getInitialIconForSensor(@NonNull final String sensorName) {
         switch (sensorName) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
                 return R.drawable.room_check_sensor_temperature;
@@ -379,7 +382,7 @@ implements RoomCheckPresenter.Output{
         }
     }
 
-    private @DrawableRes int getFinalIconForSensor(@NonNull String sensorName) {
+    private @DrawableRes int getFinalIconForSensor(@NonNull final String sensorName) {
         switch (sensorName) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
                 return R.drawable.room_check_sensor_filled_temperature;
@@ -423,7 +426,7 @@ implements RoomCheckPresenter.Output{
     }
 
     @Override
-    public void unavailableConditions(Throwable e) {
+    public void unavailableConditions(final Throwable e) {
         Analytics.trackError(e, "Room check");
         Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
 
