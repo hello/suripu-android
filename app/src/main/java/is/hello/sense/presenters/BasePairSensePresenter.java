@@ -43,7 +43,7 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
     protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
     private boolean linkedAccount = false;
 
-    private ApiService apiService;
+    private final ApiService apiService;
 
     public BasePairSensePresenter(final HardwareInteractor hardwareInteractor,
                                   final UserFeaturesInteractor userFeaturesInteractor,
@@ -100,7 +100,16 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         Analytics.trackEvent(getOnFinishAnalyticsEvent(), null);
     }
 
-    public void onPairSuccess(){
+    public void checkLinkedAccount() {
+        if(linkedAccount){
+            finishUpOperations();
+        } else {
+            showBlockingActivity(R.string.title_linking_account);
+            requestLinkAccount();
+        }
+    }
+
+    protected void onPairSuccess(){
         if(shouldClearPeripheral()){
             hardwareInteractor.clearPeripheral();
         }
@@ -111,21 +120,12 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         }
     }
 
-    public void checkLinkedAccount() {
-        if(linkedAccount){
-            finishUpOperations();
-        } else {
-            showBlockingActivity(R.string.title_linking_account);
-            requestLinkAccount();
-        }
-    }
-
-    public void updateLinkedAccount() {
+    protected void updateLinkedAccount() {
         this.linkedAccount = true;
         finishUpOperations();
     }
 
-    public boolean hasPeripheralPair() {
+    protected boolean hasPeripheralPair() {
         Analytics.setSenseId(hardwareInteractor.getDeviceId());
         if (hardwareInteractor.getBondStatus() == GattPeripheral.BOND_BONDED) {
             showBlockingActivity(R.string.title_clearing_bond);
@@ -136,7 +136,7 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         }
     }
 
-    public boolean hasConnectivity(final ConnectProgress status) {
+    protected boolean hasConnectivity(final ConnectProgress status) {
             if (status == ConnectProgress.CONNECTED) {
                 showBlockingActivity(R.string.title_checking_connectivity);
                 return true;
@@ -146,7 +146,7 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
             }
     }
 
-    public void requestLinkAccount() {
+    protected void requestLinkAccount() {
         bindAndSubscribe(hardwareInteractor.linkAccount(),
                          ignored -> updateLinkedAccount(),
                          error -> {
@@ -280,7 +280,7 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
                                   });
     }
 
-    private void presentError(final Throwable e, final String operation) {
+    protected void presentError(final Throwable e, final String operation) {
         hideAllActivityForFailure(() -> {
             if (OPERATION_LINK_ACCOUNT.equals(operation)) {
                 this.linkAccountFailures++;
