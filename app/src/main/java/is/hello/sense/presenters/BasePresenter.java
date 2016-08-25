@@ -53,6 +53,9 @@ public abstract class BasePresenter<T extends BaseOutput>
         interactorContainer.onContainerDestroyed();
     }
 
+    /**
+     * Intended to be used when {@link Interactor} values want to be released
+     */
     public abstract void onDestroy();
     //endregion
 

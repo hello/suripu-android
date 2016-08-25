@@ -30,8 +30,7 @@ implements BasePairSensePresenter.Output{
     protected BasePairSensePresenter presenter;
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onInjected() {
         addScopedPresenter(presenter);
     }
 
