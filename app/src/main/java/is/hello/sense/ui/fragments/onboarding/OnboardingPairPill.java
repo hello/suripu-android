@@ -20,16 +20,19 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+
 @Deprecated //todo remember to remove layout file and our resources when deleting this file
 public class OnboardingPairPill extends BaseHardwareFragment {
     private ProgressBar activityIndicator;
@@ -147,9 +150,9 @@ public class OnboardingPairPill extends BaseHardwareFragment {
     public void skipPairingPill() {
         final Properties properties =
                 Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "pill_pairing");
-        if (isPairOnlySession()){
+        if (isPairOnlySession()) {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP_IN_APP, properties);
-        }else {
+        } else {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, properties);
         }
 
@@ -232,5 +235,9 @@ public class OnboardingPairPill extends BaseHardwareFragment {
             final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         });
+    }
+
+    public OnboardingActivity getOnboardingActivity() {
+        return (OnboardingActivity) getActivity();
     }
 }
