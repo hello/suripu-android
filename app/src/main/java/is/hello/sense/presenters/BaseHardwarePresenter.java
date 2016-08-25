@@ -95,7 +95,7 @@ public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput>
                              e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
-    protected void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
+    public void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
         final Runnable next = () -> hideBlockingActivity(false, onCompletion);
         hideHardwareActivity(next, ignored -> next.run());
     }
