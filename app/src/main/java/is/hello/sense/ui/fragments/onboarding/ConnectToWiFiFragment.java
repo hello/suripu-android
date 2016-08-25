@@ -69,6 +69,12 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
     //region Lifecycle
 
+
+    @Override
+    public void onInjected() {
+        addScopedPresenter(wifiPresenter);
+    }
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +85,6 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         if (savedInstanceState != null) {
             this.hasSentAccessToken = savedInstanceState.getBoolean(HAS_SENT_ACCESS_TOKEN_KEY, false);
         }
-        addScopedPresenter(wifiPresenter);
         sendOnCreateAnalytics();
 
         setRetainInstance(true);

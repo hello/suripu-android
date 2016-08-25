@@ -66,16 +66,19 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
     }
 
     @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addScopedPresenter(presenter);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
 
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), null);
-
 
         setRetainInstance(true);
     }

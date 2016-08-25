@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.pill;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -41,8 +40,7 @@ public class PairPillFragment extends BasePresenterFragment
     protected boolean isPairing = false;
 
     @Override
-    public void onAttach(final Activity activity) {
-        super.onAttach(activity);
+    public void onInjected() {
         addScopedPresenter(presenter);
     }
 
