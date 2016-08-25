@@ -34,6 +34,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.onboarding.OnboardingModule;
+import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -47,6 +48,7 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
@@ -142,10 +144,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if(BuildConfig.DEBUG && getIntent().hasExtra(EXTRA_DEBUG_CHECKPOINT)){
+        if (BuildConfig.DEBUG && getIntent().hasExtra(EXTRA_DEBUG_CHECKPOINT)) {
             final int debugCheckpoint = getIntent()
-                    .getIntExtra(EXTRA_DEBUG_CHECKPOINT,Constants.DEBUG_CHECKPOINT_NONE);
-            switch(debugCheckpoint){
+                    .getIntExtra(EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_NONE);
+            switch (debugCheckpoint) {
                 case Constants.DEBUG_CHECKPOINT_SENSE_UPDATE:
                     showSenseUpdateIntro();
                     break;
@@ -297,34 +299,34 @@ public class OnboardingActivity extends ScopedInjectionActivity
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof BluetoothFragment) {
-            if(responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE){
+            if (responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE) {
                 showSetupSense();
-            } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
+            } else if (responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY) {
                 showBirthday(null, true);
             }
-        } else if(fragment instanceof PairSenseFragment){
-            if(responseCode == PairSenseFragment.REQUEST_CODE_EDIT_WIFI){
+        } else if (fragment instanceof PairSenseFragment) {
+            if (responseCode == BasePairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
             } else {
                 showPairPill(true);
             }
-        }else if (fragment instanceof OnboardingRoomCheckFragment ||
+        } else if (fragment instanceof OnboardingRoomCheckFragment ||
                 fragment instanceof OnboardingSenseColorsFragment) {
             checkSenseUpdateStatus();
             showSmartAlarmInfo();
-        } else if (fragment instanceof OnboardingSmartAlarmFragment){
+        } else if (fragment instanceof OnboardingSmartAlarmFragment) {
             passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
             checkForSenseUpdate();
-        } else if ( fragment instanceof SenseOTAIntroFragment){
+        } else if (fragment instanceof SenseOTAIntroFragment) {
             showSenseUpdating();
         } else if (fragment instanceof SenseOTAFragment) {
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
             showVoiceDone();
         } else if (fragment instanceof OnboardingCompleteFragment ||
-                fragment instanceof VoiceCompleteFragment){
+                fragment instanceof VoiceCompleteFragment) {
             showHomeActivity(OnboardingActivity.FLOW_REGISTER);
-        }else if (fragment instanceof OnboardingUnsupportedDeviceFragment){
+        } else if (fragment instanceof OnboardingUnsupportedDeviceFragment) {
             showGetStarted(true);
         }
     }
@@ -520,10 +522,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             }
-        // todo replace here    builder.setNextFragmentClass(OnboardingPairPillFragment.class);
+            builder.setNextFragmentClass(OnboardingPairPill.class);
             pushFragment(builder.toFragment(), null, false);
         } else {
-         // todo replace here   pushFragment(new OnboardingPairPillFragment(), null, false);
+            pushFragment(new OnboardingPairPill(), null, false);
         }
     }
 
@@ -569,36 +571,36 @@ public class OnboardingActivity extends ScopedInjectionActivity
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
-    public void showSetAlarmDetail(){
+    public void showSetAlarmDetail() {
         pushFragment(new Fragment(), null, false);
         final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
     }
 
-    public void checkSenseUpdateStatus(){
+    public void checkSenseUpdateStatus() {
         subscribe(senseOTAStatusPresenter.storeInPrefs(),
                   Functions.NO_OP,
                   Functions.LOG_ERROR);
     }
 
     public void checkForSenseUpdate() {
-        if(senseOTAStatusPresenter.isOTARequired()){
+        if (senseOTAStatusPresenter.isOTARequired()) {
             showSenseUpdateIntro();
-        } else{
+        } else {
             checkHasVoiceFeature();
         }
     }
 
-    public void showSenseUpdateIntro(){
+    public void showSenseUpdateIntro() {
         pushFragment(SenseOTAIntroFragment.newInstance(), null, false);
     }
 
-    public void showSenseUpdating(){
+    public void showSenseUpdating() {
         pushFragment(SenseOTAFragment.newInstance(), null, false);
     }
 
     private void checkHasVoiceFeature() {
-        if(userFeaturesPresenter.hasVoice()){
+        if (userFeaturesPresenter.hasVoice()) {
             showSenseVoice();
         } else {
             showDone();
