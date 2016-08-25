@@ -92,11 +92,6 @@ public class PairPillFragment extends BaseHardwarePresenterFragment
         this.retryButton = null;
     }
 
-    @Override
-    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        return super.onInterceptBackPressed(defaultBehavior);
-    }
-
     protected void initialize(@NonNull final View view) {
         OnboardingToolbar.of(this, view)
                          .setWantsBackButton(presenter.wantsBackButton())
