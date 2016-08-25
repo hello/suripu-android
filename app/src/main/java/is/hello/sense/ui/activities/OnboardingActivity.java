@@ -34,7 +34,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.onboarding.OnboardingModule;
-import is.hello.sense.presenters.BasePairSensePresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -305,7 +305,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
                 showBirthday(null, true);
             }
         } else if (fragment instanceof PairSenseFragment) {
-            if (responseCode == BasePairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
+            if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
             } else {
                 showPairPill(true);

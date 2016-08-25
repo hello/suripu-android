@@ -34,7 +34,8 @@ public abstract class BasePresenter<T extends BaseOutput>
         StateSaveable
 {
 
-    protected static final Func1<BasePresenter, Boolean> VALIDATOR = BasePresenter::isResumed; //todo add more
+    protected static final Func1<BasePresenter, Boolean> VALIDATOR = BasePresenter::canObservableEmit; //todo add more
+
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
     protected final DelegateObservableContainer<BasePresenter> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, VALIDATOR);
@@ -50,6 +51,7 @@ public abstract class BasePresenter<T extends BaseOutput>
 
     public void onDestroyView(){
         this.view = null;
+        observableContainer.clearSubscriptions();
         interactorContainer.onContainerDestroyed();
     }
 
@@ -137,9 +139,13 @@ public abstract class BasePresenter<T extends BaseOutput>
     //region StateSafeExecutor.Resumes
     @Override
     public boolean isResumed() {
-        return view != null && view.isResumed();
+        return view != null && view.canObservableEmit();
     }
     //endregion
+
+    private Boolean canObservableEmit(){
+        return view != null && view.canObservableEmit();
+    }
 
     //region Interactor Container
 

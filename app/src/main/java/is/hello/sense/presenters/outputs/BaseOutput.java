@@ -8,6 +8,8 @@ import is.hello.sense.util.StateSafeExecutor;
 public interface BaseOutput extends StateSafeExecutor.Resumes {
     boolean isResumed();
 
+    boolean canObservableEmit();
+
     void showBlockingActivity(@StringRes final int titleRes);
 
     void hideBlockingActivity(final boolean success, @NonNull final Runnable onComplete);

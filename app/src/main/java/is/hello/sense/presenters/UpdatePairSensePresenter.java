@@ -6,7 +6,7 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
-public class UpdatePairSensePresenter extends BasePairSensePresenter {
+public class UpdatePairSensePresenter extends PairSensePresenter {
 
     public UpdatePairSensePresenter(final HardwareInteractor hardwareInteractor,
                                     final UserFeaturesInteractor userFeaturesInteractor,

@@ -52,6 +52,10 @@ public class WifiNetworkAdapter extends ArrayAdapter<wifi_endpoint> {
         return view;
     }
 
+    public boolean isEmpty(){
+        return getCount() == 0;
+    }
+
 
     public static class ViewHolder {
         public final ImageView strength;

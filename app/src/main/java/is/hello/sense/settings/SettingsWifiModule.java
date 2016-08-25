@@ -23,9 +23,8 @@ public class SettingsWifiModule {
     @Provides
     @Singleton
     SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(
-            final HardwareInteractor hardwareInteractor,
-            final UserFeaturesInteractor userFeaturesInteractor){
-        return new SelectWifiNetworkPresenter.Settings(hardwareInteractor, userFeaturesInteractor);
+            final HardwareInteractor hardwareInteractor){
+        return new SelectWifiNetworkPresenter.Settings(hardwareInteractor);
     }
 
     @Provides
@@ -33,6 +32,6 @@ public class SettingsWifiModule {
     ConnectWifiPresenter providesSettingsConnectWifiPresenter(
             final HardwareInteractor hardwareInteractor,
             final UserFeaturesInteractor userFeaturesInteractor){
-        return new ConnectWifiPresenter.Settings(hardwareInteractor, userFeaturesInteractor);
+        return new ConnectWifiPresenter.Settings(hardwareInteractor);
     }
 }
