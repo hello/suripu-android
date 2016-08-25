@@ -20,7 +20,6 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
-import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.SelectWifiNetworkPresenter;
@@ -109,7 +108,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
         rescanButton.setEnabled(false);
         Views.setSafeOnClickListener(rescanButton, ignored -> {
             sendOnRescanAnalytics();
-            rescan(true);
+            presenter.rescan(true);
         });
 
         if (getActivity().getActionBar() != null) {
@@ -135,16 +134,9 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
 
         if (networkAdapter.getCount() == 0) {
             sendOnScanAnalytics();
-            rescan(false);
+            presenter.rescan(false);
         } else {
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
+            showRescanOption();
         }
     }
 
@@ -193,6 +185,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
                             final View view,
                             final int position,
                             final long id) {
+        //todo cleanup manual routing here
         final wifi_endpoint network = (wifi_endpoint) adapterView.getItemAtPosition(position);
         final ConnectToWiFiFragment nextFragment = new ConnectToWiFiFragment();
         final Bundle arguments = new Bundle();
@@ -202,16 +195,8 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
     }
 
-    public void sendOnScanAnalytics(){
-        Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
-    }
-
-    private void sendOnRescanAnalytics() {
-        Analytics.trackEvent(presenter.getOnRescanAnalyticsEvent(), null);
-    }
-
-
-    public void rescan(final boolean sendCountryCode) {
+    @Override
+    public void showScanning() {
         scanningIndicatorLabel.setVisibility(View.VISIBLE);
         scanningIndicator.setVisibility(View.VISIBLE);
         if (subheading.getVisibility() != View.GONE) {
@@ -221,86 +206,41 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
         rescanButton.setVisibility(View.INVISIBLE);
         rescanButton.setEnabled(false);
         networkAdapter.clear();
-
-        if (!hardwareInteractor.hasPeripheral()) {
-            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
-                             ignored -> rescan(sendCountryCode),
-                             this::peripheralRediscoveryFailed);
-            return;
-        }
-
-        if (!hardwareInteractor.isConnected()) {
-            bindAndSubscribe(hardwareInteractor.connectToPeripheral(), status -> {
-                if (status != ConnectProgress.CONNECTED) {
-                    return;
-                }
-
-                rescan(sendCountryCode);
-            }, this::peripheralRediscoveryFailed);
-
-            return;
-        }
-
-        showHardwareActivity(() -> {
-            bindAndSubscribe(hardwareInteractor.scanForWifiNetworks(sendCountryCode),
-                             this::bindScanResults,
-                             this::scanResultsUnavailable);
-        }, this::scanResultsUnavailable);
     }
 
+    @Override
+    public void showRescanOption() {
+        scanningIndicatorLabel.setVisibility(View.GONE);
+        scanningIndicator.setVisibility(View.GONE);
+        if (subheading.getVisibility() != View.GONE) {
+            subheading.setVisibility(View.VISIBLE);
+        }
+        listView.setVisibility(View.VISIBLE);
+        rescanButton.setVisibility(View.VISIBLE);
+        rescanButton.setEnabled(true);
+    }
+
+    @Override
     public void bindScanResults(@NonNull final Collection<wifi_endpoint> scanResults) {
-        hideHardwareActivity(() -> {
-            networkAdapter.clear();
-            networkAdapter.addAll(scanResults);
-
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
-        }, null);
+        networkAdapter.clear();
+        networkAdapter.addAll(scanResults);
     }
 
-    public void scanResultsUnavailable(final Throwable e) {
-        hideHardwareActivity(() -> {
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
+    @Override
+    public void presentErrorDialog(final Throwable e, final String operation){
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
+                .withOperation(operation)
+                .withSupportLink();
 
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation("Scan for networks")
-                    .withSupportLink();
-
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        }, null);
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void peripheralRediscoveryFailed(final Throwable e) {
-        presenter.execute(() -> {
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
+    public void sendOnScanAnalytics(){
+        Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
+    }
 
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation("Scan for networks")
-                    .withSupportLink();
-
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+    private void sendOnRescanAnalytics() {
+        Analytics.trackEvent(presenter.getOnRescanAnalyticsEvent(), null);
     }
 }

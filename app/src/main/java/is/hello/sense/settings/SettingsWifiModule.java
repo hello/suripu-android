@@ -4,6 +4,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.ConnectWifiPresenter;
 import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
@@ -20,13 +22,17 @@ public class SettingsWifiModule {
 
     @Provides
     @Singleton
-    SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(){
-        return new SelectWifiNetworkPresenter.Settings();
+    SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(
+            final HardwareInteractor hardwareInteractor,
+            final UserFeaturesInteractor userFeaturesInteractor){
+        return new SelectWifiNetworkPresenter.Settings(hardwareInteractor, userFeaturesInteractor);
     }
 
     @Provides
     @Singleton
-    ConnectWifiPresenter providesSettingsConnectWifiPresenter(){
-        return new ConnectWifiPresenter.Settings();
+    ConnectWifiPresenter providesSettingsConnectWifiPresenter(
+            final HardwareInteractor hardwareInteractor,
+            final UserFeaturesInteractor userFeaturesInteractor){
+        return new ConnectWifiPresenter.Settings(hardwareInteractor, userFeaturesInteractor);
     }
 }
