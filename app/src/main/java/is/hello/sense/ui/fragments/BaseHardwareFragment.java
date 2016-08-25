@@ -1,17 +1,38 @@
 package is.hello.sense.ui.fragments;
 
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import javax.inject.Inject;
+
+import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
+import is.hello.commonsense.util.ConnectProgress;
+import is.hello.sense.BuildConfig;
+import is.hello.sense.R;
+import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
+import is.hello.sense.util.Logger;
+import rx.functions.Action1;
+
 /**
  * Extends InjectionFragment to add support for displaying
  * in-app and on Sense loading indicators.
+ * Deprecated class transition to {@link is.hello.sense.presenters.BaseHardwarePresenterFragment}
  */
-public abstract class BaseHardwareFragment extends ScopedInjectionFragment {
-
+@Deprecated()
+public abstract class BaseHardwareFragment extends InjectionFragment {
+    public @Inject
+    HardwareInteractor hardwareInteractor;
     private LoadingDialogFragment loadingDialogFragment;
 
     protected boolean isPairOnlySession() {
@@ -20,41 +41,199 @@ public abstract class BaseHardwareFragment extends ScopedInjectionFragment {
 
     //region Activity
 
-    @Override
-    public void showBlockingActivity(@StringRes final int titleRes) {
-        //todo wrap presenter call to view.showBlockingActivity with execute(() -> view.showBlockingActivity)
+    protected void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
-            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                    getString(titleRes),
-                                                                    LoadingDialogFragment.OPAQUE_BACKGROUND);
+            stateSafeExecutor.execute(() -> {
+                this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+                                                                        getString(titleRes),
+                                                                        LoadingDialogFragment.OPAQUE_BACKGROUND);
+            });
         } else {
             loadingDialogFragment.setTitle(getString(titleRes));
         }
     }
 
-    //todo wrap onCompletion runnable in stateSafeExecutor.bind() if non null
-    protected void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
-         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(),
-                                                          () -> {
-                                                              this.loadingDialogFragment = null;
-                                                        if (onCompletion != null) {
-                                                            onCompletion.run();
-                                                        }
-                                                    },
-                                                    text);
-    }
-
-    //todo wrap onCompletion runnable in stateSafeExecutor.bind() if non null
-    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
+    protected void hideBlockingActivity(boolean success, @NonNull Runnable onCompletion) {
+        stateSafeExecutor.execute(() -> {
             if (success) {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                     this.loadingDialogFragment = null;
-                    onCompletion.run();
+                    stateSafeExecutor.execute(onCompletion);
                 });
             } else {
                 LoadingDialogFragment.close(getFragmentManager());
                 this.loadingDialogFragment = null;
                 onCompletion.run();
             }
+        });
     }
+
+
+    protected void showHardwareActivity(@NonNull Runnable onCompletion,
+                                        @NonNull Action1<Throwable> onError) {
+        bindAndSubscribe(hardwareInteractor.runLedAnimation(SenseLedAnimation.BUSY),
+                         ignored -> onCompletion.run(),
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
+                             onError.call(e);
+                         });
+    }
+
+    protected void hideHardwareActivity(@NonNull Runnable onCompletion,
+                                        @Nullable Action1<Throwable> onError) {
+        if (hardwareInteractor.isConnected()) {
+            bindAndSubscribe(hardwareInteractor.runLedAnimation(SenseLedAnimation.TRIPPY),
+                             ignored -> onCompletion.run(),
+                             e -> {
+                                 Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity.", e);
+                                 if (onError != null) {
+                                     onError.call(e);
+                                 } else {
+                                     onCompletion.run();
+                                 }
+                             });
+        } else {
+            stateSafeExecutor.execute(onCompletion);
+        }
+    }
+
+    protected void completeHardwareActivity(@NonNull Runnable onCompletion) {
+        bindAndSubscribe(hardwareInteractor.runLedAnimation(SenseLedAnimation.STOP),
+                         ignored -> onCompletion.run(),
+                         e -> {
+                             Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);
+
+                             onCompletion.run();
+                         });
+    }
+
+
+    protected void hideAllActivityForSuccess(@NonNull Runnable onCompletion,
+                                             @NonNull Action1<Throwable> onError) {
+        hideHardwareActivity(() -> hideBlockingActivity(true, onCompletion),
+                             e -> hideBlockingActivity(false, () -> onError.call(e)));
+    }
+
+    protected void hideAllActivityForFailure(@NonNull Runnable onCompletion) {
+        Runnable next = () -> hideBlockingActivity(false, onCompletion);
+        hideHardwareActivity(next, ignored -> next.run());
+    }
+
+    //endregion
+
+    //region Recovery
+
+    protected void showSupportOptions() {
+        if (isPairOnlySession()) {
+            return;
+        }
+
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SUPPORT_OPTIONS, null);
+
+        SenseBottomSheet options = new SenseBottomSheet(getActivity());
+        options.setTitle(R.string.title_recovery_options);
+        options.addOption(new SenseBottomSheet.Option(0)
+                                  .setTitle(R.string.action_factory_reset)
+                                  .setTitleColor(getResources().getColor(R.color.destructive_accent))
+                                  .setDescription(R.string.description_recovery_factory_reset));
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
+            options.addOption(new SenseBottomSheet.Option(1)
+                                      .setTitle("Debug")
+                                      .setTitleColor(getResources().getColor(R.color.light_accent))
+                                      .setDescription("If you're adventurous, but here there be dragons."));
+            if (!isPairOnlySession()) {
+                options.addOption(new SenseBottomSheet.Option(2)
+                                          .setTitle("Skip to End")
+                                          .setTitleColor(getResources().getColor(R.color.light_accent))
+                                          .setDescription("If you're in a hurry."));
+            }
+        }
+        options.setOnOptionSelectedListener(option -> {
+            switch (option.getOptionId()) {
+                case 0: {
+                    promptForRecoveryFactoryReset();
+                    break;
+                }
+                case 1: {
+                    Distribution.startDebugActivity(getActivity());
+                    break;
+                }
+                case 2: {
+                    getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+                    break;
+                }
+                default: {
+                    throw new IllegalArgumentException();
+                }
+            }
+            return true;
+        });
+        options.show();
+    }
+
+    protected void promptForRecoveryFactoryReset() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_FACTORY_RESET, null);
+
+        final SenseAlertDialog confirmation = new SenseAlertDialog(getActivity());
+        confirmation.setTitle(R.string.dialog_title_factory_reset);
+        confirmation.setMessage(R.string.dialog_message_factory_reset);
+        confirmation.setNegativeButton(android.R.string.cancel, null);
+        confirmation.setPositiveButton(R.string.action_factory_reset,
+                                       (ignored, which) -> performRecoveryFactoryReset());
+        confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+        confirmation.show();
+    }
+
+    private void performRecoveryFactoryReset() {
+        showBlockingActivity(R.string.dialog_loading_message);
+
+        if (!hardwareInteractor.hasPeripheral()) {
+            bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
+                             ignored -> performRecoveryFactoryReset(),
+                             this::presentFactoryResetError);
+        } else if (!hardwareInteractor.isConnected()) {
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
+                             state -> {
+                                 if (state != ConnectProgress.CONNECTED) {
+                                     return;
+                                 }
+                                 performRecoveryFactoryReset();
+                             },
+                             this::presentFactoryResetError);
+        } else {
+            showHardwareActivity(() -> {
+                bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
+                                 ignored -> {
+                                     hideBlockingActivity(true, () -> {
+                                         Analytics.setSenseId("unpaired");
+
+                                         final MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
+                                                                                                                    R.string.message_power_cycle_sense_factory_reset);
+                                         powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+
+                                         getOnboardingActivity().showSetupSense();
+                                     });
+                                 },
+                                 this::presentFactoryResetError);
+            }, this::presentFactoryResetError);
+        }
+    }
+
+    private void presentFactoryResetError(final Throwable e) {
+        hideBlockingActivity(false, () -> {
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                    .withOperation("Recovery Factory Reset")
+                    .withSupportLink()
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        });
+    }
+
+    //endregion
+
+
+    protected OnboardingActivity getOnboardingActivity() {
+        return (OnboardingActivity) getActivity();
+    }
+
 }

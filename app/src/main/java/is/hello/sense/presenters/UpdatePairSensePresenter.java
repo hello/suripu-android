@@ -60,4 +60,9 @@ public class UpdatePairSensePresenter extends BasePairSensePresenter {
     public boolean shouldShowPairDialog() {
         return true;
     }
+
+    @Override
+    public boolean showSupportOptions() {
+        return false;
+    }
 }

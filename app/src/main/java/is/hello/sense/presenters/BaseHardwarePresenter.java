@@ -18,7 +18,8 @@ import rx.functions.Action1;
  * with {@link is.hello.sense.util.StateSafeExecutor#}
  * @param <T>
  */
-public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extends ScopedPresenter<T> {
+public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput>
+        extends BasePresenter<T> {
 
     protected HardwareInteractor hardwareInteractor;
 
@@ -32,12 +33,9 @@ public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extend
         addInteractor(hardwareInteractor);
     }
 
-    //todo figure out appropriate lifecycle to remove association with Interactors
     @Override
     public void onDestroy(){
-        userFeaturesInteractor.reset();
-        userFeaturesInteractor = null;
-        hardwareInteractor = null;
+
     }
 
     protected void showBlockingActivity(@StringRes final int titleRes){
@@ -97,7 +95,7 @@ public abstract class BaseHardwarePresenter<T extends BaseHardwareOutput> extend
                              e -> hideBlockingActivity(false, () -> onError.call(e)));
     }
 
-    public void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
+    protected void hideAllActivityForFailure(@NonNull final Runnable onCompletion) {
         final Runnable next = () -> hideBlockingActivity(false, onCompletion);
         hideHardwareActivity(next, ignored -> next.run());
     }

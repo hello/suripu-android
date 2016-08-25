@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
-import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingUnsupportedDeviceFragment extends BaseHardwareFragment {

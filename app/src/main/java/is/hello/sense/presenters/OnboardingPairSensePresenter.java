@@ -61,4 +61,9 @@ public class OnboardingPairSensePresenter extends BasePairSensePresenter {
     public boolean shouldShowPairDialog() {
         return BuildConfig.DEBUG;
     }
+
+    @Override
+    public boolean showSupportOptions() {
+        return true;
+    }
 }
