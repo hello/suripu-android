@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.presenters.ScopedPresenter;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.SenseFragment;
@@ -82,33 +82,33 @@ implements BaseOutput{
         scopedPresenterContainer.onTrimMemory(level);
     }
 
-    protected void addScopedPresenter(final ScopedPresenter presenter) {
+    protected void addScopedPresenter(final BasePresenter presenter) {
         scopedPresenterContainer.add(presenter);
     }
 
     //todo if it is only possible to inject one presenter at a time this can be removed
     public static class ScopedPresenterContainer {
-        final List<ScopedPresenter> presenters = new ArrayList<>();
+        final List<BasePresenter> presenters = new ArrayList<>();
 
         public void onDestroyView(){
-            for(final ScopedPresenter p : presenters){
+            for(final BasePresenter p : presenters){
                 p.onDestroyView();
             }
         }
 
         public void onDestroy(){
-            for(final ScopedPresenter p : presenters){
+            for(final BasePresenter p : presenters){
                 p.onDestroy();
             }
             presenters.clear();
         }
 
-        public void add(final ScopedPresenter presenter) {
+        public void add(final BasePresenter presenter) {
             presenters.add(presenter);
         }
 
         public void onRestoreState(@NonNull final Bundle inState) {
-            for (final ScopedPresenter presenter : presenters) {
+            for (final BasePresenter presenter : presenters) {
                 if (presenter.isStateRestored()) {
                     continue;
                 }
@@ -121,7 +121,7 @@ implements BaseOutput{
         }
 
         public void onSaveState(final Bundle outState) {
-            for (final ScopedPresenter presenter : presenters) {
+            for (final BasePresenter presenter : presenters) {
                 final Bundle savedState = presenter.onSaveState();
                 if (savedState != null) {
                     outState.putParcelable(presenter.getSavedStateKey(), savedState);
@@ -131,13 +131,13 @@ implements BaseOutput{
         }
 
         public void onCreate(final BaseOutput view) {
-            for(final ScopedPresenter p : presenters){
+            for(final BasePresenter p : presenters){
                 p.setView(view);
             }
         }
 
         public void onTrimMemory(final int level) {
-            for(final ScopedPresenter p : presenters){
+            for(final BasePresenter p : presenters){
                 p.onTrimMemory(level);
             }
         }

@@ -20,7 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.interactors.RoomConditionsInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
-import is.hello.sense.ui.fragments.ScopedInjectionFragment;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
@@ -28,7 +28,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
-public class OnboardingSenseColorsFragment extends ScopedInjectionFragment {
+public class OnboardingSenseColorsFragment extends InjectionFragment {
     private static final float BACKGROUND_SENSE_SCALE = 0.7f;
 
     private static final int POSITION_INTRO = 0;

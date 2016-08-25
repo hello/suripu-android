@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments.sense;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,11 @@ import is.hello.sense.R;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.fragments.ScopedInjectionFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 
-public class SenseResetOriginalFragment extends ScopedInjectionFragment
+public class SenseResetOriginalFragment extends BasePresenterFragment
         implements SenseResetOriginalPresenter.Output {
 
     @Inject
@@ -50,7 +49,7 @@ public class SenseResetOriginalFragment extends ScopedInjectionFragment
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(presenter.getInteractorSubject(),
+        presenter.bindAndSubscribe(presenter.getInteractorSubject(),
                          presenter::onInteractorOutputNext,
                          presenter::onInteractorOutputError);
     }
@@ -99,11 +98,6 @@ public class SenseResetOriginalFragment extends ScopedInjectionFragment
     @Override
     public void onNetworkCallFailure(@NonNull final Throwable e) {
         ErrorDialogFragment.presentError(getActivity(), e);
-    }
-
-    @Override
-    public void showBlockingActivity(@StringRes int titleRes) {
-     //todo remove this after extending base hardware presenter
     }
 
     //endregion

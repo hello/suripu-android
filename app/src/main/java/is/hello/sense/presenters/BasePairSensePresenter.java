@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
@@ -18,11 +20,11 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.outputs.BaseHardwareOutput;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.functions.Action0;
 
 public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BasePairSensePresenter.Output> {
 
@@ -88,8 +90,14 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
 
     protected abstract boolean shouldClearPeripheral();
 
+    public abstract boolean showSupportOptions();
+
     public boolean shouldShowPairDialog() {
         return false;
+    }
+
+    protected void sendOnFinishedAnalytics() {
+        Analytics.trackEvent(getOnFinishAnalyticsEvent(), null);
     }
 
     public void onPairSuccess(){
@@ -156,12 +164,66 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         });
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    private void tryToPairWith(@NonNull final SensePeripheral device) {
+        if (shouldShowPairDialog()) {
+            view.showPairDialog(
+                    device.getName(),
+                    this::completePeripheralPair,
+                    () -> hideBlockingActivity(false, hardwareInteractor::clearPeripheral));
+        } else {
+            completePeripheralPair();
+        }
+    }
+
+    public void completePeripheralPair() {
+        if (hasPeripheralPair()) {
+            bindAndSubscribe(hardwareInteractor.clearBond(),
+                                       ignored -> hasPeripheralPair()
+                    ,
+                                       e -> presentError(e, "Clearing Bond"));
+        } else {
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
+                                       status -> {
+                                           if(hasConnectivity(status)){
+                                               checkConnectivityAndContinue();
+                                           }},
+                                       e -> presentError(e, "Connecting to Sense"));
+        }
+    }
+
+    private void checkConnectivityAndContinue() {
+        showHardwareActivity(() -> {
+            bindAndSubscribe(hardwareInteractor.currentWifiNetwork(), network -> {
+                if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
+                    checkLinkedAccount();
+                } else {
+                    continueToWifi();
+                }
+            }, e -> {
+                Logger.error(getClass().getSimpleName(), "Could not get Sense's wifi network", e);
+                continueToWifi();
+            });
+        }, e -> presentError(e, "Turning on LEDs"));
+    }
+
+    private void continueToWifi() {
+        hideAllActivityForSuccess(getFinishedRes(),
+                                  this::showSelectWifiNetwork,
+                                  e -> presentError(e, "Turning off LEDs"));
+    }
+
+    private void showSelectWifiNetwork() {
+        view.finishPairFlow(REQUEST_CODE_EDIT_WIFI);
+    }
+
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 final Intent data) {
         if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwareInteractor.setWantsHighPowerPreScan(true);
             view.next();
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
-            view.finishPairFlow(REQUEST_CODE_EDIT_WIFI);
+            showSelectWifiNetwork();
         } else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK) {
             view.requestPermissionWithDialog();
         }
@@ -199,11 +261,23 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(userFeaturesInteractor.storeFeaturesInPrefs(),
-                         ignored -> view.onFinished(),
+                         ignored -> onFinished(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
-                             view.onFinished();
+                             onFinished();
                          });
+    }
+
+    private void onFinished(){
+        hideAllActivityForSuccess(getFinishedRes(),
+                                  () -> {
+                                      sendOnFinishedAnalytics();
+                                      onPairSuccess();
+                                  },
+                                  e -> {
+                                      Log.e("Error", "E: " + e.getLocalizedMessage());
+                                      presentError(e, "Turning off LEDs");
+                                  });
     }
 
     private void presentError(final Throwable e, final String operation) {
@@ -260,26 +334,19 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
                                                             userFeaturesInteractor.reset();
                                                             view.showMessageDialog(R.string.title_power_cycle_sense_factory_reset,
                                                                                    R.string.message_power_cycle_sense_factory_reset);
-                                                            view.finishFactoryReset();
-                                                            getOnboardingActivity().showSetupSense(); //todo return a flow result. Requires activity changes
+
+
                                                         }),
-                                                        this::presentFactoryResetError), this::presentFactoryResetError);
+                                                        this::presentFactoryResetError),
+                                 this::presentFactoryResetError);
         }
     }
 
     private void presentFactoryResetError(final Throwable e) {
-        hideBlockingActivity(false, () -> {
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation("Recovery Factory Reset")
-                    .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+        hideBlockingActivity(false, () -> view.presentFactoryResetDialog(e, "Recovery Factory Reset"));
     }
 
     public interface Output extends BaseHardwareOutput {
-
-        void onFinished();
 
         void finishPairFlow(int resultCode);
 
@@ -300,5 +367,11 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         void presentUnstableBluetoothDialog(Throwable e, String operation);
 
         void showMessageDialog(@StringRes int titleRes, @StringRes int messageRes);
+
+        void presentFactoryResetDialog(Throwable e, String operation);
+
+        void showPairDialog(String deviceName,
+                            Action0 positiveAction,
+                            Action0 negativeAction);
     }
 }

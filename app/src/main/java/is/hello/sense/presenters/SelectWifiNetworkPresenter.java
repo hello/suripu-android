@@ -3,7 +3,8 @@ package is.hello.sense.presenters;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Analytics;
 
-public abstract class SelectWifiNetworkPresenter extends ScopedPresenter<SelectWifiNetworkPresenter.Output>{
+public abstract class SelectWifiNetworkPresenter
+        extends BasePresenter<SelectWifiNetworkPresenter.Output>{
 
     @Override
     public void onDestroy() {

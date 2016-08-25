@@ -22,16 +22,16 @@ import javax.inject.Inject;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class SelectWiFiNetworkFragment extends BaseHardwareFragment
+public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
         implements AdapterView.OnItemClickListener, SelectWifiNetworkPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
 
@@ -72,7 +72,6 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         addScopedPresenter(presenter);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
-        addPresenter(hardwareInteractor);
 
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
@@ -286,7 +285,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
     }
 
     public void peripheralRediscoveryFailed(final Throwable e) {
-        stateSafeExecutor.execute(() -> {
+        presenter.execute(() -> {
             scanningIndicatorLabel.setVisibility(View.GONE);
             scanningIndicator.setVisibility(View.GONE);
             if (subheading.getVisibility() != View.GONE) {

@@ -6,13 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v13.app.FragmentCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import is.hello.commonsense.bluetooth.SensePeripheral;
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
@@ -23,7 +20,7 @@ import is.hello.sense.ui.dialogs.TroubleshootSenseDialogFragment;
 import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
+import rx.functions.Action0;
 
 public class PairSenseFragment extends BasePairSenseFragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
@@ -94,40 +91,6 @@ public class PairSenseFragment extends BasePairSenseFragment
         locationPermission.requestPermissionWithDialog();
     }
 
-    private void checkConnectivityAndContinue() {
-        showHardwareActivity(() -> {
-            bindAndSubscribe(hardwareInteractor.currentWifiNetwork(), network -> {
-                if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    presenter.checkLinkedAccount();
-                } else {
-                    continueToWifi();
-                }
-            }, e -> {
-                Logger.error(PairSenseFragment.class.getSimpleName(), "Could not get Sense's wifi network", e);
-                continueToWifi();
-            });
-        }, e -> presentError(e, "Turning on LEDs"));
-    }
-
-    private void continueToWifi() {
-        hideAllActivityForSuccess(presenter.getFinishedRes(),
-                                  this::showSelectWifiNetwork,
-                                  e -> presentError(e, "Turning off LEDs"));
-    }
-
-    @Override
-    public void onFinished() {
-        hideAllActivityForSuccess(presenter.getFinishedRes(),
-                                   () -> {
-                                       sendOnFinishedAnalytics();
-                                       presenter.onPairSuccess();
-                                  },
-                                  e -> {
-                                      Log.e("Error", "E: " + e.getLocalizedMessage());
-                                      presentError(e, "Turning off LEDs");
-                                  });
-    }
-
     @Override
     public void presentError(final StringRef message,
                              final int actionResultCode,
@@ -146,7 +109,7 @@ public class PairSenseFragment extends BasePairSenseFragment
     }
 
     @Override
-    public void presentHighPowerErrorDialog(int requestCode) {
+    public void presentHighPowerErrorDialog(final int requestCode) {
         final PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
         dialogFragment.setTargetFragment(this, requestCode);
         dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
@@ -167,6 +130,19 @@ public class PairSenseFragment extends BasePairSenseFragment
         dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
+    @Override
+    public void showPairDialog(final String deviceName,
+                               final Action0 positiveAction,
+                               final Action0 negativeAction){
+        final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
+        dialog.setTitle(R.string.debug_title_confirm_sense_pair);
+        dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, deviceName));
+        dialog.setPositiveButton(android.R.string.ok, (sender, which) -> positiveAction.call());
+        dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> negativeAction.call());
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
     public void showPairingModeHelp(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_MODE);
@@ -178,35 +154,5 @@ public class PairSenseFragment extends BasePairSenseFragment
             return;
         }
         presenter.onLocationPermissionGranted();
-    }
-
-    public void tryToPairWith(@NonNull final SensePeripheral device) {
-        if (presenter.shouldShowPairDialog()) {
-            final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-            dialog.setTitle(R.string.debug_title_confirm_sense_pair);
-            dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, device.getName()));
-            dialog.setPositiveButton(android.R.string.ok, (sender, which) -> completePeripheralPair());
-            dialog.setNegativeButton(android.R.string.cancel, (sender, which) -> hideBlockingActivity(false, hardwareInteractor::clearPeripheral));
-            dialog.setCancelable(false);
-            dialog.show();
-        } else {
-            completePeripheralPair();
-        }
-    }
-
-    public void completePeripheralPair() {
-        if (presenter.hasPeripheralPair()) {
-            presenter.bindAndSubscribe(hardwareInteractor.clearBond(),
-                             ignored -> presenter.hasPeripheralPair()
-                             ,
-                             e -> presentError(e, "Clearing Bond"));
-        } else {
-            presenter.bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
-                             status -> {
-                                 if(presenter.hasConnectivity(status)){
-                                     checkConnectivityAndContinue();
-                                 }},
-                             e -> presentError(e, "Connecting to Sense"));
-        }
     }
 }

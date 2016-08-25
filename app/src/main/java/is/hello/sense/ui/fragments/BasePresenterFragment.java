@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -51,4 +52,17 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
 
         return animatorContext;
     }
+
+    //region BaseOutput
+    @Override
+    public void showBlockingActivity(@StringRes final int titleRes){
+        if (loadingDialogFragment == null) {
+            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+                                                                    getString(titleRes),
+                                                                    LoadingDialogFragment.OPAQUE_BACKGROUND);
+        } else {
+            loadingDialogFragment.setTitle(getString(titleRes));
+        }
+    }
+    //endregion
 }

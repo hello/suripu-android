@@ -438,9 +438,4 @@ implements RoomCheckPresenter.Output{
     public void continueOnboarding(@NonNull final View sender) {
         getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
     }
-
-    @Override
-    public void showBlockingActivity(@StringRes int titleRes) {
-
-    }
 }
