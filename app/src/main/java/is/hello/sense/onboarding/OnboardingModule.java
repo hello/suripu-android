@@ -9,9 +9,9 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
-import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.OnboardingPairPillPresenter;
 import is.hello.sense.presenters.OnboardingPairSensePresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -45,16 +45,15 @@ public class OnboardingModule {
 
     @Provides
     @Singleton
-    BasePairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor interactor,
-                                                                final UserFeaturesInteractor userFeaturesInteractor,
-                                                                final ApiService apiService){
+    PairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor interactor,
+                                                            final UserFeaturesInteractor userFeaturesInteractor,
+                                                            final ApiService apiService){
             return new OnboardingPairSensePresenter(interactor, userFeaturesInteractor, apiService);
     }
 
     @Provides
     @Singleton
-    BasePairPillPresenter providesOnboardingPairPillPresenter(final HardwareInteractor interactor,
-                                                              final UserFeaturesInteractor userFeaturesInteractor){
-        return new OnboardingPairPillPresenter(interactor, userFeaturesInteractor);
+    BasePairPillPresenter providesOnboardingPairPillPresenter(final HardwareInteractor interactor){
+        return new OnboardingPairPillPresenter(interactor);
     }
 }
