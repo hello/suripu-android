@@ -53,6 +53,29 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
         return animatorContext;
     }
 
+    public void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
+        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(),
+                                                         () -> {
+                                                             loadingDialogFragment = null;
+                                                             if (onCompletion != null) {
+                                                                 onCompletion.run();
+                                                             }
+                                                         },
+                                                         text);
+    }
+
+    public void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
+        if (success) {
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                this.loadingDialogFragment = null;
+                onCompletion.run();
+            });
+        } else {
+            LoadingDialogFragment.close(getFragmentManager());
+            this.loadingDialogFragment = null;
+            onCompletion.run();
+        }
+    }
     //region BaseOutput
     @Override
     public void showBlockingActivity(@StringRes final int titleRes){
@@ -64,5 +87,6 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
             loadingDialogFragment.setTitle(getString(titleRes));
         }
     }
+
     //endregion
 }

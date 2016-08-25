@@ -17,16 +17,16 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
 
-public class PairPillFragment extends BaseHardwarePresenterFragment
+public class PairPillFragment extends BasePresenterFragment
         implements BasePairPillPresenter.Output {
 
     @Inject

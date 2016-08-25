@@ -8,7 +8,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.outputs.BaseHardwareOutput;
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Analytics;
 
 public abstract class SelectWifiNetworkPresenter
@@ -74,7 +74,7 @@ public abstract class SelectWifiNetworkPresenter
         });
     }
 
-    public interface Output extends BaseHardwareOutput {
+    public interface Output extends BaseOutput {
 
         void showScanning();
 

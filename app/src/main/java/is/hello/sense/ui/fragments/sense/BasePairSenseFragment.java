@@ -12,18 +12,18 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.SkippableFlow;
 
-public abstract class BasePairSenseFragment extends BaseHardwarePresenterFragment
+public abstract class BasePairSenseFragment extends BasePresenterFragment
 implements BasePairSensePresenter.Output{
 
     @Inject

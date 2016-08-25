@@ -9,7 +9,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.outputs.BaseHardwareOutput;
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 
@@ -60,13 +60,13 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
     public void pairPill() {
         view.showPillPairing();
         if (!hardwareInteractor.hasPeripheral()) {
-            view.showBlockingActivity(R.string.title_scanning_for_sense);
+            showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(), ignored -> pairPill(), view::presentError);
             return;
         }
 
         if (!hardwareInteractor.isConnected()) {
-            view.showBlockingActivity(R.string.title_scanning_for_sense);
+            showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwareInteractor.connectToPeripheral(), status -> {
                 if (status == ConnectProgress.CONNECTED) {
                     pairPill();
@@ -77,10 +77,10 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             return;
         }
 
-        view.showBlockingActivity(R.string.title_waiting_for_sense);
+        showBlockingActivity(R.string.title_waiting_for_sense);
         showHardwareActivity(() -> {
             view.animateDiagram(true);
-            view.hideBlockingActivity(false, () -> {
+            hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwareInteractor.linkPill(),
                                  ignored -> completeHardwareActivity(() -> view.finishedPairing(true)),
                                  view::presentError);
@@ -89,7 +89,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     }
 
-    public interface Output extends BaseHardwareOutput {
+    public interface Output extends BaseOutput {
 
         void showPillPairing();
 

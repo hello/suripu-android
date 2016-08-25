@@ -19,7 +19,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.outputs.BaseHardwareOutput;
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
@@ -185,7 +185,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
     }
 
 
-    public interface Output extends BaseHardwareOutput{
+    public interface Output extends BaseOutput{
 
         void presentWifiValidationErrorDialog(Throwable e,
                                               String operation,
