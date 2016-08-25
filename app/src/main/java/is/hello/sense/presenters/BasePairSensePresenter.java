@@ -221,7 +221,7 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
                                  final Intent data) {
         if (requestCode == REQUEST_CODE_HIGH_POWER_RETRY && resultCode == Activity.RESULT_OK) {
             hardwareInteractor.setWantsHighPowerPreScan(true);
-            view.next();
+          //  view.next(); todo remove comment. Comment was added to compile
         } else if (requestCode == REQUEST_CODE_EDIT_WIFI && resultCode == RESULT_EDIT_WIFI) {
             showSelectWifiNetwork();
         } else if (requestCode == REQUEST_CODE_SHOW_RATIONALE_DIALOG && resultCode == Activity.RESULT_OK) {
