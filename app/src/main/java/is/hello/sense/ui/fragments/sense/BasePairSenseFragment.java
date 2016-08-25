@@ -12,18 +12,18 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.SkippableFlow;
 
-public abstract class BasePairSenseFragment extends BaseHardwareFragment
+public abstract class BasePairSenseFragment extends BaseHardwarePresenterFragment
 implements BasePairSensePresenter.Output{
 
     @Inject
@@ -45,10 +45,6 @@ implements BasePairSensePresenter.Output{
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), properties);
     }
 
-    protected void sendOnFinishedAnalytics() {
-        Analytics.trackEvent(presenter.getOnFinishAnalyticsEvent(), null);
-    }
-
     /**region {@link BasePairSensePresenter.Output}**/
 
     @Override
@@ -67,13 +63,29 @@ implements BasePairSensePresenter.Output{
                                       @StringRes int actionStringRes,
                                       String operation,
                                       int requestCode);
+
+
     @Override
-    public abstract void onFinished();
+    public void presentFactoryResetDialog(final Throwable e, final String operation) {
+        hideBlockingActivity(false, () -> {
+            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
+                    .withOperation(operation)
+                    .withSupportLink()
+                    .build();
+            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        });
+    }
+
+    @Override
+    public void showMessageDialog(@StringRes final int titleRes, @StringRes final int messageRes){
+        final MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(titleRes, messageRes);
+        messageDialogFragment.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
+    }
 
     //end region
 
     protected void showSupportOptions() {
-        if (isPairOnlySession() || getOnboardingActivity() == null) {
+        if (! presenter.showSupportOptions()) {
             return;
         }
 
@@ -90,7 +102,7 @@ implements BasePairSensePresenter.Output{
                                       .setTitle("Debug")
                                       .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
                                       .setDescription("If you're adventurous, but here there be dragons."));
-            if (!isPairOnlySession() && getActivity() instanceof SkippableFlow) {
+            if (getActivity() instanceof SkippableFlow) {
                 options.addOption(new SenseBottomSheet.Option(2)
                                           .setTitle("Skip to End")
                                           .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
@@ -131,35 +143,6 @@ implements BasePairSensePresenter.Output{
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmation.show();
     }
-
-    private void performRecoveryFactoryReset() {
-
-            showHardwareActivity(() -> bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
-                                                        ignored -> hideBlockingActivity(true, () -> {
-                                                            Analytics.setSenseId("unpaired");
-
-                                                            final MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
-                                                                                                                                             R.string.message_power_cycle_sense_factory_reset);
-                                                            powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
-
-                                                            userFeaturesInteractor.reset();
-                                                            getOnboardingActivity().showSetupSense(); //todo return a flow result. Requires activity changes
-                                                        }),
-                                                        this::presentFactoryResetError), this::presentFactoryResetError);
-    }
-
-    private void presentFactoryResetError(final Throwable e) {
-        hideBlockingActivity(false, () -> {
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation("Recovery Factory Reset")
-                    .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
-    }
-
-    //endregion
-
 
     protected OnboardingActivity getOnboardingActivity() {
         return (OnboardingActivity) getActivity();

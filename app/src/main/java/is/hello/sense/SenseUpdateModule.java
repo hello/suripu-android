@@ -16,7 +16,6 @@ import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
 import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.activities.SenseUpdateActivity;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
@@ -41,7 +40,6 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
                 SenseResetOriginalFragment.class,
                 UnpairPillFragment.class,
                 PairPillFragment.class,
-                BaseHardwareFragment.class,
                 BluetoothFragment.class,
                 ConnectToWiFiFragment.class,
                 SelectWiFiNetworkFragment.class,

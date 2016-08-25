@@ -374,18 +374,8 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         }
     }
 
-    @Override
-    public void onFinished(){
-        sendOnFinishedAnalytics();
-
-        hideAllActivityForSuccess(presenter.getFinishedRes(),
-                                  () -> presenter.onPairSuccess(),
-                                  e -> presentError(e, "Turning off LEDs"));
-    }
-
-
     public void presentError(final Throwable e, @NonNull final String operation) {
-        presenter.hideAllActivityForFailure(() -> {
+        hideAllActivityForFailure(() -> {
             final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                     .withOperation(operation);
 

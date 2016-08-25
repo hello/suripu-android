@@ -8,19 +8,19 @@ import is.hello.sense.presenters.outputs.BaseHardwareOutput;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 
-public class BaseHardwarePresenterFragment extends BasePresenterFragment
+public abstract class BaseHardwarePresenterFragment extends BasePresenterFragment
         implements BaseHardwareOutput {
-
+    //todo why not have this moved to BasePresenterFragment
     @Override
     public void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(),
-                                            () -> {
-                                                loadingDialogFragment = null;
-                                                if (onCompletion != null) {
-                                                    presenter.execute(onCompletion);
-                                                }
-                                            },
-                                            text);
+                                                         () -> {
+                                                             loadingDialogFragment = null;
+                                                             if (onCompletion != null) {
+                                                                 onCompletion.run();
+                                                             }
+                                                         },
+                                                         text);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class BaseHardwarePresenterFragment extends BasePresenterFragment
         if (success) {
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                 this.loadingDialogFragment = null;
-                presenter.execute(onCompletion);
+                onCompletion.run();
             });
         } else {
             LoadingDialogFragment.close(getFragmentManager());

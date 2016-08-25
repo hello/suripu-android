@@ -15,7 +15,7 @@ import is.hello.sense.interactors.RoomConditionsInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import rx.Scheduler;
 
-public class RoomCheckPresenter extends ScopedPresenter<RoomCheckPresenter.Output> {
+public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output> {
 
     @Inject
     RoomConditionsInteractor interactor;
