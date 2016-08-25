@@ -8,17 +8,14 @@ import android.support.annotation.StringRes;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 
 public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePairPillPresenter.Output> {
 
-    public BasePairPillPresenter(final HardwareInteractor hardwareInteractor,
-                                 final UserFeaturesInteractor userFeaturesInteractor) {
-        super(hardwareInteractor,
-              userFeaturesInteractor);
+    public BasePairPillPresenter(final HardwareInteractor hardwareInteractor) {
+        super(hardwareInteractor);
     }
 
     public abstract void trackOnCreate();

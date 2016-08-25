@@ -28,6 +28,11 @@ implements BaseOutput{
     public abstract void onInjected();
 
     @Override
+    public boolean canObservableEmit(){
+        return isAdded() && !getActivity().isFinishing();
+    }
+
+    @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
         try{

@@ -135,7 +135,7 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (networkAdapter.getCount() == 0) {
+        if (networkAdapter.isEmpty()) {
             sendOnScanAnalytics();
             presenter.rescan(false);
         } else {

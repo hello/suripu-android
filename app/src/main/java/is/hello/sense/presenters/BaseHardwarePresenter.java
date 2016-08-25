@@ -7,9 +7,7 @@ import android.support.annotation.StringRes;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
-import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.util.Logger;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -24,13 +22,9 @@ public abstract class BaseHardwarePresenter<T extends BaseOutput>
 
     protected HardwareInteractor hardwareInteractor;
 
-    protected UserFeaturesInteractor userFeaturesInteractor;
-
-    public BaseHardwarePresenter(final HardwareInteractor hardwareInteractor,
-                                 final UserFeaturesInteractor userFeaturesInteractor) {
+    public BaseHardwarePresenter(final HardwareInteractor hardwareInteractor) {
         super();
         this.hardwareInteractor = hardwareInteractor;
-        this.userFeaturesInteractor = userFeaturesInteractor;
         addInteractor(hardwareInteractor);
     }
 

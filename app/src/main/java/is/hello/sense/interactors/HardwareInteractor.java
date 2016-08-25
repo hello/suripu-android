@@ -326,7 +326,7 @@ import rx.functions.Action1;
                 .map(ignored -> null);
     }
 
-    public Observable<Void> runLedAnimation(@NonNull SenseLedAnimation animationType) {
+    public Observable<Void> runLedAnimation(@NonNull final SenseLedAnimation animationType) {
         logEvent("runLedAnimation()");
 
         if (peripheral == null) {
@@ -338,20 +338,20 @@ import rx.functions.Action1;
     }
 
     @VisibleForTesting
-    void sortWifiNetworks(@NonNull List<SenseCommandProtos.wifi_endpoint> networks) {
+    void sortWifiNetworks(@NonNull final List<SenseCommandProtos.wifi_endpoint> networks) {
         if (!networks.isEmpty()) {
             Collections.sort(networks, (l, r) -> Functions.compareInts(r.getRssi(), l.getRssi()));
         }
     }
 
-    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks(boolean sendCountryCode) {
+    public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks(final boolean sendCountryCode) {
         if (peripheral == null) {
             return noDeviceError();
         }
         SensePeripheral.CountryCode countryCode = null;
         if (sendCountryCode){
-            DateTimeZone timeZone = DateTimeZone.getDefault();
-            String timeZoneId = timeZone.getID();
+            final DateTimeZone timeZone = DateTimeZone.getDefault();
+            final String timeZoneId = timeZone.getID();
             if (timeZoneId.contains("America")) {
                 countryCode = SensePeripheral.CountryCode.US;
             } else if (timeZoneId.contains("Japan")) {
@@ -381,9 +381,9 @@ import rx.functions.Action1;
                 .doOnError(this.respondToError));
     }
 
-    public Observable<SenseConnectToWiFiUpdate> sendWifiCredentials(@NonNull String ssid,
-                                                                    @NonNull SenseCommandProtos.wifi_endpoint.sec_type securityType,
-                                                                    @NonNull String password
+    public Observable<SenseConnectToWiFiUpdate> sendWifiCredentials(@NonNull final String ssid,
+                                                                    @NonNull final SenseCommandProtos.wifi_endpoint.sec_type securityType,
+                                                                    @NonNull final String password
                                                                    ) {
         logEvent("sendWifiCredentials()");
 

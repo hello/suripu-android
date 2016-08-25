@@ -8,15 +8,13 @@ import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
 public class UpdatePairPillPresenter extends BasePairPillPresenter {
 
-    public UpdatePairPillPresenter(final HardwareInteractor hardwareInteractor,
-                                   final UserFeaturesInteractor userFeaturesInteractor) {
-        super(hardwareInteractor,
-              userFeaturesInteractor);
+    public UpdatePairPillPresenter(final HardwareInteractor hardwareInteractor) {
+        super(hardwareInteractor
+             );
     }
 
     @Override
