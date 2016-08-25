@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -40,9 +41,14 @@ public class PairPillFragment extends BasePresenterFragment
     protected boolean isPairing = false;
 
     @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+        addScopedPresenter(presenter);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addScopedPresenter(presenter);
         presenter.trackOnCreate();
     }
 
@@ -62,7 +68,17 @@ public class PairPillFragment extends BasePresenterFragment
 
         this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> presenter.pairPill());
-        initialize(view);
+        OnboardingToolbar.of(this, view)
+                         .setWantsBackButton(presenter.wantsBackButton())
+                         .setOnHelpClickListener(this::help);
+
+        if (BuildConfig.DEBUG) {
+            diagram.setOnLongClickListener(ignored -> {
+                presenter.skipPairingPill(getActivity());
+                return true;
+            });
+            diagram.setBackgroundResource(R.drawable.selectable_dark);
+        }
         return view;
     }
 
@@ -92,30 +108,15 @@ public class PairPillFragment extends BasePresenterFragment
         this.retryButton = null;
     }
 
-    protected void initialize(@NonNull final View view) {
-        OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(presenter.wantsBackButton())
-                         .setOnHelpClickListener(this::help);
-
-        if (BuildConfig.DEBUG) {
-            diagram.setOnLongClickListener(ignored -> {
-                presenter.skipPairingPill(getActivity());
-                return true;
-            });
-            diagram.setBackgroundResource(R.drawable.selectable_dark);
-        }
-
-    }
-
     @Override
     public void finishedPairing(final boolean success) {
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> presenter.execute(() -> {
-            presenter.finishedPairingAction(getActivity(), success);
-
-        }));
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
+                                                      () -> presenter.execute(
+                                                              () -> presenter.finishedPairingAction(getActivity(),
+                                                                                                    success)));
     }
 
     @Override
