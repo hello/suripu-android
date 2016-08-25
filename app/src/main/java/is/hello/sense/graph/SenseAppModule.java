@@ -33,6 +33,7 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
+import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
@@ -66,19 +67,19 @@ import is.hello.sense.util.UtilityModule;
 import is.hello.sense.zendesk.ZendeskModule;
 
 @Module(
-    includes = {
-            ApiModule.class,
-            BluetoothModule.class,
-            ZendeskModule.class,
-            DebugModule.class,
-            SettingsModule.class,
-            UtilityModule.class,
-            FacebookApiModule.class,
-            PillModule.class,
-    },
-    injects = {
-        SenseApplication.class,
-        NotificationReceiver.class,
+        includes = {
+                ApiModule.class,
+                BluetoothModule.class,
+                ZendeskModule.class,
+                DebugModule.class,
+                SettingsModule.class,
+                UtilityModule.class,
+                FacebookApiModule.class,
+                PillModule.class,
+        },
+        injects = {
+                SenseApplication.class,
+                NotificationReceiver.class,
 
                 DebugActivity.class,
                 PreferencesInteractor.class,

@@ -6,12 +6,14 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
+import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
 import is.hello.sense.settings.SettingsWifiModule;
@@ -39,6 +41,7 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
                 SenseUpdateReadyFragment.class,
                 SenseResetOriginalFragment.class,
                 UnpairPillFragment.class,
+                UnpairPillPresenter.class,
                 PairPillFragment.class,
                 BluetoothFragment.class,
                 ConnectToWiFiFragment.class,
@@ -65,14 +68,15 @@ public class SenseUpdateModule {
     @Singleton
     BasePairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor,
                                                             final UserFeaturesInteractor userFeaturesInteractor,
-                                                            final ApiService apiService){
+                                                            final ApiService apiService) {
         return new UpdatePairSensePresenter(interactor, userFeaturesInteractor, apiService);
     }
 
+
     @Provides
     @Singleton
-    BasePairPillPresenter providesUpdatePairPillPresenter(final HardwareInteractor interactor,
-                                                          final UserFeaturesInteractor userFeaturesInteractor){
-        return new UpdatePairPillPresenter(interactor, userFeaturesInteractor);
+    UnpairPillPresenter providesUnpairPillPresenter() {
+        return new UnpairPillPresenter();
+
     }
 }
