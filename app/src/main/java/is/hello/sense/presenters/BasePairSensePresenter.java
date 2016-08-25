@@ -19,7 +19,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.outputs.BaseHardwareOutput;
+import is.hello.sense.presenters.outputs.BaseOutput;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -346,7 +347,7 @@ public abstract class BasePairSensePresenter extends BaseHardwarePresenter<BaseP
         hideBlockingActivity(false, () -> view.presentFactoryResetDialog(e, "Recovery Factory Reset"));
     }
 
-    public interface Output extends BaseHardwareOutput {
+    public interface Output extends BaseOutput {
 
         void finishPairFlow(int resultCode);
 

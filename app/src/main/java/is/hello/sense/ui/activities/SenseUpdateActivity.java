@@ -157,7 +157,6 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         } else if (fragment instanceof SenseUpdateReadyFragment) {
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
-            checkSenseOTAStatus();
             showUpdatePairPillFragment();
         } else if (fragment instanceof PairPillFragment) {
             showUpdatePairPillConfirmationFragment();
