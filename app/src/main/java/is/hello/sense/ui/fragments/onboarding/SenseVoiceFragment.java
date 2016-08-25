@@ -38,6 +38,7 @@ import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.common.VoiceHelpDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.fragments.ScopedInjectionFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -49,7 +50,7 @@ import rx.subscriptions.Subscriptions;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class SenseVoiceFragment extends ScopedInjectionFragment {
+public class SenseVoiceFragment extends BaseHardwareFragment {
 
     @Inject
     SenseVoiceInteractor senseVoicePresenter;
