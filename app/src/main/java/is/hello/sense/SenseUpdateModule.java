@@ -12,6 +12,7 @@ import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
+import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
 import is.hello.sense.settings.SettingsWifiModule;
@@ -39,6 +40,7 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
                 SenseUpdateReadyFragment.class,
                 SenseResetOriginalFragment.class,
                 UnpairPillFragment.class,
+                UnpairPillPresenter.class,
                 PairPillFragment.class,
                 BluetoothFragment.class,
                 ConnectToWiFiFragment.class,
@@ -69,9 +71,16 @@ public class SenseUpdateModule {
         return new UpdatePairSensePresenter(interactor, userFeaturesInteractor, apiService);
     }
 
+
     @Provides
     @Singleton
     BasePairPillPresenter providesUpdatePairPillPresenter(final HardwareInteractor interactor){
         return new UpdatePairPillPresenter(interactor);
+    }
+
+    @Provides
+    @Singleton
+    UnpairPillPresenter providesUnpairPillPresenter(){
+            return new UnpairPillPresenter();
     }
 }

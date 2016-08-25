@@ -11,24 +11,20 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Devices;
-import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
-public class UnpairPillFragment extends BaseHardwareFragment {
-    private final static int ONE_SECOND_DELAY = 1000;
+public class UnpairPillFragment extends BasePresenterFragment implements UnpairPillPresenter.Output {
 
     private OnboardingSimpleStepView view = null;
 
     @Inject
-    DevicesInteractor devicesPresenter;
+    UnpairPillPresenter presenter;
 
     @Nullable
     @Override
@@ -39,7 +35,7 @@ public class UnpairPillFragment extends BaseHardwareFragment {
                 .setPrimaryButtonText(R.string.action_pair_new_sleep_pill)
                 .setSecondaryButtonText(R.string.action_do_later)
                 .setToolbarWantsHelpButton(true)
-                .setPrimaryOnClickListener(this::onPrimaryClick)
+                .setPrimaryOnClickListener(presenter::onPrimaryClick)
                 .setSecondaryOnClickListener(this::onSecondaryClick)
                 .setToolbarOnHelpClickListener(this::onHelpClick)
                 .setDiagramImage(R.drawable.onboarding_sleep_pill);
@@ -49,9 +45,12 @@ public class UnpairPillFragment extends BaseHardwareFragment {
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(devicesPresenter.devices,
-                         this::bindDevices,
-                         this::presentError);
+        presenter.onViewCreated();
+    }
+
+    @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
     }
 
     @Override
@@ -63,17 +62,12 @@ public class UnpairPillFragment extends BaseHardwareFragment {
         }
     }
 
-    private void onPrimaryClick(@NonNull final View view) {
-        showBlockingActivity(R.string.unpairing_sleep_pill);
-        devicesPresenter.update();
-    }
-
     private void onSecondaryClick(@NonNull final View view) {
         final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setTitle(R.string.unpair_pill_dialog_title);
         dialog.setMessage(R.string.unpair_pill_dialog_message);
         dialog.setPositiveButton(R.string.action_pair_new_pill, (dialogInterface, i) -> {
-            onPrimaryClick(view);
+            presenter.onPrimaryClick(view);
         });
         dialog.setNegativeButton(R.string.action_dont_pair, (dialogInterface, i) -> {
             finishFlow();
@@ -86,42 +80,20 @@ public class UnpairPillFragment extends BaseHardwareFragment {
         UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
-    private void bindDevices(@NonNull final Devices devices) {
-        if (view == null) {
-            return;
-        }
-        view.postDelayed(() -> {
-            final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-            if (sleepPillDevice == null) { // account doesn't have a pill.
-                finishWithSuccess();
-                return;
-            }
-            showBlockingActivity(R.string.unpairing_sleep_pill);
-            bindAndSubscribe(devicesPresenter.unregisterDevice(sleepPillDevice),
-                             this::bindUnregisterDevice,
-                             this::presentError);
-        }, ONE_SECOND_DELAY);
+
+    @Override
+    public void presentError(@NonNull final Throwable throwable) {
+        ErrorDialogFragment.presentError(getActivity(), throwable);
+    }
+
+    @Override
+    public void postDelayed(@NonNull Runnable runnable, int time) {
 
     }
 
-    private void bindUnregisterDevice(@NonNull final VoidResponse vr) {
-        finishWithSuccess();
+    @Override
+    public void finishWithSuccess() {
+        finishFlowWithResult(Activity.RESULT_OK);
     }
 
-    private void presentError(@NonNull final Throwable e) {
-        hideBlockingActivityWithDelay(
-                () -> ErrorDialogFragment.presentError(getActivity(), e));
-    }
-
-    private void finishWithSuccess() {
-        devicesPresenter.devices.forget();
-        hideBlockingActivity(R.string.unpaired, () -> finishFlowWithResult(Activity.RESULT_OK));
-    }
-
-    private void hideBlockingActivityWithDelay(@NonNull final Runnable runnable) {
-        if (view == null) {
-            return;
-        }
-        view.postDelayed(() -> hideBlockingActivity(false, runnable), ONE_SECOND_DELAY);
-    }
 }
