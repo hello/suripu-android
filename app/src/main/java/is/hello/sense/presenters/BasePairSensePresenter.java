@@ -66,7 +66,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     public abstract String getOnFinishAnalyticsEvent();
 
-    protected abstract boolean shouldFinishFlow();
+    protected abstract boolean shouldContinueFlow();
 
     protected abstract boolean shouldClearPeripheral();
 
@@ -80,7 +80,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         if(shouldClearPeripheral()){
             hardwareInteractor.clearPeripheral();
         }
-        if(shouldFinishFlow()){
+        if(shouldContinueFlow()){
             view.finishPairFlow(Activity.RESULT_OK);
         } else {
             view.finishActivity();

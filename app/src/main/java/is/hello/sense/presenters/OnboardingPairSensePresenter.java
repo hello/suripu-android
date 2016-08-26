@@ -48,8 +48,8 @@ public class OnboardingPairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    protected boolean shouldFinishFlow() {
-        return false;
+    protected boolean shouldContinueFlow() {
+        return true;
     }
 
     @Override
