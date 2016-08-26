@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -26,7 +26,7 @@ public class LaunchActivity extends InjectionActivity {
     @Inject
     ApiSessionManager sessionManager;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
     LocalUsageTracker localUsageTracker;
 
@@ -91,14 +91,14 @@ public class LaunchActivity extends InjectionActivity {
     }
 
     private void bounce() {
-        if (sessionManager.hasSession() && preferences.getBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)) {
+        if (sessionManager.hasSession() && preferences.getBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, false)) {
             showHomeActivity();
         } else {
             if (!sessionManager.hasSession()) {
                 preferences
                         .edit()
-                        .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, false)
-                        .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT,
+                        .putBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, false)
+                        .putInt(PreferencesInteractor.LAST_ONBOARDING_CHECK_POINT,
                                 Constants.ONBOARDING_CHECKPOINT_NONE)
                         .apply();
             }

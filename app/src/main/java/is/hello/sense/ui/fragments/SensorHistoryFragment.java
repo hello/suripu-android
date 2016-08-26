@@ -25,10 +25,10 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.Presenter;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
-import is.hello.sense.graph.presenters.SensorHistoryPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.Interactor;
+import is.hello.sense.interactors.RoomConditionsInteractor;
+import is.hello.sense.interactors.SensorHistoryInteractor;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -50,11 +50,14 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener, GraphView.OnDrawListener {
-    @Inject RoomConditionsPresenter conditionsPresenter;
-    @Inject SensorHistoryPresenter sensorHistoryPresenter;
+    @Inject
+    RoomConditionsInteractor conditionsPresenter;
+    @Inject
+    SensorHistoryInteractor sensorHistoryPresenter;
     @Inject DateFormatter dateFormatter;
     @Inject UnitFormatter unitFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesInteractor preferences;
 
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
@@ -120,8 +123,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
 
         this.historyModeSelector = (SelectorView) view.findViewById(R.id.fragment_sensor_history_mode);
         historyModeSelector.setOnSelectionChangedListener(this);
-        historyModeSelector.setButtonTags(SensorHistoryPresenter.Mode.DAY,
-                                          SensorHistoryPresenter.Mode.WEEK);
+        historyModeSelector.setButtonTags(SensorHistoryInteractor.Mode.DAY,
+                                          SensorHistoryInteractor.Mode.WEEK);
         historyModeSelector.setBackground(new TabsBackgroundDrawable(getResources(),
                                                                      TabsBackgroundDrawable.Style.INLINE));
 
@@ -153,7 +156,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        if (level >= Presenter.BASE_TRIM_LEVEL) {
+        if (level >= Interactor.BASE_TRIM_LEVEL) {
             sensorDataSource.clear();
         }
     }
@@ -176,7 +179,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         return (SensorHistoryActivity) getActivity();
     }
 
-    public void bindConditions(@Nullable RoomConditionsPresenter.Result result) {
+    public void bindConditions(@Nullable RoomConditionsInteractor.Result result) {
         if (result == null) {
             readingText.setText(R.string.missing_data_placeholder);
             messageText.setText(null);
@@ -235,8 +238,8 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
         graphPlaceholder.setVisibility(View.GONE);
         sensorDataSource.clear();
 
-        final SensorHistoryPresenter.Mode newMode =
-                (SensorHistoryPresenter.Mode) historyModeSelector.getButtonTagAt(newSelectionIndex);
+        final SensorHistoryInteractor.Mode newMode =
+                (SensorHistoryInteractor.Mode) historyModeSelector.getButtonTagAt(newSelectionIndex);
         sensorHistoryPresenter.setMode(newMode);
     }
 
@@ -328,7 +331,7 @@ public class SensorHistoryFragment extends InjectionFragment implements Selector
             final CharSequence reading = printer.print(instant.getValue());
             readingText.setText(reading);
 
-            if (sensorHistoryPresenter.getMode() == SensorHistoryPresenter.Mode.WEEK) {
+            if (sensorHistoryPresenter.getMode() == SensorHistoryInteractor.Mode.WEEK) {
                 messageText.setText(dateFormatter.formatAsDayAndTime(instant.getShiftedTime(), use24Time));
             } else {
                 messageText.setText(dateFormatter.formatAsTime(instant.getShiftedTime(), use24Time));

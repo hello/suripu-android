@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.adapter.TimeZoneAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
@@ -35,7 +35,8 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class DeviceTimeZoneFragment extends InjectionFragment implements TimeZoneAdapter.OnClickListener {
-    @Inject AccountPresenter accountPresenter;
+    @Inject
+    AccountInteractor accountPresenter;
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;

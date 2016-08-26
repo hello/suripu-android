@@ -13,10 +13,10 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.util.Analytics;
 
-public class BluetoothFragment extends HardwareFragment {
+public class BluetoothFragment extends BaseHardwareFragment {
     private static final String ARG_NEXT_SCREEN_ID = BluetoothFragment.class.getName() + ".ARG_NEXT_SCREEN_ID";
     private OnboardingSimpleStepView view;
 
@@ -58,7 +58,7 @@ public class BluetoothFragment extends HardwareFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(hardwarePresenter.bluetoothEnabled.filter(Functions.IS_TRUE),
+        bindAndSubscribe(hardwareInteractor.bluetoothEnabled.filter(Functions.IS_TRUE),
                          ignored -> done(),
                          Functions.LOG_ERROR);
     }
@@ -90,7 +90,7 @@ public class BluetoothFragment extends HardwareFragment {
 
     public void turnOn(@NonNull final View sender) {
         showBlockingActivity(R.string.title_turning_on);
-        bindAndSubscribe(hardwarePresenter.turnOnBluetooth(), ignored -> {
+        bindAndSubscribe(hardwareInteractor.turnOnBluetooth(), ignored -> {
         }, this::presentError);
     }
 

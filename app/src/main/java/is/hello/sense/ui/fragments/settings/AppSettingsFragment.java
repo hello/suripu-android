@@ -18,7 +18,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
@@ -34,7 +34,7 @@ public class AppSettingsFragment extends BacksideTabFragment {
     private ImageView breadcrumb;
 
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {

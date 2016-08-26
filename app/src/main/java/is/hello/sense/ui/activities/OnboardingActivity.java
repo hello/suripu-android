@@ -16,6 +16,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,14 +29,15 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.onboarding.OnboardingModule;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -45,17 +48,17 @@ import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingPairPillFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterHeightFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -67,13 +70,15 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.SkippableFlow;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
-public class OnboardingActivity extends InjectionActivity
+public class OnboardingActivity extends ScopedInjectionActivity
         implements FragmentNavigation,
+        SkippableFlow,
         SimpleStepFragment.ExitAnimationProviderActivity,
         AccountEditor.Container {
     public static final String TAG = OnboardingActivity.class.getName();
@@ -98,21 +103,31 @@ public class OnboardingActivity extends InjectionActivity
     @Inject
     ApiService apiService;
     @Inject
-    HardwarePresenter hardwarePresenter;
+    HardwareInteractor hardwarePresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    UserFeaturesPresenter userFeaturesPresenter;
+    UserFeaturesInteractor userFeaturesPresenter;
     @Inject
-    SenseOTAStatusPresenter senseOTAStatusPresenter;
+    SenseOTAStatusInteractor senseOTAStatusPresenter;
 
     private FragmentNavigationDelegate navigationDelegate;
 
     private
     @Nullable
     Account account;
+
+    @Override
+    List<Object> getModules() {
+        return Collections.singletonList(new OnboardingModule());
+    }
+
+    @Override
+    protected boolean shouldInjectToMainGraphObject() {
+        return false;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -129,10 +144,10 @@ public class OnboardingActivity extends InjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
-        if(BuildConfig.DEBUG && getIntent().hasExtra(EXTRA_DEBUG_CHECKPOINT)){
+        if (BuildConfig.DEBUG && getIntent().hasExtra(EXTRA_DEBUG_CHECKPOINT)) {
             final int debugCheckpoint = getIntent()
-                    .getIntExtra(EXTRA_DEBUG_CHECKPOINT,Constants.DEBUG_CHECKPOINT_NONE);
-            switch(debugCheckpoint){
+                    .getIntExtra(EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_NONE);
+            switch (debugCheckpoint) {
                 case Constants.DEBUG_CHECKPOINT_SENSE_UPDATE:
                     showSenseUpdateIntro();
                     break;
@@ -246,6 +261,15 @@ public class OnboardingActivity extends InjectionActivity
         navigationDelegate.onDestroy();
     }
 
+    //region SkippableFlow interface
+
+    @Override
+    public void skipToEnd() {
+        showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+    }
+
+    //endregion
+
     @Override
     public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
@@ -275,33 +299,35 @@ public class OnboardingActivity extends InjectionActivity
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof BluetoothFragment) {
-            if(responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE){
+            if (responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE) {
                 showSetupSense();
-            } else if(responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY){
+            } else if (responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY) {
                 showBirthday(null, true);
             }
-        } else if(fragment instanceof PairSenseFragment){
-            if(responseCode == PairSenseFragment.REQUEST_CODE_EDIT_WIFI){
+        } else if (fragment instanceof PairSenseFragment) {
+            if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
             } else {
                 showPairPill(true);
             }
-        }else if (fragment instanceof OnboardingRoomCheckFragment ||
+        } else if (fragment instanceof OnboardingRoomCheckFragment ||
                 fragment instanceof OnboardingSenseColorsFragment) {
             checkSenseUpdateStatus();
             showSmartAlarmInfo();
-        } else if (fragment instanceof OnboardingSmartAlarmFragment){
+        } else if (fragment instanceof OnboardingSmartAlarmFragment) {
             passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
             checkForSenseUpdate();
-        } else if ( fragment instanceof SenseOTAIntroFragment){
+        } else if (fragment instanceof SenseOTAIntroFragment) {
             showSenseUpdating();
         } else if (fragment instanceof SenseOTAFragment) {
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
             showVoiceDone();
         } else if (fragment instanceof OnboardingCompleteFragment ||
-                fragment instanceof VoiceCompleteFragment){
+                fragment instanceof VoiceCompleteFragment) {
             showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+        } else if (fragment instanceof OnboardingUnsupportedDeviceFragment) {
+            showGetStarted(true);
         }
     }
 
@@ -346,14 +372,14 @@ public class OnboardingActivity extends InjectionActivity
         if (getIntent().hasExtra(EXTRA_START_CHECKPOINT)) {
             return getIntent().getIntExtra(EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_NONE);
         } else {
-            return preferences.getInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
+            return preferences.getInt(PreferencesInteractor.LAST_ONBOARDING_CHECK_POINT, Constants.ONBOARDING_CHECKPOINT_NONE);
         }
     }
 
     public void passedCheckPoint(final int checkPoint) {
         preferences
                 .edit()
-                .putInt(PreferencesPresenter.LAST_ONBOARDING_CHECK_POINT, checkPoint)
+                .putInt(PreferencesInteractor.LAST_ONBOARDING_CHECK_POINT, checkPoint)
                 .apply();
 
         getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -427,10 +453,10 @@ public class OnboardingActivity extends InjectionActivity
         if (updatedBy instanceof OnboardingRegisterBirthdayFragment) {
             pushFragment(new OnboardingRegisterGenderFragment(), null, true);
         } else if (updatedBy instanceof OnboardingRegisterGenderFragment) {
-            pushFragment(new OnboardingRegisterHeightFragment(), null, true);
-        } else if (updatedBy instanceof OnboardingRegisterHeightFragment) {
-            pushFragment(new OnboardingRegisterWeightFragment(), null, true);
-        } else if (updatedBy instanceof OnboardingRegisterWeightFragment) {
+            pushFragment(new RegisterHeightFragment(), null, true);
+        } else if (updatedBy instanceof RegisterHeightFragment) {
+            pushFragment(new RegisterWeightFragment(), null, true);
+        } else if (updatedBy instanceof RegisterWeightFragment) {
             final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
@@ -470,8 +496,7 @@ public class OnboardingActivity extends InjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        final boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(pairOnly), null, true);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
     }
 
     public void showPairPill(final boolean showIntroduction) {
@@ -497,10 +522,10 @@ public class OnboardingActivity extends InjectionActivity
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);
             }
-            builder.setNextFragmentClass(OnboardingPairPillFragment.class);
+            builder.setNextFragmentClass(OnboardingPairPill.class);
             pushFragment(builder.toFragment(), null, false);
         } else {
-            pushFragment(new OnboardingPairPillFragment(), null, false);
+            pushFragment(new OnboardingPairPill(), null, false);
         }
     }
 
@@ -546,36 +571,36 @@ public class OnboardingActivity extends InjectionActivity
         pushFragment(new OnboardingSmartAlarmFragment(), null, false);
     }
 
-    public void showSetAlarmDetail(){
+    public void showSetAlarmDetail() {
         pushFragment(new Fragment(), null, false);
         final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
         startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
     }
 
-    public void checkSenseUpdateStatus(){
+    public void checkSenseUpdateStatus() {
         subscribe(senseOTAStatusPresenter.storeInPrefs(),
                   Functions.NO_OP,
                   Functions.LOG_ERROR);
     }
 
     public void checkForSenseUpdate() {
-        if(senseOTAStatusPresenter.isOTARequired()){
+        if (senseOTAStatusPresenter.isOTARequired()) {
             showSenseUpdateIntro();
-        } else{
+        } else {
             checkHasVoiceFeature();
         }
     }
 
-    public void showSenseUpdateIntro(){
+    public void showSenseUpdateIntro() {
         pushFragment(SenseOTAIntroFragment.newInstance(), null, false);
     }
 
-    public void showSenseUpdating(){
+    public void showSenseUpdating() {
         pushFragment(SenseOTAFragment.newInstance(), null, false);
     }
 
     private void checkHasVoiceFeature() {
-        if(userFeaturesPresenter.hasVoice()){
+        if (userFeaturesPresenter.hasVoice()) {
             showSenseVoice();
         } else {
             showDone();
@@ -602,7 +627,7 @@ public class OnboardingActivity extends InjectionActivity
 
     public void showHomeActivity(@Flow final int fromFlow) {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.ONBOARDING_COMPLETED, true)
+                   .putBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, true)
                    .apply();
 
         hardwarePresenter.clearPeripheral();

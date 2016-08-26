@@ -1,19 +1,22 @@
 package is.hello.sense.presenters;
 
-public interface PresenterOutputLifecycle<T> {
+import is.hello.sense.presenters.outputs.BaseOutput;
+
+public interface PresenterOutputLifecycle<T extends BaseOutput> {
 
     /**
-     * @param view Bind reference to PresenterOutput
+     * @param view Bind reference to BaseOutput
      */
     void setView(final T view);
 
     /**
-     * Release reference to PresenterOutput
+     * Release reference to BaseOutput
      */
     void onDestroyView();
 
     /**
-     * Release reference to Intercepter
+     * Release reference to Interceptor
      */
     void onDestroy();
+
 }
