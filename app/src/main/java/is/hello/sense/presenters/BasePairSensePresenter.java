@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.util.Log;
 
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
@@ -18,6 +19,7 @@ import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 
 public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Output> extends BaseHardwarePresenter<T> {
 
@@ -116,6 +118,10 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
             showBlockingActivity(getPairingRes());
             return false;
         }
+    }
+
+    protected Observable<SensePeripheral> getObservableSensePeripheral(){
+        return hardwareInteractor.closestPeripheral();
     }
 
     protected boolean hasConnectivity(final ConnectProgress status) {

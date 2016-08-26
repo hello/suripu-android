@@ -73,11 +73,13 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     public void onLocationPermissionGranted() {
         showBlockingActivity(R.string.title_scanning_for_sense);
-        final Observable<SensePeripheral> device = hardwareInteractor.closestPeripheral();
-        bindAndSubscribe(device, this::tryToPairWith, e -> {
-            hardwareInteractor.clearPeripheral();
-            presentError(e, "Discovering Sense");
-        });
+        final Observable<SensePeripheral> device = getObservableSensePeripheral();
+        bindAndSubscribe(device,
+                         this::tryToPairWith,
+                         e -> {
+                            hardwareInteractor.clearPeripheral();
+                            presentError(e, "Discovering Sense");
+                        });
     }
 
     private void tryToPairWith(@NonNull final SensePeripheral device) {
@@ -94,7 +96,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     public void completePeripheralPair() {
         if (hasPeripheralPair()) {
             bindAndSubscribe(hardwareInteractor.clearBond(),
-                             ignored -> hasPeripheralPair()
+                             ignored -> completePeripheralPair()
                     ,
                              e -> presentError(e, "Clearing Bond"));
         } else {
