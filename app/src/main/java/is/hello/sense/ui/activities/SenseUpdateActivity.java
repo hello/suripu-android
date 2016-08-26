@@ -77,7 +77,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
             getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
             //showSenseUpdateIntro();
-            showUpdatePairPillFragment();
+            showUnpairPillFragment();
 
         }
 

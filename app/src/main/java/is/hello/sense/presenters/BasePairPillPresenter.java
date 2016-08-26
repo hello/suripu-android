@@ -95,6 +95,8 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         void finishedPairing(final boolean success);
 
         void animateDiagram(final boolean animate);
+
+        void finishFlow();
     }
 
 

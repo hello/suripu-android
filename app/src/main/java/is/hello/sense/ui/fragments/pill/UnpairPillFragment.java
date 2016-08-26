@@ -88,12 +88,12 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
 
     @Override
     public void postDelayed(@NonNull Runnable runnable, int time) {
-
+        view.postDelayed(runnable, time);
     }
 
     @Override
     public void finishWithSuccess() {
-        finishFlowWithResult(Activity.RESULT_OK);
+        finishFlow();
     }
 
 }
