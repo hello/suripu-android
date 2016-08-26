@@ -1,5 +1,6 @@
 package is.hello.sense.presenters;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,9 @@ import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
+import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Analytics;
 
 public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Output> {
     private final static int ONE_SECOND_DELAY = 1000;
@@ -57,6 +61,25 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
         devicesPresenter.update();
     }
 
+    public void onSecondaryClick(@NonNull final View clickedView) {
+        final SenseAlertDialog dialog = new SenseAlertDialog(view.getActivity());
+        dialog.setTitle(R.string.unpair_pill_dialog_title);
+        dialog.setMessage(R.string.unpair_pill_dialog_message);
+        dialog.setPositiveButton(R.string.action_pair_new_pill, (dialogInterface, i) -> {
+            onPrimaryClick(clickedView);
+        });
+        dialog.setNegativeButton(R.string.action_dont_pair, (dialogInterface, i) -> {
+            view.finishWithSuccess();
+        });
+        dialog.show();
+    }
+
+    @SuppressWarnings("unused")
+    public void onHelpClick(@NonNull final View sender){
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
+        UserSupport.showForHelpStep(view.getActivity(), UserSupport.HelpStep.PAIRING_MODE);
+    }
+
     private void finishWithSuccess() {
         view.hideBlockingActivity(R.string.unpaired, view::finishWithSuccess);
     }
@@ -84,5 +107,6 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
         void presentError(@NonNull final Throwable throwable);
 
+        Activity getActivity();
     }
 }
