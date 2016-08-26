@@ -5,13 +5,9 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseOTAModule;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.OnboardingPairPillPresenter;
-import is.hello.sense.presenters.OnboardingPairSensePresenter;
-import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -25,8 +21,7 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
 
 @Module(complete = false,
         includes = {
-                SenseOTAModule.class,
-                OnboardingWifiModule.class
+                SenseOTAModule.class
         },
         injects = {
                 OnboardingActivity.class,
@@ -42,14 +37,6 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
         }
 )
 public class OnboardingModule {
-
-    @Provides
-    @Singleton
-    PairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor interactor,
-                                                            final UserFeaturesInteractor userFeaturesInteractor,
-                                                            final ApiService apiService){
-            return new OnboardingPairSensePresenter(interactor, userFeaturesInteractor, apiService);
-    }
 
     @Provides
     @Singleton
