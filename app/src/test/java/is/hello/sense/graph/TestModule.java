@@ -44,6 +44,8 @@ import is.hello.sense.interactors.SenseVoiceInteractor;
 import is.hello.sense.interactors.SenseVoiceInteractorTests;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractorTests;
+import is.hello.sense.interactors.SwapSenseInteractor;
+import is.hello.sense.interactors.SwapSenseInteractorTests;
 import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.TimelineInteractorTests;
 import is.hello.sense.interactors.UnreadStateInteractorTests;
@@ -121,6 +123,9 @@ import static org.mockito.Mockito.mock;
 
             SenseOTAStatusInteractor.class,
             SenseOTAStatusInteractorTests.class,
+
+            SwapSenseInteractor.class,
+            SwapSenseInteractorTests.class
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -131,39 +136,55 @@ public final class TestModule {
         this.applicationContext = applicationContext;
     }
 
-    @Provides Context provideApplicationContext() {
+    @Provides
+    Context provideApplicationContext() {
         return applicationContext;
     }
 
-    @Provides @ApiAppContext Context provideApiApplicationContext() {
+    @Provides
+    @ApiAppContext
+    Context provideApiApplicationContext() {
         return applicationContext;
     }
 
-    @Singleton @Provides MarkupProcessor provideMarkupProcessor() {
+    @Provides
+    @Singleton
+    MarkupProcessor provideMarkupProcessor() {
         return new MarkupProcessor();
     }
 
-    @Singleton @Provides Gson provideGson(@NonNull MarkupProcessor markupProcessor) {
+    @Provides
+    @Singleton
+    Gson provideGson(@NonNull MarkupProcessor markupProcessor) {
         return ApiModule.createConfiguredGson(markupProcessor);
     }
 
-    @Provides @GlobalSharedPreferences SharedPreferences provideGlobalSharedPreferences() {
+    @Provides
+    @GlobalSharedPreferences
+    SharedPreferences provideGlobalSharedPreferences() {
         return applicationContext.getSharedPreferences("test_suite_preferences", Context.MODE_PRIVATE);
     }
 
-    @Provides @PersistentSharedPreferences SharedPreferences providePersistentPreferences() {
+    @Provides
+    @PersistentSharedPreferences
+    SharedPreferences providePersistentPreferences() {
         return applicationContext.getSharedPreferences("test_suite_persistent_preferences", Context.MODE_PRIVATE);
     }
 
-    @Singleton @Provides ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull Gson gson) {
+    @Provides
+    @Singleton
+    ApiService provideApiService(@NonNull @ApiAppContext Context context, @NonNull Gson gson) {
         return new TestApiService(context, gson);
     }
 
-    @Singleton @Provides ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
+    @Provides
+    @Singleton
+    ApiSessionManager provideApiSessionManager(@NonNull @ApiAppContext Context context) {
         return new TestApiSessionManager(context);
     }
 
-    @Provides BluetoothStack provideBluetoothStack() {
+    @Provides
+    BluetoothStack provideBluetoothStack() {
         final BluetoothStack bluetoothStack = mock(BluetoothStack.class);
         doReturn(true)
                 .when(bluetoothStack)
@@ -174,7 +195,8 @@ public final class TestModule {
         return bluetoothStack;
     }
 
-    @Provides BatteryUtil provideBatteryUtil(){
+    @Provides
+    BatteryUtil provideBatteryUtil(){
         final BatteryUtil batteryUtil = mock(BatteryUtil.class);
         doReturn(true)
                 .when(batteryUtil)
@@ -185,8 +207,16 @@ public final class TestModule {
         return batteryUtil;
     }
 
-    @Singleton @Provides UserFeaturesManager provideUserFeaturesManager(
+    @Provides
+    @Singleton
+    UserFeaturesManager provideUserFeaturesManager(
             @NonNull final Context context, @NonNull final Gson gson){
         return new UserFeaturesManager(context, gson);
+    }
+
+    @Provides
+    @Singleton
+    SwapSenseInteractor provideSwapSenseInteractor(final ApiService service){
+        return new SwapSenseInteractor(service);
     }
 }
