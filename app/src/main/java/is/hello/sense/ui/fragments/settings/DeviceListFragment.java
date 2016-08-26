@@ -228,7 +228,7 @@ public class DeviceListFragment extends InjectionFragment
             case SENSE: {
                 //todo make separate activity to handle pairing only
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                intent.putExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, false);
+                //intent.putExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, false);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
             }

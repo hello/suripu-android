@@ -179,7 +179,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         super.onDestroyView();
         if(networkSecurity != null) {
             networkSecurity.setAdapter(null);
-            networkSecurity.setOnItemClickListener(null);
+            networkSecurity.setOnItemSelectedListener(null);
             networkSecurity = null;
         }
         if(toolbar != null){
