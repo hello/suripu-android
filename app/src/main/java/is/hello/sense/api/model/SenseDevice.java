@@ -1,6 +1,7 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.google.gson.annotations.SerializedName;
@@ -90,6 +91,39 @@ public class SenseDevice extends BaseDevice {
 
         public static Color fromString(@NonNull String string) {
             return Enums.fromString(string, values(), UNKNOWN);
+        }
+    }
+
+    public static class SwapResponse extends ApiResponse {
+        @SerializedName("status")
+        public final SwapStatus status;
+
+        public SwapResponse(final SwapStatus status){
+            this.status = status;
+        }
+
+        public static Boolean isOK(@Nullable final SwapStatus swapStatus) {
+            return SwapStatus.OK.equals(swapStatus);
+        }
+    }
+
+    public enum SwapStatus implements Enums.FromString{
+        OK,
+        ACCOUNT_PAIRED_TO_MULTIPLE_SENSE,
+        NEW_SENSE_PAIRED_TO_DIFFERENT_ACCOUNT,
+        UNKNOWN;
+
+        public static SwapStatus fromString(final String value){
+            return Enums.fromString(value, values(), UNKNOWN);
+        }
+    }
+
+    public static class SwapRequest {
+        @SerializedName("sense_id")
+        public final String senseId;
+
+        public SwapRequest(@NonNull final String senseId){
+            this.senseId = senseId;
         }
     }
 }
