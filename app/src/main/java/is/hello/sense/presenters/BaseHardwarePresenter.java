@@ -15,6 +15,7 @@ import rx.functions.Action1;
 /**
  * Contains methods for wrapping loading dialog fragments Runnables
  * with {@link is.hello.sense.util.StateSafeExecutor#}
+ *
  * @param <T>
  */
 public abstract class BaseHardwarePresenter<T extends BaseOutput>
@@ -29,20 +30,8 @@ public abstract class BaseHardwarePresenter<T extends BaseOutput>
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
 
-    }
-
-    protected void showBlockingActivity(@StringRes final int titleRes){
-        execute(() -> view.showBlockingActivity(titleRes));
-    }
-
-    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onComplete){
-        execute(() -> view.hideBlockingActivity(success, bind(onComplete)));
-    }
-
-    protected void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete){
-        execute(() -> view.hideBlockingActivity(messageRes, bind(onComplete)));
     }
 
     protected void showHardwareActivity(@NonNull final Runnable onCompletion,
@@ -82,7 +71,6 @@ public abstract class BaseHardwarePresenter<T extends BaseOutput>
                              onCompletion.run();
                          });
     }
-
 
     protected void hideAllActivityForSuccess(@NonNull final Runnable onCompletion,
                                              @NonNull final Action1<Throwable> onError) {
