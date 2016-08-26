@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.UnpairPillPresenter;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
@@ -57,11 +56,6 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
             view.destroy();
             view = null;
         }
-    }
-
-    @Override
-    public void presentError(@NonNull final Throwable throwable) {
-        ErrorDialogFragment.presentError(getActivity(), throwable);
     }
 
     @Override

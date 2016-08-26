@@ -15,6 +15,7 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
@@ -31,7 +32,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
     public void onViewCreated() {
         bindAndSubscribe(devicesPresenter.devices,
                          this::bindDevices,
-                         view::presentError);
+                         this::presentError);
     }
 
 
@@ -47,7 +48,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
                 view.finishWithSuccess();
                 return;
             }
-            view.showBlockingActivity(R.string.unpairing_sleep_pill);
+            showBlockingActivity(R.string.unpairing_sleep_pill);
             bindAndSubscribe(devicesPresenter.unregisterDevice(sleepPillDevice),
                              this::bindUnregisterDevice,
                              this::presentError);
@@ -75,25 +76,25 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
     }
 
     @SuppressWarnings("unused")
-    public void onHelpClick(@NonNull final View sender){
+    public void onHelpClick(@NonNull final View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
         UserSupport.showForHelpStep(view.getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
     private void finishWithSuccess() {
-        view.hideBlockingActivity(R.string.unpaired, view::finishWithSuccess);
+        hideBlockingActivity(R.string.unpaired, view::finishWithSuccess);
     }
 
     private void hideBlockingActivityWithDelay(@NonNull final Runnable runnable) {
         if (view == null) {
             return;
         }
-        view.postDelayed(() -> view.hideBlockingActivity(false, runnable), ONE_SECOND_DELAY);
+        view.postDelayed(() -> hideBlockingActivity(false, runnable), ONE_SECOND_DELAY);
     }
 
     private void presentError(@NonNull final Throwable e) {
         hideBlockingActivityWithDelay(
-                () -> view.presentError(e));
+                () -> view.showErrorDialog(ErrorDialogFragment.newInstance(e)));
     }
 
     private void bindUnregisterDevice(@NonNull final VoidResponse vr) {
@@ -104,8 +105,6 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
         void postDelayed(@NonNull final Runnable runnable, int time);
 
         void finishWithSuccess();
-
-        void presentError(@NonNull final Throwable throwable);
 
         Activity getActivity();
     }
