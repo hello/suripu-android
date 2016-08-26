@@ -47,8 +47,8 @@ public class SettingsPairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    protected boolean shouldFinishFlow() {
-        return true;
+    protected boolean shouldContinueFlow() {
+        return false;
     }
 
     @Override
