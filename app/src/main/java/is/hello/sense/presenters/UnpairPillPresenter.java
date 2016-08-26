@@ -1,6 +1,7 @@
 package is.hello.sense.presenters;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 
@@ -31,6 +32,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
 
     private void bindDevices(@NonNull final Devices devices) {
+        Log.e(getClass().getSimpleName(), "bindDevices: " + (devices.toString()));
         if (view == null) {
             return;
         }
@@ -49,6 +51,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
     }
 
+    @SuppressWarnings("unused")
     public void onPrimaryClick(@NonNull final View clickedView) {
         view.showBlockingActivity(R.string.unpairing_sleep_pill);
         devicesPresenter.update();

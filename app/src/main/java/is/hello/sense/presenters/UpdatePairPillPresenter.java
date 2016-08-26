@@ -8,6 +8,7 @@ import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 
 public class UpdatePairPillPresenter extends BasePairPillPresenter {
@@ -52,15 +53,14 @@ public class UpdatePairPillPresenter extends BasePairPillPresenter {
 
     @Override
     public void finishedPairingAction(@NonNull final Activity activity, final boolean success) {
-     /*  todo use this
-      if (success) {
+        if (success) {
             LoadingDialogFragment.show(activity.getFragmentManager(),
                                        null, LoadingDialogFragment.OPAQUE_BACKGROUND);
             activity.getFragmentManager().executePendingTransactions();
-            LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(), this::finishFlow, R.string.sleep_pill_paired);
+            LoadingDialogFragment.closeWithMessageTransition(activity.getFragmentManager(), view::finishFlow, R.string.sleep_pill_paired);
         } else {
-            presentError(new Throwable());
-        }*/
+            view.presentError(new Throwable());
+        }
     }
 
 
