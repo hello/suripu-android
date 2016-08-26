@@ -66,15 +66,15 @@ import rx.functions.Action1;
 
     public final Observable<Boolean> bluetoothEnabled;
 
-    @Inject public HardwareInteractor(@NonNull Context context,
-                                      @NonNull PreferencesInteractor preferencesPresenter,
-                                      @NonNull ApiSessionManager apiSessionManager,
-                                      @NonNull DevicesInteractor devicesPresenter,
-                                      @NonNull BluetoothStack bluetoothStack) {
+    @Inject public HardwareInteractor(@NonNull final Context context,
+                                      @NonNull final PreferencesInteractor preferencesInteractor,
+                                      @NonNull final ApiSessionManager apiSessionManager,
+                                      @NonNull final DevicesInteractor devicesInteractor,
+                                      @NonNull final BluetoothStack bluetoothStack) {
         this.context = context;
-        this.preferencesPresenter = preferencesPresenter;
+        this.preferencesPresenter = preferencesInteractor;
         this.apiSessionManager = apiSessionManager;
-        this.devicesPresenter = devicesPresenter;
+        this.devicesPresenter = devicesInteractor;
         this.bluetoothStack = bluetoothStack;
 
         this.respondToError = e -> {
@@ -85,32 +85,32 @@ import rx.functions.Action1;
             }
         };
 
-        Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        final Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
 
-        Observable<Intent> disconnectSignal = Rx.fromLocalBroadcast(context, new IntentFilter(GattPeripheral.ACTION_DISCONNECTED));
+        final Observable<Intent> disconnectSignal = Rx.fromLocalBroadcast(context, new IntentFilter(GattPeripheral.ACTION_DISCONNECTED));
         disconnectSignal.subscribe(this::onPeripheralDisconnected, Functions.LOG_ERROR);
 
         this.bluetoothEnabled = bluetoothStack.enabled();
         bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
     }
 
-    public void onUserLoggedOut(@NonNull Intent ignored) {
+    public void onUserLoggedOut(@NonNull final Intent ignored) {
         setLastPeripheralAddress(null);
         setPairedPillId(null);
     }
 
-    public void onBluetoothEnabledChanged(boolean enabled) {
+    public void onBluetoothEnabledChanged(final boolean enabled) {
         logEvent("onBluetoothEnabledChanged(" + enabled + ")");
         if (!enabled) {
             this.peripheral = null;
         }
     }
 
-    public void onPeripheralDisconnected(@NonNull Intent intent) {
+    public void onPeripheralDisconnected(@NonNull final Intent intent) {
         if (peripheral != null) {
-            String currentAddress = peripheral.getAddress();
-            String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+            final String currentAddress = peripheral.getAddress();
+            final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
             if (TextUtils.equals(currentAddress, intentAddress)) {
                 logEvent("broadcasting disconnect");
 
@@ -120,7 +120,7 @@ import rx.functions.Action1;
     }
 
 
-    public void setLastPeripheralAddress(@Nullable String address) {
+    public void setLastPeripheralAddress(@Nullable final String address) {
         logEvent("saving paired peripheral address: " + address);
 
         SharedPreferences.Editor editor = preferencesPresenter.edit();
@@ -132,10 +132,10 @@ import rx.functions.Action1;
         editor.apply();
     }
 
-    public void setPairedPillId(@Nullable String pillId) {
+    public void setPairedPillId(@Nullable final String pillId) {
         logEvent("saving paired pill id: " + pillId);
 
-        SharedPreferences.Editor editor = preferencesPresenter.edit();
+        final SharedPreferences.Editor editor = preferencesPresenter.edit();
         if (pillId != null) {
             editor.putString(PreferencesInteractor.PAIRED_PILL_ID, pillId);
         } else {
@@ -153,12 +153,12 @@ import rx.functions.Action1;
         return (!wantsHighPowerPreScan && peripheralNotFoundCount >= FAILS_BEFORE_HIGH_POWER);
     }
 
-    public void setWantsHighPowerPreScan(boolean wantsHighPowerPreScan) {
+    public void setWantsHighPowerPreScan(final boolean wantsHighPowerPreScan) {
         logEvent("setWantsHighPowerPreScan(" + wantsHighPowerPreScan + ")");
         this.wantsHighPowerPreScan = wantsHighPowerPreScan;
     }
 
-    public void setPeripheral(@Nullable SensePeripheral peripheral) {
+    public void setPeripheral(@Nullable final SensePeripheral peripheral) {
         this.peripheral = peripheral;
     }
 

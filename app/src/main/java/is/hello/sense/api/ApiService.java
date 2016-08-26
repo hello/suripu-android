@@ -17,6 +17,7 @@ import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
@@ -226,6 +227,9 @@ public interface ApiService {
 
     @DELETE("/v2/devices/sense/{id}/all")
     Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId);
+
+    @PUT("/v2/devices/swap")
+    Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body SenseDevice.SwapRequest oldSenseId);
 
     //endregion
 

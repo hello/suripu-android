@@ -76,8 +76,8 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
             getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            //showSenseUpdateIntro();
-            showUnpairPillFragment();
+            showSenseUpdateIntro();
+            //showUpdatePairPillFragment();
 
         }
 
@@ -155,6 +155,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showSenseUpdateReady();
         } else if (fragment instanceof SenseUpdateReadyFragment) {
+            checkSenseOTAStatus();
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
             showUpdatePairPillFragment();
