@@ -61,7 +61,7 @@ implements BaseOutput{
     @Override
     public void onDetach() {
         super.onDetach();
-        scopedPresenterContainer.clear();
+        scopedPresenterContainer.onDetach();
     }
 
     @Override
@@ -91,13 +91,6 @@ implements BaseOutput{
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // Any other call to this method is due to configuration change or low memory.
-        scopedPresenterContainer.onDestroy();
-    }
-
-    @Override
     public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
         scopedPresenterContainer.onTrimMemory(level);
@@ -116,10 +109,11 @@ implements BaseOutput{
             }
         }
 
-        public void onDestroy(){
+        public void onDetach(){
             for(final BasePresenter p : presenters){
-                p.onDestroy();
+                p.onDetach();
             }
+            presenters.clear();
         }
 
         public void add(final BasePresenter presenter) {
@@ -159,10 +153,6 @@ implements BaseOutput{
             for(final BasePresenter p : presenters){
                 p.onTrimMemory(level);
             }
-        }
-
-        public void clear() {
-            presenters.clear();
         }
     }
 }

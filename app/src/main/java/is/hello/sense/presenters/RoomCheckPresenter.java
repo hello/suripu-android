@@ -25,7 +25,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
     private final List<SensorState> sensors = new ArrayList<>();
 
     @Override
-    public void onDestroy() {
+    public void onDetach() {
         interactor.onContainerDestroyed();
     }
 
