@@ -17,16 +17,16 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
 
-public class PairPillFragment extends BaseHardwarePresenterFragment
+public class PairPillFragment extends BasePresenterFragment
         implements BasePairPillPresenter.Output {
 
     @Inject
@@ -40,9 +40,13 @@ public class PairPillFragment extends BaseHardwarePresenterFragment
     protected boolean isPairing = false;
 
     @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addScopedPresenter(presenter);
         presenter.trackOnCreate();
     }
 
@@ -62,7 +66,17 @@ public class PairPillFragment extends BaseHardwarePresenterFragment
 
         this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> presenter.pairPill());
-        initialize(view);
+        OnboardingToolbar.of(this, view)
+                         .setWantsBackButton(presenter.wantsBackButton())
+                         .setOnHelpClickListener(this::help);
+
+        if (BuildConfig.DEBUG) {
+            diagram.setOnLongClickListener(ignored -> {
+                presenter.skipPairingPill(getActivity());
+                return true;
+            });
+            diagram.setBackgroundResource(R.drawable.selectable_dark);
+        }
         return view;
     }
 
@@ -92,30 +106,15 @@ public class PairPillFragment extends BaseHardwarePresenterFragment
         this.retryButton = null;
     }
 
-    protected void initialize(@NonNull final View view) {
-        OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(presenter.wantsBackButton())
-                         .setOnHelpClickListener(this::help);
-
-        if (BuildConfig.DEBUG) {
-            diagram.setOnLongClickListener(ignored -> {
-                presenter.skipPairingPill(getActivity());
-                return true;
-            });
-            diagram.setBackgroundResource(R.drawable.selectable_dark);
-        }
-
-    }
-
     @Override
     public void finishedPairing(final boolean success) {
         LoadingDialogFragment.show(getFragmentManager(),
                                    null, LoadingDialogFragment.OPAQUE_BACKGROUND);
         getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> presenter.execute(() -> {
-            presenter.finishedPairingAction(getActivity(), success);
-
-        }));
+        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
+                                                      () -> presenter.execute(
+                                                              () -> presenter.finishedPairingAction(getActivity(),
+                                                                                                    success)));
     }
 
     @Override

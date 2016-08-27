@@ -21,16 +21,16 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
-import is.hello.sense.presenters.BaseHardwarePresenterFragment;
 import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
+public class SelectWiFiNetworkFragment extends BasePresenterFragment
         implements AdapterView.OnItemClickListener, SelectWifiNetworkPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
 
@@ -66,16 +66,19 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
     }
 
     @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addScopedPresenter(presenter);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
 
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), null);
-
 
         setRetainInstance(true);
     }
@@ -132,7 +135,7 @@ public class SelectWiFiNetworkFragment extends BaseHardwarePresenterFragment
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (networkAdapter.getCount() == 0) {
+        if (networkAdapter.isEmpty()) {
             sendOnScanAnalytics();
             presenter.rescan(false);
         } else {

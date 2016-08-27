@@ -29,9 +29,9 @@ import com.segment.analytics.Properties;
 import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
-import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.presenters.ConnectWifiPresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -40,7 +40,6 @@ import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
-import rx.functions.Action0;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
@@ -67,7 +66,17 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     @Inject
     ConnectWifiPresenter wifiPresenter;
 
+    @Inject
+    PairSensePresenter presenter;
+
     //region Lifecycle
+
+
+    @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+        addScopedPresenter(wifiPresenter);
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -79,7 +88,6 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         if (savedInstanceState != null) {
             this.hasSentAccessToken = savedInstanceState.getBoolean(HAS_SENT_ACCESS_TOKEN_KEY, false);
         }
-        addScopedPresenter(wifiPresenter);
         sendOnCreateAnalytics();
 
         setRetainInstance(true);
@@ -171,7 +179,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         super.onDestroyView();
         if(networkSecurity != null) {
             networkSecurity.setAdapter(null);
-            networkSecurity.setOnItemClickListener(null);
+            networkSecurity.setOnItemSelectedListener(null);
             networkSecurity = null;
         }
         if(toolbar != null){
@@ -279,36 +287,6 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         final int rssi = hasNetwork ? network.getRssi() : 0;
         properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
         Analytics.trackEvent(wifiPresenter.getOnCreateAnalyticsEvent(), properties);
-    }
-
-    @Override
-    public void requestPermissionWithDialog() {
-
-    }
-
-    @Override
-    public void presentError(StringRef message, int resultCode, @StringRes int actionStringRes, String operation, int requestCode) {
-
-    }
-
-    @Override
-    public void presentHighPowerErrorDialog(int requestCode) {
-
-    }
-
-    @Override
-    public void presentTroubleShootingDialog() {
-
-    }
-
-    @Override
-    public void presentUnstableBluetoothDialog(Throwable e, String operation) {
-
-    }
-
-    @Override
-    public void showPairDialog(String deviceName, Action0 positiveAction, Action0 negativeAction) {
-
     }
 
     @Override

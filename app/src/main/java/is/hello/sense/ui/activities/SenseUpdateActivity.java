@@ -19,7 +19,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.BasePairSensePresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -76,8 +76,8 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
             getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            //showSenseUpdateIntro();
-            showUpdatePairPillFragment();
+            showSenseUpdateIntro();
+            //showUpdatePairPillFragment();
 
         }
 
@@ -147,7 +147,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         if (fragment instanceof SenseUpdateIntroFragment || fragment instanceof BluetoothFragment) {
             showSenseUpdate();
         } else if (fragment instanceof PairSenseFragment) {
-            if (responseCode == BasePairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
+            if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
             } else {
                 showSenseUpdateReady();
@@ -155,9 +155,9 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showSenseUpdateReady();
         } else if (fragment instanceof SenseUpdateReadyFragment) {
+            checkSenseOTAStatus();
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
-            checkSenseOTAStatus();
             showUpdatePairPillFragment();
         } else if (fragment instanceof PairPillFragment) {
             showUpdatePairPillConfirmationFragment();

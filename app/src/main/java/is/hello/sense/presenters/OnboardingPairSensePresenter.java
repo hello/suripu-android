@@ -7,7 +7,7 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingPairSensePresenter extends BasePairSensePresenter {
+public class OnboardingPairSensePresenter extends PairSensePresenter {
 
     public OnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor,
                                         final UserFeaturesInteractor userFeaturesInteractor,
@@ -48,8 +48,8 @@ public class OnboardingPairSensePresenter extends BasePairSensePresenter {
     }
 
     @Override
-    protected boolean shouldFinishFlow() {
-        return false;
+    protected boolean shouldContinueFlow() {
+        return true;
     }
 
     @Override

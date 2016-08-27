@@ -16,7 +16,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -34,7 +34,11 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.onboarding.OnboardingModule;
-import is.hello.sense.presenters.BasePairSensePresenter;
+import is.hello.sense.onboarding.OnboardingPairSenseModule;
+import is.hello.sense.onboarding.OnboardingWifiModule;
+import is.hello.sense.presenters.PairSensePresenter;
+import is.hello.sense.settings.SettingsPairSenseModule;
+import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -121,7 +125,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     @Override
     List<Object> getModules() {
-        return Collections.singletonList(new OnboardingModule());
+        if(getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)){
+            return Arrays.asList(new OnboardingModule(), new SettingsWifiModule(), new SettingsPairSenseModule());
+        }
+        return Arrays.asList(new OnboardingModule(), new OnboardingWifiModule(), new OnboardingPairSenseModule());
     }
 
     @Override
@@ -305,7 +312,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
                 showBirthday(null, true);
             }
         } else if (fragment instanceof PairSenseFragment) {
-            if (responseCode == BasePairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
+            if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
             } else {
                 showPairPill(true);

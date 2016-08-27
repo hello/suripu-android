@@ -7,20 +7,18 @@ import java.util.Collection;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.outputs.BaseHardwareOutput;
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Analytics;
 
 public abstract class SelectWifiNetworkPresenter
         extends BaseHardwarePresenter<SelectWifiNetworkPresenter.Output>{
 
-    public SelectWifiNetworkPresenter( final HardwareInteractor hardwareInteractor,
-                                       final UserFeaturesInteractor userFeaturesInteractor) {
-        super(hardwareInteractor, userFeaturesInteractor);
+    public SelectWifiNetworkPresenter(final HardwareInteractor hardwareInteractor) {
+        super(hardwareInteractor);
     }
 
     @Override
-    public void onDestroy() {
+    public void onDetach() {
 
     }
 
@@ -37,7 +35,7 @@ public abstract class SelectWifiNetworkPresenter
         if (!hardwareInteractor.hasPeripheral()) {
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> rescan(sendCountryCode),
-                             this::onError);
+                             this::onPeripheralDiscoveryError);
             return;
         }
 
@@ -48,16 +46,17 @@ public abstract class SelectWifiNetworkPresenter
                                     return;
                                 }
                                 rescan(sendCountryCode);
-                            }, this::onError);
+                            }, this::onPeripheralDiscoveryError);
 
             return;
         }
 
         showHardwareActivity(() -> {
+            logEvent("inside onComplete showHardwareActivity");
             bindAndSubscribe(hardwareInteractor.scanForWifiNetworks(sendCountryCode),
                              this::bindScanResults,
-                             this::onError);
-        }, this::onError);
+                             this::onWifiError);
+        }, this::onWifiError);
     }
 
     private void bindScanResults(@NonNull final Collection<SenseCommandProtos.wifi_endpoint> scanResults) {
@@ -67,14 +66,21 @@ public abstract class SelectWifiNetworkPresenter
         }, null);
     }
 
-    private void onError(final Throwable e) {
+    private void onPeripheralDiscoveryError(final Throwable e) {
         execute( () -> {
             view.showRescanOption();
             view.presentErrorDialog(e, SCAN_FOR_NETWORK_OPERATION);
         });
     }
 
-    public interface Output extends BaseHardwareOutput {
+    private void onWifiError(final Throwable e){
+        hideHardwareActivity( () -> {
+            view.showRescanOption();
+            view.presentErrorDialog(e, SCAN_FOR_NETWORK_OPERATION);
+        }, null);
+    }
+
+    public interface Output extends BaseOutput {
 
         void showScanning();
 
@@ -88,9 +94,8 @@ public abstract class SelectWifiNetworkPresenter
 
     public static class Onboarding extends SelectWifiNetworkPresenter {
 
-        public Onboarding(final HardwareInteractor hardwareInteractor,
-                          final UserFeaturesInteractor userFeaturesInteractor) {
-            super(hardwareInteractor, userFeaturesInteractor);
+        public Onboarding(final HardwareInteractor hardwareInteractor) {
+            super(hardwareInteractor);
         }
 
         @Override
@@ -111,9 +116,8 @@ public abstract class SelectWifiNetworkPresenter
 
     public static class Settings extends SelectWifiNetworkPresenter {
 
-        public Settings(final HardwareInteractor hardwareInteractor,
-                        final UserFeaturesInteractor userFeaturesInteractor) {
-            super(hardwareInteractor, userFeaturesInteractor);
+        public Settings(final HardwareInteractor hardwareInteractor) {
+            super(hardwareInteractor);
         }
 
         @Override

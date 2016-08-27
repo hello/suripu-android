@@ -3,6 +3,7 @@ package is.hello.sense.presenters;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.InteractorContainer;
@@ -23,37 +24,42 @@ import rx.functions.Func1;
  * {@link StateSafeExecutor},
  * {@link StateSafeScheduler},
  * {@link DelegateObservableContainer}
- * @param <T> indicates the generic type of {@link BaseOutput} that the Presenter will expect its view to implement
+ *
+ * @param <S> indicates the generic type of {@link BaseOutput} that the Presenter will expect its view to implement
  */
-public abstract class BasePresenter<T extends BaseOutput>
+public abstract class BasePresenter<S extends BaseOutput>
         implements
         Presenter,
-        PresenterOutputLifecycle<T>,
+        PresenterOutputLifecycle<S>,
         ObservableContainer,
         StateSafeExecutor.Resumes,
-        StateSaveable
-{
+        StateSaveable {
 
-    protected static final Func1<BasePresenter, Boolean> VALIDATOR = BasePresenter::isResumed; //todo add more
+    protected static final Func1<BasePresenter, Boolean> VALIDATOR = BasePresenter::canObservableEmit; //todo add more
+
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
     protected final DelegateObservableContainer<BasePresenter> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, VALIDATOR);
 
     //region Presenter
-    protected T view;
+    protected S view;
     protected final InteractorContainer interactorContainer = new InteractorContainer();
 
 
-    public void setView(final T view){
+    public void setView(final S view) {
         this.view = view;
     }
 
-    public void onDestroyView(){
+    public void onDestroyView() {
         this.view = null;
+        observableContainer.clearSubscriptions();
         interactorContainer.onContainerDestroyed();
     }
 
-    public abstract void onDestroy();
+    /**
+     * Intended to be used when {@link Interactor} values want to be released
+     */
+    public abstract void onDetach();
     //endregion
 
     private boolean stateRestored = false;
@@ -134,12 +140,12 @@ public abstract class BasePresenter<T extends BaseOutput>
     //region StateSafeExecutor.Resumes
     @Override
     public boolean isResumed() {
-        return view != null && view.isResumed();
+        return view != null && view.canObservableEmit();
     }
     //endregion
 
-    //region Interactor Container
 
+    //region Interactor Container
     public void onResume() {
         stateSafeExecutor.executePendingForResume();
         interactorContainer.onContainerResumed();
@@ -165,5 +171,21 @@ public abstract class BasePresenter<T extends BaseOutput>
         return stateSafeExecutor.bind(runnable);
     }
     //endregion
+
+    private Boolean canObservableEmit() {
+        return view != null && view.canObservableEmit();
+    }
+
+    protected void showBlockingActivity(@StringRes final int titleRes) {
+        execute(() -> view.showBlockingActivity(titleRes));
+    }
+
+    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onComplete) {
+        execute(() -> view.hideBlockingActivity(success, bind(onComplete)));
+    }
+
+    protected void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete) {
+        execute(() -> view.hideBlockingActivity(messageRes, bind(onComplete)));
+    }
 
 }

@@ -18,8 +18,6 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.outputs.BaseHardwareOutput;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
@@ -30,9 +28,8 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
     private boolean hasConnectedToNetwork = false;
 
     public ConnectWifiPresenter(
-            final HardwareInteractor hardwareInteractor,
-            final UserFeaturesInteractor userFeaturesInteractor) {
-        super(hardwareInteractor, userFeaturesInteractor);
+            final HardwareInteractor hardwareInteractor) {
+        super(hardwareInteractor);
     }
 
     @Nullable
@@ -47,13 +44,13 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
     }
 
     @Override
-    public void onRestoreState(@NonNull Bundle savedState) {
+    public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
         this.hasConnectedToNetwork = savedState.getBoolean(HAS_CONNECTED_TO_NETWORK_KEY);
     }
 
     @Override
-    public void onDestroy() {
+    public void onDetach() {
 
     }
 
@@ -70,6 +67,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
         Analytics.trackEvent(getOnSubmitWifiCredentialsAnalyticsEvent(), properties);
     }
 
+    //@Override
     public void presentError(final Throwable e, @NonNull final String operation) {
         hideAllActivityForFailure(() -> {
 
@@ -185,7 +183,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
     }
 
 
-    public interface Output extends BaseHardwareOutput{
+    public interface Output extends BasePairSensePresenter.Output{
 
         void presentWifiValidationErrorDialog(Throwable e,
                                               String operation,
@@ -211,9 +209,8 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
 
     public static class Onboarding extends ConnectWifiPresenter {
 
-        public Onboarding(final HardwareInteractor hardwareInteractor,
-                          final UserFeaturesInteractor userFeaturesInteractor) {
-            super(hardwareInteractor, userFeaturesInteractor);
+        public Onboarding(final HardwareInteractor hardwareInteractor) {
+            super(hardwareInteractor);
         }
 
         @Override
@@ -234,9 +231,8 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
 
     public static class Settings extends ConnectWifiPresenter {
 
-        public Settings(final HardwareInteractor hardwareInteractor,
-                        final UserFeaturesInteractor userFeaturesInteractor) {
-            super(hardwareInteractor, userFeaturesInteractor);
+        public Settings(final HardwareInteractor hardwareInteractor) {
+            super(hardwareInteractor);
         }
 
         @Override
