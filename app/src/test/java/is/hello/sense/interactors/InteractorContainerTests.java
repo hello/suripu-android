@@ -32,13 +32,13 @@ public class InteractorContainerTests extends SenseTestCase {
         doNothing()
                 .when(interactor1)
                 .onContainerDestroyed();
-        interactorContainer.addPresenter(interactor1);
+        interactorContainer.addInteractor(interactor1);
 
         Interactor interactor2 = mock(Interactor.class);
         doNothing()
                 .when(interactor2)
                 .onContainerDestroyed();
-        interactorContainer.addPresenter(interactor2);
+        interactorContainer.addInteractor(interactor2);
 
         interactorContainer.onContainerDestroyed();
 
@@ -52,13 +52,13 @@ public class InteractorContainerTests extends SenseTestCase {
         doNothing()
                 .when(interactor1)
                 .onTrimMemory(Interactor.BASE_TRIM_LEVEL);
-        interactorContainer.addPresenter(interactor1);
+        interactorContainer.addInteractor(interactor1);
 
         Interactor interactor2 = mock(Interactor.class);
         doNothing()
                 .when(interactor2)
                 .onTrimMemory(Interactor.BASE_TRIM_LEVEL);
-        interactorContainer.addPresenter(interactor2);
+        interactorContainer.addInteractor(interactor2);
 
         interactorContainer.onTrimMemory(Interactor.BASE_TRIM_LEVEL);
 
@@ -72,13 +72,13 @@ public class InteractorContainerTests extends SenseTestCase {
         doNothing()
                 .when(interactor1)
                 .onContainerResumed();
-        interactorContainer.addPresenter(interactor1);
+        interactorContainer.addInteractor(interactor1);
 
         Interactor interactor2 = mock(Interactor.class);
         doNothing()
                 .when(interactor2)
                 .onContainerResumed();
-        interactorContainer.addPresenter(interactor2);
+        interactorContainer.addInteractor(interactor2);
 
         interactorContainer.onContainerResumed();
 
@@ -99,7 +99,7 @@ public class InteractorContainerTests extends SenseTestCase {
         doReturn("withState")
                 .when(withState)
                 .getSavedStateKey();
-        interactorContainer.addPresenter(withState);
+        interactorContainer.addInteractor(withState);
 
         Interactor withoutState = mock(Interactor.class, CALLS_REAL_METHODS);
         doReturn(null)
@@ -108,7 +108,7 @@ public class InteractorContainerTests extends SenseTestCase {
         doReturn("withoutState")
                 .when(withoutState)
                 .getSavedStateKey();
-        interactorContainer.addPresenter(withoutState);
+        interactorContainer.addInteractor(withoutState);
 
 
         Bundle savedState = new Bundle();

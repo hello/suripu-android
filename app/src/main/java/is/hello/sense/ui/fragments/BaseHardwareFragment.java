@@ -14,20 +14,19 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
-
 /**
  * Extends InjectionFragment to add support for displaying
  * in-app and on Sense loading indicators.
  */
+@Deprecated
 public abstract class BaseHardwareFragment extends InjectionFragment {
     public
     @Inject
-    HardwareInteractor hardwarePresenter;
+    HardwareInteractor hardwareInteractor;
     @Inject
-    protected UserFeaturesInteractor userFeaturesPresenter;
+    protected UserFeaturesInteractor userFeaturesInteractor;
 
     private LoadingDialogFragment loadingDialogFragment;
-
 
     protected boolean isPairOnlySession() {
         return getActivity().getIntent().getBooleanExtra(OnboardingActivity.EXTRA_PAIR_ONLY, false);
@@ -81,7 +80,7 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
 
     protected void showHardwareActivity(@NonNull final Runnable onCompletion,
                                         @NonNull final Action1<Throwable> onError) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.BUSY),
+        bindAndSubscribe(hardwareInteractor.runLedAnimation(SenseLedAnimation.BUSY),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when showing hardware activity.", e);
@@ -91,8 +90,8 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
 
     protected void hideHardwareActivity(@NonNull final Runnable onCompletion,
                                         @Nullable final Action1<Throwable> onError) {
-        if (hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.TRIPPY),
+        if (hardwareInteractor.isConnected()) {
+            bindAndSubscribe(hardwareInteractor.runLedAnimation(SenseLedAnimation.TRIPPY),
                              ignored -> onCompletion.run(),
                              e -> {
                                  Logger.error(getClass().getSimpleName(), "Error occurred when hiding hardware activity.", e);
@@ -108,7 +107,7 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
     }
 
     protected void completeHardwareActivity(@NonNull final Runnable onCompletion) {
-        bindAndSubscribe(hardwarePresenter.runLedAnimation(SenseLedAnimation.STOP),
+        bindAndSubscribe(hardwareInteractor.runLedAnimation(SenseLedAnimation.STOP),
                          ignored -> onCompletion.run(),
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Error occurred when completing hardware activity", e);

@@ -5,20 +5,21 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
+import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
 
 public class SenseResetOriginalPresenter
-        implements PresenterOutputLifecycle<SenseResetOriginalPresenter.SenseResetOriginalPresenterOutput>{
+        extends BasePresenter<SenseResetOriginalPresenter.Output> {
 
     private final SenseResetOriginalInteractor interactor;
-    private SenseResetOriginalPresenterOutput view;
+    private Output view;
 
-    public SenseResetOriginalPresenter( final SenseResetOriginalInteractor interactor){
+    public SenseResetOriginalPresenter(final SenseResetOriginalInteractor interactor) {
         this.interactor = interactor;
     }
 
     @Override
-    public void setView(@NonNull final SenseResetOriginalPresenterOutput view){
+    public void setView(@NonNull final Output view) {
         this.view = view;
     }
 
@@ -28,7 +29,7 @@ public class SenseResetOriginalPresenter
     }
 
     @Override
-    public void onDestroy(){
+    public void onDetach() {
         interactor.destroy();
     }
 
@@ -36,17 +37,17 @@ public class SenseResetOriginalPresenter
         UserSupport.showForHelpStep(activity, UserSupport.HelpStep.RESET_ORIGINAL_SENSE);
     }
 
-    public void startNetworkCall(){
+    public void startNetworkCall() {
         view.showProgress();
         interactor.update();
     }
 
-    public InteractorSubject<Boolean> getInteractorSubject(){
+    public InteractorSubject<Boolean> getInteractorSubject() {
         return interactor.resetResult;
     }
 
     public void onInteractorOutputNext(final Boolean resetSuccessful) {
-        if(resetSuccessful) {
+        if (resetSuccessful) {
             view.onNetworkCallSuccess();
         }
         view.hideProgress();
@@ -57,10 +58,13 @@ public class SenseResetOriginalPresenter
         view.hideProgress();
     }
 
-    public interface SenseResetOriginalPresenterOutput{
+    public interface Output extends BaseOutput {
         void showProgress();
+
         void hideProgress();
+
         void onNetworkCallSuccess();
+
         void onNetworkCallFailure(Throwable e);
     }
 }

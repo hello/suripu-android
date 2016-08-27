@@ -17,24 +17,23 @@ import android.widget.TextView;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
+
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
-import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
+import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
-import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class SelectWiFiNetworkFragment extends BaseHardwareFragment
-        implements AdapterView.OnItemClickListener {
-    public static final String ARG_USE_IN_APP_EVENTS = SelectWiFiNetworkFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
+public class SelectWiFiNetworkFragment extends BasePresenterFragment
+        implements AdapterView.OnItemClickListener, SelectWifiNetworkPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
 
-    private boolean useInAppEvents;
     private boolean sendAccessToken;
 
     private WifiNetworkAdapter networkAdapter;
@@ -47,13 +46,14 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
     private OnboardingToolbar toolbar;
     private View otherNetworkView;
 
+    @Inject
+    SelectWifiNetworkPresenter presenter;
 
     //region Lifecycle
 
-    public static SelectWiFiNetworkFragment newOnboardingInstance(final boolean useInAppEvents) {
+    public static SelectWiFiNetworkFragment newOnboardingInstance() {
         final SelectWiFiNetworkFragment fragment = new SelectWiFiNetworkFragment();
         final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_USE_IN_APP_EVENTS, useInAppEvents);
         arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, true);
         fragment.setArguments(arguments);
         return fragment;
@@ -61,9 +61,13 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
 
     public static Bundle createSettingsArguments() {
         final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_USE_IN_APP_EVENTS, true);
         arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, false);
         return arguments;
+    }
+
+    @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
     }
 
     @Override
@@ -71,16 +75,10 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         super.onCreate(savedInstanceState);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
-        addPresenter(hardwarePresenter);
 
-        this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
-        if (useInAppEvents) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI, null);
-        }
+        Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), null);
 
         setRetainInstance(true);
     }
@@ -112,8 +110,8 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         this.rescanButton = (Button) view.findViewById(R.id.fragment_select_wifi_rescan);
         rescanButton.setEnabled(false);
         Views.setSafeOnClickListener(rescanButton, ignored -> {
-            sendOnRescanAnalytics(useInAppEvents);
-            rescan(true);
+            sendOnRescanAnalytics();
+            presenter.rescan(true);
         });
 
         if (getActivity().getActionBar() != null) {
@@ -137,18 +135,11 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (networkAdapter.getCount() == 0) {
-            sendOnScanAnalytics(useInAppEvents);
-            rescan(false);
+        if (networkAdapter.isEmpty()) {
+            sendOnScanAnalytics();
+            presenter.rescan(false);
         } else {
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
+            showRescanOption();
         }
     }
 
@@ -197,34 +188,18 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
                             final View view,
                             final int position,
                             final long id) {
+        //todo cleanup manual routing here
         final wifi_endpoint network = (wifi_endpoint) adapterView.getItemAtPosition(position);
         final ConnectToWiFiFragment nextFragment = new ConnectToWiFiFragment();
         final Bundle arguments = new Bundle();
         arguments.putSerializable(ConnectToWiFiFragment.ARG_SCAN_RESULT, network);
-        arguments.putBoolean(ConnectToWiFiFragment.ARG_USE_IN_APP_EVENTS, useInAppEvents);
         arguments.putBoolean(ConnectToWiFiFragment.ARG_SEND_ACCESS_TOKEN, sendAccessToken);
         nextFragment.setArguments(arguments);
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
     }
 
-    public void sendOnScanAnalytics(final boolean isInApp){
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_SCAN, null);
-        }
-    }
-
-    private void sendOnRescanAnalytics(final boolean isInApp) {
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN_IN_APP, null);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_RESCAN, null);
-        }
-    }
-
-
-    public void rescan(final boolean sendCountryCode) {
+    @Override
+    public void showScanning() {
         scanningIndicatorLabel.setVisibility(View.VISIBLE);
         scanningIndicator.setVisibility(View.VISIBLE);
         if (subheading.getVisibility() != View.GONE) {
@@ -234,86 +209,41 @@ public class SelectWiFiNetworkFragment extends BaseHardwareFragment
         rescanButton.setVisibility(View.INVISIBLE);
         rescanButton.setEnabled(false);
         networkAdapter.clear();
-
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             ignored -> rescan(sendCountryCode),
-                             this::peripheralRediscoveryFailed);
-            return;
-        }
-
-        if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != ConnectProgress.CONNECTED) {
-                    return;
-                }
-
-                rescan(sendCountryCode);
-            }, this::peripheralRediscoveryFailed);
-
-            return;
-        }
-
-        showHardwareActivity(() -> {
-            bindAndSubscribe(hardwarePresenter.scanForWifiNetworks(sendCountryCode),
-                             this::bindScanResults,
-                             this::scanResultsUnavailable);
-        }, this::scanResultsUnavailable);
     }
 
+    @Override
+    public void showRescanOption() {
+        scanningIndicatorLabel.setVisibility(View.GONE);
+        scanningIndicator.setVisibility(View.GONE);
+        if (subheading.getVisibility() != View.GONE) {
+            subheading.setVisibility(View.VISIBLE);
+        }
+        listView.setVisibility(View.VISIBLE);
+        rescanButton.setVisibility(View.VISIBLE);
+        rescanButton.setEnabled(true);
+    }
+
+    @Override
     public void bindScanResults(@NonNull final Collection<wifi_endpoint> scanResults) {
-        hideHardwareActivity(() -> {
-            networkAdapter.clear();
-            networkAdapter.addAll(scanResults);
-
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
-        }, null);
+        networkAdapter.clear();
+        networkAdapter.addAll(scanResults);
     }
 
-    public void scanResultsUnavailable(final Throwable e) {
-        hideHardwareActivity(() -> {
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
+    @Override
+    public void presentErrorDialog(final Throwable e, final String operation){
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
+                .withOperation(operation)
+                .withSupportLink();
 
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation("Scan for networks")
-                    .withSupportLink();
-
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        }, null);
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void peripheralRediscoveryFailed(final Throwable e) {
-        stateSafeExecutor.execute(() -> {
-            scanningIndicatorLabel.setVisibility(View.GONE);
-            scanningIndicator.setVisibility(View.GONE);
-            if (subheading.getVisibility() != View.GONE) {
-                subheading.setVisibility(View.VISIBLE);
-            }
-            listView.setVisibility(View.VISIBLE);
-            rescanButton.setVisibility(View.VISIBLE);
-            rescanButton.setEnabled(true);
+    public void sendOnScanAnalytics(){
+        Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
+    }
 
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation("Scan for networks")
-                    .withSupportLink();
-
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+    private void sendOnRescanAnalytics() {
+        Analytics.trackEvent(presenter.getOnRescanAnalyticsEvent(), null);
     }
 }

@@ -139,7 +139,7 @@ public class HomeActivity extends ScopedInjectionActivity
         setContentView(R.layout.activity_home);
 
         deviceIssuesPresenter.bindScope(this);
-        interactorContainer.addPresenter(deviceIssuesPresenter);
+        interactorContainer.addInteractor(deviceIssuesPresenter);
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {

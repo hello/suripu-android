@@ -21,7 +21,13 @@ public abstract class InjectionActivity extends SenseActivity implements Observa
     protected final DelegateObservableContainer<Activity> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, ACTIVITY_VALIDATOR);
 
     public InjectionActivity() {
-        SenseApplication.getInstance().inject(this);
+        if(shouldInjectToMainGraphObject()) {
+            SenseApplication.getInstance().inject(this);
+        }
+    }
+
+    protected boolean shouldInjectToMainGraphObject(){
+        return true;
     }
 
     @Override
