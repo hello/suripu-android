@@ -42,14 +42,14 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.zendesk.AttachmentPicker;
-import is.hello.sense.zendesk.TicketsPresenter;
+import is.hello.sense.zendesk.TicketsInteractor;
 import rx.Observable;
 
 public class TicketSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener, Permission.PermissionDialogResources {
     private static final String ARG_SUPPORT_TOPIC = TicketSubmitFragment.class.getName() + ".ARG_SUPPORT_TOPIC";
 
     @Inject
-    TicketsPresenter ticketsPresenter;
+    TicketsInteractor ticketsPresenter;
 
     private AttachmentPicker attachmentPicker;
     private SupportTopic supportTopic;

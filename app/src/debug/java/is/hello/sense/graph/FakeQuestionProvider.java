@@ -19,7 +19,7 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.questions.QuestionProvider;
+import is.hello.sense.interactors.questions.QuestionProvider;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.markup.MarkupProcessor;
 import rx.Observable;

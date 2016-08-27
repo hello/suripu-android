@@ -7,33 +7,40 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
+import is.hello.sense.SenseUpdateModule;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
-import is.hello.sense.graph.presenters.UserFeaturesPresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
-import is.hello.sense.ui.fragments.onboarding.PairPillFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
+import is.hello.sense.ui.fragments.pill.PairPillFragment;
+import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
+import is.hello.sense.ui.fragments.pill.UpdatePairPillConfirmationFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
+import is.hello.sense.util.SkippableFlow;
 
-public class SenseUpdateActivity extends InjectionActivity
-        implements FragmentNavigation {
+public class SenseUpdateActivity extends ScopedInjectionActivity
+        implements FragmentNavigation, SkippableFlow {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
     public static final String EXTRA_DEVICE_ID = SenseUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
     public static final int REQUEST_CODE = 0xbeef;
@@ -45,11 +52,16 @@ public class SenseUpdateActivity extends InjectionActivity
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
-    SenseOTAStatusPresenter senseOTAStatusPresenter;
+    SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
-    UserFeaturesPresenter userFeaturesPresenter;
+    UserFeaturesInteractor userFeaturesPresenter;
+
+    @Override
+    public List<Object> getModules(){
+        return Arrays.asList(new SenseUpdateModule());
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -65,6 +77,8 @@ public class SenseUpdateActivity extends InjectionActivity
             getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
             showSenseUpdateIntro();
+            //showUpdatePairPillFragment();
+
         }
 
         getDeviceIdFromIntent(getIntent());
@@ -91,7 +105,17 @@ public class SenseUpdateActivity extends InjectionActivity
     protected void onDestroy() {
         super.onDestroy();
         navigationDelegate.onDestroy();
+        destroyScopedGraph();
     }
+
+    //region SkippableFlow interface
+
+    @Override
+    public void skipToEnd() {
+        //todo point to showHomeActivity()
+    }
+
+    //endregion
 
     @Override
     public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
@@ -113,8 +137,6 @@ public class SenseUpdateActivity extends InjectionActivity
         if (responseCode == Activity.RESULT_CANCELED) {
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
-            } else if (fragment instanceof PairPillFragment) {
-                popFragment(fragment, true);
             } else {
                 setResult(RESULT_CANCELED, null);
                 finish();
@@ -122,36 +144,37 @@ public class SenseUpdateActivity extends InjectionActivity
             return;
         }
 
-        if(fragment instanceof SenseUpdateIntroFragment || fragment instanceof BluetoothFragment){
+        if (fragment instanceof SenseUpdateIntroFragment || fragment instanceof BluetoothFragment) {
             showSenseUpdate();
-        }else if(fragment instanceof PairSenseFragment){
-            if(responseCode == PairSenseFragment.REQUEST_CODE_EDIT_WIFI){
+        } else if (fragment instanceof PairSenseFragment) {
+            if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
             } else {
                 showSenseUpdateReady();
             }
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showSenseUpdateReady();
-        } else if(fragment instanceof SenseUpdateReadyFragment){
-            showPairPillFragment();
+        } else if (fragment instanceof SenseUpdateReadyFragment) {
+            checkSenseOTAStatus();
+            showUnpairPillFragment();
+        } else if (fragment instanceof UnpairPillFragment) {
+            showUpdatePairPillFragment();
         } else if (fragment instanceof PairPillFragment) {
-            // todo pair new pill.
-            finish();
-        }
-
-        //todo show pair new pill handling before ota flow
-        else if ( fragment instanceof SenseOTAIntroFragment){
+            showUpdatePairPillConfirmationFragment();
+        } else if (fragment instanceof UpdatePairPillConfirmationFragment) {
+            checkForSenseOTA();
+        } else if (fragment instanceof SenseOTAIntroFragment) {
             showSenseOTAStart();
         } else if (fragment instanceof SenseOTAFragment) {
             checkHasVoiceFeature();
         } else if (fragment instanceof SenseVoiceFragment) {
             showVoiceDone();
-        } else if (fragment instanceof VoiceCompleteFragment){
+        } else if (fragment instanceof VoiceCompleteFragment) {
             showResetOriginalSense();
-        } else if ( fragment instanceof SenseResetOriginalFragment){
+        } else if (fragment instanceof SenseResetOriginalFragment) {
             showHomeActivity();
         }
-        
+
     }
 
     @Nullable
@@ -165,8 +188,6 @@ public class SenseUpdateActivity extends InjectionActivity
         final Fragment topFragment = getTopFragment();
         if (topFragment instanceof OnBackPressedInterceptor) {
             ((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back);
-        } else if (topFragment instanceof PairSenseFragment) {
-            showSenseUpdateIntro();
         } else {
             back();
         }
@@ -178,7 +199,7 @@ public class SenseUpdateActivity extends InjectionActivity
 
     public void showSenseUpdate() {
         if (bluetoothStack.isEnabled()) {
-            pushFragment(PairSenseFragment.newUpdateInstance(), null, false);
+            pushFragment(new PairSenseFragment(), null, false);
         } else {
             showBluetoothFragment();
         }
@@ -188,8 +209,16 @@ public class SenseUpdateActivity extends InjectionActivity
         pushFragment(new SenseUpdateReadyFragment(), null, false);
     }
 
-    private void showPairPillFragment() {
-        pushFragment(new PairPillFragment(), null, true);
+    private void showUnpairPillFragment() {
+        pushFragment(new UnpairPillFragment(), null, true);
+    }
+
+    private void showUpdatePairPillFragment() {
+        pushFragment(new PairPillFragment(), null, false);
+    }
+
+    private void showUpdatePairPillConfirmationFragment() {
+        pushFragment(new UpdatePairPillConfirmationFragment(), null, false);
     }
 
     private void updatePreferences() {
@@ -203,26 +232,25 @@ public class SenseUpdateActivity extends InjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(false), null, true);
+        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
     }
 
 
-
-    public void checkSenseOTAStatus(){
+    public void checkSenseOTAStatus() {
         subscribe(senseOTAStatusPresenter.storeInPrefs(),
                   Functions.NO_OP,
                   Functions.LOG_ERROR);
     }
 
     public void checkForSenseOTA() {
-        if(senseOTAStatusPresenter.isOTARequired()){
-            showSenseUpdateIntro();
-        } else{
+        if (senseOTAStatusPresenter.isOTARequired()) {
+            showSenseOTAIntro();
+        } else {
             checkHasVoiceFeature();
         }
     }
 
-    public void showSenseOTAIntro(){
+    public void showSenseOTAIntro() {
         pushFragment(SenseOTAIntroFragment.newInstance(), null, false);
     }
 
@@ -231,7 +259,7 @@ public class SenseUpdateActivity extends InjectionActivity
     }
 
     private void checkHasVoiceFeature() {
-        if(userFeaturesPresenter.hasVoice()){
+        if (userFeaturesPresenter.hasVoice()) {
             showSenseVoice();
         } else {
             showResetOriginalSense();
@@ -251,7 +279,7 @@ public class SenseUpdateActivity extends InjectionActivity
         pushFragment(new SenseResetOriginalFragment(), null, false);
     }
 
-    public void showHomeActivity(){
+    public void showHomeActivity() {
         setResult(RESULT_OK);
         final Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

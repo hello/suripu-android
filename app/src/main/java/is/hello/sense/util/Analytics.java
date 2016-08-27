@@ -28,7 +28,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiException;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 
 public class Analytics {
@@ -824,14 +824,14 @@ public class Analytics {
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit()
-                   .putString(PreferencesPresenter.PAIRED_SENSE_ID, senseId)
+                   .putString(PreferencesInteractor.PAIRED_SENSE_ID, senseId)
                    .apply();
     }
 
     public static String getSenseId() {
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString(PreferencesPresenter.PAIRED_SENSE_ID, "");
+        return preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID, "");
     }
 
     //endregion

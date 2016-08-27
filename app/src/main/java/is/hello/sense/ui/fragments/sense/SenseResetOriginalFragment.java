@@ -11,19 +11,30 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 
-public class SenseResetOriginalFragment extends InjectionFragment
-        implements SenseResetOriginalPresenter.SenseResetOriginalPresenterOutput {
+public class SenseResetOriginalFragment extends BasePresenterFragment
+        implements SenseResetOriginalPresenter.Output {
 
     @Inject
     SenseResetOriginalPresenter presenter;
 
     private OnboardingSimpleStepView view;
+
+    @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+    }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addScopedPresenter(presenter);
+    }
 
     @Nullable
     @Override
@@ -37,14 +48,13 @@ public class SenseResetOriginalFragment extends InjectionFragment
                 .setSecondaryOnClickListener(this::onDone)
                 .setPrimaryButtonText(R.string.action_reset_sense)
                 .setPrimaryOnClickListener(this::onNext);
-        presenter.setView(this);
         return view;
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(presenter.getInteractorSubject(),
+        presenter.bindAndSubscribe(presenter.getInteractorSubject(),
                          presenter::onInteractorOutputNext,
                          presenter::onInteractorOutputError);
     }
@@ -67,17 +77,6 @@ public class SenseResetOriginalFragment extends InjectionFragment
         super.onDestroyView();
         view.destroy();
         view = null;
-        presenter.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // Any other call to this method is due to configuration change or low memory.
-        // We want to release the presenter only when the fragment is truly done.
-        presenter.onDestroy();
-        presenter = null;
-        stateSafeExecutor.clearPending();
     }
 
     //region PresenterOutput implementation

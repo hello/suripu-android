@@ -32,6 +32,7 @@ import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
@@ -430,5 +431,10 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<UserFeatures> getUserFeatures() {
         return loadResponse("sense_features", new TypeToken<UserFeatures>(){}.getType());
+    }
+
+    @Override
+    public Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body final SenseDevice.SwapRequest oldSenseId) {
+        return loadResponse("swap_sense_"+oldSenseId.senseId, new TypeToken<SenseDevice.SwapResponse>(){}.getType());
     }
 }

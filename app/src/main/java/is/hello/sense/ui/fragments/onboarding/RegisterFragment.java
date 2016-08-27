@@ -43,9 +43,9 @@ import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.FacebookPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.FacebookInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -72,11 +72,11 @@ public class RegisterFragment extends InjectionFragment
     @Inject
     ApiSessionManager sessionManager;
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    FacebookPresenter facebookPresenter;
+    FacebookInteractor facebookPresenter;
     @Inject
     Picasso picasso;
     @Inject
@@ -313,12 +313,12 @@ public class RegisterFragment extends InjectionFragment
     }
 
     private boolean doCompleteValidation() {
-        final CharSequence firstName = AccountPresenter.normalizeInput(firstNameTextLET.getInputText());
-        final CharSequence lastName = AccountPresenter.normalizeInput(lastNameTextLET.getInputText());
-        final CharSequence email = AccountPresenter.normalizeInput(emailTextLET.getInputText());
+        final CharSequence firstName = AccountInteractor.normalizeInput(firstNameTextLET.getInputText());
+        final CharSequence lastName = AccountInteractor.normalizeInput(lastNameTextLET.getInputText());
+        final CharSequence email = AccountInteractor.normalizeInput(emailTextLET.getInputText());
         final CharSequence password = passwordTextLET.getInputText();
 
-        if (!AccountPresenter.validateName(firstName)) {
+        if (!AccountInteractor.validateName(firstName)) {
             displayRegistrationError(RegistrationError.NAME_TOO_SHORT);
             firstNameTextLET.requestFocus();
             return false;
@@ -326,13 +326,13 @@ public class RegisterFragment extends InjectionFragment
 
         //Currently we do not validate Last Name
 
-        if (!AccountPresenter.validateEmail(email)) {
+        if (!AccountInteractor.validateEmail(email)) {
             displayRegistrationError(RegistrationError.EMAIL_INVALID);
             emailTextLET.requestFocus();
             return false;
         }
 
-        if (!AccountPresenter.validatePassword(password)) {
+        if (!AccountInteractor.validatePassword(password)) {
             displayRegistrationError(RegistrationError.PASSWORD_TOO_SHORT);
             passwordTextLET.requestFocus();
             return false;
@@ -398,7 +398,7 @@ public class RegisterFragment extends InjectionFragment
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
 
-            preferences.putLocalDate(PreferencesPresenter.ACCOUNT_CREATION_DATE,
+            preferences.putLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE,
                                      LocalDate.now());
             accountPresenter.pushAccountPreferences();
 
@@ -463,7 +463,7 @@ public class RegisterFragment extends InjectionFragment
     }
     //endregion
 
-    //region Facebook presenter
+    //region Facebook interactor
     private void bindFacebookProfile(final boolean onlyPhoto) {
         if (!facebookPresenter.profile.hasObservers()) {
             bindAndSubscribe(facebookPresenter.profile,

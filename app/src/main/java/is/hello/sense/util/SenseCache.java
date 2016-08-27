@@ -14,19 +14,19 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import is.hello.sense.graph.PresenterSubject;
-import is.hello.sense.graph.presenters.ValuePresenter;
+import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.interactors.ValueInteractor;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public abstract class SenseCache extends ValuePresenter<File> {
+public abstract class SenseCache extends ValueInteractor<File> {
     private static final String TAG = SenseCache.class.getName() + ".TAG";
 
     private final File cache;
     private String urlLocation;
-    public final PresenterSubject<File> file = this.subject;
+    public final InteractorSubject<File> file = this.subject;
 
     SenseCache(@NonNull final Context context, @NonNull final String directoryName) {
         if (directoryName.isEmpty() || directoryName.charAt(0) != '/') {

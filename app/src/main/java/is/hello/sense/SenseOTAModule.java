@@ -1,8 +1,8 @@
 package is.hello.sense;
 
 import dagger.Module;
-import is.hello.sense.graph.presenters.SenseOTAStatusPresenter;
-import is.hello.sense.graph.presenters.SenseVoicePresenter;
+import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.SenseVoiceInteractor;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
@@ -12,10 +12,11 @@ import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
         injects = {
                 SenseOTAIntroFragment.class,
                 SenseOTAFragment.class,
-                SenseOTAStatusPresenter.class,
+                SenseOTAStatusInteractor.class,
                 SenseVoiceFragment.class,
-                SenseVoicePresenter.class,
+                SenseVoiceInteractor.class,
         }
 )
 public class SenseOTAModule {
+
 }

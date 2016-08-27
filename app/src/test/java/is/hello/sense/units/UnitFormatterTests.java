@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -22,7 +22,8 @@ import static org.junit.Assert.assertThat;
 @SuppressLint("CommitPrefEdits")
 public class UnitFormatterTests extends InjectionTestCase {
     @Inject UnitFormatter unitFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesInteractor preferences;
 
     @Test
     public void unitPreferenceChanges() throws Exception {
@@ -32,39 +33,39 @@ public class UnitFormatterTests extends InjectionTestCase {
                      .subscribe(changes::add);
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_CELSIUS, true)
+                   .putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                    .commit();
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_CENTIMETERS, true)
+                   .putBoolean(PreferencesInteractor.USE_CENTIMETERS, true)
                    .commit();
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_GRAMS, true)
+                   .putBoolean(PreferencesInteractor.USE_GRAMS, true)
                    .commit();
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_24_TIME, true)
+                   .putBoolean(PreferencesInteractor.USE_24_TIME, true)
                    .commit();
 
         assertThat(changes.size(), is(equalTo(3)));
-        assertThat(changes, hasItem(PreferencesPresenter.USE_CELSIUS));
-        assertThat(changes, hasItem(PreferencesPresenter.USE_CENTIMETERS));
-        assertThat(changes, hasItem(PreferencesPresenter.USE_GRAMS));
-        assertThat(changes, not(hasItem(PreferencesPresenter.USE_24_TIME)));
+        assertThat(changes, hasItem(PreferencesInteractor.USE_CELSIUS));
+        assertThat(changes, hasItem(PreferencesInteractor.USE_CENTIMETERS));
+        assertThat(changes, hasItem(PreferencesInteractor.USE_GRAMS));
+        assertThat(changes, not(hasItem(PreferencesInteractor.USE_24_TIME)));
     }
 
     @Test
     public void formatWeight() throws Exception {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_GRAMS, true)
+                   .putBoolean(PreferencesInteractor.USE_GRAMS, true)
                    .commit();
 
         assertThat(unitFormatter.formatWeight(5800).toString(),
                    is(equalTo("5 kg")));
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_GRAMS, false)
+                   .putBoolean(PreferencesInteractor.USE_GRAMS, false)
                    .commit();
 
         assertThat(unitFormatter.formatWeight(5800).toString(),
@@ -74,14 +75,14 @@ public class UnitFormatterTests extends InjectionTestCase {
     @Test
     public void formatHeight() throws Exception {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_CENTIMETERS, true)
+                   .putBoolean(PreferencesInteractor.USE_CENTIMETERS, true)
                    .commit();
 
         assertThat(unitFormatter.formatHeight(190).toString(),
                    is(equalTo("190 cm")));
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_CENTIMETERS, false)
+                   .putBoolean(PreferencesInteractor.USE_CENTIMETERS, false)
                    .commit();
 
         assertThat(unitFormatter.formatHeight(190).toString(),
@@ -91,14 +92,14 @@ public class UnitFormatterTests extends InjectionTestCase {
     @Test
     public void formatTemperature() throws Exception {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_CELSIUS, true)
+                   .putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                    .commit();
 
         assertThat(unitFormatter.formatTemperature(4).toString(),
                    is(equalTo("4 °")));
 
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.USE_CELSIUS, false)
+                   .putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                    .commit();
 
         assertThat(unitFormatter.formatTemperature(4).toString(),

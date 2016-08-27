@@ -32,8 +32,8 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
-import is.hello.sense.graph.presenters.SleepSoundsPresenter;
-import is.hello.sense.graph.presenters.SleepSoundsStatusPresenter;
+import is.hello.sense.interactors.SleepSoundsInteractor;
+import is.hello.sense.interactors.SleepSoundsStatusInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.SubFragment;
@@ -61,10 +61,10 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
 
     @Inject
-    SleepSoundsStatusPresenter sleepSoundsStatusPresenter;
+    SleepSoundsStatusInteractor sleepSoundsStatusPresenter;
 
     @Inject
-    SleepSoundsPresenter sleepSoundsPresenter;
+    SleepSoundsInteractor sleepSoundsPresenter;
 
 
     private SpinnerImageView playButton;

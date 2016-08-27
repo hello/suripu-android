@@ -87,7 +87,7 @@ public final class PillPeripheral implements Serializable {
     }
     //endregion
 
-    // Could probably move this function to something like PillDfuPresenter, but it made the flow of
+    // Could probably move this function to something like PillDfuInteractor, but it made the flow of
     // ConnectPillFragment easy to manage by returning the PillPeripheral. If we ever need to clear
     // the cache from another part of the app we should consider moving this code to be a better
     // utility function.

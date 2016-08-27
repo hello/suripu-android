@@ -12,18 +12,20 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.fragments.ScopedInjectionFragment;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
-public class OnboardingRegisterAudioFragment extends InjectionFragment {
+public class OnboardingRegisterAudioFragment extends BaseHardwareFragment {
     @Inject ApiService apiService;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesInteractor preferences;
     private OnboardingSimpleStepView view;
 
     @Override
@@ -75,7 +77,7 @@ public class OnboardingRegisterAudioFragment extends InjectionFragment {
         bindAndSubscribe(pushUpdate,
                          ignored -> {
                              preferences.edit()
-                                        .putBoolean(PreferencesPresenter.ENHANCED_AUDIO_ENABLED,
+                                        .putBoolean(PreferencesInteractor.ENHANCED_AUDIO_ENABLED,
                                                     enabled)
                                         .apply();
 

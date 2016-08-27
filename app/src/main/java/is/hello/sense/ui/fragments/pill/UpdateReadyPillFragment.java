@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.bluetooth.DfuService;
-import is.hello.sense.bluetooth.PillDfuPresenter;
+import is.hello.sense.bluetooth.PillDfuInteractor;
 import is.hello.sense.bluetooth.PillPeripheral;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.activities.PillUpdateActivity;
@@ -50,7 +50,7 @@ public class UpdateReadyPillFragment extends PillHardwareFragment
     private Button skipButton;
 
     @Inject
-    PillDfuPresenter pillDfuPresenter;
+    PillDfuInteractor pillDfuPresenter;
     @Inject
     SenseCache.FirmwareCache firmwareCache;
 
