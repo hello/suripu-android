@@ -50,7 +50,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
     }
 
     @Override
-    public void onDestroy() {
+    public void onDetach() {
 
     }
 
