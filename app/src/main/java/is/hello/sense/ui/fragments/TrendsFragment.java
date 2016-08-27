@@ -19,8 +19,8 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
-import is.hello.sense.graph.presenters.ScopedValuePresenter.BindResult;
-import is.hello.sense.graph.presenters.TrendsPresenter;
+import is.hello.sense.interactors.ScopedValueInteractor.BindResult;
+import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.TrendFeedView;
@@ -34,7 +34,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class TrendsFragment extends BacksideTabFragment implements TrendFeedViewItem.OnRetry, SelectorView.OnSelectionChangedListener, TrendGraphView.AnimationCallback {
     @Inject
-    TrendsPresenter trendsPresenter;
+    TrendsInteractor trendsPresenter;
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;

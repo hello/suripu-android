@@ -12,13 +12,14 @@ import com.squareup.picasso.LruCache;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.ObjectGraph;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -27,7 +28,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
-import is.hello.sense.zendesk.ZendeskModule;
 import rx.Observable;
 
 public class SenseApplication extends Application {
@@ -106,9 +106,7 @@ public class SenseApplication extends Application {
     public void buildGraph() {
         this.graph = ObjectGraph.create(
                 new ApiModule(this),
-                new SenseAppModule(this),
-                new BluetoothModule(),
-                new ZendeskModule()
+                new SenseAppModule(this)
         );
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_BUILT_GRAPH));
 
@@ -117,5 +115,12 @@ public class SenseApplication extends Application {
 
     public <T> void inject(final T target) {
         graph.inject(target);
+    }
+
+    /**
+     * @param modules add additional modules that should be removed in the dependent Activity's onDestroy.
+     */
+    public ObjectGraph createScopedObjectGraph(final List<Object> modules){
+        return graph.plus(modules.toArray());
     }
 }

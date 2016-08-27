@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Scheduler;
@@ -20,16 +20,16 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     private final Target bindTarget;
     private final Func1<Target, Boolean> bindPredicate;
 
-    public DelegateObservableContainer(@NonNull Scheduler scheduler,
-                                       @NonNull Target bindTarget,
-                                       @NonNull Func1<Target, Boolean> bindPredicate) {
+    public DelegateObservableContainer(@NonNull final Scheduler scheduler,
+                                       @NonNull final Target bindTarget,
+                                       @NonNull final Func1<Target, Boolean> bindPredicate) {
         this.scheduler = scheduler;
         this.bindTarget = bindTarget;
         this.bindPredicate = bindPredicate;
     }
 
     public void clearSubscriptions() {
-        for (Subscription subscription : subscriptions) {
+        for (final Subscription subscription : subscriptions) {
             if (!subscription.isUnsubscribed()) {
                 subscription.unsubscribe();
             }
@@ -44,15 +44,19 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     }
 
     @Override
-    public @NonNull Subscription track(@NonNull Subscription subscription) {
+    public
+    @NonNull
+    Subscription track(@NonNull final Subscription subscription) {
         subscriptions.add(subscription);
         return subscription;
     }
 
     @Override
-    public @NonNull <T> Observable<T> bind(@NonNull Observable<T> toBind) {
-        Observable<T> bound;
-        if (toBind instanceof PresenterSubject) {
+    public
+    @NonNull
+    <T> Observable<T> bind(@NonNull final Observable<T> toBind) {
+        final Observable<T> bound;
+        if (toBind instanceof InteractorSubject) {
             bound = toBind.lift(new Rx.OperatorUnbufferedObserveOn<>(scheduler));
         } else {
             bound = toBind.observeOn(scheduler);
@@ -61,9 +65,11 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     }
 
     @Override
-    public @NonNull <T> Subscription subscribe(@NonNull Observable<T> toSubscribe,
-                                               @NonNull Action1<? super T> onNext,
-                                               @NonNull Action1<Throwable> onError) {
+    public
+    @NonNull
+    <T> Subscription subscribe(@NonNull final Observable<T> toSubscribe,
+                               @NonNull final Action1<? super T> onNext,
+                               @NonNull final Action1<Throwable> onError) {
         return track(toSubscribe.unsafeSubscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
@@ -71,22 +77,24 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
             }
 
             @Override
-            public void onError(Throwable e) {
-                if (isUnsubscribed())
+            public void onError(final Throwable e) {
+                if (isUnsubscribed()) {
                     return;
+                }
 
                 try {
                     onError.call(e);
-                } catch (Throwable actionError) {
+                } catch (final Throwable actionError) {
                     Logger.error(bindTarget.getClass().getSimpleName(), "onError handler threw an exception, crashing", e);
                     throw actionError;
                 }
             }
 
             @Override
-            public void onNext(T t) {
-                if (isUnsubscribed())
+            public void onNext(final T t) {
+                if (isUnsubscribed()) {
                     return;
+                }
 
                 onNext.call(t);
             }
@@ -94,9 +102,11 @@ public final class DelegateObservableContainer<Target> implements ObservableCont
     }
 
     @Override
-    public @NonNull <T> Subscription bindAndSubscribe(@NonNull Observable<T> toSubscribe,
-                                                      @NonNull Action1<? super T> onNext,
-                                                      @NonNull Action1<Throwable> onError) {
+    public
+    @NonNull
+    <T> Subscription bindAndSubscribe(@NonNull final Observable<T> toSubscribe,
+                                      @NonNull final Action1<? super T> onNext,
+                                      @NonNull final Action1<Throwable> onError) {
         return subscribe(bind(toSubscribe), onNext, onError);
     }
 }

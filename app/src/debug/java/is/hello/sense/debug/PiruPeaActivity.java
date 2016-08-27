@@ -31,7 +31,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -47,7 +47,8 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
     @Inject BluetoothStack stack;
     @Inject ApiSessionManager apiSessionManager;
-    @Inject HardwarePresenter hardwarePresenter;
+    @Inject
+    HardwareInteractor hardwarePresenter;
 
     private SensePeripheral selectedPeripheral;
 
@@ -92,7 +93,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Fade Out LEDs", this::stopAnimationWithFade));
         peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Turn Off LEDs", this::stopAnimationWithoutFade));
 
-        IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        IntentFilter filter = new IntentFilter(HardwareInteractor.ACTION_CONNECTION_LOST);
         Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);
         bindAndSubscribe(onConnectionLost,
                          intent -> disconnect(),

@@ -33,8 +33,8 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -60,9 +60,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     @Inject
     DateFormatter dateFormatter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    SmartAlarmPresenter smartAlarmPresenter;
+    SmartAlarmInteractor smartAlarmPresenter;
 
     private boolean dirty = false;
     private boolean wantsTone = false;
@@ -383,7 +383,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         LoadingDialogFragment.close(getFragmentManager());
 
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
-        if (e instanceof SmartAlarmPresenter.DayOverlapError) {
+        if (e instanceof SmartAlarmInteractor.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         } else if (ApiException.statusEquals(e, 412)) {
             errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_requires_device)));

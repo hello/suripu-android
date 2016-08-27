@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,20 +26,17 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
-import java.util.concurrent.atomic.AtomicReference;
+import javax.inject.Inject;
 
-import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
-import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
-import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
+import is.hello.sense.presenters.ConnectWifiPresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
 import is.hello.sense.ui.widget.LabelEditText;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
@@ -49,14 +44,13 @@ import is.hello.sense.util.EditorActionHandler;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
 public class ConnectToWiFiFragment extends BasePairSenseFragment
-        implements AdapterView.OnItemSelectedListener {
-    public static final String ARG_USE_IN_APP_EVENTS = ConnectToWiFiFragment.class.getName() + ".ARG_USE_IN_APP_EVENTS";
+        implements AdapterView.OnItemSelectedListener, ConnectWifiPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
     public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
+    private static final String HAS_SENT_ACCESS_TOKEN_KEY = "hasSentAccessToken";
 
-    private boolean useInAppEvents;
     private boolean sendAccessToken;
 
     private EditText networkName;
@@ -66,26 +60,35 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
     private @Nullable wifi_endpoint network;
 
-    private boolean hasConnectedToNetwork = false;
     private boolean hasSentAccessToken = false;
     private OnboardingToolbar toolbar;
 
+    @Inject
+    ConnectWifiPresenter wifiPresenter;
+
+    @Inject
+    PairSensePresenter presenter;
 
     //region Lifecycle
+
+
+    @Override
+    public void onInjected() {
+        addScopedPresenter(presenter);
+        addScopedPresenter(wifiPresenter);
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.useInAppEvents = getArguments().getBoolean(ARG_USE_IN_APP_EVENTS);
         this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
         this.network = (wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
         if (savedInstanceState != null) {
-            this.hasConnectedToNetwork = savedInstanceState.getBoolean("hasConnectedToNetwork", false);
-            this.hasSentAccessToken = savedInstanceState.getBoolean("hasSentAccessToken", false);
+            this.hasSentAccessToken = savedInstanceState.getBoolean(HAS_SENT_ACCESS_TOKEN_KEY, false);
         }
-        sendOnCreateAnalytics(useInAppEvents);
+        sendOnCreateAnalytics();
 
         setRetainInstance(true);
     }
@@ -97,10 +100,10 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_network);
         this.networkPassword = (LabelEditText) view.findViewById(R.id.fragment_connect_to_wifi_password);
-        networkPassword.setOnEditorActionListener(new EditorActionHandler(this::sendWifiCredentials));
+        networkPassword.setOnEditorActionListener(new EditorActionHandler(wifiPresenter::sendWifiCredentials));
 
         this.continueButton = (Button) view.findViewById(R.id.fragment_connect_to_wifi_continue);
-        Views.setSafeOnClickListener(continueButton, ignored -> sendWifiCredentials());
+        Views.setSafeOnClickListener(continueButton, ignored -> wifiPresenter.sendWifiCredentials());
 
         final TextView title = (TextView) view.findViewById(R.id.fragment_connect_to_wifi_title);
         final TextView networkInfo = (TextView) view.findViewById(R.id.fragment_connect_to_wifi_info);
@@ -108,7 +111,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
         if (network != null) {
             networkName.setText(network.getSsid());
-            updatePasswordField();
+            wifiPresenter.updatePasswordField();
 
             final SpannableStringBuilder networkInfoBuilder = new SpannableStringBuilder();
             networkInfoBuilder.append(getString(R.string.label_wifi_network_name));
@@ -160,7 +163,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (network != null && network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
-            sendWifiCredentials();
+            wifiPresenter.sendWifiCredentials();
         }
     }
 
@@ -168,8 +171,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean("hasConnectedToNetwork", hasConnectedToNetwork);
-        outState.putBoolean("hasSentAccessToken", hasSentAccessToken);
+        outState.putBoolean(HAS_SENT_ACCESS_TOKEN_KEY, hasSentAccessToken);
     }
 
     @Override
@@ -177,7 +179,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         super.onDestroyView();
         if(networkSecurity != null) {
             networkSecurity.setAdapter(null);
-            networkSecurity.setOnItemClickListener(null);
+            networkSecurity.setOnItemSelectedListener(null);
             networkSecurity = null;
         }
         if(toolbar != null){
@@ -196,7 +198,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ERROR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            sendWifiCredentials();
+            wifiPresenter.sendWifiCredentials();
         }
     }
 
@@ -223,8 +225,8 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
 
 
     //region Password Field
-
-    private sec_type getSecurityType() {
+    @Override
+    public sec_type getSecurityType() {
         if (network != null) {
             return network.getSecurityType();
         } else {
@@ -232,197 +234,89 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         }
     }
 
-    private void updatePasswordField() {
-        final sec_type securityType = getSecurityType();
-        if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP) {
-            networkPassword.setVisibility(View.VISIBLE);
-            networkPassword.requestFocus();
-        } else if (securityType == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
-            networkPassword.setVisibility(View.GONE);
-            networkPassword.setInputText(null);
-            networkPassword.clearFocus();
-        } else {
-            networkPassword.setVisibility(View.VISIBLE);
-            networkPassword.requestFocus();
-        }
+    @Override
+    public String getNetworkName() {
+        return networkName.getText().toString();
     }
 
-    private boolean validatePasswordAsWepKey(@NonNull final String password) {
-        for (int i = 0, length = password.length(); i < length; i++) {
-            final char c = Character.toLowerCase(password.charAt(i));
-            if ((c < '0' || c > '9') && (c < 'a' || c > 'f')) {
-                return false;
-            }
-        }
+    @Override
+    public String getNetworkPassword() {
+        return networkPassword.getInputText();
+    }
 
-        return true;
+    @Override
+    public void setNetworkPassword(final int visibility,
+                                   final boolean requestFocus,
+                                   final boolean clearInput) {
+        networkPassword.setVisibility(visibility);
+        if(clearInput) {
+            networkPassword.setInputText(null);
+        }
+        if(requestFocus){
+            networkPassword.requestFocus();
+        } else {
+            networkPassword.clearFocus();
+        }
     }
 
     @Override
     public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
-        updatePasswordField();
+        wifiPresenter.updatePasswordField();
     }
 
     @Override
     public void onNothingSelected(final AdapterView<?> parent) {
-        updatePasswordField();
+        wifiPresenter.updatePasswordField();
     }
 
     //endregion
-
-
-    private void sendWifiCredentials() {
-        final String networkName = this.networkName.getText().toString();
-        final String password = this.networkPassword.getInputText();
-
-        final sec_type securityType = getSecurityType();
-        if (TextUtils.isEmpty(networkName) ||
-                (TextUtils.isEmpty(password) &&
-                        securityType != sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
-            return;
+    @Override
+    public void sendAccessToken() {
+        if (!sendAccessToken) {
+            presenter.finishUpOperations();
+        } else {
+            presenter.checkLinkedAccount();
         }
-
-        if (securityType == sec_type.SL_SCAN_SEC_TYPE_WEP &&
-                !validatePasswordAsWepKey(password)) {
-            presentError(new SenseSetWifiValidationError(SenseSetWifiValidationError.Reason.MALFORMED_BYTES),
-                    "WEP Validation");
-            return;
-        }
-
-        showBlockingActivity(R.string.title_connecting_network);
-
-        if (!hardwarePresenter.hasPeripheral()) {
-            bindAndSubscribe(hardwarePresenter.rediscoverLastPeripheral(),
-                             ignored -> sendWifiCredentials(),
-                             e -> presentError(e, "Discovery"));
-            return;
-        }
-
-        if (!hardwarePresenter.isConnected()) {
-            bindAndSubscribe(hardwarePresenter.connectToPeripheral(), status -> {
-                if (status != ConnectProgress.CONNECTED) {
-                    return;
-                }
-
-                sendWifiCredentials();
-            }, e -> presentError(e, "Connecting to Sense"));
-
-            return;
-        }
-
-        showHardwareActivity(() -> {
-            if (hasConnectedToNetwork) {
-                sendAccessToken();
-                return;
-            }
-
-            sendWifiCredentialsSubmittedAnalytics(securityType, useInAppEvents);
-
-            final String updateEvent = getWifiAnalyticsEventString(useInAppEvents);
-            final AtomicReference<SenseConnectToWiFiUpdate> lastState = new AtomicReference<>(null);
-            bindAndSubscribe(hardwarePresenter.sendWifiCredentials(networkName, securityType, password),
-                             status -> {
-                                final Properties updateProperties = Analytics.createProperties(
-                                    Analytics.Onboarding.PROP_SENSE_WIFI_STATUS, status.state.toString(),
-                                    Analytics.Onboarding.PROP_SENSE_WIFI_HTTP_RESPONSE_CODE, status.httpResponseCode,
-                                    Analytics.Onboarding.PROP_SENSE_WIFI_SOCKET_ERROR_CODE, status.socketErrorCode
-                                );
-                                Analytics.trackEvent(updateEvent, updateProperties);
-
-                                lastState.set(status);
-
-                                if (status.state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
-                                    this.hasConnectedToNetwork = true;
-                                    sendAccessToken();
-                                } else {
-                                    showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
-                                }
-                             }, e -> {
-                                final String operation = lastState.get() == null
-                                        ? "Setting WiFi"
-                                        : lastState.get().toString();
-                                presentError(e, operation);
-                            });
-        }, e -> presentError(e, "Turning on LEDs"));
     }
 
     @Override
-    public void sendOnCreateAnalytics(final boolean isInApp){
+    public void sendOnCreateAnalytics(){
         final boolean hasNetwork = network != null;
         final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,
                                                                  !hasNetwork);
         final int rssi = hasNetwork ? network.getRssi() : 0;
         properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
-
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP, properties);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_PASSWORD, properties);
-        }
-    }
-
-    private void sendWifiCredentialsSubmittedAnalytics(final sec_type securityType, final boolean isInApp) {
-        final Properties properties = Analytics.createProperties(
-                Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
-                                                                );
-        if (isInApp) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP, properties);
-        } else {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED, properties);
-        }
-    }
-
-    private String getWifiAnalyticsEventString(final boolean isInApp){
-        final String updateEvent;
-        if (isInApp) {
-            updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
-        } else {
-            updateEvent = Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
-        }
-        return updateEvent;
-    }
-
-    private void sendAccessToken() {
-        if (!sendAccessToken) {
-            super.finishUpOperations();
-        } else {
-            super.linkAccount();
-        }
+        Analytics.trackEvent(wifiPresenter.getOnCreateAnalyticsEvent(), properties);
     }
 
     @Override
-    public void onFinished(){
-        sendOnFinishedAnalytics(isPairOnlySession());
+    public void presentWifiValidationErrorDialog(final Throwable e,
+                                                 final String operation,
+                                                 final Uri supportUri,
+                                                 @StringRes final int actionStringRes) {
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
+                .withOperation(operation);
 
-        hideAllActivityForSuccess(getOnFinishedSuccessMessage(), () -> {
-            if (useInAppEvents){
-                hardwarePresenter.clearPeripheral();
-                getActivity().finish();
-            }else {
-                finishFlow();
-            }
-        }, e -> presentError(e, "Turning off LEDs"));
+        final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
+        final Intent intent = UserSupport.createViewUriIntent(getActivity(), uri);
+        errorDialogBuilder.withAction(intent, R.string.action_support);
+
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     @Override
-    public void presentError(final Throwable e, @NonNull final String operation) {
-        hideAllActivityForFailure(() -> {
-            final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation(operation);
+    public void presentLinkedAccountErrorDialog(final Throwable e,
+                                                final String operation,
+                                                @StringRes final int titleRes) {
+        final ErrorDialogFragment errorDialogFragment =
+                new ErrorDialogFragment.Builder(e, getActivity())
+                        .withOperation(operation)
+                        .withTitle(R.string.failed_to_link_account)
+                        .withSupportLink()
+                        .build();
 
-            if (e instanceof SenseSetWifiValidationError &&
-                    ((SenseSetWifiValidationError) e).reason == SenseSetWifiValidationError.Reason.MALFORMED_BYTES) {
-                final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
-                final Intent intent = UserSupport.createViewUriIntent(getActivity(), uri);
-                errorDialogBuilder.withAction(intent, R.string.action_support);
-            } else {
-                errorDialogBuilder.withTitle(R.string.failed_to_link_account);
-                errorDialogBuilder.withSupportLink();
-            }
-
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {

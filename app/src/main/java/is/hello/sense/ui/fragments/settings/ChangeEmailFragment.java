@@ -16,7 +16,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
-import is.hello.sense.graph.presenters.AccountPresenter;
+import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
@@ -29,7 +29,7 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class ChangeEmailFragment extends InjectionFragment implements Analytics.OnEventListener{
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
 
     private LabelEditText emailLET;
     private Button submitButton;
@@ -77,9 +77,9 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
     }
 
     public void save() {
-        final String newEmail = AccountPresenter.normalizeInput(emailLET.getInputText());
+        final String newEmail = AccountInteractor.normalizeInput(emailLET.getInputText());
         emailLET.setInputText(newEmail);
-        if (!AccountPresenter.validateEmail(newEmail)) {
+        if (!AccountInteractor.validateEmail(newEmail)) {
             emailLET.setError(R.string.invalid_email);
             emailLET.requestFocus();
             animatorFor(emailLET)

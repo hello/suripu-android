@@ -1,5 +1,6 @@
 package is.hello.sense.ui.common;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,8 +9,8 @@ import android.support.annotation.Nullable;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.SenseApplication;
-import is.hello.sense.graph.presenters.Presenter;
-import is.hello.sense.graph.presenters.PresenterContainer;
+import is.hello.sense.interactors.Interactor;
+import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.StateSafeExecutor;
 import is.hello.sense.util.StateSafeScheduler;
@@ -26,14 +27,20 @@ public class InjectionFragment extends SenseFragment
     protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
     protected final DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
 
-    protected final PresenterContainer presenterContainer = new PresenterContainer();
+    protected final InteractorContainer interactorContainer = new InteractorContainer();
 
     protected boolean animatorContextFromActivity = false;
     protected @Nullable AnimatorContext animatorContext;
 
 
     public InjectionFragment() {
-        SenseApplication.getInstance().inject(this);
+        if(shouldInjectToMainGraphObject()) {
+            SenseApplication.getInstance().inject(this);
+        }
+    }
+
+    protected boolean shouldInjectToMainGraphObject() {
+        return true;
     }
 
     @Override
@@ -42,6 +49,19 @@ public class InjectionFragment extends SenseFragment
 
         if (animatorContext == null && context instanceof AnimatorContext.Scene) {
             this.animatorContext = ((AnimatorContext.Scene) context).getAnimatorContext();
+            this.animatorContextFromActivity = true;
+        }
+    }
+
+    /**
+     * For devices with API level below 23
+     */
+    @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+
+        if (animatorContext == null && activity instanceof AnimatorContext.Scene) {
+            this.animatorContext = ((AnimatorContext.Scene) activity).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
     }
@@ -59,7 +79,7 @@ public class InjectionFragment extends SenseFragment
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            presenterContainer.onRestoreState(savedInstanceState);
+            interactorContainer.onRestoreState(savedInstanceState);
         }
     }
 
@@ -67,7 +87,7 @@ public class InjectionFragment extends SenseFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        presenterContainer.onSaveState(outState);
+        interactorContainer.onSaveState(outState);
     }
 
     @Override
@@ -75,14 +95,14 @@ public class InjectionFragment extends SenseFragment
         super.onResume();
 
         stateSafeExecutor.executePendingForResume();
-        presenterContainer.onContainerResumed();
+        interactorContainer.onContainerResumed();
     }
 
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
 
-        presenterContainer.onTrimMemory(level);
+        interactorContainer.onTrimMemory(level);
     }
 
     @Override
@@ -90,7 +110,7 @@ public class InjectionFragment extends SenseFragment
         super.onDestroyView();
 
         observableContainer.clearSubscriptions();
-        presenterContainer.onContainerDestroyed();
+        interactorContainer.onContainerDestroyed();
     }
 
 
@@ -128,8 +148,8 @@ public class InjectionFragment extends SenseFragment
     }
 
 
-    public void addPresenter(@NonNull Presenter presenter) {
-        presenterContainer.addPresenter(presenter);
+    public void addPresenter(@NonNull Interactor interactor) {
+        interactorContainer.addInteractor(interactor);
     }
 
 

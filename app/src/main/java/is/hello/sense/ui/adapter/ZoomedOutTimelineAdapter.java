@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
+import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
 import is.hello.sense.util.DateFormatter;
@@ -30,13 +29,13 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     private final Context context;
     private final LayoutInflater inflater;
     private final Resources resources;
-    private final ZoomedOutTimelinePresenter presenter;
+    private final ZoomedOutTimelineInteractor presenter;
     private final int count;
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
     public ZoomedOutTimelineAdapter(@NonNull Context context,
-                                    @NonNull ZoomedOutTimelinePresenter presenter,
+                                    @NonNull ZoomedOutTimelineInteractor presenter,
                                     @NonNull LocalDate oldestDate) {
         this.context = context;
         this.resources = context.getResources();
@@ -120,7 +119,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     //endregion
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ZoomedOutTimelinePresenter.DataView {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ZoomedOutTimelineInteractor.DataView {
         public final TextView dayNumber;
         public final TextView dayName;
         public final TextView score;

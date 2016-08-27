@@ -25,8 +25,8 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -55,9 +55,9 @@ public class DeviceListFragment extends InjectionFragment
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
 
     @Inject
-    DevicesPresenter devicesPresenter;
+    DevicesInteractor devicesPresenter;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
@@ -226,8 +226,9 @@ public class DeviceListFragment extends InjectionFragment
         final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         switch (type) {
             case SENSE: {
+                //todo make separate activity to handle pairing only
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                intent.putExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, false);
+                //intent.putExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, false);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
             }
