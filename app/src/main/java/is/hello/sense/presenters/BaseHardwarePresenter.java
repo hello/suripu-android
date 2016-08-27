@@ -30,8 +30,8 @@ public abstract class BaseHardwarePresenter<T extends BaseOutput>
     }
 
     @Override
-    public void onDestroy() {
-
+    public void onDetach(){
+        hardwareInteractor = null;
     }
 
     protected void showHardwareActivity(@NonNull final Runnable onCompletion,

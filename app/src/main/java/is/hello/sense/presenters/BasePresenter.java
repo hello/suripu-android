@@ -59,7 +59,7 @@ public abstract class BasePresenter<S extends BaseOutput>
     /**
      * Intended to be used when {@link Interactor} values want to be released
      */
-    public abstract void onDestroy();
+    public abstract void onDetach();
     //endregion
 
     private boolean stateRestored = false;

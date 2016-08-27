@@ -17,6 +17,6 @@ public interface PresenterOutputLifecycle<T extends BaseOutput> {
     /**
      * Release reference to Interceptor
      */
-    void onDestroy();
+    void onDetach();
 
 }

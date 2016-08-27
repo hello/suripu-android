@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
@@ -22,15 +21,15 @@ import is.hello.sense.util.Analytics;
 public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Output> {
     private final static int ONE_SECOND_DELAY = 1000;
     @Inject
-    DevicesInteractor devicesPresenter;
+    DevicesInteractor devicesInteractor;
 
     @Override
-    public void onDestroy() {
-        devicesPresenter = null;
+    public void onDetach() {
+        devicesInteractor = null;
     }
 
     public void onViewCreated() {
-        bindAndSubscribe(devicesPresenter.devices,
+        bindAndSubscribe(devicesInteractor.devices,
                          this::bindDevices,
                          this::presentError);
     }
@@ -44,12 +43,12 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
         view.postDelayed(() -> {
             final SleepPillDevice sleepPillDevice = devices.getSleepPill();
             if (sleepPillDevice == null) { // account doesn't have a pill.
-                devicesPresenter.devices.forget();
+                devicesInteractor.devices.forget();
                 view.finishWithSuccess();
                 return;
             }
-            showBlockingActivity(R.string.unpairing_sleep_pill);
-            bindAndSubscribe(devicesPresenter.unregisterDevice(sleepPillDevice),
+            view.showBlockingActivity(R.string.unpairing_sleep_pill);
+            bindAndSubscribe(devicesInteractor.unregisterDevice(sleepPillDevice),
                              this::bindUnregisterDevice,
                              this::presentError);
         }, ONE_SECOND_DELAY);
@@ -59,7 +58,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
     @SuppressWarnings("unused")
     public void onPrimaryClick(@NonNull final View clickedView) {
         view.showBlockingActivity(R.string.unpairing_sleep_pill);
-        devicesPresenter.update();
+        devicesInteractor.update();
     }
 
     public void onSecondaryClick(@NonNull final View clickedView) {

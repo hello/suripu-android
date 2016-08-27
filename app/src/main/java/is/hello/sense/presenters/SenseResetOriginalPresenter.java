@@ -29,7 +29,7 @@ public class SenseResetOriginalPresenter
     }
 
     @Override
-    public void onDestroy() {
+    public void onDetach() {
         interactor.destroy();
     }
 
