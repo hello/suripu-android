@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -27,14 +28,7 @@ implements BaseOutput{
      */
     public abstract void onInjected();
 
-    @Override
-    public boolean canObservableEmit(){
-        return isAdded() && !getActivity().isFinishing();
-    }
-
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
+    public void inject(@NonNull  final Context context){
         try{
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
             onInjected();
@@ -44,15 +38,22 @@ implements BaseOutput{
     }
 
     @Override
-    public void onAttach(final Activity activity) {
-        super.onAttach(activity);
-        try{
-            ((ScopedInjectionActivity) activity).injectToScopedGraph(this);
-            onInjected();
-        } catch (final ClassCastException e){
-            throw new ClassCastException(activity.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
-        }
+    public boolean canObservableEmit(){
+        return isAdded() && !getActivity().isFinishing();
+    }
 
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        inject(context);
+    }
+
+    @Override
+    public void onAttach(final Activity activity) {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            super.onAttach(activity);
+            inject(activity);
+        }
     }
 
     /**
