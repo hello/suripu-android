@@ -42,6 +42,13 @@ public class SwapSenseInteractor extends ValueInteractor<Boolean>{
                 });
     }
 
+    /**
+     * Used in cases where the value presenter value is not needed to be retained
+     */
+    public Observable<Boolean> canSwap(){
+        return provideUpdateObservable();
+    }
+
     public void setRequest(final String senseId) {
         this.request = new SenseDevice.SwapRequest(senseId);
     }
