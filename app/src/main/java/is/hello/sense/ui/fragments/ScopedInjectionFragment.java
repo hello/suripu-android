@@ -48,10 +48,14 @@ implements BaseOutput{
         inject(context);
     }
 
+    /**
+     * Will still be called by devices with api >= 23 until migrate SenseFragment to extend Support Library Fragment.
+     * @param activity
+     */
     @Override
     public void onAttach(final Activity activity) {
+        super.onAttach(activity);
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            super.onAttach(activity);
             inject(activity);
         }
     }
