@@ -4,7 +4,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.SenseOTAModule;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.OnboardingPairPillPresenter;
@@ -21,7 +20,8 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
 
 @Module(complete = false,
         includes = {
-                SenseOTAModule.class
+                //todo include after converting fragments to use presenters
+                // SenseOTAModule.class,
         },
         injects = {
                 OnboardingActivity.class,
