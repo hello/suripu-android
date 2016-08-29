@@ -342,12 +342,19 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (headerView != null) {
+            headerView.clearAnimation();
+        }
 
-        headerView.clearAnimation();
-        itemAnimator.endAnimations();
-        itemAnimator.removeAllListeners();
+        if (itemAnimator != null) {
+            itemAnimator.endAnimations();
+            itemAnimator.removeAllListeners();
+        }
 
-        recyclerView.setAdapter(null);
+        if (recyclerView != null) {
+            recyclerView.clearOnScrollListeners();
+            recyclerView.setAdapter(null);
+        }
 
         this.toolbar = null;
         this.headerView = null;
@@ -356,7 +363,7 @@ public class TimelineFragment extends InjectionFragment
         this.adapter = null;
         this.itemAnimator = null;
         this.backgroundFill = null;
-        scrollListener = null;
+        this.scrollListener = null;
 
         dismissVisibleOverlaysAndDialogs();
     }
