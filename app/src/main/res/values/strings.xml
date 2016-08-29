@@ -74,10 +74,9 @@
     <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
-    <string name="title_upgrade_sense_voice">Upgrade to Sense with Voice</string>
-    <string name="info_upgrade_sense_voice">The new Sense introduces improved sensors, and Voice — which lets you control Sense just by speaking to it.\n
-If you already purchased a new Sense with Voice, make sure it’s plugged in and nearby.</string>
-    <string name="action_upgrade_sense_voice_help">Learn more about Sense with Voice</string>
+    <string name="title_upgrade_sense_voice">Sense with Voice</string>
+    <string name="info_upgrade_sense_voice">The new Sense introduces improved sensors, and Voice — which lets you control Sense just by speaking to it. Purchase a Sense with Voice to upgrade.</string>
+    <string name="action_upgrade_sense_voice_help">Purchase Sense with Voice</string>
     <string name="title_upgrade_ready_sense_voice">Sense with Voice is ready</string>
     <string name="info_upgrade_ready_sense_voice">Your new Sense with Voice is set up and is currently paired with your original Sleep Pill. Next, you’ll pair your new Sleep Pill.</string>
     <string name="title_setup_sense">Setting up Sense</string>
@@ -132,7 +131,7 @@ If you already purchased a new Sense with Voice, make sure it’s plugged in and
 
     <string name="title_sense_reset_original">Reset your original Sense</string>
     <string name="info_sense_reset_original_intro">Resetting your original Sense will return it to factory settings.</string>
-    <string name="info_sense_reset_original_done">Plug your original Sense into a power outlet, and it will automatically reset within the next two hours.\nThere’s nothing else you need to do — you’ll know it’s finished when it glows purple. </string>
+    <string name="info_sense_reset_original_done">Plug your original Sense into a power outlet, and it will automatically reset within the next two hours. There’s nothing else you need to do — you’ll know it’s finished when it glows purple. </string>
     <string name="action_reset_sense">Reset Sense</string>
 
     <string name="onboarding_complete_title">You’re all set.</string>
