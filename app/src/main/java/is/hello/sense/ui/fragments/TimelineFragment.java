@@ -119,7 +119,7 @@ public class TimelineFragment extends InjectionFragment
     private TimelineAdapter adapter;
     private StaggeredFadeItemAnimator itemAnimator;
     private ColorDrawableCompat backgroundFill;
-    private ScrollListener scrollListener = new ScrollListener();
+    private ScrollListener scrollListener;
     private int toolTipHeight;
 
 
@@ -160,7 +160,6 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         final LocalDate date = getDate();
         final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
                                                                  date.toString());
@@ -177,7 +176,7 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_timeline, container, false);
-
+        scrollListener = new ScrollListener();
         final Resources resources = getResources();
         // This value will change based on screen density. Using a static value will not solve this for all phones.
         // Since we know the text and top/bottom padding size, the 3 of those combined will create enough space.
@@ -343,12 +342,19 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (headerView != null) {
+            headerView.clearAnimation();
+        }
 
-        headerView.clearAnimation();
-        itemAnimator.endAnimations();
-        itemAnimator.removeAllListeners();
+        if (itemAnimator != null) {
+            itemAnimator.endAnimations();
+            itemAnimator.removeAllListeners();
+        }
 
-        recyclerView.setAdapter(null);
+        if (recyclerView != null) {
+            recyclerView.clearOnScrollListeners();
+            recyclerView.setAdapter(null);
+        }
 
         this.toolbar = null;
         this.headerView = null;
@@ -357,7 +363,7 @@ public class TimelineFragment extends InjectionFragment
         this.adapter = null;
         this.itemAnimator = null;
         this.backgroundFill = null;
-        scrollListener = null;
+        this.scrollListener = null;
 
         dismissVisibleOverlaysAndDialogs();
     }
