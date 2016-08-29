@@ -32,7 +32,8 @@ import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
 @Module(
         complete = false,
         includes = {
-                SenseOTAModule.class,
+                //todo include after converting fragments to use presenters
+                // SenseOTAModule.class,
                 SettingsWifiModule.class
         },
         injects = {
