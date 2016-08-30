@@ -1,8 +1,8 @@
 package is.hello.sense.ui.fragments.sense;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +11,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
@@ -33,7 +31,6 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addScopedPresenter(presenter);
     }
 
     @Nullable
@@ -41,22 +38,13 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_sense_reset_original)
-                .setSubheadingText(R.string.info_sense_reset_original_intro)
+                .setSubheadingText(R.string.info_sense_reset_original)
                 .setToolbarOnHelpClickListener(this::onHelp)
-                .setDiagramImage(R.drawable.onboarding_sense_intro)
-                .setSecondaryButtonText(R.string.action_do_later)
-                .setSecondaryOnClickListener(this::onDone)
-                .setPrimaryButtonText(R.string.action_reset_sense)
+                .setDiagramImage(R.drawable.sense_reset_original)
+                .setWantsSecondaryButton(false)
+                .setPrimaryButtonText(R.string.action_reset_sense_original)
                 .setPrimaryOnClickListener(this::onNext);
         return view;
-    }
-
-    @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        presenter.bindAndSubscribe(presenter.getInteractorSubject(),
-                         presenter::onInteractorOutputNext,
-                         presenter::onInteractorOutputError);
     }
 
     public void onHelp(final View ignored) {
@@ -65,11 +53,11 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
 
     public void onDone(final View ignored) {
         //todo this would also be handled by the presenter directing to a router
-        finishFlow();
+        onOperationSuccess();
     }
 
     public void onNext(final View ignored) {
-        presenter.startNetworkCall();
+        presenter.startOperation();
     }
 
     @Override
@@ -82,27 +70,14 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     //region PresenterOutput implementation
 
     @Override
-    public void showProgress() {
-        LoadingDialogFragment.show(getFragmentManager());
+    public void onOperationSuccess(){
+        finishFlow();
     }
 
     @Override
-    public void hideProgress() {
-        LoadingDialogFragment.close(getFragmentManager());
-    }
-
-    @Override
-    public void onNetworkCallSuccess() {
-        view.setSubheadingText(R.string.info_sense_reset_original_done)
-            .setDiagramImage(R.drawable.onboarding_pair_sense)
-            .setPrimaryOnClickListener(this::onDone)
-            .setPrimaryButtonText(R.string.action_done)
-            .setWantsSecondaryButton(false);
-    }
-
-    @Override
-    public void onNetworkCallFailure(@NonNull final Throwable e) {
-        ErrorDialogFragment.presentError(getActivity(), e);
+    public void showRetry(@StringRes final int retryRes) {
+        this.view.setSecondaryButtonText(retryRes)
+                 .setSecondaryOnClickListener(this::onDone);
     }
 
     //endregion

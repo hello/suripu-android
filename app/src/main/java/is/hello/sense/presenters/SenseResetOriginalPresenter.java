@@ -1,70 +1,79 @@
 package is.hello.sense.presenters;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
-import is.hello.sense.graph.InteractorSubject;
+import is.hello.commonsense.util.ConnectProgress;
+import is.hello.commonsense.util.StringRef;
+import is.hello.sense.R;
+import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 public class SenseResetOriginalPresenter
-        extends BasePresenter<SenseResetOriginalPresenter.Output> {
+        extends BaseHardwarePresenter<SenseResetOriginalPresenter.Output> {
 
-    private final SenseResetOriginalInteractor interactor;
-    private Output view;
+    private final SenseResetOriginalInteractor resetInteractor;
 
-    public SenseResetOriginalPresenter(final SenseResetOriginalInteractor interactor) {
-        this.interactor = interactor;
-    }
-
-    @Override
-    public void setView(@NonNull final Output view) {
-        this.view = view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        view = null;
-    }
-
-    @Override
-    public void onDetach() {
-        interactor.destroy();
+    public SenseResetOriginalPresenter(final HardwareInteractor interactor,
+                                       final SenseResetOriginalInteractor resetInteractor) {
+        super(interactor);
+        this.resetInteractor = resetInteractor;
     }
 
     public void navigateToHelp(final Activity activity) {
         UserSupport.showForHelpStep(activity, UserSupport.HelpStep.RESET_ORIGINAL_SENSE);
     }
 
-    public void startNetworkCall() {
-        view.showProgress();
-        interactor.update();
+    public void startOperation() {
+        showBlockingActivity(R.string.dialog_sense_reset_original);
+        //todo its possible that resetInteractor returns null
+        bindAndSubscribe(hardwareInteractor.discoverPeripheralForDevice(resetInteractor.getCurrentSense()),
+                         ignore -> this.checkConnection(),
+                         this::onError);
     }
 
-    public InteractorSubject<Boolean> getInteractorSubject() {
-        return interactor.resetResult;
+    public void onOperationComplete(final Void ignored) {
+        hideBlockingActivity(true, () -> {
+            resetInteractor.senseDevice.forget();
+            view.onOperationSuccess();
+        });
     }
 
-    public void onInteractorOutputNext(final Boolean resetSuccessful) {
-        if (resetSuccessful) {
-            view.onNetworkCallSuccess();
+    public void onError(final Throwable e) {
+        hideBlockingActivity(false, () -> {
+            final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
+            builder.withMessage(StringRef.from(R.string.error_factory_reset_original_sense_message));
+            view.showErrorDialog(builder);
+            view.showRetry(R.string.action_skip);
+        });
+
+    }
+
+    private void checkConnection(){
+        logEvent("checkConnection");
+        if(hardwareInteractor.isConnected()) {
+            factoryResetOperation();
+        } else {
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral()
+                                               .filter(ConnectProgress.CONNECTED::equals),
+                             ignore -> this.factoryResetOperation(),
+                             this::onError);
         }
-        view.hideProgress();
     }
 
-    public void onInteractorOutputError(final Throwable e) {
-        view.onNetworkCallFailure(e);
-        view.hideProgress();
+    private void factoryResetOperation() {
+        bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
+                         this::onOperationComplete,
+                         this::onError);
     }
 
     public interface Output extends BaseOutput {
-        void showProgress();
 
-        void hideProgress();
+        void onOperationSuccess();
 
-        void onNetworkCallSuccess();
-
-        void onNetworkCallFailure(Throwable e);
+        void showRetry(@StringRes int retryRes);
     }
 }
