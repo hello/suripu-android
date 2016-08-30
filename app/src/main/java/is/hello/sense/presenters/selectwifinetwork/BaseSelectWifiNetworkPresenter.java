@@ -19,7 +19,7 @@ public abstract class BaseSelectWifiNetworkPresenter
 
     @Override
     public void onDetach() {
-
+        super.onDetach();
     }
 
     private final static String SCAN_FOR_NETWORK_OPERATION = "Scan for networks";

@@ -9,6 +9,7 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
+//todo confirm strings used are correct
 public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
 
 
