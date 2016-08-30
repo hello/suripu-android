@@ -53,6 +53,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     @Override
     public void onDetach() {
+        super.onDetach();
         //apiService = null;
     }
 
