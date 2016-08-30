@@ -76,7 +76,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
-                SenseOTAModule.class
+                SenseOTAModule.class //todo remove after converting fragments to use presenters
         },
         injects = {
                 SenseApplication.class,
