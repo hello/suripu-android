@@ -75,14 +75,14 @@ public class PairSenseFragment extends BasePairSenseFragment
                 .setSubheadingText(presenter.getSubtitleRes())
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
-                .setSecondaryOnClickListener(this::showPairingModeHelp)
-                .setPrimaryOnClickListener(ignored -> onPrimaryButtonClicked())
+                .setSecondaryOnClickListener(this::showPairingModeHelp)// todo move to presenter
+                .setPrimaryOnClickListener(ignored -> onPrimaryButtonClicked()) // todo move to presenter
                 .setToolbarWantsBackButton(true)
                 .setToolbarOnHelpClickListener(ignored -> {
-                    UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_SENSE_BLE);
+                    UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_SENSE_BLE); //todo move to presenter
                 })
                 .setToolbarOnHelpLongClickListener(ignored -> {
-                    showSupportOptions();
+                    showSupportOptions(); //todo move to presenter
                     return true;
                 })
                 .configure(b -> presenter.provideBluetoothEnabledSubscription(b.primaryButton::setEnabled));
