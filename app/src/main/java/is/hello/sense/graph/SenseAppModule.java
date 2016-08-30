@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.SenseOTAModule;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
@@ -33,7 +34,6 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
-import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
@@ -76,6 +76,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
+                SenseOTAModule.class //todo remove after converting fragments to use presenters
         },
         injects = {
                 SenseApplication.class,
