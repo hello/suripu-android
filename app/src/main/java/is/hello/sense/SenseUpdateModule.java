@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
@@ -59,14 +60,14 @@ public class SenseUpdateModule {
 
     @Provides
     @Singleton
-    SenseResetOriginalInteractor providesSenseResetOriginalInteractor(final ApiService apiService) {
-        return new SenseResetOriginalInteractor(apiService);
+    SenseResetOriginalInteractor providesResetOriginalSenseInteractor(final DevicesInteractor devicesInteractor){
+        return new SenseResetOriginalInteractor(devicesInteractor);
     }
 
     @Provides
     @Singleton
-    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final SenseResetOriginalInteractor interactor) {
-        final SenseResetOriginalPresenter presenter = new SenseResetOriginalPresenter(interactor);
+    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final HardwareInteractor interactor, final SenseResetOriginalInteractor senseResetOriginalInteractor) {
+        final SenseResetOriginalPresenter presenter = new SenseResetOriginalPresenter(interactor, senseResetOriginalInteractor);
         // todo interactor.setInteractorOutput(presenter);
         return presenter;
     }
