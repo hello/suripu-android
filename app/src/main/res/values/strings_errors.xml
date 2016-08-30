@@ -131,4 +131,6 @@
     <string name="error_pill_too_far">Sleep Pill out of range</string>
     <string name="error_pill_not_found">Sleep Pill not found</string>
 
+    <string name="error_factory_reset_original_sense_message">An error occurred while attempting to factory reset your original Sense. Make sure Sense is plugged in, nearby and try again.</string>
+
 </resources>

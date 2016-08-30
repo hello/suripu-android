@@ -18,6 +18,7 @@ import is.hello.sense.SenseUpdateModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -42,12 +43,9 @@ import is.hello.sense.util.SkippableFlow;
 public class SenseUpdateActivity extends ScopedInjectionActivity
         implements FragmentNavigation, SkippableFlow {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
-    public static final String EXTRA_DEVICE_ID = SenseUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
     public static final int REQUEST_CODE = 0xbeef;
 
     private FragmentNavigationDelegate navigationDelegate;
-
-    private String deviceId;
 
     @Inject
     BluetoothStack bluetoothStack;
@@ -57,6 +55,8 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
     UserFeaturesInteractor userFeaturesPresenter;
+    @Inject
+    SenseResetOriginalInteractor senseResetOriginalInteractor;
 
     @Override
     public List<Object> getModules(){
@@ -74,14 +74,12 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
 
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
-            getDeviceIdFromBundle(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
             showSenseUpdateIntro();
+            storeCurrentSenseDevice();
             //showUpdatePairPillFragment();
 
         }
-
-        getDeviceIdFromIntent(getIntent());
     }
 
     @Override
@@ -90,15 +88,12 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         if (this.navigationDelegate == null || this.navigationDelegate.getTopFragment() == null) {
             showSenseUpdateIntro();
         }
-
-        getDeviceIdFromIntent(intent);
     }
 
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         navigationDelegate.onSaveInstanceState(outState);
-        outState.putString(EXTRA_DEVICE_ID, deviceId);
     }
 
     @Override
@@ -112,7 +107,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
 
     @Override
     public void skipToEnd() {
-        //todo point to showHomeActivity()
+        showHomeActivity();
     }
 
     //endregion
@@ -193,6 +188,10 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         }
     }
 
+    public void storeCurrentSenseDevice(){
+        senseResetOriginalInteractor.update();
+    }
+
     public void showSenseUpdateIntro() {
         pushFragment(new SenseUpdateIntroFragment(), null, false);
     }
@@ -222,9 +221,8 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     private void updatePreferences() {
-        if (deviceId != null) {
-            deviceIssuesPresenter.updateLastUpdatedDevice(deviceId);
-        }
+        //todo uncomment when able to store new device id
+        //deviceIssuesPresenter.updateLastUpdatedDevice(newDeviceId);
     }
 
     public void showBluetoothFragment() {
@@ -276,6 +274,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     public void showResetOriginalSense() {
+        // todo a bluetooth check needs to be added before deciding to push
         pushFragment(new SenseResetOriginalFragment(), null, false);
     }
 
@@ -291,15 +290,4 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
         stateSafeExecutor.execute(super::onBackPressed);
     }
 
-    private void getDeviceIdFromBundle(@NonNull final Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(EXTRA_DEVICE_ID)) {
-            this.deviceId = savedInstanceState.getString(EXTRA_DEVICE_ID);
-        }
-    }
-
-    private void getDeviceIdFromIntent(@Nullable final Intent intent) {
-        if (intent != null && intent.hasExtra(EXTRA_DEVICE_ID)) {
-            this.deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-        }
-    }
 }

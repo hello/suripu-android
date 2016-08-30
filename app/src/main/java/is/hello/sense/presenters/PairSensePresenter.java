@@ -163,13 +163,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
                              ignored -> performRecoveryFactoryReset(),
                              this::presentFactoryResetError);
         } else if (!hardwareInteractor.isConnected()) {
-            bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
-                             state -> {
-                                 if (state != ConnectProgress.CONNECTED) {
-                                     return;
-                                 }
-                                 performRecoveryFactoryReset();
-                             },
+            bindAndSubscribe(hardwareInteractor.connectToPeripheral()
+                                               .filter(ConnectProgress.CONNECTED::equals),
+                             ignored -> performRecoveryFactoryReset(),
                              this::presentFactoryResetError);
         } else {
             showHardwareActivity(() -> bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),

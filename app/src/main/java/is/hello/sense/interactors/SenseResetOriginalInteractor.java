@@ -1,26 +1,28 @@
 package is.hello.sense.interactors;
 
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.Devices;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
-public class SenseResetOriginalInteractor extends ValueInteractor<Boolean> {
+/**
+ * Stores current sense device to be referenced later when this sense needs to be reset in {@link is.hello.sense.presenters.SenseResetOriginalPresenter}.
+ */
+public class SenseResetOriginalInteractor extends ValueInteractor<SenseDevice>{
 
-    public final InteractorSubject<Boolean> resetResult = this.subject;
+    private final DevicesInteractor devicesInteractor;
+    public InteractorSubject<SenseDevice> senseDevice = this.subject;
 
-    private final ApiService apiService;
-
-    public SenseResetOriginalInteractor(final ApiService apiService) {
-        super();
-        this.apiService = apiService;
+    public SenseResetOriginalInteractor(@NonNull final DevicesInteractor devicesInteractor){
+        this.devicesInteractor = devicesInteractor;
     }
 
     @Override
     protected boolean isDataDisposable() {
-        return true;
+        return false;
     }
 
     @Override
@@ -29,13 +31,13 @@ public class SenseResetOriginalInteractor extends ValueInteractor<Boolean> {
     }
 
     @Override
-    protected Observable<Boolean> provideUpdateObservable() {
-        //todo replace with real api call
-        return Observable.from(Collections.singletonList(true))
-                .delay(2, TimeUnit.SECONDS);
+    protected Observable<SenseDevice> provideUpdateObservable() {
+        return devicesInteractor.provideUpdateObservable()
+                                .map(Devices::getSense);
     }
 
-    public void destroy() {
-        resetResult.forget();
+    @Nullable //todo how to ensure value stored is retained?
+    public SenseDevice getCurrentSense(){
+        return senseDevice.getValue();
     }
 }
