@@ -41,6 +41,11 @@ public abstract class BaseDevice extends ApiResponse {
         this.lastUpdated = lastUpdated;
     }
 
+    /**
+     * @return a string resource for displaying device title in views
+     */
+    @StringRes public abstract int getDisplayTitleRes();
+
 
     public @NonNull CharSequence getLastUpdatedDescription(@NonNull Context context) {
         if (lastUpdated != null) {
@@ -105,7 +110,6 @@ public abstract class BaseDevice extends ApiResponse {
                 ", lastUpdated=" + lastUpdated +
                 '}';
     }
-
 
     public enum State implements Enums.FromString {
         NORMAL(R.string.device_state_normal),

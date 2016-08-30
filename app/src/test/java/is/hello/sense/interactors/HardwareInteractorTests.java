@@ -98,7 +98,7 @@ public class HardwareInteractorTests extends InjectionTestCase {
         assertThrowsNoDeviceError(presenter.putIntoPairingMode());
         assertThrowsNoDeviceError(presenter.factoryReset(new SenseDevice(BaseDevice.State.UNKNOWN,
                                                                          SenseDevice.Color.UNKNOWN,
-                                                                         "", "", null, null)));
+                                                                         "", "", null, null, SenseDevice.HardwareVersion.SENSE)));
     }
 
     @Test

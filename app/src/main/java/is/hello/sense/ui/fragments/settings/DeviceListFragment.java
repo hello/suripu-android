@@ -31,6 +31,7 @@ import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.PillUpdateActivity;
+import is.hello.sense.ui.activities.SenseUpdateActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
@@ -53,6 +54,7 @@ public class DeviceListFragment extends InjectionFragment
         ArrayRecyclerAdapter.OnItemClickedListener<BaseDevice> {
     private static final int DEVICE_REQUEST_CODE = 0x14;
     private static final int PAIR_DEVICE_REQUEST_CODE = 0x15;
+    private static final int UPGRADE_SENSE_DEVICE_REQUEST_CODE = 0x16;
 
     @Inject
     DevicesInteractor devicesPresenter;
@@ -146,7 +148,9 @@ public class DeviceListFragment extends InjectionFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == DEVICE_REQUEST_CODE || requestCode == PAIR_DEVICE_REQUEST_CODE) {
+        if (requestCode == DEVICE_REQUEST_CODE
+                || requestCode == PAIR_DEVICE_REQUEST_CODE
+                || requestCode == UPGRADE_SENSE_DEVICE_REQUEST_CODE) {
             adapter.clear();
 
             supportInfoFooter.setVisibility(View.INVISIBLE);
@@ -201,15 +205,13 @@ public class DeviceListFragment extends InjectionFragment
 
 
     @Override
-    public void onItemClicked(int position, BaseDevice device) {
+    public void onItemClicked(final int position, final BaseDevice device) {
         final DeviceDetailsFragment fragment;
-        final String title;
+        final String title = getString(device.getDisplayTitleRes());
         if (device instanceof SenseDevice) {
             fragment = SenseDetailsFragment.newInstance((SenseDevice) device);
-            title = getString(R.string.device_sense);
         } else if (device instanceof SleepPillDevice) {
             fragment = PillDetailsFragment.newInstance((SleepPillDevice) device);
-            title = getString(R.string.device_pill);
         } else {
             return;
         }
@@ -228,7 +230,6 @@ public class DeviceListFragment extends InjectionFragment
             case SENSE: {
                 //todo make separate activity to handle pairing only
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                //intent.putExtra(OnboardingActivity.EXTRA_RELEASE_PERIPHERAL_ON_PAIR, false);
                 intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
                 break;
             }
@@ -254,6 +255,8 @@ public class DeviceListFragment extends InjectionFragment
     public void onUpdateDevice(@NonNull final BaseDevice device) {
         if(device instanceof SleepPillDevice) {
             UserSupport.showUpdatePill(this, device.deviceId);
+        } else if(device instanceof SenseDevice){
+            startActivityForResult(new Intent(getActivity(), SenseUpdateActivity.class), UPGRADE_SENSE_DEVICE_REQUEST_CODE);
         }
 
     }
