@@ -14,6 +14,7 @@ import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
+import is.hello.sense.presenters.SenseUpdateIntroPresenter;
 import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
@@ -54,7 +55,7 @@ public class SenseUpdateModule {
 
     @Provides
     @Singleton
-    SwapSenseInteractor providesSwapSenseInteractor(final ApiService apiService){
+    SwapSenseInteractor providesSwapSenseInteractor(final ApiService apiService) {
         return new SwapSenseInteractor(apiService);
     }
 
@@ -74,6 +75,12 @@ public class SenseUpdateModule {
 
     @Provides
     @Singleton
+    SenseUpdateIntroPresenter providesSenseUpdateIntroPresenter() {
+        return new SenseUpdateIntroPresenter();
+    }
+
+    @Provides
+    @Singleton
     PairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor,
                                                         final UserFeaturesInteractor userFeaturesInteractor,
                                                         final ApiService apiService,
@@ -88,10 +95,10 @@ public class SenseUpdateModule {
     BasePairPillPresenter providesUpdatePairPillPresenter(final HardwareInteractor interactor) {
         return new UpdatePairPillPresenter(interactor);
     }
+
     @Provides
     @Singleton
     UnpairPillPresenter providesUnpairPillPresenter() {
         return new UnpairPillPresenter();
-
     }
 }
