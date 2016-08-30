@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.BaseDevice;
 import is.hello.sense.api.model.Devices;
@@ -153,7 +154,32 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
     }
 
-    class SenseViewHolder extends BaseViewHolder {
+    abstract class DeviceViewHolder extends BaseViewHolder {
+
+        final Button actionButton;
+
+        DeviceViewHolder(@NonNull final View view) {
+            super(view);
+
+            this.actionButton = (Button) view.findViewById(R.id.item_device_action_button);
+
+            Views.setTimeOffsetOnClickListener(actionButton, v -> {
+                final int position = getAdapterPosition();
+                if(onDeviceInteractionListener != null && position != RecyclerView.NO_POSITION) {
+                    onDeviceInteractionListener.onUpdateDevice(getItem(position));
+                }
+            });
+        }
+
+        @Override
+        public void bind(final int position) {
+            super.bind(position);
+            final BaseDevice baseDevice = getItem(position);
+            title.setText(baseDevice.getDisplayTitleRes());
+        }
+    }
+
+    class SenseViewHolder extends DeviceViewHolder {
         final TextView lastSeen;
         final TextView status1;
         final TextView status1Label;
@@ -182,7 +208,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             super.bind(position);
 
             final SenseDevice device = (SenseDevice) getItem(position);
-            title.setText(R.string.device_sense);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
@@ -214,10 +239,19 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
             status2Label.setText(R.string.label_firmware_version);
             status2.setText(device.firmwareVersion);
+
+            if(device.shouldUpgrade() && BuildConfig.IS_BETA){
+                actionButton.setText(R.string.action_upgrade_sense);
+                actionButton.setEnabled(true);
+                actionButton.setVisibility(View.VISIBLE);
+            } else {
+                actionButton.setVisibility(View.GONE);
+                actionButton.setEnabled(false);
+            }
         }
     }
 
-    class SleepPillViewHolder extends BaseViewHolder {
+    class SleepPillViewHolder extends DeviceViewHolder {
         final TextView lastSeen;
         final TextView status1;
         final TextView status1Label;
@@ -225,7 +259,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView status2Label;
         final TextView status3;
         final TextView status3Label;
-        final Button actionButton;
 
         SleepPillViewHolder(@NonNull final View view) {
             super(view);
@@ -237,18 +270,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             this.status2Label = (TextView) view.findViewById(R.id.item_device_status2_label);
             this.status3 = (TextView) view.findViewById(R.id.item_device_status3);
             this.status3Label = (TextView) view.findViewById(R.id.item_device_status3_label);
-            this.actionButton = (Button) view.findViewById(R.id.item_device_action_button);
 
             this.status3Label.setVisibility(View.VISIBLE);
             this.status3.setVisibility(View.VISIBLE);
 
             Views.setTimeOffsetOnClickListener(view, this);
-            Views.setTimeOffsetOnClickListener(actionButton, v -> {
-                final int position = getAdapterPosition();
-                if(onDeviceInteractionListener != null && position != RecyclerView.NO_POSITION) {
-                    onDeviceInteractionListener.onUpdateDevice(getItem(position));
-                }
-            });
+
             status2Label.setOnTouchListener((v, event) -> {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
@@ -269,7 +296,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         public void bind(final int position) {
             super.bind(position);
             final SleepPillDevice device = (SleepPillDevice) getItem(position);
-            title.setText(R.string.device_pill);
+
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
@@ -306,10 +333,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             if(device.shouldUpdateOverride()){
                 status3.setTextColor(ContextCompat.getColor(activity, R.color.warning));
                 actionButton.setText(R.string.action_update);
+                actionButton.setEnabled(true);
                 actionButton.setVisibility(View.VISIBLE);
             } else {
                 status3.setTextColor(ContextCompat.getColor(activity, R.color.standard));
                 actionButton.setVisibility(View.GONE);
+                actionButton.setEnabled(false);
             }
         }
     }
@@ -338,6 +367,14 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             switch (device.type) {
                 case SENSE: {
                     title.setText(R.string.device_sense);
+                    message.setText(R.string.info_no_sense_connected);
+                    actionButton.setText(R.string.action_pair_new_sense);
+                    actionButton.setEnabled(true);
+                    break;
+                }
+                //unused
+                case SENSE_WITH_VOICE: {
+                    title.setText(R.string.device_hardware_version_sense_with_voice);
                     message.setText(R.string.info_no_sense_connected);
                     actionButton.setText(R.string.action_pair_new_sense);
                     actionButton.setEnabled(true);
