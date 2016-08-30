@@ -15,6 +15,7 @@ import is.hello.sense.presenters.BasePairPillPresenter;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.presenters.SenseUpdateIntroPresenter;
+import is.hello.sense.presenters.SenseUpdateReadyPresenter;
 import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.presenters.UpdatePairPillPresenter;
 import is.hello.sense.presenters.UpdatePairSensePresenter;
@@ -77,6 +78,12 @@ public class SenseUpdateModule {
     @Singleton
     SenseUpdateIntroPresenter providesSenseUpdateIntroPresenter() {
         return new SenseUpdateIntroPresenter();
+    }
+
+    @Provides
+    @Singleton
+    SenseUpdateReadyPresenter providesSenseUpdateReadyPresenter() {
+        return new SenseUpdateReadyPresenter();
     }
 
     @Provides
