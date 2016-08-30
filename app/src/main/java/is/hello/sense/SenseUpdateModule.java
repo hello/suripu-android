@@ -77,8 +77,9 @@ public class SenseUpdateModule {
     PairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor,
                                                         final UserFeaturesInteractor userFeaturesInteractor,
                                                         final ApiService apiService,
-                                                        final SwapSenseInteractor swapSenseInteractor){
-        return new UpdatePairSensePresenter(interactor, userFeaturesInteractor, apiService, swapSenseInteractor);
+                                                        final SwapSenseInteractor swapSenseInteractor,
+                                                        final SenseResetOriginalInteractor resetOriginalInteractor){
+        return new UpdatePairSensePresenter(interactor, userFeaturesInteractor, apiService, swapSenseInteractor, resetOriginalInteractor);
     }
 
 

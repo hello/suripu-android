@@ -12,8 +12,10 @@ import android.text.TextUtils;
 
 import org.joda.time.DateTimeZone;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -212,6 +214,21 @@ import rx.functions.Action1;
         }
     }
 
+    @NonNull public List<SensePeripheral> filterPeripherals(@NonNull final List<SensePeripheral> peripherals,
+                                                            @NonNull final Set<String> excludedDeviceIDs) {
+        if(excludedDeviceIDs.isEmpty()){
+            return peripherals;
+        }
+        final List<SensePeripheral> validPeripherals = new ArrayList<>();
+
+        for(final SensePeripheral sp : peripherals){
+            if(!excludedDeviceIDs.contains(sp.getDeviceId())){
+                validPeripherals.add(sp);
+            }
+        }
+        return validPeripherals;
+    }
+
     public Observable<SensePeripheral> closestPeripheral() {
         logEvent("closestPeripheral()");
 
@@ -221,20 +238,26 @@ import rx.functions.Action1;
             return Observable.just(peripheral);
         }
 
+        return closestPeripheral(Collections.emptySet());
+    }
+
+    public Observable<SensePeripheral> closestPeripheral(@NonNull final  Set<String> excludedDeviceIDs) {
+        logEvent("closestPeripheral( excluding " + excludedDeviceIDs + ")");
         return pending.bind(TOKEN_DISCOVERY, () -> {
-            PeripheralCriteria criteria = new PeripheralCriteria();
+            final PeripheralCriteria criteria = new PeripheralCriteria();
             criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
             return SensePeripheral.discover(bluetoothStack, criteria)
-                    .flatMap(peripherals -> {
-                        if (!peripherals.isEmpty()) {
-                            SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
-                            this.peripheral = closestPeripheral;
-                            return Observable.just(closestPeripheral);
-                        } else {
-                            this.peripheral = null;
-                            return Observable.error(new SenseNotFoundError());
-                        }
-                    });
+                                  .map(peripherals -> filterPeripherals(peripherals, excludedDeviceIDs))
+                                  .flatMap(peripherals -> {
+                                      if (!peripherals.isEmpty()) {
+                                          final SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
+                                          this.peripheral = closestPeripheral;
+                                          return Observable.just(closestPeripheral);
+                                      } else {
+                                          this.peripheral = null;
+                                          return Observable.error(new SenseNotFoundError());
+                                      }
+                                  });
         });
     }
 
