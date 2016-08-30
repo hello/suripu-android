@@ -51,6 +51,11 @@ public class SleepPillDevice extends BaseDevice {
     }
 
     @Override
+    public int getDisplayTitleRes() {
+        return R.string.device_pill;
+    }
+
+    @Override
     public String toString() {
         return "SleepPillDevice{" +
                 "batteryLevel=" + batteryLevel +

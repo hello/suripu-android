@@ -424,6 +424,11 @@
     <string name="device_color_blue">Blue</string>
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
+    <string name="device_hardware_version_sense">Sense</string>
+    <string name="device_hardware_version_sense_with_voice">Sense with voice</string>
+    <string name="device_hardware_version_unknown">Unknown</string>
+    <string name="action_upgrade_sense">Upgrade to Sense with voice</string>
+
     <string name="title_thank_you">Thank You</string>
     <string name="title_have_sense_ready">Have Sense ready?</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>

@@ -39,7 +39,8 @@ public class DeviceIssuesInteractorTests extends InjectionTestCase {
                                "Not real",
                                "0.0.0",
                                DateTime.now(),
-                               null);
+                               null,
+                               SenseDevice.HardwareVersion.SENSE);
     }
 
     @Test
@@ -56,7 +57,8 @@ public class DeviceIssuesInteractorTests extends InjectionTestCase {
                                                          null,
                                                          null,
                                                          new DateTime(0),
-                                                         null);
+                                                         null,
+                                                         SenseDevice.HardwareVersion.SENSE);
         final Devices devices = new Devices(Lists.newArrayList(missingSense),
                                             new ArrayList<>());
         final DeviceIssuesInteractor.Issue issue = presenter.getTopIssue(devices);
