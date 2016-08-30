@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -27,14 +28,7 @@ implements BaseOutput{
      */
     public abstract void onInjected();
 
-    @Override
-    public boolean canObservableEmit(){
-        return isAdded() && !getActivity().isFinishing();
-    }
-
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
+    public void inject(@NonNull  final Context context){
         try{
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
             onInjected();
@@ -44,15 +38,26 @@ implements BaseOutput{
     }
 
     @Override
+    public boolean canObservableEmit(){
+        return isAdded() && !getActivity().isFinishing();
+    }
+
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        inject(context);
+    }
+
+    /**
+     * Will still be called by devices with api >= 23 until migrate SenseFragment to extend Support Library Fragment.
+     * @param activity
+     */
+    @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
-        try{
-            ((ScopedInjectionActivity) activity).injectToScopedGraph(this);
-            onInjected();
-        } catch (final ClassCastException e){
-            throw new ClassCastException(activity.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            inject(activity);
         }
-
     }
 
     /**
