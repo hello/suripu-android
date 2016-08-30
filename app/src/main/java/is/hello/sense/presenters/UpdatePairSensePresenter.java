@@ -1,9 +1,14 @@
 package is.hello.sense.presenters;
 
+import java.util.Collections;
+
 import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
@@ -12,16 +17,19 @@ import rx.Observable;
 public class UpdatePairSensePresenter extends PairSensePresenter {
 
     private final SwapSenseInteractor swapSenseInteractor;
+    private final SenseResetOriginalInteractor resetOriginalInteractor;
 
     public UpdatePairSensePresenter(final HardwareInteractor hardwareInteractor,
                                     final UserFeaturesInteractor userFeaturesInteractor,
                                     final ApiService apiService,
-                                    final SwapSenseInteractor swapSenseInteractor) {
+                                    final SwapSenseInteractor swapSenseInteractor,
+                                    final SenseResetOriginalInteractor resetOriginalInteractor) {
         super(hardwareInteractor,
               userFeaturesInteractor,
               apiService);
 
         this.swapSenseInteractor = swapSenseInteractor;
+        this.resetOriginalInteractor = resetOriginalInteractor;
     }
 
     @Override
@@ -77,7 +85,14 @@ public class UpdatePairSensePresenter extends PairSensePresenter {
     @Override
     protected Observable<SensePeripheral> getObservableSensePeripheral(){
         hardwareInteractor.clearPeripheral();
-        return hardwareInteractor.closestPeripheral();
+        final SenseDevice currentSenseDevice = resetOriginalInteractor.getCurrentSense();
+        if(currentSenseDevice != null){
+            return hardwareInteractor.closestPeripheral(
+                    Collections.singleton(currentSenseDevice.deviceId));
+        } else {
+            return Observable.error(new SenseNotFoundError());
+        }
+
     }
 
     @Override
