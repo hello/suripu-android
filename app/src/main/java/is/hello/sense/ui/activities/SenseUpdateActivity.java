@@ -25,9 +25,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
@@ -38,6 +36,8 @@ import is.hello.sense.ui.fragments.pill.UpdatePairPillConfirmationFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
 import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
+import is.hello.sense.ui.fragments.updating.UpdateConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.updating.UpdateSelectWifiNetworkFragment;
 import is.hello.sense.util.SkippableFlow;
 
 public class SenseUpdateActivity extends ScopedInjectionActivity
@@ -147,7 +147,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
             } else {
                 showSenseUpdateReady();
             }
-        } else if (fragment instanceof ConnectToWiFiFragment) {
+        } else if (fragment instanceof UpdateConnectToWiFiFragment) {
             showSenseUpdateReady();
         } else if (fragment instanceof SenseUpdateReadyFragment) {
             checkSenseOTAStatus();
@@ -230,7 +230,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
+        pushFragment(new UpdateSelectWifiNetworkFragment(), null, true);
     }
 
 

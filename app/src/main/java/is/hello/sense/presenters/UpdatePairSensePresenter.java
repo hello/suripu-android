@@ -98,9 +98,13 @@ public class UpdatePairSensePresenter extends PairSensePresenter {
     @Override
     public void completePeripheralPair() {
         swapSenseInteractor.setRequest(hardwareInteractor.getDeviceId());
+        //todo undue below
+        super.completePeripheralPair();
+        /*
         bindAndSubscribe(swapSenseInteractor.canSwap(),
                   okStatus -> super.completePeripheralPair(),
                   e -> presentError(e, "swap sense")
                  );
+                 */
     }
 }

@@ -1,4 +1,4 @@
-package is.hello.sense.presenters;
+package is.hello.sense.presenters.pairpill;
 
 
 import android.app.Activity;
@@ -8,6 +8,7 @@ import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.util.Analytics;
 
 public class ChangePairPillPresenter extends BasePairPillPresenter {

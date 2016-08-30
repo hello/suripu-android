@@ -1,4 +1,4 @@
-package is.hello.sense.presenters;
+package is.hello.sense.presenters.pairpill;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
