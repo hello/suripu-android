@@ -103,6 +103,11 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
     public void showHelpUri(@NonNull final String uri) {
         showHelpUri(Uri.parse(uri));
     }
+
+    public void finishActivity() {
+        getActivity().finish();
+    }
+
     //endregion
 
 }
