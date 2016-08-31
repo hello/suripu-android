@@ -8,7 +8,7 @@ import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 
-import static is.hello.sense.util.Analytics.SenseUpdate.ERROR_SENSE_REQUIRED;
+import static is.hello.sense.util.Analytics.SenseUpgrade.ERROR_SENSE_REQUIRED;
 
 public class SenseRequiredException extends BuruberiException implements Errors.Reporting {
     public SenseRequiredException() {
