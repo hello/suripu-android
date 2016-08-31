@@ -293,11 +293,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     }
 
     @Override
-    public void finishPairFlow(int resultCode) {
-
-    }
-
-    @Override
     public void finishActivity() {
 
     }

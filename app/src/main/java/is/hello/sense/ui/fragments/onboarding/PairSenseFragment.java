@@ -26,7 +26,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
 import is.hello.sense.ui.dialogs.TroubleshootSenseDialogFragment;
-import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.util.Analytics;
@@ -34,7 +34,7 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.SkippableFlow;
 import rx.functions.Action0;
 
-public class PairSenseFragment extends BasePairSenseFragment
+public class PairSenseFragment extends BasePresenterFragment
         implements FragmentCompat.OnRequestPermissionsResultCallback, PairSensePresenter.Output{
 
     private final LocationPermission locationPermission = new LocationPermission(this);
@@ -48,7 +48,6 @@ public class PairSenseFragment extends BasePairSenseFragment
         addScopedPresenter(presenter);
     }
 
-    @Override
     protected void sendOnCreateAnalytics() {
         final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), properties);
