@@ -677,6 +677,10 @@ public class Analytics {
         String PROPERTY_NAME = "status";
     }
 
+    public interface SenseUpdate {
+        String ERROR_SENSE_REQUIRED = "No Previously Paired Sense Found";
+    }
+
 
     //region Lifecycle
 
