@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.sense;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.SenseUpdateIntroPresenter;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
@@ -50,11 +48,6 @@ public class SenseUpdateIntroFragment extends BasePresenterFragment
         super.onDestroyView();
         view.destroy();
         view = null;
-    }
 
-    @Override
-    public void showHelpUrl() {
-        //todo replace with proper uri
-        UserSupport.openUri(getActivity(), Uri.parse(UserSupport.ORDER_URL));
     }
 }

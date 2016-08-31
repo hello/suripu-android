@@ -2,11 +2,13 @@ package is.hello.sense.ui.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.go99.animators.AnimatorContext;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Logger;
@@ -54,6 +56,7 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
 
         return animatorContext;
     }
+    //region BaseOutput
 
     public void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
         LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(),
@@ -79,8 +82,6 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
         }
     }
 
-    //region BaseOutput
-    @Override
     public void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
@@ -91,11 +92,17 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
         }
     }
 
-    //endregion
-
-
-    @Override
     public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder) {
         builder.build().showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
+
+    public void showHelpUri(@NonNull final Uri uri) {
+        UserSupport.openUri(getActivity(), uri);
+    }
+
+    public void showHelpUri(@NonNull final String uri) {
+        showHelpUri(Uri.parse(uri));
+    }
+    //endregion
+
 }

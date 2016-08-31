@@ -1,5 +1,6 @@
 package is.hello.sense.presenters.outputs;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
@@ -18,4 +19,8 @@ public interface BaseOutput extends StateSafeExecutor.Resumes {
     void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete);
 
     void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder);
+
+    void showHelpUri(@NonNull final Uri uri);
+
+    void showHelpUri(@NonNull final String  uri);
 }

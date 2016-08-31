@@ -21,14 +21,13 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
-import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
 public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<BaseConnectWifiPresenter.Output> {
 
-    private static final String HAS_CONNECTED_TO_NETWORK_KEY = "hasConnectedToNetwork";
+    private static final String ARG_CONNECTED_TO_NETWORK = BaseConnectWifiPresenter.class.getSimpleName() + ".ARG_CONNECTED_TO_NETWORK";
     private boolean hasConnectedToNetwork = false;
 
     public BaseConnectWifiPresenter(final HardwareInteractor hardwareInteractor,
@@ -44,20 +43,14 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         if (bundle == null) {
             bundle = new Bundle();
         }
-        bundle.putBoolean(HAS_CONNECTED_TO_NETWORK_KEY, hasConnectedToNetwork);
+        bundle.putBoolean(ARG_CONNECTED_TO_NETWORK, hasConnectedToNetwork);
         return bundle;
     }
 
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
-        this.hasConnectedToNetwork = savedState.getBoolean(HAS_CONNECTED_TO_NETWORK_KEY);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
+        this.hasConnectedToNetwork = savedState.getBoolean(ARG_CONNECTED_TO_NETWORK);
     }
 
     public abstract String getOnCreateAnalyticsEvent();

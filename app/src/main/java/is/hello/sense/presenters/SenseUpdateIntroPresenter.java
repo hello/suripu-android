@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 import is.hello.sense.presenters.outputs.BaseOutput;
+import is.hello.sense.ui.common.UserSupport;
 
 public class SenseUpdateIntroPresenter extends BasePresenter<SenseUpdateIntroPresenter.Output> {
 
@@ -22,11 +23,11 @@ public class SenseUpdateIntroPresenter extends BasePresenter<SenseUpdateIntroPre
     public void onSecondaryClicked(@NonNull final View clickedView) {
         //todo track with correct event
         //Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
-        view.showHelpUrl();
+        //todo replace with proper uri
+        view.showHelpUri(UserSupport.ORDER_URL);
     }
 
     public interface Output extends BaseOutput {
-        void showHelpUrl();
 
         void finishFlow();
     }
