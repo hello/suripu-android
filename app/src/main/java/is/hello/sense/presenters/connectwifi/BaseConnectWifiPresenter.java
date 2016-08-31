@@ -53,6 +53,8 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         this.hasConnectedToNetwork = savedState.getBoolean(ARG_CONNECTED_TO_NETWORK);
     }
 
+    protected abstract boolean shouldSendAccessToken();
+
     public abstract String getOnCreateAnalyticsEvent();
 
     public abstract String getOnSubmitWifiCredentialsAnalyticsEvent();
@@ -126,7 +128,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
         showHardwareActivity(() -> {
             if (hasConnectedToNetwork) {
-                sendAccessToken();
+                onConnected();
                 return;
             }
 
@@ -147,7 +149,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
                                  if (status.state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
                                      this.hasConnectedToNetwork = true;
-                                     sendAccessToken();
+                                     onConnected();
                                  } else {
                                      showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                                  }
@@ -159,11 +161,11 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         }, e -> presentError(e, "Turning on LEDs"));
     }
 
-    private void sendAccessToken() {
-        if (view.sendAccessToken()) {
-            finishUpOperations();
-        } else {
+    private void onConnected() {
+        if (shouldSendAccessToken()) {
             checkLinkedAccount();
+        } else {
+            finishUpOperations();
         }
     }
 
@@ -210,7 +212,5 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         String getNetworkName();
 
         String getNetworkPassword();
-
-        boolean sendAccessToken();
     }
 }

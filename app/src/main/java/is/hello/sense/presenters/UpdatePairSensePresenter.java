@@ -3,10 +3,10 @@ package is.hello.sense.presenters;
 import java.util.Collections;
 
 import is.hello.commonsense.bluetooth.SensePeripheral;
-import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseDevice;
+import is.hello.sense.bluetooth.exceptions.SenseRequiredException;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
@@ -90,7 +90,7 @@ public class UpdatePairSensePresenter extends PairSensePresenter {
             return hardwareInteractor.closestPeripheral(
                     Collections.singleton(currentSenseDevice.deviceId));
         } else {
-            return Observable.error(new SenseNotFoundError());
+            return Observable.error(new SenseRequiredException());
         }
 
     }
