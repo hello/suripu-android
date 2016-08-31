@@ -1,4 +1,4 @@
-package is.hello.sense.presenters;
+package is.hello.sense.presenters.selectwifinetwork;
 
 import android.support.annotation.NonNull;
 
@@ -7,19 +7,19 @@ import java.util.Collection;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.presenters.outputs.BaseOutput;
-import is.hello.sense.util.Analytics;
-@Deprecated
-public abstract class SelectWifiNetworkPresenter
-        extends BaseHardwarePresenter<SelectWifiNetworkPresenter.Output>{
 
-    public SelectWifiNetworkPresenter(final HardwareInteractor hardwareInteractor) {
+public abstract class BaseSelectWifiNetworkPresenter
+        extends BaseHardwarePresenter<BaseSelectWifiNetworkPresenter.Output> {
+
+    public BaseSelectWifiNetworkPresenter(final HardwareInteractor hardwareInteractor) {
         super(hardwareInteractor);
     }
 
     @Override
     public void onDetach() {
-
+        super.onDetach();
     }
 
     private final static String SCAN_FOR_NETWORK_OPERATION = "Scan for networks";
@@ -30,7 +30,7 @@ public abstract class SelectWifiNetworkPresenter
 
     public abstract String getOnRescanAnalyticsEvent();
 
-    public void rescan(final boolean sendCountryCode){
+    public void rescan(final boolean sendCountryCode) {
         view.showScanning();
         if (!hardwareInteractor.hasPeripheral()) {
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
@@ -42,11 +42,11 @@ public abstract class SelectWifiNetworkPresenter
         if (!hardwareInteractor.isConnected()) {
             bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              status -> {
-                                if (status != ConnectProgress.CONNECTED) {
-                                    return;
-                                }
-                                rescan(sendCountryCode);
-                            }, this::onPeripheralDiscoveryError);
+                                 if (status != ConnectProgress.CONNECTED) {
+                                     return;
+                                 }
+                                 rescan(sendCountryCode);
+                             }, this::onPeripheralDiscoveryError);
 
             return;
         }
@@ -60,21 +60,21 @@ public abstract class SelectWifiNetworkPresenter
     }
 
     private void bindScanResults(@NonNull final Collection<SenseCommandProtos.wifi_endpoint> scanResults) {
-        hideHardwareActivity( () -> {
+        hideHardwareActivity(() -> {
             view.bindScanResults(scanResults);
             view.showRescanOption();
         }, null);
     }
 
     private void onPeripheralDiscoveryError(final Throwable e) {
-        execute( () -> {
+        execute(() -> {
             view.showRescanOption();
             view.presentErrorDialog(e, SCAN_FOR_NETWORK_OPERATION);
         });
     }
 
-    private void onWifiError(final Throwable e){
-        hideHardwareActivity( () -> {
+    private void onWifiError(final Throwable e) {
+        hideHardwareActivity(() -> {
             view.showRescanOption();
             view.presentErrorDialog(e, SCAN_FOR_NETWORK_OPERATION);
         }, null);
@@ -91,48 +91,4 @@ public abstract class SelectWifiNetworkPresenter
         void presentErrorDialog(Throwable e, String operation);
     }
 
-
-    public static class Onboarding extends SelectWifiNetworkPresenter {
-
-        public Onboarding(final HardwareInteractor hardwareInteractor) {
-            super(hardwareInteractor);
-        }
-
-        @Override
-        public String getOnCreateAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI;
-        }
-
-        @Override
-        public String getOnScanAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_SCAN;
-        }
-
-        @Override
-        public String getOnRescanAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_RESCAN;
-        }
-    }
-
-    public static class Settings extends SelectWifiNetworkPresenter {
-
-        public Settings(final HardwareInteractor hardwareInteractor) {
-            super(hardwareInteractor);
-        }
-
-        @Override
-        public String getOnCreateAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_IN_APP;
-        }
-
-        @Override
-        public String getOnScanAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_SCAN_IN_APP;
-        }
-
-        @Override
-        public String getOnRescanAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_RESCAN_IN_APP;
-        }
-    }
 }

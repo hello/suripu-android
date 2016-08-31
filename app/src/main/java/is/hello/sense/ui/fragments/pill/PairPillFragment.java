@@ -17,7 +17,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.presenters.BasePairPillPresenter;
+import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;

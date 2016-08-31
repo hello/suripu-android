@@ -1,4 +1,4 @@
-package is.hello.sense.presenters;
+package is.hello.sense.presenters.connectwifi;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,43 +17,40 @@ import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 
-@Deprecated
-public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<ConnectWifiPresenter.Output>{
+public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<BaseConnectWifiPresenter.Output> {
 
-    private static final String HAS_CONNECTED_TO_NETWORK_KEY = "hasConnectedToNetwork";
+    private static final String ARG_CONNECTED_TO_NETWORK = BaseConnectWifiPresenter.class.getSimpleName() + ".ARG_CONNECTED_TO_NETWORK";
     private boolean hasConnectedToNetwork = false;
 
-    public ConnectWifiPresenter(
-            final HardwareInteractor hardwareInteractor) {
-        super(hardwareInteractor);
+    public BaseConnectWifiPresenter(final HardwareInteractor hardwareInteractor,
+                                    final UserFeaturesInteractor userFeaturesInteractor,
+                                    final ApiService apiService) {
+        super(hardwareInteractor, userFeaturesInteractor, apiService);
     }
 
     @Nullable
     @Override
     public Bundle onSaveState() {
         Bundle bundle = super.onSaveState();
-        if(bundle == null){
+        if (bundle == null) {
             bundle = new Bundle();
         }
-        bundle.putBoolean(HAS_CONNECTED_TO_NETWORK_KEY, hasConnectedToNetwork);
+        bundle.putBoolean(ARG_CONNECTED_TO_NETWORK, hasConnectedToNetwork);
         return bundle;
     }
 
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
-        this.hasConnectedToNetwork = savedState.getBoolean(HAS_CONNECTED_TO_NETWORK_KEY);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
+        this.hasConnectedToNetwork = savedState.getBoolean(ARG_CONNECTED_TO_NETWORK);
     }
 
     public abstract String getOnCreateAnalyticsEvent();
@@ -62,7 +59,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
 
     public abstract String getWifiAnalyticsEvent();
 
-    private void sendWifiCredentialsSubmittedAnalytics(final SenseCommandProtos.wifi_endpoint.sec_type securityType){
+    private void sendWifiCredentialsSubmittedAnalytics(final SenseCommandProtos.wifi_endpoint.sec_type securityType) {
         final Properties properties = Analytics.createProperties(
                 Analytics.Onboarding.PROP_WIFI_SECURITY_TYPE, securityType.toString()
                                                                 );
@@ -129,7 +126,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
 
         showHardwareActivity(() -> {
             if (hasConnectedToNetwork) {
-                view.sendAccessToken();
+                sendAccessToken();
                 return;
             }
 
@@ -150,7 +147,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
 
                                  if (status.state == SenseCommandProtos.wifi_connection_state.CONNECTED) {
                                      this.hasConnectedToNetwork = true;
-                                     view.sendAccessToken();
+                                     sendAccessToken();
                                  } else {
                                      showBlockingActivity(Styles.getWiFiConnectStatusMessage(status));
                                  }
@@ -160,6 +157,14 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
                         presentError(e, operation);
                     });
         }, e -> presentError(e, "Turning on LEDs"));
+    }
+
+    private void sendAccessToken() {
+        if (view.sendAccessToken()) {
+            finishUpOperations();
+        } else {
+            checkLinkedAccount();
+        }
     }
 
     private boolean validatePasswordAsWepKey(@NonNull final String password) {
@@ -185,7 +190,7 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
     }
 
 
-    public interface Output extends BasePairSensePresenter.Output{
+    public interface Output extends BasePairSensePresenter.Output {
 
         void presentWifiValidationErrorDialog(Throwable e,
                                               String operation,
@@ -206,50 +211,6 @@ public abstract class ConnectWifiPresenter extends BaseHardwarePresenter<Connect
 
         String getNetworkPassword();
 
-        void sendAccessToken();
-    }
-
-    public static class Onboarding extends ConnectWifiPresenter {
-
-        public Onboarding(final HardwareInteractor hardwareInteractor) {
-            super(hardwareInteractor);
-        }
-
-        @Override
-        public String getOnCreateAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_PASSWORD;
-        }
-
-        @Override
-        public String getOnSubmitWifiCredentialsAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP;
-        }
-
-        @Override
-        public String getWifiAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
-        }
-    }
-
-    public static class Settings extends ConnectWifiPresenter {
-
-        public Settings(final HardwareInteractor hardwareInteractor) {
-            super(hardwareInteractor);
-        }
-
-        @Override
-        public String getOnCreateAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP;
-        }
-
-        @Override
-        public String getOnSubmitWifiCredentialsAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED;
-        }
-
-        @Override
-        public String getWifiAnalyticsEvent() {
-            return Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
-        }
+        boolean sendAccessToken();
     }
 }

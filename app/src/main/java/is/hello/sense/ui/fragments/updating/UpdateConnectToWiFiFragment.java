@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments.onboarding;
+package is.hello.sense.ui.fragments.updating;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,23 +30,25 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
-import is.hello.sense.presenters.ConnectWifiPresenter;
-import is.hello.sense.presenters.PairSensePresenter;
+import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
-@Deprecated
-public class ConnectToWiFiFragment extends BasePairSenseFragment
-        implements AdapterView.OnItemSelectedListener, ConnectWifiPresenter.Output {
-    public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
-    public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
+
+//todo rename, remove "Update" after ConnectToWifiFragment is phased out.
+public class UpdateConnectToWiFiFragment extends BasePresenterFragment
+        implements
+        AdapterView.OnItemSelectedListener,
+        BaseConnectWifiPresenter.Output {
+    public static final String ARG_SEND_ACCESS_TOKEN = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
+    public static final String ARG_SCAN_RESULT = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
     private static final String HAS_SENT_ACCESS_TOKEN_KEY = "hasSentAccessToken";
@@ -58,23 +60,21 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     private Spinner networkSecurity;
     private Button continueButton;
 
-    private @Nullable wifi_endpoint network;
+    @Nullable
+    private wifi_endpoint network;
 
     private boolean hasSentAccessToken = false;
     private OnboardingToolbar toolbar;
 
     @Inject
-    ConnectWifiPresenter wifiPresenter;
+    BaseConnectWifiPresenter wifiPresenter;
 
-    @Inject
-    PairSensePresenter presenter;
 
     //region Lifecycle
 
 
     @Override
     public void onInjected() {
-        addScopedPresenter(presenter);
         addScopedPresenter(wifiPresenter);
     }
 
@@ -121,7 +121,7 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
                     new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.text_dark)),
                     start, networkInfoBuilder.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
+                                      );
             networkInfo.setText(networkInfoBuilder);
 
             networkInfo.setVisibility(View.VISIBLE);
@@ -151,8 +151,8 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         } else {
             this.toolbar = OnboardingToolbar.of(this, view);
             this.toolbar.setWantsBackButton(true)
-                   .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.SIGN_INTO_WIFI));
-                    //todo add back support options after refactor
+                        .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.SIGN_INTO_WIFI));
+            //todo add back support options after refactor
         }
 
         return view;
@@ -177,12 +177,12 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(networkSecurity != null) {
+        if (networkSecurity != null) {
             networkSecurity.setAdapter(null);
             networkSecurity.setOnItemSelectedListener(null);
             networkSecurity = null;
         }
-        if(toolbar != null){
+        if (toolbar != null) {
             toolbar.onDestroyView();
             toolbar = null;
         }
@@ -245,14 +245,19 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     }
 
     @Override
+    public boolean sendAccessToken() {
+        return sendAccessToken;
+    }
+
+    @Override
     public void setNetworkPassword(final int visibility,
                                    final boolean requestFocus,
                                    final boolean clearInput) {
         networkPassword.setVisibility(visibility);
-        if(clearInput) {
+        if (clearInput) {
             networkPassword.setInputText(null);
         }
-        if(requestFocus){
+        if (requestFocus) {
             networkPassword.requestFocus();
         } else {
             networkPassword.clearFocus();
@@ -268,19 +273,9 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
     public void onNothingSelected(final AdapterView<?> parent) {
         wifiPresenter.updatePasswordField();
     }
-
     //endregion
-    @Override
-    public void sendAccessToken() {
-        if (!sendAccessToken) {
-            presenter.finishUpOperations();
-        } else {
-            presenter.checkLinkedAccount();
-        }
-    }
 
-    @Override
-    public void sendOnCreateAnalytics(){
+    public void sendOnCreateAnalytics() {
         final boolean hasNetwork = network != null;
         final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,
                                                                  !hasNetwork);
@@ -319,12 +314,24 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
+    @Override
+    public void finishPairFlow(int resultCode) {
+
+    }
+
+    @Override
+    public void finishActivity() {
+
+    }
+
     private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {
         private SecurityTypeAdapter(final Context context) {
             super(context, R.layout.item_sec_type, sec_type.values());
         }
 
-        private @StringRes int getTitle(final int position) {
+        private
+        @StringRes
+        int getTitle(final int position) {
             switch (getItem(position)) {
                 case SL_SCAN_SEC_TYPE_OPEN:
                     return R.string.sec_type_open;
