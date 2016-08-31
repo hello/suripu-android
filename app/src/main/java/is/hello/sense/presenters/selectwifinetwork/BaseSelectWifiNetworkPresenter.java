@@ -22,7 +22,7 @@ public abstract class BaseSelectWifiNetworkPresenter
         super.onDetach();
     }
 
-    private final static String SCAN_FOR_NETWORK_OPERATION = "Scan for networks";
+    private final static String OPERATION_SCAN_FOR_NETWORK = "Scan for networks";
 
     public abstract String getOnCreateAnalyticsEvent();
 
@@ -69,14 +69,14 @@ public abstract class BaseSelectWifiNetworkPresenter
     private void onPeripheralDiscoveryError(final Throwable e) {
         execute(() -> {
             view.showRescanOption();
-            view.presentErrorDialog(e, SCAN_FOR_NETWORK_OPERATION);
+            view.presentErrorDialog(e, OPERATION_SCAN_FOR_NETWORK);
         });
     }
 
     private void onWifiError(final Throwable e) {
         hideHardwareActivity(() -> {
             view.showRescanOption();
-            view.presentErrorDialog(e, SCAN_FOR_NETWORK_OPERATION);
+            view.presentErrorDialog(e, OPERATION_SCAN_FOR_NETWORK);
         }, null);
     }
 

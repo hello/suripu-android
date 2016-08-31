@@ -4,12 +4,10 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
-//todo confirm strings used are correct
 public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
 
 
@@ -21,6 +19,9 @@ public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
     }
 
     @Override
+    protected boolean shouldSendAccessToken() {return true;}
+
+    @Override
     public int getPairingRes() {
         return R.string.title_pairing_with_sense;
     }
@@ -29,7 +30,6 @@ public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
     public int getFinishedRes() {
         return R.string.title_paired;
     }
-
 
     @Override
     public String getOnFinishAnalyticsEvent() {
@@ -48,16 +48,16 @@ public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
 
     @Override
     public String getOnCreateAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_PASSWORD;
+        return Analytics.SenseUpgrade.EVENT_WIFI_PASSWORD;
     }
 
     @Override
     public String getOnSubmitWifiCredentialsAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED;
+        return Analytics.SenseUpgrade.EVENT_WIFI_CREDENTIALS_SUBMITTED;
     }
 
     @Override
     public String getWifiAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE;
+        return Analytics.SenseUpgrade.EVENT_SENSE_WIFI_UPDATE;
     }
 }

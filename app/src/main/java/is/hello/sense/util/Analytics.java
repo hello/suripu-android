@@ -677,6 +677,52 @@ public class Analytics {
         String PROPERTY_NAME = "status";
     }
 
+    public interface SenseUpgrade {
+        String ERROR_SENSE_REQUIRED = "No Previously Paired Sense Found";
+        /**
+         * When user lands on the screen to scan for wifi in the app
+         */
+        String EVENT_WIFI = "Upgrade WiFi";
+
+        /**
+         * When the user implicitly scans for wifi networks.
+         */
+        String EVENT_WIFI_SCAN = "Upgrade WiFi Scan";
+
+        /**
+         * When the user explicitly rescans for wifi networks
+         */
+        String EVENT_WIFI_RESCAN = "Upgrade WiFi Rescan";
+
+        /**
+         * When the user lands on the "Enter Wifi Password" screen
+         */
+        String EVENT_WIFI_PASSWORD = "Upgrade WiFi Password";
+
+        String PROP_WIFI_IS_OTHER = "Is Other";
+
+        String PROP_WIFI_RSSI = "RSSI";
+
+        /**
+         * When user sends WiFi credentials
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Upgrade WiFi Credentials Submitted";
+
+        String PROP_WIFI_SECURITY_TYPE = "Security Type";
+
+        /**
+         * Internal logging updates from Sense in update flow.
+         *
+         * @see #PROP_SENSE_WIFI_STATUS
+         */
+        String EVENT_SENSE_WIFI_UPDATE = "Upgrade Sense WiFi Update";
+
+        String PROP_SENSE_WIFI_STATUS = "status";
+        String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
+        String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
+
+    }
+
 
     //region Lifecycle
 

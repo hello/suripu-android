@@ -47,13 +47,9 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
         implements
         AdapterView.OnItemSelectedListener,
         BaseConnectWifiPresenter.Output {
-    public static final String ARG_SEND_ACCESS_TOKEN = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
     public static final String ARG_SCAN_RESULT = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
-    private static final String HAS_SENT_ACCESS_TOKEN_KEY = "hasSentAccessToken";
-
-    private boolean sendAccessToken;
 
     private EditText networkName;
     private LabelEditText networkPassword;
@@ -63,7 +59,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     @Nullable
     private wifi_endpoint network;
 
-    private boolean hasSentAccessToken = false;
     private OnboardingToolbar toolbar;
 
     @Inject
@@ -82,12 +77,7 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
-
         this.network = (wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
-        if (savedInstanceState != null) {
-            this.hasSentAccessToken = savedInstanceState.getBoolean(HAS_SENT_ACCESS_TOKEN_KEY, false);
-        }
         sendOnCreateAnalytics();
 
         setRetainInstance(true);
@@ -168,13 +158,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(HAS_SENT_ACCESS_TOKEN_KEY, hasSentAccessToken);
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (networkSecurity != null) {
@@ -242,11 +225,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     @Override
     public String getNetworkPassword() {
         return networkPassword.getInputText();
-    }
-
-    @Override
-    public boolean sendAccessToken() {
-        return sendAccessToken;
     }
 
     @Override
