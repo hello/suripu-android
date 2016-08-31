@@ -11,16 +11,10 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
-import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
-import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
-import is.hello.sense.ui.common.UserSupport;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
@@ -37,7 +31,6 @@ public class PairPillFragment extends BasePresenterFragment
     protected DiagramVideoView diagram;
     protected Button skipButton;
     protected Button retryButton;
-    protected boolean isPairing = false;
 
     @Override
     public void onInjected() {
@@ -68,7 +61,7 @@ public class PairPillFragment extends BasePresenterFragment
         Views.setSafeOnClickListener(retryButton, ignored -> presenter.pairPill());
         OnboardingToolbar.of(this, view)
                          .setWantsBackButton(presenter.wantsBackButton())
-                         .setOnHelpClickListener(this::help);
+                         .setOnHelpClickListener(presenter::onHelpClick);
 
         if (BuildConfig.DEBUG) {
             diagram.setOnLongClickListener(ignored -> {
@@ -84,10 +77,7 @@ public class PairPillFragment extends BasePresenterFragment
     @Override
     public void onResume() {
         super.onResume();
-
-        if (!isPairing) {
-            presenter.pairPill();
-        }
+        presenter.onResume();
     }
 
     @Override
@@ -126,14 +116,9 @@ public class PairPillFragment extends BasePresenterFragment
         }
     }
 
-    protected void help(@NonNull final View sender) {
-        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PILL_PAIRING);
-    }
 
     @Override
     public void showPillPairing() {
-        this.isPairing = true;
-
         activityIndicator.setVisibility(View.VISIBLE);
         activityStatus.setVisibility(View.VISIBLE);
 
@@ -142,38 +127,16 @@ public class PairPillFragment extends BasePresenterFragment
     }
 
     @Override
-    public void presentError(final Throwable e) {
-        this.isPairing = false;
-
+    public void showError() {
         diagram.suspendPlayback(true);
-        presenter.hideAllActivityForFailure(() -> {
-            activityIndicator.setVisibility(View.GONE);
-            activityStatus.setVisibility(View.GONE);
+        activityIndicator.setVisibility(View.GONE);
+        activityStatus.setVisibility(View.GONE);
 
-            if (presenter.showSkipButtonOnError()) {
-                skipButton.setVisibility(View.VISIBLE);
-            }
-            retryButton.setVisibility(View.VISIBLE);
+        if (presenter.showSkipButtonOnError()) {
+            skipButton.setVisibility(View.VISIBLE);
+        }
+        retryButton.setVisibility(View.VISIBLE);
 
-            final ErrorDialogFragment.Builder errorDialogBuilder =
-                    new ErrorDialogFragment.Builder(e, getActivity());
-            errorDialogBuilder.withOperation("Pair Pill");
-            if (e instanceof OperationTimeoutException ||
-                    SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
-            } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
-                errorDialogBuilder.withSupportLink();
-            } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.DEVICE_ALREADY_PAIRED)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_pill_already_paired));
-                errorDialogBuilder.withSupportLink();
-            } else {
-                errorDialogBuilder.withUnstableBluetoothHelp(getActivity());
-            }
-
-            final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
     }
 
 }

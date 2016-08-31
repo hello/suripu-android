@@ -104,6 +104,10 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
         showHelpUri(Uri.parse(uri));
     }
 
+    public void showHelpUri(@NonNull final UserSupport.HelpStep helpStep) {
+        UserSupport.showForHelpStep(getActivity(), helpStep);
+    }
+
     public void finishActivity() {
         getActivity().finish();
     }
