@@ -50,7 +50,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     public static final String ARG_SCAN_RESULT = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
-    private static final String HAS_SENT_ACCESS_TOKEN_KEY = "hasSentAccessToken";
 
     private EditText networkName;
     private LabelEditText networkPassword;
@@ -60,7 +59,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     @Nullable
     private wifi_endpoint network;
 
-    private boolean hasSentAccessToken = false;
     private OnboardingToolbar toolbar;
 
     @Inject
@@ -80,9 +78,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
         super.onCreate(savedInstanceState);
 
         this.network = (wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
-        if (savedInstanceState != null) {
-            this.hasSentAccessToken = savedInstanceState.getBoolean(HAS_SENT_ACCESS_TOKEN_KEY, false);
-        }
         sendOnCreateAnalytics();
 
         setRetainInstance(true);
@@ -160,13 +155,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
         if (network != null && network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             wifiPresenter.sendWifiCredentials();
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(HAS_SENT_ACCESS_TOKEN_KEY, hasSentAccessToken);
     }
 
     @Override
