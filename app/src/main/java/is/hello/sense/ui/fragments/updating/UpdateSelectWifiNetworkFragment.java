@@ -33,9 +33,6 @@ import is.hello.sense.util.Analytics;
 //todo rename, remove "Update" after ConnectToWifiFragment is phased out.
 public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
         implements AdapterView.OnItemClickListener, BaseSelectWifiNetworkPresenter.Output {
-    public static final String ARG_SEND_ACCESS_TOKEN = UpdateSelectWifiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
-
-    private boolean sendAccessToken;
 
     private WifiNetworkAdapter networkAdapter;
 
@@ -63,12 +60,6 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
         super.onCreate(savedInstanceState);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
-        if (getArguments() != null && getArguments().containsKey(ARG_SEND_ACCESS_TOKEN)) {
-            this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
-        } else {
-            this.sendAccessToken = false;
-
-        }
 
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), null);
 
@@ -185,7 +176,6 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
         final UpdateConnectToWiFiFragment nextFragment = new UpdateConnectToWiFiFragment();
         final Bundle arguments = new Bundle();
         arguments.putSerializable(UpdateConnectToWiFiFragment.ARG_SCAN_RESULT, network);
-        arguments.putBoolean(UpdateConnectToWiFiFragment.ARG_SEND_ACCESS_TOKEN, sendAccessToken);
         nextFragment.setArguments(arguments);
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
     }
