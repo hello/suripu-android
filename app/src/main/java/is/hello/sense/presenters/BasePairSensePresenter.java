@@ -82,7 +82,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
             hardwareInteractor.clearPeripheral();
         }
         if(shouldContinueFlow()){
-            view.finishPairFlow(Activity.RESULT_OK);
+            view.finishFlowWithResult(Activity.RESULT_OK);
         } else {
             view.finishActivity();
         }
@@ -190,9 +190,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     public interface Output extends BaseOutput {
 
-        void finishPairFlow(int resultCode);
-
-        void finishActivity();
 
     }
 }

@@ -55,7 +55,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     }
 
     private void showSelectWifiNetwork() {
-        view.finishPairFlow(REQUEST_CODE_EDIT_WIFI);
+        view.finishFlowWithResult(REQUEST_CODE_EDIT_WIFI);
     }
 
     public void onActivityResult(final int requestCode,

@@ -35,7 +35,7 @@ import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.fragments.sense.BasePairSenseFragment;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -43,7 +43,7 @@ import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 @Deprecated
-public class ConnectToWiFiFragment extends BasePairSenseFragment
+public class ConnectToWiFiFragment extends BasePresenterFragment
         implements AdapterView.OnItemSelectedListener, ConnectWifiPresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
     public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
@@ -279,7 +279,6 @@ public class ConnectToWiFiFragment extends BasePairSenseFragment
         }
     }
 
-    @Override
     public void sendOnCreateAnalytics(){
         final boolean hasNetwork = network != null;
         final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,

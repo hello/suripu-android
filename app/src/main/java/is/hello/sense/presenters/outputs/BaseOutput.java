@@ -23,4 +23,8 @@ public interface BaseOutput extends StateSafeExecutor.Resumes {
     void showHelpUri(@NonNull final Uri uri);
 
     void showHelpUri(@NonNull final String  uri);
+
+    void finishActivity();
+
+    void finishFlowWithResult(int resultCode);
 }
