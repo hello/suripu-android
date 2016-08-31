@@ -4,9 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
 
-/**
- * Created by jimmy on 4/8/16.
- */
 public class SleepSoundsState extends ApiResponse {
 
     @SerializedName("availableDurations")

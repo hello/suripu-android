@@ -314,7 +314,7 @@ public class Alarm extends ApiResponse {
                 '}';
     }
 
-    public static class AlarmTones implements IListObject {
+    public static class AlarmTones implements IListObject<Sound> {
         private final ArrayList<Sound> sounds;
 
         public AlarmTones(final @NonNull ArrayList<Alarm.Sound> sounds) {
@@ -331,7 +331,7 @@ public class Alarm extends ApiResponse {
         }
 
         @Override
-        public List<? extends IListItem> getListItems() {
+        public List<Sound> getListItems() {
             return sounds;
         }
     }

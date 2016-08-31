@@ -11,7 +11,8 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.IListObject;
 
-public class SleepDurations extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
+public class SleepDurations extends ApiResponse
+        implements IListObject<Duration>, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem<Duration> {
     @SerializedName("durations")
     private List<Duration> durations;
 
@@ -45,7 +46,7 @@ public class SleepDurations extends ApiResponse implements IListObject, SleepSou
     }
 
     @Override
-    public List<? extends IListItem> getListItems() {
+    public List<Duration> getListItems() {
         return this.durations;
     }
 
@@ -60,7 +61,7 @@ public class SleepDurations extends ApiResponse implements IListObject, SleepSou
     }
 
     @Override
-    public IListObject getListObject() {
+    public IListObject<Duration> getListObject() {
         return this;
     }
 }
