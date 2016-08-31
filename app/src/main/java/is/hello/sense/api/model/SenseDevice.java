@@ -18,16 +18,27 @@ public class SenseDevice extends BaseDevice {
     @SerializedName("wifi_info")
     public final WiFiInfo wiFiInfo;
 
-    public SenseDevice(State state,
-                       Color color,
-                       String deviceId,
-                       String firmwareVersion,
-                       DateTime lastUpdated,
-                       WiFiInfo wiFiInfo) {
+    @SerializedName("hw_version")
+    public final HardwareVersion hardwareVersion;
+
+    public SenseDevice(final State state,
+                       final Color color,
+                       final String deviceId,
+                       final String firmwareVersion,
+                       final DateTime lastUpdated,
+                       final WiFiInfo wiFiInfo,
+                       final HardwareVersion hardwareVersion) {
         super(state, deviceId, firmwareVersion, lastUpdated);
 
         this.color = color;
         this.wiFiInfo = wiFiInfo;
+        this.hardwareVersion = hardwareVersion;
+    }
+
+    @Override
+    public int getDisplayTitleRes() {
+        return HardwareVersion.UNKNOWN.equals(hardwareVersion) ?
+                R.string.device_sense : hardwareVersion.nameRes;
     }
 
     @Override
@@ -35,6 +46,10 @@ public class SenseDevice extends BaseDevice {
         return "Sense{" +
                 "wiFiInfo=" + wiFiInfo +
                 '}';
+    }
+
+    public boolean shouldUpgrade() {
+        return HardwareVersion.SENSE.equals(hardwareVersion);
     }
 
     public static class WiFiInfo extends ApiResponse {
@@ -85,11 +100,28 @@ public class SenseDevice extends BaseDevice {
         public final @StringRes
         int nameRes;
 
-        Color(int nameRes) {
+        Color(final int nameRes) {
             this.nameRes = nameRes;
         }
 
-        public static Color fromString(@NonNull String string) {
+        public static Color fromString(@NonNull final String string) {
+            return Enums.fromString(string, values(), UNKNOWN);
+        }
+    }
+
+    public enum HardwareVersion implements Enums.FromString {
+        SENSE(R.string.device_hardware_version_sense),
+        SENSE_WITH_VOICE(R.string.device_hardware_version_sense_with_voice),
+        UNKNOWN(R.string.device_hardware_version_unknown);
+
+        public final @StringRes
+        int nameRes;
+
+        HardwareVersion(final int nameRes) {
+            this.nameRes = nameRes;
+        }
+
+        public static HardwareVersion fromString(@NonNull final String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }
     }
