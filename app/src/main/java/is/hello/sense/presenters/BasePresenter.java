@@ -1,6 +1,7 @@
 package is.hello.sense.presenters;
 
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -65,12 +66,13 @@ public abstract class BasePresenter<S extends BaseOutput>
     private boolean stateRestored = false;
 
     //region StateSaveable
-
+    @CallSuper
     @Override
     public boolean isStateRestored() {
         return stateRestored;
     }
 
+    @CallSuper
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
         logEvent("onRestoreState(" + savedState + ")");
@@ -146,15 +148,18 @@ public abstract class BasePresenter<S extends BaseOutput>
 
 
     //region Interactor Container
+    @CallSuper
     public void onResume() {
         stateSafeExecutor.executePendingForResume();
         interactorContainer.onContainerResumed();
     }
 
+    @CallSuper
     public void onSaveInteractorState(@NonNull final Bundle outState) {
         interactorContainer.onSaveState(outState);
     }
 
+    @CallSuper
     public void onTrimMemory(final int level) {
         interactorContainer.onTrimMemory(level);
     }

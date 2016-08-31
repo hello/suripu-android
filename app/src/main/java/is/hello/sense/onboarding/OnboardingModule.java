@@ -3,10 +3,6 @@ package is.hello.sense.onboarding;
 import javax.inject.Singleton;
 
 import dagger.Module;
-import dagger.Provides;
-import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
-import is.hello.sense.presenters.pairpill.OnboardingPairPillPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -38,9 +34,4 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
 )
 public class OnboardingModule {
 
-    @Provides
-    @Singleton
-    BasePairPillPresenter providesOnboardingPairPillPresenter(final HardwareInteractor interactor){
-        return new OnboardingPairPillPresenter(interactor);
-    }
 }
