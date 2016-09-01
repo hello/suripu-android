@@ -1,5 +1,6 @@
 package is.hello.sense.presenters;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
@@ -58,7 +59,7 @@ public class SettingsPairSensePresenter extends PairSensePresenter {
 
     @Override
     public boolean shouldShowPairDialog() {
-        return false;
+        return BuildConfig.DEBUG;
     }
 
     @Override
