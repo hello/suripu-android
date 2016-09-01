@@ -61,6 +61,24 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
 
     }
 
+    @Override
+    public void onActivityCreated(final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null){
+            getPresenter().onRestoreState(savedInstanceState);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        final Bundle savedState = getPresenter().onSaveState();
+        if (savedState != null) {
+            outState.putParcelable(getPresenter().getSavedStateKey(), savedState);
+        }
+        getPresenter().onSaveInteractorState(outState);
+    }
+
     @CallSuper
     @Override
     public void onResume() {
@@ -105,12 +123,19 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
         getPresenter().onDestroyView();
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        getPresenter().onTrimMemory(level);
+    }
+
     @CallSuper
     @Override
     public void onDetach() {
         super.onDetach();
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
+        //todo make instance of presenter null?
     }
 
     @NonNull

@@ -48,6 +48,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
+        super.onRestoreState(savedState);
         linkedAccount = savedState.getBoolean(ARG_HAS_LINKED_ACCOUNT);
     }
 
