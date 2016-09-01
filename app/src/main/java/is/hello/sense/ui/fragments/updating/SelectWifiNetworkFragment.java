@@ -26,7 +26,6 @@ import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresente
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -91,10 +90,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
 
         this.rescanButton = (Button) view.findViewById(R.id.fragment_select_wifi_rescan);
         rescanButton.setEnabled(false);
-        Views.setSafeOnClickListener(rescanButton, ignored -> {
-            sendOnRescanAnalytics();
-            presenter.rescan(true);
-        });
+        Views.setSafeOnClickListener(rescanButton, presenter::onRescanButtonClicked);
 
         if (getActivity().getActionBar() != null) {
             final TextView heading = (TextView) view.findViewById(R.id.fragment_select_wifi_heading);
@@ -118,8 +114,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (networkAdapter.isEmpty()) {
-            sendOnScanAnalytics();
-            presenter.rescan(false);
+            presenter.initialScan();
         } else {
             showRescanOption();
         }
@@ -208,23 +203,5 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
     public void bindScanResults(@NonNull final Collection<wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
-    }
-
-    @Override
-    public void presentErrorDialog(final Throwable e, final String operation) {
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                .withOperation(operation)
-                .withSupportLink();
-
-        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-    }
-
-    public void sendOnScanAnalytics() {
-        Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
-    }
-
-    private void sendOnRescanAnalytics() {
-        Analytics.trackEvent(presenter.getOnRescanAnalyticsEvent(), null);
     }
 }
