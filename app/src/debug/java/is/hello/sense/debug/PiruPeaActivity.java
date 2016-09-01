@@ -64,7 +64,8 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
 
     @Override
     protected List<Object> getModules() {
-        return Arrays.asList(new SettingsWifiModule(), new SettingsPairSenseModule());
+        // May need to change variable: true
+        return Arrays.asList(new SettingsWifiModule(true), new SettingsPairSenseModule());
     }
 
     @Override

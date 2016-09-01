@@ -24,13 +24,18 @@ import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
         }
 )
 public class SettingsWifiModule {
+    private final boolean shouldLinkAccount;
+
+    public SettingsWifiModule(final boolean shouldLinkAccount) {
+        this.shouldLinkAccount = shouldLinkAccount;
+    }
 
     @Provides
     @Singleton
     BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                                              @NonNull final UserFeaturesInteractor userFeaturesInteractor,
                                                              @NonNull final ApiService apiService) {
-        return new SettingsConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
+        return new SettingsConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, shouldLinkAccount);
     }
 
     @Provides

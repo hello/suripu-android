@@ -19,7 +19,7 @@ public class OnboardingConnectWifiPresenter extends BaseConnectWifiPresenter {
     }
 
     @Override
-    protected boolean shouldSendAccessToken() {
+    protected boolean shouldLinkAccount() {
         return true;
     }
 
