@@ -31,7 +31,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     public BasePairSensePresenter(final HardwareInteractor hardwareInteractor,
                                   final UserFeaturesInteractor userFeaturesInteractor,
-                                  final ApiService apiService){
+                                  final ApiService apiService) {
         super(hardwareInteractor);
         this.userFeaturesInteractor = userFeaturesInteractor;
         this.apiService = apiService;
@@ -71,11 +71,11 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         Analytics.trackEvent(getOnFinishAnalyticsEvent(), null);
     }
 
-    protected void onPairSuccess(){
-        if(shouldClearPeripheral()){
+    protected void onPairSuccess() {
+        if (shouldClearPeripheral()) {
             hardwareInteractor.clearPeripheral();
         }
-        if(shouldContinueFlow()){
+        if (shouldContinueFlow()) {
             view.finishFlowWithResult(Activity.RESULT_OK);
         } else {
             view.finishActivity();
@@ -83,13 +83,14 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     public void checkLinkedAccount() {
-        if(linkedAccount){
+        if (linkedAccount) {
             finishUpOperations();
         } else {
             showBlockingActivity(R.string.title_linking_account);
             requestLinkAccount();
         }
     }
+
     protected void updateLinkedAccount() {
         this.linkedAccount = true;
         finishUpOperations();
@@ -115,18 +116,18 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         }
     }
 
-    protected Observable<SensePeripheral> getObservableSensePeripheral(){
+    protected Observable<SensePeripheral> getObservableSensePeripheral() {
         return hardwareInteractor.closestPeripheral();
     }
 
     protected boolean hasConnectivity(final ConnectProgress status) {
-            if (status == ConnectProgress.CONNECTED) {
-                showBlockingActivity(R.string.title_checking_connectivity);
-                return true;
-            } else {
-                showBlockingActivity(Styles.getConnectStatusMessage(status));
-                return false;
-            }
+        if (status == ConnectProgress.CONNECTED) {
+            showBlockingActivity(R.string.title_checking_connectivity);
+            return true;
+        } else {
+            showBlockingActivity(Styles.getConnectStatusMessage(status));
+            return false;
+        }
     }
 
     public void finishUpOperations() {
@@ -168,7 +169,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                          });
     }
 
-    private void onFinished(){
+    private void onFinished() {
         hideAllActivityForSuccess(getFinishedRes(),
                                   () -> {
                                       sendOnFinishedAnalytics();

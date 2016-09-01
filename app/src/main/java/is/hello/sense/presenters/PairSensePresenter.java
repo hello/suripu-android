@@ -77,9 +77,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
         bindAndSubscribe(device,
                          this::tryToPairWith,
                          e -> {
-                            hardwareInteractor.clearPeripheral();
-                            presentError(e, "Discovering Sense");
-                        });
+                             hardwareInteractor.clearPeripheral();
+                             presentError(e, "Discovering Sense");
+                         });
     }
 
     private void tryToPairWith(@NonNull final SensePeripheral device) {
@@ -102,9 +102,10 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
         } else {
             bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              status -> {
-                                 if(hasConnectivity(status)){
+                                 if (hasConnectivity(status)) {
                                      checkConnectivityAndContinue();
-                                 }},
+                                 }
+                             },
                              e -> presentError(e, "Connecting to Sense"));
         }
     }
@@ -187,8 +188,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     }
 
 
-
-    public interface Output extends BasePairSensePresenter.Output{
+    public interface Output extends BasePairSensePresenter.Output {
         void requestPermissionWithDialog();
 
         void presentError(StringRef message,
