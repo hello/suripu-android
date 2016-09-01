@@ -28,6 +28,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
         devicesInteractor = null;
     }
 
+    @Override
     public void onViewCreated() {
         bindAndSubscribe(devicesInteractor.devices,
                          this::bindDevices,
@@ -44,7 +45,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
             final SleepPillDevice sleepPillDevice = devices.getSleepPill();
             if (sleepPillDevice == null) { // account doesn't have a pill.
                 devicesInteractor.devices.forget();
-                view.finishWithSuccess();
+                finishWithSuccess();
                 return;
             }
             view.showBlockingActivity(R.string.unpairing_sleep_pill);
@@ -69,7 +70,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
             onPrimaryClick(clickedView);
         });
         dialog.setNegativeButton(R.string.action_dont_pair, (dialogInterface, i) -> {
-            view.finishWithSuccess();
+            finishWithSuccess();
         });
         dialog.show();
     }
@@ -81,7 +82,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
     }
 
     private void finishWithSuccess() {
-        hideBlockingActivity(R.string.unpaired, view::finishWithSuccess);
+        hideBlockingActivity(R.string.unpaired, view::finishFlow);
     }
 
     private void hideBlockingActivityWithDelay(@NonNull final Runnable runnable) {
@@ -102,8 +103,6 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
     public interface Output extends BaseOutput {
         void postDelayed(@NonNull final Runnable runnable, int time);
-
-        void finishWithSuccess();
 
         Activity getActivity();
     }

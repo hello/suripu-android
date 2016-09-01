@@ -45,13 +45,6 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        presenter.onViewCreated();
-    }
-
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (view != null) {
@@ -63,11 +56,8 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
     @Override
     public void postDelayed(@NonNull final Runnable runnable, final int time) {
         view.postDelayed(runnable, time);
+
     }
 
-    @Override
-    public void finishWithSuccess() {
-        finishFlow();
-    }
 
 }

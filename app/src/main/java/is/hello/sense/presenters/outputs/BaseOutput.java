@@ -6,7 +6,11 @@ import android.support.annotation.StringRes;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.StateSafeExecutor;
 
-public interface BaseOutput extends StateSafeExecutor.Resumes, HelpOutput {
+public interface BaseOutput extends
+        StateSafeExecutor.Resumes,
+        HelpOutput,
+        FlowOutput {
+
     boolean isResumed();
 
     boolean canObservableEmit();
@@ -19,7 +23,4 @@ public interface BaseOutput extends StateSafeExecutor.Resumes, HelpOutput {
 
     void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder);
 
-    void finishActivity();
-
-    void finishFlowWithResult(int resultCode);
 }
