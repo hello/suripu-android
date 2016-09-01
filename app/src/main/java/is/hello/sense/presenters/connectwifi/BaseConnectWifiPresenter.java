@@ -2,6 +2,7 @@ package is.hello.sense.presenters.connectwifi;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -40,6 +41,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         super(hardwareInteractor, userFeaturesInteractor, apiService);
     }
 
+    @CallSuper
     @Nullable
     @Override
     public Bundle onSaveState() {
@@ -51,13 +53,14 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         return bundle;
     }
 
+    @CallSuper
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
         this.hasConnectedToNetwork = savedState.getBoolean(ARG_CONNECTED_TO_NETWORK);
     }
 
-
+    @CallSuper
     @Override
     public void onViewCreated() {
         super.onViewCreated();
@@ -102,9 +105,8 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
     public abstract String getWifiAnalyticsEvent();
 
-    public abstract
     @StringRes
-    int getLinkedAccountErrorTitleRes();
+    public abstract int getLinkedAccountErrorTitleRes();
 
     private void sendWifiCredentialsSubmittedAnalytics(final SenseCommandProtos.wifi_endpoint.sec_type securityType) {
         final Properties properties = Analytics.createProperties(
@@ -113,7 +115,6 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         Analytics.trackEvent(getOnSubmitWifiCredentialsAnalyticsEvent(), properties);
     }
 
-    //@Override
     public void presentError(final Throwable e, @NonNull final String operation) {
         hideAllActivityForFailure(() -> {
             ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
@@ -211,9 +212,9 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
     private void onConnected() {
         if (shouldSendAccessToken()) {
-            checkLinkedAccount();
-        } else {
             finishUpOperations();
+        } else {
+            checkLinkedAccount();
         }
     }
 
