@@ -83,10 +83,10 @@ public class UpgradePairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    protected Observable<SensePeripheral> getObservableSensePeripheral(){
+    protected Observable<SensePeripheral> getObservableSensePeripheral() {
         hardwareInteractor.clearPeripheral();
         final SenseDevice currentSenseDevice = resetOriginalInteractor.getCurrentSense();
-        if(currentSenseDevice != null){
+        if (currentSenseDevice != null) {
             return hardwareInteractor.closestPeripheral(
                     Collections.singleton(currentSenseDevice.deviceId));
         } else {
@@ -96,15 +96,11 @@ public class UpgradePairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    public void completePeripheralPair() {
+    protected void requestLinkAccount() {
         swapSenseInteractor.setRequest(hardwareInteractor.getDeviceId());
-        //todo undue below
-        super.completePeripheralPair();
-        /*
         bindAndSubscribe(swapSenseInteractor.canSwap(),
-                  okStatus -> super.completePeripheralPair(),
-                  e -> presentError(e, "swap sense")
-                 );
-                 */
+                         okStatus -> super.requestLinkAccount(),
+                         e -> presentError(e, "swap sense")
+                        );
     }
 }
