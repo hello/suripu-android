@@ -97,7 +97,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         Analytics.trackEvent(getOnCreateAnalyticsEvent(), properties);
     }
 
-    protected abstract boolean shouldSendAccessToken();
+    protected abstract boolean shouldLinkAccount();
 
     public abstract String getOnCreateAnalyticsEvent();
 
@@ -211,10 +211,10 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     }
 
     private void onConnected() {
-        if (shouldSendAccessToken()) {
-            finishUpOperations();
-        } else {
+        if (shouldLinkAccount()) {
             checkLinkedAccount();
+        } else {
+            finishUpOperations();
         }
     }
 

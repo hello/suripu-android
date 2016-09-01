@@ -19,7 +19,7 @@ public class UpgradeConnectWifiPresenter extends BaseConnectWifiPresenter {
     }
 
     @Override
-    protected boolean shouldSendAccessToken() {
+    protected boolean shouldLinkAccount() {
         return true;
     }
 
