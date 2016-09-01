@@ -36,7 +36,7 @@ public class SettingsActivity extends ScopedInjectionActivity
         implements FragmentNavigation, FragmentManager.OnBackStackChangedListener {
 
     @Override
-    List<Object> getModules() {
+    protected List<Object> getModules() {
         return Arrays.asList(
                 new SettingsPairSenseModule(),
                 new SettingsWifiModule());

@@ -22,7 +22,7 @@ public abstract class ScopedInjectionActivity extends InjectionActivity{
         scopedObjectGraph.inject(this);
     }
 
-    abstract List<Object> getModules();
+    protected abstract List<Object> getModules();
 
     public void destroyScopedGraph(){
         scopedObjectGraph = null;

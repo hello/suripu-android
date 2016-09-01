@@ -38,6 +38,7 @@
     <string name="error_peripheral_connection_lost_title">Connection lost</string>
     <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
 
+    <string name="error_title_wifi_connection">Wifi Connection Failed</string>
     <string name="error_wifi_connection_failed">Sense could not connect to the WiFi network. Make sure you‘re within range, double check your password, and try again.</string>
     <string name="error_wifi_ip_failure">Sense could not obtain an IP address on the WiFi network you selected.</string>
     <string name="error_wifi_ssl_failure">Sense could not establish a secure connection with SSL to the server.</string>
@@ -96,7 +97,7 @@
     <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
     <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
-    <string name="failed_to_link_account">Failed to Link Account</string>
+    <string name="error_account_not_linked">Account Not Linked</string>
 
     <string name="video_playback_connectivity_error_title">Failed to stream video</string>
     <string name="video_playback_generic_error">Could not play video.</string>

@@ -68,7 +68,7 @@
                   android:theme="@style/AppTheme.Onboarding"
                   android:screenOrientation="portrait"/>
 
-        <activity android:name=".ui.activities.SenseUpdateActivity"
+        <activity android:name=".ui.activities.SenseUpgradeActivity"
                   android:parentActivityName=".ui.activities.HomeActivity"
                   android:launchMode="singleTop"
                   android:windowSoftInputMode="adjustResize"
