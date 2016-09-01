@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments.updating;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -24,17 +23,13 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.segment.analytics.Properties;
-
 import javax.inject.Inject;
 
-import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
@@ -42,12 +37,11 @@ import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-//todo rename, remove "Update" after ConnectToWifiFragment is phased out.
-public class UpdateConnectToWiFiFragment extends BasePresenterFragment
+public class ConnectToWiFiFragment extends BasePresenterFragment
         implements
         AdapterView.OnItemSelectedListener,
         BaseConnectWifiPresenter.Output {
-    public static final String ARG_SCAN_RESULT = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
+    public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 

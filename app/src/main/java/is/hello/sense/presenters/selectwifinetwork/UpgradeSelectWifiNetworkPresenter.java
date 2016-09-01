@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.util.Analytics;
 
-public class UpdateSelectWifiNetworkPresenter extends BaseSelectWifiNetworkPresenter {
-    public UpdateSelectWifiNetworkPresenter(@NonNull final HardwareInteractor hardwareInteractor) {
+public class UpgradeSelectWifiNetworkPresenter extends BaseSelectWifiNetworkPresenter {
+    public UpgradeSelectWifiNetworkPresenter(@NonNull final HardwareInteractor hardwareInteractor) {
         super(hardwareInteractor);
     }
 

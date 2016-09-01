@@ -10,18 +10,17 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.BasePresenter;
-import is.hello.sense.presenters.SenseUpdateReadyPresenter;
-import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.presenters.SenseUpgradeIntroPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
-public class SenseUpdateReadyFragment extends BasePresenterFragment
-        implements SenseUpdateReadyPresenter.Output {
-
-    private OnboardingSimpleStepView view;
+public class SenseUpgradeIntroFragment extends BasePresenterFragment
+        implements SenseUpgradeIntroPresenter.Output {
 
     @Inject
-    SenseUpdateReadyPresenter presenter;
+    SenseUpgradeIntroPresenter presenter;
+
+    private OnboardingSimpleStepView view;
 
     @Override
     public BasePresenter getPresenter() {
@@ -32,13 +31,15 @@ public class SenseUpdateReadyFragment extends BasePresenterFragment
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         this.view = new OnboardingSimpleStepView(this, inflater)
-                .setHeadingText(R.string.title_upgrade_ready_sense_voice)
-                .setSubheadingText(R.string.info_upgrade_ready_sense_voice)
-                .setDiagramImage(R.drawable.sense_upgrade_ready)
-                .setPrimaryButtonText(R.string.action_continue)
-                .setPrimaryOnClickListener(presenter::onPrimaryClick)
-                .setWantsSecondaryButton(false)
-                .setToolbarWantsBackButton(false);
+                .setHeadingText(R.string.title_upgrade_sense_voice)
+                .setSubheadingText(R.string.info_upgrade_sense_voice)
+                .setDiagramImage(R.drawable.onboarding_sense_intro)
+                .setPrimaryButtonText(R.string.action_set_up)
+                .setPrimaryOnClickListener(presenter::onPrimaryClicked)
+                .setSecondaryButtonText(R.string.action_upgrade_sense_voice_help)
+                .setSecondaryOnClickListener(presenter::onSecondaryClicked)
+                .setToolbarWantsBackButton(true);
+
         return view;
     }
 
@@ -47,5 +48,6 @@ public class SenseUpdateReadyFragment extends BasePresenterFragment
         super.onDestroyView();
         view.destroy();
         view = null;
+
     }
 }

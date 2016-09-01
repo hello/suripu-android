@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.fragments.BaseHardwareFragment;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingUnsupportedDeviceFragment extends BaseHardwareFragment {
+public class OnboardingUnsupportedDeviceFragment extends SenseFragment {
     private OnboardingSimpleStepView view;
 
     @Override

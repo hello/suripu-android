@@ -31,7 +31,7 @@ import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.PillUpdateActivity;
-import is.hello.sense.ui.activities.SenseUpdateActivity;
+import is.hello.sense.ui.activities.SenseUpgradeActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.DevicesAdapter;
 import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
@@ -256,7 +256,7 @@ public class DeviceListFragment extends InjectionFragment
         if(device instanceof SleepPillDevice) {
             UserSupport.showUpdatePill(this, device.deviceId);
         } else if(device instanceof SenseDevice){
-            startActivityForResult(new Intent(getActivity(), SenseUpdateActivity.class), UPGRADE_SENSE_DEVICE_REQUEST_CODE);
+            startActivityForResult(new Intent(getActivity(), SenseUpgradeActivity.class), UPGRADE_SENSE_DEVICE_REQUEST_CODE);
         }
 
     }

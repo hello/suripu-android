@@ -6,7 +6,7 @@ import android.view.View;
 
 import is.hello.sense.presenters.outputs.BaseOutput;
 
-public class SenseUpdateReadyPresenter extends BasePresenter<SenseUpdateReadyPresenter.Output> {
+public class SenseUpgradeReadyPresenter extends BasePresenter<SenseUpgradeReadyPresenter.Output> {
 
     @Override
     public void onDetach() {
@@ -16,7 +16,7 @@ public class SenseUpdateReadyPresenter extends BasePresenter<SenseUpdateReadyPre
     @SuppressWarnings("unused")
     public void onPrimaryClick(@NonNull final View clickedView) {
         //todo use router
-        view.finishFlow();
+        execute( () -> view.finishFlow());
     }
 
 

@@ -15,50 +15,48 @@ import is.hello.sense.interactors.SwapSenseInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
-import is.hello.sense.presenters.SenseUpdateIntroPresenter;
-import is.hello.sense.presenters.SenseUpdateReadyPresenter;
+import is.hello.sense.presenters.SenseUpgradeIntroPresenter;
+import is.hello.sense.presenters.SenseUpgradeReadyPresenter;
 import is.hello.sense.presenters.UnpairPillPresenter;
-import is.hello.sense.presenters.UpdatePairSensePresenter;
+import is.hello.sense.presenters.UpgradePairSensePresenter;
 import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
-import is.hello.sense.presenters.connectwifi.UpdateConnectWifiPresenter;
+import is.hello.sense.presenters.connectwifi.UpgradeConnectWifiPresenter;
 import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.presenters.pairpill.UpgradePairPillPresenter;
 import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
-import is.hello.sense.presenters.selectwifinetwork.UpdateSelectWifiNetworkPresenter;
-import is.hello.sense.settings.SettingsWifiModule;
-import is.hello.sense.ui.activities.SenseUpdateActivity;
+import is.hello.sense.presenters.selectwifinetwork.UpgradeSelectWifiNetworkPresenter;
+import is.hello.sense.ui.activities.SenseUpgradeActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
 import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
-import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
-import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
-import is.hello.sense.ui.fragments.updating.UpdateConnectToWiFiFragment;
-import is.hello.sense.ui.fragments.updating.UpdateSelectWifiNetworkFragment;
+import is.hello.sense.ui.fragments.sense.SenseUpgradeIntroFragment;
+import is.hello.sense.ui.fragments.sense.SenseUpgradeReadyFragment;
+import is.hello.sense.ui.fragments.updating.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 
 @Module(
         complete = false,
         includes = {
                 //todo include after converting fragments to use presenters
                 // SenseOTAModule.class,
-                SettingsWifiModule.class
         },
         injects = {
-                SenseUpdateActivity.class,
-                SenseUpdateIntroFragment.class,
+                SenseUpgradeActivity.class,
+                SenseUpgradeIntroFragment.class,
                 PairSenseFragment.class,
-                SenseUpdateReadyFragment.class,
+                SenseUpgradeReadyFragment.class,
                 SenseResetOriginalFragment.class,
                 UnpairPillFragment.class,
                 UnpairPillPresenter.class,
                 PairPillFragment.class,
                 BluetoothFragment.class,
-                UpdateConnectToWiFiFragment.class,
-                UpdateSelectWifiNetworkFragment.class
+                ConnectToWiFiFragment.class,
+                SelectWifiNetworkFragment.class
         }
 )
-public class SenseUpdateModule {
+public class SenseUpgradeModule {
 
     @Provides
     @Singleton
@@ -71,13 +69,13 @@ public class SenseUpdateModule {
     BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                                              @NonNull final UserFeaturesInteractor userFeaturesInteractor,
                                                              @NonNull final ApiService apiService) {
-        return new UpdateConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
+        return new UpgradeConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
     }
 
     @Provides
     @Singleton
     BaseSelectWifiNetworkPresenter providesSelectWifiNetworkPresenter(final HardwareInteractor interactor) {
-        return new UpdateSelectWifiNetworkPresenter(interactor);
+        return new UpgradeSelectWifiNetworkPresenter(interactor);
     }
 
     @Provides
@@ -96,24 +94,24 @@ public class SenseUpdateModule {
 
     @Provides
     @Singleton
-    SenseUpdateIntroPresenter providesSenseUpdateIntroPresenter() {
-        return new SenseUpdateIntroPresenter();
+    SenseUpgradeIntroPresenter providesSenseUpgradeIntroPresenter() {
+        return new SenseUpgradeIntroPresenter();
     }
 
     @Provides
     @Singleton
-    SenseUpdateReadyPresenter providesSenseUpdateReadyPresenter() {
-        return new SenseUpdateReadyPresenter();
+    SenseUpgradeReadyPresenter providesSenseUpgradeReadyPresenter() {
+        return new SenseUpgradeReadyPresenter();
     }
 
     @Provides
     @Singleton
-    PairSensePresenter providesUpdatePairSensePresenter(final HardwareInteractor interactor,
+    PairSensePresenter providesUpgradePairSensePresenter(final HardwareInteractor interactor,
                                                         final UserFeaturesInteractor userFeaturesInteractor,
                                                         final ApiService apiService,
                                                         final SwapSenseInteractor swapSenseInteractor,
                                                         final SenseResetOriginalInteractor resetOriginalInteractor){
-        return new UpdatePairSensePresenter(interactor, userFeaturesInteractor, apiService, swapSenseInteractor, resetOriginalInteractor);
+        return new UpgradePairSensePresenter(interactor, userFeaturesInteractor, apiService, swapSenseInteractor, resetOriginalInteractor);
     }
 
 

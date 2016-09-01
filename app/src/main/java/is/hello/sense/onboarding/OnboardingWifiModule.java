@@ -1,34 +1,40 @@
 package is.hello.sense.onboarding;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.presenters.ConnectWifiPresenter;
-import is.hello.sense.presenters.SelectWifiNetworkPresenter;
-import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
+import is.hello.sense.presenters.connectwifi.OnboardingConnectWifiPresenter;
+import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
+import is.hello.sense.presenters.selectwifinetwork.OnboardingSelectWifiNetworkPresenter;
+import is.hello.sense.ui.fragments.updating.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 
 @Module(
         complete = false,
         injects = {
-                SelectWiFiNetworkFragment.class,
+                SelectWifiNetworkFragment.class,
                 ConnectToWiFiFragment.class
         }
 )
 public class OnboardingWifiModule {
     @Provides
     @Singleton
-    SelectWifiNetworkPresenter providesOnboardingSelectWifiNetworkPresenter(
-            final HardwareInteractor hardwareInteractor){
-        return new SelectWifiNetworkPresenter.Onboarding( hardwareInteractor);
+    BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                                                             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                                             @NonNull final ApiService apiService) {
+        return new OnboardingConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
     }
 
     @Provides
     @Singleton
-    ConnectWifiPresenter providesOnboardingConnectWifiPresenter(
-            final HardwareInteractor hardwareInteractor){
-        return new ConnectWifiPresenter.Onboarding( hardwareInteractor);
+    BaseSelectWifiNetworkPresenter providesSelectWifiNetworkPresenter(final HardwareInteractor interactor) {
+        return new OnboardingSelectWifiNetworkPresenter(interactor);
     }
 }

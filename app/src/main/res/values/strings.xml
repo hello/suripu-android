@@ -197,7 +197,7 @@
     <string name="title_scanning_for_sense">Looking for Sense</string>
     <string name="title_waiting_for_sense">Waiting for Sense</string>
     <string name="title_clearing_bond">Preparing…</string>
-    <string name="title_connecting">Connecting with Sense</string>
+    <string name="title_connecting_with_sense">Connecting with Sense</string>
     <string name="title_pairing_with_sense">Pairing with Sense</string>
     <string name="title_paired">Paired</string>
     <string name="title_discovering_services">Pairing</string>

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments.onboarding;
+package is.hello.sense.ui.fragments.updating;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,9 +22,7 @@ import javax.inject.Inject;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
 import is.hello.sense.presenters.BasePresenter;
-import is.hello.sense.presenters.EmptyPresenter;
-import is.hello.sense.presenters.PairSensePresenter;
-import is.hello.sense.presenters.SelectWifiNetworkPresenter;
+import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
@@ -32,12 +30,9 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
-@Deprecated
-public class SelectWiFiNetworkFragment extends BasePresenterFragment
-        implements AdapterView.OnItemClickListener, SelectWifiNetworkPresenter.Output {
-    public static final String ARG_SEND_ACCESS_TOKEN = SelectWiFiNetworkFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
 
-    private boolean sendAccessToken;
+public class SelectWifiNetworkFragment extends BasePresenterFragment
+        implements AdapterView.OnItemClickListener, BaseSelectWifiNetworkPresenter.Output {
 
     private WifiNetworkAdapter networkAdapter;
 
@@ -50,31 +45,13 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
     private View otherNetworkView;
 
     @Inject
-    SelectWifiNetworkPresenter presenter;
+    BaseSelectWifiNetworkPresenter presenter;
 
     //region Lifecycle
+
     @Override
     public BasePresenter getPresenter() {
-        return new EmptyPresenter();
-    }
-
-    public static SelectWiFiNetworkFragment newOnboardingInstance() {
-        final SelectWiFiNetworkFragment fragment = new SelectWiFiNetworkFragment();
-        final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, true);
-        fragment.setArguments(arguments);
-        return fragment;
-    }
-
-    public static Bundle createSettingsArguments() {
-        final Bundle arguments = new Bundle();
-        arguments.putBoolean(ARG_SEND_ACCESS_TOKEN, false);
-        return arguments;
-    }
-
-    @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+        return presenter;
     }
 
     @Override
@@ -82,8 +59,6 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
         super.onCreate(savedInstanceState);
 
         this.networkAdapter = new WifiNetworkAdapter(getActivity());
-
-        this.sendAccessToken = getArguments().getBoolean(ARG_SEND_ACCESS_TOKEN, true);
 
         Analytics.trackEvent(presenter.getOnCreateAnalyticsEvent(), null);
 
@@ -153,14 +128,14 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(toolbar != null) {
+        if (toolbar != null) {
             toolbar.onDestroyView();
             toolbar = null;
         }
         subheading = null;
         scanningIndicator = null;
         scanningIndicatorLabel = null;
-        if(listView != null) {
+        if (listView != null) {
             listView.setOnItemClickListener(null);
             listView.removeFooterView(otherNetworkView);
             listView.setAdapter(null);
@@ -200,7 +175,6 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
         final ConnectToWiFiFragment nextFragment = new ConnectToWiFiFragment();
         final Bundle arguments = new Bundle();
         arguments.putSerializable(ConnectToWiFiFragment.ARG_SCAN_RESULT, network);
-        arguments.putBoolean(ConnectToWiFiFragment.ARG_SEND_ACCESS_TOKEN, sendAccessToken);
         nextFragment.setArguments(arguments);
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
     }
@@ -237,7 +211,7 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
     }
 
     @Override
-    public void presentErrorDialog(final Throwable e, final String operation){
+    public void presentErrorDialog(final Throwable e, final String operation) {
         final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
                 .withOperation(operation)
                 .withSupportLink();
@@ -246,7 +220,7 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    public void sendOnScanAnalytics(){
+    public void sendOnScanAnalytics() {
         Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
     }
 
