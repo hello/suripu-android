@@ -154,6 +154,24 @@ public abstract class BasePresenter<S extends BaseOutput>
         interactorContainer.onContainerResumed();
     }
 
+    public void onCreate(final Bundle savedInstanceState) {
+    }
+
+    /**
+     * Should bind {@link is.hello.sense.interactors.ValueInteractor} here.
+     */
+    public void onViewCreated() {
+
+    }
+
+    public void onPause() {
+
+    }
+
+    public void onStop() {
+
+    }
+
     @CallSuper
     public void onSaveInteractorState(@NonNull final Bundle outState) {
         interactorContainer.onSaveState(outState);

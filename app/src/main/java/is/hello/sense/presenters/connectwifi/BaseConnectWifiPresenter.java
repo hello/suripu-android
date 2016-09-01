@@ -1,5 +1,6 @@
 package is.hello.sense.presenters.connectwifi;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,13 +23,17 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.common.UserSupport;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 
 public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<BaseConnectWifiPresenter.Output> {
 
     private static final String ARG_CONNECTED_TO_NETWORK = BaseConnectWifiPresenter.class.getSimpleName() + ".ARG_CONNECTED_TO_NETWORK";
     private boolean hasConnectedToNetwork = false;
+    @Nullable
+    private wifi_endpoint network;
 
     public BaseConnectWifiPresenter(final HardwareInteractor hardwareInteractor,
                                     final UserFeaturesInteractor userFeaturesInteractor,
@@ -53,6 +58,43 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         this.hasConnectedToNetwork = savedState.getBoolean(ARG_CONNECTED_TO_NETWORK);
     }
 
+
+    @Override
+    public void onViewCreated() {
+        super.onViewCreated();
+        if (network != null && network.getSecurityType() == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
+            sendWifiCredentials();
+        }
+        view.updateView(network);
+    }
+
+    @SuppressWarnings("unused")
+    public void onHelpClick(@Nullable final View clickedView) {
+        view.showHelpUri(UserSupport.HelpStep.SIGN_INTO_WIFI);
+    }
+
+    public void setNetwork(@Nullable final wifi_endpoint network) {
+        this.network = network;
+        sendOnCreateAnalytics();
+    }
+
+    private wifi_endpoint.sec_type getSecurityType() {
+        if (network != null) {
+            return network.getSecurityType();
+        } else {
+            return view.getNetworkSecurityType();
+        }
+    }
+
+    private void sendOnCreateAnalytics() {
+        final boolean hasNetwork = network != null;
+        final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,
+                                                                 !hasNetwork); //todo move property outside of onboarding
+        final int rssi = hasNetwork ? network.getRssi() : 0;
+        properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
+        Analytics.trackEvent(getOnCreateAnalyticsEvent(), properties);
+    }
+
     protected abstract boolean shouldSendAccessToken();
 
     public abstract String getOnCreateAnalyticsEvent();
@@ -60,6 +102,10 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     public abstract String getOnSubmitWifiCredentialsAnalyticsEvent();
 
     public abstract String getWifiAnalyticsEvent();
+
+    public abstract
+    @StringRes
+    int getLinkedAccountErrorTitleRes();
 
     private void sendWifiCredentialsSubmittedAnalytics(final SenseCommandProtos.wifi_endpoint.sec_type securityType) {
         final Properties properties = Analytics.createProperties(
@@ -71,27 +117,30 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     //@Override
     public void presentError(final Throwable e, @NonNull final String operation) {
         hideAllActivityForFailure(() -> {
+            ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
 
+            builder.withOperation(operation);
             if (e instanceof SenseSetWifiValidationError &&
                     ((SenseSetWifiValidationError) e).reason == SenseSetWifiValidationError.Reason.MALFORMED_BYTES) {
-                view.presentWifiValidationErrorDialog(
-                        e,
-                        operation,
-                        UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri(),
-                        R.string.action_support);
+                final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
+                builder.withAction(uri.toString(), R.string.action_support);
             } else {
-                view.presentLinkedAccountErrorDialog(
-                        e,
-                        operation,
-                        R.string.failed_to_link_account);
+                builder.withTitle(getLinkedAccountErrorTitleRes())
+                       .withSupportLink();
             }
+
+            view.showErrorDialog(builder);
         });
     }
 
     public void sendWifiCredentials() {
+
         final String networkName = view.getNetworkName();
         final String password = view.getNetworkPassword();
-        final SenseCommandProtos.wifi_endpoint.sec_type securityType = view.getSecurityType();
+        final SenseCommandProtos.wifi_endpoint.sec_type securityType = getSecurityType();
+        if (securityType == null) {
+            return;
+        }
         if (TextUtils.isEmpty(networkName) ||
                 (TextUtils.isEmpty(password) &&
                         securityType != SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN)) {
@@ -181,7 +230,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     }
 
     public void updatePasswordField() {
-        final SenseCommandProtos.wifi_endpoint.sec_type securityType = view.getSecurityType();
+        final SenseCommandProtos.wifi_endpoint.sec_type securityType = getSecurityType();
         if (securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             view.setNetworkPassword(View.VISIBLE, true, false);
         } else if (securityType == SenseCommandProtos.wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
@@ -194,17 +243,6 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
     public interface Output extends BasePairSensePresenter.Output {
 
-        void presentWifiValidationErrorDialog(Throwable e,
-                                              String operation,
-                                              Uri supportUri,
-                                              @StringRes int actionStringRes);
-
-        void presentLinkedAccountErrorDialog(Throwable e,
-                                             String operation,
-                                             @StringRes int titleRes);
-
-        SenseCommandProtos.wifi_endpoint.sec_type getSecurityType();
-
         void setNetworkPassword(int visibility,
                                 boolean requestFocus,
                                 boolean clearInput);
@@ -212,5 +250,10 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         String getNetworkName();
 
         String getNetworkPassword();
+
+        void updateView(@Nullable final wifi_endpoint network);
+
+        wifi_endpoint.sec_type getNetworkSecurityType();
+
     }
 }

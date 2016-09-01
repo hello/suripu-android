@@ -22,7 +22,7 @@ import is.hello.sense.presenters.UpdatePairSensePresenter;
 import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
 import is.hello.sense.presenters.connectwifi.UpdateConnectWifiPresenter;
 import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
-import is.hello.sense.presenters.pairpill.UpdatePairPillPresenter;
+import is.hello.sense.presenters.pairpill.UpgradePairPillPresenter;
 import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
 import is.hello.sense.presenters.selectwifinetwork.UpdateSelectWifiNetworkPresenter;
 import is.hello.sense.settings.SettingsWifiModule;
@@ -120,7 +120,7 @@ public class SenseUpdateModule {
     @Provides
     @Singleton
     BasePairPillPresenter providesUpdatePairPillPresenter(final HardwareInteractor interactor) {
-        return new UpdatePairPillPresenter(interactor);
+        return new UpgradePairPillPresenter(interactor);
     }
 
     @Provides

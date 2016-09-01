@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
@@ -24,9 +25,10 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     private OnboardingSimpleStepView view;
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+    public BasePresenter getPresenter() {
+        return presenter;
     }
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {

@@ -33,14 +33,8 @@ public class PairPillFragment extends BasePresenterFragment
     protected Button retryButton;
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
-    }
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        presenter.trackOnCreate();
+    protected BasePairPillPresenter getPresenter() {
+        return presenter;
     }
 
     @NonNull
@@ -71,13 +65,6 @@ public class PairPillFragment extends BasePresenterFragment
             diagram.setBackgroundResource(R.drawable.selectable_dark);
         }
         return view;
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        presenter.onResume();
     }
 
     @Override

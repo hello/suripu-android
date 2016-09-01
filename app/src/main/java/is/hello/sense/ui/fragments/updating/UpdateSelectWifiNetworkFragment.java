@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -49,10 +50,9 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
 
     //region Lifecycle
 
-
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+    public BasePresenter getPresenter() {
+        return presenter;
     }
 
     @Override

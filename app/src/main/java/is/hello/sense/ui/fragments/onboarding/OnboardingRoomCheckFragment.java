@@ -35,6 +35,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.SensorState;
+import is.hello.sense.presenters.BasePresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
@@ -72,8 +74,8 @@ implements RoomCheckPresenter.Output{
     private @Nullable ValueAnimator scoreAnimator;
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+    public BasePresenter getPresenter() {
+        return presenter;
     }
 
     @Override

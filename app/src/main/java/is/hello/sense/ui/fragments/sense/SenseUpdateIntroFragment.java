@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.SenseUpdateIntroPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
@@ -21,6 +22,10 @@ public class SenseUpdateIntroFragment extends BasePresenterFragment
 
     private OnboardingSimpleStepView view;
 
+    @Override
+    public BasePresenter getPresenter() {
+        return presenter;
+    }
 
     @Nullable
     @Override
@@ -36,11 +41,6 @@ public class SenseUpdateIntroFragment extends BasePresenterFragment
                 .setToolbarWantsBackButton(true);
 
         return view;
-    }
-
-    @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
     }
 
     @Override

@@ -21,6 +21,9 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
+import is.hello.sense.presenters.EmptyPresenter;
+import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -50,6 +53,10 @@ public class SelectWiFiNetworkFragment extends BasePresenterFragment
     SelectWifiNetworkPresenter presenter;
 
     //region Lifecycle
+    @Override
+    public BasePresenter getPresenter() {
+        return new EmptyPresenter();
+    }
 
     public static SelectWiFiNetworkFragment newOnboardingInstance() {
         final SelectWiFiNetworkFragment fragment = new SelectWiFiNetworkFragment();

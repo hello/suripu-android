@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.SenseUpdateReadyPresenter;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
@@ -22,6 +23,11 @@ public class SenseUpdateReadyFragment extends BasePresenterFragment
     @Inject
     SenseUpdateReadyPresenter presenter;
 
+    @Override
+    public BasePresenter getPresenter() {
+        return presenter;
+    }
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -34,11 +40,6 @@ public class SenseUpdateReadyFragment extends BasePresenterFragment
                 .setWantsSecondaryButton(false)
                 .setToolbarWantsBackButton(false);
         return view;
-    }
-
-    @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
     }
 
     @Override
