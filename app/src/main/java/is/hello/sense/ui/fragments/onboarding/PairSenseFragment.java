@@ -20,6 +20,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -44,9 +45,10 @@ public class PairSenseFragment extends BasePresenterFragment
     PairSensePresenter presenter;
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+    public BasePresenter getPresenter() {
+        return presenter;
     }
+
 
     protected void sendOnCreateAnalytics() {
         final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());

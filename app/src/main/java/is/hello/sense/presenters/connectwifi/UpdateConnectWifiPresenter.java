@@ -19,7 +19,9 @@ public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
     }
 
     @Override
-    protected boolean shouldSendAccessToken() {return true;}
+    protected boolean shouldSendAccessToken() {
+        return true;
+    }
 
     @Override
     public int getPairingRes() {
@@ -59,5 +61,10 @@ public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
     @Override
     public String getWifiAnalyticsEvent() {
         return Analytics.SenseUpgrade.EVENT_SENSE_WIFI_UPDATE;
+    }
+
+    @Override
+    public int getLinkedAccountErrorTitleRes() {
+        return R.string.error_sense_pairing_failed;
     }
 }

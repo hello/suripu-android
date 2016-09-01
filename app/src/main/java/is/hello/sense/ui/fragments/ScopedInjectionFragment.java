@@ -18,27 +18,31 @@ import is.hello.sense.ui.common.SenseFragment;
  * To be used when injecting fragments to a scoped object graph instead of application level graph.
  */
 public abstract class ScopedInjectionFragment extends SenseFragment
-implements BaseOutput{
+        implements BaseOutput {
 
+    @Deprecated
     private final ScopedPresenterContainer scopedPresenterContainer = new ScopedPresenterContainer();
 
     /**
      * Will be called after injection of this fragment is made to the scoped object graph
      * which occurs after onAttach and before {@link this#onCreate(Bundle)}
      */
-    public abstract void onInjected();
+    @Deprecated
+    public void onInjected() {
 
-    public void inject(@NonNull  final Context context){
-        try{
+    }
+
+    public void inject(@NonNull final Context context) {
+        try {
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
             onInjected();
-        } catch (final ClassCastException e){
+        } catch (final ClassCastException e) {
             throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
     }
 
     @Override
-    public boolean canObservableEmit(){
+    public boolean canObservableEmit() {
         return isAdded() && !getActivity().isFinishing();
     }
 
@@ -50,12 +54,13 @@ implements BaseOutput{
 
     /**
      * Will still be called by devices with api >= 23 until migrate SenseFragment to extend Support Library Fragment.
+     *
      * @param activity
      */
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             inject(activity);
         }
     }
@@ -76,9 +81,15 @@ implements BaseOutput{
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        scopedPresenterContainer.onResume();
+    }
+
+    @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             scopedPresenterContainer.onRestoreState(savedInstanceState);
         }
     }
@@ -105,20 +116,27 @@ implements BaseOutput{
         scopedPresenterContainer.add(presenter);
     }
 
+    @Deprecated
     public static class ScopedPresenterContainer {
         final List<BasePresenter> presenters = new ArrayList<>();
 
-        public void onDestroyView(){
-            for(final BasePresenter p : presenters){
+        public void onDestroyView() {
+            for (final BasePresenter p : presenters) {
                 p.onDestroyView();
             }
         }
 
-        public void onDetach(){
-            for(final BasePresenter p : presenters){
+        public void onDetach() {
+            for (final BasePresenter p : presenters) {
                 p.onDetach();
             }
             presenters.clear();
+        }
+
+        public void onResume() {
+            for (final BasePresenter p : presenters) {
+                p.onResume();
+            }
         }
 
         public void add(final BasePresenter presenter) {
@@ -149,13 +167,13 @@ implements BaseOutput{
         }
 
         public void setView(final BaseOutput view) {
-            for(final BasePresenter p : presenters){
+            for (final BasePresenter p : presenters) {
                 p.setView(view);
             }
         }
 
         public void onTrimMemory(final int level) {
-            for(final BasePresenter p : presenters){
+            for (final BasePresenter p : presenters) {
                 p.onTrimMemory(level);
             }
         }

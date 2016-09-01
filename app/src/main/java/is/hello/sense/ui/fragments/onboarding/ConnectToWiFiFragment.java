@@ -30,7 +30,9 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.ConnectWifiPresenter;
+import is.hello.sense.presenters.EmptyPresenter;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
@@ -44,7 +46,7 @@ import is.hello.sense.util.EditorActionHandler;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 @Deprecated
 public class ConnectToWiFiFragment extends BasePresenterFragment
-        implements AdapterView.OnItemSelectedListener, ConnectWifiPresenter.Output {
+        implements AdapterView.OnItemSelectedListener, ConnectWifiPresenter.Output, PairSensePresenter.Output {
     public static final String ARG_SEND_ACCESS_TOKEN = ConnectToWiFiFragment.class.getName() + ".ARG_SEND_ACCESS_TOKEN";
     public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
@@ -76,6 +78,11 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
     public void onInjected() {
         addScopedPresenter(presenter);
         addScopedPresenter(wifiPresenter);
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return new EmptyPresenter();
     }
 
     @Override

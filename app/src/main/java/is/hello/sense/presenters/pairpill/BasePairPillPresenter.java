@@ -2,6 +2,7 @@ package is.hello.sense.presenters.pairpill;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.view.View;
@@ -26,8 +27,6 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         super(hardwareInteractor);
     }
 
-    public abstract void trackOnCreate();
-
     public abstract void trackOnSkip();
 
     @StringRes
@@ -44,7 +43,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
     public abstract void finishedPairingAction(@NonNull final Activity activity, final boolean success);
 
     public abstract void onHelpClick(@NonNull final View viewClicked);
-
+    @CallSuper
     @Override
     public void onResume() {
         super.onResume();
@@ -64,11 +63,6 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmation.show();
-    }
-
-    @Override
-    public boolean isResumed() {
-        return view != null && view.isResumed();
     }
 
     public void pairPill() {
