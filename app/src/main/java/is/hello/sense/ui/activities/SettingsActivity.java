@@ -39,7 +39,7 @@ public class SettingsActivity extends ScopedInjectionActivity
     protected List<Object> getModules() {
         return Arrays.asList(
                 new SettingsPairSenseModule(),
-                new SettingsWifiModule());
+                new SettingsWifiModule(false));
     }
 
     public static final String EXTRA_DEFAULT_TITLE = SettingsActivity.class.getName() + ".EXTRA_DEFAULT_TITLE";

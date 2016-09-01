@@ -10,17 +10,20 @@ import is.hello.sense.util.Analytics;
 
 public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
 
+    private final boolean shouldLinkAccount;
 
     public SettingsConnectWifiPresenter(
             @NonNull final HardwareInteractor hardwareInteractor,
             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
-            @NonNull final ApiService apiService) {
+            @NonNull final ApiService apiService,
+            final boolean shouldLinkAccount) {
         super(hardwareInteractor, userFeaturesInteractor, apiService);
+        this.shouldLinkAccount = shouldLinkAccount;
     }
 
     @Override
-    protected boolean shouldSendAccessToken() {
-        return false;
+    protected boolean shouldLinkAccount() {
+        return shouldLinkAccount;
     }
 
     @Override

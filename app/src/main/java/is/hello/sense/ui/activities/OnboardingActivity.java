@@ -126,7 +126,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     @Override
     protected List<Object> getModules() {
         if(getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)){
-            return Arrays.asList(new OnboardingModule(), new SettingsWifiModule(), new SettingsPairSenseModule());
+            return Arrays.asList(new OnboardingModule(), new SettingsWifiModule(true), new SettingsPairSenseModule());
         }
         return Arrays.asList(new OnboardingModule(), new OnboardingWifiModule(), new OnboardingPairSenseModule());
     }
