@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.util.Log;
 
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SensePeripheral;
@@ -50,12 +49,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
         linkedAccount = savedState.getBoolean(ARG_HAS_LINKED_ACCOUNT);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        //apiService = null;
     }
 
     @StringRes
@@ -182,7 +175,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                                       onPairSuccess();
                                   },
                                   e -> {
-                                      Log.e("Error", "E: " + e.getLocalizedMessage());
                                       presentError(e, "Turning off LEDs");
                                   });
     }
