@@ -14,16 +14,16 @@ import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
-public class UpdatePairSensePresenter extends PairSensePresenter {
+public class UpgradePairSensePresenter extends PairSensePresenter {
 
     private final SwapSenseInteractor swapSenseInteractor;
     private final SenseResetOriginalInteractor resetOriginalInteractor;
 
-    public UpdatePairSensePresenter(final HardwareInteractor hardwareInteractor,
-                                    final UserFeaturesInteractor userFeaturesInteractor,
-                                    final ApiService apiService,
-                                    final SwapSenseInteractor swapSenseInteractor,
-                                    final SenseResetOriginalInteractor resetOriginalInteractor) {
+    public UpgradePairSensePresenter(final HardwareInteractor hardwareInteractor,
+                                     final UserFeaturesInteractor userFeaturesInteractor,
+                                     final ApiService apiService,
+                                     final SwapSenseInteractor swapSenseInteractor,
+                                     final SenseResetOriginalInteractor resetOriginalInteractor) {
         super(hardwareInteractor,
               userFeaturesInteractor,
               apiService);

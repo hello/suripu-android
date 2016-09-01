@@ -29,7 +29,7 @@ public class OnboardingPairSensePresenter extends PairSensePresenter {
 
     @Override
     public int getPairingRes() {
-        return R.string.title_connecting;
+        return R.string.title_connecting_with_sense;
     }
 
     @Override

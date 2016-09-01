@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,19 +34,21 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.settings.SettingsPairSenseModule;
+import is.hello.sense.settings.SettingsWifiModule;
+import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
+public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
     @Inject BluetoothStack stack;
     @Inject ApiSessionManager apiSessionManager;
     @Inject
@@ -57,6 +61,11 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
     private RecyclerView recyclerView;
     private ProgressBar loadingIndicator;
 
+
+    @Override
+    protected List<Object> getModules() {
+        return Arrays.asList(new SettingsWifiModule(), new SettingsPairSenseModule());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -243,8 +252,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         final FragmentNavigationActivity.Builder builder =
                 new FragmentNavigationActivity.Builder(this);
         builder.setDefaultTitle(R.string.title_edit_wifi);
-        builder.setFragmentClass(SelectWiFiNetworkFragment.class);
-        builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
+        builder.setFragmentClass(SelectWifiNetworkFragment.class);
         builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());

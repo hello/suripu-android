@@ -8,10 +8,10 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.util.Analytics;
 
-public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
+public class UpgradeConnectWifiPresenter extends BaseConnectWifiPresenter {
 
 
-    public UpdateConnectWifiPresenter(
+    public UpgradeConnectWifiPresenter(
             @NonNull final HardwareInteractor hardwareInteractor,
             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
             @NonNull final ApiService apiService) {

@@ -143,7 +143,7 @@ public class DebugActivity extends InjectionActivity {
     }
 
     private void showNewSenseUpdate() {
-        final Intent senseUpdate = new Intent(this, SenseUpdateActivity.class);
+        final Intent senseUpdate = new Intent(this, SenseUpgradeActivity.class);
         startActivity(senseUpdate);
     }
 

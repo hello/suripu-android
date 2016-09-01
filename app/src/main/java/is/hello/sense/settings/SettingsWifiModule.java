@@ -1,20 +1,25 @@
 package is.hello.sense.settings;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
-import is.hello.sense.presenters.ConnectWifiPresenter;
-import is.hello.sense.presenters.SelectWifiNetworkPresenter;
-import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
+import is.hello.sense.presenters.connectwifi.SettingsConnectWifiPresenter;
+import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
+import is.hello.sense.presenters.selectwifinetwork.SettingsSelectWifiNetworkPresenter;
+import is.hello.sense.ui.fragments.updating.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 
 @Module(
         complete = false,
         injects = {
-                SelectWiFiNetworkFragment.class,
+                SelectWifiNetworkFragment.class,
                 ConnectToWiFiFragment.class
         }
 )
@@ -22,16 +27,15 @@ public class SettingsWifiModule {
 
     @Provides
     @Singleton
-    SelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(
-            final HardwareInteractor hardwareInteractor){
-        return new SelectWifiNetworkPresenter.Settings(hardwareInteractor);
+    BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                                                             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                                             @NonNull final ApiService apiService) {
+        return new SettingsConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
     }
 
     @Provides
     @Singleton
-    ConnectWifiPresenter providesSettingsConnectWifiPresenter(
-            final HardwareInteractor hardwareInteractor,
-            final UserFeaturesInteractor userFeaturesInteractor){
-        return new ConnectWifiPresenter.Settings(hardwareInteractor);
+    BaseSelectWifiNetworkPresenter providesSelectWifiNetworkPresenter(final HardwareInteractor interactor) {
+        return new SettingsSelectWifiNetworkPresenter(interactor);
     }
 }

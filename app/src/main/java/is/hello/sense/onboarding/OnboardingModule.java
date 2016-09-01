@@ -1,7 +1,5 @@
 package is.hello.sense.onboarding;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;

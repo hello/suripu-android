@@ -31,7 +31,7 @@ public abstract class BaseSelectWifiNetworkPresenter
     public abstract String getOnRescanAnalyticsEvent();
 
     public void rescan(final boolean sendCountryCode) {
-        view.showScanning();
+        execute( () -> view.showScanning());
         if (!hardwareInteractor.hasPeripheral()) {
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> rescan(sendCountryCode),

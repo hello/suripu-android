@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
-import is.hello.sense.SenseUpdateModule;
+import is.hello.sense.SenseUpgradeModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
@@ -34,15 +34,15 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
 import is.hello.sense.ui.fragments.pill.UnpairPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdatePairPillConfirmationFragment;
 import is.hello.sense.ui.fragments.sense.SenseResetOriginalFragment;
-import is.hello.sense.ui.fragments.sense.SenseUpdateIntroFragment;
-import is.hello.sense.ui.fragments.sense.SenseUpdateReadyFragment;
-import is.hello.sense.ui.fragments.updating.UpdateConnectToWiFiFragment;
-import is.hello.sense.ui.fragments.updating.UpdateSelectWifiNetworkFragment;
+import is.hello.sense.ui.fragments.sense.SenseUpgradeIntroFragment;
+import is.hello.sense.ui.fragments.sense.SenseUpgradeReadyFragment;
+import is.hello.sense.ui.fragments.updating.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.util.SkippableFlow;
 
-public class SenseUpdateActivity extends ScopedInjectionActivity
+public class SenseUpgradeActivity extends ScopedInjectionActivity
         implements FragmentNavigation, SkippableFlow {
-    public static final String ARG_NEEDS_BLUETOOTH = SenseUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
+    public static final String ARG_NEEDS_BLUETOOTH = SenseUpgradeActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
     public static final int REQUEST_CODE = 0xbeef;
 
     private FragmentNavigationDelegate navigationDelegate;
@@ -59,8 +59,8 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     SenseResetOriginalInteractor senseResetOriginalInteractor;
 
     @Override
-    public List<Object> getModules(){
-        return Arrays.asList(new SenseUpdateModule());
+    protected List<Object> getModules(){
+        return Arrays.asList(new SenseUpgradeModule());
     }
 
     @Override
@@ -139,7 +139,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
             return;
         }
 
-        if (fragment instanceof SenseUpdateIntroFragment || fragment instanceof BluetoothFragment) {
+        if (fragment instanceof SenseUpgradeIntroFragment || fragment instanceof BluetoothFragment) {
             showSenseUpdate();
         } else if (fragment instanceof PairSenseFragment) {
             if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
@@ -147,9 +147,9 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
             } else {
                 showSenseUpdateReady();
             }
-        } else if (fragment instanceof UpdateConnectToWiFiFragment) {
+        } else if (fragment instanceof ConnectToWiFiFragment) {
             showSenseUpdateReady();
-        } else if (fragment instanceof SenseUpdateReadyFragment) {
+        } else if (fragment instanceof SenseUpgradeReadyFragment) {
             checkSenseOTAStatus();
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
@@ -193,7 +193,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     public void showSenseUpdateIntro() {
-        pushFragment(new SenseUpdateIntroFragment(), null, false);
+        pushFragment(new SenseUpgradeIntroFragment(), null, false);
     }
 
     public void showSenseUpdate() {
@@ -205,7 +205,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     public void showSenseUpdateReady() {
-        pushFragment(new SenseUpdateReadyFragment(), null, false);
+        pushFragment(new SenseUpgradeReadyFragment(), null, false);
     }
 
     private void showUnpairPillFragment() {
@@ -230,7 +230,7 @@ public class SenseUpdateActivity extends ScopedInjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(new UpdateSelectWifiNetworkFragment(), null, true);
+        pushFragment(new SelectWifiNetworkFragment(), null, true);
     }
 
 
