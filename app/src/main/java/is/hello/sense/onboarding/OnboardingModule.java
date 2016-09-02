@@ -13,6 +13,7 @@ import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
 
 @Module(complete = false,
+        library = true,
         includes = {
                 //todo include after converting fragments to use presenters
                 // SenseOTAModule.class,

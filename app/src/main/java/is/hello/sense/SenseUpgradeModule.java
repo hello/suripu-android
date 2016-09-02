@@ -13,6 +13,7 @@ import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.UpgradePairSenseInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
 import is.hello.sense.presenters.SenseUpgradeIntroPresenter;
@@ -58,24 +59,12 @@ import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 )
 public class SenseUpgradeModule {
 
+    //region Interactors
+
     @Provides
     @Singleton
     SwapSenseInteractor providesSwapSenseInteractor(final ApiService apiService) {
         return new SwapSenseInteractor(apiService);
-    }
-
-    @Provides
-    @Singleton
-    BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
-                                                             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
-                                                             @NonNull final ApiService apiService) {
-        return new UpgradeConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
-    }
-
-    @Provides
-    @Singleton
-    BaseSelectWifiNetworkPresenter providesSelectWifiNetworkPresenter(final HardwareInteractor interactor) {
-        return new UpgradeSelectWifiNetworkPresenter(interactor);
     }
 
     @Provides
@@ -86,10 +75,10 @@ public class SenseUpgradeModule {
 
     @Provides
     @Singleton
-    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final HardwareInteractor interactor, final SenseResetOriginalInteractor senseResetOriginalInteractor) {
-        final SenseResetOriginalPresenter presenter = new SenseResetOriginalPresenter(interactor, senseResetOriginalInteractor);
-        // todo interactor.setInteractorOutput(presenter);
-        return presenter;
+    UpgradePairSenseInteractor providesUpgradePairSenseInteractor(final HardwareInteractor hardwareInteractor,
+                                                                  final SwapSenseInteractor swapSenseInteractor,
+                                                                  final SenseResetOriginalInteractor resetOriginalInteractor){
+        return new UpgradePairSenseInteractor(hardwareInteractor, swapSenseInteractor, resetOriginalInteractor);
     }
 
     @Provides
@@ -98,22 +87,39 @@ public class SenseUpgradeModule {
         return new SenseUpgradeIntroPresenter();
     }
 
+   //endregion
+
+    //region Presenters
+
+    @Provides
+    @Singleton
+    PairSensePresenter providesUpgradePairSensePresenter(final HardwareInteractor interactor,
+                                                         final UserFeaturesInteractor userFeaturesInteractor,
+                                                         final ApiService apiService,
+                                                         final UpgradePairSenseInteractor upgradePairSenseInteractor){
+        return new UpgradePairSensePresenter(interactor, userFeaturesInteractor, apiService, upgradePairSenseInteractor);
+    }
+
+    @Provides
+    @Singleton
+    BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                                                             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                                             @NonNull final ApiService apiService,
+                                                             @NonNull final UpgradePairSenseInteractor pairSenseInteractor) {
+        return new UpgradeConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
+    }
+
+    @Provides
+    @Singleton
+    BaseSelectWifiNetworkPresenter providesSelectWifiNetworkPresenter(final HardwareInteractor interactor) {
+        return new UpgradeSelectWifiNetworkPresenter(interactor);
+    }
+
     @Provides
     @Singleton
     SenseUpgradeReadyPresenter providesSenseUpgradeReadyPresenter() {
         return new SenseUpgradeReadyPresenter();
     }
-
-    @Provides
-    @Singleton
-    PairSensePresenter providesUpgradePairSensePresenter(final HardwareInteractor interactor,
-                                                        final UserFeaturesInteractor userFeaturesInteractor,
-                                                        final ApiService apiService,
-                                                        final SwapSenseInteractor swapSenseInteractor,
-                                                        final SenseResetOriginalInteractor resetOriginalInteractor){
-        return new UpgradePairSensePresenter(interactor, userFeaturesInteractor, apiService, swapSenseInteractor, resetOriginalInteractor);
-    }
-
 
     @Provides
     @Singleton
@@ -126,4 +132,13 @@ public class SenseUpgradeModule {
     UnpairPillPresenter providesUnpairPillPresenter() {
         return new UnpairPillPresenter();
     }
+
+    @Provides
+    @Singleton
+    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final HardwareInteractor interactor, final SenseResetOriginalInteractor senseResetOriginalInteractor) {
+        return new SenseResetOriginalPresenter(interactor, senseResetOriginalInteractor);
+    }
+
+    //endregion
+
 }
