@@ -35,10 +35,8 @@ import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
-import is.hello.sense.onboarding.OnboardingWifiModule;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.settings.SettingsPairSenseModule;
-import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -126,9 +124,9 @@ public class OnboardingActivity extends ScopedInjectionActivity
     @Override
     protected List<Object> getModules() {
         if(getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)){
-            return Arrays.asList(new OnboardingModule(), new SettingsWifiModule(true), new SettingsPairSenseModule());
+            return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
         }
-        return Arrays.asList(new OnboardingModule(), new OnboardingWifiModule(), new OnboardingPairSenseModule());
+        return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());
     }
 
     @Override

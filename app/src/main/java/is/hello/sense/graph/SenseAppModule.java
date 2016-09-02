@@ -173,17 +173,4 @@ public class SenseAppModule {
         return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
     }
 
-    //todo move to OnboardingModule
-    @Provides
-    @Singleton
-    OnboardingPairSenseInteractor providesOnboardingPairSenseInteractor(final HardwareInteractor hardwareInteractor){
-        return new OnboardingPairSenseInteractor(hardwareInteractor);
-    }
-
-    //todo move to SettingsModule when pair sense and pill only sessions removed from onboarding
-    @Provides
-    @Singleton
-    SettingsPairSenseInteractor providesSettingsPairSenseInteractor(final HardwareInteractor hardwareInteractor){
-        return new SettingsPairSenseInteractor(hardwareInteractor);
-    }
 }
