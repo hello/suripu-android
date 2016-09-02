@@ -9,6 +9,7 @@ import dagger.Provides;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
 import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
 import is.hello.sense.presenters.connectwifi.OnboardingConnectWifiPresenter;
 import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
@@ -24,12 +25,14 @@ import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
         }
 )
 public class OnboardingWifiModule {
+
     @Provides
     @Singleton
     BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                                              @NonNull final UserFeaturesInteractor userFeaturesInteractor,
-                                                             @NonNull final ApiService apiService) {
-        return new OnboardingConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService);
+                                                             @NonNull final ApiService apiService,
+                                                             @NonNull final OnboardingPairSenseInteractor pairSenseInteractor) {
+        return new OnboardingConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
     }
 
     @Provides

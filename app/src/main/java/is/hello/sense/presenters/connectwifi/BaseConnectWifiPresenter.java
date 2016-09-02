@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -22,6 +21,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -37,8 +37,9 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
     public BaseConnectWifiPresenter(final HardwareInteractor hardwareInteractor,
                                     final UserFeaturesInteractor userFeaturesInteractor,
-                                    final ApiService apiService) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService);
+                                    final ApiService apiService,
+                                    final PairSenseInteractor pairSenseInteractor) {
+        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
     }
 
     @CallSuper
@@ -70,6 +71,12 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         view.updateView(network);
     }
 
+    protected abstract boolean shouldLinkAccount();
+
+    public abstract String getOnSubmitWifiCredentialsAnalyticsEvent();
+
+    public abstract String getWifiAnalyticsEvent();
+
     @SuppressWarnings("unused")
     public void onHelpClick(@Nullable final View clickedView) {
         view.showHelpUri(UserSupport.HelpStep.SIGN_INTO_WIFI);
@@ -96,17 +103,6 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
         Analytics.trackEvent(getOnCreateAnalyticsEvent(), properties);
     }
-
-    protected abstract boolean shouldLinkAccount();
-
-    public abstract String getOnCreateAnalyticsEvent();
-
-    public abstract String getOnSubmitWifiCredentialsAnalyticsEvent();
-
-    public abstract String getWifiAnalyticsEvent();
-
-    @StringRes
-    public abstract int getLinkedAccountErrorTitleRes();
 
     private void sendWifiCredentialsSubmittedAnalytics(final SenseCommandProtos.wifi_endpoint.sec_type securityType) {
         final Properties properties = Analytics.createProperties(

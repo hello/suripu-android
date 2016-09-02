@@ -14,6 +14,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
@@ -24,17 +25,21 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     protected static final String OPERATION_LINK_ACCOUNT = "Linking account";
     protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
+
     private boolean linkedAccount = false;
 
     private final ApiService apiService;
-    protected UserFeaturesInteractor userFeaturesInteractor;
+    protected final UserFeaturesInteractor userFeaturesInteractor;
+    private final PairSenseInteractor pairSenseInteractor;
 
     public BasePairSensePresenter(final HardwareInteractor hardwareInteractor,
                                   final UserFeaturesInteractor userFeaturesInteractor,
-                                  final ApiService apiService) {
+                                  final ApiService apiService,
+                                  final PairSenseInteractor pairSenseInteractor) {
         super(hardwareInteractor);
         this.userFeaturesInteractor = userFeaturesInteractor;
         this.apiService = apiService;
+        this.pairSenseInteractor = pairSenseInteractor;
     }
 
     @Nullable
@@ -51,24 +56,43 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         linkedAccount = savedState.getBoolean(ARG_HAS_LINKED_ACCOUNT);
     }
 
-    @StringRes
-    public abstract int getPairingRes();
-
-    @StringRes
-    public abstract int getFinishedRes();
-
     public abstract String getOnCreateAnalyticsEvent();
-
-    public abstract String getOnFinishAnalyticsEvent();
-
-    protected abstract boolean shouldContinueFlow();
-
-    protected abstract boolean shouldClearPeripheral();
 
     protected abstract void presentError(Throwable e, String operation);
 
+    @StringRes
+    public int getPairingRes(){
+        return pairSenseInteractor.getPairingRes();
+    }
+
+    @StringRes
+    public int getFinishedRes(){
+        return pairSenseInteractor.getFinishedRes();
+    }
+
+    protected boolean shouldContinueFlow(){
+        return pairSenseInteractor.shouldContinueFlow();
+    }
+
+    protected boolean shouldClearPeripheral(){
+        return pairSenseInteractor.shouldClearPeripheral();
+    }
+
+    protected Observable<SensePeripheral> getObservableSensePeripheral() {
+        return pairSenseInteractor.closestPeripheral();
+    }
+
+    protected String getOnFinishAnalyticsEvent(){
+        return pairSenseInteractor.getOnFinishedAnalyticsEvent();
+    }
+
     protected void sendOnFinishedAnalytics() {
         Analytics.trackEvent(getOnFinishAnalyticsEvent(), null);
+    }
+
+    @StringRes
+    public int getLinkedAccountErrorTitleRes(){
+        return pairSenseInteractor.getLinkedAccountErrorTitleRes();
     }
 
     protected void onPairSuccess() {
@@ -87,6 +111,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
             finishUpOperations();
         } else {
             showBlockingActivity(R.string.title_linking_account);
+
             requestLinkAccount();
         }
     }
@@ -97,7 +122,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     protected void requestLinkAccount() {
-        bindAndSubscribe(hardwareInteractor.linkAccount(),
+        bindAndSubscribe(pairSenseInteractor.linkAccount(),
                          ignored -> updateLinkedAccount(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not link Sense to account", error);
@@ -114,10 +139,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
             showBlockingActivity(getPairingRes());
             return false;
         }
-    }
-
-    protected Observable<SensePeripheral> getObservableSensePeripheral() {
-        return hardwareInteractor.closestPeripheral();
     }
 
     protected boolean hasConnectivity(final ConnectProgress status) {

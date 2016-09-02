@@ -6,6 +6,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
 
 public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
@@ -16,39 +17,15 @@ public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
             @NonNull final HardwareInteractor hardwareInteractor,
             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
             @NonNull final ApiService apiService,
+            @NonNull final PairSenseInteractor pairSenseInteractor,
             final boolean shouldLinkAccount) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService);
+        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
         this.shouldLinkAccount = shouldLinkAccount;
     }
 
     @Override
     protected boolean shouldLinkAccount() {
         return shouldLinkAccount;
-    }
-
-    @Override
-    public int getPairingRes() {
-        return R.string.title_connecting_with_sense;
-    }
-
-    @Override
-    public int getFinishedRes() {
-        return R.string.action_done;
-    }
-
-    @Override
-    public String getOnFinishAnalyticsEvent() {
-        return getOnSubmitWifiCredentialsAnalyticsEvent();
-    }
-
-    @Override
-    protected boolean shouldContinueFlow() {
-        return false;
-    }
-
-    @Override
-    protected boolean shouldClearPeripheral() {
-        return false;
     }
 
     @Override
