@@ -5,13 +5,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.util.Analytics;
@@ -58,16 +58,14 @@ public class UpgradePairPillPresenter extends BasePairPillPresenter {
 
     @Override
     public void finishedPairingAction(@NonNull final Activity activity, final boolean success) {
-        execute(() -> {
-            if (success) {
-                LoadingDialogFragment.show(activity.getFragmentManager(),
-                                           null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-                activity.getFragmentManager().executePendingTransactions();
-                LoadingDialogFragment.closeWithMessageTransition(activity.getFragmentManager(), view::finishFlow, R.string.sleep_pill_paired);
-            } else {
-                this.presentError(new Throwable());
-            }
-        });
+        LoadingDialogFragment.show(activity.getFragmentManager(),
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+        activity.getFragmentManager().executePendingTransactions();
+        @StringRes final int message = success ? R.string.sleep_pill_paired : R.string.action_done;
+        LoadingDialogFragment.closeWithMessageTransition(activity.getFragmentManager(),
+                                                         () -> execute(view::finishFlow),
+                                                         message);
+        //todo send analytics based on success
     }
 
     @Override

@@ -43,14 +43,11 @@ import is.hello.sense.util.SkippableFlow;
 public class SenseUpgradeActivity extends ScopedInjectionActivity
         implements FragmentNavigation, SkippableFlow {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpgradeActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
-    public static final int REQUEST_CODE = 0xbeef;
 
     private FragmentNavigationDelegate navigationDelegate;
 
     @Inject
     BluetoothStack bluetoothStack;
-    @Inject
-    DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
     SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
@@ -75,9 +72,9 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            showSenseUpdateIntro();
+         //   showSenseUpdateIntro();
             storeCurrentSenseDevice();
-            //showUpdatePairPillFragment();
+            showUnpairPillFragment();
 
         }
     }
