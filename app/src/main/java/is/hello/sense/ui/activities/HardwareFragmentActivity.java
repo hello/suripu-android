@@ -24,7 +24,7 @@ public class HardwareFragmentActivity extends FragmentNavigationActivity {
         super.onDestroy();
 
         if (isFinishing()) {
-            hardwarePresenter.clearPeripheral();
+            hardwarePresenter.reset();
         }
     }
 }

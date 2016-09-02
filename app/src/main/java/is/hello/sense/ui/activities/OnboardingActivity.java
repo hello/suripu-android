@@ -635,7 +635,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
                    .putBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, true)
                    .apply();
 
-        hardwarePresenter.clearPeripheral();
+        hardwarePresenter.reset();
 
         final Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

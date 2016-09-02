@@ -594,7 +594,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                                                                                             R.string.message_power_cycle_sense_factory_reset);
                                  powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
-                                 hardwarePresenter.clearPeripheral();
+                                 hardwarePresenter.reset();
                                  userFeaturesPresenter.reset();
                                  finishWithResult(RESULT_REPLACED_DEVICE, null);
 
@@ -621,7 +621,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
                              ignored -> {
                                  Analytics.setSenseId("unpaired");
-                                 hardwarePresenter.clearPeripheral();
+                                 hardwarePresenter.reset();
                                  userFeaturesPresenter.reset();
                                  finishDeviceReplaced();
                              },

@@ -15,6 +15,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -132,12 +133,13 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
             if (OPERATION_LINK_ACCOUNT.equals(operation)) {
                 this.linkAccountFailures++;
                 if (linkAccountFailures >= LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI) {
-                    view.presentError(StringRef.from(R.string.error_link_account_failed_multiple_times),
-                                      RESULT_EDIT_WIFI, R.string.action_select_wifi_network,
-                                      operation,
-                                      REQUEST_CODE_EDIT_WIFI);
-
-                    Analytics.trackError(e, operation);
+                    final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
+                    builder.withOperation(operation)
+                           .withMessage(StringRef.from(R.string.error_link_account_failed_multiple_times))
+                            .withAction(RESULT_EDIT_WIFI,  R.string.action_select_wifi_network)
+                            .withSupportLink()
+                            .build();
+                    view.showErrorDialog(builder, REQUEST_CODE_EDIT_WIFI);
                     return;
                 }
             }
@@ -153,7 +155,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
                 Analytics.trackError(e, operation);
             } else {
-                view.presentUnstableBluetoothDialog(e, operation);
+                final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
+                builder.withOperation(operation);
+                view.showErrorDialog(builder);
             }
         });
     }
@@ -186,28 +190,25 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     }
 
     private void presentFactoryResetError(final Throwable e) {
-        hideBlockingActivity(false, () -> view.presentFactoryResetDialog(e, "Recovery Factory Reset"));
+        hideBlockingActivity(false, () -> {
+            final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
+            builder.withOperation("Recovery Factory Reset")
+                    .withSupportLink();
+            view.showErrorDialog(builder);
+        });
     }
 
 
     public interface Output extends BasePairSensePresenter.Output {
         void requestPermissionWithDialog();
 
-        void presentError(StringRef message,
-                          int resultCode,
-                          @StringRes int actionStringRes,
-                          String operation,
-                          int requestCode);
+        void showErrorDialog(ErrorDialogFragment.PresenterBuilder builder, int targetFragmentRequestCode);
 
         void presentHighPowerErrorDialog(int requestCode);
 
         void presentTroubleShootingDialog();
 
-        void presentUnstableBluetoothDialog(Throwable e, String operation);
-
         void showMessageDialog(@StringRes int titleRes, @StringRes int messageRes);
-
-        void presentFactoryResetDialog(Throwable e, String operation);
 
         void showPairDialog(String deviceName,
                             Action0 positiveAction,

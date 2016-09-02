@@ -521,6 +521,16 @@ public class HardwareInteractor extends Interactor {
         }
     }
 
+    /**
+     * Call this method to clear values.
+     * Usually done at end of successful flow
+     */
+    public void reset() {
+        setWantsHighPowerPreScan(false);
+        peripheralNotFoundCount = 0;
+        clearPeripheral();
+    }
+
     public static class NoConnectedPeripheralException extends BuruberiException {
         public NoConnectedPeripheralException() {
             super("HardwareInteractor peripheral method called without paired peripheral.",

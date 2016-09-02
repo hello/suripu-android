@@ -16,7 +16,6 @@ import com.segment.analytics.Properties;
 
 import javax.inject.Inject;
 
-import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
@@ -119,17 +118,9 @@ public class PairSenseFragment extends BasePresenterFragment
     }
 
     @Override
-    public void presentError(final StringRef message,
-                             final int actionResultCode,
-                             @StringRes final int actionStringRes,
-                             final String operation,
+    public void showErrorDialog(final ErrorDialogFragment.PresenterBuilder builder,
                              final int requestCode) {
-        final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
-                .withMessage(message)
-                .withAction(actionResultCode, actionStringRes)
-                .withOperation(operation)
-                .withSupportLink()
-                .build();
+        final ErrorDialogFragment dialogFragment = builder.build();
 
         dialogFragment.setTargetFragment(this, requestCode);
         dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
@@ -146,26 +137,6 @@ public class PairSenseFragment extends BasePresenterFragment
     public void presentTroubleShootingDialog() {
         final TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
         dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
-    }
-
-    @Override
-    public void presentUnstableBluetoothDialog(final Throwable e, @NonNull final String operation) {
-        final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                .withUnstableBluetoothHelp(getActivity())
-                .withOperation(operation)
-                .build();
-        dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-    }
-
-    @Override
-    public void presentFactoryResetDialog(final Throwable e, final String operation) {
-        hideBlockingActivity(false, () -> {
-            final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity())
-                    .withOperation(operation)
-                    .withSupportLink()
-                    .build();
-            errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-        });
     }
 
     @Override
