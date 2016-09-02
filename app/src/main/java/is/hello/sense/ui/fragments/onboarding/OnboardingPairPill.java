@@ -26,7 +26,6 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BaseHardwareFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
@@ -134,7 +133,7 @@ public class OnboardingPairPill extends BaseHardwareFragment {
                     Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED_IN_APP, null);
                     getOnboardingActivity().finish();
                 } else {
-                    hardwareInteractor.clearPeripheral();
+                    hardwareInteractor.reset();
                     if (success) {
                         Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED, null);
                         getOnboardingActivity().showPillInstructions();
