@@ -35,7 +35,6 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.settings.SettingsPairSenseModule;
-import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
@@ -65,7 +64,7 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
     @Override
     protected List<Object> getModules() {
         // May need to change variable: true
-        return Arrays.asList(new SettingsWifiModule(true), new SettingsPairSenseModule());
+        return Arrays.asList(new SettingsPairSenseModule(true));
     }
 
     @Override

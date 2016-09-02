@@ -25,7 +25,6 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.settings.SettingsPairSenseModule;
-import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -38,8 +37,7 @@ public class SettingsActivity extends ScopedInjectionActivity
     @Override
     protected List<Object> getModules() {
         return Arrays.asList(
-                new SettingsPairSenseModule(),
-                new SettingsWifiModule(false));
+                new SettingsPairSenseModule(false));
     }
 
     public static final String EXTRA_DEFAULT_TITLE = SettingsActivity.class.getName() + ".EXTRA_DEFAULT_TITLE";

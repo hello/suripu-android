@@ -85,13 +85,8 @@ public class PairPillFragment extends BasePresenterFragment
 
     @Override
     public void finishedPairing(final boolean success) {
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-        getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                                                      () -> presenter.execute(
-                                                              () -> presenter.finishedPairingAction(getActivity(),
-                                                                                                    success)));
+        presenter.finishedPairingAction(getActivity(),
+                                        success);
     }
 
     @Override
