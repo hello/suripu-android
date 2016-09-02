@@ -40,14 +40,14 @@ public class SenseAlertDialog extends Dialog {
     private View topViewDivider, bottomViewDivider;
 
     public SenseAlertDialog(@NonNull Context context) {
-        this(context,R.style.AppTheme_Dialog_Simple);
+        this(context, R.style.AppTheme_Dialog_Simple);
     }
 
-    public SenseAlertDialog(@NonNull Context context, final int style){
-        this(context,style,R.layout.dialog_sense_alert);
+    public SenseAlertDialog(@NonNull Context context, final int style) {
+        this(context, style, R.layout.dialog_sense_alert);
     }
 
-    private SenseAlertDialog(@NonNull Context context, final int style, @LayoutRes final int layout){
+    private SenseAlertDialog(@NonNull Context context, final int style, @LayoutRes final int layout) {
         super(context, style);
 
         setContentView(layout);
@@ -64,7 +64,6 @@ public class SenseAlertDialog extends Dialog {
     }
 
     /**
-     *
      * @return a dialog with the properties of {@link SenseBottomAlertDialog} except is dismissed easily.
      */
     public static SenseAlertDialog newBottomSheetInstance(@NonNull Context context) {
@@ -82,17 +81,17 @@ public class SenseAlertDialog extends Dialog {
         super.onCreate(savedInstanceState);
 
         Views.runWhenLaidOut(container, () -> {
-                 final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
+            final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
 
-                 final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
-                 final int maxHeight = metrics.heightPixels - (padding * 2);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+            final int maxHeight = metrics.heightPixels - (padding * 2);
 
-                 if (container.getMeasuredHeight() > maxHeight) {
-                     container.getLayoutParams().height = maxHeight;
-                     container.requestLayout();
-                     container.invalidate();
-                 }
-             });
+            if (container.getMeasuredHeight() > maxHeight) {
+                container.getLayoutParams().height = maxHeight;
+                container.requestLayout();
+                container.invalidate();
+            }
+        });
     }
 
     private void updatePaddingAndDividers() {

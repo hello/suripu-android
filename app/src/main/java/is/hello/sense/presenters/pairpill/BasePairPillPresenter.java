@@ -43,6 +43,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
     public abstract void finishedPairingAction(@NonNull final Activity activity, final boolean success);
 
     public abstract void onHelpClick(@NonNull final View viewClicked);
+
     @CallSuper
     @Override
     public void onResume() {
@@ -52,13 +53,13 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         }
     }
 
-    public void skipPairingPill(@NonNull final Activity activity) {
+    public void skipPairingPill() {
         trackOnSkip();
-        final SenseAlertDialog confirmation = new SenseAlertDialog(activity);
+        final SenseAlertDialog confirmation = new SenseAlertDialog(view.getActivity());
         confirmation.setTitle(R.string.alert_title_skip_pair_pill);
         confirmation.setMessage(R.string.alert_message_skip_pair_pill);
         confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
-            completeHardwareActivity(() -> view.finishedPairing(false));
+            completeHardwareActivity(() -> finishedPairingAction(view.getActivity(), false));
         });
         confirmation.setNegativeButton(android.R.string.cancel, null);
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
@@ -67,7 +68,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     public void pairPill() {
         this.isPairing = true;
-        view.showPillPairing();
+        view.showPillPairingState();
         if (!hardwareInteractor.hasPeripheral()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
@@ -91,7 +92,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             view.animateDiagram(true);
             hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwareInteractor.linkPill(),
-                                 ignored -> completeHardwareActivity(() -> view.finishedPairing(true)),
+                                 ignored -> completeHardwareActivity(() -> finishedPairingAction(view.getActivity(), true)),
                                  this::presentError);
             });
         }, this::presentError);
@@ -115,22 +116,20 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             } else {
                 errorDialogBuilder.withUnstableBluetoothHelp();
             }
-            view.showError();
+            view.showErrorState(showSkipButtonOnError());
             view.showErrorDialog(errorDialogBuilder);
         });
     }
 
     public interface Output extends BaseOutput {
 
-        void showPillPairing();
+        void showPillPairingState();
 
-        void showError();
+        void showErrorState(boolean withSkipButton);
 
-        void finishedPairing(final boolean success);
+        void animateDiagram(boolean animate);
 
-        void animateDiagram(final boolean animate);
-
-        void finishFlow();
+        Activity getActivity();
     }
 
 
