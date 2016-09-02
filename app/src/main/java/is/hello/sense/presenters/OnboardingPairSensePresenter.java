@@ -5,16 +5,19 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairSensePresenter extends PairSensePresenter {
 
     public OnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor,
                                         final UserFeaturesInteractor userFeaturesInteractor,
-                                        final ApiService apiService) {
+                                        final ApiService apiService,
+                                        final PairSenseInteractor pairSenseInteractor) {
         super(hardwareInteractor,
               userFeaturesInteractor,
-              apiService);
+              apiService,
+              pairSenseInteractor);
     }
 
     @Override
@@ -28,16 +31,6 @@ public class OnboardingPairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    public int getPairingRes() {
-        return R.string.title_connecting_with_sense;
-    }
-
-    @Override
-    public int getFinishedRes() {
-        return R.string.action_done;
-    }
-
-    @Override
     public String getOnCreateAnalyticsEvent() {
         return Analytics.Onboarding.EVENT_PAIR_SENSE;
     }
@@ -45,16 +38,6 @@ public class OnboardingPairSensePresenter extends PairSensePresenter {
     @Override
     public String getOnFinishAnalyticsEvent() {
         return Analytics.Onboarding.EVENT_SENSE_PAIRED;
-    }
-
-    @Override
-    protected boolean shouldContinueFlow() {
-        return true;
-    }
-
-    @Override
-    protected boolean shouldClearPeripheral() {
-        return true;
     }
 
     @Override

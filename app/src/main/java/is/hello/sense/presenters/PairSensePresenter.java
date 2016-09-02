@@ -14,6 +14,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -32,8 +33,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     public PairSensePresenter(final HardwareInteractor hardwareInteractor,
                               final UserFeaturesInteractor userFeaturesInteractor,
-                              final ApiService apiService) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService);
+                              final ApiService apiService,
+                              final PairSenseInteractor pairSenseInteractor) {
+        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
     }
 
     @StringRes

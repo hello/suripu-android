@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
@@ -30,6 +32,8 @@ import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
+import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
+import is.hello.sense.interactors.pairsense.SettingsPairSenseInteractor;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -148,7 +152,7 @@ import is.hello.sense.zendesk.ZendeskModule;
 public class SenseAppModule {
     private final Context applicationContext;
 
-    public SenseAppModule(@NonNull Context context) {
+    public SenseAppModule(@NonNull final Context context) {
         this.applicationContext = context;
     }
 
@@ -165,7 +169,21 @@ public class SenseAppModule {
 
     @Provides
     @PersistentSharedPreferences
-    SharedPreferences providePersistentSharedPreferences(@NonNull Context context) {
+    SharedPreferences providePersistentSharedPreferences(@NonNull final Context context) {
         return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
+    }
+
+    //todo move to OnboardingModule
+    @Provides
+    @Singleton
+    OnboardingPairSenseInteractor providesOnboardingPairSenseInteractor(final HardwareInteractor hardwareInteractor){
+        return new OnboardingPairSenseInteractor(hardwareInteractor);
+    }
+
+    //todo move to SettingsModule when pair sense and pill only sessions removed from onboarding
+    @Provides
+    @Singleton
+    SettingsPairSenseInteractor providesSettingsPairSenseInteractor(final HardwareInteractor hardwareInteractor){
+        return new SettingsPairSenseInteractor(hardwareInteractor);
     }
 }
