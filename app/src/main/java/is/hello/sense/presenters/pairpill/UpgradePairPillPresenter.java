@@ -58,14 +58,16 @@ public class UpgradePairPillPresenter extends BasePairPillPresenter {
 
     @Override
     public void finishedPairingAction(@NonNull final Activity activity, final boolean success) {
-        if (success) {
-            LoadingDialogFragment.show(activity.getFragmentManager(),
-                                       null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-            activity.getFragmentManager().executePendingTransactions();
-            LoadingDialogFragment.closeWithMessageTransition(activity.getFragmentManager(), view::finishFlow, R.string.sleep_pill_paired);
-        } else {
-            this.presentError(new Throwable());
-        }
+        execute(() -> {
+            if (success) {
+                LoadingDialogFragment.show(activity.getFragmentManager(),
+                                           null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+                activity.getFragmentManager().executePendingTransactions();
+                LoadingDialogFragment.closeWithMessageTransition(activity.getFragmentManager(), view::finishFlow, R.string.sleep_pill_paired);
+            } else {
+                this.presentError(new Throwable());
+            }
+        });
     }
 
     @Override
