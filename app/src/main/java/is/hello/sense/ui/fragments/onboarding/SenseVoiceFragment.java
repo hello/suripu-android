@@ -430,7 +430,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         return animSet;
     }
 
-    private void sendAnalyticsEvent(@NonNull final VoiceResponse voiceResponse){
+    private void sendAnalyticsEvent(@Nullable final VoiceResponse voiceResponse){
+        if(voiceResponse == null){
+            return;
+        }
         Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_COMMAND,
                              Analytics.createProperties(Analytics.Onboarding.PROP_VOICE_COMMAND_STATUS,
                                                         voiceResponse.result));
