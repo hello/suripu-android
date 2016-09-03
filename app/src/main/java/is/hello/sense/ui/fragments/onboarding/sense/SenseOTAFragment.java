@@ -112,7 +112,7 @@ public class SenseOTAFragment extends BaseHardwareFragment {
         ), response -> {
              sendAnalyticsStatusUpdate(response.state);
              setProgressStatus(response.state);
-             if(response.state.equals(DeviceOTAState.OtaState.COMPLETE)) {
+             if(response.state.equals(DeviceOTAState.OtaState.COMPLETE) || response.state.equals(DeviceOTAState.OtaState.NOT_REQUIRED)) {
                  Logger.info(SenseOTAFragment.class.getSimpleName(), "Sense updated.");
                  done();
              }
