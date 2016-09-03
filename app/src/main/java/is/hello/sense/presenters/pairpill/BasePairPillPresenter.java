@@ -40,8 +40,6 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     public abstract boolean wantsBackButton();
 
-    public abstract void finishedPairingAction(@NonNull final Activity activity, final boolean success);
-
     public abstract void onHelpClick(@NonNull final View viewClicked);
 
     @CallSuper
@@ -55,15 +53,14 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     public void skipPairingPill() {
         trackOnSkip();
-        final SenseAlertDialog confirmation = new SenseAlertDialog(view.getActivity());
-        confirmation.setTitle(R.string.alert_title_skip_pair_pill);
-        confirmation.setMessage(R.string.alert_message_skip_pair_pill);
-        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
-            completeHardwareActivity(() -> finishedPairingAction(view.getActivity(), false));
-        });
-        confirmation.setNegativeButton(android.R.string.cancel, null);
-        confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
-        confirmation.show();
+
+        final SenseAlertDialog.Builder builder = new SenseAlertDialog.Builder();
+        builder.setTitle(R.string.alert_title_skip_pair_pill)
+               .setMessage(R.string.alert_message_skip_pair_pill)
+               .setPositiveButton(R.string.action_skip, () -> showFinishedLoading(false))
+               .setNegativeButton(android.R.string.cancel, null)
+               .setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+        view.showAlertDialog(builder);
     }
 
     public void pairPill() {
@@ -92,14 +89,22 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             view.animateDiagram(true);
             hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwareInteractor.linkPill(),
-                                 ignored -> completeHardwareActivity(() -> finishedPairingAction(view.getActivity(), true)),
+                                 ignored -> showFinishedLoading(true),
                                  this::presentError);
             });
         }, this::presentError);
 
     }
 
-    public void presentError(@NonNull final Throwable e) {
+    private void showFinishedLoading(final boolean success) {
+        //todo analytics
+        completeHardwareActivity(
+                () -> view.showFinishedLoadingFragment(success ? R.string.sleep_pill_paired : R.string.action_done,
+                                                       () -> execute(view::finishFlow)));
+
+    }
+
+    private void presentError(@NonNull final Throwable e) {
         hideAllActivityForFailure(() -> {
             this.isPairing = false;
             final ErrorDialogFragment.PresenterBuilder errorDialogBuilder = ErrorDialogFragment.newInstance(e);
@@ -129,7 +134,9 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
         void animateDiagram(boolean animate);
 
-        Activity getActivity();
+        void showFinishedLoadingFragment(@StringRes final int messageRes, @NonNull final Runnable runnable);
+
+
     }
 
 

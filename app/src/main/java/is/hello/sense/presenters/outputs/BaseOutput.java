@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.StateSafeExecutor;
 
 public interface BaseOutput extends
@@ -22,5 +23,7 @@ public interface BaseOutput extends
     void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete);
 
     void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder);
+
+    void showAlertDialog(@NonNull final SenseAlertDialog.Builder builder);
 
 }
