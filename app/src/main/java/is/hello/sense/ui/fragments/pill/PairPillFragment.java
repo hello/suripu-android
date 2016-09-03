@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.pill;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
@@ -107,6 +109,18 @@ public class PairPillFragment extends BasePresenterFragment
             skipButton.setVisibility(View.VISIBLE);
         }
         retryButton.setVisibility(View.VISIBLE);
+
+    }
+
+
+    @Override
+    public void showFinishedLoadingFragment(@StringRes final int messageRes, @NonNull final Runnable runnable) {
+        LoadingDialogFragment.show(getActivity().getFragmentManager(),
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+        getActivity().getFragmentManager().executePendingTransactions();
+        LoadingDialogFragment.closeWithMessageTransition(getActivity().getFragmentManager(),
+                                                         runnable,
+                                                         messageRes);
 
     }
 

@@ -16,6 +16,7 @@ import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
 
 public abstract class BasePresenterFragment extends ScopedInjectionFragment {
@@ -64,7 +65,7 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             getPresenter().onRestoreState(savedInstanceState);
         }
     }
@@ -185,6 +186,10 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
 
     public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder) {
         builder.build().showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    public void showAlertDialog(@NonNull final SenseAlertDialog.Builder builder) {
+        builder.build(getActivity()).show();
     }
 
     public void showHelpUri(@NonNull final Uri uri) {
