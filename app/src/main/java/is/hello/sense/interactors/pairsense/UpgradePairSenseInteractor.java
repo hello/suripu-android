@@ -8,8 +8,8 @@ import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.bluetooth.exceptions.SenseRequiredException;
+import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
@@ -17,11 +17,11 @@ import rx.Observable;
 public class UpgradePairSenseInteractor extends PairSenseInteractor{
 
     protected final SwapSenseInteractor swapSenseInteractor;
-    protected final SenseResetOriginalInteractor resetOriginalInteractor;
+    protected final CurrentSenseInteractor resetOriginalInteractor;
 
     public UpgradePairSenseInteractor(@NonNull final HardwareInteractor hardwareInteractor,
                                       @NonNull final SwapSenseInteractor swapSenseInteractor,
-                                      @NonNull final SenseResetOriginalInteractor resetOriginalInteractor) {
+                                      @NonNull final CurrentSenseInteractor resetOriginalInteractor) {
 
         super(hardwareInteractor);
         this.swapSenseInteractor = swapSenseInteractor;

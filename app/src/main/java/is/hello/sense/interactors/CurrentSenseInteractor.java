@@ -11,12 +11,12 @@ import rx.Observable;
 /**
  * Stores current sense device to be referenced later when this sense needs to be reset in {@link is.hello.sense.presenters.SenseResetOriginalPresenter}.
  */
-public class SenseResetOriginalInteractor extends ValueInteractor<SenseDevice>{
+public class CurrentSenseInteractor extends ValueInteractor<SenseDevice>{
 
     private final DevicesInteractor devicesInteractor;
     public InteractorSubject<SenseDevice> senseDevice = this.subject;
 
-    public SenseResetOriginalInteractor(@NonNull final DevicesInteractor devicesInteractor){
+    public CurrentSenseInteractor(@NonNull final DevicesInteractor devicesInteractor){
         this.devicesInteractor = devicesInteractor;
     }
 
