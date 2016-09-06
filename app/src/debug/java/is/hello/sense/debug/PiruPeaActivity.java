@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,9 +37,9 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.settings.SettingsPairSenseModule;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
@@ -249,11 +250,11 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
     }
 
     public void setWifiNetwork() {
-        final FragmentNavigationActivity.Builder builder =
-                new FragmentNavigationActivity.Builder(this);
+        final SettingsActivity.Builder builder =
+                new SettingsActivity.Builder(this);
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWifiNetworkFragment.class);
-        builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());
     }

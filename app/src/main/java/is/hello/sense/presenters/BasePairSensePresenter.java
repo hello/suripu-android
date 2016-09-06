@@ -74,7 +74,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         return pairSenseInteractor.shouldContinueFlow();
     }
 
-    protected boolean shouldClearPeripheral(){
+    protected boolean shouldResetOnPairSuccess(){
         return pairSenseInteractor.shouldClearPeripheral();
     }
 
@@ -96,8 +96,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     protected void onPairSuccess() {
-        if (shouldClearPeripheral()) {
-            hardwareInteractor.clearPeripheral();
+        if (shouldResetOnPairSuccess()) {
+            hardwareInteractor.reset();
         }
         if (shouldContinueFlow()) {
             view.finishFlowWithResult(Activity.RESULT_OK);
