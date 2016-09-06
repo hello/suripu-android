@@ -229,7 +229,7 @@ public interface ApiService {
     Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId);
 
     @PUT("/v2/devices/swap")
-    Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body SenseDevice.SwapRequest oldSenseId);
+    Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body SenseDevice.SwapRequest newSenseId);
 
     //endregion
 

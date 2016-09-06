@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.util.Log;
 
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SensePeripheral;
@@ -15,6 +14,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
@@ -25,17 +25,21 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     protected static final String OPERATION_LINK_ACCOUNT = "Linking account";
     protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
+
     private boolean linkedAccount = false;
 
     private final ApiService apiService;
-    protected UserFeaturesInteractor userFeaturesInteractor;
+    protected final UserFeaturesInteractor userFeaturesInteractor;
+    private final PairSenseInteractor pairSenseInteractor;
 
     public BasePairSensePresenter(final HardwareInteractor hardwareInteractor,
                                   final UserFeaturesInteractor userFeaturesInteractor,
-                                  final ApiService apiService){
+                                  final ApiService apiService,
+                                  final PairSenseInteractor pairSenseInteractor) {
         super(hardwareInteractor);
         this.userFeaturesInteractor = userFeaturesInteractor;
         this.apiService = apiService;
+        this.pairSenseInteractor = pairSenseInteractor;
     }
 
     @Nullable
@@ -48,40 +52,54 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
+        super.onRestoreState(savedState);
         linkedAccount = savedState.getBoolean(ARG_HAS_LINKED_ACCOUNT);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        //apiService = null;
+    public abstract String getOnCreateAnalyticsEvent();
+
+    protected abstract void presentError(Throwable e, String operation);
+
+    @StringRes
+    public int getPairingRes(){
+        return pairSenseInteractor.getPairingRes();
     }
 
     @StringRes
-    public abstract int getPairingRes();
+    public int getFinishedRes(){
+        return pairSenseInteractor.getFinishedRes();
+    }
 
-    @StringRes
-    public abstract int getFinishedRes();
+    protected boolean shouldContinueFlow(){
+        return pairSenseInteractor.shouldContinueFlow();
+    }
 
-    public abstract String getOnCreateAnalyticsEvent();
+    protected boolean shouldClearPeripheral(){
+        return pairSenseInteractor.shouldClearPeripheral();
+    }
 
-    public abstract String getOnFinishAnalyticsEvent();
+    protected Observable<SensePeripheral> getObservableSensePeripheral() {
+        return pairSenseInteractor.closestPeripheral();
+    }
 
-    protected abstract boolean shouldContinueFlow();
-
-    protected abstract boolean shouldClearPeripheral();
-
-    protected abstract void presentError(Throwable e, String operation);
+    protected String getOnFinishAnalyticsEvent(){
+        return pairSenseInteractor.getOnFinishedAnalyticsEvent();
+    }
 
     protected void sendOnFinishedAnalytics() {
         Analytics.trackEvent(getOnFinishAnalyticsEvent(), null);
     }
 
-    protected void onPairSuccess(){
-        if(shouldClearPeripheral()){
+    @StringRes
+    public int getLinkedAccountErrorTitleRes(){
+        return pairSenseInteractor.getLinkedAccountErrorTitleRes();
+    }
+
+    protected void onPairSuccess() {
+        if (shouldClearPeripheral()) {
             hardwareInteractor.clearPeripheral();
         }
-        if(shouldContinueFlow()){
+        if (shouldContinueFlow()) {
             view.finishFlowWithResult(Activity.RESULT_OK);
         } else {
             view.finishActivity();
@@ -89,20 +107,22 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     public void checkLinkedAccount() {
-        if(linkedAccount){
+        if (linkedAccount) {
             finishUpOperations();
         } else {
             showBlockingActivity(R.string.title_linking_account);
+
             requestLinkAccount();
         }
     }
+
     protected void updateLinkedAccount() {
         this.linkedAccount = true;
         finishUpOperations();
     }
 
     protected void requestLinkAccount() {
-        bindAndSubscribe(hardwareInteractor.linkAccount(),
+        bindAndSubscribe(pairSenseInteractor.linkAccount(),
                          ignored -> updateLinkedAccount(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not link Sense to account", error);
@@ -121,18 +141,14 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         }
     }
 
-    protected Observable<SensePeripheral> getObservableSensePeripheral(){
-        return hardwareInteractor.closestPeripheral();
-    }
-
     protected boolean hasConnectivity(final ConnectProgress status) {
-            if (status == ConnectProgress.CONNECTED) {
-                showBlockingActivity(R.string.title_checking_connectivity);
-                return true;
-            } else {
-                showBlockingActivity(Styles.getConnectStatusMessage(status));
-                return false;
-            }
+        if (status == ConnectProgress.CONNECTED) {
+            showBlockingActivity(R.string.title_checking_connectivity);
+            return true;
+        } else {
+            showBlockingActivity(Styles.getConnectStatusMessage(status));
+            return false;
+        }
     }
 
     public void finishUpOperations() {
@@ -174,14 +190,13 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                          });
     }
 
-    private void onFinished(){
+    private void onFinished() {
         hideAllActivityForSuccess(getFinishedRes(),
                                   () -> {
                                       sendOnFinishedAnalytics();
                                       onPairSuccess();
                                   },
                                   e -> {
-                                      Log.e("Error", "E: " + e.getLocalizedMessage());
                                       presentError(e, "Turning off LEDs");
                                   });
     }

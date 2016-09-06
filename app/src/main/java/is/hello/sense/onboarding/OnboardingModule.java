@@ -1,7 +1,5 @@
 package is.hello.sense.onboarding;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
@@ -15,6 +13,7 @@ import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
 
 @Module(complete = false,
+        library = true,
         includes = {
                 //todo include after converting fragments to use presenters
                 // SenseOTAModule.class,

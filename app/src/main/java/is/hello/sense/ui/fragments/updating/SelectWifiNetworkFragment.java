@@ -21,17 +21,16 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-//todo rename, remove "Update" after ConnectToWifiFragment is phased out.
-public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
+public class SelectWifiNetworkFragment extends BasePresenterFragment
         implements AdapterView.OnItemClickListener, BaseSelectWifiNetworkPresenter.Output {
 
     private WifiNetworkAdapter networkAdapter;
@@ -49,10 +48,9 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
 
     //region Lifecycle
 
-
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+    public BasePresenter getPresenter() {
+        return presenter;
     }
 
     @Override
@@ -92,10 +90,7 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
 
         this.rescanButton = (Button) view.findViewById(R.id.fragment_select_wifi_rescan);
         rescanButton.setEnabled(false);
-        Views.setSafeOnClickListener(rescanButton, ignored -> {
-            sendOnRescanAnalytics();
-            presenter.rescan(true);
-        });
+        Views.setSafeOnClickListener(rescanButton, presenter::onRescanButtonClicked);
 
         if (getActivity().getActionBar() != null) {
             final TextView heading = (TextView) view.findViewById(R.id.fragment_select_wifi_heading);
@@ -119,8 +114,7 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (networkAdapter.isEmpty()) {
-            sendOnScanAnalytics();
-            presenter.rescan(false);
+            presenter.initialScan();
         } else {
             showRescanOption();
         }
@@ -173,9 +167,9 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
                             final long id) {
         //todo cleanup manual routing here
         final wifi_endpoint network = (wifi_endpoint) adapterView.getItemAtPosition(position);
-        final UpdateConnectToWiFiFragment nextFragment = new UpdateConnectToWiFiFragment();
+        final ConnectToWiFiFragment nextFragment = new ConnectToWiFiFragment();
         final Bundle arguments = new Bundle();
-        arguments.putSerializable(UpdateConnectToWiFiFragment.ARG_SCAN_RESULT, network);
+        arguments.putSerializable(ConnectToWiFiFragment.ARG_SCAN_RESULT, network);
         nextFragment.setArguments(arguments);
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
     }
@@ -209,23 +203,5 @@ public class UpdateSelectWifiNetworkFragment extends BasePresenterFragment
     public void bindScanResults(@NonNull final Collection<wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
-    }
-
-    @Override
-    public void presentErrorDialog(final Throwable e, final String operation) {
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                .withOperation(operation)
-                .withSupportLink();
-
-        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-    }
-
-    public void sendOnScanAnalytics() {
-        Analytics.trackEvent(presenter.getOnScanAnalyticsEvent(), null);
-    }
-
-    private void sendOnRescanAnalytics() {
-        Analytics.trackEvent(presenter.getOnRescanAnalyticsEvent(), null);
     }
 }

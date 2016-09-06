@@ -14,6 +14,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -32,8 +33,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     public PairSensePresenter(final HardwareInteractor hardwareInteractor,
                               final UserFeaturesInteractor userFeaturesInteractor,
-                              final ApiService apiService) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService);
+                              final ApiService apiService,
+                              final PairSenseInteractor pairSenseInteractor) {
+        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
     }
 
     @StringRes
@@ -77,9 +79,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
         bindAndSubscribe(device,
                          this::tryToPairWith,
                          e -> {
-                            hardwareInteractor.clearPeripheral();
-                            presentError(e, "Discovering Sense");
-                        });
+                             hardwareInteractor.clearPeripheral();
+                             presentError(e, "Discovering Sense");
+                         });
     }
 
     private void tryToPairWith(@NonNull final SensePeripheral device) {
@@ -102,9 +104,10 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
         } else {
             bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              status -> {
-                                 if(hasConnectivity(status)){
+                                 if (hasConnectivity(status)) {
                                      checkConnectivityAndContinue();
-                                 }},
+                                 }
+                             },
                              e -> presentError(e, "Connecting to Sense"));
         }
     }
@@ -187,8 +190,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     }
 
 
-
-    public interface Output extends BasePairSensePresenter.Output{
+    public interface Output extends BasePairSensePresenter.Output {
         void requestPermissionWithDialog();
 
         void presentError(StringRef message,

@@ -2,47 +2,25 @@ package is.hello.sense.presenters.connectwifi;
 
 import android.support.annotation.NonNull;
 
-import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
 
-public class UpdateConnectWifiPresenter extends BaseConnectWifiPresenter {
+public class UpgradeConnectWifiPresenter extends BaseConnectWifiPresenter {
 
 
-    public UpdateConnectWifiPresenter(
+    public UpgradeConnectWifiPresenter(
             @NonNull final HardwareInteractor hardwareInteractor,
             @NonNull final UserFeaturesInteractor userFeaturesInteractor,
-            @NonNull final ApiService apiService) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService);
+            @NonNull final ApiService apiService,
+            @NonNull final PairSenseInteractor pairSenseInteractor) {
+        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
     }
 
     @Override
-    protected boolean shouldSendAccessToken() {return true;}
-
-    @Override
-    public int getPairingRes() {
-        return R.string.title_pairing_with_sense;
-    }
-
-    @Override
-    public int getFinishedRes() {
-        return R.string.title_paired;
-    }
-
-    @Override
-    public String getOnFinishAnalyticsEvent() {
-        return getOnSubmitWifiCredentialsAnalyticsEvent();
-    }
-
-    @Override
-    protected boolean shouldContinueFlow() {
-        return true;
-    }
-
-    @Override
-    protected boolean shouldClearPeripheral() {
+    protected boolean shouldLinkAccount() {
         return true;
     }
 

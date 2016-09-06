@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
@@ -30,6 +32,8 @@ import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
+import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
+import is.hello.sense.interactors.pairsense.SettingsPairSenseInteractor;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -52,6 +56,9 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
+import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -133,13 +140,19 @@ import is.hello.sense.zendesk.ZendeskModule;
                 ListActivity.class,
                 SleepSoundsPlayerView.class,
                 BaseHardwarePresenter.class,
+
+                //todo remove when fragments use presenters
+                OnboardingSenseColorsFragment.class,
+                OnboardingRegisterAudioFragment.class,
+                OnboardingPairPill.class
+
         }
 )
 @SuppressWarnings("UnusedDeclaration")
 public class SenseAppModule {
     private final Context applicationContext;
 
-    public SenseAppModule(@NonNull Context context) {
+    public SenseAppModule(@NonNull final Context context) {
         this.applicationContext = context;
     }
 
@@ -156,7 +169,8 @@ public class SenseAppModule {
 
     @Provides
     @PersistentSharedPreferences
-    SharedPreferences providePersistentSharedPreferences(@NonNull Context context) {
+    SharedPreferences providePersistentSharedPreferences(@NonNull final Context context) {
         return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
     }
+
 }

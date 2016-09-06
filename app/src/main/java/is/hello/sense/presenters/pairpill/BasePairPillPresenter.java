@@ -2,6 +2,7 @@ package is.hello.sense.presenters.pairpill;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.view.View;
@@ -26,8 +27,6 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         super(hardwareInteractor);
     }
 
-    public abstract void trackOnCreate();
-
     public abstract void trackOnSkip();
 
     @StringRes
@@ -41,10 +40,9 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     public abstract boolean wantsBackButton();
 
-    public abstract void finishedPairingAction(@NonNull final Activity activity, final boolean success);
-
     public abstract void onHelpClick(@NonNull final View viewClicked);
 
+    @CallSuper
     @Override
     public void onResume() {
         super.onResume();
@@ -53,27 +51,21 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
         }
     }
 
-    public void skipPairingPill(@NonNull final Activity activity) {
+    public void skipPairingPill() {
         trackOnSkip();
-        final SenseAlertDialog confirmation = new SenseAlertDialog(activity);
-        confirmation.setTitle(R.string.alert_title_skip_pair_pill);
-        confirmation.setMessage(R.string.alert_message_skip_pair_pill);
-        confirmation.setPositiveButton(R.string.action_skip, (dialog, which) -> {
-            completeHardwareActivity(() -> view.finishedPairing(false));
-        });
-        confirmation.setNegativeButton(android.R.string.cancel, null);
-        confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
-        confirmation.show();
-    }
 
-    @Override
-    public boolean isResumed() {
-        return view != null && view.isResumed();
+        final SenseAlertDialog.Builder builder = new SenseAlertDialog.Builder();
+        builder.setTitle(R.string.alert_title_skip_pair_pill)
+               .setMessage(R.string.alert_message_skip_pair_pill)
+               .setPositiveButton(R.string.action_skip, () -> showFinishedLoading(false))
+               .setNegativeButton(android.R.string.cancel, null)
+               .setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+        view.showAlertDialog(builder);
     }
 
     public void pairPill() {
         this.isPairing = true;
-        view.showPillPairing();
+        view.showPillPairingState();
         if (!hardwareInteractor.hasPeripheral()) {
             showBlockingActivity(R.string.title_scanning_for_sense);
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(), ignored -> pairPill(), this::presentError);
@@ -97,14 +89,22 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             view.animateDiagram(true);
             hideBlockingActivity(false, () -> {
                 bindAndSubscribe(hardwareInteractor.linkPill(),
-                                 ignored -> completeHardwareActivity(() -> view.finishedPairing(true)),
+                                 ignored -> showFinishedLoading(true),
                                  this::presentError);
             });
         }, this::presentError);
 
     }
 
-    public void presentError(@NonNull final Throwable e) {
+    private void showFinishedLoading(final boolean success) {
+        //todo analytics
+        completeHardwareActivity(
+                () -> view.showFinishedLoadingFragment(success ? R.string.sleep_pill_paired : R.string.action_done,
+                                                       () -> execute(view::finishFlow)));
+
+    }
+
+    private void presentError(@NonNull final Throwable e) {
         hideAllActivityForFailure(() -> {
             this.isPairing = false;
             final ErrorDialogFragment.PresenterBuilder errorDialogBuilder = ErrorDialogFragment.newInstance(e);
@@ -121,22 +121,22 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             } else {
                 errorDialogBuilder.withUnstableBluetoothHelp();
             }
-            view.showError();
+            view.showErrorState(showSkipButtonOnError());
             view.showErrorDialog(errorDialogBuilder);
         });
     }
 
     public interface Output extends BaseOutput {
 
-        void showPillPairing();
+        void showPillPairingState();
 
-        void showError();
+        void showErrorState(boolean withSkipButton);
 
-        void finishedPairing(final boolean success);
+        void animateDiagram(boolean animate);
 
-        void animateDiagram(final boolean animate);
+        void showFinishedLoadingFragment(@StringRes final int messageRes, @NonNull final Runnable runnable);
 
-        void finishFlow();
+
     }
 
 

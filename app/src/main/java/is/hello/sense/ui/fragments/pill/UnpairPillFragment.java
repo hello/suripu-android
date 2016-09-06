@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
+import is.hello.sense.presenters.EmptyPresenter;
 import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
@@ -22,8 +24,8 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
     UnpairPillPresenter presenter;
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
+    public BasePresenter getPresenter() {
+        return presenter;
     }
 
     @Nullable
@@ -43,13 +45,6 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        presenter.onViewCreated();
-    }
-
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (view != null) {
@@ -61,11 +56,8 @@ public class UnpairPillFragment extends BasePresenterFragment implements UnpairP
     @Override
     public void postDelayed(@NonNull final Runnable runnable, final int time) {
         view.postDelayed(runnable, time);
+
     }
 
-    @Override
-    public void finishWithSuccess() {
-        finishFlow();
-    }
 
 }

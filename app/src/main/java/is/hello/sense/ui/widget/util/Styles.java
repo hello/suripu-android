@@ -101,7 +101,7 @@ public final class Styles {
     int getConnectStatusMessage(@NonNull ConnectProgress status) {
         switch (status) {
             case CONNECTING:
-                return R.string.title_connecting;
+                return R.string.title_connecting_with_sense;
 
             case BONDING:
                 return R.string.title_pairing;
@@ -111,7 +111,7 @@ public final class Styles {
 
             default:
             case CONNECTED:
-                return R.string.title_connecting;
+                return R.string.title_connecting_with_sense;
         }
     }
 

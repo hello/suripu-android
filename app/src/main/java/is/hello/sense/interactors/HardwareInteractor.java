@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,7 +43,8 @@ import is.hello.sense.graph.PendingObservables;
 import rx.Observable;
 import rx.functions.Action1;
 
-@Singleton public class HardwareInteractor extends Interactor {
+@Singleton
+public class HardwareInteractor extends Interactor {
     public static final String ACTION_CONNECTION_LOST = HardwareInteractor.class.getName() + ".ACTION_CONNECTION_LOST";
     public static final int FAILS_BEFORE_HIGH_POWER = 2;
 
@@ -50,7 +52,7 @@ import rx.functions.Action1;
     private static final String TOKEN_CONNECT = HardwareInteractor.class.getSimpleName() + ".TOKEN_CONNECT";
     private static final String TOKEN_GET_WIFI = HardwareInteractor.class.getSimpleName() + ".TOKEN_GET_WIFI";
     private static final String TOKEN_FACTORY_RESET = HardwareInteractor.class.getSimpleName() + ".TOKEN_FACTORY_RESET";
-
+    private static final int BOND_DELAY_SECONDS = 10; // seconds
     private final Context context;
     private final PreferencesInteractor preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
@@ -59,7 +61,9 @@ import rx.functions.Action1;
 
     private final PendingObservables<String> pending = new PendingObservables<>();
 
-    @VisibleForTesting @Nullable SensePeripheral peripheral;
+    @VisibleForTesting
+    @Nullable
+    SensePeripheral peripheral;
 
     private int peripheralNotFoundCount = 0;
     private boolean wantsHighPowerPreScan;
@@ -68,11 +72,12 @@ import rx.functions.Action1;
 
     public final Observable<Boolean> bluetoothEnabled;
 
-    @Inject public HardwareInteractor(@NonNull final Context context,
-                                      @NonNull final PreferencesInteractor preferencesInteractor,
-                                      @NonNull final ApiSessionManager apiSessionManager,
-                                      @NonNull final DevicesInteractor devicesInteractor,
-                                      @NonNull final BluetoothStack bluetoothStack) {
+    @Inject
+    public HardwareInteractor(@NonNull final Context context,
+                              @NonNull final PreferencesInteractor preferencesInteractor,
+                              @NonNull final ApiSessionManager apiSessionManager,
+                              @NonNull final DevicesInteractor devicesInteractor,
+                              @NonNull final BluetoothStack bluetoothStack) {
         this.context = context;
         this.preferencesPresenter = preferencesInteractor;
         this.apiSessionManager = apiSessionManager;
@@ -180,7 +185,9 @@ import rx.functions.Action1;
         }
     }
 
-    public @Nullable String getDeviceId() {
+    public
+    @Nullable
+    String getDeviceId() {
         if (peripheral != null) {
             return peripheral.getDeviceId();
         } else {
@@ -192,7 +199,9 @@ import rx.functions.Action1;
         return Compatibility.generateReport(context).isSupported();
     }
 
-    private @NonNull <T> Observable<T> noDeviceError() {
+    private
+    @NonNull
+    <T> Observable<T> noDeviceError() {
         return Observable.error(new NoConnectedPeripheralException());
     }
 
@@ -204,7 +213,9 @@ import rx.functions.Action1;
         return bluetoothStack.turnOff();
     }
 
-    public @Nullable SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
+    public
+    @Nullable
+    SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
         logEvent("getClosestPeripheral(" + peripherals + ")");
 
         if (peripherals.isEmpty()) {
@@ -214,15 +225,16 @@ import rx.functions.Action1;
         }
     }
 
-    @NonNull public List<SensePeripheral> filterPeripherals(@NonNull final List<SensePeripheral> peripherals,
-                                                            @NonNull final Set<String> excludedDeviceIDs) {
-        if(excludedDeviceIDs.isEmpty()){
+    @NonNull
+    public List<SensePeripheral> filterPeripherals(@NonNull final List<SensePeripheral> peripherals,
+                                                   @NonNull final Set<String> excludedDeviceIDs) {
+        if (excludedDeviceIDs.isEmpty()) {
             return peripherals;
         }
         final List<SensePeripheral> validPeripherals = new ArrayList<>();
 
-        for(final SensePeripheral sp : peripherals){
-            if(!excludedDeviceIDs.contains(sp.getDeviceId())){
+        for (final SensePeripheral sp : peripherals) {
+            if (!excludedDeviceIDs.contains(sp.getDeviceId())) {
                 validPeripherals.add(sp);
             }
         }
@@ -241,7 +253,7 @@ import rx.functions.Action1;
         return closestPeripheral(Collections.emptySet());
     }
 
-    public Observable<SensePeripheral> closestPeripheral(@NonNull final  Set<String> excludedDeviceIDs) {
+    public Observable<SensePeripheral> closestPeripheral(@NonNull final Set<String> excludedDeviceIDs) {
         logEvent("closestPeripheral( excluding " + excludedDeviceIDs + ")");
         return pending.bind(TOKEN_DISCOVERY, () -> {
             final PeripheralCriteria criteria = new PeripheralCriteria();
@@ -278,16 +290,16 @@ import rx.functions.Action1;
                 PeripheralCriteria criteria = PeripheralCriteria.forAddress(address);
                 criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
                 return SensePeripheral.discover(bluetoothStack, criteria)
-                        .flatMap(peripherals -> {
-                            if (!peripherals.isEmpty()) {
-                                this.peripheral = peripherals.get(0);
-                                logEvent("rediscoveredDevice(" + peripheral + ")");
+                                      .flatMap(peripherals -> {
+                                          if (!peripherals.isEmpty()) {
+                                              this.peripheral = peripherals.get(0);
+                                              logEvent("rediscoveredDevice(" + peripheral + ")");
 
-                                return Observable.just(peripheral);
-                            } else {
-                                return Observable.error(new SenseNotFoundError());
-                            }
-                        });
+                                              return Observable.just(peripheral);
+                                          } else {
+                                              return Observable.error(new SenseNotFoundError());
+                                          }
+                                      });
             });
         }
     }
@@ -306,11 +318,11 @@ import rx.functions.Action1;
 
         return pending.bind(TOKEN_DISCOVERY, () -> {
             return SensePeripheral.rediscover(bluetoothStack, device.deviceId, wantsHighPowerPreScan)
-                    .flatMap(peripheral -> {
-                        logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
-                        this.peripheral = peripheral;
-                        return Observable.just(this.peripheral);
-                    });
+                                  .flatMap(peripheral -> {
+                                      logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
+                                      this.peripheral = peripheral;
+                                      return Observable.just(this.peripheral);
+                                  });
         });
     }
 
@@ -345,8 +357,9 @@ import rx.functions.Action1;
         }
 
         return peripheral.removeBond()
-                .doOnError(this.respondToError)
-                .map(ignored -> null);
+                         .doOnError(this.respondToError)
+                         .delay(BOND_DELAY_SECONDS, TimeUnit.SECONDS)
+                         .map(ignored -> null);
     }
 
     public Observable<Void> runLedAnimation(@NonNull final SenseLedAnimation animationType) {
@@ -372,7 +385,7 @@ import rx.functions.Action1;
             return noDeviceError();
         }
         SensePeripheral.CountryCode countryCode = null;
-        if (sendCountryCode){
+        if (sendCountryCode) {
             final DateTimeZone timeZone = DateTimeZone.getDefault();
             final String timeZoneId = timeZone.getID();
             if (timeZoneId.contains("America")) {
@@ -401,7 +414,7 @@ import rx.functions.Action1;
         }
 
         return pending.bind(TOKEN_GET_WIFI, () -> peripheral.getWifiNetwork()
-                .doOnError(this.respondToError));
+                                                            .doOnError(this.respondToError));
     }
 
     public Observable<SenseConnectToWiFiUpdate> sendWifiCredentials(@NonNull final String ssid,
@@ -479,7 +492,7 @@ import rx.functions.Action1;
             Observable<VoidResponse> resetBackEnd = devicesPresenter.removeSenseAssociations(apiDevice);
             Observable<Void> resetSense = peripheral.factoryReset();
             return resetBackEnd.flatMap(ignored -> resetSense)
-                    .doOnError(this.respondToError);
+                               .doOnError(this.respondToError);
         });
     }
 

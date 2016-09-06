@@ -1,14 +1,17 @@
 package is.hello.sense.presenters.outputs;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.StateSafeExecutor;
 
-public interface BaseOutput extends StateSafeExecutor.Resumes {
+public interface BaseOutput extends
+        StateSafeExecutor.Resumes,
+        HelpOutput,
+        FlowOutput {
+
     boolean isResumed();
 
     boolean canObservableEmit();
@@ -21,13 +24,6 @@ public interface BaseOutput extends StateSafeExecutor.Resumes {
 
     void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder);
 
-    void showHelpUri(@NonNull final Uri uri);
+    void showAlertDialog(@NonNull final SenseAlertDialog.Builder builder);
 
-    void showHelpUri(@NonNull final String  uri);
-
-    void showHelpUri(@NonNull final UserSupport.HelpStep helpStep);
-
-    void finishActivity();
-
-    void finishFlowWithResult(int resultCode);
 }

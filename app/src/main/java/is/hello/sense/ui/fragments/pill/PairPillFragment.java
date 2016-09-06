@@ -2,6 +2,7 @@ package is.hello.sense.ui.fragments.pill;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,14 +34,8 @@ public class PairPillFragment extends BasePresenterFragment
     protected Button retryButton;
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(presenter);
-    }
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        presenter.trackOnCreate();
+    protected BasePairPillPresenter getPresenter() {
+        return presenter;
     }
 
     @NonNull
@@ -55,7 +50,7 @@ public class PairPillFragment extends BasePresenterFragment
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_pair_pill_diagram);
 
         this.skipButton = (Button) view.findViewById(R.id.fragment_pair_pill_skip);
-        Views.setSafeOnClickListener(skipButton, ignored -> presenter.skipPairingPill(getActivity()));
+        Views.setSafeOnClickListener(skipButton, ignored -> presenter.skipPairingPill());
 
         this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> presenter.pairPill());
@@ -65,19 +60,12 @@ public class PairPillFragment extends BasePresenterFragment
 
         if (BuildConfig.DEBUG) {
             diagram.setOnLongClickListener(ignored -> {
-                presenter.skipPairingPill(getActivity());
+                presenter.skipPairingPill();
                 return true;
             });
             diagram.setBackgroundResource(R.drawable.selectable_dark);
         }
         return view;
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        presenter.onResume();
     }
 
     @Override
@@ -89,22 +77,9 @@ public class PairPillFragment extends BasePresenterFragment
 
         this.activityIndicator = null;
         this.activityStatus = null;
-
         this.diagram = null;
-
         this.skipButton = null;
         this.retryButton = null;
-    }
-
-    @Override
-    public void finishedPairing(final boolean success) {
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
-        getFragmentManager().executePendingTransactions();
-        LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(),
-                                                      () -> presenter.execute(
-                                                              () -> presenter.finishedPairingAction(getActivity(),
-                                                                                                    success)));
     }
 
     @Override
@@ -118,24 +93,34 @@ public class PairPillFragment extends BasePresenterFragment
 
 
     @Override
-    public void showPillPairing() {
+    public void showPillPairingState() {
         activityIndicator.setVisibility(View.VISIBLE);
         activityStatus.setVisibility(View.VISIBLE);
-
         skipButton.setVisibility(View.GONE);
         retryButton.setVisibility(View.GONE);
     }
 
     @Override
-    public void showError() {
+    public void showErrorState(final boolean withSkipButton) {
         diagram.suspendPlayback(true);
         activityIndicator.setVisibility(View.GONE);
         activityStatus.setVisibility(View.GONE);
-
-        if (presenter.showSkipButtonOnError()) {
+        if (withSkipButton) {
             skipButton.setVisibility(View.VISIBLE);
         }
         retryButton.setVisibility(View.VISIBLE);
+
+    }
+
+
+    @Override
+    public void showFinishedLoadingFragment(@StringRes final int messageRes, @NonNull final Runnable runnable) {
+        LoadingDialogFragment.show(getActivity().getFragmentManager(),
+                                   null, LoadingDialogFragment.OPAQUE_BACKGROUND);
+        getActivity().getFragmentManager().executePendingTransactions();
+        LoadingDialogFragment.closeWithMessageTransition(getActivity().getFragmentManager(),
+                                                         runnable,
+                                                         messageRes);
 
     }
 

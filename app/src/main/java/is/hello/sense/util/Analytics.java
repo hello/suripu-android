@@ -721,6 +721,8 @@ public class Analytics {
         String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
         String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
 
+        String EVENT_SENSE_PAIR = "Upgrade Pair Sense";
+        String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
     }
 
 

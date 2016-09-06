@@ -55,7 +55,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Styles;
@@ -451,8 +451,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         final SettingsActivity.Builder builder =
                 new SettingsActivity.Builder(getActivity());
         builder.setDefaultTitle(R.string.title_edit_wifi);
-        builder.setFragmentClass(SelectWiFiNetworkFragment.class);
-        builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
+        builder.setFragmentClass(SelectWifiNetworkFragment.class);
         builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);

@@ -1,6 +1,8 @@
 package is.hello.sense.presenters.selectwifinetwork;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.View;
 
 import java.util.Collection;
 
@@ -9,6 +11,8 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.presenters.outputs.BaseOutput;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.util.Analytics;
 
 public abstract class BaseSelectWifiNetworkPresenter
         extends BaseHardwarePresenter<BaseSelectWifiNetworkPresenter.Output> {
@@ -30,8 +34,27 @@ public abstract class BaseSelectWifiNetworkPresenter
 
     public abstract String getOnRescanAnalyticsEvent();
 
-    public void rescan(final boolean sendCountryCode) {
-        view.showScanning();
+    public void sendOnScanAnalytics() {
+        Analytics.trackEvent(getOnScanAnalyticsEvent(), null);
+    }
+
+    private void sendOnRescanAnalytics() {
+        Analytics.trackEvent(getOnRescanAnalyticsEvent(), null);
+    }
+
+    public void initialScan() {
+        sendOnScanAnalytics();
+        rescan(false);
+    }
+
+    @SuppressWarnings("unused")
+    public void onRescanButtonClicked(@Nullable final View clickedView){
+        sendOnRescanAnalytics();
+        rescan(true);
+    }
+
+    protected void rescan(final boolean sendCountryCode) {
+        execute( () -> view.showScanning());
         if (!hardwareInteractor.hasPeripheral()) {
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> rescan(sendCountryCode),
@@ -69,15 +92,21 @@ public abstract class BaseSelectWifiNetworkPresenter
     private void onPeripheralDiscoveryError(final Throwable e) {
         execute(() -> {
             view.showRescanOption();
-            view.presentErrorDialog(e, OPERATION_SCAN_FOR_NETWORK);
+            presentErrorDialog(e, OPERATION_SCAN_FOR_NETWORK);
         });
     }
 
     private void onWifiError(final Throwable e) {
         hideHardwareActivity(() -> {
             view.showRescanOption();
-            view.presentErrorDialog(e, OPERATION_SCAN_FOR_NETWORK);
+            presentErrorDialog(e, OPERATION_SCAN_FOR_NETWORK);
         }, null);
+    }
+
+    private void presentErrorDialog(@NonNull final Throwable e, final String operation){
+        final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
+        builder.withOperation(operation);
+        view.showErrorDialog(builder);
     }
 
     public interface Output extends BaseOutput {
@@ -87,8 +116,6 @@ public abstract class BaseSelectWifiNetworkPresenter
         void showRescanOption();
 
         void bindScanResults(Collection<SenseCommandProtos.wifi_endpoint> scanResults);
-
-        void presentErrorDialog(Throwable e, String operation);
     }
 
 }

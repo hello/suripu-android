@@ -35,10 +35,8 @@ import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
-import is.hello.sense.onboarding.OnboardingWifiModule;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.settings.SettingsPairSenseModule;
-import is.hello.sense.settings.SettingsWifiModule;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -48,7 +46,6 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
@@ -63,13 +60,14 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragmen
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
+import is.hello.sense.ui.fragments.updating.ConnectToWiFiFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -124,11 +122,11 @@ public class OnboardingActivity extends ScopedInjectionActivity
     Account account;
 
     @Override
-    List<Object> getModules() {
+    protected List<Object> getModules() {
         if(getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)){
-            return Arrays.asList(new OnboardingModule(), new SettingsWifiModule(), new SettingsPairSenseModule());
+            return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
         }
-        return Arrays.asList(new OnboardingModule(), new OnboardingWifiModule(), new OnboardingPairSenseModule());
+        return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());
     }
 
     @Override
@@ -503,7 +501,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     public void showSelectWifiNetwork() {
-        pushFragment(SelectWiFiNetworkFragment.newOnboardingInstance(), null, true);
+        pushFragment(new SelectWifiNetworkFragment(), null, true);
     }
 
     public void showPairPill(final boolean showIntroduction) {

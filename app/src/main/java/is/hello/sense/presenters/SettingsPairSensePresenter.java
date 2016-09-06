@@ -1,19 +1,23 @@
 package is.hello.sense.presenters;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
 
 public class SettingsPairSensePresenter extends PairSensePresenter {
 
     public SettingsPairSensePresenter(final HardwareInteractor hardwareInteractor,
                                       final UserFeaturesInteractor userFeaturesInteractor,
-                                      final ApiService apiService) {
+                                      final ApiService apiService,
+                                      final PairSenseInteractor pairSenseInteractor) {
         super(hardwareInteractor,
               userFeaturesInteractor,
-              apiService);
+              apiService,
+              pairSenseInteractor);
     }
 
     @Override
@@ -27,16 +31,6 @@ public class SettingsPairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    public int getPairingRes() {
-        return R.string.title_connecting;
-    }
-
-    @Override
-    public int getFinishedRes() {
-        return R.string.action_done;
-    }
-
-    @Override
     public String getOnCreateAnalyticsEvent() {
         return Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP;
     }
@@ -47,18 +41,8 @@ public class SettingsPairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    protected boolean shouldContinueFlow() {
-        return false;
-    }
-
-    @Override
-    protected boolean shouldClearPeripheral() {
-        return false;
-    }
-
-    @Override
     public boolean shouldShowPairDialog() {
-        return false;
+        return BuildConfig.DEBUG;
     }
 
     @Override

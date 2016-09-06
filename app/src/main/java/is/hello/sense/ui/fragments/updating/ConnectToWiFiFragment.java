@@ -3,7 +3,6 @@ package is.hello.sense.ui.fragments.updating;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -24,30 +23,25 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.segment.analytics.Properties;
-
 import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.sense.R;
+import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
-import is.hello.sense.ui.common.UserSupport;
-import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.LabelEditText;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Analytics;
 import is.hello.sense.util.EditorActionHandler;
 
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
 
-//todo rename, remove "Update" after ConnectToWifiFragment is phased out.
-public class UpdateConnectToWiFiFragment extends BasePresenterFragment
+public class ConnectToWiFiFragment extends BasePresenterFragment
         implements
         AdapterView.OnItemSelectedListener,
         BaseConnectWifiPresenter.Output {
-    public static final String ARG_SCAN_RESULT = UpdateConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
+    public static final String ARG_SCAN_RESULT = ConnectToWiFiFragment.class.getName() + ".ARG_SCAN_RESULT";
 
     private static final int ERROR_REQUEST_CODE = 0x30;
 
@@ -55,9 +49,7 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     private LabelEditText networkPassword;
     private Spinner networkSecurity;
     private Button continueButton;
-
-    @Nullable
-    private wifi_endpoint network;
+    private View view;
 
     private OnboardingToolbar toolbar;
 
@@ -69,24 +61,21 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
 
 
     @Override
-    public void onInjected() {
-        addScopedPresenter(wifiPresenter);
+    protected BasePresenter getPresenter() {
+        return wifiPresenter;
     }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.network = (wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT);
-        sendOnCreateAnalytics();
-
+        wifiPresenter.setNetwork((wifi_endpoint) getArguments().getSerializable(ARG_SCAN_RESULT));
         setRetainInstance(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_connect_to_wifi, container, false);
+        view = inflater.inflate(R.layout.fragment_connect_to_wifi, container, false);
 
         this.networkName = (EditText) view.findViewById(R.id.fragment_connect_to_wifi_network);
         this.networkPassword = (LabelEditText) view.findViewById(R.id.fragment_connect_to_wifi_password);
@@ -95,10 +84,88 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
         this.continueButton = (Button) view.findViewById(R.id.fragment_connect_to_wifi_continue);
         Views.setSafeOnClickListener(continueButton, ignored -> wifiPresenter.sendWifiCredentials());
 
+        if (getActivity().getActionBar() != null) {
+            setHasOptionsMenu(true);
+        } else {
+            this.toolbar = OnboardingToolbar.of(this, view);
+            this.toolbar.setWantsBackButton(true)
+                        .setOnHelpClickListener(wifiPresenter::onHelpClick);
+            //todo add back support options after refactor
+        }
+
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (networkSecurity != null) {
+            networkSecurity.setAdapter(null);
+            networkSecurity.setOnItemSelectedListener(null);
+            networkSecurity = null;
+        }
+        if (toolbar != null) {
+            toolbar.onDestroyView();
+            toolbar = null;
+        }
+        networkName = null;
+        if (networkPassword != null) {
+            networkPassword.setOnEditorActionListener(null);
+        }
+        networkPassword = null;
+        if (continueButton != null) {
+            continueButton.setOnClickListener(null);
+        }
+        continueButton = null;
+        view = null;
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ERROR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            wifiPresenter.sendWifiCredentials();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        inflater.inflate(R.menu.help, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help: {
+                wifiPresenter.onHelpClick(null);
+                return true;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+    }
+
+
+    //endregion
+
+    @Override
+    public wifi_endpoint.sec_type getNetworkSecurityType() {
+        if (networkSecurity == null) {
+            return null;
+        }
+        return (wifi_endpoint.sec_type) networkSecurity.getSelectedItem();
+    }
+
+    @Override
+    public void updateView(@Nullable final wifi_endpoint network) {
+        if (view == null) {
+            return;
+        }
         final TextView title = (TextView) view.findViewById(R.id.fragment_connect_to_wifi_title);
         final TextView networkInfo = (TextView) view.findViewById(R.id.fragment_connect_to_wifi_info);
         final ViewGroup otherContainer = (ViewGroup) view.findViewById(R.id.fragment_connect_to_wifi_other_container);
-
         if (network != null) {
             networkName.setText(network.getSsid());
             wifiPresenter.updatePasswordField();
@@ -135,95 +202,24 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
 
             title.setText(R.string.title_sign_into_wifi_other);
         }
-
-        if (getActivity().getActionBar() != null) {
-            setHasOptionsMenu(true);
-        } else {
-            this.toolbar = OnboardingToolbar.of(this, view);
-            this.toolbar.setWantsBackButton(true)
-                        .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.SIGN_INTO_WIFI));
-            //todo add back support options after refactor
-        }
-
-        return view;
     }
-
-    @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (network != null && network.getSecurityType() == sec_type.SL_SCAN_SEC_TYPE_OPEN) {
-            wifiPresenter.sendWifiCredentials();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (networkSecurity != null) {
-            networkSecurity.setAdapter(null);
-            networkSecurity.setOnItemSelectedListener(null);
-            networkSecurity = null;
-        }
-        if (toolbar != null) {
-            toolbar.onDestroyView();
-            toolbar = null;
-        }
-        networkName = null;
-        networkPassword.setOnEditorActionListener(null);
-        networkPassword = null;
-        continueButton.setOnClickListener(null);
-        continueButton = null;
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ERROR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            wifiPresenter.sendWifiCredentials();
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        inflater.inflate(R.menu.help, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_help: {
-                UserSupport.showForHelpStep(getActivity(),
-                                            UserSupport.HelpStep.SIGN_INTO_WIFI);
-                return true;
-            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
-        }
-    }
-
-    //endregion
-
 
     //region Password Field
-    @Override
-    public sec_type getSecurityType() {
-        if (network != null) {
-            return network.getSecurityType();
-        } else {
-            return (sec_type) networkSecurity.getSelectedItem();
-        }
-    }
+
 
     @Override
     public String getNetworkName() {
+        if (networkName == null) {
+            return null;
+        }
         return networkName.getText().toString();
     }
 
     @Override
     public String getNetworkPassword() {
+        if (networkPassword == null) {
+            return null;
+        }
         return networkPassword.getInputText();
     }
 
@@ -231,6 +227,9 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
     public void setNetworkPassword(final int visibility,
                                    final boolean requestFocus,
                                    final boolean clearInput) {
+        if (networkPassword == null) {
+            return;
+        }
         networkPassword.setVisibility(visibility);
         if (clearInput) {
             networkPassword.setInputText(null);
@@ -252,50 +251,6 @@ public class UpdateConnectToWiFiFragment extends BasePresenterFragment
         wifiPresenter.updatePasswordField();
     }
     //endregion
-
-    public void sendOnCreateAnalytics() {
-        final boolean hasNetwork = network != null;
-        final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_WIFI_IS_OTHER,
-                                                                 !hasNetwork);
-        final int rssi = hasNetwork ? network.getRssi() : 0;
-        properties.put(Analytics.Onboarding.PROP_WIFI_RSSI, rssi);
-        Analytics.trackEvent(wifiPresenter.getOnCreateAnalyticsEvent(), properties);
-    }
-
-    @Override
-    public void presentWifiValidationErrorDialog(final Throwable e,
-                                                 final String operation,
-                                                 final Uri supportUri,
-                                                 @StringRes final int actionStringRes) {
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity())
-                .withOperation(operation);
-
-        final Uri uri = UserSupport.DeviceIssue.SENSE_ASCII_WEP.getUri();
-        final Intent intent = UserSupport.createViewUriIntent(getActivity(), uri);
-        errorDialogBuilder.withAction(intent, R.string.action_support);
-
-        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-    }
-
-    @Override
-    public void presentLinkedAccountErrorDialog(final Throwable e,
-                                                final String operation,
-                                                @StringRes final int titleRes) {
-        final ErrorDialogFragment errorDialogFragment =
-                new ErrorDialogFragment.Builder(e, getActivity())
-                        .withOperation(operation)
-                        .withTitle(R.string.failed_to_link_account)
-                        .withSupportLink()
-                        .build();
-
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
-    }
-
-    @Override
-    public void finishActivity() {
-
-    }
 
     private static class SecurityTypeAdapter extends ArrayAdapter<sec_type> {
         private SecurityTypeAdapter(final Context context) {
