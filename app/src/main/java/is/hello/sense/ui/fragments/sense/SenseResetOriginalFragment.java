@@ -53,11 +53,6 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
         presenter.navigateToHelp(getActivity());
     }
 
-    public void onDone(final View ignored) {
-        //todo this would also be handled by the presenter directing to a router
-        onOperationSuccess();
-    }
-
     public void onNext(final View ignored) {
         presenter.startOperation();
     }
@@ -77,9 +72,10 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     }
 
     @Override
-    public void showRetry(@StringRes final int retryRes) {
+    public void showRetry(@StringRes final int retryRes,
+                          final View.OnClickListener onClickListener) {
         this.view.setSecondaryButtonText(retryRes)
-                 .setSecondaryOnClickListener(this::onDone);
+                 .setSecondaryOnClickListener(onClickListener);
     }
 
     //endregion
