@@ -21,6 +21,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -34,7 +35,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 @Deprecated //todo remember to remove layout file and our resources when deleting this file
-public class OnboardingPairPill extends BaseHardwareFragment {
+public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPressedInterceptor{
     private ProgressBar activityIndicator;
     private TextView activityStatus;
 
@@ -239,5 +240,11 @@ public class OnboardingPairPill extends BaseHardwareFragment {
 
     public OnboardingActivity getOnboardingActivity() {
         return (OnboardingActivity) getActivity();
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        // do nothing
+        return true;
     }
 }
