@@ -70,7 +70,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
             onPrimaryClick(clickedView);
         });
         dialog.setNegativeButton(R.string.action_dont_pair, (dialogInterface, i) -> {
-            finishWithSuccess();
+            execute(() -> view.cancelFlow());
         });
         dialog.show();
     }

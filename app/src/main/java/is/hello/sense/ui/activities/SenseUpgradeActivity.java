@@ -126,6 +126,10 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         if (responseCode == Activity.RESULT_CANCELED) {
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
+            } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment){
+                checkForSenseOTA();
+            } else if (fragment instanceof SenseVoiceFragment){
+                showResetOriginalSense();
             } else {
                 setResult(RESULT_CANCELED, null);
                 finish();

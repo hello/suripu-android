@@ -7,4 +7,6 @@ public interface FlowOutput {
     void finishFlowWithResult(int resultCode);
 
     void finishFlow();
+
+    void cancelFlow();
 }
