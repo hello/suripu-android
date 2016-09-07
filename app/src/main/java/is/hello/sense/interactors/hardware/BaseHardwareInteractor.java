@@ -9,6 +9,8 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import java.util.concurrent.TimeUnit;
+
 import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
@@ -36,12 +38,15 @@ public abstract class BaseHardwareInteractor extends Interactor {
     private static final String TOKEN_CONNECT = BaseHardwareInteractor.class.getSimpleName() + ".TOKEN_CONNECT";
     private static final String TOKEN_FACTORY_RESET = BaseHardwareInteractor.class.getSimpleName() + ".TOKEN_FACTORY_RESET";
 
+    private static final int BOND_DELAY_SECONDS = 10; // seconds
+
     protected final Context context;
     protected final BluetoothStack bluetoothStack;
 
     protected final PendingObservables<String> pending = new PendingObservables<>();
     protected final Action1<Throwable> respondToError;
     public final Observable<Boolean> bluetoothEnabled;
+
 
     @VisibleForTesting
     @Nullable
@@ -55,6 +60,7 @@ public abstract class BaseHardwareInteractor extends Interactor {
         this.respondToError = e -> {
             if (BuruberiException.isInstabilityLikely(e)) {
                 clearPeripheral();
+                pending.clear();
             } else if (e instanceof ConnectionStateException) {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
             }
@@ -106,6 +112,10 @@ public abstract class BaseHardwareInteractor extends Interactor {
         } else {
             return GattPeripheral.BOND_NONE;
         }
+    }
+
+    public boolean isBonded(){
+        return peripheral != null && GattPeripheral.BOND_BONDED == peripheral.getBondStatus();
     }
 
     public
@@ -173,6 +183,19 @@ public abstract class BaseHardwareInteractor extends Interactor {
 
             this.peripheral = null;
         }
+    }
+
+    public Observable<Void> clearBond() {
+        logEvent("clearBond()");
+
+        if (peripheral == null) {
+            return noDeviceError();
+        }
+
+        return peripheral.removeBond()
+                         .doOnError(this.respondToError)
+                         .delay(BOND_DELAY_SECONDS, TimeUnit.SECONDS)
+                         .map(ignored -> null);
     }
 
     public Observable<Void> runLedAnimation(@NonNull final SenseLedAnimation animationType) {
