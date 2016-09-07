@@ -69,12 +69,14 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     @SuppressWarnings("unused")
     public void showPairingModeHelp(@NonNull final View ignore) {
-        Analytics.trackEvent(getAnalyticsHelpEvent(), null);
-        view.showHelpUri(UserSupport.HelpStep.PAIRING_MODE);
+        execute( () -> {
+            Analytics.trackEvent(getAnalyticsHelpEvent(), null);
+            view.showHelpUri(UserSupport.HelpStep.PAIRING_MODE);
+        });
     }
 
     public void showToolbarHelp() {
-        view.showHelpUri(UserSupport.HelpStep.PAIRING_SENSE_BLE);
+        execute( () -> view.showHelpUri(UserSupport.HelpStep.PAIRING_SENSE_BLE));
     }
 
     public void onActivityResult(final int requestCode,
