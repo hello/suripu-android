@@ -7,7 +7,7 @@ import android.support.annotation.StringRes;
 
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.util.Logger;
 import rx.Subscription;

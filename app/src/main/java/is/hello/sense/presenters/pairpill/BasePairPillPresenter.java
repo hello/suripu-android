@@ -1,6 +1,5 @@
 package is.hello.sense.presenters.pairpill;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -13,7 +12,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
