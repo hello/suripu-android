@@ -488,7 +488,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             builder.setDiagramImage(R.drawable.onboarding_sense_intro);
             builder.setNextFragmentClass(PairSenseFragment.class);
             if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
-                builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP_IN_APP);
+                builder.setAnalyticsEvent(Analytics.Settings.EVENT_SENSE_SETUP);
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
             }

@@ -1,10 +1,16 @@
 package is.hello.sense.interactors;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class SwapSenseInteractor extends ValueInteractor<Boolean>{
@@ -53,10 +59,22 @@ public class SwapSenseInteractor extends ValueInteractor<Boolean>{
         this.request = new SenseDevice.SwapRequest(senseId);
     }
 
-    public static class BadSwapStatusException extends Throwable {
-        BadSwapStatusException(){
-            //todo replace with real error copy
-            super("Unable to update your new Sense at the moment. This is temporary copy for swap api error.");
+    public static class BadSwapStatusException extends BuruberiException implements Errors.Reporting {
+
+        public BadSwapStatusException() {
+            super("Swap api returned not ok status");
+        }
+
+        @Nullable
+        @Override
+        public String getContextInfo() {
+            return Analytics.SenseUpgrade.ERROR_SWAP_API_STATUS;
+        }
+
+        @NonNull
+        @Override
+        public StringRef getDisplayMessage() {
+            return StringRef.from(R.string.error_sense_upgrade_failed_message);
         }
     }
 }

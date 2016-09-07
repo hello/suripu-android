@@ -30,17 +30,17 @@ public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
 
     @Override
     public String getOnCreateAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_PASSWORD_IN_APP;
+        return Analytics.Settings.EVENT_WIFI_PASSWORD;
     }
 
     @Override
     public String getOnSubmitWifiCredentialsAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP;
+        return Analytics.Settings.EVENT_WIFI_CREDENTIALS_SUBMITTED;
     }
 
     @Override
     public String getWifiAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_SENSE_WIFI_UPDATE_IN_APP;
+        return Analytics.Settings.EVENT_SENSE_WIFI_UPDATE;
     }
 
     @Override

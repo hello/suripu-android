@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.view.View;
 
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
@@ -15,6 +16,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
@@ -45,6 +47,8 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     @StringRes
     public abstract int getSubtitleRes();
 
+    public abstract String getAnalyticsHelpEvent();
+
     public abstract boolean showSupportOptions();
 
     public boolean shouldShowPairDialog() {
@@ -59,6 +63,16 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     private void showSelectWifiNetwork() {
         view.finishFlowWithResult(REQUEST_CODE_EDIT_WIFI);
+    }
+
+    @SuppressWarnings("unused")
+    public void showPairingModeHelp(@NonNull final View ignore) {
+        Analytics.trackEvent(getAnalyticsHelpEvent(), null);
+        view.showHelpUri(UserSupport.HelpStep.PAIRING_MODE);
+    }
+
+    public void showToolbarHelp() {
+        view.showHelpUri(UserSupport.HelpStep.PAIRING_SENSE_BLE);
     }
 
     public void onActivityResult(final int requestCode,
@@ -156,7 +170,8 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
                 Analytics.trackError(e, operation);
             } else {
                 final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
-                builder.withOperation(operation);
+                builder.withTitle(getLinkedAccountErrorTitleRes())
+                       .withOperation(operation);
                 view.showErrorDialog(builder);
             }
         });
@@ -197,7 +212,6 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
             view.showErrorDialog(builder);
         });
     }
-
 
     public interface Output extends BasePairSensePresenter.Output {
         void requestPermissionWithDialog();

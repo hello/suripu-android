@@ -10,16 +10,16 @@ public class SettingsSelectWifiNetworkPresenter extends BaseSelectWifiNetworkPre
 
     @Override
     public String getOnCreateAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_IN_APP;
+        return Analytics.Settings.EVENT_WIFI;
     }
 
     @Override
     public String getOnScanAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_SCAN_IN_APP;
+        return Analytics.Settings.EVENT_WIFI_SCAN;
     }
 
     @Override
     public String getOnRescanAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_WIFI_RESCAN_IN_APP;
+        return Analytics.Settings.EVENT_WIFI_RESCAN;
     }
 }
