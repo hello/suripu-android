@@ -113,7 +113,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
     public void presentError(final Throwable e, @NonNull final String operation) {
         hideAllActivityForFailure(() -> {
-            ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
+            final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
 
             builder.withOperation(operation);
             if (e instanceof SenseSetWifiValidationError &&

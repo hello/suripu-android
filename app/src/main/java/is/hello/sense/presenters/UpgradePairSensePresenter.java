@@ -31,6 +31,11 @@ public class UpgradePairSensePresenter extends PairSensePresenter {
     }
 
     @Override
+    public String getAnalyticsHelpEvent() {
+        return Analytics.SenseUpgrade.EVENT_PAIRING_MODE_HELP;
+    }
+
+    @Override
     public boolean shouldShowPairDialog() {
         return true;
     }

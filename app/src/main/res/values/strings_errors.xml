@@ -19,6 +19,7 @@
     <string name="error_sense_voice_not_detected">Sorry didn\'t quite get that.\nPlease try again.</string>
     <string name="error_sense_voice_problem">Sorry there was a problem.\nPlease try again.</string>
     <string name="error_sense_update_failed_message">Sense was unable to update successfully. Please try again.</string>
+    <string name="error_sense_upgrade_failed_message">Your account could not be linked. Please try again.</string>
     <string name="error_update_failed">Update failed</string>
     <string name="error_sense_pairing_failed">Pairing failed</string>
 

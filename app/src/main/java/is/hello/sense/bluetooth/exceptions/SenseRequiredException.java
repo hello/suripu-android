@@ -15,10 +15,6 @@ public class SenseRequiredException extends BuruberiException implements Errors.
         super("Sense Required to perform operation");
     }
 
-    public SenseRequiredException(final String detailMessage) {
-        super(detailMessage);
-    }
-
     @Nullable
     @Override
     public String getContextInfo() {

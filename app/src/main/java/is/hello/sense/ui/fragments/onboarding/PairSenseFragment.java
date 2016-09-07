@@ -21,7 +21,6 @@ import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.PairSensePresenter;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
@@ -75,12 +74,10 @@ public class PairSenseFragment extends BasePresenterFragment
                 .setSubheadingText(presenter.getSubtitleRes())
                 .setDiagramImage(R.drawable.onboarding_pair_sense)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
-                .setSecondaryOnClickListener(this::showPairingModeHelp)// todo move to presenter
+                .setSecondaryOnClickListener(presenter::showPairingModeHelp)
                 .setPrimaryOnClickListener(ignored -> onPrimaryButtonClicked()) // todo move to presenter
                 .setToolbarWantsBackButton(true)
-                .setToolbarOnHelpClickListener(ignored -> {
-                    UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_SENSE_BLE); //todo move to presenter
-                })
+                .setToolbarOnHelpClickListener(ignored -> presenter.showToolbarHelp())
                 .setToolbarOnHelpLongClickListener(ignored -> {
                     showSupportOptions(); //todo move to presenter
                     return true;
@@ -165,11 +162,6 @@ public class PairSenseFragment extends BasePresenterFragment
             return;
         }
         presenter.onLocationPermissionGranted();
-    }
-
-    public void showPairingModeHelp(@NonNull final View sender) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
-        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
     protected void showSupportOptions() {

@@ -39,6 +39,6 @@ public class SettingsPairSenseInteractor extends PairSenseInteractor{
 
     @Override
     public String getOnFinishedAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_PAIR_SENSE_IN_APP;
+        return Analytics.Settings.EVENT_SENSE_PAIRED;
     }
 }
