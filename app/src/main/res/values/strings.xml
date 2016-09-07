@@ -83,7 +83,7 @@
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
-    <string name="title_pair_new_sense">Pairing your New Sense</string>
+    <string name="title_pair_new_sense">Pairing your new Sense</string>
     <string name="info_pair_new_sense">Confirm that your new Sense is plugged in nearby and glowing purple.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>

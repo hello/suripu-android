@@ -51,6 +51,8 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     public abstract boolean showSupportOptions();
 
+    protected abstract boolean shouldUseDefaultBackPressedBehavior();
+
     public boolean shouldShowPairDialog() {
         return false;
     }
@@ -211,6 +213,15 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
                     .withSupportLink();
             view.showErrorDialog(builder);
         });
+    }
+
+    public void onBackPressed(@NonNull final Runnable defaultBackPressedBehavior) {
+        if(shouldUseDefaultBackPressedBehavior()){
+            defaultBackPressedBehavior.run();
+        } else {
+            execute(() -> view.cancelFlow());
+        }
+
     }
 
     public interface Output extends BasePairSensePresenter.Output {

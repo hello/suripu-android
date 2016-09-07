@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -123,9 +122,11 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
 
     @Override
     public void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-        if (responseCode == Activity.RESULT_CANCELED) {
+        if (responseCode == RESULT_CANCELED) {
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
+            } else if ( fragment instanceof PairSenseFragment){
+                showSenseUpdateIntro();
             } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment){
                 checkForSenseOTA();
             } else if ( fragment instanceof SenseOTAFragment) {

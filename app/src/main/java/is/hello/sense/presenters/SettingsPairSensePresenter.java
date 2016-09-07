@@ -49,4 +49,9 @@ public class SettingsPairSensePresenter extends PairSensePresenter {
     public boolean showSupportOptions() {
         return false;
     }
+
+    @Override
+    protected boolean shouldUseDefaultBackPressedBehavior() {
+        return true;
+    }
 }
