@@ -47,12 +47,16 @@ public abstract class BasePresenter<S extends BaseOutput>
     protected final InteractorContainer interactorContainer = new InteractorContainer();
 
 
+    /**
+     * Currently set during onAttach and released in onDetach of fragment lifecycle
+     * @param view Bind reference to BaseOutput
+     */
     public void setView(final S view) {
         this.view = view;
     }
 
+    @CallSuper
     public void onDestroyView() {
-        this.view = null;
         observableContainer.clearSubscriptions();
         interactorContainer.onContainerDestroyed();
     }
@@ -154,7 +158,7 @@ public abstract class BasePresenter<S extends BaseOutput>
         interactorContainer.onContainerResumed();
     }
 
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
     }
 
     /**

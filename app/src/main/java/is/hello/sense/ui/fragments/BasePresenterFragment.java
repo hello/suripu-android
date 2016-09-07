@@ -100,6 +100,7 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getPresenter().onViewCreated();
+        setView();
     }
 
     @CallSuper
@@ -134,6 +135,7 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        getPresenter().setView(null);
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
         //todo make instance of presenter null?

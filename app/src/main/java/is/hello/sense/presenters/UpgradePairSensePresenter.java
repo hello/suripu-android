@@ -46,6 +46,11 @@ public class UpgradePairSensePresenter extends PairSensePresenter {
     }
 
     @Override
+    protected boolean shouldUseDefaultBackPressedBehavior() {
+        return false;
+    }
+
+    @Override
     public String getOnCreateAnalyticsEvent() {
         return Analytics.SenseUpgrade.EVENT_SENSE_PAIR;
     }
