@@ -31,13 +31,13 @@ public class OnboardingPairSensePresenter extends PairSensePresenter {
     }
 
     @Override
-    public String getOnCreateAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_PAIR_SENSE;
+    public String getAnalyticsHelpEvent() {
+        return Analytics.Onboarding.EVENT_PAIRING_MODE_HELP;
     }
 
     @Override
-    public String getOnFinishAnalyticsEvent() {
-        return Analytics.Onboarding.EVENT_SENSE_PAIRED;
+    public String getOnCreateAnalyticsEvent() {
+        return Analytics.Onboarding.EVENT_PAIR_SENSE;
     }
 
     @Override

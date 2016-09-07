@@ -258,19 +258,9 @@ public class Analytics {
         String EVENT_SENSE_SETUP = "Onboarding Sense Setup";
 
         /**
-         * When user lands on the Setting up Sense screen inside the app
-         */
-        String EVENT_SENSE_SETUP_IN_APP = "Sense Setup";
-
-        /**
          * When user lands on the "Pair your Sense" screen
          */
         String EVENT_PAIR_SENSE = "Onboarding Pair Sense";
-
-        /**
-         * When user lands on the "Pair your Sense" screen inside the app
-         */
-        String EVENT_PAIR_SENSE_IN_APP = "Pair Sense";
 
         /**
          * When the user successfully pairs a sense
@@ -278,19 +268,9 @@ public class Analytics {
         String EVENT_SENSE_PAIRED = "Onboarding Sense Paired";
 
         /**
-         * When the user successfully pairs a sense in the app
-         */
-        String EVENT_SENSE_PAIRED_IN_APP = "Sense Paired";
-
-        /**
          * When user lands on the screen to scan for wifi
          */
         String EVENT_WIFI = "Onboarding WiFi";
-
-        /**
-         * When user lands on the screen to scan for wifi in the app
-         */
-        String EVENT_WIFI_IN_APP = "WiFi";
 
         /**
          * When the user implicitly scans for wifi networks.
@@ -298,29 +278,14 @@ public class Analytics {
         String EVENT_WIFI_SCAN = "Onboarding WiFi Scan";
 
         /**
-         * When the user implicitly scans for wifi networks in the app.
-         */
-        String EVENT_WIFI_SCAN_IN_APP = "WiFi Scan";
-
-        /**
          * When the user explicitly rescans for wifi networks.
          */
         String EVENT_WIFI_RESCAN = "Onboarding WiFi Rescan";
 
         /**
-         * When the user explicitly rescans for wifi networks in the app.
-         */
-        String EVENT_WIFI_RESCAN_IN_APP = "WiFi Rescan";
-
-        /**
          * When the user lands on the "Enter Wifi Password" screen
          */
         String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
-
-        /**
-         * When the user lands on the "Enter Wifi Password" screen in app
-         */
-        String EVENT_WIFI_PASSWORD_IN_APP = "WiFi Password";
 
         String PROP_WIFI_IS_OTHER = "Is Other";
 
@@ -331,11 +296,6 @@ public class Analytics {
          */
         String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Onboarding WiFi Credentials Submitted";
 
-        /**
-         * When the user or the app sends WiFi credentials to Sense in app.
-         */
-        String EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP = "WiFi Credentials Submitted";
-
         String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
@@ -344,13 +304,6 @@ public class Analytics {
          * @see #PROP_SENSE_WIFI_STATUS
          */
         String EVENT_SENSE_WIFI_UPDATE = "Onboarding Sense WiFi Update";
-
-        /**
-         * Internal logging updates from Sense in app.
-         *
-         * @see #PROP_SENSE_WIFI_STATUS
-         */
-        String EVENT_SENSE_WIFI_UPDATE_IN_APP = "Sense WiFi Update";
 
         String PROP_SENSE_WIFI_STATUS = "status";
         String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
@@ -639,6 +592,59 @@ public class Analytics {
 
     }
 
+    public interface Settings {
+        /**
+         * When user lands on the pairing mode help screen (not glowing purple)
+         */
+        String EVENT_PAIRING_MODE_HELP = "Pairing Mode Help";
+
+        /**
+         * When user lands on the Setting up Sense screen
+         */
+        String EVENT_SENSE_SETUP = "Sense Setup";
+
+        /**
+         * When user lands on the "Pair your Sense" screen
+         */
+        String EVENT_PAIR_SENSE = "Pair Sense";
+
+        /**
+         * When the user successfully pairs a sense
+         */
+        String EVENT_SENSE_PAIRED = "Sense Paired";
+
+        /**
+         * When user lands on the screen to scan for wifi
+         */
+        String EVENT_WIFI = "WiFi";
+
+        /**
+         * When the user implicitly scans for wifi networks
+         */
+        String EVENT_WIFI_SCAN = "WiFi Scan";
+
+        /**
+         * When the user explicitly rescans for wifi networks
+         */
+        String EVENT_WIFI_RESCAN = "WiFi Rescan";
+
+        /**
+         * When the user lands on the "Enter Wifi Password" screen
+         */
+        String EVENT_WIFI_PASSWORD = "WiFi Password";
+
+        /**
+         * When the user or the app sends WiFi credentials to Sense
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED = "WiFi Credentials Submitted";
+
+        /**
+         * Internal logging updates from Sense in app.
+         */
+        String EVENT_SENSE_WIFI_UPDATE = "Sense WiFi Update";
+
+    }
+
     /**
      *  {@link this#EVENT_START} - Fire when user reaches "Updating your Sleep Pill" screen after tapping "Update" button or "Update Sleep Pill firmware" row or "Update Now" pop-up button
      *
@@ -679,6 +685,13 @@ public class Analytics {
 
     public interface SenseUpgrade {
         String ERROR_SENSE_REQUIRED = "No Previously Paired Sense Found";
+        String ERROR_SWAP_API_STATUS = "Swap Api Status was not OK";
+
+        /**
+         * When user lands on the pairing mode help screen (not glowing purple)
+         */
+        String EVENT_PAIRING_MODE_HELP = "Upgrade Pairing Mode Help";
+
         /**
          * When user lands on the screen to scan for wifi in the app
          */
@@ -723,6 +736,7 @@ public class Analytics {
 
         String EVENT_SENSE_PAIR = "Upgrade Pair Sense";
         String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
+
     }
 
 
