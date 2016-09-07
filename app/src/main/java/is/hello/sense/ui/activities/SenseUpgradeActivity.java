@@ -197,7 +197,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     public void showSenseUpdateIntro() {
-        pushFragment(new SenseUpgradeIntroFragment(), null, false);
+        pushFragment(new SenseUpgradeIntroFragment(), null, true);
     }
 
     public void showSenseUpdate() {
