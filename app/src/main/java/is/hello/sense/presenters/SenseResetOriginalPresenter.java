@@ -43,7 +43,7 @@ public class SenseResetOriginalPresenter
             return;
         }
         bindAndSubscribe(interactor.discoverPeripheralForDevice(currentSenseInteractor.getCurrentSense()),
-                         ignore -> this.checkConnection(),
+                         ignore -> this.checkBond(),
                          this::onError);
     }
 
@@ -65,6 +65,17 @@ public class SenseResetOriginalPresenter
             );
         });
 
+    }
+
+    public void checkBond(){
+        logEvent("checkBond");
+        if(interactor.isBonded()){
+            bindAndSubscribe(interactor.clearBond(),
+                             ignore -> checkConnection(),
+                             this::onError);
+        } else {
+            checkConnection();
+        }
     }
 
     private void checkConnection(){

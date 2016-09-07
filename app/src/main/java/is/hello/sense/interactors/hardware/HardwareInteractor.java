@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -51,7 +50,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
     private static final String TOKEN_CONNECT = HardwareInteractor.class.getSimpleName() + ".TOKEN_CONNECT";
     private static final String TOKEN_GET_WIFI = HardwareInteractor.class.getSimpleName() + ".TOKEN_GET_WIFI";
     private static final String TOKEN_FACTORY_RESET = HardwareInteractor.class.getSimpleName() + ".TOKEN_FACTORY_RESET";
-    private static final int BOND_DELAY_SECONDS = 10; // seconds
+
 
     private final PreferencesInteractor preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
@@ -274,19 +273,6 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                 logEvent("failed to pair with peripheral " + peripheral + ": " + e);
             });
         });
-    }
-
-    public Observable<Void> clearBond() {
-        logEvent("clearBond()");
-
-        if (peripheral == null) {
-            return noDeviceError();
-        }
-
-        return peripheral.removeBond()
-                         .doOnError(this.respondToError)
-                         .delay(BOND_DELAY_SECONDS, TimeUnit.SECONDS)
-                         .map(ignored -> null);
     }
 
     @VisibleForTesting
