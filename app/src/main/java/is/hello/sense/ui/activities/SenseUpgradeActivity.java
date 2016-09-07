@@ -129,7 +129,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
             } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment){
                 checkForSenseOTA();
             } else if (fragment instanceof SenseVoiceFragment){
-                showResetOriginalSense();
+                showVoiceDone();
             } else {
                 setResult(RESULT_CANCELED, null);
                 finish();
