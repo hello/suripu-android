@@ -72,4 +72,8 @@ public final class PendingObservables<T> {
     public <U> Observable<U> bind(@NonNull T token, @NonNull Observable<U> observable) {
         return bind(token, () -> observable);
     }
+
+    public void clear() {
+        pending.clear();
+    }
 }

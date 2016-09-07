@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
@@ -132,7 +131,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     protected boolean hasPeripheralPair() {
         Analytics.setSenseId(hardwareInteractor.getDeviceId());
-        if (hardwareInteractor.getBondStatus() == GattPeripheral.BOND_BONDED) {
+        if (hardwareInteractor.isBonded()) {
             showBlockingActivity(R.string.title_clearing_bond);
             return true;
         } else {
