@@ -35,7 +35,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 @Deprecated //todo remember to remove layout file and our resources when deleting this file
-public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPressedInterceptor{
+public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPressedInterceptor {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
 
@@ -244,7 +244,9 @@ public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPr
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        // do nothing
+        if (isPairOnlySession() && !isPairing) {
+            defaultBehavior.run();
+        }
         return true;
     }
 }
