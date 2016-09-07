@@ -21,6 +21,7 @@ import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.PairSensePresenter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
@@ -33,8 +34,13 @@ import is.hello.sense.util.Distribution;
 import is.hello.sense.util.SkippableFlow;
 import rx.functions.Action0;
 
+
 public class PairSenseFragment extends BasePresenterFragment
-        implements FragmentCompat.OnRequestPermissionsResultCallback, PairSensePresenter.Output{
+        implements
+        FragmentCompat.OnRequestPermissionsResultCallback,
+        PairSensePresenter.Output,
+        OnBackPressedInterceptor
+{
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     private OnboardingSimpleStepView view;
@@ -222,5 +228,11 @@ public class PairSenseFragment extends BasePresenterFragment
                                        (ignored, which) -> presenter.performRecoveryFactoryReset());
         confirmation.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         confirmation.show();
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        presenter.onBackPressed(defaultBehavior);
+        return true;
     }
 }

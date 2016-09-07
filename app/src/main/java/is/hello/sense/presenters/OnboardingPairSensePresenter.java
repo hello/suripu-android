@@ -49,4 +49,9 @@ public class OnboardingPairSensePresenter extends PairSensePresenter {
     public boolean showSupportOptions() {
         return true;
     }
+
+    @Override
+    protected boolean shouldUseDefaultBackPressedBehavior() {
+        return true;
+    }
 }
