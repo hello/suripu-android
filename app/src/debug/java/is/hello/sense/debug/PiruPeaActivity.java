@@ -34,7 +34,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.settings.SettingsPairSenseModule;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.activities.SettingsActivity;

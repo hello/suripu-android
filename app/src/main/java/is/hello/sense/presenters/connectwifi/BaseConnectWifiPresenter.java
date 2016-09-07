@@ -19,8 +19,8 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.presenters.BasePairSensePresenter;
 import is.hello.sense.ui.common.UserSupport;

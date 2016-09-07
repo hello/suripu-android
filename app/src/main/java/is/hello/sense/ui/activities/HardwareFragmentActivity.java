@@ -3,7 +3,7 @@ package is.hello.sense.ui.activities;
 import javax.inject.Inject;
 
 import is.hello.sense.SenseApplication;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 
 /**

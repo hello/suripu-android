@@ -3,7 +3,7 @@ package is.hello.sense.interactors.pairsense;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.util.Analytics;
 
 public class OnboardingPairSenseInteractor extends PairSenseInteractor {
