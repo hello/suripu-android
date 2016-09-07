@@ -48,11 +48,22 @@ public abstract class BasePresenter<S extends BaseOutput>
 
 
     /**
-     * Currently set during onAttach and released in onDetach of fragment lifecycle
+     * Currently set during onAttach
      * @param view Bind reference to BaseOutput
      */
     public void setView(final S view) {
         this.view = view;
+    }
+
+    /**
+     * Currently set during onDetach. Check is made to prevent overriding
+     * setting view of new instance of same fragment. So view is only removed if
+     * current view is the same.
+     */
+    public void removeView(final S view) {
+        if(this.view.equals(view)){
+            this.view = null;
+        }
     }
 
     @CallSuper
@@ -214,5 +225,4 @@ public abstract class BasePresenter<S extends BaseOutput>
     protected void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete) {
         execute(() -> view.hideBlockingActivity(messageRes, bind(onComplete)));
     }
-
 }
