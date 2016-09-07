@@ -194,11 +194,12 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     public void showSenseUpdateIntro() {
-        pushFragment(new SenseUpgradeIntroFragment(), null, true);
+        pushFragment(new SenseUpgradeIntroFragment(), null, false);
     }
 
     public void showSenseUpdate() {
         if (bluetoothStack.isEnabled()) {
+
             pushFragment(new PairSenseFragment(), null, false);
         } else {
             showBluetoothFragment();
