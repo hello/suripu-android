@@ -1,18 +1,21 @@
 package is.hello.sense;
 
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
-import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.interactors.hardware.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.pairsense.UpgradePairSenseInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.SenseResetOriginalPresenter;
@@ -69,16 +72,23 @@ public class SenseUpgradeModule {
 
     @Provides
     @Singleton
-    SenseResetOriginalInteractor providesResetOriginalSenseInteractor(final DevicesInteractor devicesInteractor){
-        return new SenseResetOriginalInteractor(devicesInteractor);
+    CurrentSenseInteractor providesCurrentSenseInteractor(final DevicesInteractor devicesInteractor){
+        return new CurrentSenseInteractor(devicesInteractor);
     }
 
     @Provides
     @Singleton
     UpgradePairSenseInteractor providesUpgradePairSenseInteractor(final HardwareInteractor hardwareInteractor,
                                                                   final SwapSenseInteractor swapSenseInteractor,
-                                                                  final SenseResetOriginalInteractor resetOriginalInteractor){
+                                                                  final CurrentSenseInteractor resetOriginalInteractor){
         return new UpgradePairSenseInteractor(hardwareInteractor, swapSenseInteractor, resetOriginalInteractor);
+    }
+
+    @Provides
+    @Singleton
+    SenseResetOriginalInteractor providesSenseResetOriginalInteractor(final Context context,
+                                                                      final BluetoothStack bluetoothStack){
+        return new SenseResetOriginalInteractor(context, bluetoothStack);
     }
 
     @Provides
@@ -135,8 +145,9 @@ public class SenseUpgradeModule {
 
     @Provides
     @Singleton
-    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final HardwareInteractor interactor, final SenseResetOriginalInteractor senseResetOriginalInteractor) {
-        return new SenseResetOriginalPresenter(interactor, senseResetOriginalInteractor);
+    SenseResetOriginalPresenter providesSenseResetOriginalPresenter(final SenseResetOriginalInteractor interactor,
+                                                                    final CurrentSenseInteractor currentSenseInteractor) {
+        return new SenseResetOriginalPresenter(interactor, currentSenseInteractor);
     }
 
     //endregion

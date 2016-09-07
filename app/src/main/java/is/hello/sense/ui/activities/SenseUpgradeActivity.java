@@ -16,9 +16,8 @@ import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.SenseUpgradeModule;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
-import is.hello.sense.interactors.SenseResetOriginalInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -53,7 +52,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     @Inject
     UserFeaturesInteractor userFeaturesPresenter;
     @Inject
-    SenseResetOriginalInteractor senseResetOriginalInteractor;
+    CurrentSenseInteractor currentSenseInteractor;
 
     @Override
     protected List<Object> getModules(){
@@ -184,7 +183,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     public void storeCurrentSenseDevice(){
-        senseResetOriginalInteractor.update();
+        currentSenseInteractor.update();
     }
 
     public void showSenseUpdateIntro() {

@@ -7,8 +7,8 @@ import android.support.annotation.StringRes;
 import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
-import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;

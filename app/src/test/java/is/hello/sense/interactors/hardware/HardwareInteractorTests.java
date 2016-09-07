@@ -1,4 +1,4 @@
-package is.hello.sense.interactors;
+package is.hello.sense.interactors.hardware;
 
 import android.support.annotation.NonNull;
 
@@ -48,7 +48,7 @@ public class HardwareInteractorTests extends InjectionTestCase {
                                                     Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral)
                 .getWifiNetwork();
-        presenter.peripheral = peripheral;
+        presenter.setPeripheral(peripheral);
 
         assertThrows(() -> Sync.last(presenter.currentWifiNetwork()));
         assertThat(presenter.peripheral, is(nullValue()));
@@ -77,7 +77,7 @@ public class HardwareInteractorTests extends InjectionTestCase {
 
         assertThat(presenter.isConnected(), is(false));
 
-        presenter.peripheral = null;
+        presenter.setPeripheral(null);
 
         assertThat(presenter.hasPeripheral(), is(false));
         assertThat(presenter.isConnected(), is(false));
@@ -137,7 +137,7 @@ public class HardwareInteractorTests extends InjectionTestCase {
                 .when(peripheral)
                 .disconnect();
 
-        presenter.peripheral = peripheral;
+        presenter.setPeripheral(peripheral);
 
         assertThat(presenter.hasPeripheral(), is(true));
         assertThat(presenter.isConnected(), is(true));

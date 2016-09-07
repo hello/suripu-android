@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
@@ -18,7 +16,6 @@ import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
-import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -32,8 +29,7 @@ import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
-import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
-import is.hello.sense.interactors.pairsense.SettingsPairSenseInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;

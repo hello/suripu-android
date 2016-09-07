@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;

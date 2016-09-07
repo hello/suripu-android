@@ -1,4 +1,4 @@
-package is.hello.sense.interactors;
+package is.hello.sense.interactors.hardware;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,21 +30,20 @@ import is.hello.buruberi.util.Rx;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
-import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
-import is.hello.commonsense.util.Compatibility;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.PendingObservables;
+import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import rx.Observable;
 import rx.functions.Action1;
 
 @Singleton
-public class HardwareInteractor extends Interactor {
+public class HardwareInteractor extends BaseHardwareInteractor {
     public static final String ACTION_CONNECTION_LOST = HardwareInteractor.class.getName() + ".ACTION_CONNECTION_LOST";
     public static final int FAILS_BEFORE_HIGH_POWER = 2;
 
@@ -53,24 +52,14 @@ public class HardwareInteractor extends Interactor {
     private static final String TOKEN_GET_WIFI = HardwareInteractor.class.getSimpleName() + ".TOKEN_GET_WIFI";
     private static final String TOKEN_FACTORY_RESET = HardwareInteractor.class.getSimpleName() + ".TOKEN_FACTORY_RESET";
     private static final int BOND_DELAY_SECONDS = 10; // seconds
-    private final Context context;
+
     private final PreferencesInteractor preferencesPresenter;
     private final ApiSessionManager apiSessionManager;
     private final DevicesInteractor devicesPresenter;
-    private final BluetoothStack bluetoothStack;
-
-    private final PendingObservables<String> pending = new PendingObservables<>();
-
-    @VisibleForTesting
-    @Nullable
-    SensePeripheral peripheral;
 
     private int peripheralNotFoundCount = 0;
-    private boolean wantsHighPowerPreScan;
 
     private final Action1<Throwable> respondToError;
-
-    public final Observable<Boolean> bluetoothEnabled;
 
     @Inject
     public HardwareInteractor(@NonNull final Context context,
@@ -78,16 +67,16 @@ public class HardwareInteractor extends Interactor {
                               @NonNull final ApiSessionManager apiSessionManager,
                               @NonNull final DevicesInteractor devicesInteractor,
                               @NonNull final BluetoothStack bluetoothStack) {
-        this.context = context;
+        super(context, bluetoothStack);
+
         this.preferencesPresenter = preferencesInteractor;
         this.apiSessionManager = apiSessionManager;
         this.devicesPresenter = devicesInteractor;
-        this.bluetoothStack = bluetoothStack;
 
         this.respondToError = e -> {
             if (BuruberiException.isInstabilityLikely(e)) {
                 clearPeripheral();
-            } else if (e != null && e instanceof ConnectionStateException) {
+            } else if (e instanceof ConnectionStateException) {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_CONNECTION_LOST));
             }
         };
@@ -97,21 +86,11 @@ public class HardwareInteractor extends Interactor {
 
         final Observable<Intent> disconnectSignal = Rx.fromLocalBroadcast(context, new IntentFilter(GattPeripheral.ACTION_DISCONNECTED));
         disconnectSignal.subscribe(this::onPeripheralDisconnected, Functions.LOG_ERROR);
-
-        this.bluetoothEnabled = bluetoothStack.enabled();
-        bluetoothEnabled.subscribe(this::onBluetoothEnabledChanged, Functions.LOG_ERROR);
     }
 
     public void onUserLoggedOut(@NonNull final Intent ignored) {
         setLastPeripheralAddress(null);
         setPairedPillId(null);
-    }
-
-    public void onBluetoothEnabledChanged(final boolean enabled) {
-        logEvent("onBluetoothEnabledChanged(" + enabled + ")");
-        if (!enabled) {
-            this.peripheral = null;
-        }
     }
 
     public void onPeripheralDisconnected(@NonNull final Intent intent) {
@@ -126,11 +105,10 @@ public class HardwareInteractor extends Interactor {
         }
     }
 
-
     public void setLastPeripheralAddress(@Nullable final String address) {
         logEvent("saving paired peripheral address: " + address);
 
-        SharedPreferences.Editor editor = preferencesPresenter.edit();
+        final SharedPreferences.Editor editor = preferencesPresenter.edit();
         if (address != null) {
             editor.putString(PreferencesInteractor.PAIRED_DEVICE_ADDRESS, address);
         } else {
@@ -158,59 +136,6 @@ public class HardwareInteractor extends Interactor {
 
     public boolean shouldPromptForHighPowerScan() {
         return (!wantsHighPowerPreScan && peripheralNotFoundCount >= FAILS_BEFORE_HIGH_POWER);
-    }
-
-    public void setWantsHighPowerPreScan(final boolean wantsHighPowerPreScan) {
-        logEvent("setWantsHighPowerPreScan(" + wantsHighPowerPreScan + ")");
-        this.wantsHighPowerPreScan = wantsHighPowerPreScan;
-    }
-
-    public void setPeripheral(@Nullable final SensePeripheral peripheral) {
-        this.peripheral = peripheral;
-    }
-
-    public boolean hasPeripheral() {
-        return (peripheral != null);
-    }
-
-    public boolean isConnected() {
-        return (peripheral != null && peripheral.isConnected());
-    }
-
-    public int getBondStatus() {
-        if (peripheral != null) {
-            return peripheral.getBondStatus();
-        } else {
-            return GattPeripheral.BOND_NONE;
-        }
-    }
-
-    public
-    @Nullable
-    String getDeviceId() {
-        if (peripheral != null) {
-            return peripheral.getDeviceId();
-        } else {
-            return null;
-        }
-    }
-
-    public boolean isDeviceSupported() {
-        return Compatibility.generateReport(context).isSupported();
-    }
-
-    private
-    @NonNull
-    <T> Observable<T> noDeviceError() {
-        return Observable.error(new NoConnectedPeripheralException());
-    }
-
-    public Observable<Void> turnOnBluetooth() {
-        return bluetoothStack.turnOn();
-    }
-
-    public Observable<Void> turnOffBluetooth() {
-        return bluetoothStack.turnOff();
     }
 
     public
@@ -282,12 +207,12 @@ public class HardwareInteractor extends Interactor {
             return Observable.just(peripheral);
         }
 
-        String address = preferencesPresenter.getString(PreferencesInteractor.PAIRED_DEVICE_ADDRESS, null);
+        final String address = preferencesPresenter.getString(PreferencesInteractor.PAIRED_DEVICE_ADDRESS, null);
         if (TextUtils.isEmpty(address)) {
             return closestPeripheral();
         } else {
             return pending.bind(TOKEN_DISCOVERY, () -> {
-                PeripheralCriteria criteria = PeripheralCriteria.forAddress(address);
+                final PeripheralCriteria criteria = PeripheralCriteria.forAddress(address);
                 criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
                 return SensePeripheral.discover(bluetoothStack, criteria)
                                       .flatMap(peripherals -> {
@@ -304,7 +229,8 @@ public class HardwareInteractor extends Interactor {
         }
     }
 
-    public Observable<SensePeripheral> discoverPeripheralForDevice(@NonNull SenseDevice device) {
+    @Override
+    public Observable<SensePeripheral> discoverPeripheralForDevice(@NonNull final SenseDevice device) {
         logEvent("discoverPeripheralForDevice(" + device.deviceId + ")");
 
         if (TextUtils.isEmpty(device.deviceId))
@@ -326,6 +252,7 @@ public class HardwareInteractor extends Interactor {
         });
     }
 
+    @Override
     public Observable<ConnectProgress> connectToPeripheral() {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
@@ -360,17 +287,6 @@ public class HardwareInteractor extends Interactor {
                          .doOnError(this.respondToError)
                          .delay(BOND_DELAY_SECONDS, TimeUnit.SECONDS)
                          .map(ignored -> null);
-    }
-
-    public Observable<Void> runLedAnimation(@NonNull final SenseLedAnimation animationType) {
-        logEvent("runLedAnimation()");
-
-        if (peripheral == null) {
-            return noDeviceError();
-        }
-
-        return peripheral.runLedAnimation(animationType)
-                         .doOnError(this.respondToError);
     }
 
     @VisibleForTesting
@@ -496,6 +412,7 @@ public class HardwareInteractor extends Interactor {
         });
     }
 
+    @Override
     public Observable<Void> unsafeFactoryReset() {
         logEvent("unsafeFactoryReset()");
 
@@ -506,35 +423,9 @@ public class HardwareInteractor extends Interactor {
         return pending.bind(TOKEN_FACTORY_RESET, () -> peripheral.factoryReset().doOnError(this.respondToError));
     }
 
-    public void clearPeripheral() {
-        logEvent("clearPeripheral()");
-
-        if (peripheral != null) {
-            if (peripheral.isConnected()) {
-                logEvent("disconnect from paired peripheral");
-
-                peripheral.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
-                                                  e -> logEvent("Could not disconnect peripheral " + e));
-            }
-
-            this.peripheral = null;
-        }
-    }
-
-    /**
-     * Call this method to clear values.
-     * Usually done at end of successful flow
-     */
+    @Override
     public void reset() {
-        setWantsHighPowerPreScan(false);
         peripheralNotFoundCount = 0;
-        clearPeripheral();
-    }
-
-    public static class NoConnectedPeripheralException extends BuruberiException {
-        public NoConnectedPeripheralException() {
-            super("HardwareInteractor peripheral method called without paired peripheral.",
-                  new NullPointerException());
-        }
+        super.reset();
     }
 }
