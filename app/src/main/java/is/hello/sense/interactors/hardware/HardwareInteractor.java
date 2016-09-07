@@ -1,4 +1,4 @@
-package is.hello.sense.interactors;
+package is.hello.sense.interactors.hardware;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +37,8 @@ import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.hardware.BaseHardwareInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -135,12 +136,6 @@ public class HardwareInteractor extends BaseHardwareInteractor {
 
     public boolean shouldPromptForHighPowerScan() {
         return (!wantsHighPowerPreScan && peripheralNotFoundCount >= FAILS_BEFORE_HIGH_POWER);
-    }
-
-    private
-    @NonNull
-    <T> Observable<T> noDeviceError() {
-        return Observable.error(new NoConnectedPeripheralException());
     }
 
     public
@@ -432,12 +427,5 @@ public class HardwareInteractor extends BaseHardwareInteractor {
     public void reset() {
         peripheralNotFoundCount = 0;
         super.reset();
-    }
-
-    public static class NoConnectedPeripheralException extends BuruberiException {
-        public NoConnectedPeripheralException() {
-            super("HardwareInteractor peripheral method called without paired peripheral.",
-                  new NullPointerException());
-        }
     }
 }

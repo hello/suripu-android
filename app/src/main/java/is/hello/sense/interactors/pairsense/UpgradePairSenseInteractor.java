@@ -9,8 +9,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.bluetooth.exceptions.SenseRequiredException;
 import is.hello.sense.interactors.CurrentSenseInteractor;
-import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 

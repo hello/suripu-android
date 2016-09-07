@@ -1,7 +1,6 @@
 package is.hello.sense.presenters.selectwifinetwork;
 
-import is.hello.sense.interactors.HardwareInteractor;
-import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.util.Analytics;
 
 public class SettingsSelectWifiNetworkPresenter extends BaseSelectWifiNetworkPresenter {

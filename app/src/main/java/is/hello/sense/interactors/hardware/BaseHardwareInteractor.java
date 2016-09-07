@@ -45,7 +45,7 @@ public abstract class BaseHardwareInteractor extends Interactor {
 
     @VisibleForTesting
     @Nullable
-    protected SensePeripheral peripheral;
+    SensePeripheral peripheral;
     protected boolean wantsHighPowerPreScan = false;
 
     public BaseHardwareInteractor(@NonNull final Context context,
@@ -206,7 +206,7 @@ public abstract class BaseHardwareInteractor extends Interactor {
         clearPeripheral();
     }
 
-    private
+    protected
     @NonNull
     <T> Observable<T> noDeviceError() {
         return Observable.error(new NoConnectedPeripheralException());

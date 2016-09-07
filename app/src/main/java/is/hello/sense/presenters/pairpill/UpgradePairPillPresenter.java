@@ -9,7 +9,7 @@ import android.view.View;
 import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
-import is.hello.sense.interactors.HardwareInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Analytics;
 

@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
 import is.hello.commonsense.bluetooth.SensePeripheral;
-import is.hello.sense.interactors.HardwareInteractor;
 import is.hello.sense.interactors.Interactor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import rx.Observable;
 
 /**
