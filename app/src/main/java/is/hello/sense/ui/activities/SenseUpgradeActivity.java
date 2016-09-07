@@ -128,6 +128,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
                 showBluetoothFragment();
             } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment){
                 checkForSenseOTA();
+            } else if ( fragment instanceof SenseOTAFragment) {
+                checkHasVoiceFeature();
             } else if (fragment instanceof SenseVoiceFragment){
                 showVoiceDone();
             } else {
@@ -191,7 +193,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     public void showSenseUpdateIntro() {
-        pushFragment(new SenseUpgradeIntroFragment(), null, false);
+        pushFragment(new SenseUpgradeIntroFragment(), null, true);
     }
 
     public void showSenseUpdate() {
