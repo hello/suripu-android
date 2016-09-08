@@ -134,6 +134,7 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        getPresenter().removeView(this);
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
         //todo make instance of presenter null?

@@ -47,12 +47,27 @@ public abstract class BasePresenter<S extends BaseOutput>
     protected final InteractorContainer interactorContainer = new InteractorContainer();
 
 
+    /**
+     * Currently set during onAttach
+     * @param view Bind reference to BaseOutput
+     */
     public void setView(final S view) {
         this.view = view;
     }
 
+    /**
+     * Currently set during onDetach. Check is made to prevent overriding
+     * setting view of new instance of same fragment. So view is only removed if
+     * current view is the same.
+     */
+    public void removeView(final S view) {
+        if(this.view.equals(view)){
+            this.view = null;
+        }
+    }
+
+    @CallSuper
     public void onDestroyView() {
-        this.view = null;
         observableContainer.clearSubscriptions();
         interactorContainer.onContainerDestroyed();
     }
@@ -154,7 +169,7 @@ public abstract class BasePresenter<S extends BaseOutput>
         interactorContainer.onContainerResumed();
     }
 
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
     }
 
     /**
@@ -210,5 +225,4 @@ public abstract class BasePresenter<S extends BaseOutput>
     protected void hideBlockingActivity(@StringRes final int messageRes, @NonNull final Runnable onComplete) {
         execute(() -> view.hideBlockingActivity(messageRes, bind(onComplete)));
     }
-
 }
