@@ -321,19 +321,9 @@ public class Analytics {
         String EVENT_PAIR_PILL = "Onboarding Pair Pill";
 
         /**
-         * When user lands on the "Pairing your Sleep Pill" screen inside the app
-         */
-        String EVENT_PAIR_PILL_IN_APP = "Pair Pill";
-
-        /**
          * When user lands on the "Pairing your Sleep Pill" screen
          */
         String EVENT_PILL_PAIRED = "Onboarding Pill Paired";
-
-        /**
-         * When user lands on the "Pairing your Sleep Pill" screen inside the app
-         */
-        String EVENT_PILL_PAIRED_IN_APP = "Pill Paired";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow
@@ -646,7 +636,18 @@ public class Analytics {
         /**
          * "Purchase sense with voice" button tapped.
          */
-        String PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+        String EVET_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PILL_PAIRED = "Pill Paired";
+
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PAIR_PILL = "Pair Pill";
 
     }
 
@@ -741,7 +742,7 @@ public class Analytics {
         String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
         String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
 
-        String EVENT_SENSE_PAIR = "Upgrade Pair Sense";
+        String EVENT_PAIR_SENSE = "Upgrade Pair Sense";
         String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
 
         String EVENT_SWAP_ACCOUNTS_REQUEST = "Upgrade Swap Accounts Request";
