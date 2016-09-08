@@ -688,7 +688,7 @@ public class Analytics {
         String PROPERTY_NAME = "status";
     }
 
-    public interface SenseUpgrade {
+    public interface Upgrade {
         String ERROR_SENSE_REQUIRED = "No Previously Paired Sense Found";
         String ERROR_SWAP_API_STATUS = "Swap Api Status was not OK";
 
