@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,6 +16,7 @@ import is.hello.sense.R;
 import is.hello.sense.SenseUpgradeModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
@@ -52,10 +53,12 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     UserFeaturesInteractor userFeaturesPresenter;
     @Inject
     CurrentSenseInteractor currentSenseInteractor;
+    @Inject
+    DevicesInteractor devicesInteractor;
 
     @Override
-    protected List<Object> getModules(){
-        return Arrays.asList(new SenseUpgradeModule());
+    protected List<Object> getModules() {
+        return Collections.singletonList(new SenseUpgradeModule());
     }
 
     @Override
@@ -66,7 +69,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_onboarding_container,
                                                                  stateSafeExecutor);
-
+        devicesInteractor.update();
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
@@ -189,7 +192,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void storeCurrentSenseDevice(){
+    public void storeCurrentSenseDevice() {
         currentSenseInteractor.update();
     }
 
@@ -199,7 +202,6 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
 
     public void showSenseUpdate() {
         if (bluetoothStack.isEnabled()) {
-
             pushFragment(new PairSenseFragment(), null, false);
         } else {
             showBluetoothFragment();

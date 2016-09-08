@@ -20,6 +20,13 @@ import is.hello.sense.util.Analytics;
 
 public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Output> {
     private final static int ONE_SECOND_DELAY = 1000;
+    /**
+     * When we bindAndSubscribe to devicesInteractor.devices during onViewCreated the value from
+     * SenseUpgradeActivity will immediately be used and force the user into the next fragment.
+     * Use this boolean to determine if the user is ready.
+     */
+    private boolean handlePrimaryClick = false;
+
     @Inject
     DevicesInteractor devicesInteractor;
 
@@ -38,14 +45,17 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
     private void bindDevices(@NonNull final Devices devices) {
         Log.e(getClass().getSimpleName(), "bindDevices: " + (devices.toString()));
+        if (!handlePrimaryClick) {
+            return;
+        }
+        handlePrimaryClick = false;
         if (view == null) {
             return;
         }
         view.postDelayed(() -> {
             final SleepPillDevice sleepPillDevice = devices.getSleepPill();
             if (sleepPillDevice == null) { // account doesn't have a pill.
-                devicesInteractor.devices.forget();
-                finishWithSuccess();
+                finishWithSuccess(false);
                 return;
             }
             view.showBlockingActivity(R.string.unpairing_sleep_pill);
@@ -58,8 +68,19 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
     @SuppressWarnings("unused")
     public void onPrimaryClick(@NonNull final View clickedView) {
-        view.showBlockingActivity(R.string.unpairing_sleep_pill);
-        devicesInteractor.update();
+        handlePrimaryClick = true;
+        if (devicesInteractor.devices.hasValue()) {
+            if (devicesInteractor.devices.getValue().getSleepPill() == null) {
+                // no sleep pill with account.
+                finishWithSuccess(false);
+            } else {
+                view.showBlockingActivity(R.string.unpairing_sleep_pill);
+                bindDevices(devicesInteractor.devices.getValue());
+            }
+        } else {
+            view.showBlockingActivity(R.string.unpairing_sleep_pill);
+            devicesInteractor.update();
+        }
     }
 
     public void onSecondaryClick(@NonNull final View clickedView) {
@@ -70,7 +91,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
             onPrimaryClick(clickedView);
         });
         dialog.setNegativeButton(R.string.action_dont_pair, (dialogInterface, i) -> {
-            execute(() -> view.cancelFlow());
+            execute(view::cancelFlow);
         });
         dialog.show();
     }
@@ -81,8 +102,12 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
         UserSupport.showForHelpStep(view.getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
-    private void finishWithSuccess() {
-        hideBlockingActivity(R.string.unpaired, view::finishFlow);
+    private void finishWithSuccess(final boolean unpairedOldPill) {
+        if (unpairedOldPill) {
+            hideBlockingActivity(R.string.unpaired, view::finishFlow);
+        } else {
+            view.finishFlow();
+        }
     }
 
     private void hideBlockingActivityWithDelay(@NonNull final Runnable runnable) {
@@ -98,7 +123,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
     }
 
     private void bindUnregisterDevice(@NonNull final VoidResponse vr) {
-        finishWithSuccess();
+        finishWithSuccess(true);
     }
 
     public interface Output extends BaseOutput {
