@@ -22,7 +22,7 @@ public class UpgradePairPillPresenter extends BasePairPillPresenter {
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL_IN_APP, null); //todo make new event
+        Analytics.trackEvent(Analytics.Upgrade.EVENT_PAIR_PILL, null); //todo make new event
     }
 
     @Override
