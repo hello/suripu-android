@@ -1,6 +1,5 @@
 package is.hello.sense.presenters;
 
-import android.app.Activity;
 import android.support.annotation.StringRes;
 import android.view.View;
 
@@ -32,8 +31,8 @@ public class SenseResetOriginalPresenter
         interactor = null;
     }
 
-    public void navigateToHelp(final Activity activity) {
-        UserSupport.showForHelpStep(activity, UserSupport.HelpStep.RESET_ORIGINAL_SENSE);
+    public void navigateToHelp() {
+        execute( () -> view.showHelpUri(UserSupport.HelpStep.RESET_ORIGINAL_SENSE));
     }
 
     public void startOperation() {
@@ -51,7 +50,7 @@ public class SenseResetOriginalPresenter
         hideBlockingActivity(true, () -> {
             currentSenseInteractor.senseDevice.forget();
             interactor.reset();
-            view.onOperationSuccess();
+            view.finishFlow();
         });
     }
 
@@ -97,8 +96,6 @@ public class SenseResetOriginalPresenter
     }
 
     public interface Output extends BaseOutput {
-
-        void onOperationSuccess();
 
         void showRetry(@StringRes int retryRes, View.OnClickListener onClickListener);
     }
