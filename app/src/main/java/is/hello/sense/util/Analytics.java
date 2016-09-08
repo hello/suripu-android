@@ -755,35 +755,30 @@ public class Analytics {
         /**
          * User arrives on Upgrade to Sense with Voice screen
          */
-        String EVENT_UPGRADE_SENSE = "Upgrade Sense";
+        String EVENT_SENSE = "Upgrade Sense";
 
         /**
          * User taps "set up" button
          */
         String EVENT_SENSE_VOICE_START = "Upgrade Sense Voice Start";
 
-        String EVENT_UPGRADE_PAIR_PILL = "Upgrade Pair Pill";
+        String EVENT_PAIR_PILL = "Upgrade Pair Pill";
 
-        String EVENT_UPGRADE_PAIR_PILL_RETRY = "Upgrade Pair Pill Retry";
+        String EVENT_PAIR_PILL_RETRY = "Upgrade Pair Pill Retry";
 
-        String EVENT_UPGRADE_PILL_PAIRED = "Upgrade Pill Paired";
+        String EVENT_PILL_PAIRED = "Upgrade Pill Paired";
 
-        String EVENT_UPGRADE_HELP = "Upgrade Help";
+        String EVENT_HELP = "Upgrade Help";
 
         /**
          * Request to swap account during upgrade
          */
-        String EVENT_UPGRADE_SWAP_ACCOUNT_REQUEST = "Upgrade Swap Accounts Request";
+        String EVENT_SWAP_ACCOUNT_REQUEST = "Upgrade Swap Accounts Request";
 
         /**
          * Successful request to swap account during upgrade
          */
-        String EVENT_UPGRADE_ACCOUNTS_SWAPPED = "Upgrade Accounts Swapped";
-
-        /**
-         * User taps to factory reset during at end of upgrade flow
-         */
-        String EVENT_UPGRADE_FACTORY_RESET = "Upgrade Factory Reset";
+        String EVENT_ACCOUNTS_SWAPPED = "Upgrade Accounts Swapped";
 
     }
 
