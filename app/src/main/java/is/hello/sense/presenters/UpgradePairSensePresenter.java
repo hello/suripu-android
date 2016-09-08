@@ -32,7 +32,7 @@ public class UpgradePairSensePresenter extends PairSensePresenter {
 
     @Override
     public String getAnalyticsHelpEvent() {
-        return Analytics.SenseUpgrade.EVENT_PAIRING_MODE_HELP;
+        return Analytics.Upgrade.EVENT_PAIRING_MODE_HELP;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class UpgradePairSensePresenter extends PairSensePresenter {
 
     @Override
     public String getOnCreateAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_SENSE_PAIR;
+        return Analytics.Upgrade.EVENT_SENSE_PAIR;
     }
 
 }

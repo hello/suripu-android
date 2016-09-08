@@ -10,7 +10,7 @@ import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
-import static is.hello.sense.util.Analytics.SenseUpgrade.EVENT_FACTORY_RESET;
+import static is.hello.sense.util.Analytics.Upgrade.EVENT_FACTORY_RESET;
 
 public class SenseResetOriginalInteractor extends BaseHardwareInteractor {
 
