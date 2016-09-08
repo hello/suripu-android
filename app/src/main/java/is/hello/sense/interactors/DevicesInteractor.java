@@ -2,8 +2,6 @@ package is.hello.sense.interactors;
 
 import android.support.annotation.NonNull;
 
-import javax.inject.Inject;
-
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.BaseDevice;
 import is.hello.sense.api.model.Devices;
@@ -14,9 +12,13 @@ import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
 public class DevicesInteractor extends ValueInteractor<Devices> {
-    @Inject ApiService apiService;
+    private final ApiService apiService;
 
     public final InteractorSubject<Devices> devices = this.subject;
+
+    public DevicesInteractor(@NonNull final ApiService apiService) {
+        this.apiService = apiService;
+    }
 
     @Override
     protected boolean isDataDisposable() {
