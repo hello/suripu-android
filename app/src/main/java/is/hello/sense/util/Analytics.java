@@ -737,6 +737,13 @@ public class Analytics {
         String EVENT_SENSE_PAIR = "Upgrade Pair Sense";
         String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
 
+        String EVENT_SWAP_ACCOUNTS_REQUEST = "Upgrade Swap Accounts Request";
+        String EVENT_SWAPPED_ACCOUNTS = "Upgrade Accounts Swapped";
+        /**
+         * User taps to factory reset during at end of upgrade flow
+         */
+        String EVENT_FACTORY_RESET = "Upgrade Factory Reset";
+
     }
 
 
