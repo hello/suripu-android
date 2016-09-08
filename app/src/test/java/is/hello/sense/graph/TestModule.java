@@ -24,6 +24,7 @@ import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.AccountInteractorTests;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DeviceIssuesInteractorTests;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.InsightsInteractorTests;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
@@ -218,5 +219,11 @@ public final class TestModule {
     @Singleton
     SwapSenseInteractor provideSwapSenseInteractor(final ApiService service){
         return new SwapSenseInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    DevicesInteractor provideDevicesInteractor(final ApiService service){
+        return new DevicesInteractor(service);
     }
 }
