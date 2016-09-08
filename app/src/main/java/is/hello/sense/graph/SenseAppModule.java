@@ -5,11 +5,14 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.SenseOTAModule;
 import is.hello.sense.api.ApiModule;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -167,6 +170,14 @@ public class SenseAppModule {
     @PersistentSharedPreferences
     SharedPreferences providePersistentSharedPreferences(@NonNull final Context context) {
         return context.getSharedPreferences(Constants.PERSISTENT_PREFS, Context.MODE_PRIVATE);
+    }
+
+
+    //todo move to individual module settings/onboarding/upgrading/home
+    @Provides
+    @Singleton
+    DevicesInteractor providesDevicesInteractor(@NonNull final ApiService apiService) {
+        return new DevicesInteractor(apiService);
     }
 
 }
