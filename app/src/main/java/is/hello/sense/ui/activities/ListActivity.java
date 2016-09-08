@@ -74,7 +74,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               final int requestCode,
                                               @StringRes final int title,
                                               final int selectedId,
-                                              @NonNull final IListObject IListObject,
+                                              @NonNull final IListObject<? extends IListItem> IListObject,
                                               final boolean wantsPlayer) {
         final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
@@ -98,7 +98,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                                               final int requestCode,
                                               @StringRes final int title,
                                               @NonNull final ArrayList<Integer> selectedIds,
-                                              @NonNull final IListObject IListObject) {
+                                              @NonNull final IListObject<? extends IListItem> IListObject) {
         final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(ARG_REQUEST_CODE, requestCode);
         intent.putExtra(ARG_TITLE, title);
@@ -122,7 +122,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         }
 
         titleRes = intent.getIntExtra(ARG_TITLE, -1);
-        final IListObject IListObject = (IListObject) intent.getSerializableExtra(ARG_LIST_OBJECT);
+        final IListObject<? extends IListItem> IListObject = (IListObject<? extends IListItem>) intent.getSerializableExtra(ARG_LIST_OBJECT);
         final boolean wantsPlayer = intent.getBooleanExtra(ARG_WANTS_PLAYER, false);
         final boolean multipleOptions = intent.getBooleanExtra(ARG_MULTIPLE_OPTIONS, false);
 
@@ -275,10 +275,10 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     //endregion
 
     private class ListAdapter extends RecyclerView.Adapter<BaseViewHolder> {
-        final IListObject IListObject;
+        final IListObject<? extends IListItem> IListObject;
         final boolean wantsPlayer;
 
-        public ListAdapter(@NonNull final IListObject IListObject, final boolean wantsPlayer) {
+        public ListAdapter(@NonNull final IListObject<? extends IListItem> IListObject, final boolean wantsPlayer) {
             this.IListObject = IListObject;
             this.wantsPlayer = wantsPlayer;
         }

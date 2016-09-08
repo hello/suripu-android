@@ -32,6 +32,7 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.api.model.v2.Volume;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
 import is.hello.sense.ui.activities.ListActivity;
@@ -101,7 +102,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
             final Sound sound = adapter.getDisplayedSound();
             final Duration duration = adapter.getDisplayedDuration();
-            final SleepSoundStatus.Volume volume = adapter.getDisplayedVolume();
+            final Volume volume = adapter.getDisplayedVolume();
             if (sound == null || duration == null || volume == null) {
                 displayPlayButton();
                 return;

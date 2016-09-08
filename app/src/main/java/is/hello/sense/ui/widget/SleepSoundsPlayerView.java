@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import java.util.List;
 
 import is.hello.go99.Anime;
@@ -27,19 +26,21 @@ import is.hello.sense.api.model.v2.Duration;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.api.model.v2.Volume;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.util.IListObject;
 
 @SuppressLint("ViewConstructor")
-public class SleepSoundsPlayerView extends RelativeLayout implements SleepSoundsAdapter.IDisplayedValues {
+public class SleepSoundsPlayerView extends RelativeLayout
+        implements SleepSoundsAdapter.IDisplayedValues {
     private static final float minFadeFactor = .2f;
     private static final float maxFadeFactor = 1f;
 
     private final AnimatorContext animatorContext;
     private final TitleRow titleRow;
-    private final SleepSoundsPlayerRow soundRow;
-    private final SleepSoundsPlayerRow durationRow;
-    private final SleepSoundsPlayerRow volumeRow;
+    private final SleepSoundsPlayerRow<Sound> soundRow;
+    private final SleepSoundsPlayerRow<Duration> durationRow;
+    private final VolumePlayerRow volumeRow;
     private SleepSoundStatus currentStatus;
     private float fadeFactor = 1f;
 
@@ -48,31 +49,31 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                                  final @NonNull SleepSoundsState state,
                                  final @NonNull SleepSoundsAdapter.InteractionListener interactionListener) {
         super(context);
-        ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_rounded_linearlayout, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.item_rounded_linearlayout, this);
         final RoundedLinearLayout view = (RoundedLinearLayout) findViewById(R.id.item_rounded_linearlayout);
         view.setOrientation(LinearLayout.VERTICAL);
         this.animatorContext = animatorContext;
         this.currentStatus = state.getStatus();
         this.titleRow = new TitleRow(context);
-        this.soundRow = new SleepSoundsPlayerRow(context, state.getSounds());
-        this.durationRow = new SleepSoundsPlayerRow(context, state.getDurations());
-        this.volumeRow = new SleepSoundsPlayerRow(context, state.getStatus());
+        this.soundRow = new SleepSoundsPlayerRow<>(context, state.getSounds());
+        this.durationRow = new SleepSoundsPlayerRow<>(context, state.getDurations());
+        this.volumeRow = new VolumePlayerRow(context, state.getStatus());
         view.addView(titleRow);
         view.addView(soundRow);
         view.addView(durationRow);
         view.addView(volumeRow);
         soundRow.setHolderClickListener(v -> {
-            if (!currentStatus.isPlaying()) {
+            if (!currentStatus.isPlaying() && displayedSound() != null) {
                 interactionListener.onSoundClick(displayedSound().getId(), state.getSounds());
             }
         });
         durationRow.setHolderClickListener(v -> {
-            if (!currentStatus.isPlaying()) {
+            if (!currentStatus.isPlaying() && displayedDuration() != null) {
                 interactionListener.onDurationClick(displayedDuration().getId(), state.getDurations());
             }
         });
         volumeRow.setHolderClickListener(v -> {
-            if (!currentStatus.isPlaying()) {
+            if (!currentStatus.isPlaying() && displayedVolume() != null) {
                 interactionListener.onVolumeClick(displayedVolume().getId(), state.getStatus());
             }
         });
@@ -81,7 +82,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
     public void bindStatus(final @NonNull SleepSoundStatus status,
                            final @Nullable Sound savedSound,
                            final @Nullable Duration savedDuration,
-                           @Nullable SleepSoundStatus.Volume savedVolume) {
+                           final @Nullable Volume savedVolume) {
         this.currentStatus = status;
         final ValueAnimator animator;
         if (status.isPlaying()) {
@@ -106,34 +107,31 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
 
         soundRow.bind(status.getSound(), savedSound, null);
         durationRow.bind(status.getDuration(), savedDuration, null);
-        if (savedVolume == SleepSoundStatus.Volume.None) {
-            savedVolume = null;
-        }
-        volumeRow.bind(status.getVolume(), savedVolume, SleepSoundStatus.Volume.Medium);
+        volumeRow.bind(status.getVolume(), savedVolume, Volume.Medium);
     }
 
     @Override
     public Sound displayedSound() {
-        return (Sound) soundRow.displayedItem();
+        return soundRow.displayedItem();
     }
 
     @Override
     public Duration displayedDuration() {
-        return (Duration) durationRow.displayedItem();
+        return durationRow.displayedItem();
     }
 
     @Override
-    public SleepSoundStatus.Volume displayedVolume() {
-        return (SleepSoundStatus.Volume) volumeRow.displayedItem();
+    public Volume displayedVolume() {
+        return volumeRow.displayedItem();
     }
 
-    private abstract class PlayerRow extends LinearLayout {
+    private static abstract class PlayerRow extends LinearLayout {
 
         public PlayerRow(final @NonNull Context context) {
             super(context);
         }
 
-        protected View inflateView(@LayoutRes int view) {
+        protected View inflateView(@LayoutRes final int view) {
             return ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(view, this);
         }
     }
@@ -221,15 +219,16 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
 
     }
 
-    private class SleepSoundsPlayerRow extends PlayerRow implements IDisplayedValue {
-        protected final ISleepSoundsPlayerRowItem rowItem;
+    private class SleepSoundsPlayerRow<itemType extends IListObject.IListItem>
+            extends PlayerRow implements IDisplayedValue<itemType> {
+        protected final ISleepSoundsPlayerRowItem<itemType> rowItem;
         protected final View holder;
         protected final TextView label;
         protected final TextView value;
         protected final ImageView image;
-        protected IListObject.IListItem listItem;
+        protected itemType listItem;
 
-        public SleepSoundsPlayerRow(final @NonNull Context context, final @NonNull ISleepSoundsPlayerRowItem item) {
+        public SleepSoundsPlayerRow(final @NonNull Context context, final @NonNull ISleepSoundsPlayerRowItem<itemType> item) {
             super(context);
             this.holder = inflateView(R.layout.item_sleep_sounds);  // todo change view name
             this.image = (ImageView) holder.findViewById(R.id.item_sleep_sounds_image);
@@ -240,10 +239,11 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             this.label.setText(item.getLabelRes());
         }
 
-        public void bind(final @Nullable IListObject.IListItem currentItem,
-                         final @Nullable IListObject.IListItem savedItem,
-                         final @Nullable IListObject.IListItem defaultItem) {
-            final List<? extends IListObject.IListItem> items = rowItem.getListObject().getListItems();
+        public void bind(final @Nullable itemType currentItem,
+                         final @Nullable itemType savedItem,
+                         final @Nullable itemType defaultItem) {
+            final List<itemType> items = rowItem.getListObject()
+                                                .getListItems();
 
             if (currentItem != null && itemIsContained(items, currentItem)) {
                 listItem = currentItem;
@@ -251,6 +251,8 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                 listItem = savedItem;
             } else if (defaultItem != null) {
                 listItem = defaultItem;
+            } else if (items.isEmpty()){
+                listItem = null;
             } else {
                 listItem = items.get(0);
             }
@@ -262,16 +264,18 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             requestLayout();
         }
 
-        public void setHolderClickListener(OnClickListener onClickListener) {
+        public void setHolderClickListener(final OnClickListener onClickListener) {
             holder.setOnClickListener(onClickListener);
         }
 
+        @Nullable
         @Override
-        public IListObject.IListItem displayedItem() {
+        public itemType displayedItem() {
             return listItem;
         }
 
-        private boolean itemIsContained(@NonNull final List<? extends IListObject.IListItem> items, @NonNull final IListObject.IListItem currentItem) {
+        private boolean itemIsContained(@NonNull final List<itemType> items,
+                                        @NonNull final itemType currentItem) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getId() == currentItem.getId()) {
                     return true;
@@ -281,17 +285,37 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
         }
     }
 
-    public interface ISleepSoundsPlayerRowItem {
+    private class VolumePlayerRow extends SleepSoundsPlayerRow<Volume> {
+
+        public VolumePlayerRow(@NonNull final Context context,
+                               @NonNull final SleepSoundStatus item) {
+            super(context, item);
+        }
+
+        @Override
+        public void bind(@Nullable final Volume currentItem,
+                         @Nullable final Volume savedItem,
+                         @Nullable final Volume defaultItem) {
+            if (savedItem == Volume.None) {
+                super.bind(currentItem, null, defaultItem);
+            } else{
+                super.bind(currentItem, savedItem, defaultItem);
+            }
+
+        }
+    }
+
+    public interface ISleepSoundsPlayerRowItem<itemType extends IListObject.IListItem> {
         @StringRes
         int getLabelRes();
 
         @DrawableRes
         int getImageRes();
 
-        IListObject getListObject();
+        IListObject<itemType> getListObject();
     }
 
-    public interface IDisplayedValue {
-        IListObject.IListItem displayedItem();
+    public interface IDisplayedValue<itemType extends IListObject.IListItem> {
+        itemType displayedItem();
     }
 }

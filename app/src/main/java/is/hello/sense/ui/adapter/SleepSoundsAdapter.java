@@ -22,6 +22,7 @@ import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.api.model.v2.Volume;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 
@@ -81,7 +82,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         return displayedValues.displayedDuration();
     }
 
-    public SleepSoundStatus.Volume getDisplayedVolume() {
+    public Volume getDisplayedVolume() {
         return displayedValues.displayedVolume();
     }
 
@@ -100,7 +101,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         return combinedSleepState.getDurations().getDurationWithId(preferences.getInt(Constants.SLEEP_SOUNDS_DURATION_ID, -1));
     }
 
-    private SleepSoundStatus.Volume getSavedVolume() {
+    private Volume getSavedVolume() {
         return combinedSleepState.getStatus().getVolumeWithValue(preferences.getInt(Constants.SLEEP_SOUNDS_VOLUME_ID, -1));
     }
 
@@ -294,7 +295,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         Duration displayedDuration();
 
-        SleepSoundStatus.Volume displayedVolume();
+        Volume displayedVolume();
     }
 
 
