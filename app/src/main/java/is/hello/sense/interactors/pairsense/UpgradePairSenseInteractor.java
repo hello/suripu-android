@@ -72,9 +72,21 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor{
 
     @Override
     public Observable<Void> linkAccount() {
+        sendSwapAccountRequestEvent();
         swapSenseInteractor.setRequest(hardwareInteractor.getDeviceId());
         return swapSenseInteractor.canSwap()
-                                  .doOnNext( status -> logEvent("Swap Status: " + status))
+                                  .doOnNext( status -> {
+                                      logEvent("Swap Status: " + status);
+                                      sendSwappedAccountsEvent();
+                                  })
                                   .flatMap(okStatus -> hardwareInteractor.linkAccount());
+    }
+
+    protected void sendSwapAccountRequestEvent(){
+        Analytics.trackEvent(Analytics.SenseUpgrade.EVENT_SWAP_ACCOUNTS_REQUEST, null);
+    }
+
+    protected void sendSwappedAccountsEvent(){
+        Analytics.trackEvent(Analytics.SenseUpgrade.EVENT_SWAPPED_ACCOUNTS, null);
     }
 }

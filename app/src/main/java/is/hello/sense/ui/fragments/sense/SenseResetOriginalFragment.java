@@ -41,16 +41,12 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
         this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_sense_reset_original)
                 .setSubheadingText(R.string.info_sense_reset_original)
-                .setToolbarOnHelpClickListener(this::onHelp)
+                .setToolbarOnHelpClickListener(ignored -> presenter.navigateToHelp())
                 .setDiagramImage(R.drawable.sense_reset_original)
                 .setWantsSecondaryButton(false)
                 .setPrimaryButtonText(R.string.action_reset_sense_original)
                 .setPrimaryOnClickListener(this::onNext);
         return view;
-    }
-
-    public void onHelp(final View ignored) {
-        presenter.navigateToHelp(getActivity());
     }
 
     public void onNext(final View ignored) {
@@ -65,11 +61,6 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
     }
 
     //region PresenterOutput implementation
-
-    @Override
-    public void onOperationSuccess(){
-        finishFlow();
-    }
 
     @Override
     public void showRetry(@StringRes final int retryRes,
