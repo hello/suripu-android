@@ -643,6 +643,11 @@ public class Analytics {
          */
         String EVENT_SENSE_WIFI_UPDATE = "Sense WiFi Update";
 
+        /**
+         * "Purchase sense with voice" button tapped.
+         */
+        String PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+
     }
 
     /**
@@ -691,6 +696,8 @@ public class Analytics {
          * When user lands on the pairing mode help screen (not glowing purple)
          */
         String EVENT_PAIRING_MODE_HELP = "Upgrade Pairing Mode Help";
+
+        String EVENT_PUT_INTO_PAIRING_MODE = "Put into Pairing Mode";
 
         /**
          * When user lands on the screen to scan for wifi in the app
@@ -743,6 +750,40 @@ public class Analytics {
          * User taps to factory reset during at end of upgrade flow
          */
         String EVENT_FACTORY_RESET = "Upgrade Factory Reset";
+        String EVENT_NO_BLE = "Upgrade No BLE";
+
+        /**
+         * User arrives on Upgrade to Sense with Voice screen
+         */
+        String EVENT_UPGRADE_SENSE = "Upgrade Sense";
+
+        /**
+         * User taps "set up" button
+         */
+        String EVENT_SENSE_VOICE_START = "Upgrade Sense Voice Start";
+
+        String EVENT_UPGRADE_PAIR_PILL = "Upgrade Pair Pill";
+
+        String EVENT_UPGRADE_PAIR_PILL_RETRY = "Upgrade Pair Pill Retry";
+
+        String EVENT_UPGRADE_PILL_PAIRED = "Upgrade Pill Paired";
+
+        String EVENT_UPGRADE_HELP = "Upgrade Help";
+
+        /**
+         * Request to swap account during upgrade
+         */
+        String EVENT_UPGRADE_SWAP_ACCOUNT_REQUEST = "Upgrade Swap Accounts Request";
+
+        /**
+         * Successful request to swap account during upgrade
+         */
+        String EVENT_UPGRADE_ACCOUNTS_SWAPPED = "Upgrade Accounts Swapped";
+
+        /**
+         * User taps to factory reset during at end of upgrade flow
+         */
+        String EVENT_UPGRADE_FACTORY_RESET = "Upgrade Factory Reset";
 
     }
 
