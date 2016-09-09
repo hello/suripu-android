@@ -34,7 +34,7 @@ public class BluetoothFragment extends BaseHardwareFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_BLE, null);
+        Analytics.trackEvent(Analytics.General.EVENT_NO_BLE, null);
 
         setRetainInstance(true);
     }
