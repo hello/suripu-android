@@ -371,6 +371,8 @@ public class Analytics {
          * When the user long presses on the help button and accesses our secret support menu.
          */
         String EVENT_SUPPORT_OPTIONS = "Support options activated";
+
+        String EVENT_PAIR_PILL_RETRY = "Onboarding Pair Pill Retry";
     }
 
     public interface Timeline {
@@ -634,11 +636,6 @@ public class Analytics {
         String EVENT_SENSE_WIFI_UPDATE = "Sense WiFi Update";
 
         /**
-         * "Purchase sense with voice" button tapped.
-         */
-        String EVET_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
-
-        /**
          * When user lands on the "Pairing your Sleep Pill" screen inside the app
          */
         String EVENT_PILL_PAIRED = "Pill Paired";
@@ -648,6 +645,8 @@ public class Analytics {
          * When user lands on the "Pairing your Sleep Pill" screen inside the app
          */
         String EVENT_PAIR_PILL = "Pair Pill";
+
+        String EVENT_PAIR_PILL_RETRY = "Pair Pill Retry";
 
     }
 
@@ -754,11 +753,6 @@ public class Analytics {
         String EVENT_NO_BLE = "Upgrade No BLE";
 
         /**
-         * User arrives on Upgrade to Sense with Voice screen
-         */
-        String EVENT_SENSE = "Upgrade Sense";
-
-        /**
          * User taps "set up" button
          */
         String EVENT_SENSE_VOICE_START = "Upgrade Sense Voice Start";
@@ -772,14 +766,9 @@ public class Analytics {
         String EVENT_HELP = "Upgrade Help";
 
         /**
-         * Request to swap account during upgrade
+         * "Purchase sense with voice" button tapped.
          */
-        String EVENT_SWAP_ACCOUNT_REQUEST = "Upgrade Swap Accounts Request";
-
-        /**
-         * Successful request to swap account during upgrade
-         */
-        String EVENT_ACCOUNTS_SWAPPED = "Upgrade Accounts Swapped";
+        String EVET_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
 
     }
 
