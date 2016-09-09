@@ -70,7 +70,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            showSenseUpdateIntro();
+          //  showSenseUpdateIntro();
+            showUnpairPillFragment();
             storeCurrentSenseDevice();
         }
     }

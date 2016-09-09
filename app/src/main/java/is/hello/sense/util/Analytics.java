@@ -768,7 +768,9 @@ public class Analytics {
         /**
          * "Purchase sense with voice" button tapped.
          */
-        String EVET_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+        String EVENT_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+
+        String EVENT_UPGRADE_SENSE = "Upgrade Sense";
 
     }
 
