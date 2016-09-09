@@ -12,16 +12,16 @@ public class UpgradeSelectWifiNetworkPresenter extends BaseSelectWifiNetworkPres
 
     @Override
     public String getOnCreateAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_WIFI;
+        return Analytics.Upgrade.EVENT_WIFI;
     }
 
     @Override
     public String getOnScanAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_WIFI_SCAN;
+        return Analytics.Upgrade.EVENT_WIFI_SCAN;
     }
 
     @Override
     public String getOnRescanAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_WIFI_RESCAN;
+        return Analytics.Upgrade.EVENT_WIFI_RESCAN;
     }
 }

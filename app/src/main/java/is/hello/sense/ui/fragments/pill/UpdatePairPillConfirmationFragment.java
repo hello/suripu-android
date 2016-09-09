@@ -51,7 +51,7 @@ public class UpdatePairPillConfirmationFragment extends SenseFragment implements
     }
 
     private void onHelpClick(@NonNull final View sender) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
+        Analytics.trackEvent(Analytics.General.EVENT_HELP, null);
         UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.PILL_PLACEMENT);
     }
 }

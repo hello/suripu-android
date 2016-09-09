@@ -26,16 +26,16 @@ public class UpgradeConnectWifiPresenter extends BaseConnectWifiPresenter {
 
     @Override
     public String getOnCreateAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_WIFI_PASSWORD;
+        return Analytics.Upgrade.EVENT_WIFI_PASSWORD;
     }
 
     @Override
     public String getOnSubmitWifiCredentialsAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_WIFI_CREDENTIALS_SUBMITTED;
+        return Analytics.Upgrade.EVENT_WIFI_CREDENTIALS_SUBMITTED;
     }
 
     @Override
     public String getWifiAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_SENSE_WIFI_UPDATE;
+        return Analytics.Upgrade.EVENT_SENSE_WIFI_UPDATE;
     }
 }

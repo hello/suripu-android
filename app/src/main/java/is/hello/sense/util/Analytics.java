@@ -243,11 +243,6 @@ public class Analytics {
         String EVENT_SENSE_AUDIO = "Onboarding Sense Audio";
 
         /**
-         * When user lands on the No BLE screen
-         */
-        String EVENT_NO_BLE = "Onboarding No BLE";
-
-        /**
          * When user lands on the pairing mode help screen (not glowing purple)
          */
         String EVENT_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
@@ -321,19 +316,9 @@ public class Analytics {
         String EVENT_PAIR_PILL = "Onboarding Pair Pill";
 
         /**
-         * When user lands on the "Pairing your Sleep Pill" screen inside the app
-         */
-        String EVENT_PAIR_PILL_IN_APP = "Pair Pill";
-
-        /**
          * When user lands on the "Pairing your Sleep Pill" screen
          */
         String EVENT_PILL_PAIRED = "Onboarding Pill Paired";
-
-        /**
-         * When user lands on the "Pairing your Sleep Pill" screen inside the app
-         */
-        String EVENT_PILL_PAIRED_IN_APP = "Pill Paired";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow
@@ -381,6 +366,8 @@ public class Analytics {
          * When the user long presses on the help button and accesses our secret support menu.
          */
         String EVENT_SUPPORT_OPTIONS = "Support options activated";
+
+        String EVENT_PAIR_PILL_RETRY = "Onboarding Pair Pill Retry";
     }
 
     public interface Timeline {
@@ -492,6 +479,15 @@ public class Analytics {
         String EVENT_TIMESCALE_WEEK = "week";
         String EVENT_TIMESCALE_MONTH = "month";
         String EVENT_TIMESCALE_QUARTER = "quarter";
+    }
+
+    public interface General{
+        String EVENT_HELP = "Help";
+        /**
+         * When user lands on the No BLE screen
+         */
+        String EVENT_NO_BLE = "No BLE";
+
     }
 
     public interface SleepSounds {
@@ -643,6 +639,19 @@ public class Analytics {
          */
         String EVENT_SENSE_WIFI_UPDATE = "Sense WiFi Update";
 
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PILL_PAIRED = "Pill Paired";
+
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PAIR_PILL = "Pair Pill";
+
+        String EVENT_PAIR_PILL_RETRY = "Pair Pill Retry";
+
     }
 
     /**
@@ -683,7 +692,7 @@ public class Analytics {
         String PROPERTY_NAME = "status";
     }
 
-    public interface SenseUpgrade {
+    public interface Upgrade {
         String ERROR_SENSE_REQUIRED = "No Previously Paired Sense Found";
         String ERROR_SWAP_API_STATUS = "Swap Api Status was not OK";
 
@@ -734,7 +743,7 @@ public class Analytics {
         String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
         String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
 
-        String EVENT_SENSE_PAIR = "Upgrade Pair Sense";
+        String EVENT_PAIR_SENSE = "Upgrade Pair Sense";
         String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
 
         String EVENT_SWAP_ACCOUNTS_REQUEST = "Upgrade Swap Accounts Request";
@@ -743,6 +752,26 @@ public class Analytics {
          * User taps to factory reset during at end of upgrade flow
          */
         String EVENT_FACTORY_RESET = "Upgrade Factory Reset";
+
+        /**
+         * User taps "set up" button
+         */
+        String EVENT_SENSE_VOICE_START = "Upgrade Sense Voice Start";
+
+        String EVENT_PAIR_PILL = "Upgrade Pair Pill";
+
+        String EVENT_PAIR_PILL_RETRY = "Upgrade Pair Pill Retry";
+
+        String EVENT_PILL_PAIRED = "Upgrade Pill Paired";
+
+        String EVENT_HELP = "Upgrade Help";
+
+        /**
+         * "Purchase sense with voice" button tapped.
+         */
+        String EVENT_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+
+        String EVENT_UPGRADE_SENSE = "Upgrade Sense";
 
     }
 

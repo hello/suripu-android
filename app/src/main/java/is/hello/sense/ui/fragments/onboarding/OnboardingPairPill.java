@@ -49,7 +49,7 @@ public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPr
         super.onCreate(savedInstanceState);
 
         if (isPairOnlySession()) {
-            Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL_IN_APP, null);
+            Analytics.trackEvent(Analytics.Settings.EVENT_PAIR_PILL, null);
         } else {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIR_PILL, null);
         }
@@ -131,7 +131,7 @@ public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPr
         LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
             stateSafeExecutor.execute(() -> {
                 if (isPairOnlySession()) {
-                    Analytics.trackEvent(Analytics.Onboarding.EVENT_PILL_PAIRED_IN_APP, null);
+                    Analytics.trackEvent(Analytics.Settings.EVENT_PILL_PAIRED, null);
                     getOnboardingActivity().finish();
                 } else {
                     hardwareInteractor.reset();

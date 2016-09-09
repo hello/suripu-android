@@ -68,7 +68,7 @@ public class SwapSenseInteractor extends ValueInteractor<Boolean>{
         @Nullable
         @Override
         public String getContextInfo() {
-            return Analytics.SenseUpgrade.ERROR_SWAP_API_STATUS;
+            return Analytics.Upgrade.ERROR_SWAP_API_STATUS;
         }
 
         @NonNull

@@ -55,7 +55,7 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor{
 
     @Override
     public String getOnFinishedAnalyticsEvent() {
-        return Analytics.SenseUpgrade.EVENT_SENSE_PAIRED;
+        return Analytics.Upgrade.EVENT_SENSE_PAIRED;
     }
 
     @Override
@@ -83,10 +83,10 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor{
     }
 
     protected void sendSwapAccountRequestEvent(){
-        Analytics.trackEvent(Analytics.SenseUpgrade.EVENT_SWAP_ACCOUNTS_REQUEST, null);
+        Analytics.trackEvent(Analytics.Upgrade.EVENT_SWAP_ACCOUNTS_REQUEST, null);
     }
 
     protected void sendSwappedAccountsEvent(){
-        Analytics.trackEvent(Analytics.SenseUpgrade.EVENT_SWAPPED_ACCOUNTS, null);
+        Analytics.trackEvent(Analytics.Upgrade.EVENT_SWAPPED_ACCOUNTS, null);
     }
 }

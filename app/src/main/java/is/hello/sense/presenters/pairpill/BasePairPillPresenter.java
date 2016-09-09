@@ -18,6 +18,7 @@ import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Analytics;
 
 public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePairPillPresenter.Output> {
     protected boolean isPairing = false;
@@ -38,6 +39,10 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
     public abstract boolean showSkipButtonOnError();
 
     public abstract boolean wantsBackButton();
+
+    public abstract String getPairPillRetryAnalyticsEvent();
+
+    public abstract String getPillPairedAnalyticsEvent();
 
     public abstract void onHelpClick(@NonNull final View viewClicked);
 
@@ -60,6 +65,11 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
                .setNegativeButton(android.R.string.cancel, null)
                .setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
         view.showAlertDialog(builder);
+    }
+
+    public void retry() {
+        Analytics.trackEvent(getPairPillRetryAnalyticsEvent(), null);
+        pairPill();
     }
 
     public void pairPill() {
@@ -96,12 +106,12 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
     }
 
     private void showFinishedLoading(final boolean success) {
-        //todo analytics
         completeHardwareActivity(
                 () -> view.showFinishedLoadingFragment(
                         success ? R.string.sleep_pill_paired : R.string.action_done,
                         bind(() -> {
-                            if (success){
+                            if (success) {
+                                Analytics.trackEvent(getPillPairedAnalyticsEvent(), null);
                                 view.finishFlow();
                             } else {
                                 view.cancelFlow();
