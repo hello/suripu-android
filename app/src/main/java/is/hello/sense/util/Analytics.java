@@ -243,11 +243,6 @@ public class Analytics {
         String EVENT_SENSE_AUDIO = "Onboarding Sense Audio";
 
         /**
-         * When user lands on the No BLE screen
-         */
-        String EVENT_NO_BLE = "Onboarding No BLE";
-
-        /**
          * When user lands on the pairing mode help screen (not glowing purple)
          */
         String EVENT_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
@@ -486,6 +481,15 @@ public class Analytics {
         String EVENT_TIMESCALE_QUARTER = "quarter";
     }
 
+    public interface General{
+        String EVENT_HELP = "Help";
+        /**
+         * When user lands on the No BLE screen
+         */
+        String EVENT_NO_BLE = "No BLE";
+
+    }
+
     public interface SleepSounds {
         String EVENT_SLEEP_SOUNDS = "Sleep sounds";
         String EVENT_SLEEP_SOUNDS_PLAY = "Play sleep sound";
@@ -697,8 +701,6 @@ public class Analytics {
          */
         String EVENT_PAIRING_MODE_HELP = "Upgrade Pairing Mode Help";
 
-        String EVENT_PUT_INTO_PAIRING_MODE = "Put into Pairing Mode";
-
         /**
          * When user lands on the screen to scan for wifi in the app
          */
@@ -750,7 +752,6 @@ public class Analytics {
          * User taps to factory reset during at end of upgrade flow
          */
         String EVENT_FACTORY_RESET = "Upgrade Factory Reset";
-        String EVENT_NO_BLE = "Upgrade No BLE";
 
         /**
          * User taps "set up" button

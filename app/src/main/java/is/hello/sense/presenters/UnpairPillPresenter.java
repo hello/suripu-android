@@ -77,7 +77,7 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
     @SuppressWarnings("unused")
     public void onHelpClick(@NonNull final View sender) {
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_PAIRING_MODE_HELP, null);
+        Analytics.trackEvent(Analytics.General.EVENT_HELP, null);
         UserSupport.showForHelpStep(view.getActivity(), UserSupport.HelpStep.PAIRING_MODE);
     }
 
