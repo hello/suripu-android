@@ -58,5 +58,13 @@ public class UpgradePairPillPresenter extends BasePairPillPresenter {
         view.showHelpUri(UserSupport.HelpStep.PILL_PAIRING);
     }
 
+    @Override
+    public String getPairPillRetryAnalyticsEvent() {
+        return Analytics.Upgrade.EVENT_PAIR_PILL_RETRY;
+    }
 
+    @Override
+    public String getPillPairedAnalyticsEvent() {
+        return Analytics.Upgrade.EVENT_PILL_PAIRED;
+    }
 }

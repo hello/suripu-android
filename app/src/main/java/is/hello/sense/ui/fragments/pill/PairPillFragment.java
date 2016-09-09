@@ -53,7 +53,7 @@ public class PairPillFragment extends BasePresenterFragment
         Views.setSafeOnClickListener(skipButton, ignored -> presenter.skipPairingPill());
 
         this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
-        Views.setSafeOnClickListener(retryButton, ignored -> presenter.pairPill());
+        Views.setSafeOnClickListener(retryButton, ignored -> presenter.retry());
         OnboardingToolbar.of(this, view)
                          .setWantsBackButton(presenter.wantsBackButton())
                          .setOnHelpClickListener(presenter::onHelpClick);
