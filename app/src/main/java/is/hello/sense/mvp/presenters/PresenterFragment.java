@@ -27,7 +27,7 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     protected LoadingDialogFragment loadingDialogFragment;
     protected T presenterView;
 
-    abstract T getPresenterView();
+    public abstract T getPresenterView();
 
     @Nullable
     protected AnimatorContext animatorContext;
@@ -91,8 +91,8 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
         super.onDetach();
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
+        this.presenterView.detach();
         this.presenterView = null;
-        //todo make instance of presenter null?
     }
 
     @NonNull
