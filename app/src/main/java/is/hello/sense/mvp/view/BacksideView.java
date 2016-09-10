@@ -57,29 +57,7 @@ public final class BacksideView extends PresenterView {
         this.tabSelectorHeight = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         this.tabSelector = (SelectorView) view.findViewById(R.id.fragment_backside_tabs);
         tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
-        final @DrawableRes int[] inactiveIcons = {
-                R.drawable.backside_icon_currently,
-                R.drawable.backside_icon_trends,
-                R.drawable.backside_icon_insights,
-                R.drawable.backside_icon_sounds,
-                R.drawable.backside_icon_settings,
-        };
-        final @DrawableRes int[] activeIcons = {
-                R.drawable.backside_icon_currently_active,
-                R.drawable.backside_icon_trends_active,
-                R.drawable.backside_icon_insights_active,
-                R.drawable.backside_icon_sounds_active,
-                R.drawable.backside_icon_settings_active,
-        };
-        for (int i = 0, count = adapter.getCount(); i < count; i++) {
-            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),
-                                                                   inactiveIcons[i]);
-            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i),
-                                                                 activeIcons[i]);
-            final ToggleButton button = tabSelector.addOption(activeContent, inactiveContent, false);
-            button.setPadding(0, 0, 0, 0);
-        }
-        tabSelector.setSelectedIndex(pager.getCurrentItem());
+
         return view;
     }
 
@@ -104,6 +82,29 @@ public final class BacksideView extends PresenterView {
                                                  new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)),
                                                  new StaticFragmentAdapter.Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);
+        final @DrawableRes int[] inactiveIcons = {
+                R.drawable.backside_icon_currently,
+                R.drawable.backside_icon_trends,
+                R.drawable.backside_icon_insights,
+                R.drawable.backside_icon_sounds,
+                R.drawable.backside_icon_settings,
+        };
+        final @DrawableRes int[] activeIcons = {
+                R.drawable.backside_icon_currently_active,
+                R.drawable.backside_icon_trends_active,
+                R.drawable.backside_icon_insights_active,
+                R.drawable.backside_icon_sounds_active,
+                R.drawable.backside_icon_settings_active,
+        };
+        for (int i = 0, count = adapter.getCount(); i < count; i++) {
+            final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),
+                                                                   inactiveIcons[i]);
+            final SpannableString activeContent = createIconSpan(adapter.getPageTitle(i),
+                                                                 activeIcons[i]);
+            final ToggleButton button = tabSelector.addOption(activeContent, inactiveContent, false);
+            button.setPadding(0, 0, 0, 0);
+        }
+        tabSelector.setSelectedIndex(pager.getCurrentItem());
     }
 
     public final void setCurrentItem(final int currentItem, final int options) {
