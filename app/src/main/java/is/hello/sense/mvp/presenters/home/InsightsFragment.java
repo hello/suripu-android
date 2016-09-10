@@ -60,17 +60,17 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
         InsightsAdapter.OnRetry {
 
     @Inject
-    InsightsInteractor insightsPresenter;
+    InsightsInteractor insightsInteractor;
     @Inject
     DateFormatter dateFormatter;
     @Inject
     LocalUsageTracker localUsageTracker;
     @Inject
-    DeviceIssuesInteractor deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesInteractor;
     @Inject
     PreferencesInteractor preferences;
     @Inject
-    QuestionsInteractor questionsPresenter;
+    QuestionsInteractor questionsInteractor;
     @Inject
     Picasso picasso;
     @Inject
@@ -113,8 +113,13 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        deviceIssuesPresenter.bindScope(getScope());
+        addInteractor(insightsInteractor);
+        addInteractor(dateFormatter);
+        addInteractor(localUsageTracker);
+        addInteractor(deviceIssuesInteractor);
+        addInteractor(preferences);
+        addInteractor(questionsInteractor);
+        deviceIssuesInteractor.bindScope(getScope());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
@@ -134,11 +139,11 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
         // handling more or less breaking. Keep them separate until
         // we actually merge the endpoints on the backend.
 
-        bindAndSubscribe(insightsPresenter.insights,
+        bindAndSubscribe(insightsInteractor.insights,
                          this::bindInsights,
                          this::insightsUnavailable);
 
-        bindAndSubscribe(questionsPresenter.question,
+        bindAndSubscribe(questionsInteractor.question,
                          this::bindQuestion,
                          this::questionUnavailable);
     }
@@ -152,7 +157,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
             this.tutorialOverlayView = null;
         }
 
-        insightsPresenter.unbindScope();
+        insightsInteractor.unbindScope();
     }
 
     @Override
@@ -169,11 +174,11 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
 
     @Override
     public void onUpdate() {
-        if (insightsPresenter.updateIfEmpty()) {
+        if (insightsInteractor.updateIfEmpty()) {
             presenterView.setRefreshing(true);
         }
 
-        if (!questionsPresenter.hasQuestion()) {
+        if (!questionsInteractor.hasQuestion()) {
             updateQuestion();
         }
     }
@@ -323,7 +328,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     //region Questions
 
     public void updateQuestion() {
-        final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
+        final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
                 localUsageTracker.isUsageAcceptableForRatingPrompt() &&
                 !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
@@ -331,22 +336,22 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
                                    if (!preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false)) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
-                                           questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
+                                           questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
                                        } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
-                                           questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
+                                           questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
                                        }
                                    } else {
-                                       questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW);
+                                       questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW);
                                    }
                                } else {
-                                   questionsPresenter.setSource(QuestionsInteractor.Source.API);
+                                   questionsInteractor.setSource(QuestionsInteractor.Source.API);
                                }
-                               questionsPresenter.update();
+                               questionsInteractor.update();
                            },
                            e -> {
                                Logger.warn(getClass().getSimpleName(),
                                            "Could not determine device status", e);
-                               questionsPresenter.update();
+                               questionsInteractor.update();
                            });
     }
 
@@ -358,7 +363,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     @Override
     public void onSkipQuestion() {
         LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(questionsPresenter.skipQuestion(false),
+        bindAndSubscribe(questionsInteractor.skipQuestion(false),
                          ignored -> LoadingDialogFragment.close(getFragmentManager()),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
@@ -384,7 +389,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
         this.questionLoaded = false;
 
         presenterView.setRefreshing(true);
-        insightsPresenter.update();
+        insightsInteractor.update();
         updateQuestion();
     }
 

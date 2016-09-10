@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.view.View;
-import android.widget.ImageView;
 
 import javax.inject.Inject;
 
@@ -27,7 +26,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         AppSettingsView.ClickListenerGenerator {
 
     @Inject
-    AccountInteractor accountPresenter;
+    AccountInteractor accountInteractor;
 
 
     @Override
@@ -47,11 +46,17 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addInteractor(accountInteractor);
+    }
+
+    @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.viewCreated(view, this, showDeviceList(), tellAFriend());
-        bindAndSubscribe(accountPresenter.account, this::bindAccount, Functions.LOG_ERROR);
-        accountPresenter.update();
+        bindAndSubscribe(accountInteractor.account, this::bindAccount, Functions.LOG_ERROR);
+        accountInteractor.update();
     }
 
     @Override
@@ -69,7 +74,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     public void onResume() {
         super.onResume();
-        accountPresenter.update();
+        accountInteractor.update();
     }
 
     private View.OnClickListener showDeviceList() {
