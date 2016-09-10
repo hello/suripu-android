@@ -57,7 +57,7 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.setTimeScaleSelectOnSelectionChangedListener(this);
-        presenterView.setSwipRefreshLayoutRefreshListener(this::fetchTrends);
+        presenterView.setSwipeRefreshLayoutRefreshListener(this::fetchTrends);
         presenterView.setTrendFeedViewAnimationCallback(this);
         bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
         presenterView.setTimeScaleButton(trendsPresenter.getTimeScale());

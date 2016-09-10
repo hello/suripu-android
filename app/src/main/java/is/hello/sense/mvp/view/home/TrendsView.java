@@ -3,7 +3,6 @@ package is.hello.sense.mvp.view.home;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.ToggleButton;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
@@ -78,7 +76,7 @@ public final class TrendsView extends PresenterView {
         super.detach();
     }
 
-    public final void setSwipRefreshLayoutRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
+    public final void setSwipeRefreshLayoutRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
         swipeRefreshLayout.setOnRefreshListener(listener);
         swipeRefreshLayout.setRefreshing(true);
     }
