@@ -28,7 +28,7 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
         TrendGraphView.AnimationCallback {
 
     @Inject
-    TrendsInteractor trendsPresenter;
+    TrendsInteractor trendsInteractor;
 
 
     @Override
@@ -50,6 +50,7 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addInteractor(trendsInteractor);
         setHasOptionsMenu(true);
     }
 
@@ -59,8 +60,8 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
         presenterView.setTimeScaleSelectOnSelectionChangedListener(this);
         presenterView.setSwipeRefreshLayoutRefreshListener(this::fetchTrends);
         presenterView.setTrendFeedViewAnimationCallback(this);
-        bindAndSubscribe(trendsPresenter.trends, this::bindTrends, this::presentError);
-        presenterView.setTimeScaleButton(trendsPresenter.getTimeScale());
+        bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
+        presenterView.setTimeScaleButton(trendsInteractor.getTimeScale());
     }
 
     @Override
@@ -69,7 +70,7 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
 
     @Override
     public void onUpdate() {
-        if (trendsPresenter.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
+        if (trendsInteractor.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
             fetchTrends();
         }
     }
@@ -82,7 +83,7 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
                 presenterView.removeAllTimeScaleButtons();
                 for (final TimeScale timeScale : availableTimeScales) {
                     final ToggleButton button = presenterView.addTimeScaleButton(timeScale.titleRes, false);
-                    if (timeScale == trendsPresenter.getTimeScale()) {
+                    if (timeScale == trendsInteractor.getTimeScale()) {
                         presenterView.setSelectedTimeScaleButton(button);
                         fetchTrends();
                     }
@@ -108,13 +109,13 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     @Override
     public void fetchTrends() {
         presenterView.setRefreshing(true);
-        trendsPresenter.update();
+        trendsInteractor.update();
     }
 
     @Override
     public void onSelectionChanged(final int newSelectionIndex) {
         final Trends.TimeScale newTimeScale = presenterView.setSelectionChanged(newSelectionIndex);
-        trendsPresenter.setTimeScale(newTimeScale);
+        trendsInteractor.setTimeScale(newTimeScale);
 
         final String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
                 (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);

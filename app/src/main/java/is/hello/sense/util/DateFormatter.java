@@ -44,9 +44,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.R;
+import is.hello.sense.interactors.Interactor;
 import is.hello.sense.ui.widget.util.Styles;
 
-@Singleton public class DateFormatter {
+@Singleton public class DateFormatter extends Interactor {
     /**
      * The hour of day when the last night date is considered to roll over.
      * <p />

@@ -12,7 +12,6 @@ import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.home.BacksideView;
-import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;

@@ -145,6 +145,11 @@ import is.hello.sense.zendesk.ZendeskModule;
                 OnboardingRegisterAudioFragment.class,
                 OnboardingPairPill.class,
                 is.hello.sense.mvp.presenters.home.BacksideFragment.class,
+                is.hello.sense.mvp.presenters.home.RoomConditionsFragment.class,
+                is.hello.sense.mvp.presenters.home.TrendsFragment.class,
+                is.hello.sense.mvp.presenters.home.InsightsFragment.class,
+                is.hello.sense.mvp.presenters.home.SoundsFragment.class,
+                is.hello.sense.mvp.presenters.home.AppSettingsFragment.class
 
         }
 )

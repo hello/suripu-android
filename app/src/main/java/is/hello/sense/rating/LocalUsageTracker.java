@@ -16,11 +16,12 @@ import org.joda.time.Weeks;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.interactors.Interactor;
 import is.hello.sense.util.Logger;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
-@Singleton public class LocalUsageTracker {
+@Singleton public class LocalUsageTracker extends Interactor {
     public static final Days OLDEST_DAY = Days.days(60);
 
     private final Store store;
