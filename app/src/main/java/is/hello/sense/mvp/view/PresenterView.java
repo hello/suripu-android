@@ -3,6 +3,7 @@ package is.hello.sense.mvp.view;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
@@ -10,8 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public abstract class PresenterView {
-    protected final Context context;
-    protected View view;
+    protected Context context;
 
     public PresenterView(@NonNull final Activity activity) {
         this.context = activity;
@@ -46,6 +46,15 @@ public abstract class PresenterView {
 
     public void destroyView() {
 
+    }
+
+    /**
+     * Remove any reference to Fragment using it.
+     * Will usually be context and any listeners.
+     */
+    @CallSuper
+    public void detach() {
+        context = null;
     }
 
 }

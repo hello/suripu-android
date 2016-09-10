@@ -1,4 +1,4 @@
-package is.hello.sense.mvp.presenters;
+package is.hello.sense.mvp.presenters.home;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,7 +10,8 @@ import javax.inject.Inject;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
-import is.hello.sense.mvp.view.BacksideView;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.view.home.BacksideView;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.SelectorView;
@@ -19,7 +20,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.InternalPrefManager;
 
 
-public class BacksideFragment extends PresenterFragment<BacksideView>
+public final class BacksideFragment extends PresenterFragment<BacksideView>
         implements
         ViewPager.OnPageChangeListener,
         SelectorView.OnSelectionChangedListener {
@@ -38,7 +39,7 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
 
 
     @Override
-    final BacksideView getPresenterView() {
+    public final BacksideView getPresenterView() {
         if (presenterView == null) {
             return new BacksideView(getActivity());
         }

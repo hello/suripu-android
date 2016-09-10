@@ -1,4 +1,4 @@
-package is.hello.sense.mvp.view;
+package is.hello.sense.mvp.view.home;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -18,6 +18,7 @@ import android.widget.ToggleButton;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
@@ -64,6 +65,13 @@ public final class BacksideView extends PresenterView {
     @Override
     public final void destroyView() {
         pager.clearOnPageChangeListeners();
+    }
+
+    @Override
+    public void detach() {
+        super.detach();
+        pager.clearOnPageChangeListeners();
+        tabSelector.setOnSelectionChangedListener(null);
     }
 
     public final void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
