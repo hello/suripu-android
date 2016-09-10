@@ -80,8 +80,9 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onResume() {
         super.onResume();
-        presenterView.resume();
+        stateSafeExecutor.executePendingForResume();
         interactorContainer.onContainerResumed();
+        presenterView.resume();
     }
 
     @CallSuper
