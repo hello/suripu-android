@@ -18,14 +18,14 @@ import android.widget.ToggleButton;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.mvp.presenters.home.AppSettingsFragment;
+import is.hello.sense.mvp.presenters.home.BacksideTabFragment;
+import is.hello.sense.mvp.presenters.home.InsightsFragment;
+import is.hello.sense.mvp.presenters.home.RoomConditionsFragment;
+import is.hello.sense.mvp.presenters.home.SoundsFragment;
+import is.hello.sense.mvp.presenters.home.TrendsFragment;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
-import is.hello.sense.ui.fragments.BacksideTabFragment;
-import is.hello.sense.ui.fragments.InsightsFragment;
-import is.hello.sense.ui.fragments.RoomConditionsFragment;
-import is.hello.sense.ui.fragments.TrendsFragment;
-import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
-import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 

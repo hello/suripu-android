@@ -10,11 +10,12 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.widget.util.Styles;
 import rx.Observable;
 
-public class UnitFormatter {
+public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
     public static final String UNIT_SUFFIX_LIGHT = "lux";
     public static final String UNIT_SUFFIX_HUMIDITY = "%";

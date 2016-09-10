@@ -14,15 +14,13 @@ import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.mvp.view.home.SoundsView;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
-import is.hello.sense.ui.widget.util.Views;
 
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 
 public class SoundsFragment extends BacksideTabFragment<SoundsView> implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
-    SleepSoundsInteractor sleepSoundsPresenter;
+    SleepSoundsInteractor sleepSoundsInteractor;
 
     @Override
     public SoundsView getPresenterView() {
@@ -36,10 +34,10 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            sleepSoundsPresenter.update();
-            bindAndSubscribe(sleepSoundsPresenter.sub, this::bind, this::presentError);
+            sleepSoundsInteractor.update();
+            bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
         }
-        if (presenterView.isShowingViews()) {
+        if (presenterView != null && presenterView.isShowingViews()) {
 
             final SubFragment fragment = presenterView.getCurrentSubFragment(getChildFragmentManager());
             if (fragment != null) {
@@ -52,6 +50,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addInteractor(sleepSoundsInteractor);
         setHasOptionsMenu(true);
     }
 
@@ -72,7 +71,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     public void onResume() {
         super.onResume();
-        sleepSoundsPresenter.update();
+        sleepSoundsInteractor.update();
     }
 
     @Override
@@ -109,7 +108,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
 
     @Override
     public void onRefresh() {
-        sleepSoundsPresenter.update();
+        sleepSoundsInteractor.update();
         presenterView.refreshed(getChildFragmentManager());
     }
 
