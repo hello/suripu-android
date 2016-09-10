@@ -38,6 +38,8 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
+import is.hello.sense.mvp.presenters.BacksideFragment;
+import is.hello.sense.mvp.view.BacksideView;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -46,7 +48,6 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
-import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
@@ -167,7 +168,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, false));
+            stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideView.ITEM_SOUNDS, false));
         }
 
         deviceIssuesPresenter.update();
@@ -177,7 +178,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
 
         this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
-        Views.setSafeOnClickListener(smartAlarmButton, ignored -> showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, true));
+        Views.setSafeOnClickListener(smartAlarmButton, ignored -> showBacksideWithItem(BacksideView.ITEM_SOUNDS, true));
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
         viewPager.addOnPageChangeListener(this);
@@ -223,7 +224,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, false);
+            showBacksideWithItem(BacksideView.ITEM_SOUNDS, false);
         } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD), isResumed);
         }
@@ -330,7 +331,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case SENSOR: {
-                    showBacksideWithItem(BacksideFragment.ITEM_ROOM_CONDITIONS, animate);
+                    showBacksideWithItem(BacksideView.ITEM_ROOM_CONDITIONS, animate);
 
                     final Intent sensorHistory = new Intent(this, SensorHistoryActivity.class);
                     final String sensorName = Notification.getSensorName(notification);
@@ -340,19 +341,19 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case TRENDS: {
-                    showBacksideWithItem(BacksideFragment.ITEM_TRENDS, animate);
+                    showBacksideWithItem(BacksideView.ITEM_TRENDS, animate);
                     break;
                 }
                 case ALARM: {
-                    showBacksideWithItem(BacksideFragment.ITEM_SOUNDS, animate);
+                    showBacksideWithItem(BacksideView.ITEM_SOUNDS, animate);
                     break;
                 }
                 case SETTINGS: {
-                    showBacksideWithItem(BacksideFragment.ITEM_APP_SETTINGS, animate);
+                    showBacksideWithItem(BacksideView.ITEM_APP_SETTINGS, animate);
                     break;
                 }
                 case INSIGHTS: {
-                    showBacksideWithItem(BacksideFragment.ITEM_INSIGHTS, animate);
+                    showBacksideWithItem(BacksideView.ITEM_INSIGHTS, animate);
                     break;
                 }
             }
@@ -596,7 +597,7 @@ public class HomeActivity extends ScopedInjectionActivity
         if (slidingLayersView.isOpen()) {
             final BacksideFragment backside = getBacksideFragment();
             if (backside != null) {
-                backside.setCurrentItem(item, BacksideFragment.OPTION_ANIMATE);
+                backside.setCurrentItem(item, BacksideView.OPTION_ANIMATE);
             }
         } else {
             InternalPrefManager.saveCurrentItem(this, item);

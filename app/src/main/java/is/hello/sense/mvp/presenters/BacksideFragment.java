@@ -67,6 +67,7 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        presenterView.setAdapter(getFragmentManager());
         presenterView.addOnPageChangeListener(this);
         presenterView.setOnSelectionChangedListener(this);
         final long itemLastUpdated =
@@ -147,6 +148,14 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
         this.suppressNextSwipeEvent = true;
 
         presenterView.setCurrentItem(newSelectionIndex, BacksideView.OPTION_ANIMATE);
+    }
+
+    public final void setCurrentItem(final int item, final int animateOptions) {
+        presenterView.setCurrentItem(item, animateOptions);
+    }
+
+    public final BacksideTabFragment getCurrentTabFragment() {
+        return presenterView.getCurrentTabFragment(getFragmentManager());
     }
 
 

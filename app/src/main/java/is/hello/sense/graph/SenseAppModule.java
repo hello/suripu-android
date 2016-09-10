@@ -33,6 +33,7 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.mvp.presenters.ScopedInjectionFragment;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -143,7 +144,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,
                 OnboardingRegisterAudioFragment.class,
-                OnboardingPairPill.class
+                OnboardingPairPill.class,
+                is.hello.sense.mvp.presenters.BacksideFragment.class,
 
         }
 )

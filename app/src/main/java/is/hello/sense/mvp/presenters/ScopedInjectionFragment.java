@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import is.hello.sense.SenseApplication;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.SenseFragment;
@@ -29,7 +30,8 @@ public abstract class ScopedInjectionFragment extends SenseFragment
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
             onInjected();
         } catch (final ClassCastException e) {
-            throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
+            SenseApplication.getInstance().inject(this); //todo temporary until we phase out old ScopedInjectionActivity
+           // throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
     }
 
