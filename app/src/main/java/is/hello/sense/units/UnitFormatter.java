@@ -33,13 +33,14 @@ public class UnitFormatter {
     private final String placeHolder;
 
     public static boolean isDefaultLocaleMetric() {
-        String country = Locale.getDefault().getCountry();
+        final String country = Locale.getDefault().getCountry();
         return (!"US".equals(country) &&
                 !"LR".equals(country) &&
                 !"MM".equals(country));
     }
 
-    @Inject public UnitFormatter(@NonNull PreferencesInteractor preferences, @NonNull Context context) {
+    @Inject
+    public UnitFormatter(@NonNull final PreferencesInteractor preferences, @NonNull final Context context) {
         this.preferences = preferences;
         this.defaultMetric = isDefaultLocaleMetric();
         this.placeHolder = context.getString(R.string.missing_data_placeholder);
@@ -53,8 +54,9 @@ public class UnitFormatter {
 
     //region Formatting
 
-    public @NonNull CharSequence formatTemperature(double value) {
-        if (value == -1){
+    @NonNull
+    public CharSequence formatTemperature(final double value) {
+        if (value == -1) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
         }
         double convertedValue = value;
@@ -65,23 +67,25 @@ public class UnitFormatter {
         return Styles.assembleReadingAndUnit(convertedValue, UNIT_SUFFIX_TEMPERATURE);
     }
 
-    public @NonNull CharSequence formatWeight(long value) {
+    @NonNull
+    public CharSequence formatWeight(final long value) {
         if (preferences.getBoolean(PreferencesInteractor.USE_GRAMS, defaultMetric)) {
-            long kilograms = UnitOperations.gramsToKilograms(value);
+            final long kilograms = UnitOperations.gramsToKilograms(value);
             return kilograms + " kg";
         } else {
-            long pounds = UnitOperations.gramsToPounds(value);
+            final long pounds = UnitOperations.gramsToPounds(value);
             return pounds + " lbs";
         }
     }
 
-    public @NonNull CharSequence formatHeight(long value) {
+    @NonNull
+    public CharSequence formatHeight(final long value) {
         if (preferences.getBoolean(PreferencesInteractor.USE_CENTIMETERS, defaultMetric)) {
             return value + " cm";
         } else {
-            long totalInches = UnitOperations.centimetersToInches(value);
-            long feet = totalInches / 12;
-            long inches = totalInches % 12;
+            final long totalInches = UnitOperations.centimetersToInches(value);
+            final long feet = totalInches / 12;
+            final long inches = totalInches % 12;
             if (inches > 0) {
                 return String.format("%d' %d''", feet, inches);
             } else {
@@ -90,10 +94,11 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull CharSequence formatLight(double value) {
-        if (value == -1){
+    @NonNull
+    public CharSequence formatLight(final double value) {
+        if (value == -1) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_LIGHT);
-        }else if (value < 10.0) {
+        } else if (value < 10.0) {
             return Styles.assembleReadingAndUnit(String.format("%.1f", value),
                                                  UNIT_SUFFIX_LIGHT,
                                                  Styles.UNIT_STYLE_SUPERSCRIPT);
@@ -102,28 +107,32 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull CharSequence formatHumidity(double value) {
-        if (value == -1){
+    @NonNull
+    public CharSequence formatHumidity(final double value) {
+        if (value == -1) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_HUMIDITY);
         }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_HUMIDITY);
     }
 
-    public @NonNull CharSequence formatAirQuality(double value) {
-        if (value == -1){
+    @NonNull
+    public CharSequence formatAirQuality(final double value) {
+        if (value == -1) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_AIR_QUALITY);
         }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
     }
 
-    public @NonNull CharSequence formatNoise(double value) {
-        if (value == -1){
+    @NonNull
+    public CharSequence formatNoise(final double value) {
+        if (value == -1) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_NOISE);
         }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
     }
 
-    public @NonNull UnitConverter getUnitConverterForSensor(@NonNull String sensor) {
+    @NonNull
+    public UnitConverter getUnitConverterForSensor(@NonNull final String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
                 if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
@@ -138,7 +147,8 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull UnitPrinter getUnitPrinterForSensor(@NonNull String sensor) {
+    @NonNull
+    public UnitPrinter getUnitPrinterForSensor(@NonNull final String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return this::formatTemperature;
@@ -160,7 +170,8 @@ public class UnitFormatter {
         }
     }
 
-    public @Nullable String getUnitSuffixForSensor(@NonNull String sensor) {
+    @Nullable
+    public String getUnitSuffixForSensor(@NonNull final String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE:
                 return UNIT_SUFFIX_TEMPERATURE;
